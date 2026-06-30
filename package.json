@@ -1,0 +1,43 @@
+{
+	"name": "template",
+	"private": true,
+	"type": "module",
+	"packageManager": "bun@1.3.12",
+	"workspaces": [
+		"backend",
+		"frontend",
+		"packages/*"
+	],
+	"scripts": {
+		"build": "turbo build",
+		"check-types": "turbo check-types",
+		"commit": "git add . && bun committier ai",
+		"dev": "turbo dev",
+		"format": "bun format:biome . && bun format:eslint .",
+		"format:biome": "bunx biome check --diagnostic-level=error --write --unsafe",
+		"format:eslint": "bunx eslint --quiet --fix",
+		"prepare": "bun run ./prepare.ts || true",
+		"start": "turbo start",
+		"test": "turbo test",
+		"test:e2e": "turbo test:e2e",
+		"test:unit": "turbo test:unit"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.16",
+		"@commitlint/cli": "^20.5.3",
+		"@commitlint/config-conventional": "^20.5.3",
+		"@commitlint/types": "^20.5.0",
+		"@eslint/js": "^10.0.1",
+		"@hyoretsu/configs": "^1.2.33",
+		"@types/bun": "^1.3.14",
+		"@types/node": "^25.9.1",
+		"committier": "^0.2.3",
+		"eslint": "^10.4.1",
+		"eslint-config-biome": "^2.1.3",
+		"lefthook": "^2.1.9",
+		"lint-staged": "^16.4.0",
+		"turbo": "^2.9.16",
+		"typescript": "^6.0.3",
+		"typescript-eslint": "^8.60.1"
+	}
+}

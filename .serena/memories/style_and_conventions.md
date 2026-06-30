@@ -1,0 +1,11 @@
+# Style and Conventions
+- Use Serena tools first for TypeScript/TSX code reading and edits.
+- Keep one React component per file unless a file intentionally uses Composition.
+- Component filenames use PascalCase; non-component files use kebab-case.
+- Page-only frontend components live in an adjacent `components/` folder with an `index.ts` barrel.
+- Do not use the `React.` namespace; import React APIs and types by name.
+- ShadCN components must be added through the ShadCN CLI.
+- Backend DTOs use TypeBox schemas only, deriving types with `typeof XxxDTO.static`; compose DTOs with `.properties` spread, not `t.Intersect`.
+- Elysia route schemas use `response:`, not `result:`.
+- Never edit generated frontend SDK files under `frontend/src/lib/api/generated/` directly.
+- Keep locale files synchronized when adding, renaming, or removing i18n keys.
