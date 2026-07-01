@@ -19,13 +19,18 @@ Project-specific product rules live in [`docs/business-rules.md`](docs/business-
 
 ## Git Commits — Required After Every Completed Task
 
-After finishing any task (feature, fix, refactor, or guideline addition), always create a git commit with the agent as the author and the local user as the committer:
+After finishing any task (feature, fix, refactor, or guideline addition), always create a git commit with **the agent doing the work as the author** and the local user as the committer:
 
 ```
-git -c commit.gpgsign=false -c user.name="Aran Leite" -c user.email="hyoretsu@gmail.com" commit --author="Codex <noreply@openai.com>"
+git -c commit.gpgsign=false -c user.name="Aran Leite" -c user.email="hyoretsu@gmail.com" commit --author="<Agent> <agent-email>"
 ```
 
-Never author commits under another agent's identity or any other third-party identity. In this repo, Codex work is authored by `Codex <noreply@openai.com>` and committed by `Aran Leite <hyoretsu@gmail.com>` unless the user explicitly gives a different per-instance instruction.
+**Each agent authenticates as itself — Claude as Claude, Codex as Codex, and so on.** Use the identity of whichever agent actually authored the change; never sign under another agent's identity or any other third-party identity. Per-agent authors:
+
+- Claude → `--author="Claude <noreply@anthropic.com>"`
+- Codex → `--author="Codex <noreply@openai.com>"`
+
+The committer is always `Aran Leite <hyoretsu@gmail.com>` (never overridden), unless the user explicitly gives a different per-instance instruction.
 
 If the user requests an adjustment to something just delivered, amend or rebase rather than creating a separate noisy commit — keep history clean. Use Conventional Commits (`feat`, `fix`, `refactor`, `docs`, `style`, `chore`) with the monorepo package as scope (e.g. `feat(frontend)`, `fix(backend)`).
 
