@@ -7,12 +7,12 @@ export const authClient = createAuthClient({
 	basePath: "/auth",
 	baseURL,
 	// Mirror the server's user.additionalFields (see backend betterAuth.ts) so the
-	// client user type carries role/document/kycStatus instead of being stripped.
+	// client user type carries tenant + RBAC fields instead of being stripped (docs/03).
 	plugins: [
 		inferAdditionalFields({
 			user: {
-				document: { required: false, type: "string" },
-				kycStatus: { required: false, type: "string" },
+				companyId: { required: false, type: "string" },
+				level: { required: false, type: "string" },
 				role: { required: false, type: "string" },
 			},
 		}),

@@ -1,16 +1,17 @@
 import { create } from "zustand";
 
-export type UserRole = "USER" | "ADMIN";
-export type KycStatus = "NOT_SUBMITTED" | "SUBMITTED" | "APPROVED" | "REJECTED";
+/** Access roles mirror the backend (docs/03). */
+export type UserRole = "superAdmin" | "owner" | "employee" | "courier" | "customer";
 
 export interface AuthUser {
+	companyId: string | null;
 	createdAt: number | string | Date;
-	document: string | null;
 	email: string;
 	emailVerified: boolean;
 	id: string;
 	image: string | null;
-	kycStatus: string;
+	/** Employee sub-level when role = employee (docs/03). */
+	level: string | null;
 	name: string;
 	role: string;
 }
@@ -66,23 +67,23 @@ export const useAuthStore = create<AuthState>(set => ({
 			error: null,
 			isAuthenticated: true,
 			isLoading: false,
-			role: "USER",
+			role: "customer",
 			user: {
+				companyId: null,
 				createdAt: new Date(),
-				document: null,
 				email,
 				emailVerified: true,
 				id: "demo-user",
 				image: null,
-				kycStatus: "NOT_SUBMITTED",
+				level: null,
 				name: defaultUserName,
-				role: "USER",
+				role: "customer",
 			},
 		});
 	},
 	user: null,
 }));
 
-export function isAdmin(role: string | null | undefined): boolean {
-	return role === "ADMIN";
+export function isSuperAdmin(role: string | null | undefined): boolean {
+	return role === "superAdmin";
 }
