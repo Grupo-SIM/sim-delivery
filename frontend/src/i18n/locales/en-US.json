@@ -5,6 +5,42 @@
 			"confirm": "Confirm",
 			"ok": "OK"
 		},
+		"admin": {
+			"companies": {
+				"columns": {
+					"createdAt": "Created",
+					"name": "Name",
+					"slug": "Slug",
+					"variant": "Variant"
+				},
+				"create": {
+					"error": "Could not create the company.",
+					"name": "Name",
+					"namePlaceholder": "Ex: Bliss Cookie",
+					"slug": "Slug",
+					"slugPlaceholder": "ex: bliss-cookie",
+					"slugTaken": "That slug is already taken.",
+					"submit": "Create company",
+					"submitting": "Creating...",
+					"success": "Company created.",
+					"title": "New company"
+				},
+				"edit": {
+					"action": "Edit",
+					"cancel": "Cancel",
+					"error": "Could not save the company.",
+					"save": "Save",
+					"saving": "Saving...",
+					"variantPlaceholder": "variant key",
+					"variantTaken": "That variant key is already in use."
+				},
+				"empty": "No companies yet.",
+				"loadError": "Could not load companies.",
+				"subtitle": "Tenants served by the platform.",
+				"title": "Companies",
+				"variantUnset": "—"
+			}
+		},
 		"app": {
 			"name": "Template App"
 		},
@@ -19,10 +55,10 @@
 				"description": "Backed by a persisted Zustand store.",
 				"emailLabel": "Email",
 				"passwordLabel": "Password",
-				"signedInAs": "Signed in as {{name}}",
 				"signIn": "Sign in locally",
-				"signingIn": "Signing in...",
 				"signOut": "Sign out",
+				"signedInAs": "Signed in as {{name}}",
+				"signingIn": "Signing in...",
 				"title": "Auth example"
 			},
 			"hero": {
