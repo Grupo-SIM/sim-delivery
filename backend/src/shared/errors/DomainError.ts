@@ -1,14 +1,17 @@
 import type { StatusCodes } from "http-status-codes";
+import { CompanyErrors, CompanyErrorsStatusCodes } from "@/modules/companies/errors";
 import { ExampleErrors, ExampleErrorsStatusCodes } from "@/modules/example/errors";
 import { UserErrors, UserErrorsStatusCodes } from "@/modules/users/errors";
 
 export const DomainErrors = {
 	...ExampleErrors,
 	...UserErrors,
+	...CompanyErrors,
 } as const;
 export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCodes> = {
 	...ExampleErrorsStatusCodes,
 	...UserErrorsStatusCodes,
+	...CompanyErrorsStatusCodes,
 };
 
 export class DomainError extends Error {
