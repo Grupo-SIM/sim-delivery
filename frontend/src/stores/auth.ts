@@ -1,7 +1,35 @@
 import { create } from "zustand";
+import { authClient } from "@/lib/auth-client";
 
 /** Access roles mirror the backend (docs/03). */
 export type UserRole = "superAdmin" | "owner" | "employee" | "courier" | "customer";
+
+type SessionUser = {
+	companyId?: string | null;
+	createdAt: number | string | Date;
+	email: string;
+	emailVerified: boolean;
+	id: string;
+	image?: string | null;
+	level?: string | null;
+	name: string;
+	role?: string | null;
+};
+
+/** Maps a Better Auth session user (with tenant additionalFields) to the store shape. */
+export function mapSessionUser(user: SessionUser): AuthUser {
+	return {
+		companyId: user.companyId ?? null,
+		createdAt: user.createdAt,
+		email: user.email,
+		emailVerified: user.emailVerified,
+		id: user.id,
+		image: user.image ?? null,
+		level: user.level ?? null,
+		name: user.name,
+		role: user.role ?? "customer",
+	};
+}
 
 export interface AuthUser {
 	companyId: string | null;
@@ -22,7 +50,7 @@ export interface AuthState {
 	hydrated: boolean;
 	isAuthenticated: boolean;
 	isLoading: boolean;
-	logout: () => void;
+	logout: () => Promise<void>;
 	role: string | null;
 	setUser: (user: AuthUser | null) => void;
 	signIn: (input: {
@@ -40,13 +68,15 @@ export const useAuthStore = create<AuthState>(set => ({
 	hydrated: false,
 	isAuthenticated: false,
 	isLoading: false,
-	logout: () =>
+	logout: async () => {
+		await authClient.signOut();
 		set({
 			error: null,
 			isAuthenticated: false,
 			role: null,
 			user: null,
-		}),
+		});
+	},
 	role: null,
 	setUser: user =>
 		set({
@@ -56,29 +86,24 @@ export const useAuthStore = create<AuthState>(set => ({
 			role: user?.role ?? null,
 			user,
 		}),
-	signIn: async ({ defaultUserName, email, invalidCredentialsMessage, password }) => {
+	signIn: async ({ email, invalidCredentialsMessage, password }) => {
 		set({ error: null, isLoading: true });
-		await Promise.resolve();
-		if (!email || password.length < 6) {
+
+		const { error } = await authClient.signIn.email({ email, password });
+		if (error) {
 			set({ error: invalidCredentialsMessage, isLoading: false });
 			return;
 		}
+
+		const session = await authClient.getSession();
+		const user = session.data?.user ? mapSessionUser(session.data.user) : null;
 		set({
 			error: null,
-			isAuthenticated: true,
+			hydrated: true,
+			isAuthenticated: !!user,
 			isLoading: false,
-			role: "customer",
-			user: {
-				companyId: null,
-				createdAt: new Date(),
-				email,
-				emailVerified: true,
-				id: "demo-user",
-				image: null,
-				level: null,
-				name: defaultUserName,
-				role: "customer",
-			},
+			role: user?.role ?? null,
+			user,
 		});
 	},
 	user: null,

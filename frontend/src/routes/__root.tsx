@@ -1,6 +1,9 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { useSyncSession } from "@/hooks/useSyncSession";
 
 function RootComponent() {
+	useSyncSession();
+
 	return (
 		<div className="dark min-h-screen bg-background text-foreground">
 			<main>

@@ -47,7 +47,16 @@
 		"auth": {
 			"defaultUserName": "Demo user",
 			"errors": {
-				"invalidCredentials": "Use any email and a password with at least 6 characters."
+				"invalidCredentials": "Invalid email or password."
+			},
+			"login": {
+				"email": "Email",
+				"emailPlaceholder": "you@company.com",
+				"password": "Password",
+				"submit": "Sign in",
+				"submitting": "Signing in...",
+				"subtitle": "Sign in to the management panel.",
+				"title": "Staff sign in"
 			}
 		},
 		"home": {

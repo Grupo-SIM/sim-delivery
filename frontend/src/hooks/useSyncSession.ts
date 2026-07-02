@@ -1,13 +1,22 @@
 import { useEffect } from "react";
-import { useAuthStore } from "@/stores/auth";
+import { authClient } from "@/lib/auth-client";
+import { mapSessionUser, useAuthStore } from "@/stores/auth";
 
+/**
+ * Keeps the auth store in sync with the live Better Auth session (login, logout,
+ * refresh). Mount once near the app root.
+ */
 export function useSyncSession() {
 	const setUser = useAuthStore(state => state.setUser);
-	const user = useAuthStore(state => state.user);
+	const { data, isPending } = authClient.useSession();
 
 	useEffect(() => {
-		setUser(user);
-	}, [setUser, user]);
+		if (isPending) {
+			return;
+		}
 
-	return { user };
+		setUser(data?.user ? mapSessionUser(data.user) : null);
+	}, [data, isPending, setUser]);
+
+	return { user: data?.user ?? null };
 }
