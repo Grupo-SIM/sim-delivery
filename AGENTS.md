@@ -34,6 +34,15 @@ The committer is always `Aran Leite <hyoretsu@gmail.com>` (never overridden), un
 
 If the user requests an adjustment to something just delivered, amend or rebase rather than creating a separate noisy commit — keep history clean. Use Conventional Commits (`feat`, `fix`, `refactor`, `docs`, `style`, `chore`) with the monorepo package as scope (e.g. `feat(frontend)`, `fix(backend)`).
 
+**Atomic commits.** One commit = one coherent, complete change (compiles, passes tests, revertible on its own). Never bundle unrelated features/refactors/formatting into the same commit — if an automated formatter touches files outside your change, revert those before committing. Prefer several small, presentable commits over one large one. Every commit must leave the tree green (type-check + build + the affected package's tests).
+
+## Plans — Versioned in the Repo
+
+AI work plans live in the top-level [`plans/`](plans/) folder, **committed** as part of the repo — they are the decision/execution history. Keep `docs/` for product/domain knowledge and `plans/` for planning/execution history; do not keep working plans under `~/.claude/plans`.
+
+- One file per task, named with a zero-padded sequential prefix: `NNNN-kebab-slug.md` (e.g. `0001-jb-delivery-mvp.md`). The number gives chronological order; the next plan takes the next number.
+- When starting or resuming a task, **read** the relevant plan from `plans/`. After **each completed step**, update the plan (mark progress, adjust upcoming steps) and commit that update alongside the step's changes.
+
 ## Pre-PR / Pre-Merge Checks — Required Before Staging or Main
 
 Before opening a PR or merging to `staging` or `main`, run a **type-check** and a **build check** — scoped to the **affected packages only** (don't rebuild the whole monorepo when one package changed). Both must pass before the merge/PR proceeds.

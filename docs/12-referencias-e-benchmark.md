@@ -19,7 +19,7 @@ Legenda: **MVP** = no esboço/escopo confirmado · **Roadmap** = desejável, for
 | Multi-unidade | **MVP** | [04](04-unidades.md) |
 | Cupons e descontos | **MVP** | [09](09-pagamentos-cashback-cupons-frete.md) |
 | Cashback | **MVP** | [09](09-pagamentos-cashback-cupons-frete.md) |
-| Programa de fidelidade por pontos | Roadmap | [10](10-painel-do-dono.md) |
+| Programa de fidelidade por pontos | **MVP** | [10](10-painel-do-dono.md) |
 | Gestão de pedidos / dashboard | **MVP** | [06](06-pedidos.md), [10](10-painel-do-dono.md) |
 | Filtros avançados de cliente (ticket, frequência, histórico) | **MVP** | [07](07-clientes.md) |
 | Relatórios gerenciais / dashboards | **MVP** (básico) | [10](10-painel-do-dono.md) |
@@ -29,18 +29,18 @@ Legenda: **MVP** = no esboço/escopo confirmado · **Roadmap** = desejável, for
 | Chatbot / disparador / automações WhatsApp | Roadmap | [10](10-painel-do-dono.md) |
 | Recuperação de carrinho | Roadmap | [10](10-painel-do-dono.md) |
 | PDV / controle de caixa c/ histórico | Roadmap | [10](10-painel-do-dono.md) |
-| Controle de estoque | Roadmap | [04](04-unidades.md), [05](05-cardapio.md) |
+| Controle de estoque | **MVP** | [04](04-unidades.md), [05](05-cardapio.md) |
 | Controle de fiado | Roadmap | [10](10-painel-do-dono.md) |
 | Emissor de nota fiscal (NF) | Roadmap | [10](10-painel-do-dono.md) |
 | Impressão automática multi-impressora | Roadmap | [10](10-painel-do-dono.md) |
 | KDS (painel de cozinha) | Roadmap | [06](06-pedidos.md), [10](10-painel-do-dono.md) |
 | Gestão de mesas e comandas | Roadmap | [10](10-painel-do-dono.md) |
 | Roteirização + rastreio ao vivo do entregador | Roadmap | [11](11-entregas-motoboy.md) |
-| Agendamento de pedidos | Roadmap | [04](04-unidades.md), [06](06-pedidos.md) |
-| Avaliações / feedback | Roadmap | [10](10-painel-do-dono.md) |
-| Pagamento online (Pix, Mercado Pago, Cielo) | Roadmap | [09](09-pagamentos-cashback-cupons-frete.md) |
+| Agendamento de pedidos | **MVP** | [04](04-unidades.md), [06](06-pedidos.md) |
+| Avaliações / feedback | **MVP** | [10](10-painel-do-dono.md) |
+| Pagamento online (Pix, Mercado Pago, Cielo) | **MVP** | [09](09-pagamentos-cashback-cupons-frete.md) |
 | Integração iFood | Roadmap | [10](10-painel-do-dono.md) |
-| Marketing (Meta/Google Ads, Pixel, GA, GTM) | Roadmap | [10](10-painel-do-dono.md) |
+| Marketing (Meta/Google Ads, Pixel, GA, GTM) | **MVP** | [10](10-painel-do-dono.md) |
 
 ## Como usar este benchmark
 
