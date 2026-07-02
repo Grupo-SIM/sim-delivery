@@ -6,7 +6,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { requireSuperAdminBeforeLoad } from "@/lib/super-admin-guard";
-import { CompaniesTable } from "./components";
+import { CompaniesTable, CreateCompanyForm } from "./components";
 
 function CompaniesPage() {
 	const { t } = useTranslation();
@@ -15,6 +15,8 @@ function CompaniesPage() {
 	return (
 		<Container className="space-y-6 py-8">
 			<SectionHeading subtitle={t("admin.companies.subtitle")} title={t("admin.companies.title")} />
+
+			<CreateCompanyForm />
 
 			{isPending ? (
 				<Skeleton className="h-40 w-full" />
