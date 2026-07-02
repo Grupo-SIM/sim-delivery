@@ -41,12 +41,21 @@ model User {
     email         String   @unique
     emailVerified Boolean  @default(false)
     image         String?
+    /// Access role: superAdmin | owner | employee | courier | customer (docs/03).
+    role          String   @default("customer")
+    /// Employee sub-level when role = employee: manager | attendant | kitchen (docs/03).
+    level         String?
+    /// Tenant the user belongs to. Null for superAdmin (cross-tenant); every other
+    /// user is strictly scoped to this company.
+    companyId     String?
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
 
     accounts Account[]
+    company  Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
     sessions Session[]
 
+    @@index([companyId])
     @@map("user")
 }
 
