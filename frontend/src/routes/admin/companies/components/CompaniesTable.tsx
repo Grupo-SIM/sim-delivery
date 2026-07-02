@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import type { GetCompanies200 } from "@/lib/api";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { CompanyRow } from "./CompanyRow";
 
 interface CompaniesTableProps {
 	companies: GetCompanies200;
@@ -22,16 +23,12 @@ export function CompaniesTable({ companies }: CompaniesTableProps) {
 					<th className="px-4 py-3 font-medium">{t("admin.companies.columns.slug")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.companies.columns.variant")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.companies.columns.createdAt")}</th>
+					<th className="px-4 py-3" />
 				</tr>
 			</thead>
 			<tbody>
 				{companies.map(company => (
-					<tr className="border-border border-b" key={company.id}>
-						<td className="px-4 py-3">{company.name}</td>
-						<td className="px-4 py-3">{company.slug}</td>
-						<td className="px-4 py-3">{company.variantKey ?? t("admin.companies.variantUnset")}</td>
-						<td className="px-4 py-3">{new Date(company.createdAt).toLocaleDateString()}</td>
-					</tr>
+					<CompanyRow company={company} key={company.id} />
 				))}
 			</tbody>
 		</DataTable>
