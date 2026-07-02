@@ -1,8 +1,9 @@
 import Elysia from "elysia";
 import { CompanyScopeGuard } from "@/modules/users/guards";
+import { auth } from "@/shared/infra/betterAuth";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
-import { StaffListReturn } from "../../dtos";
-import { ListStaff } from "../../useCases";
+import { InviteStaffBody, StaffListReturn, StaffReturn } from "../../dtos";
+import { InviteStaff, ListStaff } from "../../useCases";
 
 export const StaffController = new Elysia({
 	detail: {
@@ -14,6 +15,7 @@ export const StaffController = new Elysia({
 		app
 			.decorate(({ prisma, ...injected }) => ({
 				...injected,
+				inviteStaff: new InviteStaff(prisma, input => auth.api.signUpEmail(input)),
 				listStaff: new ListStaff(prisma),
 				prisma,
 			}))
@@ -27,6 +29,19 @@ export const StaffController = new Elysia({
 				},
 				{
 					response: StaffListReturn,
+				},
+			)
+			.post(
+				"/",
+				async ({ body, inviteStaff, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "staff", "invite");
+
+					return inviteStaff.execute({ ...body, companyId: scope.companyId });
+				},
+				{
+					body: InviteStaffBody,
+					response: StaffReturn,
 				},
 			),
 	);
