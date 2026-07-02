@@ -1,0 +1,19 @@
+import { t } from "elysia";
+
+/**
+ * Safe public shape of a staff member (owner or employee). Never exposes credentials.
+ * `role`/`level` are plain strings on the wire (the frontend translates them via t());
+ * this also avoids a Kubb quirk that collapses enum-in-array-item response types.
+ */
+export const StaffReturn = t.Object({
+	createdAt: t.Date(),
+	email: t.String(),
+	id: t.String(),
+	level: t.Nullable(t.String()),
+	name: t.String(),
+	role: t.String(),
+});
+export type StaffReturn = typeof StaffReturn.static;
+
+export const StaffListReturn = t.Array(StaffReturn);
+export type StaffListReturn = typeof StaffListReturn.static;

@@ -39,6 +39,47 @@
 				"subtitle": "Tenants served by the platform.",
 				"title": "Companies",
 				"variantUnset": "—"
+			},
+			"staff": {
+				"columns": {
+					"email": "Email",
+					"level": "Level",
+					"name": "Name",
+					"role": "Role"
+				},
+				"empty": "No staff yet.",
+				"invite": {
+					"email": "Email",
+					"emailPlaceholder": "person@company.com",
+					"emailTaken": "That email is already in use.",
+					"error": "Could not invite the employee.",
+					"level": "Level",
+					"name": "Name",
+					"namePlaceholder": "Full name",
+					"password": "Temporary password",
+					"submit": "Invite employee",
+					"submitting": "Inviting...",
+					"title": "Invite employee"
+				},
+				"levels": {
+					"attendant": "Attendant",
+					"kitchen": "Kitchen",
+					"manager": "Manager",
+					"none": "—"
+				},
+				"loadError": "Could not load staff.",
+				"roles": {
+					"employee": "Employee",
+					"owner": "Owner"
+				},
+				"row": {
+					"remove": "Remove",
+					"removeConfirm": "Remove {{name}} from the team?",
+					"removeError": "Could not remove the employee.",
+					"updateError": "Could not update the level."
+				},
+				"subtitle": "People who manage this company.",
+				"title": "Team"
 			}
 		},
 		"app": {
