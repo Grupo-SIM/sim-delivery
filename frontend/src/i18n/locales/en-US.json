@@ -80,6 +80,33 @@
 				},
 				"subtitle": "People who manage this company.",
 				"title": "Team"
+			},
+			"units": {
+				"columns": {
+					"actions": "",
+					"city": "City",
+					"name": "Name",
+					"phone": "Phone"
+				},
+				"create": {
+					"error": "Could not create the unit.",
+					"name": "Name",
+					"namePlaceholder": "Ex: Downtown",
+					"phone": "Phone",
+					"phonePlaceholder": "(11) 90000-0000",
+					"submit": "Add unit",
+					"submitting": "Adding...",
+					"title": "New unit"
+				},
+				"empty": "No units yet.",
+				"loadError": "Could not load units.",
+				"row": {
+					"delete": "Delete",
+					"deleteConfirm": "Delete unit {{name}}?",
+					"deleteError": "Could not delete the unit."
+				},
+				"subtitle": "Stores of this company.",
+				"title": "Units"
 			}
 		},
 		"app": {

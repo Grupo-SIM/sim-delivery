@@ -1,0 +1,34 @@
+/// A physical store of a company. A company has 1..N units, each with its own
+/// address, hours, fees and payment/delivery options (see docs/04).
+model Unit {
+    id           String   @id @default(cuid())
+    companyId    String
+    name         String
+    phone        String?
+    // Address (deduced from CEP on the client app; see docs/08).
+    zipCode      String?
+    addressLine  String?
+    number       String?
+    complement   String?
+    neighborhood String?
+    city         String?
+    state        String?
+    reference    String?
+    latitude     Float?
+    longitude    Float?
+    // Fulfilment: which methods this unit offers (delivery | pickup).
+    deliveryMethods String[] @default(["delivery"])
+    /// Delivery fee in cents (flat, MVP). See docs/09 for zone/distance evolution.
+    deliveryFee     Int      @default(0)
+    /// Default cashback percentage granted on orders from this unit (docs/09).
+    cashbackPercent Float    @default(0)
+    /// Manual open/closed override. Null = follow the weekly hours (docs/04).
+    isOpenManual    Boolean?
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+
+    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+    @@index([companyId])
+    @@map("unit")
+}
