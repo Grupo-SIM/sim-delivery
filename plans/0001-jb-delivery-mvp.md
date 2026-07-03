@@ -97,7 +97,8 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   Formalização da variant/tema fica p/ É13.
 
 ### É4 — Cardápio
-- **4.1** Category CRUD. demo: gestão categorias.
+- **4.1** ✅ Category CRUD (`Category` model company-scoped + ordenável; `/categories` CRUD
+  guard `menu`; página `/admin/categories`). demo: gestão categorias.
 - **4.2** Tag CRUD (nome+cor). demo: gestão tags.
 - **4.3** Product CRUD (título/img/desc/preço/cashback override). demo: gestão produtos.
 - **4.4** `UnitProduct` (associação por categoria; preço/disponibilidade/estoque `[MVP+]`
@@ -181,5 +182,6 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   explícita (não `.map`) p/ Elysia inferir.
 - **É0, É1, É2, É3 concluídos.** Empresa resolvida por `variantKey` chumbada no build;
   unidade escolhida/trocada por rota (`/store/$unitId`).
-- Próximo: **É4** — Cardápio (4.1 Category CRUD).
+- **É4 em andamento**: 4.1 (Category CRUD) concluído.
+- Próximo: **4.2** Tag CRUD (nome + cor).
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.

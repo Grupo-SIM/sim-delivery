@@ -1,4 +1,5 @@
 import { mkdir } from "node:fs/promises";
+import { CategoriesController } from "./modules/categories/infra";
 import { CompaniesController } from "./modules/companies/infra";
 import { ExampleController } from "./modules/example/infra";
 import { StaffController } from "./modules/staff/infra";
@@ -15,4 +16,5 @@ export const server = app.use([
 	StaffController,
 	UnitsController,
 	PublicUnitsController,
+	CategoriesController,
 ]);

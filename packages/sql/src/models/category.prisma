@@ -1,0 +1,17 @@
+/// Groups products in the menu (e.g. "Cheese bread", "Promotions"). Company-scoped and
+/// orderable; drives the menu's side summary (docs/05, docs/08). A product may also be
+/// category-less (listed loose).
+model Category {
+    id        String   @id @default(cuid())
+    companyId String
+    name      String
+    /// Manual ordering in the menu summary; lower shows first.
+    position  Int      @default(0)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+    @@index([companyId])
+    @@map("category")
+}

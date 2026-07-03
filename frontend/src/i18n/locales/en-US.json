@@ -6,6 +6,36 @@
 			"ok": "OK"
 		},
 		"admin": {
+			"categories": {
+				"columns": {
+					"name": "Name",
+					"position": "Order"
+				},
+				"create": {
+					"error": "Could not create the category.",
+					"name": "Name",
+					"namePlaceholder": "Ex: Drinks",
+					"submit": "Add category",
+					"submitting": "Adding...",
+					"title": "New category"
+				},
+				"edit": {
+					"action": "Edit",
+					"cancel": "Cancel",
+					"error": "Could not save the category.",
+					"save": "Save",
+					"saving": "Saving..."
+				},
+				"empty": "No categories yet.",
+				"loadError": "Could not load categories.",
+				"row": {
+					"delete": "Delete",
+					"deleteConfirm": "Delete category {{name}}?",
+					"deleteError": "Could not delete the category."
+				},
+				"subtitle": "Menu groups for this company.",
+				"title": "Categories"
+			},
 			"companies": {
 				"columns": {
 					"createdAt": "Created",
