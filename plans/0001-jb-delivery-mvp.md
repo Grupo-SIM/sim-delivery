@@ -99,7 +99,8 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
 ### É4 — Cardápio
 - **4.1** ✅ Category CRUD (`Category` model company-scoped + ordenável; `/categories` CRUD
   guard `menu`; página `/admin/categories`). demo: gestão categorias.
-- **4.2** Tag CRUD (nome+cor). demo: gestão tags.
+- **4.2** ✅ Tag CRUD (`Tag` model company-scoped, nome+cor hex; `/tags` CRUD guard `menu`;
+  página `/admin/tags` com swatch+hex). demo: gestão tags.
 - **4.3** Product CRUD (título/img/desc/preço/cashback override). demo: gestão produtos.
 - **4.4** `UnitProduct` (associação por categoria; preço/disponibilidade/estoque `[MVP+]`
   por unidade). demo: associar produto a unidade.
@@ -182,6 +183,6 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   explícita (não `.map`) p/ Elysia inferir.
 - **É0, É1, É2, É3 concluídos.** Empresa resolvida por `variantKey` chumbada no build;
   unidade escolhida/trocada por rota (`/store/$unitId`).
-- **É4 em andamento**: 4.1 (Category CRUD) concluído.
-- Próximo: **4.2** Tag CRUD (nome + cor).
+- **É4 em andamento**: 4.1 (Category CRUD) + 4.2 (Tag CRUD) concluídos.
+- Próximo: **4.3** Product CRUD (título/img/desc/preço/cashback override).
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.

@@ -14,6 +14,7 @@ import { Route as StoreIndexRouteImport } from './routes/store/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as StoreUnitIdIndexRouteImport } from './routes/store/$unitId/index'
 import { Route as AdminUnitsIndexRouteImport } from './routes/admin/units/index'
+import { Route as AdminTagsIndexRouteImport } from './routes/admin/tags/index'
 import { Route as AdminStaffIndexRouteImport } from './routes/admin/staff/index'
 import { Route as AdminCompaniesIndexRouteImport } from './routes/admin/companies/index'
 import { Route as AdminCategoriesIndexRouteImport } from './routes/admin/categories/index'
@@ -43,6 +44,11 @@ const AdminUnitsIndexRoute = AdminUnitsIndexRouteImport.update({
   path: '/admin/units/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminTagsIndexRoute = AdminTagsIndexRouteImport.update({
+  id: '/admin/tags/',
+  path: '/admin/tags/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminStaffIndexRoute = AdminStaffIndexRouteImport.update({
   id: '/admin/staff/',
   path: '/admin/staff/',
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/admin/categories/': typeof AdminCategoriesIndexRoute
   '/admin/companies/': typeof AdminCompaniesIndexRoute
   '/admin/staff/': typeof AdminStaffIndexRoute
+  '/admin/tags/': typeof AdminTagsIndexRoute
   '/admin/units/': typeof AdminUnitsIndexRoute
   '/store/$unitId/': typeof StoreUnitIdIndexRoute
 }
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/admin/categories': typeof AdminCategoriesIndexRoute
   '/admin/companies': typeof AdminCompaniesIndexRoute
   '/admin/staff': typeof AdminStaffIndexRoute
+  '/admin/tags': typeof AdminTagsIndexRoute
   '/admin/units': typeof AdminUnitsIndexRoute
   '/store/$unitId': typeof StoreUnitIdIndexRoute
 }
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/admin/categories/': typeof AdminCategoriesIndexRoute
   '/admin/companies/': typeof AdminCompaniesIndexRoute
   '/admin/staff/': typeof AdminStaffIndexRoute
+  '/admin/tags/': typeof AdminTagsIndexRoute
   '/admin/units/': typeof AdminUnitsIndexRoute
   '/store/$unitId/': typeof StoreUnitIdIndexRoute
 }
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/admin/categories/'
     | '/admin/companies/'
     | '/admin/staff/'
+    | '/admin/tags/'
     | '/admin/units/'
     | '/store/$unitId/'
   fileRoutesByTo: FileRoutesByTo
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/admin/categories'
     | '/admin/companies'
     | '/admin/staff'
+    | '/admin/tags'
     | '/admin/units'
     | '/store/$unitId'
   id:
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/admin/categories/'
     | '/admin/companies/'
     | '/admin/staff/'
+    | '/admin/tags/'
     | '/admin/units/'
     | '/store/$unitId/'
   fileRoutesById: FileRoutesById
@@ -130,6 +142,7 @@ export interface RootRouteChildren {
   AdminCategoriesIndexRoute: typeof AdminCategoriesIndexRoute
   AdminCompaniesIndexRoute: typeof AdminCompaniesIndexRoute
   AdminStaffIndexRoute: typeof AdminStaffIndexRoute
+  AdminTagsIndexRoute: typeof AdminTagsIndexRoute
   AdminUnitsIndexRoute: typeof AdminUnitsIndexRoute
   StoreUnitIdIndexRoute: typeof StoreUnitIdIndexRoute
 }
@@ -171,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUnitsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/tags/': {
+      id: '/admin/tags/'
+      path: '/admin/tags'
+      fullPath: '/admin/tags/'
+      preLoaderRoute: typeof AdminTagsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/staff/': {
       id: '/admin/staff/'
       path: '/admin/staff'
@@ -202,6 +222,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminCategoriesIndexRoute: AdminCategoriesIndexRoute,
   AdminCompaniesIndexRoute: AdminCompaniesIndexRoute,
   AdminStaffIndexRoute: AdminStaffIndexRoute,
+  AdminTagsIndexRoute: AdminTagsIndexRoute,
   AdminUnitsIndexRoute: AdminUnitsIndexRoute,
   StoreUnitIdIndexRoute: StoreUnitIdIndexRoute,
 }

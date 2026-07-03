@@ -3,6 +3,7 @@ import { CategoryErrors, CategoryErrorsStatusCodes } from "@/modules/categories/
 import { CompanyErrors, CompanyErrorsStatusCodes } from "@/modules/companies/errors";
 import { ExampleErrors, ExampleErrorsStatusCodes } from "@/modules/example/errors";
 import { StaffErrors, StaffErrorsStatusCodes } from "@/modules/staff/errors";
+import { TagErrors, TagErrorsStatusCodes } from "@/modules/tags/errors";
 import { UnitErrors, UnitErrorsStatusCodes } from "@/modules/units/errors";
 import { UserErrors, UserErrorsStatusCodes } from "@/modules/users/errors";
 
@@ -13,6 +14,7 @@ export const DomainErrors = {
 	...StaffErrors,
 	...UnitErrors,
 	...CategoryErrors,
+	...TagErrors,
 } as const;
 export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCodes> = {
 	...ExampleErrorsStatusCodes,
@@ -21,6 +23,7 @@ export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCo
 	...StaffErrorsStatusCodes,
 	...UnitErrorsStatusCodes,
 	...CategoryErrorsStatusCodes,
+	...TagErrorsStatusCodes,
 };
 
 export class DomainError extends Error {

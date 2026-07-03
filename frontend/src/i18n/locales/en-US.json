@@ -111,6 +111,36 @@
 				"subtitle": "People who manage this company.",
 				"title": "Team"
 			},
+			"tags": {
+				"columns": {
+					"color": "Color",
+					"name": "Name"
+				},
+				"create": {
+					"color": "Color",
+					"error": "Could not create the tag.",
+					"name": "Name",
+					"namePlaceholder": "Ex: Vegan",
+					"submit": "Add tag",
+					"submitting": "Adding..."
+				},
+				"edit": {
+					"action": "Edit",
+					"cancel": "Cancel",
+					"error": "Could not save the tag.",
+					"save": "Save",
+					"saving": "Saving..."
+				},
+				"empty": "No tags yet.",
+				"loadError": "Could not load tags.",
+				"row": {
+					"delete": "Delete",
+					"deleteConfirm": "Delete tag {{name}}?",
+					"deleteError": "Could not delete the tag."
+				},
+				"subtitle": "Labels for products in this company.",
+				"title": "Tags"
+			},
 			"units": {
 				"columns": {
 					"actions": "",

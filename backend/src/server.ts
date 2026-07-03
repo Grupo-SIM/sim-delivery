@@ -3,6 +3,7 @@ import { CategoriesController } from "./modules/categories/infra";
 import { CompaniesController } from "./modules/companies/infra";
 import { ExampleController } from "./modules/example/infra";
 import { StaffController } from "./modules/staff/infra";
+import { TagsController } from "./modules/tags/infra";
 import { PublicUnitsController, UnitsController } from "./modules/units/infra";
 import { UsersController } from "./modules/users/infra";
 import { app } from "./shared/infra/elysia";
@@ -17,4 +18,5 @@ export const server = app.use([
 	UnitsController,
 	PublicUnitsController,
 	CategoriesController,
+	TagsController,
 ]);

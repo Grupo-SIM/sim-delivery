@@ -1,0 +1,16 @@
+/// Labels products with a name + color for menu filtering/badges (e.g. "Vegan", "Spicy",
+/// "New"). Company-scoped; a product may carry several tags (docs/05).
+model Tag {
+    id        String   @id @default(cuid())
+    companyId String
+    name      String
+    /// Badge color as a hex string (e.g. "#22c55e").
+    color     String   @default("#000000")
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+    @@index([companyId])
+    @@map("tag")
+}
