@@ -70,6 +70,10 @@
 				"title": "Companies",
 				"variantUnset": "—"
 			},
+			"dashboard": {
+				"subtitle": "Manage this company's catalog, team, and stores.",
+				"title": "Admin"
+			},
 			"products": {
 				"columns": {
 					"cashback": "Cashback",
