@@ -50,7 +50,7 @@ export function CartModal({ onClose, open, sections, unitId }: CartModalProps) {
 						className="w-full"
 						onClick={() => {
 							onClose();
-							void navigate({ params: { unitId }, to: "/store/$unitId/checkout" });
+							void navigate({ params: { unitId }, to: "/$unitId/checkout" });
 						}}
 						type="button"
 					>

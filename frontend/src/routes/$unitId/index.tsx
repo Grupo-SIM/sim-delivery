@@ -20,7 +20,7 @@ function UnitStorePage() {
 		return (
 			<Container className="space-y-4 py-8">
 				<ErrorState title={t("store.unit.notFound")} />
-				<Link className="text-primary text-sm" to="/store">
+				<Link className="text-primary text-sm" to="/">
 					← {t("store.unit.change")}
 				</Link>
 			</Container>
@@ -31,7 +31,7 @@ function UnitStorePage() {
 
 	return (
 		<Container className="space-y-4 py-8">
-			<Link className="text-primary text-sm" to="/store">
+			<Link className="text-primary text-sm" to="/">
 				← {t("store.unit.change")}
 			</Link>
 
@@ -64,6 +64,6 @@ function UnitStorePage() {
 	);
 }
 
-export const Route = createFileRoute("/store/$unitId/")({
+export const Route = createFileRoute("/$unitId/")({
 	component: UnitStorePage,
 });

@@ -1,20 +1,61 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { AuthExampleCard } from "./components/AuthExampleCard";
-import { HeroSection } from "./components/HeroSection";
-import { PatternCard } from "./components/PatternCard";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
+import { Badge } from "@/components/ui/badge";
+import { Container } from "@/components/ui/Container";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { useGetPublicUnits } from "@/lib/api";
+import { variantKey } from "@/lib/variant";
 
-function IndexPage() {
+function StorePage() {
+	const { t } = useTranslation();
+	const { data: units, isError, isPending } = useGetPublicUnits({ variantKey });
+
 	return (
-		<div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-10 px-6 py-10 sm:px-8 lg:px-10">
-			<HeroSection />
-			<section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-				<AuthExampleCard />
-				<PatternCard />
-			</section>
-		</div>
+		<Container className="space-y-6 py-8">
+			<SectionHeading subtitle={t("store.chooseUnit.subtitle")} title={t("store.chooseUnit.title")} />
+
+			{isPending ? (
+				<Skeleton className="h-40 w-full" />
+			) : isError ? (
+				<ErrorState title={t("store.chooseUnit.loadError")} />
+			) : units.length === 0 ? (
+				<EmptyState title={t("store.chooseUnit.empty")} />
+			) : (
+				<div className="grid gap-4 sm:grid-cols-2">
+					{units.map(unit => (
+						<Link
+							className="flex flex-col gap-2 rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary"
+							key={unit.id}
+							params={{ unitId: unit.id }}
+							to="/$unitId"
+						>
+							<div className="flex items-center justify-between gap-2">
+								<span className="font-medium">{unit.name}</span>
+								<Badge
+									className={
+										unit.isOpenNow
+											? "border-green-500/30 bg-green-500/10 text-green-500"
+											: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
+									}
+								>
+									{unit.isOpenNow ? t("store.status.open") : t("store.status.closed")}
+								</Badge>
+							</div>
+							<span className="text-muted-foreground text-sm">
+								{[unit.addressLine, unit.neighborhood, unit.city].filter(Boolean).join(", ") ||
+									t("store.chooseUnit.noAddress")}
+							</span>
+						</Link>
+					))}
+				</div>
+			)}
+		</Container>
 	);
 }
 
 export const Route = createFileRoute("/")({
-	component: IndexPage,
+	component: StorePage,
 });

@@ -11,7 +11,7 @@ function CheckoutPage() {
 
 	return (
 		<Container className="max-w-lg space-y-6 py-8">
-			<Link className="text-primary text-sm" params={{ unitId }} to="/store/$unitId">
+			<Link className="text-primary text-sm" params={{ unitId }} to="/$unitId">
 				← {t("store.checkout.back")}
 			</Link>
 
@@ -25,6 +25,6 @@ function CheckoutPage() {
 	);
 }
 
-export const Route = createFileRoute("/store/$unitId/checkout/")({
+export const Route = createFileRoute("/$unitId/checkout/")({
 	component: CheckoutPage,
 });
