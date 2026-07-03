@@ -1,6 +1,7 @@
 export * from "./CreateUnit";
 export * from "./DeleteUnit";
 export * from "./GetUnitHours";
+export * from "./ListPublicMenu";
 export * from "./ListPublicUnits";
 export * from "./ListUnits";
 export * from "./SetUnitHours";

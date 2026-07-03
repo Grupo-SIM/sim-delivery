@@ -1,16 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { useGetPublicUnits } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { useGetPublicUnits, useGetPublicUnitsByUnitIdMenu } from "@/lib/api";
 import { variantKey } from "@/lib/variant";
+import { MenuBrowser } from "./components";
 
 function UnitStorePage() {
 	const { t } = useTranslation();
 	const { unitId } = Route.useParams();
 	const { data: units } = useGetPublicUnits({ variantKey });
+	const menu = useGetPublicUnitsByUnitIdMenu(unitId);
 	const unit = units?.find(item => item.id === unitId);
 
 	if (!unit) {
@@ -45,7 +48,13 @@ function UnitStorePage() {
 				</Badge>
 			</div>
 
-			<p className="text-muted-foreground text-sm">{t("store.unit.menuSoon")}</p>
+			{menu.isPending ? (
+				<Skeleton className="h-64 w-full" />
+			) : menu.isError ? (
+				<ErrorState title={t("store.menu.loadError")} />
+			) : (
+				<MenuBrowser sections={menu.data} />
+			)}
 		</Container>
 	);
 }

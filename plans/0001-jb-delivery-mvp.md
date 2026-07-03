@@ -106,8 +106,10 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
 - **4.4** ✅ `UnitProduct` (model `@@unique([unitId,productId])`, override preço/cashback/
   categoria + disponibilidade/estoque por unidade; `/units/:unitId/products` CRUD guard `menu`;
   página `/admin/units/$unitId/products` + botão "Menu" na tabela de unidades). demo: associar produto a unidade.
-- **4.5** Front cliente: **tela de cardápio** (lista por unidade, busca, card, botões
-  rápidos). demo: navegar cardápio.
+- **4.5** ✅ Front cliente: **tela de cardápio** (endpoint público `GET /public/units/:unitId/menu`
+  agrupa por categoria ordenada + solto por último, resolve preço/cashback por unidade; tela
+  `/store/$unitId` com busca debounced, chips de navegação rápida por categoria, cards
+  imagem/nome/desc/preço/cashback). demo: navegar cardápio. (add-to-cart fica em 4.7)
 - **4.6** Front cliente: carrossel promo + destaques/"peça novamente" + sumário lateral +
   troca de unidade. demo: cardápio completo.
 - **4.7** Front cliente: **carrinho local** (itens, qtd, observação, editar/excluir) — store.
@@ -187,11 +189,11 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   explícita (não `.map`) p/ Elysia inferir.
 - **É0, É1, É2, É3 concluídos.** Empresa resolvida por `variantKey` chumbada no build;
   unidade escolhida/trocada por rota (`/store/$unitId`).
-- **É4 em andamento**: 4.1 (Category CRUD) + 4.2 (Tag CRUD) + 4.3 (Product CRUD) + 4.4 (UnitProduct) concluídos.
+- **É4 em andamento**: 4.1 (Category CRUD) + 4.2 (Tag CRUD) + 4.3 (Product CRUD) + 4.4 (UnitProduct) + 4.5 (cardápio cliente) concluídos.
 - **Reordenação (fluxo de dependência + dificuldade)**: carrinho (era 6.1) e sugestões (era 6.4)
   são front-only sem backend → subiram para 4.7/4.8 (fecham browse→carrinho antes de cliente/pedido);
   É6 vira só persistência de pedido (6.1 create, 6.2 agendamento). Demais épicos já seguiam a ordem
   de dependência; mantidos. Trabalho fácil front-first batelado; integrações difíceis (pagamento,
   WhatsApp, motoboy) permanecem depois de suas dependências.
-- Próximo: **4.5** Front cliente — tela de cardápio (lista por unidade, busca, card, botões rápidos).
+- Próximo: **4.6** Front cliente — carrossel promo + destaques/"peça novamente" + sumário lateral + troca de unidade.
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.

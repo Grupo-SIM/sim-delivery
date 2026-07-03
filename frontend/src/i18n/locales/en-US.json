@@ -343,13 +343,19 @@
 				"subtitle": "Choose a unit to start your order.",
 				"title": "Our units"
 			},
+			"menu": {
+				"empty": "This unit has no products yet.",
+				"loadError": "Could not load the menu.",
+				"loose": "Others",
+				"noResults": "No products match your search.",
+				"searchPlaceholder": "Search the menu"
+			},
 			"status": {
 				"closed": "Closed",
 				"open": "Open"
 			},
 			"unit": {
 				"change": "Change unit",
-				"menuSoon": "The menu for this unit is coming soon.",
 				"notFound": "This unit is not available."
 			}
 		}

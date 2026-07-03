@@ -1,0 +1,22 @@
+import { useTranslation } from "react-i18next";
+import { MenuItemCard } from "./MenuItemCard";
+import { type MenuSection, sectionAnchor } from "./types";
+
+interface MenuSectionBlockProps {
+	section: MenuSection;
+}
+
+export function MenuSectionBlock({ section }: MenuSectionBlockProps) {
+	const { t } = useTranslation();
+
+	return (
+		<section className="scroll-mt-16 space-y-3" id={sectionAnchor(section.categoryId)}>
+			<h2 className="font-semibold text-lg">{section.categoryName ?? t("store.menu.loose")}</h2>
+			<div className="grid gap-3 sm:grid-cols-2">
+				{section.items.map(item => (
+					<MenuItemCard item={item} key={item.id} />
+				))}
+			</div>
+		</section>
+	);
+}

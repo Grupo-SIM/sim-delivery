@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { useGetPublicUnits } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/Container";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useGetPublicUnits } from "@/lib/api";
 import { variantKey } from "@/lib/variant";
 
 function StorePage() {
