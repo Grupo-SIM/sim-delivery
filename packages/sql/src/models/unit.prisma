@@ -27,7 +27,8 @@ model Unit {
     createdAt       DateTime @default(now())
     updatedAt       DateTime @updatedAt
 
-    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    company Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    hours   UnitHours[]
 
     @@index([companyId])
     @@map("unit")

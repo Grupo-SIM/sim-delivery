@@ -99,6 +99,24 @@
 					"title": "New unit"
 				},
 				"empty": "No units yet.",
+				"hours": {
+					"action": "Hours",
+					"cancel": "Cancel",
+					"closed": "Closed",
+					"error": "Could not save the hours.",
+					"save": "Save hours",
+					"saving": "Saving...",
+					"title": "Weekly hours",
+					"weekdays": {
+						"fri": "Friday",
+						"mon": "Monday",
+						"sat": "Saturday",
+						"sun": "Sunday",
+						"thu": "Thursday",
+						"tue": "Tuesday",
+						"wed": "Wednesday"
+					}
+				},
 				"loadError": "Could not load units.",
 				"row": {
 					"delete": "Delete",
@@ -132,10 +150,10 @@
 				"description": "Backed by a persisted Zustand store.",
 				"emailLabel": "Email",
 				"passwordLabel": "Password",
-				"signIn": "Sign in locally",
-				"signOut": "Sign out",
 				"signedInAs": "Signed in as {{name}}",
+				"signIn": "Sign in locally",
 				"signingIn": "Signing in...",
+				"signOut": "Sign out",
 				"title": "Auth example"
 			},
 			"hero": {

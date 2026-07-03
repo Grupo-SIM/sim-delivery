@@ -1,0 +1,22 @@
+/// Weekly opening-hours template for a unit: one row per weekday (0 = Sunday .. 6 =
+/// Saturday). `closed` marks a weekday with no service; otherwise opensAt/closesAt are
+/// local "HH:mm" times. A single range per weekday (MVP; see docs/04). The automatic
+/// open/closed calculation reads these, with the unit's manual override taking precedence.
+model UnitHours {
+    id       String  @id @default(cuid())
+    unitId   String
+    /// 0 = Sunday .. 6 = Saturday.
+    weekday  Int
+    /// When true the unit does not open on this weekday (opensAt/closesAt are ignored).
+    closed   Boolean @default(false)
+    /// Local "HH:mm" opening time. Null when closed.
+    opensAt  String?
+    /// Local "HH:mm" closing time. Null when closed.
+    closesAt String?
+
+    unit Unit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+    @@unique([unitId, weekday])
+    @@index([unitId])
+    @@map("unit_hours")
+}
