@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Container } from "@/components/ui/Container";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { isStaff } from "@/lib/staff-guard";
 import { useAuthStore } from "@/stores";
 
 function LoginPage() {
@@ -34,8 +35,9 @@ function LoginPage() {
 								invalidCredentialsMessage: t("auth.errors.invalidCredentials"),
 								password,
 							});
-							if (useAuthStore.getState().isAuthenticated) {
-								await navigate({ to: "/" });
+							const { isAuthenticated, role } = useAuthStore.getState();
+							if (isAuthenticated) {
+								await navigate({ to: isStaff(role) ? "/admin" : "/" });
 							}
 						}}
 					>
