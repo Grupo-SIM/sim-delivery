@@ -11,9 +11,10 @@ import type { MenuSection } from "./types";
 
 interface MenuBrowserProps {
 	sections: MenuSection[];
+	unitId: string;
 }
 
-export function MenuBrowser({ sections }: MenuBrowserProps) {
+export function MenuBrowser({ sections, unitId }: MenuBrowserProps) {
 	const { t } = useTranslation();
 	const [search, setSearch] = useState("");
 	const [localSearch, setLocalSearch] = useDebouncedInput(search, setSearch);
@@ -50,7 +51,7 @@ export function MenuBrowser({ sections }: MenuBrowserProps) {
 							<CategoryNav sections={filtered} />
 						</div>
 						{filtered.map(section => (
-							<MenuSectionBlock key={section.categoryId ?? "loose"} section={section} />
+							<MenuSectionBlock key={section.categoryId ?? "loose"} section={section} unitId={unitId} />
 						))}
 					</div>
 				</div>

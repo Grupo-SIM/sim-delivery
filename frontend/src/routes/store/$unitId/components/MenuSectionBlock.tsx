@@ -4,9 +4,10 @@ import { type MenuSection, sectionAnchor } from "./types";
 
 interface MenuSectionBlockProps {
 	section: MenuSection;
+	unitId: string;
 }
 
-export function MenuSectionBlock({ section }: MenuSectionBlockProps) {
+export function MenuSectionBlock({ section, unitId }: MenuSectionBlockProps) {
 	const { t } = useTranslation();
 
 	return (
@@ -14,7 +15,7 @@ export function MenuSectionBlock({ section }: MenuSectionBlockProps) {
 			<h2 className="font-semibold text-lg">{section.categoryName ?? t("store.menu.loose")}</h2>
 			<div className="grid gap-3 sm:grid-cols-2">
 				{section.items.map(item => (
-					<MenuItemCard item={item} key={item.id} />
+					<MenuItemCard item={item} key={item.id} unitId={unitId} />
 				))}
 			</div>
 		</section>

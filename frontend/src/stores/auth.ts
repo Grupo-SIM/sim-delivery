@@ -4,7 +4,7 @@ import { authClient } from "@/lib/auth-client";
 /** Access roles mirror the backend (docs/03). */
 export type UserRole = "superAdmin" | "owner" | "employee" | "courier" | "customer";
 
-type SessionUser = {
+interface SessionUser {
 	companyId?: string | null;
 	createdAt: number | string | Date;
 	email: string;
@@ -14,7 +14,7 @@ type SessionUser = {
 	level?: string | null;
 	name: string;
 	role?: string | null;
-};
+}
 
 /** Maps a Better Auth session user (with tenant additionalFields) to the store shape. */
 export function mapSessionUser(user: SessionUser): AuthUser {

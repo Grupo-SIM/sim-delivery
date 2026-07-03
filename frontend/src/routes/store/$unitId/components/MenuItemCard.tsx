@@ -1,12 +1,19 @@
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useCartStore } from "@/stores";
 import { type MenuItem, money } from "./types";
 
 interface MenuItemCardProps {
 	item: MenuItem;
+	unitId: string;
 }
 
-export function MenuItemCard({ item }: MenuItemCardProps) {
+export function MenuItemCard({ item, unitId }: MenuItemCardProps) {
+	const { t } = useTranslation();
+	const addItem = useCartStore(state => state.addItem);
+
 	return (
 		<Card className="flex gap-3 overflow-hidden p-3">
 			<img
@@ -25,6 +32,22 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
 							{item.cashbackPercent}%
 						</Badge>
 					)}
+					<Button
+						className="ml-auto"
+						onClick={() =>
+							addItem(unitId, {
+								id: item.id,
+								imageUrl: item.imageUrl,
+								priceCents: Number(item.priceCents),
+								productId: item.productId,
+								title: item.title,
+							})
+						}
+						size="sm"
+						type="button"
+					>
+						{t("store.cart.add")}
+					</Button>
 				</div>
 			</div>
 		</Card>

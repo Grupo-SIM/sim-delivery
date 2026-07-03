@@ -336,6 +336,17 @@
 			}
 		},
 		"store": {
+			"cart": {
+				"add": "Add",
+				"clear": "Clear cart",
+				"clearConfirm": "Remove all items from the cart?",
+				"empty": "Your cart is empty.",
+				"notePlaceholder": "Notes (e.g. no onions)",
+				"open": "View cart ({{count}})",
+				"remove": "Remove",
+				"subtotal": "Subtotal",
+				"title": "Your cart"
+			},
 			"chooseUnit": {
 				"empty": "No units available yet.",
 				"loadError": "Could not load units.",
