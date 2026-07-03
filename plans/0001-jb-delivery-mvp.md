@@ -123,7 +123,12 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   Front-only. demo: sugestões. (era 6.4)
 
 ### É5 — Clientes & checkout #1
-- **5.1** `Customer`+`Address`; proxy CEP (`GET /cep/:cep`). demo: autofill de CEP.
+- **5.1** ✅ `Customer`+`Address` (models company-scoped; Customer 1:1 com User Better Auth,
+  cpf/phone; Address com campos deduzidos por CEP + `number` "S/N"). Proxy CEP público
+  `GET /cep/:cep` (ViaCEP, normaliza logradouro/bairro/cidade/uf). Front: rota
+  `/store/$unitId/checkout` com `AddressForm` (CEP mascarado autofill on-complete), botão
+  "Checkout" no carrinho navega p/ lá. demo: autofill de CEP. (identificação/conta em 5.2/5.3;
+  submit hoje só `showAlert` placeholder)
 - **5.2** Passwordless (solicitar código + verificar). Front: tela identificação. demo: login sem senha.
 - **5.3** Cadastro (cria conta+endereço, loga). demo: **checkout #1** completo.
 
@@ -200,5 +205,9 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   É6 vira só persistência de pedido (6.1 create, 6.2 agendamento). Demais épicos já seguiam a ordem
   de dependência; mantidos. Trabalho fácil front-first batelado; integrações difíceis (pagamento,
   WhatsApp, motoboy) permanecem depois de suas dependências.
-- Próximo: **É5** Clientes & checkout #1 — 5.1 `Customer`+`Address` + proxy CEP (`GET /cep/:cep`).
+- **É5 em andamento**: 5.1 ✅ (Customer+Address + proxy CEP ViaCEP + AddressForm autofill).
+  Decisão CEP: **ViaCEP** (grátis, sem auth). Endpoint público sob tag "Public".
+- Próximo: **5.2** passwordless (solicitar código + verificar) + tela de identificação;
+  depois **5.3** cadastro (cria conta+endereço, loga) = checkout #1 completo.
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.
+  Schema novo (customer, address) + client regenerado; SQL de migração fica p/ o usuário.

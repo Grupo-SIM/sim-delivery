@@ -1,0 +1,26 @@
+/// A saved delivery address of a customer. Every field except the street `number` is
+/// auto-filled from the CEP (zip) via the CEP proxy (docs/07, docs/08). `number` accepts
+/// "S/N" when the place has none.
+model Address {
+    id           String   @id @default(cuid())
+    customerId   String
+    label        String?
+    zipCode      String
+    addressLine  String
+    number       String
+    complement   String?
+    neighborhood String?
+    city         String?
+    state        String?
+    reference    String?
+    latitude     Float?
+    longitude    Float?
+    isDefault    Boolean  @default(false)
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+    @@index([customerId])
+    @@map("address")
+}

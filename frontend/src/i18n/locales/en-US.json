@@ -338,6 +338,7 @@
 		"store": {
 			"cart": {
 				"add": "Add",
+				"checkout": "Checkout",
 				"clear": "Clear cart",
 				"clearConfirm": "Remove all items from the cart?",
 				"empty": "Your cart is empty.",
@@ -347,6 +348,31 @@
 				"subtotal": "Subtotal",
 				"suggestions": "You might also like",
 				"title": "Your cart"
+			},
+			"checkout": {
+				"address": {
+					"cep": "Postal code (CEP)",
+					"cepNotFound": "Postal code not found.",
+					"city": "City",
+					"cityPlaceholder": "Ex: São Paulo",
+					"complement": "Complement",
+					"complementPlaceholder": "Ex: apt 42",
+					"continue": "Continue",
+					"neighborhood": "Neighborhood",
+					"neighborhoodPlaceholder": "Ex: Downtown",
+					"noNumber": "No number",
+					"number": "Number",
+					"reference": "Reference point",
+					"referencePlaceholder": "Ex: next to the bakery",
+					"saved": "Address saved. Payment is coming up next.",
+					"searching": "Looking up address…",
+					"state": "State",
+					"street": "Street",
+					"streetPlaceholder": "Ex: Paulista Avenue",
+					"subtitle": "We fill everything from your postal code, except the number.",
+					"title": "Delivery address"
+				},
+				"back": "Back to menu"
 			},
 			"chooseUnit": {
 				"empty": "No units available yet.",

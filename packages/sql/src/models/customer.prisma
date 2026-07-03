@@ -1,0 +1,20 @@
+/// Consumer end-user of a company's storefront app. Created automatically at the first
+/// checkout (docs/07, docs/08). Strictly scoped by `companyId`; linked 1:1 to the Better
+/// Auth `User` that owns the login (role = customer).
+model Customer {
+    id        String   @id @default(cuid())
+    companyId String
+    userId    String   @unique
+    cpf       String?
+    phone     String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    addresses Address[]
+
+    @@unique([companyId, cpf])
+    @@index([companyId])
+    @@map("customer")
+}

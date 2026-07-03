@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
@@ -15,6 +16,7 @@ interface CartModalProps {
 
 export function CartModal({ onClose, open, sections, unitId }: CartModalProps) {
 	const { t } = useTranslation();
+	const navigate = useNavigate();
 	const items = useCartStore(state => state.items);
 	const clear = useCartStore(state => state.clear);
 
@@ -43,6 +45,17 @@ export function CartModal({ onClose, open, sections, unitId }: CartModalProps) {
 						<span className="text-muted-foreground text-sm">{t("store.cart.subtotal")}</span>
 						<span className="font-semibold">{money.format(cartTotalCents(items) / 100)}</span>
 					</div>
+
+					<Button
+						className="w-full"
+						onClick={() => {
+							onClose();
+							void navigate({ params: { unitId }, to: "/store/$unitId/checkout" });
+						}}
+						type="button"
+					>
+						{t("store.cart.checkout")}
+					</Button>
 
 					<Button className="w-full" onClick={handleClear} type="button" variant="outline">
 						{t("store.cart.clear")}

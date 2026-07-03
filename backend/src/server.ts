@@ -1,12 +1,13 @@
 import { mkdir } from "node:fs/promises";
 import { CategoriesController } from "./modules/categories/infra";
+import { CepController } from "./modules/cep/infra";
 import { CompaniesController } from "./modules/companies/infra";
 import { ExampleController } from "./modules/example/infra";
 import { ProductsController } from "./modules/products/infra";
 import { StaffController } from "./modules/staff/infra";
 import { TagsController } from "./modules/tags/infra";
-import { PublicUnitsController, UnitsController } from "./modules/units/infra";
 import { UnitProductsController } from "./modules/unitProducts/infra";
+import { PublicUnitsController, UnitsController } from "./modules/units/infra";
 import { UsersController } from "./modules/users/infra";
 import { app } from "./shared/infra/elysia";
 
@@ -23,4 +24,5 @@ export const server = app.use([
 	TagsController,
 	ProductsController,
 	UnitProductsController,
+	CepController,
 ]);

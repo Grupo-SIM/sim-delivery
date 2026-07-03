@@ -19,6 +19,7 @@ import { Route as AdminStaffIndexRouteImport } from './routes/admin/staff/index'
 import { Route as AdminProductsIndexRouteImport } from './routes/admin/products/index'
 import { Route as AdminCompaniesIndexRouteImport } from './routes/admin/companies/index'
 import { Route as AdminCategoriesIndexRouteImport } from './routes/admin/categories/index'
+import { Route as StoreUnitIdCheckoutIndexRouteImport } from './routes/store/$unitId/checkout/index'
 import { Route as AdminUnitsUnitIdProductsIndexRouteImport } from './routes/admin/units/$unitId/products/index'
 
 const IndexRoute = IndexRouteImport.update({
@@ -71,6 +72,12 @@ const AdminCategoriesIndexRoute = AdminCategoriesIndexRouteImport.update({
   path: '/admin/categories/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StoreUnitIdCheckoutIndexRoute =
+  StoreUnitIdCheckoutIndexRouteImport.update({
+    id: '/store/$unitId/checkout/',
+    path: '/store/$unitId/checkout/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminUnitsUnitIdProductsIndexRoute =
   AdminUnitsUnitIdProductsIndexRouteImport.update({
     id: '/admin/units/$unitId/products/',
@@ -89,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/admin/tags/': typeof AdminTagsIndexRoute
   '/admin/units/': typeof AdminUnitsIndexRoute
   '/store/$unitId/': typeof StoreUnitIdIndexRoute
+  '/store/$unitId/checkout/': typeof StoreUnitIdCheckoutIndexRoute
   '/admin/units/$unitId/products/': typeof AdminUnitsUnitIdProductsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -102,6 +110,7 @@ export interface FileRoutesByTo {
   '/admin/tags': typeof AdminTagsIndexRoute
   '/admin/units': typeof AdminUnitsIndexRoute
   '/store/$unitId': typeof StoreUnitIdIndexRoute
+  '/store/$unitId/checkout': typeof StoreUnitIdCheckoutIndexRoute
   '/admin/units/$unitId/products': typeof AdminUnitsUnitIdProductsIndexRoute
 }
 export interface FileRoutesById {
@@ -116,6 +125,7 @@ export interface FileRoutesById {
   '/admin/tags/': typeof AdminTagsIndexRoute
   '/admin/units/': typeof AdminUnitsIndexRoute
   '/store/$unitId/': typeof StoreUnitIdIndexRoute
+  '/store/$unitId/checkout/': typeof StoreUnitIdCheckoutIndexRoute
   '/admin/units/$unitId/products/': typeof AdminUnitsUnitIdProductsIndexRoute
 }
 export interface FileRouteTypes {
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/admin/tags/'
     | '/admin/units/'
     | '/store/$unitId/'
+    | '/store/$unitId/checkout/'
     | '/admin/units/$unitId/products/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/admin/tags'
     | '/admin/units'
     | '/store/$unitId'
+    | '/store/$unitId/checkout'
     | '/admin/units/$unitId/products'
   id:
     | '__root__'
@@ -157,6 +169,7 @@ export interface FileRouteTypes {
     | '/admin/tags/'
     | '/admin/units/'
     | '/store/$unitId/'
+    | '/store/$unitId/checkout/'
     | '/admin/units/$unitId/products/'
   fileRoutesById: FileRoutesById
 }
@@ -171,6 +184,7 @@ export interface RootRouteChildren {
   AdminTagsIndexRoute: typeof AdminTagsIndexRoute
   AdminUnitsIndexRoute: typeof AdminUnitsIndexRoute
   StoreUnitIdIndexRoute: typeof StoreUnitIdIndexRoute
+  StoreUnitIdCheckoutIndexRoute: typeof StoreUnitIdCheckoutIndexRoute
   AdminUnitsUnitIdProductsIndexRoute: typeof AdminUnitsUnitIdProductsIndexRoute
 }
 
@@ -246,6 +260,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/store/$unitId/checkout/': {
+      id: '/store/$unitId/checkout/'
+      path: '/store/$unitId/checkout'
+      fullPath: '/store/$unitId/checkout/'
+      preLoaderRoute: typeof StoreUnitIdCheckoutIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/units/$unitId/products/': {
       id: '/admin/units/$unitId/products/'
       path: '/admin/units/$unitId/products'
@@ -267,6 +288,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminTagsIndexRoute: AdminTagsIndexRoute,
   AdminUnitsIndexRoute: AdminUnitsIndexRoute,
   StoreUnitIdIndexRoute: StoreUnitIdIndexRoute,
+  StoreUnitIdCheckoutIndexRoute: StoreUnitIdCheckoutIndexRoute,
   AdminUnitsUnitIdProductsIndexRoute: AdminUnitsUnitIdProductsIndexRoute,
 }
 export const routeTree = rootRouteImport

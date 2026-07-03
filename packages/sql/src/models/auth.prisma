@@ -53,6 +53,7 @@ model User {
 
     accounts Account[]
     company  Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+    customer Customer?
     sessions Session[]
 
     @@index([companyId])
