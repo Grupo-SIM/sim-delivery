@@ -110,17 +110,19 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   rápidos). demo: navegar cardápio.
 - **4.6** Front cliente: carrossel promo + destaques/"peça novamente" + sumário lateral +
   troca de unidade. demo: cardápio completo.
+- **4.7** Front cliente: **carrinho local** (itens, qtd, observação, editar/excluir) — store.
+  Front-only, sem backend; completa o fluxo browse→carrinho. demo: carrinho. (era 6.1)
+- **4.8** Front cliente: **sugestões de produtos no carrinho** (usa catálogo existente).
+  Front-only. demo: sugestões. (era 6.4)
 
 ### É5 — Clientes & checkout #1
 - **5.1** `Customer`+`Address`; proxy CEP (`GET /cep/:cep`). demo: autofill de CEP.
 - **5.2** Passwordless (solicitar código + verificar). Front: tela identificação. demo: login sem senha.
 - **5.3** Cadastro (cria conta+endereço, loga). demo: **checkout #1** completo.
 
-### É6 — Carrinho & Pedido
-- **6.1** Front: carrinho local (itens, qtd, observação, editar/excluir) — store. demo: carrinho.
-- **6.2** `Order`+`OrderItem` create (totais) via UoW. Front: enviar pedido. demo: cria pedido.
-- **6.3** Agendamento (`scheduledFor`) `[MVP+]`. demo: agendar.
-- **6.4** Front: sugestões de produtos no carrinho. demo: sugestões.
+### É6 — Pedido
+- **6.1** `Order`+`OrderItem` create (totais) via UoW. Front: enviar pedido. demo: cria pedido. (era 6.2)
+- **6.2** Agendamento (`scheduledFor`) `[MVP+]`. demo: agendar. (era 6.3)
 
 ### É7 — Cupom / cashback / frete / pontos
 - **7.1** Frete por unidade + simulação (`POST /freight/simulate`). Front: simulação no carrinho.
@@ -186,5 +188,10 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
 - **É0, É1, É2, É3 concluídos.** Empresa resolvida por `variantKey` chumbada no build;
   unidade escolhida/trocada por rota (`/store/$unitId`).
 - **É4 em andamento**: 4.1 (Category CRUD) + 4.2 (Tag CRUD) + 4.3 (Product CRUD) + 4.4 (UnitProduct) concluídos.
+- **Reordenação (fluxo de dependência + dificuldade)**: carrinho (era 6.1) e sugestões (era 6.4)
+  são front-only sem backend → subiram para 4.7/4.8 (fecham browse→carrinho antes de cliente/pedido);
+  É6 vira só persistência de pedido (6.1 create, 6.2 agendamento). Demais épicos já seguiam a ordem
+  de dependência; mantidos. Trabalho fácil front-first batelado; integrações difíceis (pagamento,
+  WhatsApp, motoboy) permanecem depois de suas dependências.
 - Próximo: **4.5** Front cliente — tela de cardápio (lista por unidade, busca, card, botões rápidos).
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.
