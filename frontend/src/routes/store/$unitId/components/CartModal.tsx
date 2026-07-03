@@ -3,14 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { cartTotalCents, showConfirm, useCartStore } from "@/stores";
 import { CartItemRow } from "./CartItemRow";
-import { money } from "./types";
+import { CartSuggestions } from "./CartSuggestions";
+import { type MenuSection, money } from "./types";
 
 interface CartModalProps {
 	onClose: () => void;
 	open: boolean;
+	sections: MenuSection[];
+	unitId: string;
 }
 
-export function CartModal({ onClose, open }: CartModalProps) {
+export function CartModal({ onClose, open, sections, unitId }: CartModalProps) {
 	const { t } = useTranslation();
 	const items = useCartStore(state => state.items);
 	const clear = useCartStore(state => state.clear);
@@ -33,6 +36,8 @@ export function CartModal({ onClose, open }: CartModalProps) {
 							<CartItemRow item={item} key={item.id} />
 						))}
 					</div>
+
+					<CartSuggestions sections={sections} unitId={unitId} />
 
 					<div className="flex items-center justify-between border-border border-t pt-3">
 						<span className="text-muted-foreground text-sm">{t("store.cart.subtotal")}</span>

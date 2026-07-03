@@ -345,6 +345,7 @@
 				"open": "View cart ({{count}})",
 				"remove": "Remove",
 				"subtotal": "Subtotal",
+				"suggestions": "You might also like",
 				"title": "Your cart"
 			},
 			"chooseUnit": {

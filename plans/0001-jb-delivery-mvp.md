@@ -96,7 +96,7 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   `/store` (lista) e `/store/$unitId` (unidade escolhida = param de rota, troca por rota).
   Formalização da variant/tema fica p/ É13.
 
-### É4 — Cardápio
+### É4 — Cardápio ✅
 - **4.1** ✅ Category CRUD (`Category` model company-scoped + ordenável; `/categories` CRUD
   guard `menu`; página `/admin/categories`). demo: gestão categorias.
 - **4.2** ✅ Tag CRUD (`Tag` model company-scoped, nome+cor hex; `/tags` CRUD guard `menu`;
@@ -118,7 +118,8 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   observação, editar/excluir; 1 unidade por vez, troca reinicia). Botão "Adicionar" nos cards,
   barra fixa inferior com contagem/total, modal com linhas (stepper qtd, nota debounced, remover,
   limpar). Front-only. demo: carrinho. (era 6.1; checkout fica em É6)
-- **4.8** Front cliente: **sugestões de produtos no carrinho** (usa catálogo existente).
+- **4.8** ✅ Front cliente: **sugestões de produtos no carrinho** (itens do cardápio ainda não
+  no carrinho, ofertas de cashback primeiro; strip com botão adicionar no modal do carrinho).
   Front-only. demo: sugestões. (era 6.4)
 
 ### É5 — Clientes & checkout #1
@@ -193,11 +194,11 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   explícita (não `.map`) p/ Elysia inferir.
 - **É0, É1, É2, É3 concluídos.** Empresa resolvida por `variantKey` chumbada no build;
   unidade escolhida/trocada por rota (`/store/$unitId`).
-- **É4 em andamento**: 4.1 (Category CRUD) + 4.2 (Tag CRUD) + 4.3 (Product CRUD) + 4.4 (UnitProduct) + 4.5 (cardápio cliente) + 4.6 (destaques/sumário/troca unidade) + 4.7 (carrinho local) concluídos. Falta 4.8 (sugestões).
+- **É4 concluído**: 4.1 (Category) + 4.2 (Tag) + 4.3 (Product) + 4.4 (UnitProduct) + 4.5 (cardápio cliente) + 4.6 (destaques/sumário/troca unidade) + 4.7 (carrinho local) + 4.8 (sugestões). Cardápio completo: gestão admin + storefront cliente com carrinho.
 - **Reordenação (fluxo de dependência + dificuldade)**: carrinho (era 6.1) e sugestões (era 6.4)
   são front-only sem backend → subiram para 4.7/4.8 (fecham browse→carrinho antes de cliente/pedido);
   É6 vira só persistência de pedido (6.1 create, 6.2 agendamento). Demais épicos já seguiam a ordem
   de dependência; mantidos. Trabalho fácil front-first batelado; integrações difíceis (pagamento,
   WhatsApp, motoboy) permanecem depois de suas dependências.
-- Próximo: **4.8** Front cliente — sugestões de produtos no carrinho (usa catálogo existente).
+- Próximo: **É5** Clientes & checkout #1 — 5.1 `Customer`+`Address` + proxy CEP (`GET /cep/:cep`).
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.

@@ -3,14 +3,15 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cartCount, cartTotalCents, useCartStore } from "@/stores";
 import { CartModal } from "./CartModal";
-import { money } from "./types";
+import { type MenuSection, money } from "./types";
 
 interface CartBarProps {
+	sections: MenuSection[];
 	unitId: string;
 }
 
 /** Sticky bottom bar summarizing the current unit's cart; opens the cart modal. */
-export function CartBar({ unitId }: CartBarProps) {
+export function CartBar({ sections, unitId }: CartBarProps) {
 	const { t } = useTranslation();
 	const [open, setOpen] = useState(false);
 	const cartUnitId = useCartStore(state => state.unitId);
@@ -29,7 +30,7 @@ export function CartBar({ unitId }: CartBarProps) {
 					<span>{money.format(cartTotalCents(items) / 100)}</span>
 				</Button>
 			</div>
-			<CartModal onClose={() => setOpen(false)} open={open} />
+			<CartModal onClose={() => setOpen(false)} open={open} sections={sections} unitId={unitId} />
 		</>
 	);
 }
