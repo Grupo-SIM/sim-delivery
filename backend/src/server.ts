@@ -6,6 +6,7 @@ import { ProductsController } from "./modules/products/infra";
 import { StaffController } from "./modules/staff/infra";
 import { TagsController } from "./modules/tags/infra";
 import { PublicUnitsController, UnitsController } from "./modules/units/infra";
+import { UnitProductsController } from "./modules/unitProducts/infra";
 import { UsersController } from "./modules/users/infra";
 import { app } from "./shared/infra/elysia";
 
@@ -21,4 +22,5 @@ export const server = app.use([
 	CategoriesController,
 	TagsController,
 	ProductsController,
+	UnitProductsController,
 ]);

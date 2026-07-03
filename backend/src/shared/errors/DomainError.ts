@@ -5,6 +5,7 @@ import { ExampleErrors, ExampleErrorsStatusCodes } from "@/modules/example/error
 import { ProductErrors, ProductErrorsStatusCodes } from "@/modules/products/errors";
 import { StaffErrors, StaffErrorsStatusCodes } from "@/modules/staff/errors";
 import { TagErrors, TagErrorsStatusCodes } from "@/modules/tags/errors";
+import { UnitProductErrors, UnitProductErrorsStatusCodes } from "@/modules/unitProducts/errors";
 import { UnitErrors, UnitErrorsStatusCodes } from "@/modules/units/errors";
 import { UserErrors, UserErrorsStatusCodes } from "@/modules/users/errors";
 
@@ -17,6 +18,7 @@ export const DomainErrors = {
 	...CategoryErrors,
 	...TagErrors,
 	...ProductErrors,
+	...UnitProductErrors,
 } as const;
 export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCodes> = {
 	...ExampleErrorsStatusCodes,
@@ -27,6 +29,7 @@ export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCo
 	...CategoryErrorsStatusCodes,
 	...TagErrorsStatusCodes,
 	...ProductErrorsStatusCodes,
+	...UnitProductErrorsStatusCodes,
 };
 
 export class DomainError extends Error {

@@ -1,8 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClassName } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { type GetUnits200, getUnitsQueryKey, useDeleteUnitsByUnitId } from "@/lib/api";
@@ -69,6 +70,13 @@ export function UnitsTable({ units }: UnitsTableProps) {
 							</td>
 							<td className="px-4 py-3 text-right">
 								<div className="flex justify-end gap-2">
+									<Link
+										className={buttonClassName({ size: "sm", variant: "outline" })}
+										params={{ unitId: unit.id }}
+										to="/admin/units/$unitId/products"
+									>
+										{t("admin.units.menu.action")}
+									</Link>
 									<Button onClick={() => setConfigUnit(unit)} size="sm" type="button" variant="outline">
 										{t("admin.units.config.action")}
 									</Button>

@@ -179,6 +179,48 @@
 				"subtitle": "Labels for products in this company.",
 				"title": "Tags"
 			},
+			"unitProducts": {
+				"back": "Back to units",
+				"columns": {
+					"availability": "Availability",
+					"category": "Category",
+					"price": "Price",
+					"product": "Product"
+				},
+				"edit": {
+					"cancel": "Cancel",
+					"error": "Could not save the association.",
+					"save": "Save",
+					"saving": "Saving..."
+				},
+				"empty": "No products in this unit's menu yet.",
+				"form": {
+					"available": "Available in this unit",
+					"category": "Category",
+					"error": "Could not associate the product.",
+					"loose": "No category",
+					"priceOverride": "Override unit price",
+					"product": "Product",
+					"productPlaceholder": "Select a product",
+					"stock": "Track stock",
+					"submit": "Add to menu",
+					"submitting": "Adding..."
+				},
+				"loadError": "Could not load the unit's menu.",
+				"row": {
+					"edit": "Edit",
+					"overridden": "(override)",
+					"remove": "Remove",
+					"removeConfirm": "Remove {{title}} from this unit's menu?",
+					"removeError": "Could not remove the association."
+				},
+				"status": {
+					"available": "Available",
+					"unavailable": "Unavailable"
+				},
+				"subtitle": "Menu for {{name}}.",
+				"title": "Unit menu"
+			},
 			"units": {
 				"columns": {
 					"actions": "",
@@ -236,6 +278,9 @@
 					}
 				},
 				"loadError": "Could not load units.",
+				"menu": {
+					"action": "Menu"
+				},
 				"row": {
 					"delete": "Delete",
 					"deleteConfirm": "Delete unit {{name}}?",

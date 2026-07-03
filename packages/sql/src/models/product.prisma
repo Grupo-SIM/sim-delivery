@@ -1,5 +1,5 @@
 /// Company catalog item. Unit/category-specific availability and price overrides are modeled
-/// separately by UnitProduct in the next menu step (docs/05).
+/// separately by UnitProduct (docs/05).
 model Product {
     id                      String   @id @default(cuid())
     companyId               String
@@ -13,7 +13,8 @@ model Product {
     createdAt               DateTime @default(now())
     updatedAt               DateTime @updatedAt
 
-    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    unitProducts UnitProduct[]
 
     @@index([companyId])
     @@map("product")

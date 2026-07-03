@@ -1,0 +1,90 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { getUnitsByUnitIdProductsQueryKey, useDeleteUnitsByUnitIdProductsByUnitProductId } from "@/lib/api";
+import { showAlert, showConfirm } from "@/stores";
+import { type Category, money, type Product, type UnitProduct } from "./types";
+import { UnitProductEditRow } from "./UnitProductEditRow";
+
+interface UnitProductRowProps {
+	association: UnitProduct;
+	categories: Category[];
+	products: Product[];
+	unitId: string;
+}
+
+export function UnitProductRow({ association, categories, products, unitId }: UnitProductRowProps) {
+	const { t } = useTranslation();
+	const queryClient = useQueryClient();
+	const [editing, setEditing] = useState(false);
+	const remove = useDeleteUnitsByUnitIdProductsByUnitProductId();
+
+	const product = products.find(p => p.id === association.productId);
+	const category = categories.find(c => c.id === association.categoryId);
+	const priceCents = Number(association.priceCentsOverride ?? product?.basePriceCents ?? 0);
+
+	async function del() {
+		if (!(await showConfirm(t("admin.unitProducts.row.removeConfirm", { title: product?.title ?? "" })))) {
+			return;
+		}
+		remove.mutate(
+			{ unitId, unitProductId: association.id },
+			{
+				onError: () => void showAlert(t("admin.unitProducts.row.removeError")),
+				onSuccess: () =>
+					queryClient.invalidateQueries({ queryKey: getUnitsByUnitIdProductsQueryKey(unitId) }),
+			},
+		);
+	}
+
+	if (editing) {
+		return (
+			<UnitProductEditRow
+				association={association}
+				categories={categories}
+				onCancel={() => setEditing(false)}
+				unitId={unitId}
+			/>
+		);
+	}
+
+	return (
+		<tr className="border-border/60 border-b last:border-0">
+			<td className="px-4 py-3 font-medium">{product?.title ?? association.productId}</td>
+			<td className="px-4 py-3 text-muted-foreground">
+				{category?.name ?? t("admin.unitProducts.form.loose")}
+			</td>
+			<td className="px-4 py-3 text-muted-foreground">
+				{money.format(priceCents / 100)}
+				{association.priceCentsOverride !== null && (
+					<span className="ml-1 text-xs">{t("admin.unitProducts.row.overridden")}</span>
+				)}
+			</td>
+			<td className="px-4 py-3">
+				<Badge
+					className={
+						association.available
+							? "border-green-500/30 bg-green-500/10 text-green-500"
+							: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
+					}
+				>
+					{association.available
+						? t("admin.unitProducts.status.available")
+						: t("admin.unitProducts.status.unavailable")}
+				</Badge>
+			</td>
+			<td className="px-4 py-3 text-right">
+				<div className="flex justify-end gap-2">
+					<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
+						{t("admin.unitProducts.row.edit")}
+					</Button>
+					<Button disabled={remove.isPending} onClick={del} size="sm" type="button" variant="outline">
+						{t("admin.unitProducts.row.remove")}
+					</Button>
+				</div>
+			</td>
+		</tr>
+	);
+}

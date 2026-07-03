@@ -1,0 +1,29 @@
+/// Associates a Product with a Unit's menu (docs/05). A product only shows in a unit's
+/// menu when this row exists. Each association may override price/cashback, set which
+/// category it appears under, and carry per-unit availability and stock.
+model UnitProduct {
+    id                      String   @id @default(cuid())
+    unitId                  String
+    productId               String
+    /// Category it appears under in this unit's menu; null = loose (no category).
+    categoryId              String?
+    /// Per-unit price override in cents; null = use the product base price.
+    priceCentsOverride      Int?
+    /// Per-unit cashback percent override; null = use the product/unit default.
+    cashbackPercentOverride Float?
+    /// Whether the product is currently orderable at this unit.
+    available               Boolean  @default(true)
+    /// Optional stock count (MVP+); null = untracked.
+    stock                   Int?
+    createdAt               DateTime @default(now())
+    updatedAt               DateTime @updatedAt
+
+    unit     Unit      @relation(fields: [unitId], references: [id], onDelete: Cascade)
+    product  Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+    category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+    @@unique([unitId, productId])
+    @@index([unitId])
+    @@index([productId])
+    @@map("unit_product")
+}

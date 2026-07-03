@@ -103,8 +103,9 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   página `/admin/tags` com swatch+hex). demo: gestão tags.
 - **4.3** ✅ Product CRUD (`Product` model company-scoped, título/img/desc/preço em centavos/
   cashback override; `/products` CRUD guard `menu`; página `/admin/products`). demo: gestão produtos.
-- **4.4** `UnitProduct` (associação por categoria; preço/disponibilidade/estoque `[MVP+]`
-  por unidade). demo: associar produto a unidade.
+- **4.4** ✅ `UnitProduct` (model `@@unique([unitId,productId])`, override preço/cashback/
+  categoria + disponibilidade/estoque por unidade; `/units/:unitId/products` CRUD guard `menu`;
+  página `/admin/units/$unitId/products` + botão "Menu" na tabela de unidades). demo: associar produto a unidade.
 - **4.5** Front cliente: **tela de cardápio** (lista por unidade, busca, card, botões
   rápidos). demo: navegar cardápio.
 - **4.6** Front cliente: carrossel promo + destaques/"peça novamente" + sumário lateral +
@@ -184,6 +185,6 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   explícita (não `.map`) p/ Elysia inferir.
 - **É0, É1, É2, É3 concluídos.** Empresa resolvida por `variantKey` chumbada no build;
   unidade escolhida/trocada por rota (`/store/$unitId`).
-- **É4 em andamento**: 4.1 (Category CRUD) + 4.2 (Tag CRUD) + 4.3 (Product CRUD) concluídos.
-- Próximo: **4.4** UnitProduct (associação por categoria; preço/disponibilidade/estoque por unidade).
+- **É4 em andamento**: 4.1 (Category CRUD) + 4.2 (Tag CRUD) + 4.3 (Product CRUD) + 4.4 (UnitProduct) concluídos.
+- Próximo: **4.5** Front cliente — tela de cardápio (lista por unidade, busca, card, botões rápidos).
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.
