@@ -7,7 +7,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetPublicUnits, useGetPublicUnitsByUnitIdMenu } from "@/lib/api";
 import { variantKey } from "@/lib/variant";
-import { MenuBrowser } from "./components";
+import { MenuBrowser, UnitSwitcher } from "./components";
 
 function UnitStorePage() {
 	const { t } = useTranslation();
@@ -35,17 +35,20 @@ function UnitStorePage() {
 				← {t("store.unit.change")}
 			</Link>
 
-			<div className="flex items-center gap-3">
-				<SectionHeading subtitle={address || t("store.chooseUnit.noAddress")} title={unit.name} />
-				<Badge
-					className={
-						unit.isOpenNow
-							? "border-green-500/30 bg-green-500/10 text-green-500"
-							: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
-					}
-				>
-					{unit.isOpenNow ? t("store.status.open") : t("store.status.closed")}
-				</Badge>
+			<div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+				<div className="flex items-center gap-3">
+					<SectionHeading subtitle={address || t("store.chooseUnit.noAddress")} title={unit.name} />
+					<Badge
+						className={
+							unit.isOpenNow
+								? "border-green-500/30 bg-green-500/10 text-green-500"
+								: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
+						}
+					>
+						{unit.isOpenNow ? t("store.status.open") : t("store.status.closed")}
+					</Badge>
+				</div>
+				{units && <UnitSwitcher unitId={unitId} units={units} />}
 			</div>
 
 			{menu.isPending ? (

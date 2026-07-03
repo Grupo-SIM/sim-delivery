@@ -110,8 +110,10 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   agrupa por categoria ordenada + solto por último, resolve preço/cashback por unidade; tela
   `/store/$unitId` com busca debounced, chips de navegação rápida por categoria, cards
   imagem/nome/desc/preço/cashback). demo: navegar cardápio. (add-to-cart fica em 4.7)
-- **4.6** Front cliente: carrossel promo + destaques/"peça novamente" + sumário lateral +
-  troca de unidade. demo: cardápio completo.
+- **4.6** ✅ Front cliente: carrossel de destaques (itens com cashback = ofertas) + sumário
+  lateral desktop (categorias + contagem, jump-to) + troca de unidade inline (CustomSelect →
+  navega p/ `/store/$unitId`). demo: cardápio completo. **"Peça novamente" adiado** — precisa de
+  histórico de pedidos (É6+); reintroduzir quando houver `Order`.
 - **4.7** Front cliente: **carrinho local** (itens, qtd, observação, editar/excluir) — store.
   Front-only, sem backend; completa o fluxo browse→carrinho. demo: carrinho. (era 6.1)
 - **4.8** Front cliente: **sugestões de produtos no carrinho** (usa catálogo existente).
@@ -189,11 +191,11 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   explícita (não `.map`) p/ Elysia inferir.
 - **É0, É1, É2, É3 concluídos.** Empresa resolvida por `variantKey` chumbada no build;
   unidade escolhida/trocada por rota (`/store/$unitId`).
-- **É4 em andamento**: 4.1 (Category CRUD) + 4.2 (Tag CRUD) + 4.3 (Product CRUD) + 4.4 (UnitProduct) + 4.5 (cardápio cliente) concluídos.
+- **É4 em andamento**: 4.1 (Category CRUD) + 4.2 (Tag CRUD) + 4.3 (Product CRUD) + 4.4 (UnitProduct) + 4.5 (cardápio cliente) + 4.6 (destaques/sumário/troca unidade) concluídos. Falta 4.7 (carrinho) + 4.8 (sugestões).
 - **Reordenação (fluxo de dependência + dificuldade)**: carrinho (era 6.1) e sugestões (era 6.4)
   são front-only sem backend → subiram para 4.7/4.8 (fecham browse→carrinho antes de cliente/pedido);
   É6 vira só persistência de pedido (6.1 create, 6.2 agendamento). Demais épicos já seguiam a ordem
   de dependência; mantidos. Trabalho fácil front-first batelado; integrações difíceis (pagamento,
   WhatsApp, motoboy) permanecem depois de suas dependências.
-- Próximo: **4.6** Front cliente — carrossel promo + destaques/"peça novamente" + sumário lateral + troca de unidade.
+- Próximo: **4.7** Front cliente — carrinho local (store Zustand: itens, qtd, observação, editar/excluir).
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.

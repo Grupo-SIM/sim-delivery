@@ -345,6 +345,7 @@
 			},
 			"menu": {
 				"empty": "This unit has no products yet.",
+				"highlights": "Highlights",
 				"loadError": "Could not load the menu.",
 				"loose": "Others",
 				"noResults": "No products match your search.",
@@ -356,7 +357,8 @@
 			},
 			"unit": {
 				"change": "Change unit",
-				"notFound": "This unit is not available."
+				"notFound": "This unit is not available.",
+				"switch": "Switch unit"
 			}
 		}
 	}
