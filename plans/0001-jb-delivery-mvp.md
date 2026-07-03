@@ -80,7 +80,7 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
 - **2.3** ✅ Convidar funcionário (`POST /staff`, Better Auth signUp). demo: cria funcionário.
 - **2.4** ✅ Alterar nível (`PATCH`) + remover (`DELETE`). demo: gestão completa.
 
-### É3 — Unidades
+### É3 — Unidades ✅
 - **3.1** ✅ Unit CRUD (nome/telefone/endereço + escalares fee/cashback/deliveryMethods/
   isOpenManual no schema). `/units` CRUD + página `/admin/units` (criar/listar/excluir).
 - **3.2** ✅ Horários semanais (`UnitHours` geral): model + `GET`/`PUT /units/:unitId/hours`
@@ -91,8 +91,10 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
 - **3.4** ✅ Aberto/fechado: `isUnitOpen` (override manual `isOpenManual` prevalece, senão
   horário do dia) computa `isOpenNow` no `GET /units`; front mostra badge + seletor
   auto/aberto/fechado no config. demo: badge status.
-- **3.5** Front cliente: **tela inicial escolher unidade** — precisa endpoint **público**
-  de unidades por empresa (sem auth); depende de contexto de empresa/variante (ligar com É13).
+- **3.5** ✅ Front cliente: **tela inicial escolher unidade**. Endpoint público `GET /public/units`
+  (sem auth) resolve a empresa pela `variantKey` chumbada no build (`VITE_VARIANT_KEY`); rotas
+  `/store` (lista) e `/store/$unitId` (unidade escolhida = param de rota, troca por rota).
+  Formalização da variant/tema fica p/ É13.
 
 ### É4 — Cardápio
 - **4.1** Category CRUD. demo: gestão categorias.
@@ -177,8 +179,7 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
 - Padrão reforçado: retorno de lista com enum → usar `t.String()` no DTO (Kubb achata
   enum-em-item-de-array). Schema com `t.Union` de literais em resposta: escrever união
   explícita (não `.map`) p/ Elysia inferir.
-- **É3 em andamento**: 3.1 (Unit CRUD), 3.2 (horários semanais), 3.3 (config entrega/taxa/
-  cashback), 3.4 (aberto/fechado) concluídos.
-- Próximo: **3.5** front cliente — tela inicial escolher unidade (endpoint público de
-  unidades por empresa, sem auth; depende de contexto de empresa/variante — ligar com É13).
+- **É0, É1, É2, É3 concluídos.** Empresa resolvida por `variantKey` chumbada no build;
+  unidade escolhida/trocada por rota (`/store/$unitId`).
+- Próximo: **É4** — Cardápio (4.1 Category CRUD).
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.

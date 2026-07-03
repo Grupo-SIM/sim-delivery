@@ -191,6 +191,24 @@
 				"secondParagraph": "When a real API exists, keep <apiPath>src/lib/api</apiPath> for generated backend hooks and call those hooks from the route or component that owns the screen.",
 				"title": "Use this pattern"
 			}
+		},
+		"store": {
+			"chooseUnit": {
+				"empty": "No units available yet.",
+				"loadError": "Could not load units.",
+				"noAddress": "Address not provided",
+				"subtitle": "Choose a unit to start your order.",
+				"title": "Our units"
+			},
+			"status": {
+				"closed": "Closed",
+				"open": "Open"
+			},
+			"unit": {
+				"change": "Change unit",
+				"menuSoon": "The menu for this unit is coming soon.",
+				"notFound": "This unit is not available."
+			}
 		}
 	}
 }

@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StoreIndexRouteImport } from './routes/store/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
+import { Route as StoreUnitIdIndexRouteImport } from './routes/store/$unitId/index'
 import { Route as AdminUnitsIndexRouteImport } from './routes/admin/units/index'
 import { Route as AdminStaffIndexRouteImport } from './routes/admin/staff/index'
 import { Route as AdminCompaniesIndexRouteImport } from './routes/admin/companies/index'
@@ -20,9 +22,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StoreIndexRoute = StoreIndexRouteImport.update({
+  id: '/store/',
+  path: '/store/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginIndexRoute = LoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoreUnitIdIndexRoute = StoreUnitIdIndexRouteImport.update({
+  id: '/store/$unitId/',
+  path: '/store/$unitId/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUnitsIndexRoute = AdminUnitsIndexRouteImport.update({
@@ -44,50 +56,69 @@ const AdminCompaniesIndexRoute = AdminCompaniesIndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login/': typeof LoginIndexRoute
+  '/store/': typeof StoreIndexRoute
   '/admin/companies/': typeof AdminCompaniesIndexRoute
   '/admin/staff/': typeof AdminStaffIndexRoute
   '/admin/units/': typeof AdminUnitsIndexRoute
+  '/store/$unitId/': typeof StoreUnitIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginIndexRoute
+  '/store': typeof StoreIndexRoute
   '/admin/companies': typeof AdminCompaniesIndexRoute
   '/admin/staff': typeof AdminStaffIndexRoute
   '/admin/units': typeof AdminUnitsIndexRoute
+  '/store/$unitId': typeof StoreUnitIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login/': typeof LoginIndexRoute
+  '/store/': typeof StoreIndexRoute
   '/admin/companies/': typeof AdminCompaniesIndexRoute
   '/admin/staff/': typeof AdminStaffIndexRoute
   '/admin/units/': typeof AdminUnitsIndexRoute
+  '/store/$unitId/': typeof StoreUnitIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/login/'
+    | '/store/'
     | '/admin/companies/'
     | '/admin/staff/'
     | '/admin/units/'
+    | '/store/$unitId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/admin/companies' | '/admin/staff' | '/admin/units'
+  to:
+    | '/'
+    | '/login'
+    | '/store'
+    | '/admin/companies'
+    | '/admin/staff'
+    | '/admin/units'
+    | '/store/$unitId'
   id:
     | '__root__'
     | '/'
     | '/login/'
+    | '/store/'
     | '/admin/companies/'
     | '/admin/staff/'
     | '/admin/units/'
+    | '/store/$unitId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
+  StoreIndexRoute: typeof StoreIndexRoute
   AdminCompaniesIndexRoute: typeof AdminCompaniesIndexRoute
   AdminStaffIndexRoute: typeof AdminStaffIndexRoute
   AdminUnitsIndexRoute: typeof AdminUnitsIndexRoute
+  StoreUnitIdIndexRoute: typeof StoreUnitIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,11 +130,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/store/': {
+      id: '/store/'
+      path: '/store'
+      fullPath: '/store/'
+      preLoaderRoute: typeof StoreIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login/': {
       id: '/login/'
       path: '/login'
       fullPath: '/login/'
       preLoaderRoute: typeof LoginIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/store/$unitId/': {
+      id: '/store/$unitId/'
+      path: '/store/$unitId'
+      fullPath: '/store/$unitId/'
+      preLoaderRoute: typeof StoreUnitIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/units/': {
@@ -133,9 +178,11 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginIndexRoute: LoginIndexRoute,
+  StoreIndexRoute: StoreIndexRoute,
   AdminCompaniesIndexRoute: AdminCompaniesIndexRoute,
   AdminStaffIndexRoute: AdminStaffIndexRoute,
   AdminUnitsIndexRoute: AdminUnitsIndexRoute,
+  StoreUnitIdIndexRoute: StoreUnitIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
