@@ -1,0 +1,20 @@
+/// Company catalog item. Unit/category-specific availability and price overrides are modeled
+/// separately by UnitProduct in the next menu step (docs/05).
+model Product {
+    id                      String   @id @default(cuid())
+    companyId               String
+    title                   String
+    imageUrl                String
+    description             String   @default("")
+    /// Base price in cents; unit associations may override it.
+    basePriceCents          Int
+    /// Optional percent override. Null means use the unit default cashback percentage.
+    cashbackPercentOverride Float?
+    createdAt               DateTime @default(now())
+    updatedAt               DateTime @updatedAt
+
+    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+    @@index([companyId])
+    @@map("product")
+}

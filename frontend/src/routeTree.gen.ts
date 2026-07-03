@@ -16,6 +16,7 @@ import { Route as StoreUnitIdIndexRouteImport } from './routes/store/$unitId/ind
 import { Route as AdminUnitsIndexRouteImport } from './routes/admin/units/index'
 import { Route as AdminTagsIndexRouteImport } from './routes/admin/tags/index'
 import { Route as AdminStaffIndexRouteImport } from './routes/admin/staff/index'
+import { Route as AdminProductsIndexRouteImport } from './routes/admin/products/index'
 import { Route as AdminCompaniesIndexRouteImport } from './routes/admin/companies/index'
 import { Route as AdminCategoriesIndexRouteImport } from './routes/admin/categories/index'
 
@@ -54,6 +55,11 @@ const AdminStaffIndexRoute = AdminStaffIndexRouteImport.update({
   path: '/admin/staff/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminProductsIndexRoute = AdminProductsIndexRouteImport.update({
+  id: '/admin/products/',
+  path: '/admin/products/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminCompaniesIndexRoute = AdminCompaniesIndexRouteImport.update({
   id: '/admin/companies/',
   path: '/admin/companies/',
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/store/': typeof StoreIndexRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
   '/admin/companies/': typeof AdminCompaniesIndexRoute
+  '/admin/products/': typeof AdminProductsIndexRoute
   '/admin/staff/': typeof AdminStaffIndexRoute
   '/admin/tags/': typeof AdminTagsIndexRoute
   '/admin/units/': typeof AdminUnitsIndexRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/store': typeof StoreIndexRoute
   '/admin/categories': typeof AdminCategoriesIndexRoute
   '/admin/companies': typeof AdminCompaniesIndexRoute
+  '/admin/products': typeof AdminProductsIndexRoute
   '/admin/staff': typeof AdminStaffIndexRoute
   '/admin/tags': typeof AdminTagsIndexRoute
   '/admin/units': typeof AdminUnitsIndexRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/store/': typeof StoreIndexRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
   '/admin/companies/': typeof AdminCompaniesIndexRoute
+  '/admin/products/': typeof AdminProductsIndexRoute
   '/admin/staff/': typeof AdminStaffIndexRoute
   '/admin/tags/': typeof AdminTagsIndexRoute
   '/admin/units/': typeof AdminUnitsIndexRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/store/'
     | '/admin/categories/'
     | '/admin/companies/'
+    | '/admin/products/'
     | '/admin/staff/'
     | '/admin/tags/'
     | '/admin/units/'
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/store'
     | '/admin/categories'
     | '/admin/companies'
+    | '/admin/products'
     | '/admin/staff'
     | '/admin/tags'
     | '/admin/units'
@@ -129,6 +140,7 @@ export interface FileRouteTypes {
     | '/store/'
     | '/admin/categories/'
     | '/admin/companies/'
+    | '/admin/products/'
     | '/admin/staff/'
     | '/admin/tags/'
     | '/admin/units/'
@@ -141,6 +153,7 @@ export interface RootRouteChildren {
   StoreIndexRoute: typeof StoreIndexRoute
   AdminCategoriesIndexRoute: typeof AdminCategoriesIndexRoute
   AdminCompaniesIndexRoute: typeof AdminCompaniesIndexRoute
+  AdminProductsIndexRoute: typeof AdminProductsIndexRoute
   AdminStaffIndexRoute: typeof AdminStaffIndexRoute
   AdminTagsIndexRoute: typeof AdminTagsIndexRoute
   AdminUnitsIndexRoute: typeof AdminUnitsIndexRoute
@@ -198,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminStaffIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/products/': {
+      id: '/admin/products/'
+      path: '/admin/products'
+      fullPath: '/admin/products/'
+      preLoaderRoute: typeof AdminProductsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/companies/': {
       id: '/admin/companies/'
       path: '/admin/companies'
@@ -221,6 +241,7 @@ const rootRouteChildren: RootRouteChildren = {
   StoreIndexRoute: StoreIndexRoute,
   AdminCategoriesIndexRoute: AdminCategoriesIndexRoute,
   AdminCompaniesIndexRoute: AdminCompaniesIndexRoute,
+  AdminProductsIndexRoute: AdminProductsIndexRoute,
   AdminStaffIndexRoute: AdminStaffIndexRoute,
   AdminTagsIndexRoute: AdminTagsIndexRoute,
   AdminUnitsIndexRoute: AdminUnitsIndexRoute,

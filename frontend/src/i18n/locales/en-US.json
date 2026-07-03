@@ -70,6 +70,44 @@
 				"title": "Companies",
 				"variantUnset": "—"
 			},
+			"products": {
+				"columns": {
+					"cashback": "Cashback",
+					"price": "Price",
+					"product": "Product"
+				},
+				"create": {
+					"cashbackOverride": "Override unit cashback",
+					"description": "Description",
+					"descriptionPlaceholder": "Ex: Fresh from the oven, served warm.",
+					"error": "Could not create the product.",
+					"imageUrl": "Image URL",
+					"imageUrlPlaceholder": "https://example.com/product.jpg",
+					"price": "Base price",
+					"submit": "Add product",
+					"submitting": "Adding...",
+					"title": "Title",
+					"titlePlaceholder": "Ex: Traditional cheese bread"
+				},
+				"edit": {
+					"action": "Edit",
+					"cancel": "Cancel",
+					"error": "Could not save the product.",
+					"save": "Save",
+					"saving": "Saving..."
+				},
+				"empty": "No products yet.",
+				"loadError": "Could not load products.",
+				"row": {
+					"cashbackPercent": "{{value}}%",
+					"delete": "Delete",
+					"deleteConfirm": "Delete product {{title}}?",
+					"deleteError": "Could not delete the product.",
+					"unitDefault": "Unit default"
+				},
+				"subtitle": "Base catalog for this company.",
+				"title": "Products"
+			},
 			"staff": {
 				"columns": {
 					"email": "Email",

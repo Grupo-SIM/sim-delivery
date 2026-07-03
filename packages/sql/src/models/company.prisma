@@ -10,6 +10,7 @@ model Company {
     updatedAt  DateTime @updatedAt
 
     categories Category[]
+    products   Product[]
     tags       Tag[]
     units      Unit[]
     users      User[]
