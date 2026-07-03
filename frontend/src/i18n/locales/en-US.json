@@ -88,6 +88,21 @@
 					"name": "Name",
 					"phone": "Phone"
 				},
+				"config": {
+					"action": "Config",
+					"cancel": "Cancel",
+					"cashback": "Cashback",
+					"deliveryFee": "Delivery fee",
+					"deliveryMethods": "Delivery methods",
+					"error": "Could not save the settings.",
+					"method": {
+						"delivery": "Delivery",
+						"pickup": "Pickup"
+					},
+					"save": "Save settings",
+					"saving": "Saving...",
+					"title": "Unit settings"
+				},
 				"create": {
 					"error": "Could not create the unit.",
 					"name": "Name",

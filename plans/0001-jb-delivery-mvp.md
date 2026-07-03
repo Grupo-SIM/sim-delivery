@@ -86,7 +86,8 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
 - **3.2** ✅ Horários semanais (`UnitHours` geral): model + `GET`/`PUT /units/:unitId/hours`
   (upsert por dia) + editor modal por unidade. demo: editar horários. (override por dia
   específico — feriados — adiado p/ passo seguinte pequeno.)
-- **3.3** Formas de entrega + taxa + cashback % (UI de edição; campos já no schema). demo: config.
+- **3.3** ✅ Formas de entrega + taxa + cashback % (UI de edição via `UnitConfigEditor` modal;
+  campos já no schema, salva por `PATCH /units/:unitId`). demo: config.
 - **3.4** Aberto/fechado (auto por horário + override manual `isOpenManual`). demo: badge status.
 - **3.5** Front cliente: **tela inicial escolher unidade** — precisa endpoint **público**
   de unidades por empresa (sem auth); depende de contexto de empresa/variante (ligar com É13).
@@ -174,6 +175,7 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
 - Padrão reforçado: retorno de lista com enum → usar `t.String()` no DTO (Kubb achata
   enum-em-item-de-array). Schema com `t.Union` de literais em resposta: escrever união
   explícita (não `.map`) p/ Elysia inferir.
-- **É3 em andamento**: 3.1 (Unit CRUD) e 3.2 (horários semanais) concluídos.
-- Próximo: **3.3** formas de entrega + taxa + cashback % (UI; campos já no schema).
+- **É3 em andamento**: 3.1 (Unit CRUD), 3.2 (horários semanais), 3.3 (config entrega/taxa/
+  cashback) concluídos.
+- Próximo: **3.4** aberto/fechado (auto por horário + override manual `isOpenManual`).
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.
