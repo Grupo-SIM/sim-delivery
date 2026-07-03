@@ -5,8 +5,8 @@ import {
 	CreateUnitBody,
 	SetUnitHoursBody,
 	UnitHoursListReturn,
-	UnitListReturn,
 	UnitReturn,
+	UnitWithStatusListReturn,
 	UpdateUnitBody,
 } from "../../dtos";
 import { CreateUnit, DeleteUnit, GetUnitHours, ListUnits, SetUnitHours, UpdateUnit } from "../../useCases";
@@ -37,7 +37,7 @@ export const UnitsController = new Elysia({
 
 					return listUnits.execute(scope.companyId);
 				},
-				{ response: UnitListReturn },
+				{ response: UnitWithStatusListReturn },
 			)
 			.post(
 				"/",

@@ -88,7 +88,9 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   específico — feriados — adiado p/ passo seguinte pequeno.)
 - **3.3** ✅ Formas de entrega + taxa + cashback % (UI de edição via `UnitConfigEditor` modal;
   campos já no schema, salva por `PATCH /units/:unitId`). demo: config.
-- **3.4** Aberto/fechado (auto por horário + override manual `isOpenManual`). demo: badge status.
+- **3.4** ✅ Aberto/fechado: `isUnitOpen` (override manual `isOpenManual` prevalece, senão
+  horário do dia) computa `isOpenNow` no `GET /units`; front mostra badge + seletor
+  auto/aberto/fechado no config. demo: badge status.
 - **3.5** Front cliente: **tela inicial escolher unidade** — precisa endpoint **público**
   de unidades por empresa (sem auth); depende de contexto de empresa/variante (ligar com É13).
 
@@ -176,6 +178,7 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   enum-em-item-de-array). Schema com `t.Union` de literais em resposta: escrever união
   explícita (não `.map`) p/ Elysia inferir.
 - **É3 em andamento**: 3.1 (Unit CRUD), 3.2 (horários semanais), 3.3 (config entrega/taxa/
-  cashback) concluídos.
-- Próximo: **3.4** aberto/fechado (auto por horário + override manual `isOpenManual`).
+  cashback), 3.4 (aberto/fechado) concluídos.
+- Próximo: **3.5** front cliente — tela inicial escolher unidade (endpoint público de
+  unidades por empresa, sem auth; depende de contexto de empresa/variante — ligar com É13).
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.

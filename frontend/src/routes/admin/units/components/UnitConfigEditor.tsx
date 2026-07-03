@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Modal } from "@/components/ui/Modal";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { type GetUnits200, getUnitsQueryKey, usePatchUnitsByUnitId } from "@/lib/api";
@@ -10,6 +11,12 @@ import { showAlert } from "@/stores";
 type Unit = GetUnits200[number];
 type DeliveryMethod = "delivery" | "pickup";
 const METHODS: DeliveryMethod[] = ["delivery", "pickup"];
+
+type Availability = "auto" | "closed" | "open";
+const toAvailability = (isOpenManual: boolean | null): Availability =>
+	isOpenManual === null ? "auto" : isOpenManual ? "open" : "closed";
+const toIsOpenManual = (availability: Availability): boolean | null =>
+	availability === "auto" ? null : availability === "open";
 
 interface UnitConfigEditorProps {
 	onClose: () => void;
@@ -23,6 +30,7 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 	const [methods, setMethods] = useState<DeliveryMethod[]>([]);
 	const [feeReais, setFeeReais] = useState(0);
 	const [cashback, setCashback] = useState(0);
+	const [availability, setAvailability] = useState<Availability>("auto");
 
 	useEffect(() => {
 		if (!unit) {
@@ -31,6 +39,7 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 		setMethods(METHODS.filter(method => unit.deliveryMethods.includes(method)));
 		setFeeReais(Number(unit.deliveryFee) / 100);
 		setCashback(unit.cashbackPercent);
+		setAvailability(toAvailability(unit.isOpenManual));
 	}, [unit]);
 
 	function toggleMethod(method: DeliveryMethod, checked: boolean) {
@@ -47,6 +56,7 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 					cashbackPercent: cashback,
 					deliveryFee: Math.round(feeReais * 100),
 					deliveryMethods: methods,
+					isOpenManual: toIsOpenManual(availability),
 				},
 				unitId: unit.id,
 			},
@@ -102,6 +112,19 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 						placeholder="5 %"
 						suffix=" %"
 						value={cashback}
+					/>
+				</div>
+
+				<div>
+					<span className="font-medium text-sm">{t("admin.units.config.availability")}</span>
+					<CustomSelect
+						onChange={value => setAvailability(value as Availability)}
+						options={[
+							{ label: t("admin.units.config.availabilityAuto"), value: "auto" },
+							{ label: t("admin.units.config.availabilityOpen"), value: "open" },
+							{ label: t("admin.units.config.availabilityClosed"), value: "closed" },
+						]}
+						value={availability}
 					/>
 				</div>
 

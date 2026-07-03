@@ -86,10 +86,15 @@
 					"actions": "",
 					"city": "City",
 					"name": "Name",
-					"phone": "Phone"
+					"phone": "Phone",
+					"status": "Status"
 				},
 				"config": {
 					"action": "Config",
+					"availability": "Availability",
+					"availabilityAuto": "Automatic (by hours)",
+					"availabilityClosed": "Force closed",
+					"availabilityOpen": "Force open",
 					"cancel": "Cancel",
 					"cashback": "Cashback",
 					"deliveryFee": "Delivery fee",
@@ -137,6 +142,10 @@
 					"delete": "Delete",
 					"deleteConfirm": "Delete unit {{name}}?",
 					"deleteError": "Could not delete the unit."
+				},
+				"status": {
+					"closed": "Closed",
+					"open": "Open"
 				},
 				"subtitle": "Stores of this company.",
 				"title": "Units"

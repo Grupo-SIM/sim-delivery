@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -45,6 +46,7 @@ export function UnitsTable({ units }: UnitsTableProps) {
 						<th className="px-4 py-3 font-medium">{t("admin.units.columns.name")}</th>
 						<th className="px-4 py-3 font-medium">{t("admin.units.columns.phone")}</th>
 						<th className="px-4 py-3 font-medium">{t("admin.units.columns.city")}</th>
+						<th className="px-4 py-3 font-medium">{t("admin.units.columns.status")}</th>
 						<th className="px-4 py-3" />
 					</tr>
 				</thead>
@@ -54,6 +56,17 @@ export function UnitsTable({ units }: UnitsTableProps) {
 							<td className="px-4 py-3 font-medium">{unit.name}</td>
 							<td className="px-4 py-3 text-muted-foreground">{unit.phone ?? "—"}</td>
 							<td className="px-4 py-3 text-muted-foreground">{unit.city ?? "—"}</td>
+							<td className="px-4 py-3">
+								<Badge
+									className={
+										unit.isOpenNow
+											? "border-green-500/30 bg-green-500/10 text-green-500"
+											: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
+									}
+								>
+									{unit.isOpenNow ? t("admin.units.status.open") : t("admin.units.status.closed")}
+								</Badge>
+							</td>
 							<td className="px-4 py-3 text-right">
 								<div className="flex justify-end gap-2">
 									<Button onClick={() => setConfigUnit(unit)} size="sm" type="button" variant="outline">
