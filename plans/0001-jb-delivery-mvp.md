@@ -149,11 +149,11 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
 - **7.1** ✅ Frete por unidade + simulação (`POST /freight/simulate`). Front: simulação no carrinho.
 - **7.2** ✅ `Coupon` validar/aplicar. Front: input cupom. demo: desconto.
 - **7.3** ✅ `CashbackLedger` (acúmulo/resgate). Front: exibir/resgatar. demo: cashback.
-- **7.4** `LoyaltyPoints` `[MVP+]`. Front: exibir/resgatar. demo: pontos.
+- **7.4** ✅ `LoyaltyPoints` `[MVP+]`. Front: exibir/resgatar. demo: pontos.
 
 ### É8 — Pagamento (plataforma própria) + webhook
-- **8.1** Criar intenção de pagamento (url/token). Front: **checkout #2** com **iframe**. demo: tela pagamento.
-- **8.2** `POST /payments/webhook` (confirma pedido, credita cashback/pontos). Front: **tela
+- **8.1** ✅ Criar intenção de pagamento (url/token). Front: **checkout #2** com **iframe**. demo: tela pagamento.
+- **8.2** ✅ `POST /payments/webhook` (confirma pedido, credita cashback/pontos). Front: **tela
   de obrigado** + aviso WhatsApp. demo: pós-pagamento.
 
 ### É9 — Pedidos: ciclo / listagem / WhatsApp
@@ -225,6 +225,15 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   `CheckoutPage` com 3 passos: identify → profile (se não tem Customer) → address. Submit do
   address chama `POST /customers/me` que cria Customer + Address e atualiza nome na BA. SDK regenerado.
 - **É5 concluído.** Checkout #1 completo: identify (SMS/magic link) → profile → address → save.
-- Próximo: **É6** — `Order`+`OrderItem` create (6.1) + agendamento (6.2).
+- **É6 concluído**: 6.1 ✅ Order+OrderItem create via UoW (subtotais, frete, cupom, cashback/loyalty redemption).
+  6.2 (agendamento) adiado.
+- **É7 concluído**: 7.1 frete/simulação, 7.2 cupom, 7.3 cashback ledger, 7.4 loyalty points ledger.
+- **É8 concluído**: 8.1 payment intent + iframe (backend serve página de pagamento em /pay/:token;
+  frontend checkout step 5 = iframe + postMessage); 8.2 webhook ConfirmPayment credita cashback+loyalty
+  accrual + muda status pedido p/ recebido; tela de obrigado. Decisão de pagamento: plataforma interna
+  via token (hosted pay page); webhook por `POST /payments/webhook { token }`.
+- Próximo: **É9** — ciclo de vida de pedidos + listagem + painel.
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.
+  Novos modelos: LoyaltyLedger, Payment. Campos novos: Unit.loyaltyPointsRate, Order.loyaltyPointsRedeemed,
+  Order.status default agora é `awaiting_payment` (antes `recebido`).
   Schema customer + address já entregues em 5.1; migração fica p/ o usuário.
