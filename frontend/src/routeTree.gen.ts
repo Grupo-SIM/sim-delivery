@@ -19,6 +19,7 @@ import { Route as AdminTagsIndexRouteImport } from './routes/admin/tags/index'
 import { Route as AdminStaffIndexRouteImport } from './routes/admin/staff/index'
 import { Route as AdminProductsIndexRouteImport } from './routes/admin/products/index'
 import { Route as AdminOrdersIndexRouteImport } from './routes/admin/orders/index'
+import { Route as AdminKitchenIndexRouteImport } from './routes/admin/kitchen/index'
 import { Route as AdminCompaniesIndexRouteImport } from './routes/admin/companies/index'
 import { Route as AdminCategoriesIndexRouteImport } from './routes/admin/categories/index'
 import { Route as UnitIdCheckoutIndexRouteImport } from './routes/$unitId/checkout/index'
@@ -75,6 +76,11 @@ const AdminOrdersIndexRoute = AdminOrdersIndexRouteImport.update({
   path: '/admin/orders/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminKitchenIndexRoute = AdminKitchenIndexRouteImport.update({
+  id: '/admin/kitchen/',
+  path: '/admin/kitchen/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminCompaniesIndexRoute = AdminCompaniesIndexRouteImport.update({
   id: '/admin/companies/',
   path: '/admin/companies/',
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/$unitId/checkout/': typeof UnitIdCheckoutIndexRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
   '/admin/companies/': typeof AdminCompaniesIndexRoute
+  '/admin/kitchen/': typeof AdminKitchenIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
   '/admin/staff/': typeof AdminStaffIndexRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/$unitId/checkout': typeof UnitIdCheckoutIndexRoute
   '/admin/categories': typeof AdminCategoriesIndexRoute
   '/admin/companies': typeof AdminCompaniesIndexRoute
+  '/admin/kitchen': typeof AdminKitchenIndexRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
   '/admin/products': typeof AdminProductsIndexRoute
   '/admin/staff': typeof AdminStaffIndexRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/$unitId/checkout/': typeof UnitIdCheckoutIndexRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
   '/admin/companies/': typeof AdminCompaniesIndexRoute
+  '/admin/kitchen/': typeof AdminKitchenIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
   '/admin/staff/': typeof AdminStaffIndexRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/$unitId/checkout/'
     | '/admin/categories/'
     | '/admin/companies/'
+    | '/admin/kitchen/'
     | '/admin/orders/'
     | '/admin/products/'
     | '/admin/staff/'
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/$unitId/checkout'
     | '/admin/categories'
     | '/admin/companies'
+    | '/admin/kitchen'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/staff'
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/$unitId/checkout/'
     | '/admin/categories/'
     | '/admin/companies/'
+    | '/admin/kitchen/'
     | '/admin/orders/'
     | '/admin/products/'
     | '/admin/staff/'
@@ -217,6 +229,7 @@ export interface RootRouteChildren {
   UnitIdCheckoutIndexRoute: typeof UnitIdCheckoutIndexRoute
   AdminCategoriesIndexRoute: typeof AdminCategoriesIndexRoute
   AdminCompaniesIndexRoute: typeof AdminCompaniesIndexRoute
+  AdminKitchenIndexRoute: typeof AdminKitchenIndexRoute
   AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
   AdminProductsIndexRoute: typeof AdminProductsIndexRoute
   AdminStaffIndexRoute: typeof AdminStaffIndexRoute
@@ -299,6 +312,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/kitchen/': {
+      id: '/admin/kitchen/'
+      path: '/admin/kitchen'
+      fullPath: '/admin/kitchen/'
+      preLoaderRoute: typeof AdminKitchenIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/companies/': {
       id: '/admin/companies/'
       path: '/admin/companies'
@@ -345,6 +365,7 @@ const rootRouteChildren: RootRouteChildren = {
   UnitIdCheckoutIndexRoute: UnitIdCheckoutIndexRoute,
   AdminCategoriesIndexRoute: AdminCategoriesIndexRoute,
   AdminCompaniesIndexRoute: AdminCompaniesIndexRoute,
+  AdminKitchenIndexRoute: AdminKitchenIndexRoute,
   AdminOrdersIndexRoute: AdminOrdersIndexRoute,
   AdminProductsIndexRoute: AdminProductsIndexRoute,
   AdminStaffIndexRoute: AdminStaffIndexRoute,

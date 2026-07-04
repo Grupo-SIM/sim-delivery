@@ -74,6 +74,22 @@
 				"subtitle": "Manage this company's catalog, team, and stores.",
 				"title": "Admin"
 			},
+			"kitchen": {
+				"columns": {
+					"emPreparo": "Preparing",
+					"recebido": "Received"
+				},
+				"empty": "No active orders.",
+				"loadError": "Could not load orders.",
+				"order": {
+					"items": "{{count}} item(s)",
+					"start": "Start preparing",
+					"ready": "Mark ready"
+				},
+				"refresh": "Refresh",
+				"subtitle": "Active orders for this unit.",
+				"title": "Kitchen"
+			},
 			"orders": {
 				"columns": {
 					"customer": "Customer",
