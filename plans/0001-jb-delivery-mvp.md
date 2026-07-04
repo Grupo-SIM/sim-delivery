@@ -139,7 +139,7 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   `CheckoutPage` alterna entre `IdentifyForm` e `AddressForm` conforme
   `useAuthStore().isAuthenticated` (sincronizado globalmente por `useSyncSession`). demo:
   login sem senha por SMS ou magic link.
-- **5.3** Cadastro (cria conta+endereço, loga). demo: **checkout #1** completo.
+- **5.3** ✅ Cadastro (cria conta+endereço, loga). demo: **checkout #1** completo.
 
 ### É6 — Pedido
 - **6.1** `Order`+`OrderItem` create (totais) via UoW. Front: enviar pedido. demo: cria pedido. (era 6.2)
@@ -220,9 +220,11 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   porém desabilitado**, com mecanismo de provider (`shared/infra/phoneOtp`, driver por env).
   Sem endpoint próprio — usa plugins nativos do Better Auth (`phoneNumber`, `magicLink`), sem
   DTO/UseCase/controller novo neste passo.
-- Próximo: **5.3** cadastro (cria conta+endereço, loga) = checkout #1 completo. Hoje o
-  `phoneNumber` já cria usuário-sombra na verificação (`signUpOnVerification`, email/nome
-  temporários); 5.3 decide como/quando completar o perfil (nome real, CPF, endereço) —
-  provavelmente checando se existe `Customer` vinculado ao usuário logado.
+- 5.3 ✅ cadastro: `GET /customers/me?variantKey=` + `POST /customers/me` (módulo `customers`
+  com `GetMyCustomer` + `UpsertCustomer`; 6 testes). Front: `ProfileForm` (nome + CPF opcional),
+  `CheckoutPage` com 3 passos: identify → profile (se não tem Customer) → address. Submit do
+  address chama `POST /customers/me` que cria Customer + Address e atualiza nome na BA. SDK regenerado.
+- **É5 concluído.** Checkout #1 completo: identify (SMS/magic link) → profile → address → save.
+- Próximo: **É6** — `Order`+`OrderItem` create (6.1) + agendamento (6.2).
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.
-  Schema novo (customer, address) + client regenerado; SQL de migração fica p/ o usuário.
+  Schema customer + address já entregues em 5.1; migração fica p/ o usuário.

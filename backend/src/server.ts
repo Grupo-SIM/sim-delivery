@@ -2,6 +2,7 @@ import { mkdir } from "node:fs/promises";
 import { CategoriesController } from "./modules/categories/infra";
 import { CepController } from "./modules/cep/infra";
 import { CompaniesController } from "./modules/companies/infra";
+import { CustomersController } from "./modules/customers/infra";
 import { ExampleController } from "./modules/example/infra";
 import { ProductsController } from "./modules/products/infra";
 import { StaffController } from "./modules/staff/infra";
@@ -25,4 +26,5 @@ export const server = app.use([
 	ProductsController,
 	UnitProductsController,
 	CepController,
+	CustomersController,
 ]);

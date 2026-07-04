@@ -400,6 +400,17 @@
 					"title": "Identification",
 					"verify": "Verify",
 					"verifying": "Verifying…"
+				},
+				"profile": {
+					"cpf": "CPF (optional)",
+					"cpfPlaceholder": "000.000.000-00",
+					"error": "Could not save your profile.",
+					"name": "Full name",
+					"namePlaceholder": "Ex: Maria Silva",
+					"submit": "Continue",
+					"submitting": "Saving…",
+					"subtitle": "Tell us your name so we can personalise your order.",
+					"title": "Your profile"
 				}
 			},
 			"chooseUnit": {
