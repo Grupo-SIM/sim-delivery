@@ -1,8 +1,11 @@
 import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
+import { DisabledWhatsAppProvider } from "@/shared/infra/whatsapp";
 import { CreateOrder } from "./CreateOrder";
 import { UpdateOrderStatus } from "./UpdateOrderStatus";
 import { ListOrders } from "./ListOrders";
+
+const noopWhatsApp = new DisabledWhatsAppProvider();
 
 const baseCompany = { id: "cmp_1", variantKey: "demo" };
 const baseUnit = { id: "unit_1", companyId: "cmp_1", deliveryFee: 500 };
@@ -151,7 +154,12 @@ describe("CreateOrder", () => {
 });
 
 function makeUpdateStatusPrisma(order: { id: string; companyId: string; status: string }) {
-	const stored: { id: string; companyId: string; status: string; cancelReason: string | null; items: unknown[] } = { ...order, cancelReason: null, items: [] };
+	const stored: { id: string; companyId: string; status: string; cancelReason: string | null; items: unknown[]; customer: { phone: string | null } } = {
+		...order,
+		cancelReason: null,
+		customer: { phone: null },
+		items: [],
+	};
 
 	const prisma = {
 		order: {
@@ -170,41 +178,41 @@ function makeUpdateStatusPrisma(order: { id: string; companyId: string; status: 
 describe("UpdateOrderStatus", () => {
 	it("transitions recebido → em_preparo", async () => {
 		const { stored, prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
-		await new UpdateOrderStatus(prisma).execute("cmp_1", "ord_1", { status: "em_preparo" });
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "em_preparo" });
 		expect(stored.status).toBe("em_preparo");
 	});
 
 	it("throws ORDER_NOT_FOUND for wrong companyId", async () => {
 		const { prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
 		await expect(
-			new UpdateOrderStatus(prisma).execute("cmp_2", "ord_1", { status: "em_preparo" }),
+			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_2", "ord_1", { status: "em_preparo" }),
 		).rejects.toThrow("ORDER_NOT_FOUND");
 	});
 
 	it("throws INVALID_TRANSITION for illegal transition", async () => {
 		const { prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
 		await expect(
-			new UpdateOrderStatus(prisma).execute("cmp_1", "ord_1", { status: "entregue" }),
+			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "entregue" }),
 		).rejects.toThrow("INVALID_TRANSITION");
 	});
 
 	it("throws INVALID_TRANSITION when order is terminal", async () => {
 		const { prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "cancelado" });
 		await expect(
-			new UpdateOrderStatus(prisma).execute("cmp_1", "ord_1", { status: "em_preparo" }),
+			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "em_preparo" }),
 		).rejects.toThrow("INVALID_TRANSITION");
 	});
 
 	it("throws CANCEL_REASON_REQUIRED when cancelling without reason", async () => {
 		const { prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
 		await expect(
-			new UpdateOrderStatus(prisma).execute("cmp_1", "ord_1", { status: "cancelado" }),
+			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "cancelado" }),
 		).rejects.toThrow("CANCEL_REASON_REQUIRED");
 	});
 
 	it("cancels with reason", async () => {
 		const { stored, prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
-		await new UpdateOrderStatus(prisma).execute("cmp_1", "ord_1", { status: "cancelado", cancelReason: "Cliente desistiu" });
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "cancelado", cancelReason: "Cliente desistiu" });
 		expect(stored.status).toBe("cancelado");
 		expect(stored.cancelReason).toBe("Cliente desistiu");
 	});
