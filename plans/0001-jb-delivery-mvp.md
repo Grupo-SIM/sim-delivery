@@ -156,11 +156,11 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
 - **8.2** ✅ `POST /payments/webhook` (confirma pedido, credita cashback/pontos). Front: **tela
   de obrigado** + aviso WhatsApp. demo: pós-pagamento.
 
-### É9 — Pedidos: ciclo / listagem / WhatsApp
+### É9 — Pedidos: ciclo / listagem / WhatsApp ✅
 - **9.1** ✅ Transições de status. Front: painel de pedidos (mudar status). demo: gestão pedidos.
-- **9.2** Listagem com filtros compreensivos. Front: filtros. demo: busca/filtro.
-- **9.3** Notificação WhatsApp por mudança de status (config provider). demo: mensagem.
-- **9.4** Front: visão de cozinha (`kitchen`). demo: fila cozinha.
+- **9.2** ✅ Listagem com filtros compreensivos. Front: filtros. demo: busca/filtro.
+- **9.3** ✅ Notificação WhatsApp por mudança de status (config provider). demo: mensagem.
+- **9.4** ✅ Front: visão de cozinha (`kitchen`). demo: fila cozinha.
 
 ### É10 — Motoboy & entregas
 - **10.1** `Courier` CRUD + `Delivery` + atribuir. Front: atribuição no painel. demo: atribuir.
@@ -232,7 +232,8 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   frontend checkout step 5 = iframe + postMessage); 8.2 webhook ConfirmPayment credita cashback+loyalty
   accrual + muda status pedido p/ recebido; tela de obrigado. Decisão de pagamento: plataforma interna
   via token (hosted pay page); webhook por `POST /payments/webhook { token }`.
-- **É9 em andamento**: 9.1 ✅ status transitions + admin orders panel (GET /orders, PATCH /orders/:id/status, 14 tests). Próximo: 9.2 listagem com filtros compreensivos.
+- **É9 concluído**: 9.1 status transitions (GET/PATCH /orders, 14 tests), 9.2 comprehensive filters (deliveryMethod/hasCoupon/search), 9.3 WhatsApp provider (console/disabled drivers, notifies on status change), 9.4 kitchen view (/admin/kitchen, 30s polling, advance actions).
+- Próximo: **É10** — motoboy CRUD + deliveries + assignment.
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.
   Novos modelos: LoyaltyLedger, Payment. Campos novos: Unit.loyaltyPointsRate, Order.loyaltyPointsRedeemed,
   Order.status default agora é `awaiting_payment` (antes `recebido`).
