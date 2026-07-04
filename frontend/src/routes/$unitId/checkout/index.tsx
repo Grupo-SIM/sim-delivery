@@ -12,12 +12,13 @@ import {
 	useGetLoyaltyMe,
 	usePostCustomersMe,
 	usePostOrders,
+	usePostPaymentsIntent,
 } from "@/lib/api";
 import { variantKey } from "@/lib/variant";
 import { cartTotalCents, showAlert, useAuthStore, useCartStore } from "@/stores";
-import { AddressForm, IdentifyForm, OrderReview, ProfileForm, type AppliedCoupon, type AddressValue, type DeliveryMethod, type ProfileValue } from "./components";
+import { AddressForm, IdentifyForm, OrderReview, PaymentFrame, ProfileForm, type AppliedCoupon, type AddressValue, type DeliveryMethod, type ProfileValue } from "./components";
 
-type Step = "identify" | "profile" | "address" | "review";
+type Step = "identify" | "profile" | "address" | "review" | "payment";
 
 function CheckoutPage() {
 	const { t } = useTranslation();
@@ -36,9 +37,11 @@ function CheckoutPage() {
 	const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
 	const [cashbackRedeemCents, setCashbackRedeemCents] = useState(0);
 	const [loyaltyRedeemPoints, setLoyaltyRedeemPoints] = useState(0);
+	const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
 
 	const { mutate: saveCustomer, isPending: isSavingCustomer } = usePostCustomersMe();
 	const { mutate: placeOrder, isPending: isPlacingOrder } = usePostOrders();
+	const { mutate: createPaymentIntent, isPending: isCreatingIntent } = usePostPaymentsIntent();
 
 	const { data: existingCustomer, isLoading: loadingCustomer } = useQuery({
 		...getCustomersMeQueryOptions({ variantKey: variantKey ?? "" }),
@@ -60,7 +63,7 @@ function CheckoutPage() {
 	);
 	const loyaltyBalancePoints = Number(loyaltyData?.balancePoints ?? 0);
 
-	const step: Step = !identified
+	const reviewStep: Step = !identified
 		? "identify"
 		: identified && loadingCustomer
 			? "identify"
@@ -73,6 +76,8 @@ function CheckoutPage() {
 							? "address"
 							: "review"
 						: "address";
+
+	const step: Step = paymentUrl ? "payment" : reviewStep;
 
 	const activeCustomer = savedCustomer ?? existingCustomer ?? null;
 	const savedAddress = activeCustomer?.addresses[0] ?? null;
@@ -125,21 +130,33 @@ function CheckoutPage() {
 			},
 			{
 				onError: () => void showAlert(t("store.checkout.order.error")),
-				onSuccess: () => {
-					clearCart();
-					void showAlert(t("store.checkout.order.success")).then(() => {
-						void navigate({ params: { unitId }, to: "/$unitId" });
-					});
+				onSuccess: order => {
+					createPaymentIntent(
+						{ data: { orderId: order.id, variantKey: variantKey ?? "" } },
+						{
+							onError: () => void showAlert(t("store.checkout.payment.intentError")),
+							onSuccess: intent => setPaymentUrl(intent.paymentUrl),
+						},
+					);
 				},
 			},
 		);
 	}
 
+	function handlePaymentConfirmed() {
+		clearCart();
+		void navigate({ params: { unitId }, to: "/$unitId/checkout/thank-you" });
+	}
+
+	const isPendingOrder = isPlacingOrder || isCreatingIntent;
+
 	return (
 		<Container className="max-w-lg space-y-6 py-8">
-			<Link className="text-primary text-sm" params={{ unitId }} to="/$unitId">
-				← {t("store.checkout.back")}
-			</Link>
+			{step !== "payment" && (
+				<Link className="text-primary text-sm" params={{ unitId }} to="/$unitId">
+					← {t("store.checkout.back")}
+				</Link>
+			)}
 
 			{step === "identify" && (
 				<>
@@ -186,7 +203,7 @@ function CheckoutPage() {
 						cashbackBalanceCents={cashbackBalanceCents}
 						cashbackRedeemCents={cashbackRedeemCents}
 						deliveryMethod={deliveryMethod}
-						isPending={isPlacingOrder}
+						isPending={isPendingOrder}
 						items={cartItems}
 						loyaltyBalancePoints={loyaltyBalancePoints}
 						loyaltyRedeemPoints={loyaltyRedeemPoints}
@@ -200,6 +217,16 @@ function CheckoutPage() {
 						unitId={unitId}
 						variantKey={variantKey ?? ""}
 					/>
+				</>
+			)}
+
+			{step === "payment" && paymentUrl && (
+				<>
+					<SectionHeading
+						subtitle={t("store.checkout.payment.subtitle")}
+						title={t("store.checkout.payment.title")}
+					/>
+					<PaymentFrame onConfirmed={handlePaymentConfirmed} paymentUrl={paymentUrl} />
 				</>
 			)}
 		</Container>

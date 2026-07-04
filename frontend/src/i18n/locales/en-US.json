@@ -441,6 +441,18 @@
 					"submitting": "Saving…",
 					"subtitle": "Tell us your name so we can personalise your order.",
 					"title": "Your profile"
+				},
+				"payment": {
+					"instructions": "Complete your payment securely in the form below.",
+					"intentError": "Could not start payment. Please try again.",
+					"subtitle": "Complete your payment to confirm the order.",
+					"title": "Payment"
+				},
+				"thankYou": {
+					"continue": "Continue browsing",
+					"subtitle": "Your order has been confirmed and is being prepared.",
+					"title": "Thank you for your order!",
+					"whatsapp": "You will receive updates about your order via WhatsApp."
 				}
 			},
 			"chooseUnit": {

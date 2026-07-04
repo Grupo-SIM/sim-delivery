@@ -1,0 +1,18 @@
+/// A payment record tied to one order. Created by POST /payments/intent.
+/// Status lifecycle: pending → confirmed | failed.
+model Payment {
+    id        String   @id @default(cuid())
+    orderId   String   @unique
+    /// One-time opaque token used as the URL path for the hosted payment page.
+    token     String   @unique @default(cuid())
+    /// "pending" | "confirmed" | "failed"
+    status    String   @default("pending")
+    /// Amount in cents, mirrors order total at intent creation time.
+    amount    Int
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    order Order @relation(fields: [orderId], references: [id])
+
+    @@map("payment")
+}
