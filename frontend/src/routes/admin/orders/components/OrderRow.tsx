@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { GetOrders200 } from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { AssignCourierModal } from "./AssignCourierModal";
 import { UpdateStatusModal } from "./UpdateStatusModal";
 
 const TERMINAL = new Set(["entregue", "retirado", "cancelado"]);
@@ -13,6 +14,7 @@ interface OrderRowProps {
 export function OrderRow({ order }: OrderRowProps) {
 	const { t } = useTranslation();
 	const [modalOpen, setModalOpen] = useState(false);
+	const [assignOpen, setAssignOpen] = useState(false);
 
 	const date = new Date(order.createdAt).toLocaleString("pt-BR", {
 		day: "2-digit",
@@ -27,6 +29,8 @@ export function OrderRow({ order }: OrderRowProps) {
 	});
 
 	const isTerminal = TERMINAL.has(order.status);
+	const canAssign =
+		order.status === "pronto" && order.deliveryMethod === "delivery" && !order.delivery;
 
 	return (
 		<>
@@ -47,7 +51,12 @@ export function OrderRow({ order }: OrderRowProps) {
 					{t("admin.orders.items", { count: order.items.length })}
 				</td>
 				<td className="px-4 py-3 font-medium text-sm">{totalBRL}</td>
-				<td className="px-4 py-3 text-right">
+				<td className="px-4 py-3 text-right flex justify-end gap-2">
+					{canAssign && (
+						<Button onClick={() => setAssignOpen(true)} size="sm" type="button" variant="outline">
+							{t("admin.deliveries.assign.action")}
+						</Button>
+					)}
 					{!isTerminal && (
 						<Button onClick={() => setModalOpen(true)} size="sm" type="button" variant="outline">
 							{t("admin.orders.updateStatus.action")}
@@ -61,6 +70,12 @@ export function OrderRow({ order }: OrderRowProps) {
 				deliveryMethod={order.deliveryMethod}
 				isOpen={modalOpen}
 				onClose={() => setModalOpen(false)}
+				orderId={order.id}
+			/>
+
+			<AssignCourierModal
+				isOpen={assignOpen}
+				onClose={() => setAssignOpen(false)}
 				orderId={order.id}
 			/>
 		</>

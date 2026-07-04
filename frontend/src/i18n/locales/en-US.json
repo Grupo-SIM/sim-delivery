@@ -74,6 +74,31 @@
 				"subtitle": "Manage this company's catalog, team, and stores.",
 				"title": "Admin"
 			},
+			"deliveries": {
+				"assign": {
+					"action": "Assign courier",
+					"cancel": "Cancel",
+					"courier": "Courier",
+					"courierPlaceholder": "Select a courier",
+					"error": "Could not assign the delivery.",
+					"noCouriers": "No couriers available.",
+					"save": "Assign",
+					"saving": "Assigning...",
+					"title": "Assign delivery"
+				},
+				"empty": "No deliveries yet.",
+				"loadError": "Could not load deliveries.",
+				"status": {
+					"a_caminho": "On the way",
+					"aceita": "Accepted",
+					"atribuida": "Assigned",
+					"entregue": "Delivered",
+					"falhou": "Failed",
+					"recusada": "Refused"
+				},
+				"subtitle": "Delivery assignments for this company.",
+				"title": "Deliveries"
+			},
 			"kitchen": {
 				"columns": {
 					"emPreparo": "Preparing",

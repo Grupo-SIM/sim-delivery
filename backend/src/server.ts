@@ -1,5 +1,6 @@
 import { mkdir } from "node:fs/promises";
 import { CashbackController } from "./modules/cashback/infra";
+import { DeliveriesController } from "./modules/deliveries/infra/elysia";
 import { LoyaltyController } from "./modules/loyalty/infra";
 import { PaymentsController } from "./modules/payments/infra";
 import { CategoriesController } from "./modules/categories/infra";
@@ -35,6 +36,7 @@ export const server = app.use([
 	CepController,
 	CouponsController,
 	CustomersController,
+	DeliveriesController,
 	OrdersController,
 	PaymentsController,
 ]);

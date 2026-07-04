@@ -13,6 +13,7 @@ export class ListOrders {
 		const orders = await this.prisma.order.findMany({
 			include: {
 				customer: { include: { user: true } },
+				delivery: { select: { id: true } },
 				items: true,
 				unit: true,
 			},
@@ -53,6 +54,7 @@ export class ListOrders {
 			customerId: o.customerId,
 			customerName: o.customer.user.name ?? "",
 			customerPhone: o.customer.phone ?? null,
+			delivery: o.delivery ?? null,
 			deliveryFee: o.deliveryFee,
 			deliveryMethod: o.deliveryMethod,
 			discountCents: o.discountCents,

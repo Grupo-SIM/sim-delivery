@@ -29,11 +29,12 @@ model Unit {
     createdAt       DateTime @default(now())
     updatedAt       DateTime @updatedAt
 
-    company  Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-    coupons  Coupon[]
-    hours    UnitHours[]
-    products UnitProduct[]
-    orders   Order[]
+    company    Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    coupons    Coupon[]
+    deliveries Delivery[]
+    hours      UnitHours[]
+    products   UnitProduct[]
+    orders     Order[]
 
     @@index([companyId])
     @@map("unit")

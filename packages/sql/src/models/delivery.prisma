@@ -1,0 +1,24 @@
+/// A delivery assignment linking an order to a courier. Status: atribuida → aceita → a_caminho → entregue (or recusada / falhou).
+model Delivery {
+    id          String    @id @default(cuid())
+    companyId   String
+    orderId     String    @unique
+    courierId   String
+    unitId      String
+    /// One of: atribuida | aceita | a_caminho | entregue | recusada | falhou
+    status      String    @default("atribuida")
+    assignedAt  DateTime  @default(now())
+    acceptedAt  DateTime?
+    departedAt  DateTime?
+    deliveredAt DateTime?
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+
+    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+    unit    Unit    @relation(fields: [unitId], references: [id])
+
+    @@index([companyId, courierId])
+    @@index([companyId, status])
+    @@map("delivery")
+}

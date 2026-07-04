@@ -27,6 +27,7 @@ model Order {
     address         Address?         @relation(fields: [addressId], references: [id])
     coupon          Coupon?          @relation(fields: [couponId], references: [id])
     cashbackLedger  CashbackLedger[]
+    delivery        Delivery?
     loyaltyLedger   LoyaltyLedger[]
     items           OrderItem[]
     payment         Payment?

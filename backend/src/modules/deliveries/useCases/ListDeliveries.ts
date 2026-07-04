@@ -1,0 +1,60 @@
+import { DomainError } from "@/shared/errors";
+import { UserErrors } from "@/modules/users/errors";
+import type { PrismaInstance } from "@/shared/infra/sql";
+import type { ListDeliveriesQuery, DeliveryListReturn } from "../dtos";
+
+export class ListDeliveries {
+	constructor(private readonly prisma: PrismaInstance) {}
+
+	async execute(companyId: string | null, query: ListDeliveriesQuery): Promise<DeliveryListReturn> {
+		if (!companyId) throw new DomainError(UserErrors.FORBIDDEN);
+		const { courierId, status } = query;
+
+		const deliveries = await this.prisma.delivery.findMany({
+			include: {
+				order: {
+					include: {
+						customer: { include: { user: true } },
+						items: true,
+					},
+				},
+				unit: true,
+			},
+			orderBy: { assignedAt: "desc" },
+			where: {
+				companyId,
+				...(courierId ? { courierId } : {}),
+				...(status ? { status } : {}),
+			},
+		});
+
+		return deliveries.map(d => ({
+			acceptedAt: d.acceptedAt,
+			assignedAt: d.assignedAt,
+			companyId: d.companyId,
+			courierId: d.courierId,
+			courierName: "",
+			createdAt: d.createdAt,
+			deliveredAt: d.deliveredAt,
+			departedAt: d.departedAt,
+			id: d.id,
+			order: {
+				customerName: d.order.customer.user.name ?? "",
+				deliveryMethod: d.order.deliveryMethod,
+				id: d.order.id,
+				items: d.order.items.map(i => ({
+					id: i.id,
+					note: i.note,
+					productName: i.productName,
+					quantity: i.quantity,
+				})),
+				total: d.order.total,
+			},
+			orderId: d.orderId,
+			status: d.status,
+			unitId: d.unitId,
+			unitName: d.unit.name,
+			updatedAt: d.updatedAt,
+		}));
+	}
+}

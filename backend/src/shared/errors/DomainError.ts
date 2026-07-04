@@ -1,4 +1,5 @@
 import type { StatusCodes } from "http-status-codes";
+import { DeliveryErrors, DeliveryErrorsStatusCodes } from "@/modules/deliveries/errors";
 import { CashbackErrors, CashbackErrorsStatusCodes } from "@/modules/cashback/errors";
 import { LoyaltyErrors, LoyaltyErrorsStatusCodes } from "@/modules/loyalty/errors";
 import { PaymentErrors, PaymentErrorsStatusCodes } from "@/modules/payments/errors";
@@ -17,6 +18,7 @@ import { UnitErrors, UnitErrorsStatusCodes } from "@/modules/units/errors";
 import { UserErrors, UserErrorsStatusCodes } from "@/modules/users/errors";
 
 export const DomainErrors = {
+	...DeliveryErrors,
 	...ExampleErrors,
 	...UserErrors,
 	...CashbackErrors,
@@ -35,6 +37,7 @@ export const DomainErrors = {
 	...CepErrors,
 } as const;
 export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCodes> = {
+	...DeliveryErrorsStatusCodes,
 	...ExampleErrorsStatusCodes,
 	...UserErrorsStatusCodes,
 	...CashbackErrorsStatusCodes,

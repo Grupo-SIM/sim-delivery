@@ -11,6 +11,7 @@ export const AdminOrderReturn = t.Object({
 	customerName: t.String(),
 	customerPhone: __nullable__(t.String()),
 	customerId: t.String(),
+	delivery: __nullable__(t.Object({ id: t.String() })),
 	deliveryFee: t.Integer(),
 	deliveryMethod: t.String(),
 	discountCents: t.Integer(),

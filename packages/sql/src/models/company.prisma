@@ -12,6 +12,7 @@ model Company {
     categories Category[]
     coupons    Coupon[]
     customers  Customer[]
+    deliveries Delivery[]
     orders     Order[]
     products   Product[]
     tags       Tag[]
