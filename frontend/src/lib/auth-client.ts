@@ -1,4 +1,4 @@
-import { inferAdditionalFields } from "better-auth/client/plugins";
+import { inferAdditionalFields, magicLinkClient, phoneNumberClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 const baseURL = import.meta.env.VITE_API_URL ?? "http://localhost:3333";
@@ -16,6 +16,8 @@ export const authClient = createAuthClient({
 				role: { required: false, type: "string" },
 			},
 		}),
+		phoneNumberClient(),
+		magicLinkClient(),
 	],
 });
 

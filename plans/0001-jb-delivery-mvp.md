@@ -129,7 +129,16 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   `/store/$unitId/checkout` com `AddressForm` (CEP mascarado autofill on-complete), botão
   "Checkout" no carrinho navega p/ lá. demo: autofill de CEP. (identificação/conta em 5.2/5.3;
   submit hoje só `showAlert` placeholder)
-- **5.2** Passwordless (solicitar código + verificar). Front: tela identificação. demo: login sem senha.
+- **5.2** ✅ Passwordless (solicitar código + verificar). Better Auth plugins `phoneNumber`
+  (SMS, `signUpOnVerification` com email/nome temporários) + `magicLink` (email, link aponta
+  pro front `/identify/magic-link` em vez do redirect padrão do backend, assim funciona no
+  app Tauri). Provider de envio de SMS abstrato (`shared/infra/phoneOtp`, driver por env
+  `PHONE_OTP_DRIVER`: `console` dev / `twilio` via fetch direto sem SDK) + canal WhatsApp
+  já modelado porém **desabilitado** (`DisabledWhatsAppOtpProvider` sempre lança). Front:
+  `IdentifyForm` na tela de checkout com abas SMS/Email/WhatsApp (WhatsApp desabilitada);
+  `CheckoutPage` alterna entre `IdentifyForm` e `AddressForm` conforme
+  `useAuthStore().isAuthenticated` (sincronizado globalmente por `useSyncSession`). demo:
+  login sem senha por SMS ou magic link.
 - **5.3** Cadastro (cria conta+endereço, loga). demo: **checkout #1** completo.
 
 ### É6 — Pedido
@@ -207,7 +216,13 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   WhatsApp, motoboy) permanecem depois de suas dependências.
 - **É5 em andamento**: 5.1 ✅ (Customer+Address + proxy CEP ViaCEP + AddressForm autofill).
   Decisão CEP: **ViaCEP** (grátis, sem auth). Endpoint público sob tag "Public".
-- Próximo: **5.2** passwordless (solicitar código + verificar) + tela de identificação;
-  depois **5.3** cadastro (cria conta+endereço, loga) = checkout #1 completo.
+- 5.2 ✅ passwordless: decisão do usuário foi **SMS + magic link (email) + WhatsApp modelado
+  porém desabilitado**, com mecanismo de provider (`shared/infra/phoneOtp`, driver por env).
+  Sem endpoint próprio — usa plugins nativos do Better Auth (`phoneNumber`, `magicLink`), sem
+  DTO/UseCase/controller novo neste passo.
+- Próximo: **5.3** cadastro (cria conta+endereço, loga) = checkout #1 completo. Hoje o
+  `phoneNumber` já cria usuário-sombra na verificação (`signUpOnVerification`, email/nome
+  temporários); 5.3 decide como/quando completar o perfil (nome real, CPF, endereço) —
+  provavelmente checando se existe `Customer` vinculado ao usuário logado.
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.
   Schema novo (customer, address) + client regenerado; SQL de migração fica p/ o usuário.

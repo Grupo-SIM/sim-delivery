@@ -376,7 +376,31 @@
 					"subtitle": "We fill everything from your postal code, except the number.",
 					"title": "Delivery address"
 				},
-				"back": "Back to menu"
+				"back": "Back to menu",
+				"identify": {
+					"channels": {
+						"email": "Email",
+						"sms": "SMS",
+						"soon": "soon",
+						"whatsapp": "WhatsApp"
+					},
+					"code": "Verification code",
+					"email": "Email",
+					"errors": {
+						"code": "Invalid code. Please try again.",
+						"magicLink": "This link is invalid or has expired.",
+						"send": "Couldn't send the code. Please try again."
+					},
+					"linkSent": "We've sent a sign-in link to {{email}}. Check your inbox.",
+					"phone": "Mobile phone",
+					"sendCode": "Send code",
+					"sending": "Sending…",
+					"sendLink": "Send link",
+					"subtitle": "Enter your email and mobile phone to sign in without a password.",
+					"title": "Identification",
+					"verify": "Verify",
+					"verifying": "Verifying…"
+				}
 			},
 			"chooseUnit": {
 				"empty": "No units available yet.",

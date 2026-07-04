@@ -2,6 +2,7 @@ import path from "node:path";
 import { MailProvidersEnum } from "@hyoretsu/providers";
 import { Value } from "@sinclair/typebox/value";
 import { t, type UnwrapSchema } from "elysia";
+import { PhoneOtpProvidersEnum } from "@/shared/infra/phoneOtp";
 import { NodeEnv } from "@/shared/types";
 
 const defaultPort = "3333";
@@ -42,6 +43,7 @@ export const envSchema = t.Object({
 			default: NodeEnv.Production,
 		}),
 	),
+	PHONE_OTP_DRIVER: t.Enum(PhoneOtpProvidersEnum, { default: PhoneOtpProvidersEnum.CONSOLE }),
 	PORT: t.Optional(t.Numeric({ default: defaultPort })),
 	RESEND_API_KEY: t.Optional(t.String()),
 	S3_ACCESS_KEY_ID: t.Optional(t.String()),
@@ -57,6 +59,9 @@ export const envSchema = t.Object({
 			default: path.resolve(__dirname, "..", "static"),
 		}),
 	),
+	TWILIO_ACCOUNT_SID: t.Optional(t.String()),
+	TWILIO_AUTH_TOKEN: t.Optional(t.String()),
+	TWILIO_FROM_NUMBER: t.Optional(t.String()),
 });
 
 declare global {

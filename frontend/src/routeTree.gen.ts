@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as UnitIdIndexRouteImport } from './routes/$unitId/index'
+import { Route as IdentifyMagicLinkIndexRouteImport } from './routes/identify/magic-link/index'
 import { Route as AdminUnitsIndexRouteImport } from './routes/admin/units/index'
 import { Route as AdminTagsIndexRouteImport } from './routes/admin/tags/index'
 import { Route as AdminStaffIndexRouteImport } from './routes/admin/staff/index'
@@ -40,6 +41,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const UnitIdIndexRoute = UnitIdIndexRouteImport.update({
   id: '/$unitId/',
   path: '/$unitId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdentifyMagicLinkIndexRoute = IdentifyMagicLinkIndexRouteImport.update({
+  id: '/identify/magic-link/',
+  path: '/identify/magic-link/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUnitsIndexRoute = AdminUnitsIndexRouteImport.update({
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/admin/staff/': typeof AdminStaffIndexRoute
   '/admin/tags/': typeof AdminTagsIndexRoute
   '/admin/units/': typeof AdminUnitsIndexRoute
+  '/identify/magic-link/': typeof IdentifyMagicLinkIndexRoute
   '/admin/units/$unitId/products/': typeof AdminUnitsUnitIdProductsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/admin/staff': typeof AdminStaffIndexRoute
   '/admin/tags': typeof AdminTagsIndexRoute
   '/admin/units': typeof AdminUnitsIndexRoute
+  '/identify/magic-link': typeof IdentifyMagicLinkIndexRoute
   '/admin/units/$unitId/products': typeof AdminUnitsUnitIdProductsIndexRoute
 }
 export interface FileRoutesById {
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/admin/staff/': typeof AdminStaffIndexRoute
   '/admin/tags/': typeof AdminTagsIndexRoute
   '/admin/units/': typeof AdminUnitsIndexRoute
+  '/identify/magic-link/': typeof IdentifyMagicLinkIndexRoute
   '/admin/units/$unitId/products/': typeof AdminUnitsUnitIdProductsIndexRoute
 }
 export interface FileRouteTypes {
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/admin/staff/'
     | '/admin/tags/'
     | '/admin/units/'
+    | '/identify/magic-link/'
     | '/admin/units/$unitId/products/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/admin/staff'
     | '/admin/tags'
     | '/admin/units'
+    | '/identify/magic-link'
     | '/admin/units/$unitId/products'
   id:
     | '__root__'
@@ -169,6 +180,7 @@ export interface FileRouteTypes {
     | '/admin/staff/'
     | '/admin/tags/'
     | '/admin/units/'
+    | '/identify/magic-link/'
     | '/admin/units/$unitId/products/'
   fileRoutesById: FileRoutesById
 }
@@ -184,6 +196,7 @@ export interface RootRouteChildren {
   AdminStaffIndexRoute: typeof AdminStaffIndexRoute
   AdminTagsIndexRoute: typeof AdminTagsIndexRoute
   AdminUnitsIndexRoute: typeof AdminUnitsIndexRoute
+  IdentifyMagicLinkIndexRoute: typeof IdentifyMagicLinkIndexRoute
   AdminUnitsUnitIdProductsIndexRoute: typeof AdminUnitsUnitIdProductsIndexRoute
 }
 
@@ -215,6 +228,13 @@ declare module '@tanstack/react-router' {
       path: '/$unitId'
       fullPath: '/$unitId/'
       preLoaderRoute: typeof UnitIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/identify/magic-link/': {
+      id: '/identify/magic-link/'
+      path: '/identify/magic-link'
+      fullPath: '/identify/magic-link/'
+      preLoaderRoute: typeof IdentifyMagicLinkIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/units/': {
@@ -288,6 +308,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminStaffIndexRoute: AdminStaffIndexRoute,
   AdminTagsIndexRoute: AdminTagsIndexRoute,
   AdminUnitsIndexRoute: AdminUnitsIndexRoute,
+  IdentifyMagicLinkIndexRoute: IdentifyMagicLinkIndexRoute,
   AdminUnitsUnitIdProductsIndexRoute: AdminUnitsUnitIdProductsIndexRoute,
 }
 export const routeTree = rootRouteImport
