@@ -1,7 +1,7 @@
 import Elysia, { t } from "elysia";
 import { AuthGuard } from "@/modules/users/guards";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
-import { CreatePaymentIntentBody, PaymentIntentReturn } from "../../dtos";
+import { CreatePaymentIntentBody, PaymentIntentReturn, WebhookBody } from "../../dtos";
 import { ConfirmPayment, CreatePaymentIntent } from "../../useCases";
 
 const backendUrl = process.env.BACKEND_URL ?? "http://localhost:3000";
@@ -12,6 +12,7 @@ export const PaymentsController = new Elysia({ detail: { tags: ["Payments"] } })
 		app
 			.decorate(({ prisma, ...injected }) => ({
 				...injected,
+				confirmPayment: new ConfirmPayment(prisma),
 				createPaymentIntent: new CreatePaymentIntent(prisma, backendUrl),
 				prisma,
 			}))
@@ -22,6 +23,14 @@ export const PaymentsController = new Elysia({ detail: { tags: ["Payments"] } })
 					return createPaymentIntent.execute(userId, body);
 				},
 				{ body: CreatePaymentIntentBody, response: PaymentIntentReturn },
+			)
+			.post(
+				"/webhook",
+				async ({ body, confirmPayment }) => {
+					await confirmPayment.execute(body.token);
+					return new Response(null, { status: 204 });
+				},
+				{ body: WebhookBody },
 			),
 	)
 	.group("/pay", app =>

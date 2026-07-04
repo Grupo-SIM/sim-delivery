@@ -11,3 +11,8 @@ export const PaymentIntentReturn = t.Object({
 	token: t.String(),
 });
 export type PaymentIntentReturn = typeof PaymentIntentReturn.static;
+
+export const WebhookBody = t.Object({
+	token: t.String({ minLength: 1 }),
+});
+export type WebhookBody = typeof WebhookBody.static;
