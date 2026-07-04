@@ -4,6 +4,7 @@ import { CepController } from "./modules/cep/infra";
 import { CompaniesController } from "./modules/companies/infra";
 import { CustomersController } from "./modules/customers/infra";
 import { ExampleController } from "./modules/example/infra";
+import { OrdersController } from "./modules/orders/infra";
 import { ProductsController } from "./modules/products/infra";
 import { StaffController } from "./modules/staff/infra";
 import { TagsController } from "./modules/tags/infra";
@@ -27,4 +28,5 @@ export const server = app.use([
 	UnitProductsController,
 	CepController,
 	CustomersController,
+	OrdersController,
 ]);

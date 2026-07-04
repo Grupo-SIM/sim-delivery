@@ -30,6 +30,7 @@ model Unit {
     company  Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
     hours    UnitHours[]
     products UnitProduct[]
+    orders   Order[]
 
     @@index([companyId])
     @@map("unit")

@@ -1,25 +1,38 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import {
+	type PostCustomersMe200,
 	getCustomersMeQueryOptions,
 	usePostCustomersMe,
+	usePostOrders,
 } from "@/lib/api";
 import { variantKey } from "@/lib/variant";
-import { showAlert, useAuthStore } from "@/stores";
-import { useQuery } from "@tanstack/react-query";
-import { AddressForm, IdentifyForm, ProfileForm, type AddressValue, type ProfileValue } from "./components";
+import { cartTotalCents, showAlert, useAuthStore, useCartStore } from "@/stores";
+import { AddressForm, IdentifyForm, OrderReview, ProfileForm, type AddressValue, type DeliveryMethod, type ProfileValue } from "./components";
 
-type Step = "identify" | "profile" | "address";
+type Step = "identify" | "profile" | "address" | "review";
 
 function CheckoutPage() {
 	const { t } = useTranslation();
+	const navigate = useNavigate();
 	const { unitId } = Route.useParams();
-	const { isAuthenticated: identified, user } = useAuthStore(state => ({ isAuthenticated: state.isAuthenticated, user: state.user }));
+	const { isAuthenticated: identified, user } = useAuthStore(state => ({
+		isAuthenticated: state.isAuthenticated,
+		user: state.user,
+	}));
+	const cartItems = useCartStore(state => state.items);
+	const clearCart = useCartStore(state => state.clear);
+
 	const [profileValue, setProfileValue] = useState<ProfileValue | null>(null);
-	const { mutate: saveCustomer, isPending } = usePostCustomersMe();
+	const [savedCustomer, setSavedCustomer] = useState<PostCustomersMe200 | null>(null);
+	const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("delivery");
+
+	const { mutate: saveCustomer, isPending: isSavingCustomer } = usePostCustomersMe();
+	const { mutate: placeOrder, isPending: isPlacingOrder } = usePostOrders();
 
 	const { data: existingCustomer, isLoading: loadingCustomer } = useQuery({
 		...getCustomersMeQueryOptions({ variantKey: variantKey ?? "" }),
@@ -28,17 +41,23 @@ function CheckoutPage() {
 
 	const step: Step = !identified
 		? "identify"
-		: existingCustomer === undefined && loadingCustomer
+		: identified && loadingCustomer
 			? "identify"
-			: existingCustomer === null && profileValue === null
+			: existingCustomer === null && profileValue === null && savedCustomer === null
 				? "profile"
-				: "address";
+				: savedCustomer === null && existingCustomer === null
+					? "address"
+					: savedCustomer !== null || existingCustomer !== null
+						? savedCustomer === null && existingCustomer !== null
+							? "address"
+							: "review"
+						: "address";
+
+	const activeCustomer = savedCustomer ?? existingCustomer ?? null;
+	const savedAddress = activeCustomer?.addresses[0] ?? null;
 
 	function handleAddressSubmit(address: AddressValue) {
-		const profile = profileValue ?? {
-			cpf: existingCustomer?.cpf ?? "",
-			name: user?.name ?? "",
-		};
+		const profile = profileValue ?? { cpf: existingCustomer?.cpf ?? "", name: user?.name ?? "" };
 		saveCustomer(
 			{
 				data: {
@@ -59,7 +78,35 @@ function CheckoutPage() {
 			},
 			{
 				onError: () => void showAlert(t("store.checkout.profile.error")),
-				onSuccess: () => void showAlert(t("store.checkout.address.saved")),
+				onSuccess: data => setSavedCustomer(data),
+			},
+		);
+	}
+
+	function handlePlaceOrder() {
+		if (!activeCustomer || cartItems.length === 0) return;
+		placeOrder(
+			{
+				data: {
+					addressId: savedAddress?.id,
+					deliveryMethod,
+					items: cartItems.map(item => ({
+						note: item.note || undefined,
+						quantity: item.quantity,
+						unitProductId: item.id,
+					})),
+					unitId,
+					variantKey: variantKey ?? "",
+				},
+			},
+			{
+				onError: () => void showAlert(t("store.checkout.order.error")),
+				onSuccess: () => {
+					clearCart();
+					void showAlert(t("store.checkout.order.success")).then(() => {
+						void navigate({ params: { unitId }, to: "/$unitId" });
+					});
+				},
 			},
 		);
 	}
@@ -87,9 +134,9 @@ function CheckoutPage() {
 						title={t("store.checkout.profile.title")}
 					/>
 					<ProfileForm
-					initialName={user?.name?.startsWith("+") ? "" : (user?.name ?? "")}
-					onSubmit={value => setProfileValue(value)}
-				/>
+						initialName={user?.name?.startsWith("+") ? "" : (user?.name ?? "")}
+						onSubmit={value => setProfileValue(value)}
+					/>
 				</>
 			)}
 
@@ -99,9 +146,25 @@ function CheckoutPage() {
 						subtitle={t("store.checkout.address.subtitle")}
 						title={t("store.checkout.address.title")}
 					/>
-					<AddressForm
-						disabled={isPending}
-						onSubmit={handleAddressSubmit}
+					<AddressForm disabled={isSavingCustomer} onSubmit={handleAddressSubmit} />
+				</>
+			)}
+
+			{step === "review" && (
+				<>
+					<SectionHeading
+						subtitle={t("store.checkout.order.subtitle")}
+						title={t("store.checkout.order.title")}
+					/>
+					<OrderReview
+						address={savedAddress}
+						deliveryMethod={deliveryMethod}
+						isPending={isPlacingOrder}
+						items={cartItems}
+						onChangeDeliveryMethod={setDeliveryMethod}
+						onSubmit={handlePlaceOrder}
+						subtotal={cartTotalCents(cartItems)}
+						unitDeliveryFee={0}
 					/>
 				</>
 			)}

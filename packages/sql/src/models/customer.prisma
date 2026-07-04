@@ -13,6 +13,7 @@ model Customer {
     company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
     user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
     addresses Address[]
+    orders    Order[]
 
     @@unique([companyId, cpf])
     @@index([companyId])

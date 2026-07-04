@@ -11,6 +11,7 @@ model Company {
 
     categories Category[]
     customers  Customer[]
+    orders     Order[]
     products   Product[]
     tags       Tag[]
     units      Unit[]

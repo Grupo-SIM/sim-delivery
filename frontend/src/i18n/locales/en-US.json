@@ -401,6 +401,17 @@
 					"verify": "Verify",
 					"verifying": "Verifying…"
 				},
+				"order": {
+					"deliveryMethod": "Delivery method",
+					"delivery": "Delivery",
+					"error": "Could not place your order. Please try again.",
+					"pickup": "Pickup",
+					"place": "Place order",
+					"placing": "Placing order…",
+					"subtitle": "Review your order before confirming.",
+					"success": "Order placed! We'll get started right away.",
+					"title": "Order summary"
+				},
 				"profile": {
 					"cpf": "CPF (optional)",
 					"cpfPlaceholder": "000.000.000-00",
