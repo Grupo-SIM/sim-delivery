@@ -403,15 +403,23 @@
 					"verifying": "Verifying…"
 				},
 				"order": {
+					"coupon": "Discount coupon",
+					"couponApply": "Apply",
+					"couponApplying": "Applying…",
+					"couponError": "Invalid or inapplicable coupon.",
+					"couponPlaceholder": "PROMO10",
+					"couponRemove": "Remove",
 					"deliveryMethod": "Delivery method",
 					"delivery": "Delivery",
+					"discount": "Discount",
 					"error": "Could not place your order. Please try again.",
 					"pickup": "Pickup",
 					"place": "Place order",
 					"placing": "Placing order…",
 					"subtitle": "Review your order before confirming.",
 					"success": "Order placed! We'll get started right away.",
-					"title": "Order summary"
+					"title": "Order summary",
+					"total": "Total"
 				},
 				"profile": {
 					"cpf": "CPF (optional)",

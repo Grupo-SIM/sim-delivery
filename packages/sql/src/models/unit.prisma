@@ -28,6 +28,7 @@ model Unit {
     updatedAt       DateTime @updatedAt
 
     company  Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    coupons  Coupon[]
     hours    UnitHours[]
     products UnitProduct[]
     orders   Order[]

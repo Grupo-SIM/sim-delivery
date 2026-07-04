@@ -1,6 +1,7 @@
 import { mkdir } from "node:fs/promises";
 import { CategoriesController } from "./modules/categories/infra";
 import { CepController } from "./modules/cep/infra";
+import { CouponsController } from "./modules/coupons/infra";
 import { CompaniesController } from "./modules/companies/infra";
 import { CustomersController } from "./modules/customers/infra";
 import { ExampleController } from "./modules/example/infra";
@@ -27,6 +28,7 @@ export const server = app.use([
 	ProductsController,
 	UnitProductsController,
 	CepController,
+	CouponsController,
 	CustomersController,
 	OrdersController,
 ]);

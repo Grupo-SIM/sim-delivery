@@ -10,6 +10,7 @@ model Company {
     updatedAt  DateTime @updatedAt
 
     categories Category[]
+    coupons    Coupon[]
     customers  Customer[]
     orders     Order[]
     products   Product[]

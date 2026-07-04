@@ -1,36 +1,73 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { formatMoney } from "@/lib/formatMoney";
-import type { PostCustomersMe200 } from "@/lib/api";
+import { postPublicCouponsValidate, type PostCustomersMe200, type PostPublicCouponsValidate200 } from "@/lib/api";
 import type { CartItem } from "@/stores";
 
 export type DeliveryMethod = "delivery" | "pickup";
 type Address = PostCustomersMe200["addresses"][number];
 
+export type AppliedCoupon = PostPublicCouponsValidate200 & { code: string };
+
 interface OrderReviewProps {
 	address: Address | null;
+	appliedCoupon: AppliedCoupon | null;
 	deliveryMethod: DeliveryMethod;
 	items: CartItem[];
 	isPending: boolean;
 	onChangeDeliveryMethod: (method: DeliveryMethod) => void;
+	onSetCoupon: (coupon: AppliedCoupon | null) => void;
 	onSubmit: () => void;
 	subtotal: number;
 	unitDeliveryFee: number;
+	unitId: string;
+	variantKey: string;
 }
 
 export function OrderReview({
 	address,
+	appliedCoupon,
 	deliveryMethod,
 	items,
 	isPending,
 	onChangeDeliveryMethod,
+	onSetCoupon,
 	onSubmit,
 	subtotal,
 	unitDeliveryFee,
+	unitId,
+	variantKey,
 }: OrderReviewProps) {
 	const { t } = useTranslation();
+	const [couponInput, setCouponInput] = useState(appliedCoupon?.code ?? "");
+	const [couponError, setCouponError] = useState<string | null>(null);
+	const [isValidating, setIsValidating] = useState(false);
+
 	const deliveryFee = deliveryMethod === "delivery" ? unitDeliveryFee : 0;
-	const total = subtotal + deliveryFee;
+	const discountCents = appliedCoupon?.discountCents ?? 0;
+	const total = Math.max(0, subtotal + deliveryFee - discountCents);
+
+	async function handleApplyCoupon() {
+		if (!couponInput.trim()) return;
+		setCouponError(null);
+		setIsValidating(true);
+		try {
+			const result = await postPublicCouponsValidate({
+				code: couponInput.trim(),
+				orderSubtotal: subtotal,
+				unitId,
+				variantKey,
+			});
+			onSetCoupon({ ...result, code: couponInput.trim().toUpperCase() });
+		} catch {
+			setCouponError(t("store.checkout.order.couponError"));
+			onSetCoupon(null);
+		} finally {
+			setIsValidating(false);
+		}
+	}
 
 	return (
 		<div className="space-y-4">
@@ -70,15 +107,55 @@ export function OrderReview({
 				</div>
 			)}
 
+			<div className="space-y-2">
+				<span className="font-medium text-sm">{t("store.checkout.order.coupon")}</span>
+				{appliedCoupon ? (
+					<div className="flex items-center justify-between rounded-md border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm">
+						<span className="font-mono font-semibold text-green-700">{appliedCoupon.code}</span>
+						<Button
+							onClick={() => { onSetCoupon(null); setCouponInput(""); }}
+							size="sm"
+							type="button"
+							variant="ghost"
+						>
+							{t("store.checkout.order.couponRemove")}
+						</Button>
+					</div>
+				) : (
+					<div className="flex gap-2">
+						<Input
+							onChange={e => setCouponInput(e.currentTarget.value.toUpperCase())}
+							placeholder={t("store.checkout.order.couponPlaceholder")}
+							value={couponInput}
+						/>
+						<Button
+							disabled={!couponInput.trim() || isValidating}
+							onClick={handleApplyCoupon}
+							type="button"
+							variant="outline"
+						>
+							{isValidating ? t("store.checkout.order.couponApplying") : t("store.checkout.order.couponApply")}
+						</Button>
+					</div>
+				)}
+				{couponError && <p className="text-destructive text-sm">{couponError}</p>}
+			</div>
+
 			<div className="space-y-1 border-border border-t pt-3">
 				{deliveryFee > 0 && (
 					<div className="flex justify-between text-sm">
-						<span className="text-muted-foreground">Frete</span>
+						<span className="text-muted-foreground">{t("store.cart.deliveryFee")}</span>
 						<span>{formatMoney(deliveryFee / 100)}</span>
 					</div>
 				)}
+				{discountCents > 0 && (
+					<div className="flex justify-between text-sm text-green-700">
+						<span>{t("store.checkout.order.discount")}</span>
+						<span>−{formatMoney(discountCents / 100)}</span>
+					</div>
+				)}
 				<div className="flex justify-between font-semibold">
-					<span>Total</span>
+					<span>{t("store.checkout.order.total")}</span>
 					<span>{formatMoney(total / 100)}</span>
 				</div>
 			</div>

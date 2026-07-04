@@ -1,5 +1,6 @@
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
+import { ValidateCoupon } from "@/modules/coupons/useCases";
 import type { CreateOrderBody, OrderReturn } from "../dtos";
 import { OrderErrors } from "../errors";
 
@@ -7,7 +8,7 @@ export class CreateOrder {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(userId: string, data: CreateOrderBody): Promise<OrderReturn> {
-		const { addressId, deliveryMethod, items, unitId, variantKey } = data;
+		const { addressId, couponCode, deliveryMethod, items, unitId, variantKey } = data;
 
 		if (items.length === 0) throw new DomainError(OrderErrors.EMPTY_ORDER);
 
@@ -44,21 +45,44 @@ export class CreateOrder {
 
 		const subtotal = resolvedItems.reduce((sum, i) => sum + i.total, 0);
 		const deliveryFee = deliveryMethod === "delivery" ? unit.deliveryFee : 0;
-		const total = subtotal + deliveryFee;
+
+		let couponId: string | null = null;
+		let discountCents = 0;
+		if (couponCode) {
+			const couponResult = await new ValidateCoupon(this.prisma).execute({
+				code: couponCode,
+				orderSubtotal: subtotal,
+				unitId,
+				variantKey,
+			});
+			couponId = couponResult.couponId;
+			discountCents = couponResult.discountCents;
+		}
+
+		const total = Math.max(0, subtotal + deliveryFee - discountCents);
 
 		const order = await this.prisma.$transaction(async tx => {
 			const created = await tx.order.create({
 				data: {
 					addressId: addressId ?? null,
 					companyId: company.id,
+					couponId,
 					customerId: customer.id,
 					deliveryFee,
 					deliveryMethod,
+					discountCents,
 					subtotal,
 					total,
 					unitId,
 				},
 			});
+
+			if (couponId) {
+				await tx.coupon.update({
+					data: { usedCount: { increment: 1 } },
+					where: { id: couponId },
+				});
+			}
 
 			await tx.orderItem.createMany({
 				data: resolvedItems.map(item => ({ ...item, orderId: created.id })),

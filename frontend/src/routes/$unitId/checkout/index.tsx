@@ -13,7 +13,7 @@ import {
 } from "@/lib/api";
 import { variantKey } from "@/lib/variant";
 import { cartTotalCents, showAlert, useAuthStore, useCartStore } from "@/stores";
-import { AddressForm, IdentifyForm, OrderReview, ProfileForm, type AddressValue, type DeliveryMethod, type ProfileValue } from "./components";
+import { AddressForm, IdentifyForm, OrderReview, ProfileForm, type AppliedCoupon, type AddressValue, type DeliveryMethod, type ProfileValue } from "./components";
 
 type Step = "identify" | "profile" | "address" | "review";
 
@@ -31,6 +31,7 @@ function CheckoutPage() {
 	const [profileValue, setProfileValue] = useState<ProfileValue | null>(null);
 	const [savedCustomer, setSavedCustomer] = useState<PostCustomersMe200 | null>(null);
 	const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("delivery");
+	const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
 
 	const { mutate: saveCustomer, isPending: isSavingCustomer } = usePostCustomersMe();
 	const { mutate: placeOrder, isPending: isPlacingOrder } = usePostOrders();
@@ -93,6 +94,7 @@ function CheckoutPage() {
 			{
 				data: {
 					addressId: savedAddress?.id,
+					couponCode: appliedCoupon?.code,
 					deliveryMethod,
 					items: cartItems.map(item => ({
 						note: item.note || undefined,
@@ -162,13 +164,17 @@ function CheckoutPage() {
 					/>
 					<OrderReview
 						address={savedAddress}
+						appliedCoupon={appliedCoupon}
 						deliveryMethod={deliveryMethod}
 						isPending={isPlacingOrder}
 						items={cartItems}
 						onChangeDeliveryMethod={setDeliveryMethod}
+						onSetCoupon={setAppliedCoupon}
 						onSubmit={handlePlaceOrder}
 						subtotal={cartTotalCents(cartItems)}
 						unitDeliveryFee={unit?.deliveryFee ?? 0}
+						unitId={unitId}
+						variantKey={variantKey ?? ""}
 					/>
 				</>
 			)}
