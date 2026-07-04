@@ -74,6 +74,58 @@
 				"subtitle": "Manage this company's catalog, team, and stores.",
 				"title": "Admin"
 			},
+			"orders": {
+				"columns": {
+					"customer": "Customer",
+					"date": "Date",
+					"method": "Method",
+					"status": "Status",
+					"total": "Total",
+					"unit": "Unit"
+				},
+				"empty": "No orders yet.",
+				"filter": {
+					"all": "All",
+					"date": "Date",
+					"from": "From",
+					"to": "To",
+					"unit": "Unit",
+					"unitAll": "All units"
+				},
+				"items": "{{count}} item(s)",
+				"loadError": "Could not load orders.",
+				"status": {
+					"all": "All",
+					"awaiting_payment": "Awaiting payment",
+					"cancelado": "Cancelled",
+					"em_preparo": "Preparing",
+					"entregue": "Delivered",
+					"pronto": "Ready",
+					"recebido": "Received",
+					"retirado": "Picked up",
+					"saiu_para_entrega": "Out for delivery"
+				},
+				"subtitle": "Orders for this company.",
+				"title": "Orders",
+				"updateStatus": {
+					"action": "Update status",
+					"cancel": "Cancel",
+					"cancelReason": "Reason for cancellation",
+					"cancelReasonPlaceholder": "Ex: Customer requested cancellation",
+					"error": "Could not update the status.",
+					"next": {
+						"cancelado": "Cancel order",
+						"em_preparo": "Start preparing",
+						"entregue": "Mark as delivered",
+						"pronto": "Mark as ready",
+						"retirado": "Mark as picked up",
+						"saiu_para_entrega": "Out for delivery"
+					},
+					"save": "Update",
+					"saving": "Updating...",
+					"title": "Update order status"
+				}
+			},
 			"products": {
 				"columns": {
 					"cashback": "Cashback",

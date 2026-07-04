@@ -1,8 +1,8 @@
 import Elysia from "elysia";
-import { AuthGuard } from "@/modules/users/guards";
+import { AuthGuard, CompanyScopeGuard } from "@/modules/users/guards";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
-import { CreateOrderBody, OrderReturn } from "../../dtos";
-import { CreateOrder } from "../../useCases";
+import { AdminOrderListReturn, CreateOrderBody, ListOrdersQuery, OrderReturn, UpdateOrderStatusBody } from "../../dtos";
+import { CreateOrder, ListOrders, UpdateOrderStatus } from "../../useCases";
 
 export const OrdersController = new Elysia({
 	detail: { tags: ["Orders"] },
@@ -13,8 +13,19 @@ export const OrdersController = new Elysia({
 			.decorate(({ prisma, ...injected }) => ({
 				...injected,
 				createOrder: new CreateOrder(prisma),
+				listOrders: new ListOrders(prisma),
 				prisma,
+				updateOrderStatus: new UpdateOrderStatus(prisma),
 			}))
+			.get(
+				"/",
+				async ({ listOrders, query, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "orders", "read");
+					return listOrders.execute(scope.companyId, query);
+				},
+				{ query: ListOrdersQuery, response: AdminOrderListReturn },
+			)
 			.post(
 				"/",
 				async ({ body, createOrder, request }) => {
@@ -22,5 +33,14 @@ export const OrdersController = new Elysia({
 					return createOrder.execute(userId, body);
 				},
 				{ body: CreateOrderBody, response: OrderReturn },
+			)
+			.patch(
+				"/:orderId/status",
+				async ({ body, params, request, updateOrderStatus }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "orders", "updateStatus");
+					return updateOrderStatus.execute(scope.companyId, params.orderId, body);
+				},
+				{ body: UpdateOrderStatusBody, response: OrderReturn },
 			),
 	);

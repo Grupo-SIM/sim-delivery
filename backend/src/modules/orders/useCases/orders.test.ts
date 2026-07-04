@@ -1,6 +1,8 @@
 import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { CreateOrder } from "./CreateOrder";
+import { UpdateOrderStatus } from "./UpdateOrderStatus";
+import { ListOrders } from "./ListOrders";
 
 const baseCompany = { id: "cmp_1", variantKey: "demo" };
 const baseUnit = { id: "unit_1", companyId: "cmp_1", deliveryFee: 500 };
@@ -145,5 +147,110 @@ describe("CreateOrder", () => {
 		const { orders, prisma } = makeOrderPrisma();
 		await new CreateOrder(prisma).execute("user_1", { ...baseBody, deliveryMethod: "pickup" });
 		expect(orders[0]).toMatchObject({ deliveryFee: 0, total: 2000 });
+	});
+});
+
+function makeUpdateStatusPrisma(order: { id: string; companyId: string; status: string }) {
+	const stored = { ...order, cancelReason: null, items: [] };
+
+	const prisma = {
+		order: {
+			findFirst: async ({ where }: { where: { companyId: string; id: string } }) =>
+				stored.companyId === where.companyId && stored.id === where.id ? stored : null,
+			update: async ({ data }: { data: object }) => {
+				Object.assign(stored, data);
+				return { ...stored };
+			},
+		},
+	} as unknown as PrismaInstance;
+
+	return { stored, prisma };
+}
+
+describe("UpdateOrderStatus", () => {
+	it("transitions recebido → em_preparo", async () => {
+		const { stored, prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
+		await new UpdateOrderStatus(prisma).execute("cmp_1", "ord_1", { status: "em_preparo" });
+		expect(stored.status).toBe("em_preparo");
+	});
+
+	it("throws ORDER_NOT_FOUND for wrong companyId", async () => {
+		const { prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
+		await expect(
+			new UpdateOrderStatus(prisma).execute("cmp_2", "ord_1", { status: "em_preparo" }),
+		).rejects.toThrow("ORDER_NOT_FOUND");
+	});
+
+	it("throws INVALID_TRANSITION for illegal transition", async () => {
+		const { prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
+		await expect(
+			new UpdateOrderStatus(prisma).execute("cmp_1", "ord_1", { status: "entregue" }),
+		).rejects.toThrow("INVALID_TRANSITION");
+	});
+
+	it("throws INVALID_TRANSITION when order is terminal", async () => {
+		const { prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "cancelado" });
+		await expect(
+			new UpdateOrderStatus(prisma).execute("cmp_1", "ord_1", { status: "em_preparo" }),
+		).rejects.toThrow("INVALID_TRANSITION");
+	});
+
+	it("throws CANCEL_REASON_REQUIRED when cancelling without reason", async () => {
+		const { prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
+		await expect(
+			new UpdateOrderStatus(prisma).execute("cmp_1", "ord_1", { status: "cancelado" }),
+		).rejects.toThrow("CANCEL_REASON_REQUIRED");
+	});
+
+	it("cancels with reason", async () => {
+		const { stored, prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
+		await new UpdateOrderStatus(prisma).execute("cmp_1", "ord_1", { status: "cancelado", cancelReason: "Cliente desistiu" });
+		expect(stored.status).toBe("cancelado");
+		expect(stored.cancelReason).toBe("Cliente desistiu");
+	});
+});
+
+function makeListOrdersPrisma() {
+	const baseUser = { id: "user_1", name: "Maria" };
+	const baseCustomer = { id: "cust_1", companyId: "cmp_1", userId: "user_1", phone: "11999999999", user: baseUser };
+	const baseUnit = { id: "unit_1", companyId: "cmp_1", name: "Centro" };
+	const order1 = {
+		id: "ord_1",
+		companyId: "cmp_1",
+		customerId: "cust_1",
+		unitId: "unit_1",
+		status: "recebido",
+		addressId: null,
+		cancelReason: null,
+		cashbackCentsRedeemed: 0,
+		couponId: null,
+		createdAt: new Date("2024-01-01"),
+		deliveryFee: 500,
+		deliveryMethod: "delivery",
+		discountCents: 0,
+		loyaltyPointsRedeemed: 0,
+		subtotal: 2000,
+		total: 2500,
+		updatedAt: new Date("2024-01-01"),
+		items: [],
+		customer: baseCustomer,
+		unit: baseUnit,
+	};
+
+	const prisma = {
+		order: {
+			findMany: async () => [order1],
+		},
+	} as unknown as PrismaInstance;
+
+	return { order1, prisma };
+}
+
+describe("ListOrders", () => {
+	it("returns orders with customer and unit names", async () => {
+		const { prisma } = makeListOrdersPrisma();
+		const result = await new ListOrders(prisma).execute("cmp_1", {});
+		expect(result).toHaveLength(1);
+		expect(result[0]).toMatchObject({ customerName: "Maria", unitName: "Centro" });
 	});
 });
