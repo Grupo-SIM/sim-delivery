@@ -22,6 +22,8 @@ model Unit {
     deliveryFee     Int      @default(0)
     /// Default cashback percentage granted on orders from this unit (docs/09).
     cashbackPercent Float    @default(0)
+    /// Loyalty points rate: points earned per 100 cents spent on this unit (0 = disabled).
+    loyaltyPointsRate Float  @default(0)
     /// Manual open/closed override. Null = follow the weekly hours (docs/04).
     isOpenManual    Boolean?
     createdAt       DateTime @default(now())

@@ -9,6 +9,7 @@ import {
 	getCustomersMeQueryOptions,
 	getPublicUnitsQueryOptions,
 	useGetCashbackMe,
+	useGetLoyaltyMe,
 	usePostCustomersMe,
 	usePostOrders,
 } from "@/lib/api";
@@ -34,6 +35,7 @@ function CheckoutPage() {
 	const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("delivery");
 	const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
 	const [cashbackRedeemCents, setCashbackRedeemCents] = useState(0);
+	const [loyaltyRedeemPoints, setLoyaltyRedeemPoints] = useState(0);
 
 	const { mutate: saveCustomer, isPending: isSavingCustomer } = usePostCustomersMe();
 	const { mutate: placeOrder, isPending: isPlacingOrder } = usePostOrders();
@@ -50,7 +52,13 @@ function CheckoutPage() {
 		{ variantKey: variantKey ?? "" },
 		{ query: { enabled: identified && !!variantKey } },
 	);
-	const cashbackBalanceCents = cashbackData?.balanceCents ?? 0;
+	const cashbackBalanceCents = Number(cashbackData?.balanceCents ?? 0);
+
+	const { data: loyaltyData } = useGetLoyaltyMe(
+		{ variantKey: variantKey ?? "" },
+		{ query: { enabled: identified && !!variantKey } },
+	);
+	const loyaltyBalancePoints = Number(loyaltyData?.balancePoints ?? 0);
 
 	const step: Step = !identified
 		? "identify"
@@ -105,6 +113,7 @@ function CheckoutPage() {
 					couponCode: appliedCoupon?.code,
 					deliveryMethod,
 					redeemCashbackCents: cashbackRedeemCents > 0 ? cashbackRedeemCents : undefined,
+					redeemLoyaltyPoints: loyaltyRedeemPoints > 0 ? loyaltyRedeemPoints : undefined,
 					items: cartItems.map(item => ({
 						note: item.note || undefined,
 						quantity: item.quantity,
@@ -179,12 +188,15 @@ function CheckoutPage() {
 						deliveryMethod={deliveryMethod}
 						isPending={isPlacingOrder}
 						items={cartItems}
+						loyaltyBalancePoints={loyaltyBalancePoints}
+						loyaltyRedeemPoints={loyaltyRedeemPoints}
 						onChangeCashbackRedeem={setCashbackRedeemCents}
 						onChangeDeliveryMethod={setDeliveryMethod}
+						onChangeLoyaltyRedeem={setLoyaltyRedeemPoints}
 						onSetCoupon={setAppliedCoupon}
 						onSubmit={handlePlaceOrder}
 						subtotal={cartTotalCents(cartItems)}
-						unitDeliveryFee={unit?.deliveryFee ?? 0}
+						unitDeliveryFee={Number(unit?.deliveryFee ?? 0)}
 						unitId={unitId}
 						variantKey={variantKey ?? ""}
 					/>

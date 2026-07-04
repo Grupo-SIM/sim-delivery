@@ -13,6 +13,7 @@ model Order {
     deliveryFee           Int      @default(0)
     discountCents         Int      @default(0)
     cashbackCentsRedeemed Int      @default(0)
+    loyaltyPointsRedeemed Int      @default(0)
     total                 Int
     /// "delivery" or "pickup"
     deliveryMethod String
@@ -26,6 +27,7 @@ model Order {
     address         Address?         @relation(fields: [addressId], references: [id])
     coupon          Coupon?          @relation(fields: [couponId], references: [id])
     cashbackLedger  CashbackLedger[]
+    loyaltyLedger   LoyaltyLedger[]
     items           OrderItem[]
 
     @@index([companyId, status])

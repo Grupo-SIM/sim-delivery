@@ -1,0 +1,17 @@
+/// Loyalty points ledger entry for a customer. Positive = earned, negative = redeemed.
+model LoyaltyLedger {
+    id         String   @id @default(cuid())
+    customerId String
+    orderId    String
+    /// Points. Positive = earned; negative = redeemed.
+    amount     Int
+    /// "earn" | "redemption"
+    type       String
+    createdAt  DateTime @default(now())
+
+    customer Customer @relation(fields: [customerId], references: [id])
+    order    Order    @relation(fields: [orderId], references: [id])
+
+    @@index([customerId])
+    @@map("loyalty_ledger")
+}

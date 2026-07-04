@@ -3,6 +3,8 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import { ValidateCoupon } from "@/modules/coupons/useCases";
 import { GetCashbackBalance } from "@/modules/cashback/useCases";
 import { CashbackErrors } from "@/modules/cashback/errors";
+import { GetLoyaltyBalance } from "@/modules/loyalty/useCases";
+import { LoyaltyErrors } from "@/modules/loyalty/errors";
 import type { CreateOrderBody, OrderReturn } from "../dtos";
 import { OrderErrors } from "../errors";
 
@@ -10,7 +12,7 @@ export class CreateOrder {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(userId: string, data: CreateOrderBody): Promise<OrderReturn> {
-		const { addressId, couponCode, deliveryMethod, items, redeemCashbackCents, unitId, variantKey } = data;
+		const { addressId, couponCode, deliveryMethod, items, redeemCashbackCents, redeemLoyaltyPoints, unitId, variantKey } = data;
 
 		if (items.length === 0) throw new DomainError(OrderErrors.EMPTY_ORDER);
 
@@ -68,7 +70,14 @@ export class CreateOrder {
 			cashbackCentsRedeemed = redeemCashbackCents;
 		}
 
-		const total = Math.max(0, subtotal + deliveryFee - discountCents - cashbackCentsRedeemed);
+		let loyaltyPointsRedeemed = 0;
+		if (redeemLoyaltyPoints && redeemLoyaltyPoints > 0) {
+			const { balancePoints } = await new GetLoyaltyBalance(this.prisma).execute(userId, variantKey);
+			if (redeemLoyaltyPoints > balancePoints) throw new DomainError(LoyaltyErrors.INSUFFICIENT_BALANCE);
+			loyaltyPointsRedeemed = redeemLoyaltyPoints;
+		}
+
+		const total = Math.max(0, subtotal + deliveryFee - discountCents - cashbackCentsRedeemed - loyaltyPointsRedeemed);
 
 		const order = await this.prisma.$transaction(async tx => {
 			const created = await tx.order.create({
@@ -81,6 +90,7 @@ export class CreateOrder {
 					deliveryFee,
 					deliveryMethod,
 					discountCents,
+					loyaltyPointsRedeemed,
 					subtotal,
 					total,
 					unitId,
@@ -98,6 +108,17 @@ export class CreateOrder {
 				await tx.cashbackLedger.create({
 					data: {
 						amount: -cashbackCentsRedeemed,
+						customerId: customer.id,
+						orderId: created.id,
+						type: "redemption",
+					},
+				});
+			}
+
+			if (loyaltyPointsRedeemed > 0) {
+				await tx.loyaltyLedger.create({
+					data: {
+						amount: -loyaltyPointsRedeemed,
 						customerId: customer.id,
 						orderId: created.id,
 						type: "redemption",

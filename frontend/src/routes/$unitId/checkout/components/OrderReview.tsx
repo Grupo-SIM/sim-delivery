@@ -19,8 +19,11 @@ interface OrderReviewProps {
 	deliveryMethod: DeliveryMethod;
 	items: CartItem[];
 	isPending: boolean;
+	loyaltyBalancePoints: number;
+	loyaltyRedeemPoints: number;
 	onChangeDeliveryMethod: (method: DeliveryMethod) => void;
 	onChangeCashbackRedeem: (cents: number) => void;
+	onChangeLoyaltyRedeem: (points: number) => void;
 	onSetCoupon: (coupon: AppliedCoupon | null) => void;
 	onSubmit: () => void;
 	subtotal: number;
@@ -37,8 +40,11 @@ export function OrderReview({
 	deliveryMethod,
 	items,
 	isPending,
+	loyaltyBalancePoints,
+	loyaltyRedeemPoints,
 	onChangeDeliveryMethod,
 	onChangeCashbackRedeem,
+	onChangeLoyaltyRedeem,
 	onSetCoupon,
 	onSubmit,
 	subtotal,
@@ -52,8 +58,8 @@ export function OrderReview({
 	const [isValidating, setIsValidating] = useState(false);
 
 	const deliveryFee = deliveryMethod === "delivery" ? unitDeliveryFee : 0;
-	const discountCents = appliedCoupon?.discountCents ?? 0;
-	const total = Math.max(0, subtotal + deliveryFee - discountCents - cashbackRedeemCents);
+	const discountCents = Number(appliedCoupon?.discountCents ?? 0);
+	const total = Math.max(0, subtotal + deliveryFee - discountCents - cashbackRedeemCents - loyaltyRedeemPoints);
 
 	async function handleApplyCoupon() {
 		if (!couponInput.trim()) return;
@@ -170,6 +176,29 @@ export function OrderReview({
 				</div>
 			)}
 
+			{loyaltyBalancePoints > 0 && (
+				<div className="space-y-2">
+					<span className="font-medium text-sm">{t("store.checkout.order.loyalty")}</span>
+					<div className="flex items-center justify-between rounded-md border border-border bg-muted/30 px-3 py-2 text-sm">
+						<span className="text-muted-foreground">
+							{t("store.checkout.order.loyaltyBalance", { points: loyaltyBalancePoints, amount: formatMoney(loyaltyBalancePoints / 100) })}
+						</span>
+						<Button
+							onClick={() =>
+								onChangeLoyaltyRedeem(loyaltyRedeemPoints > 0 ? 0 : loyaltyBalancePoints)
+							}
+							size="sm"
+							type="button"
+							variant={loyaltyRedeemPoints > 0 ? "default" : "outline"}
+						>
+							{loyaltyRedeemPoints > 0
+								? t("store.checkout.order.loyaltyRemove")
+								: t("store.checkout.order.loyaltyUse")}
+						</Button>
+					</div>
+				</div>
+			)}
+
 			<div className="space-y-1 border-border border-t pt-3">
 				{deliveryFee > 0 && (
 					<div className="flex justify-between text-sm">
@@ -187,6 +216,12 @@ export function OrderReview({
 					<div className="flex justify-between text-sm text-green-700">
 						<span>{t("store.checkout.order.cashbackRedeemed")}</span>
 						<span>−{formatMoney(cashbackRedeemCents / 100)}</span>
+					</div>
+				)}
+				{loyaltyRedeemPoints > 0 && (
+					<div className="flex justify-between text-sm text-green-700">
+						<span>{t("store.checkout.order.loyaltyRedeemed")}</span>
+						<span>−{formatMoney(loyaltyRedeemPoints / 100)}</span>
 					</div>
 				)}
 				<div className="flex justify-between font-semibold">

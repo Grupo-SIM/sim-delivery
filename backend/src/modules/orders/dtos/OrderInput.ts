@@ -13,6 +13,7 @@ export const CreateOrderBody = t.Object({
 	deliveryMethod: t.Union([t.Literal("delivery"), t.Literal("pickup")]),
 	items: t.Array(CreateOrderItemBody, { minItems: 1 }),
 	redeemCashbackCents: t.Optional(t.Integer({ minimum: 0 })),
+	redeemLoyaltyPoints: t.Optional(t.Integer({ minimum: 0 })),
 	unitId: t.String({ minLength: 1 }),
 	variantKey: t.String({ minLength: 1 }),
 });
