@@ -403,6 +403,11 @@
 					"verifying": "Verifying…"
 				},
 				"order": {
+					"cashback": "Cashback balance",
+					"cashbackBalance": "Available: {{amount}}",
+					"cashbackRedeemed": "Cashback redeemed",
+					"cashbackRemove": "Remove",
+					"cashbackUse": "Use",
 					"coupon": "Discount coupon",
 					"couponApply": "Apply",
 					"couponApplying": "Applying…",

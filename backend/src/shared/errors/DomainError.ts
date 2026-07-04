@@ -1,4 +1,5 @@
 import type { StatusCodes } from "http-status-codes";
+import { CashbackErrors, CashbackErrorsStatusCodes } from "@/modules/cashback/errors";
 import { CategoryErrors, CategoryErrorsStatusCodes } from "@/modules/categories/errors";
 import { CouponErrors, CouponErrorsStatusCodes } from "@/modules/coupons/errors";
 import { CepErrors, CepErrorsStatusCodes } from "@/modules/cep/errors";
@@ -16,6 +17,7 @@ import { UserErrors, UserErrorsStatusCodes } from "@/modules/users/errors";
 export const DomainErrors = {
 	...ExampleErrors,
 	...UserErrors,
+	...CashbackErrors,
 	...CompanyErrors,
 	...CouponErrors,
 	...CustomerErrors,
@@ -31,6 +33,7 @@ export const DomainErrors = {
 export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCodes> = {
 	...ExampleErrorsStatusCodes,
 	...UserErrorsStatusCodes,
+	...CashbackErrorsStatusCodes,
 	...CompanyErrorsStatusCodes,
 	...CouponErrorsStatusCodes,
 	...CustomerErrorsStatusCodes,

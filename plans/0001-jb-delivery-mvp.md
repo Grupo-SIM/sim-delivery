@@ -146,9 +146,9 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
 - **6.2** Agendamento (`scheduledFor`) `[MVP+]`. demo: agendar. (era 6.3)
 
 ### É7 — Cupom / cashback / frete / pontos
-- **7.1** Frete por unidade + simulação (`POST /freight/simulate`). Front: simulação no carrinho.
-- **7.2** `Coupon` validar/aplicar. Front: input cupom. demo: desconto.
-- **7.3** `CashbackLedger` (acúmulo/resgate). Front: exibir/resgatar. demo: cashback.
+- **7.1** ✅ Frete por unidade + simulação (`POST /freight/simulate`). Front: simulação no carrinho.
+- **7.2** ✅ `Coupon` validar/aplicar. Front: input cupom. demo: desconto.
+- **7.3** ✅ `CashbackLedger` (acúmulo/resgate). Front: exibir/resgatar. demo: cashback.
 - **7.4** `LoyaltyPoints` `[MVP+]`. Front: exibir/resgatar. demo: pontos.
 
 ### É8 — Pagamento (plataforma própria) + webhook

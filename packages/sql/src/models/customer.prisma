@@ -10,10 +10,11 @@ model Customer {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-    addresses Address[]
-    orders    Order[]
+    company          Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+    addresses        Address[]
+    cashbackLedger   CashbackLedger[]
+    orders           Order[]
 
     @@unique([companyId, cpf])
     @@index([companyId])

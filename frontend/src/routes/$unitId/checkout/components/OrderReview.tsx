@@ -14,10 +14,13 @@ export type AppliedCoupon = PostPublicCouponsValidate200 & { code: string };
 interface OrderReviewProps {
 	address: Address | null;
 	appliedCoupon: AppliedCoupon | null;
+	cashbackBalanceCents: number;
+	cashbackRedeemCents: number;
 	deliveryMethod: DeliveryMethod;
 	items: CartItem[];
 	isPending: boolean;
 	onChangeDeliveryMethod: (method: DeliveryMethod) => void;
+	onChangeCashbackRedeem: (cents: number) => void;
 	onSetCoupon: (coupon: AppliedCoupon | null) => void;
 	onSubmit: () => void;
 	subtotal: number;
@@ -29,10 +32,13 @@ interface OrderReviewProps {
 export function OrderReview({
 	address,
 	appliedCoupon,
+	cashbackBalanceCents,
+	cashbackRedeemCents,
 	deliveryMethod,
 	items,
 	isPending,
 	onChangeDeliveryMethod,
+	onChangeCashbackRedeem,
 	onSetCoupon,
 	onSubmit,
 	subtotal,
@@ -47,7 +53,7 @@ export function OrderReview({
 
 	const deliveryFee = deliveryMethod === "delivery" ? unitDeliveryFee : 0;
 	const discountCents = appliedCoupon?.discountCents ?? 0;
-	const total = Math.max(0, subtotal + deliveryFee - discountCents);
+	const total = Math.max(0, subtotal + deliveryFee - discountCents - cashbackRedeemCents);
 
 	async function handleApplyCoupon() {
 		if (!couponInput.trim()) return;
@@ -141,6 +147,29 @@ export function OrderReview({
 				{couponError && <p className="text-destructive text-sm">{couponError}</p>}
 			</div>
 
+			{cashbackBalanceCents > 0 && (
+				<div className="space-y-2">
+					<span className="font-medium text-sm">{t("store.checkout.order.cashback")}</span>
+					<div className="flex items-center justify-between rounded-md border border-border bg-muted/30 px-3 py-2 text-sm">
+						<span className="text-muted-foreground">
+							{t("store.checkout.order.cashbackBalance", { amount: formatMoney(cashbackBalanceCents / 100) })}
+						</span>
+						<Button
+							onClick={() =>
+								onChangeCashbackRedeem(cashbackRedeemCents > 0 ? 0 : cashbackBalanceCents)
+							}
+							size="sm"
+							type="button"
+							variant={cashbackRedeemCents > 0 ? "default" : "outline"}
+						>
+							{cashbackRedeemCents > 0
+								? t("store.checkout.order.cashbackRemove")
+								: t("store.checkout.order.cashbackUse")}
+						</Button>
+					</div>
+				</div>
+			)}
+
 			<div className="space-y-1 border-border border-t pt-3">
 				{deliveryFee > 0 && (
 					<div className="flex justify-between text-sm">
@@ -152,6 +181,12 @@ export function OrderReview({
 					<div className="flex justify-between text-sm text-green-700">
 						<span>{t("store.checkout.order.discount")}</span>
 						<span>−{formatMoney(discountCents / 100)}</span>
+					</div>
+				)}
+				{cashbackRedeemCents > 0 && (
+					<div className="flex justify-between text-sm text-green-700">
+						<span>{t("store.checkout.order.cashbackRedeemed")}</span>
+						<span>−{formatMoney(cashbackRedeemCents / 100)}</span>
 					</div>
 				)}
 				<div className="flex justify-between font-semibold">

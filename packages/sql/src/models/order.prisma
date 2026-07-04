@@ -6,25 +6,27 @@ model Order {
     unitId         String
     customerId     String
     addressId      String?
-    couponId       String?
+    couponId              String?
     /// One of: recebido | em_preparo | pronto | saiu_para_entrega | entregue | retirado | cancelado
-    status         String   @default("recebido")
-    subtotal       Int
-    deliveryFee    Int      @default(0)
-    discountCents  Int      @default(0)
-    total          Int
+    status                String   @default("recebido")
+    subtotal              Int
+    deliveryFee           Int      @default(0)
+    discountCents         Int      @default(0)
+    cashbackCentsRedeemed Int      @default(0)
+    total                 Int
     /// "delivery" or "pickup"
     deliveryMethod String
     cancelReason   String?
     createdAt      DateTime @default(now())
     updatedAt      DateTime @updatedAt
 
-    company  Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
-    unit     Unit        @relation(fields: [unitId], references: [id])
-    customer Customer    @relation(fields: [customerId], references: [id])
-    address  Address?    @relation(fields: [addressId], references: [id])
-    coupon   Coupon?     @relation(fields: [couponId], references: [id])
-    items    OrderItem[]
+    company         Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    unit            Unit             @relation(fields: [unitId], references: [id])
+    customer        Customer         @relation(fields: [customerId], references: [id])
+    address         Address?         @relation(fields: [addressId], references: [id])
+    coupon          Coupon?          @relation(fields: [couponId], references: [id])
+    cashbackLedger  CashbackLedger[]
+    items           OrderItem[]
 
     @@index([companyId, status])
     @@index([customerId])

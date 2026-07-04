@@ -1,0 +1,18 @@
+/// A cashback ledger entry for a customer. Positive entries = accrual (after order
+/// completed), negative entries = redemption (at order placement).
+model CashbackLedger {
+  id         String   @id @default(cuid())
+  customerId String
+  orderId    String
+  /// Cents. Positive = accrual; negative = redemption.
+  amount     Int
+  /// "accrual" or "redemption"
+  type       String
+  createdAt  DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id])
+  order    Order    @relation(fields: [orderId], references: [id])
+
+  @@index([customerId])
+  @@map("cashback_ledger")
+}

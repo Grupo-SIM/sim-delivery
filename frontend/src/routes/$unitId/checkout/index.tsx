@@ -8,6 +8,7 @@ import {
 	type PostCustomersMe200,
 	getCustomersMeQueryOptions,
 	getPublicUnitsQueryOptions,
+	useGetCashbackMe,
 	usePostCustomersMe,
 	usePostOrders,
 } from "@/lib/api";
@@ -32,6 +33,7 @@ function CheckoutPage() {
 	const [savedCustomer, setSavedCustomer] = useState<PostCustomersMe200 | null>(null);
 	const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("delivery");
 	const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+	const [cashbackRedeemCents, setCashbackRedeemCents] = useState(0);
 
 	const { mutate: saveCustomer, isPending: isSavingCustomer } = usePostCustomersMe();
 	const { mutate: placeOrder, isPending: isPlacingOrder } = usePostOrders();
@@ -43,6 +45,12 @@ function CheckoutPage() {
 
 	const { data: units } = useQuery(getPublicUnitsQueryOptions({ variantKey: variantKey ?? "" }));
 	const unit = units?.find(u => u.id === unitId);
+
+	const { data: cashbackData } = useGetCashbackMe(
+		{ variantKey: variantKey ?? "" },
+		{ query: { enabled: identified && !!variantKey } },
+	);
+	const cashbackBalanceCents = cashbackData?.balanceCents ?? 0;
 
 	const step: Step = !identified
 		? "identify"
@@ -96,6 +104,7 @@ function CheckoutPage() {
 					addressId: savedAddress?.id,
 					couponCode: appliedCoupon?.code,
 					deliveryMethod,
+					redeemCashbackCents: cashbackRedeemCents > 0 ? cashbackRedeemCents : undefined,
 					items: cartItems.map(item => ({
 						note: item.note || undefined,
 						quantity: item.quantity,
@@ -165,9 +174,12 @@ function CheckoutPage() {
 					<OrderReview
 						address={savedAddress}
 						appliedCoupon={appliedCoupon}
+						cashbackBalanceCents={cashbackBalanceCents}
+						cashbackRedeemCents={cashbackRedeemCents}
 						deliveryMethod={deliveryMethod}
 						isPending={isPlacingOrder}
 						items={cartItems}
+						onChangeCashbackRedeem={setCashbackRedeemCents}
 						onChangeDeliveryMethod={setDeliveryMethod}
 						onSetCoupon={setAppliedCoupon}
 						onSubmit={handlePlaceOrder}

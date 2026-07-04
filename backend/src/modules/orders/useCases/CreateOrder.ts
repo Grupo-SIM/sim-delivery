@@ -1,6 +1,8 @@
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { ValidateCoupon } from "@/modules/coupons/useCases";
+import { GetCashbackBalance } from "@/modules/cashback/useCases";
+import { CashbackErrors } from "@/modules/cashback/errors";
 import type { CreateOrderBody, OrderReturn } from "../dtos";
 import { OrderErrors } from "../errors";
 
@@ -8,7 +10,7 @@ export class CreateOrder {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(userId: string, data: CreateOrderBody): Promise<OrderReturn> {
-		const { addressId, couponCode, deliveryMethod, items, unitId, variantKey } = data;
+		const { addressId, couponCode, deliveryMethod, items, redeemCashbackCents, unitId, variantKey } = data;
 
 		if (items.length === 0) throw new DomainError(OrderErrors.EMPTY_ORDER);
 
@@ -59,12 +61,20 @@ export class CreateOrder {
 			discountCents = couponResult.discountCents;
 		}
 
-		const total = Math.max(0, subtotal + deliveryFee - discountCents);
+		let cashbackCentsRedeemed = 0;
+		if (redeemCashbackCents && redeemCashbackCents > 0) {
+			const { balanceCents } = await new GetCashbackBalance(this.prisma).execute(userId, variantKey);
+			if (redeemCashbackCents > balanceCents) throw new DomainError(CashbackErrors.INSUFFICIENT_BALANCE);
+			cashbackCentsRedeemed = redeemCashbackCents;
+		}
+
+		const total = Math.max(0, subtotal + deliveryFee - discountCents - cashbackCentsRedeemed);
 
 		const order = await this.prisma.$transaction(async tx => {
 			const created = await tx.order.create({
 				data: {
 					addressId: addressId ?? null,
+					cashbackCentsRedeemed,
 					companyId: company.id,
 					couponId,
 					customerId: customer.id,
@@ -81,6 +91,17 @@ export class CreateOrder {
 				await tx.coupon.update({
 					data: { usedCount: { increment: 1 } },
 					where: { id: couponId },
+				});
+			}
+
+			if (cashbackCentsRedeemed > 0) {
+				await tx.cashbackLedger.create({
+					data: {
+						amount: -cashbackCentsRedeemed,
+						customerId: customer.id,
+						orderId: created.id,
+						type: "redemption",
+					},
 				});
 			}
 

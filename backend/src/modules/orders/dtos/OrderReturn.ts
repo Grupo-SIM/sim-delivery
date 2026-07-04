@@ -16,6 +16,7 @@ export type OrderItemReturn = typeof OrderItemReturn.static;
 export const OrderReturn = t.Object({
 	addressId: __nullable__(t.String()),
 	cancelReason: __nullable__(t.String()),
+	cashbackCentsRedeemed: t.Integer(),
 	companyId: t.String(),
 	couponId: __nullable__(t.String()),
 	createdAt: t.Date(),
