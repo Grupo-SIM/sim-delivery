@@ -1,5 +1,6 @@
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
+import { UserErrors } from "@/modules/users/errors";
 import type { UpdateOrderStatusBody, OrderReturn } from "../dtos";
 import { OrderErrors } from "../errors";
 
@@ -13,7 +14,8 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
 export class UpdateOrderStatus {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(companyId: string, orderId: string, data: UpdateOrderStatusBody): Promise<OrderReturn> {
+	async execute(companyId: string | null, orderId: string, data: UpdateOrderStatusBody): Promise<OrderReturn> {
+		if (!companyId) throw new DomainError(UserErrors.FORBIDDEN);
 		const { status, cancelReason } = data;
 
 		const order = await this.prisma.order.findFirst({

@@ -90,7 +90,8 @@
 					"from": "From",
 					"to": "To",
 					"unit": "Unit",
-					"unitAll": "All units"
+					"unitAll": "All units",
+					"search": "Search"
 				},
 				"items": "{{count}} item(s)",
 				"loadError": "Could not load orders.",

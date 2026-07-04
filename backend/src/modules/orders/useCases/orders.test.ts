@@ -151,7 +151,7 @@ describe("CreateOrder", () => {
 });
 
 function makeUpdateStatusPrisma(order: { id: string; companyId: string; status: string }) {
-	const stored = { ...order, cancelReason: null, items: [] };
+	const stored: { id: string; companyId: string; status: string; cancelReason: string | null; items: unknown[] } = { ...order, cancelReason: null, items: [] };
 
 	const prisma = {
 		order: {
