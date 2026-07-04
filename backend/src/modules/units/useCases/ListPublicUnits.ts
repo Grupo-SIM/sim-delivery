@@ -28,6 +28,7 @@ export class ListPublicUnits {
 		return units.map(({ hours, ...unit }) => ({
 			addressLine: unit.addressLine,
 			city: unit.city,
+			deliveryFee: unit.deliveryFee,
 			deliveryMethods: unit.deliveryMethods,
 			id: unit.id,
 			isOpenNow: isUnitOpen(hours, unit.isOpenManual),

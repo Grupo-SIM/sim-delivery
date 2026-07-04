@@ -7,6 +7,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import {
 	type PostCustomersMe200,
 	getCustomersMeQueryOptions,
+	getPublicUnitsQueryOptions,
 	usePostCustomersMe,
 	usePostOrders,
 } from "@/lib/api";
@@ -38,6 +39,9 @@ function CheckoutPage() {
 		...getCustomersMeQueryOptions({ variantKey: variantKey ?? "" }),
 		enabled: identified && !!variantKey,
 	});
+
+	const { data: units } = useQuery(getPublicUnitsQueryOptions({ variantKey: variantKey ?? "" }));
+	const unit = units?.find(u => u.id === unitId);
 
 	const step: Step = !identified
 		? "identify"
@@ -164,7 +168,7 @@ function CheckoutPage() {
 						onChangeDeliveryMethod={setDeliveryMethod}
 						onSubmit={handlePlaceOrder}
 						subtotal={cartTotalCents(cartItems)}
-						unitDeliveryFee={0}
+						unitDeliveryFee={unit?.deliveryFee ?? 0}
 					/>
 				</>
 			)}

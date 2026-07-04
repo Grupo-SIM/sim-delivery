@@ -4,6 +4,7 @@ import { t } from "elysia";
 export const PublicUnitReturn = t.Object({
 	addressLine: t.Nullable(t.String()),
 	city: t.Nullable(t.String()),
+	deliveryFee: t.Integer(),
 	deliveryMethods: t.Array(t.String()),
 	id: t.String(),
 	isOpenNow: t.Boolean(),

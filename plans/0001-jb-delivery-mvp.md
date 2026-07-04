@@ -142,7 +142,7 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
 - **5.3** ✅ Cadastro (cria conta+endereço, loga). demo: **checkout #1** completo.
 
 ### É6 — Pedido
-- **6.1** `Order`+`OrderItem` create (totais) via UoW. Front: enviar pedido. demo: cria pedido. (era 6.2)
+- **6.1** ✅ `Order`+`OrderItem` create (totais) via UoW. Front: enviar pedido. demo: cria pedido. (era 6.2)
 - **6.2** Agendamento (`scheduledFor`) `[MVP+]`. demo: agendar. (era 6.3)
 
 ### É7 — Cupom / cashback / frete / pontos
