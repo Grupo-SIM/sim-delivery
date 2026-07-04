@@ -157,7 +157,7 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   de obrigado** + aviso WhatsApp. demo: pós-pagamento.
 
 ### É9 — Pedidos: ciclo / listagem / WhatsApp
-- **9.1** Transições de status. Front: painel de pedidos (mudar status). demo: gestão pedidos.
+- **9.1** ✅ Transições de status. Front: painel de pedidos (mudar status). demo: gestão pedidos.
 - **9.2** Listagem com filtros compreensivos. Front: filtros. demo: busca/filtro.
 - **9.3** Notificação WhatsApp por mudança de status (config provider). demo: mensagem.
 - **9.4** Front: visão de cozinha (`kitchen`). demo: fila cozinha.
@@ -232,7 +232,7 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   frontend checkout step 5 = iframe + postMessage); 8.2 webhook ConfirmPayment credita cashback+loyalty
   accrual + muda status pedido p/ recebido; tela de obrigado. Decisão de pagamento: plataforma interna
   via token (hosted pay page); webhook por `POST /payments/webhook { token }`.
-- Próximo: **É9** — ciclo de vida de pedidos + listagem + painel.
+- **É9 em andamento**: 9.1 ✅ status transitions + admin orders panel (GET /orders, PATCH /orders/:id/status, 14 tests). Próximo: 9.2 listagem com filtros compreensivos.
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.
   Novos modelos: LoyaltyLedger, Payment. Campos novos: Unit.loyaltyPointsRate, Order.loyaltyPointsRedeemed,
   Order.status default agora é `awaiting_payment` (antes `recebido`).
