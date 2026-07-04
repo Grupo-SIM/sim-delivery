@@ -134,7 +134,7 @@ describe("CreateOrder", () => {
 	it("uses priceCentsOverride when set", async () => {
 		const overrideProduct = {
 			...baseUnitProduct,
-			priceCentsOverride: 800,
+			priceCentsOverride: 800 as unknown as null,
 		};
 		const { orders, prisma } = makeOrderPrisma({ unitProducts: [overrideProduct] });
 		await new CreateOrder(prisma).execute("user_1", baseBody);

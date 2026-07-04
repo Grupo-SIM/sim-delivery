@@ -344,6 +344,7 @@
 				"add": "Add",
 				"checkout": "Checkout",
 				"clear": "Clear cart",
+				"deliveryFee": "Delivery fee",
 				"clearConfirm": "Remove all items from the cart?",
 				"empty": "Your cart is empty.",
 				"notePlaceholder": "Notes (e.g. no onions)",

@@ -8,13 +8,14 @@ import { CartSuggestions } from "./CartSuggestions";
 import { type MenuSection, money } from "./types";
 
 interface CartModalProps {
+	deliveryFee: number;
 	onClose: () => void;
 	open: boolean;
 	sections: MenuSection[];
 	unitId: string;
 }
 
-export function CartModal({ onClose, open, sections, unitId }: CartModalProps) {
+export function CartModal({ deliveryFee, onClose, open, sections, unitId }: CartModalProps) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const items = useCartStore(state => state.items);
@@ -41,9 +42,17 @@ export function CartModal({ onClose, open, sections, unitId }: CartModalProps) {
 
 					<CartSuggestions sections={sections} unitId={unitId} />
 
-					<div className="flex items-center justify-between border-border border-t pt-3">
-						<span className="text-muted-foreground text-sm">{t("store.cart.subtotal")}</span>
-						<span className="font-semibold">{money.format(cartTotalCents(items) / 100)}</span>
+					<div className="space-y-1 border-border border-t pt-3">
+						<div className="flex items-center justify-between">
+							<span className="text-muted-foreground text-sm">{t("store.cart.subtotal")}</span>
+							<span className="font-semibold">{money.format(cartTotalCents(items) / 100)}</span>
+						</div>
+						{deliveryFee > 0 && (
+							<div className="flex items-center justify-between">
+								<span className="text-muted-foreground text-sm">{t("store.cart.deliveryFee")}</span>
+								<span className="font-medium text-sm">{money.format(deliveryFee / 100)}</span>
+							</div>
+						)}
 					</div>
 
 					<Button

@@ -6,12 +6,13 @@ import { CartModal } from "./CartModal";
 import { type MenuSection, money } from "./types";
 
 interface CartBarProps {
+	deliveryFee: number;
 	sections: MenuSection[];
 	unitId: string;
 }
 
 /** Sticky bottom bar summarizing the current unit's cart; opens the cart modal. */
-export function CartBar({ sections, unitId }: CartBarProps) {
+export function CartBar({ deliveryFee, sections, unitId }: CartBarProps) {
 	const { t } = useTranslation();
 	const [open, setOpen] = useState(false);
 	const cartUnitId = useCartStore(state => state.unitId);
@@ -30,7 +31,7 @@ export function CartBar({ sections, unitId }: CartBarProps) {
 					<span>{money.format(cartTotalCents(items) / 100)}</span>
 				</Button>
 			</div>
-			<CartModal onClose={() => setOpen(false)} open={open} sections={sections} unitId={unitId} />
+			<CartModal deliveryFee={deliveryFee} onClose={() => setOpen(false)} open={open} sections={sections} unitId={unitId} />
 		</>
 	);
 }

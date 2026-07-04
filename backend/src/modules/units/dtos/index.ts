@@ -1,3 +1,4 @@
+export * from "./FreightReturn";
 export * from "./PublicMenuReturn";
 export * from "./PublicUnitReturn";
 export * from "./UnitHoursInput";

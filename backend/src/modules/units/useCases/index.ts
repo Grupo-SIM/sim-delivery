@@ -5,4 +5,5 @@ export * from "./ListPublicMenu";
 export * from "./ListPublicUnits";
 export * from "./ListUnits";
 export * from "./SetUnitHours";
+export * from "./SimulateFreight";
 export * from "./UpdateUnit";

@@ -59,7 +59,7 @@ function UnitStorePage() {
 				<MenuBrowser sections={menu.data} unitId={unitId} />
 			)}
 
-			<CartBar sections={menu.data ?? []} unitId={unitId} />
+			<CartBar deliveryFee={unit.deliveryFee} sections={menu.data ?? []} unitId={unitId} />
 		</Container>
 	);
 }
