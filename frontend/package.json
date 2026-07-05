@@ -13,7 +13,8 @@
 		"tauri:android": "tauri android dev",
 		"tauri:build": "tauri build",
 		"tauri:dev": "tauri dev",
-		"tauri:ios": "tauri ios dev"
+		"tauri:ios": "tauri ios dev",
+		"variant": "bun ../scripts/inject-variant.ts"
 	},
 	"dependencies": {
 		"@fontsource-variable/inter": "^5.2.8",

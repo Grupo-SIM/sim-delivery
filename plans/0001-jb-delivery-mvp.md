@@ -176,10 +176,10 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
 - **12.2** ✅ Branding/footer por unidade (runtime) + render do footer. demo: footer personalizado.
 - **12.3** ✅ IDs de tracking `[MVP+]` (Meta/Google/Pixel/GA/GTM) + injeção das tags. demo: tags ativas.
 
-### É13 — Whitelabel builds
-- **13.1** `frontend/variants.json` + script de injeção de assets/tema/`tauri.conf`. demo: 2 variantes locais.
-- **13.2** Generalizar jobs do `cd.yml` p/ matrix sobre variantes. demo: matrix no CI.
-- **13.3** Tema runtime a partir do branding da empresa. demo: cores por empresa.
+### É13 — Whitelabel builds ✅
+- **13.1** ✅ `frontend/variants.json` + script de injeção de assets/tema/`tauri.conf`. demo: 2 variantes locais.
+- **13.2** ✅ Generalizar jobs do `cd.yml` p/ matrix sobre variantes. demo: matrix no CI.
+- **13.3** ✅ Tema runtime a partir do branding da empresa. demo: cores por empresa.
 
 ---
 

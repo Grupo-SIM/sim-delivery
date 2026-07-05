@@ -9,7 +9,7 @@
 				"fullscreen": false,
 				"height": 800,
 				"resizable": true,
-				"title": "Example",
+				"title": "Zero Grau Delivery",
 				"width": 400
 			}
 		],
@@ -32,7 +32,7 @@
 		],
 		"targets": "all"
 	},
-	"identifier": "com.example.app",
-	"productName": "Example",
+	"identifier": "com.zerograu.delivery",
+	"productName": "Zero Grau Delivery",
 	"version": "1.0.0"
 }

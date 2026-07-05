@@ -16,6 +16,8 @@ jobs:
       # "frontend" is in it. A push that touches neither builds nothing.
       # An empty base-sha (workflow_dispatch / first push) plans every service.
       tasks: ${{ steps.affected.outputs.tasks }}
+      # JSON array of variant keys from frontend/variants.json, e.g. ["default","demo-acai"]
+      variants: ${{ steps.variants.outputs.keys }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -30,29 +32,20 @@ jobs:
           tasks: build
           base-sha: ${{ github.event.before }}
 
-  ghcr:
-    name: Build and publish ${{ matrix.service }} image
+      - name: Read variant keys
+        id: variants
+        run: |
+          keys=$(jq -c '[.[].key]' frontend/variants.json)
+          echo "keys=$keys" >> "$GITHUB_OUTPUT"
+
+  ghcr-backend:
+    name: Build and publish backend image
     needs: detect
-    if: ${{ fromJSON(needs.detect.outputs.tasks).build[0] }}
+    if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'backend') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    strategy:
-      fail-fast: false
-      matrix:
-        service: ${{ fromJSON(needs.detect.outputs.tasks).build }}
-        include:
-          - service: backend
-            dockerfile: backend/Dockerfile
-            build_args: |
-              NODE_ENV=production
-          - service: frontend
-            dockerfile: frontend/Dockerfile
-            build_args: |
-              NODE_ENV=production
-              VITE_API_URL=${{ vars.VITE_API_URL }}
-              VITE_APP_URL=${{ vars.VITE_APP_URL }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -60,11 +53,47 @@ jobs:
       - name: Build and publish image
         uses: hyoretsu/gh-actions/ghcr@main
         with:
-          image: ghcr.io/${{ github.repository }}_${{ matrix.service }}
-          dockerfile: ${{ matrix.dockerfile }}
-          build-args: ${{ matrix.build_args }}
-          secrets: ${{ matrix.service == 'backend' && format('DATABASE_URL={0}', secrets.DATABASE_URL) || '' }}
-          cache-scope: ${{ matrix.service }}
+          image: ghcr.io/${{ github.repository }}_backend
+          dockerfile: backend/Dockerfile
+          build-args: |
+            NODE_ENV=production
+          secrets: DATABASE_URL=${{ secrets.DATABASE_URL }}
+          cache-scope: backend
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+  ghcr-frontend:
+    name: Build and publish frontend image (${{ matrix.variant }})
+    needs: detect
+    if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'frontend') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: ${{ fromJSON(needs.detect.outputs.variants) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Inject variant
+        run: bun scripts/inject-variant.ts --key=${{ matrix.variant }}
+
+      - name: Build and publish image
+        uses: hyoretsu/gh-actions/ghcr@main
+        with:
+          # Each variant gets its own tagged image: frontend-default, frontend-demo-acai, …
+          image: ghcr.io/${{ github.repository }}_frontend-${{ matrix.variant }}
+          dockerfile: frontend/Dockerfile
+          build-args: |
+            NODE_ENV=production
+            VITE_API_URL=${{ vars.VITE_API_URL }}
+            VITE_APP_URL=${{ vars.VITE_APP_URL }}
+          cache-scope: frontend-${{ matrix.variant }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
   desktop:
