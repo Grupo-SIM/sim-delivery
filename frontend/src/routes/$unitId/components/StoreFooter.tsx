@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useGetBranding } from "@/lib/api";
+import { useTracking } from "@/hooks/use-tracking";
 
 interface StoreFooterProps {
 	unitId: string;
@@ -8,6 +9,12 @@ interface StoreFooterProps {
 export function StoreFooter({ unitId }: StoreFooterProps) {
 	const { t } = useTranslation();
 	const { data: branding } = useGetBranding({ unitId });
+
+	useTracking({
+		ga4Id: branding?.ga4Id,
+		gtmId: branding?.gtmId,
+		metaPixelId: branding?.metaPixelId,
+	});
 
 	const text = branding?.footerText;
 	const logoUrl = branding?.logoUrl;
