@@ -16,6 +16,7 @@ model Customer {
     cashbackLedger   CashbackLedger[]
     loyaltyLedger    LoyaltyLedger[]
     orders           Order[]
+    reviews          Review[]
 
     @@unique([companyId, cpf])
     @@index([companyId])

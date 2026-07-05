@@ -31,6 +31,7 @@ model Order {
     loyaltyLedger   LoyaltyLedger[]
     items           OrderItem[]
     payment         Payment?
+    review          Review?
 
     @@index([companyId, status])
     @@index([customerId])

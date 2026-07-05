@@ -64,6 +64,10 @@ export function createPermissions(role: Role, level?: EmployeeLevel | null) {
 		reports: {
 			read: mgmt,
 		},
+		reviews: {
+			create: isCustomer,
+			read: mgmt || isAttendant,
+		},
 		staff: {
 			invite: mgmt,
 			read: mgmt,

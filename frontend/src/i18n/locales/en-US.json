@@ -206,6 +206,19 @@
 				"subtitle": "Base catalog for this company.",
 				"title": "Products"
 			},
+			"reviews": {
+				"average": "Average rating",
+				"columns": {
+					"comment": "Comment",
+					"customer": "Customer",
+					"date": "Date",
+					"rating": "Rating"
+				},
+				"empty": "No reviews yet.",
+				"loadError": "Could not load reviews.",
+				"subtitle": "Customer reviews for this company.",
+				"title": "Reviews"
+			},
 			"staff": {
 				"columns": {
 					"email": "Email",
@@ -570,7 +583,8 @@
 					"continue": "Continue browsing",
 					"subtitle": "Your order has been confirmed and is being prepared.",
 					"title": "Thank you for your order!",
-					"whatsapp": "You will receive updates about your order via WhatsApp."
+					"whatsapp": "You will receive updates about your order via WhatsApp.",
+					"rate": "Rate your order"
 				}
 			},
 			"chooseUnit": {
@@ -596,6 +610,19 @@
 				"change": "Change unit",
 				"notFound": "This unit is not available.",
 				"switch": "Switch unit"
+			},
+			"rate": {
+				"alreadyReviewed": "You've already reviewed this order.",
+				"comment": "Comment (optional)",
+				"commentPlaceholder": "How was your experience?",
+				"error": "Could not submit your review.",
+				"notEligible": "This order is not ready for review yet.",
+				"rating": "Rating",
+				"submit": "Submit review",
+				"submitting": "Submitting...",
+				"subtitle": "Share how your experience was.",
+				"success": "Thank you for your review!",
+				"title": "Rate your order"
 			}
 		}
 	}

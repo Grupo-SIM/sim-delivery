@@ -11,6 +11,7 @@ import { CustomersController } from "./modules/customers/infra";
 import { ExampleController } from "./modules/example/infra";
 import { OrdersController } from "./modules/orders/infra";
 import { ProductsController } from "./modules/products/infra";
+import { ReviewsController } from "./modules/reviews/infra/elysia";
 import { StaffController } from "./modules/staff/infra";
 import { TagsController } from "./modules/tags/infra";
 import { UnitProductsController } from "./modules/unitProducts/infra";
@@ -39,4 +40,5 @@ export const server = app.use([
 	DeliveriesController,
 	OrdersController,
 	PaymentsController,
+	ReviewsController,
 ]);

@@ -13,6 +13,7 @@ import { OrderErrors, OrderErrorsStatusCodes } from "@/modules/orders/errors";
 import { ProductErrors, ProductErrorsStatusCodes } from "@/modules/products/errors";
 import { StaffErrors, StaffErrorsStatusCodes } from "@/modules/staff/errors";
 import { TagErrors, TagErrorsStatusCodes } from "@/modules/tags/errors";
+import { ReviewErrors, ReviewErrorsStatusCodes } from "@/modules/reviews/errors";
 import { UnitProductErrors, UnitProductErrorsStatusCodes } from "@/modules/unitProducts/errors";
 import { UnitErrors, UnitErrorsStatusCodes } from "@/modules/units/errors";
 import { UserErrors, UserErrorsStatusCodes } from "@/modules/users/errors";
@@ -20,6 +21,7 @@ import { UserErrors, UserErrorsStatusCodes } from "@/modules/users/errors";
 export const DomainErrors = {
 	...DeliveryErrors,
 	...ExampleErrors,
+	...ReviewErrors,
 	...UserErrors,
 	...CashbackErrors,
 	...LoyaltyErrors,
@@ -39,6 +41,7 @@ export const DomainErrors = {
 export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCodes> = {
 	...DeliveryErrorsStatusCodes,
 	...ExampleErrorsStatusCodes,
+	...ReviewErrorsStatusCodes,
 	...UserErrorsStatusCodes,
 	...CashbackErrorsStatusCodes,
 	...LoyaltyErrorsStatusCodes,

@@ -1,0 +1,18 @@
+/// A post-delivery customer rating for a completed order.
+model Review {
+    id         String   @id @default(cuid())
+    companyId  String
+    orderId    String   @unique
+    customerId String
+    rating     Int
+    comment    String?
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    customer Customer @relation(fields: [customerId], references: [id])
+    order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+    @@index([companyId])
+    @@map("review")
+}

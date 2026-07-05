@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { LuBuilding2, LuClipboardList, LuLayoutGrid, LuPackage, LuStore, LuTag, LuUtensilsCrossed, LuUsers } from "react-icons/lu";
+import { LuBuilding2, LuClipboardList, LuLayoutGrid, LuPackage, LuStar, LuStore, LuTag, LuUtensilsCrossed, LuUsers } from "react-icons/lu";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { requireStaffBeforeLoad } from "@/lib/staff-guard";
@@ -57,6 +57,12 @@ function AdminDashboardPage() {
 					icon={LuUtensilsCrossed}
 					title={t("admin.kitchen.title")}
 					to="/admin/kitchen"
+				/>
+				<AdminSectionCard
+					description={t("admin.reviews.subtitle")}
+					icon={LuStar}
+					title={t("admin.reviews.title")}
+					to="/admin/reviews"
 				/>
 				{isSuperAdmin(role) && (
 					<AdminSectionCard

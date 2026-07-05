@@ -38,6 +38,7 @@ function CheckoutPage() {
 	const [cashbackRedeemCents, setCashbackRedeemCents] = useState(0);
 	const [loyaltyRedeemPoints, setLoyaltyRedeemPoints] = useState(0);
 	const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
+	const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);
 
 	const { mutate: saveCustomer, isPending: isSavingCustomer } = usePostCustomersMe();
 	const { mutate: placeOrder, isPending: isPlacingOrder } = usePostOrders();
@@ -131,6 +132,7 @@ function CheckoutPage() {
 			{
 				onError: () => void showAlert(t("store.checkout.order.error")),
 				onSuccess: order => {
+					setPlacedOrderId(order.id);
 					createPaymentIntent(
 						{ data: { orderId: order.id, variantKey: variantKey ?? "" } },
 						{
@@ -145,7 +147,11 @@ function CheckoutPage() {
 
 	function handlePaymentConfirmed() {
 		clearCart();
-		void navigate({ params: { unitId }, to: "/$unitId/checkout/thank-you" });
+		void navigate({
+			params: { unitId },
+			search: placedOrderId ? { orderId: placedOrderId } : {},
+			to: "/$unitId/checkout/thank-you",
+		});
 	}
 
 	const isPendingOrder = isPlacingOrder || isCreatingIntent;

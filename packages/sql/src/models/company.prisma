@@ -15,6 +15,7 @@ model Company {
     deliveries Delivery[]
     orders     Order[]
     products   Product[]
+    reviews    Review[]
     tags       Tag[]
     units      Unit[]
     users      User[]

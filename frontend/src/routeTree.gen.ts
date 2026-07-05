@@ -18,11 +18,13 @@ import { Route as IdentifyMagicLinkIndexRouteImport } from './routes/identify/ma
 import { Route as AdminUnitsIndexRouteImport } from './routes/admin/units/index'
 import { Route as AdminTagsIndexRouteImport } from './routes/admin/tags/index'
 import { Route as AdminStaffIndexRouteImport } from './routes/admin/staff/index'
+import { Route as AdminReviewsIndexRouteImport } from './routes/admin/reviews/index'
 import { Route as AdminProductsIndexRouteImport } from './routes/admin/products/index'
 import { Route as AdminOrdersIndexRouteImport } from './routes/admin/orders/index'
 import { Route as AdminKitchenIndexRouteImport } from './routes/admin/kitchen/index'
 import { Route as AdminCompaniesIndexRouteImport } from './routes/admin/companies/index'
 import { Route as AdminCategoriesIndexRouteImport } from './routes/admin/categories/index'
+import { Route as UnitIdRateIndexRouteImport } from './routes/$unitId/rate/index'
 import { Route as UnitIdCheckoutIndexRouteImport } from './routes/$unitId/checkout/index'
 import { Route as UnitIdCheckoutThankYouIndexRouteImport } from './routes/$unitId/checkout/thank-you/index'
 import { Route as AdminUnitsUnitIdProductsIndexRouteImport } from './routes/admin/units/$unitId/products/index'
@@ -72,6 +74,11 @@ const AdminStaffIndexRoute = AdminStaffIndexRouteImport.update({
   path: '/admin/staff/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminReviewsIndexRoute = AdminReviewsIndexRouteImport.update({
+  id: '/admin/reviews/',
+  path: '/admin/reviews/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminProductsIndexRoute = AdminProductsIndexRouteImport.update({
   id: '/admin/products/',
   path: '/admin/products/',
@@ -95,6 +102,11 @@ const AdminCompaniesIndexRoute = AdminCompaniesIndexRouteImport.update({
 const AdminCategoriesIndexRoute = AdminCategoriesIndexRouteImport.update({
   id: '/admin/categories/',
   path: '/admin/categories/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnitIdRateIndexRoute = UnitIdRateIndexRouteImport.update({
+  id: '/$unitId/rate/',
+  path: '/$unitId/rate/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UnitIdCheckoutIndexRoute = UnitIdCheckoutIndexRouteImport.update({
@@ -122,11 +134,13 @@ export interface FileRoutesByFullPath {
   '/courier/': typeof CourierIndexRoute
   '/login/': typeof LoginIndexRoute
   '/$unitId/checkout/': typeof UnitIdCheckoutIndexRoute
+  '/$unitId/rate/': typeof UnitIdRateIndexRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
   '/admin/companies/': typeof AdminCompaniesIndexRoute
   '/admin/kitchen/': typeof AdminKitchenIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
+  '/admin/reviews/': typeof AdminReviewsIndexRoute
   '/admin/staff/': typeof AdminStaffIndexRoute
   '/admin/tags/': typeof AdminTagsIndexRoute
   '/admin/units/': typeof AdminUnitsIndexRoute
@@ -141,11 +155,13 @@ export interface FileRoutesByTo {
   '/courier': typeof CourierIndexRoute
   '/login': typeof LoginIndexRoute
   '/$unitId/checkout': typeof UnitIdCheckoutIndexRoute
+  '/$unitId/rate': typeof UnitIdRateIndexRoute
   '/admin/categories': typeof AdminCategoriesIndexRoute
   '/admin/companies': typeof AdminCompaniesIndexRoute
   '/admin/kitchen': typeof AdminKitchenIndexRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
   '/admin/products': typeof AdminProductsIndexRoute
+  '/admin/reviews': typeof AdminReviewsIndexRoute
   '/admin/staff': typeof AdminStaffIndexRoute
   '/admin/tags': typeof AdminTagsIndexRoute
   '/admin/units': typeof AdminUnitsIndexRoute
@@ -161,11 +177,13 @@ export interface FileRoutesById {
   '/courier/': typeof CourierIndexRoute
   '/login/': typeof LoginIndexRoute
   '/$unitId/checkout/': typeof UnitIdCheckoutIndexRoute
+  '/$unitId/rate/': typeof UnitIdRateIndexRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
   '/admin/companies/': typeof AdminCompaniesIndexRoute
   '/admin/kitchen/': typeof AdminKitchenIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
+  '/admin/reviews/': typeof AdminReviewsIndexRoute
   '/admin/staff/': typeof AdminStaffIndexRoute
   '/admin/tags/': typeof AdminTagsIndexRoute
   '/admin/units/': typeof AdminUnitsIndexRoute
@@ -182,11 +200,13 @@ export interface FileRouteTypes {
     | '/courier/'
     | '/login/'
     | '/$unitId/checkout/'
+    | '/$unitId/rate/'
     | '/admin/categories/'
     | '/admin/companies/'
     | '/admin/kitchen/'
     | '/admin/orders/'
     | '/admin/products/'
+    | '/admin/reviews/'
     | '/admin/staff/'
     | '/admin/tags/'
     | '/admin/units/'
@@ -201,11 +221,13 @@ export interface FileRouteTypes {
     | '/courier'
     | '/login'
     | '/$unitId/checkout'
+    | '/$unitId/rate'
     | '/admin/categories'
     | '/admin/companies'
     | '/admin/kitchen'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/reviews'
     | '/admin/staff'
     | '/admin/tags'
     | '/admin/units'
@@ -220,11 +242,13 @@ export interface FileRouteTypes {
     | '/courier/'
     | '/login/'
     | '/$unitId/checkout/'
+    | '/$unitId/rate/'
     | '/admin/categories/'
     | '/admin/companies/'
     | '/admin/kitchen/'
     | '/admin/orders/'
     | '/admin/products/'
+    | '/admin/reviews/'
     | '/admin/staff/'
     | '/admin/tags/'
     | '/admin/units/'
@@ -240,11 +264,13 @@ export interface RootRouteChildren {
   CourierIndexRoute: typeof CourierIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
   UnitIdCheckoutIndexRoute: typeof UnitIdCheckoutIndexRoute
+  UnitIdRateIndexRoute: typeof UnitIdRateIndexRoute
   AdminCategoriesIndexRoute: typeof AdminCategoriesIndexRoute
   AdminCompaniesIndexRoute: typeof AdminCompaniesIndexRoute
   AdminKitchenIndexRoute: typeof AdminKitchenIndexRoute
   AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
   AdminProductsIndexRoute: typeof AdminProductsIndexRoute
+  AdminReviewsIndexRoute: typeof AdminReviewsIndexRoute
   AdminStaffIndexRoute: typeof AdminStaffIndexRoute
   AdminTagsIndexRoute: typeof AdminTagsIndexRoute
   AdminUnitsIndexRoute: typeof AdminUnitsIndexRoute
@@ -318,6 +344,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminStaffIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/reviews/': {
+      id: '/admin/reviews/'
+      path: '/admin/reviews'
+      fullPath: '/admin/reviews/'
+      preLoaderRoute: typeof AdminReviewsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/products/': {
       id: '/admin/products/'
       path: '/admin/products'
@@ -353,6 +386,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$unitId/rate/': {
+      id: '/$unitId/rate/'
+      path: '/$unitId/rate'
+      fullPath: '/$unitId/rate/'
+      preLoaderRoute: typeof UnitIdRateIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$unitId/checkout/': {
       id: '/$unitId/checkout/'
       path: '/$unitId/checkout'
@@ -384,11 +424,13 @@ const rootRouteChildren: RootRouteChildren = {
   CourierIndexRoute: CourierIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
   UnitIdCheckoutIndexRoute: UnitIdCheckoutIndexRoute,
+  UnitIdRateIndexRoute: UnitIdRateIndexRoute,
   AdminCategoriesIndexRoute: AdminCategoriesIndexRoute,
   AdminCompaniesIndexRoute: AdminCompaniesIndexRoute,
   AdminKitchenIndexRoute: AdminKitchenIndexRoute,
   AdminOrdersIndexRoute: AdminOrdersIndexRoute,
   AdminProductsIndexRoute: AdminProductsIndexRoute,
+  AdminReviewsIndexRoute: AdminReviewsIndexRoute,
   AdminStaffIndexRoute: AdminStaffIndexRoute,
   AdminTagsIndexRoute: AdminTagsIndexRoute,
   AdminUnitsIndexRoute: AdminUnitsIndexRoute,
