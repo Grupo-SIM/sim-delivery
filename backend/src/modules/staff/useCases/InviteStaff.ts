@@ -14,7 +14,7 @@ export class InviteStaff {
 		private readonly signUp: SignUpFn,
 	) {}
 
-	async execute({ companyId, email, level, name, password }: InviteStaffDTO): Promise<StaffReturn> {
+	async execute({ companyId, email, level, name, password, role = "employee" }: InviteStaffDTO): Promise<StaffReturn> {
 		if (!companyId) {
 			throw new DomainError(StaffErrors.NO_COMPANY);
 		}
@@ -26,8 +26,9 @@ export class InviteStaff {
 
 		const { user } = await this.signUp({ body: { email, name, password } });
 
+		const isCourier = role === "courier";
 		const staff = await this.prisma.user.update({
-			data: { companyId, level, role: "employee" },
+			data: { companyId, level: isCourier ? null : level, role },
 			select: { createdAt: true, email: true, id: true, level: true, name: true, role: true },
 			where: { id: user.id },
 		});

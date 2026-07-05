@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
+import { Route as CourierIndexRouteImport } from './routes/courier/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as UnitIdIndexRouteImport } from './routes/$unitId/index'
 import { Route as IdentifyMagicLinkIndexRouteImport } from './routes/identify/magic-link/index'
@@ -34,6 +35,11 @@ const IndexRoute = IndexRouteImport.update({
 const LoginIndexRoute = LoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CourierIndexRoute = CourierIndexRouteImport.update({
+  id: '/courier/',
+  path: '/courier/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$unitId/': typeof UnitIdIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/courier/': typeof CourierIndexRoute
   '/login/': typeof LoginIndexRoute
   '/$unitId/checkout/': typeof UnitIdCheckoutIndexRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$unitId': typeof UnitIdIndexRoute
   '/admin': typeof AdminIndexRoute
+  '/courier': typeof CourierIndexRoute
   '/login': typeof LoginIndexRoute
   '/$unitId/checkout': typeof UnitIdCheckoutIndexRoute
   '/admin/categories': typeof AdminCategoriesIndexRoute
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$unitId/': typeof UnitIdIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/courier/': typeof CourierIndexRoute
   '/login/': typeof LoginIndexRoute
   '/$unitId/checkout/': typeof UnitIdCheckoutIndexRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
@@ -170,6 +179,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$unitId/'
     | '/admin/'
+    | '/courier/'
     | '/login/'
     | '/$unitId/checkout/'
     | '/admin/categories/'
@@ -188,6 +198,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$unitId'
     | '/admin'
+    | '/courier'
     | '/login'
     | '/$unitId/checkout'
     | '/admin/categories'
@@ -206,6 +217,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$unitId/'
     | '/admin/'
+    | '/courier/'
     | '/login/'
     | '/$unitId/checkout/'
     | '/admin/categories/'
@@ -225,6 +237,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   UnitIdIndexRoute: typeof UnitIdIndexRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  CourierIndexRoute: typeof CourierIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
   UnitIdCheckoutIndexRoute: typeof UnitIdCheckoutIndexRoute
   AdminCategoriesIndexRoute: typeof AdminCategoriesIndexRoute
@@ -254,6 +267,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login/'
       preLoaderRoute: typeof LoginIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/courier/': {
+      id: '/courier/'
+      path: '/courier'
+      fullPath: '/courier/'
+      preLoaderRoute: typeof CourierIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -361,6 +381,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   UnitIdIndexRoute: UnitIdIndexRoute,
   AdminIndexRoute: AdminIndexRoute,
+  CourierIndexRoute: CourierIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
   UnitIdCheckoutIndexRoute: UnitIdCheckoutIndexRoute,
   AdminCategoriesIndexRoute: AdminCategoriesIndexRoute,

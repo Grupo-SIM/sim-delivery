@@ -12,7 +12,7 @@ export class ListStaff {
 		const staff = await this.prisma.user.findMany({
 			orderBy: { createdAt: "asc" },
 			select: { createdAt: true, email: true, id: true, level: true, name: true, role: true },
-			where: { companyId, role: { in: ["owner", "employee"] } },
+			where: { companyId, role: { in: ["owner", "employee", "courier"] } },
 		});
 
 		return staff as StaffListReturn;

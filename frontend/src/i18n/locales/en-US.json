@@ -223,6 +223,7 @@
 					"name": "Name",
 					"namePlaceholder": "Full name",
 					"password": "Temporary password",
+					"role": "Role",
 					"submit": "Invite employee",
 					"submitting": "Inviting...",
 					"title": "Invite employee"
@@ -235,6 +236,7 @@
 				},
 				"loadError": "Could not load staff.",
 				"roles": {
+					"courier": "Courier",
 					"employee": "Employee",
 					"owner": "Owner"
 				},
@@ -409,6 +411,26 @@
 				"subtitle": "Sign in to the management panel.",
 				"title": "Staff sign in"
 			}
+		},
+		"courier": {
+			"actions": {
+				"accept": "Accept",
+				"markDelivered": "Mark delivered",
+				"markFailed": "Mark failed",
+				"refuse": "Refuse",
+				"startRoute": "Start route"
+			},
+			"empty": "No deliveries assigned to you.",
+			"loadError": "Could not load your deliveries.",
+			"order": {
+				"customer": "Customer",
+				"items": "{{count}} item",
+				"items_other": "{{count}} items",
+				"total": "Total",
+				"unit": "Unit"
+			},
+			"subtitle": "Your active deliveries.",
+			"title": "Deliveries"
 		},
 		"home": {
 			"auth": {
