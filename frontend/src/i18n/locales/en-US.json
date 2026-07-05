@@ -417,6 +417,7 @@
 				"accept": "Accept",
 				"markDelivered": "Mark delivered",
 				"markFailed": "Mark failed",
+				"navigate": "Navigate",
 				"refuse": "Refuse",
 				"startRoute": "Start route"
 			},
@@ -430,7 +431,8 @@
 				"unit": "Unit"
 			},
 			"subtitle": "Your active deliveries.",
-			"title": "Deliveries"
+			"title": "Deliveries",
+			"history": "Delivery history"
 		},
 		"home": {
 			"auth": {

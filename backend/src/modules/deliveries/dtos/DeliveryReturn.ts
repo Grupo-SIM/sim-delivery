@@ -33,6 +33,14 @@ export const DeliveryListReturn = t.Array(
 				note: __nullable__(t.String()),
 			})),
 			total: t.Integer(),
+			address: __nullable__(t.Object({
+				addressLine: t.String(),
+				city: __nullable__(t.String()),
+				complement: __nullable__(t.String()),
+				neighborhood: __nullable__(t.String()),
+				number: t.String(),
+				state: __nullable__(t.String()),
+			})),
 		}),
 	}),
 );

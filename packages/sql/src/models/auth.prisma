@@ -51,10 +51,11 @@ model User {
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
 
-    accounts Account[]
-    company  Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
-    customer Customer?
-    sessions Session[]
+    accounts   Account[]
+    company    Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
+    customer   Customer?
+    deliveries Delivery[]
+    sessions   Session[]
 
     @@index([companyId])
     @@map("user")

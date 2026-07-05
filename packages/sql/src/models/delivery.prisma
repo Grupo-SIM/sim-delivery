@@ -15,6 +15,7 @@ model Delivery {
     updatedAt   DateTime  @updatedAt
 
     company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    courier User    @relation(fields: [courierId], references: [id])
     order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
     unit    Unit    @relation(fields: [unitId], references: [id])
 

@@ -11,6 +11,7 @@ import { useAuthStore } from "@/stores/auth";
 import { DeliveryCard } from "./components";
 
 const ACTIVE_STATUSES = new Set(["atribuida", "aceita", "a_caminho"]);
+const TERMINAL_STATUSES = new Set(["entregue", "falhou", "recusada"]);
 
 function CourierPage() {
 	const { t } = useTranslation();
@@ -22,6 +23,7 @@ function CourierPage() {
 	);
 
 	const active = (deliveries ?? []).filter(d => ACTIVE_STATUSES.has(d.status));
+	const history = (deliveries ?? []).filter(d => TERMINAL_STATUSES.has(d.status)).slice(0, 10);
 
 	return (
 		<Container className="space-y-6 py-8">
@@ -34,14 +36,31 @@ function CourierPage() {
 				</div>
 			) : isError ? (
 				<ErrorState title={t("courier.loadError")} />
-			) : active.length === 0 ? (
-				<EmptyState title={t("courier.empty")} />
 			) : (
-				<div className="space-y-3">
-					{active.map(d => (
-						<DeliveryCard delivery={d} key={d.id} />
-					))}
-				</div>
+				<>
+					{active.length === 0 ? (
+						<EmptyState title={t("courier.empty")} />
+					) : (
+						<div className="space-y-3">
+							{active.map(d => (
+								<DeliveryCard delivery={d} key={d.id} />
+							))}
+						</div>
+					)}
+
+					{history.length > 0 && (
+						<div className="space-y-3">
+							<h2 className="font-semibold text-muted-foreground text-sm uppercase tracking-wide">
+								{t("courier.history")}
+							</h2>
+							<div className="space-y-3 opacity-60">
+								{history.map(d => (
+									<DeliveryCard delivery={d} key={d.id} />
+								))}
+							</div>
+						</div>
+					)}
+				</>
 			)}
 		</Container>
 	);

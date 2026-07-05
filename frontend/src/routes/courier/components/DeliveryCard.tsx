@@ -25,6 +25,13 @@ const NEXT_ACTIONS: Record<string, { status: string; labelKey: string; destructi
 	],
 };
 
+function buildMapsUrl(addr: NonNullable<Delivery["order"]["address"]>): string {
+	const parts = [addr.addressLine, addr.number, addr.neighborhood, addr.city, addr.state]
+		.filter(Boolean)
+		.join(", ");
+	return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(parts)}`;
+}
+
 interface DeliveryCardProps {
 	delivery: Delivery;
 }
@@ -39,6 +46,7 @@ export function DeliveryCard({ delivery }: DeliveryCardProps) {
 		currency: "BRL",
 		style: "currency",
 	});
+	const showNavigate = delivery.status === "a_caminho" && delivery.order.address != null;
 
 	async function handleAction(status: string, destructive?: boolean) {
 		if (destructive) {
@@ -78,8 +86,24 @@ export function DeliveryCard({ delivery }: DeliveryCardProps) {
 				<p className="font-medium text-foreground">{totalBRL}</p>
 			</div>
 
-			{actions.length > 0 && (
-				<div className="flex gap-2 pt-1">
+			{(actions.length > 0 || showNavigate) && (
+				<div className="flex flex-wrap gap-2 pt-1">
+					{showNavigate && (
+						<Button
+							asChild
+							size="sm"
+							type="button"
+							variant="outline"
+						>
+							<a
+								href={buildMapsUrl(delivery.order.address!)}
+								rel="noopener noreferrer"
+								target="_blank"
+							>
+								{t("courier.actions.navigate")}
+							</a>
+						</Button>
+					)}
 					{actions.map(action => (
 						<Button
 							disabled={patch.isPending}

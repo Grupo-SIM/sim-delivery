@@ -12,8 +12,10 @@ export class ListDeliveries {
 
 		const deliveries = await this.prisma.delivery.findMany({
 			include: {
+				courier: { select: { name: true } },
 				order: {
 					include: {
+						address: { select: { addressLine: true, city: true, complement: true, neighborhood: true, number: true, state: true } },
 						customer: { include: { user: true } },
 						items: true,
 					},
@@ -33,12 +35,13 @@ export class ListDeliveries {
 			assignedAt: d.assignedAt,
 			companyId: d.companyId,
 			courierId: d.courierId,
-			courierName: "",
+			courierName: d.courier.name ?? "",
 			createdAt: d.createdAt,
 			deliveredAt: d.deliveredAt,
 			departedAt: d.departedAt,
 			id: d.id,
 			order: {
+				address: d.order.address ?? null,
 				customerName: d.order.customer.user.name ?? "",
 				deliveryMethod: d.order.deliveryMethod,
 				id: d.order.id,
