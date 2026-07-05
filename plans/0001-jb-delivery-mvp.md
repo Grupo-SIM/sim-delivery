@@ -168,8 +168,8 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   status). demo: fluxo motoboy.
 - **10.3** ✅ Front: link de rota + histórico. demo: navegação/histórico.
 
-### É11 — Avaliações `[MVP+]`
-- **11.1** `Review` (pedido concluído) create+list. Front: prompt de nota + listagem owner. demo: avaliar.
+### É11 — Avaliações `[MVP+]` ✅
+- **11.1** ✅ `Review` (pedido concluído) create+list. Front: prompt de nota + listagem owner. demo: avaliar.
 
 ### É12 — Painel do dono: relatórios / branding / marketing
 - **12.1** Relatórios (faturamento, pedidos, mais vendidos). Front: dashboard. demo: dashboard.
