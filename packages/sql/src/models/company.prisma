@@ -5,8 +5,12 @@ model Company {
     name       String
     slug       String   @unique
     /// Links the company to its whitelabel build variant (docs/02). Null until assigned.
-    variantKey String?  @unique
-    createdAt  DateTime @default(now())
+    variantKey  String?  @unique
+    /// Branding fields rendered in the store footer and app shell.
+    logoUrl     String?
+    footerText  String?
+    primaryColor String?
+    createdAt   DateTime @default(now())
     updatedAt  DateTime @updatedAt
 
     categories Category[]

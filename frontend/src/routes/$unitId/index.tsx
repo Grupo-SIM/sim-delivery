@@ -7,7 +7,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetPublicUnits, useGetPublicUnitsByUnitIdMenu } from "@/lib/api";
 import { variantKey } from "@/lib/variant";
-import { CartBar, MenuBrowser, UnitSwitcher } from "./components";
+import { CartBar, MenuBrowser, StoreFooter, UnitSwitcher } from "./components";
 
 function UnitStorePage() {
 	const { t } = useTranslation();
@@ -60,6 +60,7 @@ function UnitStorePage() {
 			)}
 
 			<CartBar deliveryFee={Number(unit.deliveryFee)} sections={menu.data ?? []} unitId={unitId} />
+			<StoreFooter unitId={unitId} />
 		</Container>
 	);
 }

@@ -6,6 +6,21 @@
 			"ok": "OK"
 		},
 		"admin": {
+			"branding": {
+				"colorHint": "Hex color, e.g. #FF5733",
+				"footerText": "Footer text",
+				"footerTextPlaceholder": "© 2025 My Restaurant",
+				"loadError": "Could not load branding settings.",
+				"logoUrl": "Logo URL",
+				"logoUrlPlaceholder": "https://example.com/logo.png",
+				"primaryColor": "Primary color",
+				"save": "Save branding",
+				"saving": "Saving...",
+				"saveError": "Could not save branding settings.",
+				"saveSuccess": "Branding updated.",
+				"subtitle": "Customize your store appearance.",
+				"title": "Branding"
+			},
 			"categories": {
 				"columns": {
 					"name": "Name",
@@ -497,6 +512,9 @@
 			}
 		},
 		"store": {
+			"branding": {
+				"poweredBy": "Powered by"
+			},
 			"cart": {
 				"add": "Add",
 				"checkout": "Checkout",

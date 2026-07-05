@@ -1,4 +1,5 @@
 import { mkdir } from "node:fs/promises";
+import { BrandingController } from "./modules/branding/infra";
 import { CashbackController } from "./modules/cashback/infra";
 import { DeliveriesController } from "./modules/deliveries/infra/elysia";
 import { LoyaltyController } from "./modules/loyalty/infra";
@@ -23,6 +24,7 @@ import { app } from "./shared/infra/elysia";
 await mkdir(process.env.STATIC_DIR!, { recursive: true });
 
 export const server = app.use([
+	BrandingController,
 	ExampleController,
 	CompaniesController,
 	UsersController,
