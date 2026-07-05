@@ -162,11 +162,11 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
 - **9.3** ✅ Notificação WhatsApp por mudança de status (config provider). demo: mensagem.
 - **9.4** ✅ Front: visão de cozinha (`kitchen`). demo: fila cozinha.
 
-### É10 — Motoboy & entregas
-- **10.1** `Courier` CRUD + `Delivery` + atribuir. Front: atribuição no painel. demo: atribuir.
-- **10.2** Transições de entrega (reflete pedido). Front: **app do motoboy** (fila, aceitar,
+### É10 — Motoboy & entregas ✅
+- **10.1** ✅ `Courier` CRUD + `Delivery` + atribuir. Front: atribuição no painel. demo: atribuir.
+- **10.2** ✅ Transições de entrega (reflete pedido). Front: **app do motoboy** (fila, aceitar,
   status). demo: fluxo motoboy.
-- **10.3** Front: link de rota + histórico. demo: navegação/histórico.
+- **10.3** ✅ Front: link de rota + histórico. demo: navegação/histórico.
 
 ### É11 — Avaliações `[MVP+]`
 - **11.1** `Review` (pedido concluído) create+list. Front: prompt de nota + listagem owner. demo: avaliar.
@@ -233,7 +233,8 @@ Legenda: ✅ feito · `[MVP+]` promovido ao MVP · "demo:" = o que fica visível
   accrual + muda status pedido p/ recebido; tela de obrigado. Decisão de pagamento: plataforma interna
   via token (hosted pay page); webhook por `POST /payments/webhook { token }`.
 - **É9 concluído**: 9.1 status transitions (GET/PATCH /orders, 14 tests), 9.2 comprehensive filters (deliveryMethod/hasCoupon/search), 9.3 WhatsApp provider (console/disabled drivers, notifies on status change), 9.4 kitchen view (/admin/kitchen, 30s polling, advance actions).
-- Próximo: **É10** — motoboy CRUD + deliveries + assignment.
+- **É10 concluído**: 10.1 Delivery model + AssignDelivery + UpdateDeliveryStatus + DeliveriesController + assign button in orders panel (delivery field added to order list return); 10.2 courier role in InviteStaff, ListStaff includes couriers, /courier page with active delivery queue + status actions; 10.3 address in delivery list return, Google Maps link when a_caminho, history section on courier page.
+- Próximo: **É11** — reviews (pedido concluído, prompt de nota).
 - Nota: migrações não aplicadas (sem DB local); usuário roda `bun run migrate:dev`.
   Novos modelos: LoyaltyLedger, Payment. Campos novos: Unit.loyaltyPointsRate, Order.loyaltyPointsRedeemed,
   Order.status default agora é `awaiting_payment` (antes `recebido`).
