@@ -82,7 +82,8 @@ function RatePage() {
 				value={comment}
 			/>
 
-			{errorKey && <p className="text-destructive text-sm">{t(errorKey as Parameters<typeof t>[0])}</p>}
+			{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+			{errorKey && <p className="text-destructive text-sm">{(t as any)(errorKey)}</p>}
 
 			<Button disabled={rating === 0 || isPending} onClick={submit} type="button">
 				{isPending ? t("store.rate.submitting") : t("store.rate.submit")}

@@ -5,7 +5,7 @@ import {
 	type GetDeliveries200,
 	usePatchDeliveriesByDeliveryIdStatus,
 } from "@/lib/api";
-import { Button } from "@/components/ui/button";
+import { Button, buttonClassName } from "@/components/ui/button";
 import { showAlert, showConfirm } from "@/stores";
 
 type Delivery = GetDeliveries200[number];
@@ -89,20 +89,14 @@ export function DeliveryCard({ delivery }: DeliveryCardProps) {
 			{(actions.length > 0 || showNavigate) && (
 				<div className="flex flex-wrap gap-2 pt-1">
 					{showNavigate && (
-						<Button
-							asChild
-							size="sm"
-							type="button"
-							variant="outline"
+						<a
+							className={buttonClassName({ size: "sm", variant: "outline" })}
+							href={buildMapsUrl(delivery.order.address!)}
+							rel="noopener noreferrer"
+							target="_blank"
 						>
-							<a
-								href={buildMapsUrl(delivery.order.address!)}
-								rel="noopener noreferrer"
-								target="_blank"
-							>
-								{t("courier.actions.navigate")}
-							</a>
-						</Button>
+							{t("courier.actions.navigate")}
+						</a>
 					)}
 					{actions.map(action => (
 						<Button
@@ -113,7 +107,8 @@ export function DeliveryCard({ delivery }: DeliveryCardProps) {
 							type="button"
 							variant={action.destructive ? "outline" : "default"}
 						>
-							{t(action.labelKey as Parameters<typeof t>[0])}
+							{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+							{t(action.labelKey as any)}
 						</Button>
 					))}
 				</div>

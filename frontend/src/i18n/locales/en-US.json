@@ -206,6 +206,32 @@
 				"subtitle": "Base catalog for this company.",
 				"title": "Products"
 			},
+			"reports": {
+				"bestSellers": {
+					"columns": {
+						"product": "Product",
+						"quantity": "Qty sold",
+						"revenue": "Revenue"
+					},
+					"empty": "No sales data yet.",
+					"title": "Best sellers"
+				},
+				"empty": "No completed orders in this period.",
+				"loadError": "Could not load reports.",
+				"period": {
+					"month": "This month",
+					"title": "Period",
+					"today": "Today",
+					"week": "Last 7 days"
+				},
+				"summary": {
+					"averageOrderValue": "Avg. order value",
+					"orderCount": "Completed orders",
+					"totalRevenue": "Total revenue"
+				},
+				"subtitle": "Revenue and sales reports.",
+				"title": "Reports"
+			},
 			"reviews": {
 				"average": "Average rating",
 				"columns": {

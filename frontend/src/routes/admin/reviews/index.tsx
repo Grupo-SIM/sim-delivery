@@ -19,7 +19,7 @@ function ReviewsPage() {
 
 	const avg =
 		reviews && reviews.length > 0
-			? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
+			? (reviews.reduce((s, r) => s + Number(r.rating), 0) / reviews.length).toFixed(1)
 			: null;
 
 	return (
@@ -55,7 +55,7 @@ function ReviewsPage() {
 									{new Date(r.createdAt).toLocaleDateString("pt-BR")}
 								</td>
 								<td className="px-4 py-3 font-medium">{r.customerName}</td>
-								<td className="px-4 py-3 text-sm">{stars(r.rating)}</td>
+								<td className="px-4 py-3 text-sm">{stars(Number(r.rating))}</td>
 								<td className="px-4 py-3 text-muted-foreground text-sm">{r.comment ?? "—"}</td>
 							</tr>
 						))}
