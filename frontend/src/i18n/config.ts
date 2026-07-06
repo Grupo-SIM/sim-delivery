@@ -1,9 +1,9 @@
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
-import enUS from "./locales/en-US.json";
+import ptBR from "./locales/pt-BR.json";
 
-export const supportedLngs = ["en-US"] as const;
+export const supportedLngs = ["pt-BR"] as const;
 export type SupportedLanguage = (typeof supportedLngs)[number];
 
 if (!i18n.isInitialized) {
@@ -17,11 +17,11 @@ if (!i18n.isInitialized) {
 				lookupLocalStorage: "lang",
 				order: ["localStorage", "navigator", "htmlTag"],
 			},
-			fallbackLng: "en-US",
+			fallbackLng: "pt-BR",
 			interpolation: { escapeValue: false },
 			load: "currentOnly",
 			resources: {
-				"en-US": enUS,
+				"pt-BR": ptBR,
 			},
 			supportedLngs: [...supportedLngs],
 		});
