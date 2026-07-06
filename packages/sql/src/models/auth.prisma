@@ -47,6 +47,8 @@ model User {
     level         String?
     /// Tenant the user belongs to. Null for superAdmin (cross-tenant); every other
     /// user is strictly scoped to this company.
+    phoneNumber         String?  @unique
+    phoneNumberVerified Boolean  @default(false)
     companyId     String?
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
