@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
+import { Route as DesignKitIndexRouteImport } from './routes/design-kit/index'
 import { Route as CourierIndexRouteImport } from './routes/courier/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as UnitIdIndexRouteImport } from './routes/$unitId/index'
@@ -39,6 +40,11 @@ const IndexRoute = IndexRouteImport.update({
 const LoginIndexRoute = LoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DesignKitIndexRoute = DesignKitIndexRouteImport.update({
+  id: '/design-kit/',
+  path: '/design-kit/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CourierIndexRoute = CourierIndexRouteImport.update({
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/$unitId/': typeof UnitIdIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/courier/': typeof CourierIndexRoute
+  '/design-kit/': typeof DesignKitIndexRoute
   '/login/': typeof LoginIndexRoute
   '/$unitId/checkout/': typeof UnitIdCheckoutIndexRoute
   '/$unitId/rate/': typeof UnitIdRateIndexRoute
@@ -167,6 +174,7 @@ export interface FileRoutesByTo {
   '/$unitId': typeof UnitIdIndexRoute
   '/admin': typeof AdminIndexRoute
   '/courier': typeof CourierIndexRoute
+  '/design-kit': typeof DesignKitIndexRoute
   '/login': typeof LoginIndexRoute
   '/$unitId/checkout': typeof UnitIdCheckoutIndexRoute
   '/$unitId/rate': typeof UnitIdRateIndexRoute
@@ -191,6 +199,7 @@ export interface FileRoutesById {
   '/$unitId/': typeof UnitIdIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/courier/': typeof CourierIndexRoute
+  '/design-kit/': typeof DesignKitIndexRoute
   '/login/': typeof LoginIndexRoute
   '/$unitId/checkout/': typeof UnitIdCheckoutIndexRoute
   '/$unitId/rate/': typeof UnitIdRateIndexRoute
@@ -216,6 +225,7 @@ export interface FileRouteTypes {
     | '/$unitId/'
     | '/admin/'
     | '/courier/'
+    | '/design-kit/'
     | '/login/'
     | '/$unitId/checkout/'
     | '/$unitId/rate/'
@@ -239,6 +249,7 @@ export interface FileRouteTypes {
     | '/$unitId'
     | '/admin'
     | '/courier'
+    | '/design-kit'
     | '/login'
     | '/$unitId/checkout'
     | '/$unitId/rate'
@@ -262,6 +273,7 @@ export interface FileRouteTypes {
     | '/$unitId/'
     | '/admin/'
     | '/courier/'
+    | '/design-kit/'
     | '/login/'
     | '/$unitId/checkout/'
     | '/$unitId/rate/'
@@ -286,6 +298,7 @@ export interface RootRouteChildren {
   UnitIdIndexRoute: typeof UnitIdIndexRoute
   AdminIndexRoute: typeof AdminIndexRoute
   CourierIndexRoute: typeof CourierIndexRoute
+  DesignKitIndexRoute: typeof DesignKitIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
   UnitIdCheckoutIndexRoute: typeof UnitIdCheckoutIndexRoute
   UnitIdRateIndexRoute: typeof UnitIdRateIndexRoute
@@ -319,6 +332,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login/'
       preLoaderRoute: typeof LoginIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/design-kit/': {
+      id: '/design-kit/'
+      path: '/design-kit'
+      fullPath: '/design-kit/'
+      preLoaderRoute: typeof DesignKitIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/courier/': {
@@ -462,6 +482,7 @@ const rootRouteChildren: RootRouteChildren = {
   UnitIdIndexRoute: UnitIdIndexRoute,
   AdminIndexRoute: AdminIndexRoute,
   CourierIndexRoute: CourierIndexRoute,
+  DesignKitIndexRoute: DesignKitIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
   UnitIdCheckoutIndexRoute: UnitIdCheckoutIndexRoute,
   UnitIdRateIndexRoute: UnitIdRateIndexRoute,
