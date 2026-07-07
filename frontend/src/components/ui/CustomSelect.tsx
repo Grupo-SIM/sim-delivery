@@ -78,7 +78,7 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 				aria-expanded={open}
 				aria-haspopup="listbox"
 				className={cn(
-					"flex h-11 w-full items-center justify-between rounded-md border border-border bg-surface px-3 text-foreground text-sm transition-colors",
+					"flex h-11 w-full items-center justify-between rounded-md border border-border bg-surface px-3 text-foreground text-sm transition-[border-color,box-shadow] duration-300",
 					"hover:border-foreground/40 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
 					className,
 				)}
@@ -98,7 +98,7 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 			{open &&
 				createPortal(
 					<div
-						className="overflow-hidden rounded-md border border-border bg-popover shadow-md"
+						className="overflow-hidden rounded-brand border border-border bg-popover shadow-medium"
 						onMouseDown={e => e.preventDefault()}
 						ref={dropdownRef}
 						role="listbox"

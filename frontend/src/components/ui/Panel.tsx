@@ -13,8 +13,8 @@ export function Panel({ active, as: Component = "div", children, className, ...p
 	return (
 		<Component
 			className={cn(
-				"rounded-lg border border-border bg-card text-card-foreground shadow-[0_1px_0_rgba(15,23,42,0.04)]",
-				active && "border-primary/70 ring-1 ring-primary/10",
+				"rounded-brand border border-border bg-card text-card-foreground shadow-soft",
+				active && "border-primary/60 ring-2 ring-primary/15",
 				className,
 			)}
 			{...props}

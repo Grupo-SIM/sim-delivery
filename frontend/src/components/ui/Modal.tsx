@@ -19,6 +19,7 @@ export function Modal({ children, isOpen, maxWidth = "640px", onClose, title }: 
 			overrides={{
 				Dialog: {
 					style: {
+						borderRadius: "24px",
 						maxWidth,
 						width: "92vw",
 					},

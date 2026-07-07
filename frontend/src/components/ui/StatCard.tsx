@@ -26,7 +26,7 @@ export function StatCard({ hint, label, onClick, tone = "default", value }: Stat
 		</>
 	);
 
-	const baseClass = "rounded-lg border border-border bg-card p-4 text-left transition";
+	const baseClass = "rounded-brand border border-border bg-card p-4 text-left shadow-soft transition-[box-shadow,border-color] duration-300";
 
 	if (!interactive) {
 		return <div className={baseClass}>{body}</div>;
@@ -34,7 +34,7 @@ export function StatCard({ hint, label, onClick, tone = "default", value }: Stat
 
 	return (
 		<button
-			className={cn(baseClass, "cursor-pointer hover:border-foreground/30 hover:bg-muted")}
+			className={cn(baseClass, "cursor-pointer hover:border-primary/40 hover:shadow-medium")}
 			onClick={onClick}
 			type="button"
 		>

@@ -8,7 +8,7 @@ interface AlertProps extends ComponentPropsWithoutRef<"div"> {
 export function Alert({ children, className, ...props }: AlertProps) {
 	return (
 		<div
-			className={cn("rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm", className)}
+			className={cn("rounded-brand border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm", className)}
 			{...props}
 		>
 			{children}

@@ -31,12 +31,14 @@ export function AppButton({
 				BaseButton: {
 					...overrides?.BaseButton,
 					style: {
-						borderRadius: "4px",
+						borderRadius: "8px",
 						fontSize: "12px",
 						fontWeight: 800,
 						letterSpacing: "0.04em",
 						minHeight: size === "mini" ? "32px" : "40px",
 						textTransform: "uppercase",
+						transitionDuration: "0.3s",
+						transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
 						width: fullWidth ? "100%" : undefined,
 						...(tone === "destructive"
 							? {

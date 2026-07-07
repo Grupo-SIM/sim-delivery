@@ -19,7 +19,7 @@ export function IconBadge({ children, className, tone = "default", ...props }: I
 	return (
 		<span
 			className={cn(
-				"inline-flex items-center justify-center whitespace-nowrap rounded-full px-2 py-0.5 text-label-bold",
+				"inline-flex items-center justify-center whitespace-nowrap rounded-full px-2 py-0.5 font-bold text-xs uppercase tracking-wide",
 				toneClass[tone],
 				className,
 			)}

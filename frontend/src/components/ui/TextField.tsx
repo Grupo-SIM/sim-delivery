@@ -63,8 +63,8 @@ export function TextField({
 						...overrides?.InputContainer,
 						style: {
 							backgroundColor: "var(--surface-sunken)",
-							borderColor: "var(--input)",
-							borderRadius: "4px",
+						borderColor: "var(--input)",
+						borderRadius: "8px",
 						},
 					},
 					Input: {

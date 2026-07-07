@@ -25,6 +25,7 @@ export function ConfirmDialog() {
 				},
 				Dialog: {
 					style: {
+						borderRadius: "24px",
 						maxWidth: "420px",
 						width: "92vw",
 					},
