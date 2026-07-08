@@ -8,9 +8,12 @@ export const PublicUnitReturn = t.Object({
 	deliveryMethods: t.Array(t.String()),
 	id: t.String(),
 	isOpenNow: t.Boolean(),
+	minOrderCents: t.Integer(),
 	name: t.String(),
 	neighborhood: t.Nullable(t.String()),
 	phone: t.Nullable(t.String()),
+	prepTimeMaxMinutes: t.Nullable(t.Integer()),
+	prepTimeMinMinutes: t.Nullable(t.Integer()),
 });
 export type PublicUnitReturn = typeof PublicUnitReturn.static;
 

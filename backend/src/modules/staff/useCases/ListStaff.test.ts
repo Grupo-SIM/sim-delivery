@@ -24,6 +24,6 @@ describe("ListStaff", () => {
 		const staff = await new ListStaff(fakePrisma(capture)).execute("cmp_1");
 
 		expect(staff).toHaveLength(1);
-		expect(capture.where).toEqual({ companyId: "cmp_1", role: { in: ["owner", "employee"] } });
+		expect(capture.where).toEqual({ companyId: "cmp_1", role: { in: ["owner", "employee", "courier"] } });
 	});
 });

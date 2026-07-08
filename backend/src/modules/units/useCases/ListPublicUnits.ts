@@ -32,9 +32,12 @@ export class ListPublicUnits {
 			deliveryMethods: unit.deliveryMethods,
 			id: unit.id,
 			isOpenNow: isUnitOpen(hours, unit.isOpenManual),
+			minOrderCents: unit.minOrderCents,
 			name: unit.name,
 			neighborhood: unit.neighborhood,
 			phone: unit.phone,
+			prepTimeMaxMinutes: unit.prepTimeMaxMinutes,
+			prepTimeMinMinutes: unit.prepTimeMinMinutes,
 		}));
 	}
 }

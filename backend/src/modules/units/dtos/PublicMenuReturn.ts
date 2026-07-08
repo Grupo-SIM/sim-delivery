@@ -1,11 +1,38 @@
 import { t } from "elysia";
 
+export const PublicOptionReturn = t.Object({
+	description: t.String(),
+	id: t.String(),
+	imageUrl: t.Nullable(t.String()),
+	maxPerItem: t.Nullable(t.Integer()),
+	name: t.String(),
+	popularity: t.Integer(),
+	priceDeltaCents: t.Integer(),
+});
+export type PublicOptionReturn = typeof PublicOptionReturn.static;
+
+export const PublicOptionGroupReturn = t.Object({
+	id: t.String(),
+	maxSelect: t.Integer(),
+	minSelect: t.Integer(),
+	name: t.String(),
+	options: t.Array(PublicOptionReturn),
+	priceRule: t.String(),
+	selectionType: t.String(),
+	sortOrder: t.Integer(),
+});
+export type PublicOptionGroupReturn = typeof PublicOptionGroupReturn.static;
+
 /** A single orderable item in a unit's storefront menu, with the per-unit price resolved. */
 export const PublicMenuItemReturn = t.Object({
 	cashbackPercent: t.Nullable(t.Number()),
 	description: t.String(),
+	featuredRank: t.Nullable(t.Integer()),
+	fromPriceCents: t.Integer(),
 	id: t.String(),
 	imageUrl: t.String(),
+	optionGroups: t.Array(PublicOptionGroupReturn),
+	popularity: t.Integer(),
 	priceCents: t.Integer(),
 	productId: t.String(),
 	title: t.String(),

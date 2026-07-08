@@ -6,6 +6,7 @@ type Assoc = {
 	available: boolean;
 	cashbackPercentOverride: number | null;
 	category: { id: string; name: string; position: number } | null;
+	featuredRank: number | null;
 	id: string;
 	priceCentsOverride: number | null;
 	product: {
@@ -14,6 +15,25 @@ type Assoc = {
 		description: string;
 		id: string;
 		imageUrl: string;
+		optionGroups: {
+			id: string;
+			maxSelect: number;
+			minSelect: number;
+			name: string;
+			options: {
+				description: string;
+				id: string;
+				imageUrl: string | null;
+				maxPerItem: number | null;
+				name: string;
+				popularity: number;
+				priceDeltaCents: number;
+			}[];
+			priceRule: string;
+			selectionType: string;
+			sortOrder: number;
+		}[];
+		popularity: number;
 		title: string;
 	};
 	unitId: string;
@@ -38,6 +58,8 @@ const product = (id: string, over: Partial<Assoc["product"]> = {}): Assoc["produ
 	description: "",
 	id,
 	imageUrl: "https://x/img.jpg",
+	optionGroups: [],
+	popularity: 0,
 	title: id,
 	...over,
 });
@@ -54,6 +76,7 @@ describe("ListPublicMenu", () => {
 				available: true,
 				cashbackPercentOverride: 7,
 				category: { id: "cat1", name: "Salgados", position: 0 },
+				featuredRank: null,
 				id: "up1",
 				priceCentsOverride: 1500,
 				product: product("p1", { cashbackPercentOverride: 3 }),
@@ -63,6 +86,7 @@ describe("ListPublicMenu", () => {
 				available: true,
 				cashbackPercentOverride: null,
 				category: { id: "cat1", name: "Salgados", position: 0 },
+				featuredRank: null,
 				id: "up2",
 				priceCentsOverride: null,
 				product: product("p2", { basePriceCents: 800, cashbackPercentOverride: 2 }),
@@ -83,6 +107,7 @@ describe("ListPublicMenu", () => {
 				available: true,
 				cashbackPercentOverride: null,
 				category: null,
+				featuredRank: null,
 				id: "up-loose",
 				priceCentsOverride: null,
 				product: product("loose"),
@@ -92,6 +117,7 @@ describe("ListPublicMenu", () => {
 				available: true,
 				cashbackPercentOverride: null,
 				category: { id: "cat2", name: "Bebidas", position: 1 },
+				featuredRank: null,
 				id: "up-b",
 				priceCentsOverride: null,
 				product: product("b"),
@@ -101,6 +127,7 @@ describe("ListPublicMenu", () => {
 				available: true,
 				cashbackPercentOverride: null,
 				category: { id: "cat1", name: "Salgados", position: 0 },
+				featuredRank: null,
 				id: "up-s",
 				priceCentsOverride: null,
 				product: product("s"),

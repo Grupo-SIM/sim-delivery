@@ -16,7 +16,22 @@ export class ListPublicMenu {
 		}
 
 		const associations = await this.prisma.unitProduct.findMany({
-			include: { category: true, product: true },
+			include: {
+				category: true,
+				product: {
+					include: {
+						optionGroups: {
+							include: {
+								options: {
+									orderBy: { sortOrder: "asc" },
+									where: { available: true },
+								},
+							},
+							orderBy: { sortOrder: "asc" },
+						},
+					},
+				},
+			},
 			orderBy: { product: { title: "asc" } },
 			where: { available: true, unitId },
 		});
@@ -36,12 +51,45 @@ export class ListPublicMenu {
 				positionOf.set(key, category?.position ?? Number.POSITIVE_INFINITY);
 			}
 
+			const basePriceCents = association.priceCentsOverride ?? product.basePriceCents;
+
+			// "A partir de": base + sum of cheapest available option per required group.
+			const fromPriceCents =
+				basePriceCents +
+				product.optionGroups
+					.filter(g => g.minSelect >= 1 && g.options.length > 0)
+					.reduce((sum, g) => {
+						const cheapest = Math.min(...g.options.map(o => o.priceDeltaCents));
+						return sum + cheapest;
+					}, 0);
+
 			section.items.push({
 				cashbackPercent: association.cashbackPercentOverride ?? product.cashbackPercentOverride,
 				description: product.description,
+				featuredRank: association.featuredRank,
+				fromPriceCents,
 				id: association.id,
 				imageUrl: product.imageUrl,
-				priceCents: association.priceCentsOverride ?? product.basePriceCents,
+				optionGroups: product.optionGroups.map(g => ({
+					id: g.id,
+					maxSelect: g.maxSelect,
+					minSelect: g.minSelect,
+					name: g.name,
+					options: g.options.map(o => ({
+						description: o.description,
+						id: o.id,
+						imageUrl: o.imageUrl,
+						maxPerItem: o.maxPerItem,
+						name: o.name,
+						popularity: o.popularity,
+						priceDeltaCents: o.priceDeltaCents,
+					})),
+					priceRule: g.priceRule,
+					selectionType: g.selectionType,
+					sortOrder: g.sortOrder,
+				})),
+				popularity: product.popularity,
+				priceCents: basePriceCents,
 				productId: product.id,
 				title: product.title,
 			});

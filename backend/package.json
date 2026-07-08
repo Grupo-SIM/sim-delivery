@@ -8,7 +8,8 @@
 		"check-types": "tsc --noEmit",
 		"dev": "bun --watch src/main.ts",
 		"export": "bun ./src/generateOpenApi.ts",
-		"start": "NODE_ENV=production bun dist/main.js"
+		"start": "NODE_ENV=production bun dist/main.js",
+		"test:unit": "bun test --coverage"
 	},
 	"dependencies": {
 		"@elysiajs/openapi": "^1.4.15",
