@@ -650,7 +650,8 @@
 				"loadError": "Não foi possível carregar o cardápio.",
 				"loose": "Outros",
 				"noResults": "Nenhum produto corresponde à sua busca.",
-				"searchPlaceholder": "Buscar no cardápio"
+				"searchPlaceholder": "Buscar no cardápio",
+				"topPicks": "Os mais pedidos"
 			},
 			"product": {
 				"addedTitle": "{{title}} adicionado!",

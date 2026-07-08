@@ -6,7 +6,7 @@ import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { CategoryNav } from "./CategoryNav";
 import { CategorySummary } from "./CategorySummary";
 import { MenuSectionBlock } from "./MenuSectionBlock";
-import { PromoCarousel } from "./PromoCarousel";
+import { TopPicksCarousel } from "./TopPicksCarousel";
 import type { MenuSection } from "./types";
 
 interface MenuBrowserProps {
@@ -39,7 +39,7 @@ export function MenuBrowser({ sections, unitId }: MenuBrowserProps) {
 				value={localSearch}
 			/>
 
-			{!query && <PromoCarousel sections={sections} />}
+			{!query && <TopPicksCarousel sections={sections} unitId={unitId} />}
 
 			{filtered.length === 0 ? (
 				<EmptyState title={query ? t("store.menu.noResults") : t("store.menu.empty")} />
