@@ -3,6 +3,7 @@ export {
 	type CartItem,
 	type CartItemInput,
 	type CartState,
+	type SelectedOption,
 	cartCount,
 	cartTotalCents,
 	useCartStore,

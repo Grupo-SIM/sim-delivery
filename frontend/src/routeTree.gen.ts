@@ -29,6 +29,7 @@ import { Route as AdminCategoriesIndexRouteImport } from './routes/admin/categor
 import { Route as AdminBrandingIndexRouteImport } from './routes/admin/branding/index'
 import { Route as UnitIdRateIndexRouteImport } from './routes/$unitId/rate/index'
 import { Route as UnitIdCheckoutIndexRouteImport } from './routes/$unitId/checkout/index'
+import { Route as UnitIdProductProductIdIndexRouteImport } from './routes/$unitId/product/$productId/index'
 import { Route as UnitIdCheckoutThankYouIndexRouteImport } from './routes/$unitId/checkout/thank-you/index'
 import { Route as AdminUnitsUnitIdProductsIndexRouteImport } from './routes/admin/units/$unitId/products/index'
 
@@ -132,6 +133,12 @@ const UnitIdCheckoutIndexRoute = UnitIdCheckoutIndexRouteImport.update({
   path: '/$unitId/checkout/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UnitIdProductProductIdIndexRoute =
+  UnitIdProductProductIdIndexRouteImport.update({
+    id: '/$unitId/product/$productId/',
+    path: '/$unitId/product/$productId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const UnitIdCheckoutThankYouIndexRoute =
   UnitIdCheckoutThankYouIndexRouteImport.update({
     id: '/$unitId/checkout/thank-you/',
@@ -167,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/admin/units/': typeof AdminUnitsIndexRoute
   '/identify/magic-link/': typeof IdentifyMagicLinkIndexRoute
   '/$unitId/checkout/thank-you/': typeof UnitIdCheckoutThankYouIndexRoute
+  '/$unitId/product/$productId/': typeof UnitIdProductProductIdIndexRoute
   '/admin/units/$unitId/products/': typeof AdminUnitsUnitIdProductsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -191,6 +199,7 @@ export interface FileRoutesByTo {
   '/admin/units': typeof AdminUnitsIndexRoute
   '/identify/magic-link': typeof IdentifyMagicLinkIndexRoute
   '/$unitId/checkout/thank-you': typeof UnitIdCheckoutThankYouIndexRoute
+  '/$unitId/product/$productId': typeof UnitIdProductProductIdIndexRoute
   '/admin/units/$unitId/products': typeof AdminUnitsUnitIdProductsIndexRoute
 }
 export interface FileRoutesById {
@@ -216,6 +225,7 @@ export interface FileRoutesById {
   '/admin/units/': typeof AdminUnitsIndexRoute
   '/identify/magic-link/': typeof IdentifyMagicLinkIndexRoute
   '/$unitId/checkout/thank-you/': typeof UnitIdCheckoutThankYouIndexRoute
+  '/$unitId/product/$productId/': typeof UnitIdProductProductIdIndexRoute
   '/admin/units/$unitId/products/': typeof AdminUnitsUnitIdProductsIndexRoute
 }
 export interface FileRouteTypes {
@@ -242,6 +252,7 @@ export interface FileRouteTypes {
     | '/admin/units/'
     | '/identify/magic-link/'
     | '/$unitId/checkout/thank-you/'
+    | '/$unitId/product/$productId/'
     | '/admin/units/$unitId/products/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -266,6 +277,7 @@ export interface FileRouteTypes {
     | '/admin/units'
     | '/identify/magic-link'
     | '/$unitId/checkout/thank-you'
+    | '/$unitId/product/$productId'
     | '/admin/units/$unitId/products'
   id:
     | '__root__'
@@ -290,6 +302,7 @@ export interface FileRouteTypes {
     | '/admin/units/'
     | '/identify/magic-link/'
     | '/$unitId/checkout/thank-you/'
+    | '/$unitId/product/$productId/'
     | '/admin/units/$unitId/products/'
   fileRoutesById: FileRoutesById
 }
@@ -315,6 +328,7 @@ export interface RootRouteChildren {
   AdminUnitsIndexRoute: typeof AdminUnitsIndexRoute
   IdentifyMagicLinkIndexRoute: typeof IdentifyMagicLinkIndexRoute
   UnitIdCheckoutThankYouIndexRoute: typeof UnitIdCheckoutThankYouIndexRoute
+  UnitIdProductProductIdIndexRoute: typeof UnitIdProductProductIdIndexRoute
   AdminUnitsUnitIdProductsIndexRoute: typeof AdminUnitsUnitIdProductsIndexRoute
 }
 
@@ -460,6 +474,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnitIdCheckoutIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$unitId/product/$productId/': {
+      id: '/$unitId/product/$productId/'
+      path: '/$unitId/product/$productId'
+      fullPath: '/$unitId/product/$productId/'
+      preLoaderRoute: typeof UnitIdProductProductIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$unitId/checkout/thank-you/': {
       id: '/$unitId/checkout/thank-you/'
       path: '/$unitId/checkout/thank-you'
@@ -499,6 +520,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminUnitsIndexRoute: AdminUnitsIndexRoute,
   IdentifyMagicLinkIndexRoute: IdentifyMagicLinkIndexRoute,
   UnitIdCheckoutThankYouIndexRoute: UnitIdCheckoutThankYouIndexRoute,
+  UnitIdProductProductIdIndexRoute: UnitIdProductProductIdIndexRoute,
   AdminUnitsUnitIdProductsIndexRoute: AdminUnitsUnitIdProductsIndexRoute,
 }
 export const routeTree = rootRouteImport

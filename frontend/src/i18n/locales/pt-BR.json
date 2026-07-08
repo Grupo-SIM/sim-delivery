@@ -652,6 +652,17 @@
 				"noResults": "Nenhum produto corresponde à sua busca.",
 				"searchPlaceholder": "Buscar no cardápio"
 			},
+			"product": {
+				"chooseExact": "Escolha {{count}}",
+				"chooseGroup": "Escolha {{group}}",
+				"chooseRange": "Escolha de {{min}} a {{max}}",
+				"chooseUpTo": "Escolha até {{count}}",
+				"from": "A partir de",
+				"notFound": "Produto não encontrado.",
+				"popularOptions": "Itens mais pedidos",
+				"required": "Obrigatório",
+				"searchOptions": "Pesquise pelas opções..."
+			},
 			"rate": {
 				"alreadyReviewed": "Você já avaliou este pedido.",
 				"comment": "Comentário (opcional)",

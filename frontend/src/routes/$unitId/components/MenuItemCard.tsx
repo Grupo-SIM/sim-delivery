@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,28 @@ interface MenuItemCardProps {
 
 export function MenuItemCard({ item, unitId }: MenuItemCardProps) {
 	const { t } = useTranslation();
+	const navigate = useNavigate();
 	const addItem = useCartStore(state => state.addItem);
+	const hasGroups = item.optionGroups.length > 0;
+
+	const displayPrice = hasGroups
+		? `${t("store.product.from")} ${money.format(Number(item.fromPriceCents) / 100)}`
+		: money.format(Number(item.priceCents) / 100);
+
+	function handleAdd() {
+		if (hasGroups) {
+			void navigate({ params: { productId: item.productId, unitId }, to: "/$unitId/product/$productId" });
+		} else {
+			addItem(unitId, {
+				id: item.id,
+				imageUrl: item.imageUrl,
+				options: [],
+				priceCents: Number(item.priceCents),
+				productId: item.productId,
+				title: item.title,
+			});
+		}
+	}
 
 	return (
 		<Card className="flex gap-3 overflow-hidden p-3">
@@ -26,27 +48,13 @@ export function MenuItemCard({ item, unitId }: MenuItemCardProps) {
 				<p className="truncate font-medium">{item.title}</p>
 				{item.description && <p className="line-clamp-2 text-muted-foreground text-sm">{item.description}</p>}
 				<div className="mt-auto flex items-center gap-2 pt-1">
-					<span className="font-semibold">{money.format(Number(item.priceCents) / 100)}</span>
+					<span className="font-semibold">{displayPrice}</span>
 					{item.cashbackPercent != null && (
 						<Badge className="border-green-500/30 bg-green-500/10 text-green-500">
 							{item.cashbackPercent}%
 						</Badge>
 					)}
-					<Button
-						className="ml-auto"
-						onClick={() =>
-							addItem(unitId, {
-								id: item.id,
-								imageUrl: item.imageUrl,
-								options: [],
-								priceCents: Number(item.priceCents),
-								productId: item.productId,
-								title: item.title,
-							})
-						}
-						size="sm"
-						type="button"
-					>
+					<Button className="ml-auto" onClick={handleAdd} size="sm" type="button">
 						{t("store.cart.add")}
 					</Button>
 				</div>
