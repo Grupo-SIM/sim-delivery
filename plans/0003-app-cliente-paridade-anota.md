@@ -81,7 +81,7 @@ variações (tamanho)" e destaques manuais como pendências.
 > obrigatório/opcional com min/max, opções com imagem+descrição+preço, radio vs stepper,
 > busca interna e carrossel de "mais pedidos" por grupo.
 
-- **22.1 Schema** (`packages/sql/src/models/product-option.prisma`):
+- ✅ **22.1 Schema** (`packages/sql/src/models/product-option.prisma`):
   - `OptionGroup`: id, productId, name, `minSelect` Int, `maxSelect` Int,
     `selectionType` (single|multi), `required` Boolean (derivável de min≥1),
     `priceRule` (sum|highest|average — p/ sabores meio-a-meio), `sortOrder`, `collapsed` Bool.
@@ -92,20 +92,20 @@ variações (tamanho)" e destaques manuais como pendências.
     priceDeltaCents) — tabela (não Json) p/ relatório de adicionais mais vendidos.
   - Meio-a-meio de pizza: modelado como grupo `multi` "Sabor" com `maxSelect` = nº de sabores
     do tamanho e `priceRule=highest` (ou average). Migração baseline **local apenas**.
-- **22.2 Backend catálogo**: incluir `optionGroups`/`options` no DTO do menu público e do
+- ✅ **22.2 Backend catálogo**: incluir `optionGroups`/`options` no DTO do menu público e do
   produto; expor preço "**a partir de**" = base + menor combinação obrigatória. DTOs em
   **TypeBox** (`t.Object` + `.properties` spread; nunca `t.Intersect`; `response:` no Elysia).
   `bun run export` (backend) → `bun run generate` (frontend) regenera SDK — **não** editar
   `frontend/src/lib/api/generated/`.
-- **22.3 Backend pedido**: `CreateOrder` valida seleções (min/max por grupo, `maxPerItem`,
+- ⏳ **22.3 Backend pedido**: `CreateOrder` valida seleções (min/max por grupo, `maxPerItem`,
   disponibilidade), recalcula `unitPrice` = base + Σ(deltas·qtd) aplicando `priceRule`, e faz
   **snapshot** em `OrderItemOption`. Rejeita inválido (422 `INVALID_OPTIONS`). Teste
   `CreateOrder.test.ts` (`bun:test`) cobrindo sabor+borda+adicional.
-- **22.4 Cart store** (`stores/cart.ts`): `CartItem` ganha
+- ✅ **22.4 Cart store** (`stores/cart.ts`): `CartItem` ganha
   `options: {groupId,groupName,optionId,optionName,quantity,priceDeltaCents}[]`. Chave da
   linha = hash(productId+opções) (mesmo produto com opções diferentes = linhas distintas).
   `priceCents` da linha inclui deltas. `addItem`/`CartItemInput` atualizados.
-- **22.5 Página de produto**: rota `$unitId/product/$productId/index.tsx` (convenção
+- ✅ **22.5 Página de produto**: rota `$unitId/product/$productId/index.tsx` (convenção
   folder/index). Componentes em `product/components/`: `OptionGroupBlock` (colapsável, título
   + subtítulo "Escolha até N", badge **Obrigatório**, contador **min/max**, `radio` p/ single
   e `+`/`−` stepper p/ multi respeitando `maxPerItem`), `OptionRow` (imagem+descrição+preço),
@@ -113,14 +113,14 @@ variações (tamanho)" e destaques manuais como pendências.
   pedidos"), botão sticky que valida obrigatórios e mostra total ao vivo. `MenuItemCard`
   passa a **navegar** para essa página quando o produto tem grupos; add-rápido só p/ produtos
   sem opções.
-- **22.6 Modal de confirmação pós-opções**: ao adicionar, abrir modal (baseui, via `@/stores`
+- ✅ **22.6 Modal de confirmação pós-opções**: ao adicionar, abrir modal (baseui, via `@/stores`
   padrão de dialog) com **Quantidade** + **Observações** (`useDebouncedInput`) e ações
   "Continuar comprando" / "Avançar para o carrinho".
-- **22.7 Carrinho/review**: `CartItemRow` lista opções sob o item; **lápis** reabre a página
+- ⏳ **22.7 Carrinho/review**: `CartItemRow` lista opções sob o item; **lápis** reabre a página
   de produto com seleção pré-carregada (editar). `OrderReview` idem no resumo.
-- **22.8 Admin**: editor de grupos/opções por produto em `admin/products` (CRUD
+- ⏳ **22.8 Admin**: editor de grupos/opções por produto em `admin/products` (CRUD
   `OptionGroup`/`Option`, ordenar, min/max, `maxPerItem`, delta, `priceRule`, imagem da opção).
-- **22.9 i18n**: chaves novas em **todos** os locales (`pt-BR` + `en-US`) na mesma operação;
+- ✅ **22.9 i18n**: chaves novas em **todos** os locales (`pt-BR` + `en-US`) na mesma operação;
   ordem alfabética; registrar namespace se criar.
 
 ## É23 — Destaques: featured manual → mais pedidos reais
@@ -128,19 +128,19 @@ variações (tamanho)" e destaques manuais como pendências.
 > Regra do dono (verbatim): "mais pedidos e/ou featured, que, se setados, aparecem **antes**
 > dos mais pedidos de verdade".
 
-- **23.1 Backend popularidade**: `Product.popularity` (contador de vendas) e flag/campo
+- ✅ **23.1 Backend popularidade**: `Product.popularity` (contador de vendas) e flag/campo
   `featuredRank Int?` por associação de unidade (`UnitProduct`) para destaque manual. Endpoint
   do menu retorna a faixa de destaques **ordenada**: primeiro os `featuredRank` (asc), depois
   os de maior `popularity` (mais pedidos reais), deduplicando; opcional "peça novamente" do
   histórico do cliente logado no topo (docs 05).
-- **23.2 Frontend**: renomear/substituir `PromoCarousel` (hoje cashback) por
+- ✅ **23.2 Frontend**: renomear/substituir `PromoCarousel` (hoje cashback) por
   `TopPicksCarousel` "**Os mais pedidos**" alimentado por 23.1. Manter selo de cashback como
   badge no card, não como critério da faixa.
-- **23.3 Admin**: no `admin/products` (ou por unidade), marcar/ordenar destaques manuais.
+- ⏳ **23.3 Admin**: no `admin/products` (ou por unidade), marcar/ordenar destaques manuais.
 
 ## É24 — Header da loja, pedido mínimo e delivery/retirada na entrada
 
-- **24.1 Schema `Unit`**: `minOrderCents Int @default(0)`, `prepTimeMinMinutes Int?`,
+- ✅ **24.1 Schema `Unit`**: `minOrderCents Int @default(0)`, `prepTimeMinMinutes Int?`,
   `prepTimeMaxMinutes Int?`; expor no DTO público de unidades.
 - **24.2 Header rico** (`$unitId/index.tsx`): sub-linha "**Aberto até HH:MM · Pedido mín.
   R$ X**" (ou "Abre às HH:MM" quando fechado, via `UnitHours`), **ETA** ("30–45 min"),
