@@ -687,8 +687,17 @@
 				"open": "Aberto"
 			},
 			"unit": {
+				"address": "Endereço",
 				"change": "Trocar unidade",
+				"deliveryMethods": "Formas de entrega",
+				"eta": "Tempo estimado",
+				"etaRange": "{{min}}–{{max}} min",
+				"freeDelivery": "Grátis",
+				"minOrder": "Pedido mín.",
+				"noMinOrder": "Sem pedido mínimo",
 				"notFound": "Esta unidade não está disponível.",
+				"phone": "Telefone",
+				"storeProfile": "Perfil da loja",
 				"switch": "Trocar unidade"
 			}
 		}

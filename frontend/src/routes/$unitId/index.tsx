@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/Container";
@@ -7,7 +8,8 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetPublicUnits, useGetPublicUnitsByUnitIdMenu } from "@/lib/api";
 import { variantKey } from "@/lib/variant";
-import { CartBar, MenuBrowser, StoreFooter, UnitSwitcher } from "./components";
+import { CartBar, InfoPill, MenuBrowser, StoreFooter, StoreInfoModal, UnitSwitcher } from "./components";
+import { money } from "./components/types";
 
 function UnitStorePage() {
 	const { t } = useTranslation();
@@ -15,6 +17,7 @@ function UnitStorePage() {
 	const { data: units } = useGetPublicUnits({ variantKey });
 	const menu = useGetPublicUnitsByUnitIdMenu(unitId);
 	const unit = units?.find(item => item.id === unitId);
+	const [profileOpen, setProfileOpen] = useState(false);
 
 	if (!unit) {
 		return (
@@ -28,6 +31,11 @@ function UnitStorePage() {
 	}
 
 	const address = [unit.addressLine, unit.neighborhood, unit.city].filter(Boolean).join(", ");
+	const minOrder = Number(unit.minOrderCents);
+	const fee = Number(unit.deliveryFee);
+	const prepMin = unit.prepTimeMinMinutes != null ? Number(unit.prepTimeMinMinutes) : null;
+	const prepMax = unit.prepTimeMaxMinutes != null ? Number(unit.prepTimeMaxMinutes) : null;
+	const hasDelivery = unit.deliveryMethods.includes("delivery");
 
 	return (
 		<Container className="space-y-4 py-8">
@@ -51,6 +59,29 @@ function UnitStorePage() {
 				{units && <UnitSwitcher unitId={unitId} units={units} />}
 			</div>
 
+			<div className="flex flex-wrap items-center gap-2">
+				{prepMin != null && prepMax != null && (
+					<InfoPill>⏱ {prepMin}–{prepMax} min</InfoPill>
+				)}
+				{minOrder > 0 && (
+					<InfoPill>
+						{t("store.unit.minOrder")} {money.format(minOrder / 100)}
+					</InfoPill>
+				)}
+				{hasDelivery && (
+					<InfoPill>
+						{t("store.cart.deliveryFee")}: {fee > 0 ? money.format(fee / 100) : t("store.unit.freeDelivery")}
+					</InfoPill>
+				)}
+				<button
+					className="text-primary text-xs underline-offset-2 hover:underline"
+					onClick={() => setProfileOpen(true)}
+					type="button"
+				>
+					{t("store.unit.storeProfile")}
+				</button>
+			</div>
+
 			{menu.isPending ? (
 				<Skeleton className="h-64 w-full" />
 			) : menu.isError ? (
@@ -59,8 +90,10 @@ function UnitStorePage() {
 				<MenuBrowser sections={menu.data} unitId={unitId} />
 			)}
 
-			<CartBar deliveryFee={Number(unit.deliveryFee)} sections={menu.data ?? []} unitId={unitId} />
+			<CartBar deliveryFee={fee} sections={menu.data ?? []} unitId={unitId} />
 			<StoreFooter unitId={unitId} />
+
+			<StoreInfoModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} unit={unit} />
 		</Container>
 	);
 }
