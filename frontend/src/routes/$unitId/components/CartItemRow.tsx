@@ -18,7 +18,7 @@ export function CartItemRow({ item }: CartItemRowProps) {
 	const [note, setNoteState] = useState(item.note);
 	const [localNote, setLocalNote, flushNote] = useDebouncedInput(note, value => {
 		setNoteState(value);
-		setNote(item.id, value);
+		setNote(item.lineKey, value);
 	});
 
 	return (
@@ -37,6 +37,16 @@ export function CartItemRow({ item }: CartItemRowProps) {
 					</span>
 				</div>
 
+				{item.options.length > 0 && (
+					<ul className="space-y-0.5 text-muted-foreground text-xs">
+						{item.options.map(opt => (
+							<li key={opt.optionId}>
+								{opt.groupName}: {opt.quantity > 1 ? `${opt.quantity}x ` : ""}{opt.optionName}
+							</li>
+						))}
+					</ul>
+				)}
+
 				<textarea
 					className="min-h-9 w-full rounded border border-input bg-surface px-2 py-1 text-sm placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
 					onBlur={flushNote}
@@ -47,7 +57,7 @@ export function CartItemRow({ item }: CartItemRowProps) {
 
 				<div className="flex items-center gap-2">
 					<Button
-						onClick={() => setQuantity(item.id, item.quantity - 1)}
+						onClick={() => setQuantity(item.lineKey, item.quantity - 1)}
 						size="sm"
 						type="button"
 						variant="outline"
@@ -56,7 +66,7 @@ export function CartItemRow({ item }: CartItemRowProps) {
 					</Button>
 					<span className="min-w-6 text-center text-sm">{item.quantity}</span>
 					<Button
-						onClick={() => setQuantity(item.id, item.quantity + 1)}
+						onClick={() => setQuantity(item.lineKey, item.quantity + 1)}
 						size="sm"
 						type="button"
 						variant="outline"
@@ -65,7 +75,7 @@ export function CartItemRow({ item }: CartItemRowProps) {
 					</Button>
 					<Button
 						className="ml-auto"
-						onClick={() => removeItem(item.id)}
+						onClick={() => removeItem(item.lineKey)}
 						size="sm"
 						type="button"
 						variant="outline"

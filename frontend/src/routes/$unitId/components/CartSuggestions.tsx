@@ -52,6 +52,7 @@ export function CartSuggestions({ sections, unitId }: CartSuggestionsProps) {
 									addItem(unitId, {
 										id: item.id,
 										imageUrl: item.imageUrl,
+										options: [],
 										priceCents: Number(item.priceCents),
 										productId: item.productId,
 										title: item.title,

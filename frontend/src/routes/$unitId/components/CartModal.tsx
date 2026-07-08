@@ -36,7 +36,7 @@ export function CartModal({ deliveryFee, onClose, open, sections, unitId }: Cart
 				<div className="space-y-4">
 					<div>
 						{items.map(item => (
-							<CartItemRow item={item} key={item.id} />
+							<CartItemRow item={item} key={item.lineKey} />
 						))}
 					</div>
 

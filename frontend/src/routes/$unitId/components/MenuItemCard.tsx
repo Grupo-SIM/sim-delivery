@@ -38,6 +38,7 @@ export function MenuItemCard({ item, unitId }: MenuItemCardProps) {
 							addItem(unitId, {
 								id: item.id,
 								imageUrl: item.imageUrl,
+								options: [],
 								priceCents: Number(item.priceCents),
 								productId: item.productId,
 								title: item.title,

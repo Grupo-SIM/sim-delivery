@@ -1,29 +1,51 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-/** A line in the cart. `id` is the unit-product association id (unique within a unit). */
+export interface SelectedOption {
+	groupId: string;
+	groupName: string;
+	optionId: string;
+	optionName: string;
+	/** Number of times this option was chosen (for multi/stepper groups). */
+	quantity: number;
+	priceDeltaCents: number;
+}
+
+/** A line in the cart. `lineKey` is the stable identity (unit-product id + options hash). */
 export interface CartItem {
 	id: string;
 	imageUrl: string;
+	/** Unique key per distinct combination of product + selected options. */
+	lineKey: string;
 	note: string;
+	options: SelectedOption[];
+	/** Total price in cents including option deltas (base + Σ deltas*qty). */
 	priceCents: number;
 	productId: string;
 	quantity: number;
 	title: string;
 }
 
-/** Fields needed to seed a new line; quantity/note are managed by the store. */
-export type CartItemInput = Omit<CartItem, "note" | "quantity">;
+/** Fields needed to seed a new line; quantity/note/lineKey are managed by the store. */
+export type CartItemInput = Omit<CartItem, "lineKey" | "note" | "quantity">;
 
 export interface CartState {
 	addItem: (unitId: string, item: CartItemInput) => void;
 	clear: () => void;
 	items: CartItem[];
-	removeItem: (id: string) => void;
-	setNote: (id: string, note: string) => void;
-	setQuantity: (id: string, quantity: number) => void;
+	removeItem: (lineKey: string) => void;
+	setNote: (lineKey: string, note: string) => void;
+	setQuantity: (lineKey: string, quantity: number) => void;
 	/** The unit this cart belongs to; a cart holds items from a single unit at a time. */
 	unitId: string | null;
+}
+
+function makeLineKey(id: string, options: SelectedOption[]): string {
+	const sorted = [...options]
+		.sort((a, b) => a.optionId.localeCompare(b.optionId))
+		.map(o => `${o.optionId}:${o.quantity}`)
+		.join("|");
+	return sorted ? `${id}::${sorted}` : id;
 }
 
 export const useCartStore = create<CartState>()(
@@ -33,30 +55,35 @@ export const useCartStore = create<CartState>()(
 				set(state => {
 					// Switching units starts a fresh cart (one unit at a time).
 					const base = state.unitId === unitId ? state.items : [];
-					const existing = base.find(line => line.id === item.id);
+					const lineKey = makeLineKey(item.id, item.options);
+					const existing = base.find(line => line.lineKey === lineKey);
 					const items = existing
-						? base.map(line => (line.id === item.id ? { ...line, quantity: line.quantity + 1 } : line))
-						: [...base, { ...item, note: "", quantity: 1 }];
+						? base.map(line =>
+								line.lineKey === lineKey ? { ...line, quantity: line.quantity + 1 } : line,
+							)
+						: [...base, { ...item, lineKey, note: "", quantity: 1 }];
 					return { items, unitId };
 				}),
 			clear: () => set({ items: [], unitId: null }),
 			items: [],
-			removeItem: id =>
+			removeItem: lineKey =>
 				set(state => {
-					const items = state.items.filter(line => line.id !== id);
+					const items = state.items.filter(line => line.lineKey !== lineKey);
 					return { items, unitId: items.length === 0 ? null : state.unitId };
 				}),
-			setNote: (id, note) =>
+			setNote: (lineKey, note) =>
 				set(state => ({
-					items: state.items.map(line => (line.id === id ? { ...line, note } : line)),
+					items: state.items.map(line => (line.lineKey === lineKey ? { ...line, note } : line)),
 				})),
-			setQuantity: (id, quantity) => {
+			setQuantity: (lineKey, quantity) => {
 				if (quantity <= 0) {
-					get().removeItem(id);
+					get().removeItem(lineKey);
 					return;
 				}
 				set(state => ({
-					items: state.items.map(line => (line.id === id ? { ...line, quantity } : line)),
+					items: state.items.map(line =>
+						line.lineKey === lineKey ? { ...line, quantity } : line,
+					),
 				}));
 			},
 			unitId: null,
