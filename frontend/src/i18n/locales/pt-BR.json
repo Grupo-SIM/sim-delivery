@@ -528,6 +528,7 @@
 				"clearConfirm": "Remover todos os itens do carrinho?",
 				"deliveryFee": "Taxa de entrega",
 				"empty": "Seu carrinho está vazio.",
+				"minOrderProgress": "Faltam {{amount}} para o pedido mínimo",
 				"notePlaceholder": "Observações (ex: sem cebola)",
 				"open": "Ver carrinho ({{count}})",
 				"remove": "Remover",

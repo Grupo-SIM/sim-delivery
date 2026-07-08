@@ -9,13 +9,14 @@ import { type MenuSection, money } from "./types";
 
 interface CartModalProps {
 	deliveryFee: number;
+	minOrderCents: number;
 	onClose: () => void;
 	open: boolean;
 	sections: MenuSection[];
 	unitId: string;
 }
 
-export function CartModal({ deliveryFee, onClose, open, sections, unitId }: CartModalProps) {
+export function CartModal({ deliveryFee, minOrderCents, onClose, open, sections, unitId }: CartModalProps) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const items = useCartStore(state => state.items);
@@ -27,6 +28,9 @@ export function CartModal({ deliveryFee, onClose, open, sections, unitId }: Cart
 			onClose();
 		}
 	}
+
+	const total = cartTotalCents(items);
+	const belowMin = minOrderCents > 0 && total < minOrderCents;
 
 	return (
 		<Modal isOpen={open} onClose={onClose} title={t("store.cart.title")}>
@@ -45,7 +49,7 @@ export function CartModal({ deliveryFee, onClose, open, sections, unitId }: Cart
 					<div className="space-y-1 border-border border-t pt-3">
 						<div className="flex items-center justify-between">
 							<span className="text-muted-foreground text-sm">{t("store.cart.subtotal")}</span>
-							<span className="font-semibold">{money.format(cartTotalCents(items) / 100)}</span>
+							<span className="font-semibold">{money.format(total / 100)}</span>
 						</div>
 						{deliveryFee > 0 && (
 							<div className="flex items-center justify-between">
@@ -55,8 +59,15 @@ export function CartModal({ deliveryFee, onClose, open, sections, unitId }: Cart
 						)}
 					</div>
 
+					{belowMin && (
+						<p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-amber-800 text-xs">
+							{t("store.cart.minOrderProgress", { amount: money.format((minOrderCents - total) / 100) })}
+						</p>
+					)}
+
 					<Button
 						className="w-full"
+						disabled={belowMin}
 						onClick={() => {
 							onClose();
 							void navigate({ params: { unitId }, to: "/$unitId/checkout" });

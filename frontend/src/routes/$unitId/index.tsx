@@ -90,7 +90,7 @@ function UnitStorePage() {
 				<MenuBrowser sections={menu.data} unitId={unitId} />
 			)}
 
-			<CartBar deliveryFee={fee} sections={menu.data ?? []} unitId={unitId} />
+			<CartBar deliveryFee={fee} minOrderCents={minOrder} sections={menu.data ?? []} unitId={unitId} />
 			<StoreFooter unitId={unitId} />
 
 			<StoreInfoModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} unit={unit} />
