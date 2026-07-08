@@ -10,10 +10,13 @@ model Product {
     basePriceCents          Int
     /// Optional percent override. Null means use the unit default cashback percentage.
     cashbackPercentOverride Float?
+    /// Number of times this product has been ordered; used for "Os mais pedidos" strip (docs/05).
+    popularity              Int      @default(0)
     createdAt               DateTime @default(now())
     updatedAt               DateTime @updatedAt
 
     company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    optionGroups OptionGroup[]
     unitProducts UnitProduct[]
 
     @@index([companyId])

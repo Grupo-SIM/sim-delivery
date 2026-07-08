@@ -1,0 +1,73 @@
+/// A group of selectable options attached to a product (e.g. "Sabor", "Borda", "Adicionais").
+/// Controls how many options the customer must/can pick and how the price is calculated.
+model OptionGroup {
+    id            String   @id @default(cuid())
+    productId     String
+    name          String
+    /// Minimum number of selections required (0 = optional group).
+    minSelect     Int      @default(0)
+    /// Maximum number of selections allowed.
+    maxSelect     Int      @default(1)
+    /// "single" = radio; "multi" = stepper (customer can pick multiple options).
+    selectionType String   @default("single")
+    /// How to calculate the group's price contribution when multiple options are selected.
+    /// "sum" = add all deltas; "highest" = use the highest-priced option (half-and-half pizza);
+    /// "average" = average of selected deltas.
+    priceRule     String   @default("sum")
+    sortOrder     Int      @default(0)
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+
+    product Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+    options Option[]
+
+    @@index([productId])
+    @@map("option_group")
+}
+
+/// A selectable item within an OptionGroup (e.g. "Pizza - Calabresa", "Borda de Cheddar").
+model Option {
+    id              String   @id @default(cuid())
+    groupId         String
+    name            String
+    description     String   @default("")
+    imageUrl        String?
+    /// Price added to the product base when this option is selected (in cents).
+    priceDeltaCents Int      @default(0)
+    /// Max quantity the customer can pick of this specific option (null = bounded only by group maxSelect).
+    maxPerItem      Int?
+    available       Boolean  @default(true)
+    sortOrder       Int      @default(0)
+    /// Times this option has been ordered; drives the "most ordered" strip on the product page.
+    popularity      Int      @default(0)
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+
+    group            OptionGroup       @relation(fields: [groupId], references: [id], onDelete: Cascade)
+    orderItemOptions OrderItemOption[]
+
+    @@index([groupId])
+    @@map("option")
+}
+
+/// Snapshot of a selected option at order creation time.
+/// Stored per OrderItem so the receipt is immutable even if options/prices change later.
+model OrderItemOption {
+    id              String  @id @default(cuid())
+    orderItemId     String
+    /// Reference to the original option for analytics (null if option was deleted).
+    optionId        String?
+    /// Snapshot of the group name at order time.
+    groupName       String
+    /// Snapshot of the option name at order time.
+    optionName      String
+    quantity        Int     @default(1)
+    /// Snapshot of the per-unit price delta at order time (in cents).
+    priceDeltaCents Int     @default(0)
+
+    orderItem OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+    option    Option?   @relation(fields: [optionId], references: [id], onDelete: SetNull)
+
+    @@index([orderItemId])
+    @@map("order_item_option")
+}

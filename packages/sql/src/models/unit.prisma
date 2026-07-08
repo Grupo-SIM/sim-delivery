@@ -25,8 +25,13 @@ model Unit {
     /// Loyalty points rate: points earned per 100 cents spent on this unit (0 = disabled).
     loyaltyPointsRate Float  @default(0)
     /// Manual open/closed override. Null = follow the weekly hours (docs/04).
-    isOpenManual    Boolean?
-    createdAt       DateTime @default(now())
+    isOpenManual       Boolean?
+    /// Minimum order subtotal in cents for delivery orders (0 = no minimum).
+    minOrderCents      Int      @default(0)
+    /// Estimated preparation time range displayed to the customer (null = not configured).
+    prepTimeMinMinutes Int?
+    prepTimeMaxMinutes Int?
+    createdAt          DateTime @default(now())
     updatedAt       DateTime @updatedAt
 
     company    Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)

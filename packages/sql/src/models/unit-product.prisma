@@ -15,6 +15,9 @@ model UnitProduct {
     available               Boolean  @default(true)
     /// Optional stock count (MVP+); null = untracked.
     stock                   Int?
+    /// When set, this product is pinned to the "Os mais pedidos" strip before popularity-based items.
+    /// Lower rank = earlier in the list. Null = not manually featured.
+    featuredRank            Int?
     createdAt               DateTime @default(now())
     updatedAt               DateTime @updatedAt
 
