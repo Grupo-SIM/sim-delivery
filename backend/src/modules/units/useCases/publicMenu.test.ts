@@ -137,4 +137,59 @@ describe("ListPublicMenu", () => {
 		const result = await new ListPublicMenu(prisma).execute("u1");
 		expect(result.map(s => s.categoryName)).toEqual(["Salgados", "Bebidas", null]);
 	});
+
+	it("computes fromPriceCents as base + min required option deltas", async () => {
+		const optionGroup = (minSelect: number, options: { priceDeltaCents: number }[]) => ({
+			id: "g1",
+			maxSelect: 1,
+			minSelect,
+			name: "Sabor",
+			options: options.map((o, i) => ({
+				description: "",
+				id: `o${i}`,
+				imageUrl: null,
+				maxPerItem: null,
+				name: `opt${i}`,
+				popularity: 0,
+				priceDeltaCents: o.priceDeltaCents,
+			})),
+			priceRule: "highest",
+			selectionType: "single",
+			sortOrder: 0,
+		});
+
+		const prisma = prismaWith({ id: "u1" }, [
+			{
+				available: true,
+				cashbackPercentOverride: null,
+				category: null,
+				featuredRank: null,
+				id: "up1",
+				priceCentsOverride: null,
+				product: product("p1", {
+					basePriceCents: 4800,
+					optionGroups: [optionGroup(1, [{ priceDeltaCents: 200 }, { priceDeltaCents: 800 }])],
+				}),
+				unitId: "u1",
+			},
+			{
+				available: true,
+				cashbackPercentOverride: null,
+				category: null,
+				featuredRank: 1,
+				id: "up2",
+				priceCentsOverride: null,
+				product: product("p2", { optionGroups: [] }),
+				unitId: "u1",
+			},
+		]);
+		const result = await new ListPublicMenu(prisma).execute("u1");
+		const items = result[0].items;
+		// p1: 4800 + cheapest required group delta (200) = 5000
+		expect(items.find(i => i.id === "up1")).toMatchObject({ fromPriceCents: 5000, priceCents: 4800 });
+		// p2: no required groups, fromPriceCents == priceCents
+		expect(items.find(i => i.id === "up2")).toMatchObject({ featuredRank: 1, fromPriceCents: 1000 });
+		// optionGroups are mapped correctly
+		expect(items.find(i => i.id === "up1")?.optionGroups).toHaveLength(1);
+	});
 });
