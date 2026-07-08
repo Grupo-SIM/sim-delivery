@@ -15,7 +15,7 @@ import {
 	usePostPaymentsIntent,
 } from "@/lib/api";
 import { variantKey } from "@/lib/variant";
-import { cartTotalCents, showAlert, useAuthStore, useCartStore } from "@/stores";
+import { cartTotalCents, showAlert, useAuthStore, useCartStore, useDeliveryMethodStore } from "@/stores";
 import { AddressForm, IdentifyForm, OrderReview, PaymentFrame, ProfileForm, type AppliedCoupon, type AddressValue, type DeliveryMethod, type ProfileValue } from "./components";
 
 type Step = "identify" | "profile" | "address" | "review" | "payment";
@@ -33,7 +33,14 @@ function CheckoutPage() {
 
 	const [profileValue, setProfileValue] = useState<ProfileValue | null>(null);
 	const [savedCustomer, setSavedCustomer] = useState<PostCustomersMe200 | null>(null);
-	const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("delivery");
+	const getMethod = useDeliveryMethodStore(state => state.getMethod);
+	const setStoredMethod = useDeliveryMethodStore(state => state.setMethod);
+	const { data: units } = useQuery(getPublicUnitsQueryOptions({ variantKey: variantKey ?? "" }));
+	const unit = units?.find(u => u.id === unitId);
+	const availableMethods = unit?.deliveryMethods ?? ["delivery"];
+	const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>(() =>
+		getMethod(unitId, availableMethods),
+	);
 	const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
 	const [cashbackRedeemCents, setCashbackRedeemCents] = useState(0);
 	const [loyaltyRedeemPoints, setLoyaltyRedeemPoints] = useState(0);
@@ -49,9 +56,6 @@ function CheckoutPage() {
 		enabled: identified && !!variantKey,
 	});
 
-	const { data: units } = useQuery(getPublicUnitsQueryOptions({ variantKey: variantKey ?? "" }));
-	const unit = units?.find(u => u.id === unitId);
-
 	const { data: cashbackData } = useGetCashbackMe(
 		{ variantKey: variantKey ?? "" },
 		{ query: { enabled: identified && !!variantKey } },
@@ -64,24 +68,28 @@ function CheckoutPage() {
 	);
 	const loyaltyBalancePoints = Number(loyaltyData?.balancePoints ?? 0);
 
-	const reviewStep: Step = !identified
+	const isPickup = deliveryMethod === "pickup";
+	const hasCustomer = savedCustomer !== null || existingCustomer !== null;
+	const reviewStep: Step = !identified || loadingCustomer
 		? "identify"
-		: identified && loadingCustomer
-			? "identify"
-			: existingCustomer === null && profileValue === null && savedCustomer === null
-				? "profile"
-				: savedCustomer === null && existingCustomer === null
+		: !hasCustomer && profileValue === null
+			? "profile"
+			: !hasCustomer
+				? "address"
+				// Existing customer + pickup: skip address entirely
+				: existingCustomer !== null && savedCustomer === null && !isPickup
 					? "address"
-					: savedCustomer !== null || existingCustomer !== null
-						? savedCustomer === null && existingCustomer !== null
-							? "address"
-							: "review"
-						: "address";
+					: "review";
 
 	const step: Step = paymentUrl ? "payment" : reviewStep;
 
 	const activeCustomer = savedCustomer ?? existingCustomer ?? null;
 	const savedAddress = activeCustomer?.addresses[0] ?? null;
+
+	function handleChangeDeliveryMethod(method: DeliveryMethod) {
+		setDeliveryMethod(method);
+		setStoredMethod(unitId, method);
+	}
 
 	function handleAddressSubmit(address: AddressValue) {
 		const profile = profileValue ?? { cpf: existingCustomer?.cpf ?? "", name: user?.name ?? "" };
@@ -214,7 +222,8 @@ function CheckoutPage() {
 						loyaltyBalancePoints={loyaltyBalancePoints}
 						loyaltyRedeemPoints={loyaltyRedeemPoints}
 						onChangeCashbackRedeem={setCashbackRedeemCents}
-						onChangeDeliveryMethod={setDeliveryMethod}
+						availableMethods={availableMethods}
+					onChangeDeliveryMethod={handleChangeDeliveryMethod}
 						onChangeLoyaltyRedeem={setLoyaltyRedeemPoints}
 						onSetCoupon={setAppliedCoupon}
 						onSubmit={handlePlaceOrder}

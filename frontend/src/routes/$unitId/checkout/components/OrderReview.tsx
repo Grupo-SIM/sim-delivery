@@ -14,6 +14,7 @@ export type AppliedCoupon = PostPublicCouponsValidate200 & { code: string };
 interface OrderReviewProps {
 	address: Address | null;
 	appliedCoupon: AppliedCoupon | null;
+	availableMethods: string[];
 	cashbackBalanceCents: number;
 	cashbackRedeemCents: number;
 	deliveryMethod: DeliveryMethod;
@@ -35,6 +36,7 @@ interface OrderReviewProps {
 export function OrderReview({
 	address,
 	appliedCoupon,
+	availableMethods,
 	cashbackBalanceCents,
 	cashbackRedeemCents,
 	deliveryMethod,
@@ -94,22 +96,24 @@ export function OrderReview({
 				))}
 			</div>
 
-			<div className="space-y-2">
-				<span className="font-medium text-sm">{t("store.checkout.order.deliveryMethod")}</span>
-				<div className="flex gap-2">
-					{(["delivery", "pickup"] as DeliveryMethod[]).map(method => (
-						<Button
-							key={method}
-							onClick={() => onChangeDeliveryMethod(method)}
-							size="sm"
-							type="button"
-							variant={deliveryMethod === method ? "default" : "outline"}
-						>
-							{t(`store.checkout.order.${method}`)}
-						</Button>
-					))}
+			{availableMethods.length > 1 && (
+				<div className="space-y-2">
+					<span className="font-medium text-sm">{t("store.checkout.order.deliveryMethod")}</span>
+					<div className="flex gap-2">
+						{(["delivery", "pickup"] as DeliveryMethod[]).filter(m => availableMethods.includes(m)).map(method => (
+							<Button
+								key={method}
+								onClick={() => onChangeDeliveryMethod(method)}
+								size="sm"
+								type="button"
+								variant={deliveryMethod === method ? "default" : "outline"}
+							>
+								{t(`store.checkout.order.${method}`)}
+							</Button>
+						))}
+					</div>
 				</div>
-			</div>
+			)}
 
 			{address && (
 				<div className="rounded-md border border-border bg-muted/30 p-3 text-sm">

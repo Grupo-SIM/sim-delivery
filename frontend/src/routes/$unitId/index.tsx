@@ -8,7 +8,8 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetPublicUnits, useGetPublicUnitsByUnitIdMenu } from "@/lib/api";
 import { variantKey } from "@/lib/variant";
-import { CartBar, InfoPill, MenuBrowser, StoreFooter, StoreInfoModal, UnitSwitcher } from "./components";
+import { useDeliveryMethodStore } from "@/stores";
+import { CartBar, DeliveryMethodSelector, InfoPill, MenuBrowser, StoreFooter, StoreInfoModal, UnitSwitcher } from "./components";
 import { money } from "./components/types";
 
 function UnitStorePage() {
@@ -18,6 +19,7 @@ function UnitStorePage() {
 	const menu = useGetPublicUnitsByUnitIdMenu(unitId);
 	const unit = units?.find(item => item.id === unitId);
 	const [profileOpen, setProfileOpen] = useState(false);
+	const getMethod = useDeliveryMethodStore(state => state.getMethod);
 
 	if (!unit) {
 		return (
@@ -36,6 +38,7 @@ function UnitStorePage() {
 	const prepMin = unit.prepTimeMinMinutes != null ? Number(unit.prepTimeMinMinutes) : null;
 	const prepMax = unit.prepTimeMaxMinutes != null ? Number(unit.prepTimeMaxMinutes) : null;
 	const hasDelivery = unit.deliveryMethods.includes("delivery");
+	const deliveryMethod = getMethod(unitId, unit.deliveryMethods);
 
 	return (
 		<Container className="space-y-4 py-8">
@@ -60,6 +63,7 @@ function UnitStorePage() {
 			</div>
 
 			<div className="flex flex-wrap items-center gap-2">
+				<DeliveryMethodSelector deliveryMethods={unit.deliveryMethods} unitId={unitId} />
 				{prepMin != null && prepMax != null && (
 					<InfoPill>⏱ {prepMin}–{prepMax} min</InfoPill>
 				)}
@@ -68,7 +72,7 @@ function UnitStorePage() {
 						{t("store.unit.minOrder")} {money.format(minOrder / 100)}
 					</InfoPill>
 				)}
-				{hasDelivery && (
+				{hasDelivery && deliveryMethod === "delivery" && (
 					<InfoPill>
 						{t("store.cart.deliveryFee")}: {fee > 0 ? money.format(fee / 100) : t("store.unit.freeDelivery")}
 					</InfoPill>

@@ -1,4 +1,5 @@
 export { type AuthState, useAuthStore } from "./auth";
+export { type DeliveryMethod, useDeliveryMethodStore } from "./delivery-method";
 export {
 	type CartItem,
 	type CartItemInput,
