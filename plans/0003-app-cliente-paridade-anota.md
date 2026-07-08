@@ -142,14 +142,14 @@ variações (tamanho)" e destaques manuais como pendências.
 
 - ✅ **24.1 Schema `Unit`**: `minOrderCents Int @default(0)`, `prepTimeMinMinutes Int?`,
   `prepTimeMaxMinutes Int?`; expor no DTO público de unidades.
-- **24.2 Header rico** (`$unitId/index.tsx`): sub-linha "**Aberto até HH:MM · Pedido mín.
+- ✅ **24.2 Header rico** (`$unitId/index.tsx`): sub-linha "**Aberto até HH:MM · Pedido mín.
   R$ X**" (ou "Abre às HH:MM" quando fechado, via `UnitHours`), **ETA** ("30–45 min"),
   **taxa de entrega**, nota média (reviews já existem) e link "**Perfil da loja**" → modal/
   página com endereço, horários completos e formas de pagamento da unidade. Extrair
   primitivos (`InfoPill`, `StoreInfoModal`).
-- **24.3 Pedido mínimo**: `CartBar` mostra progresso ("Faltam R$ X p/ o mínimo") e desabilita
+- ✅ **24.3 Pedido mínimo**: `CartBar` mostra progresso ("Faltam R$ X p/ o mínimo") e desabilita
   "concluir" abaixo do mínimo (só `delivery`); `CreateOrder` valida (422 `BELOW_MINIMUM`).
-- **24.4 Delivery/Retirada na entrada**: seletor no header do cardápio (default pela
+- ✅ **24.4 Delivery/Retirada na entrada**: seletor no header do cardápio (default pela
   `unit.deliveryMethods`; fixa se só um). Persistir por unidade; propagar ao checkout
   (pré-selecionar/ocultar toggle no `OrderReview`, pular endereço se `pickup`); revalidar ao
   trocar de unidade.
