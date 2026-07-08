@@ -653,13 +653,18 @@
 				"searchPlaceholder": "Buscar no cardápio"
 			},
 			"product": {
+				"addedTitle": "{{title}} adicionado!",
 				"chooseExact": "Escolha {{count}}",
 				"chooseGroup": "Escolha {{group}}",
 				"chooseRange": "Escolha de {{min}} a {{max}}",
 				"chooseUpTo": "Escolha até {{count}}",
+				"continueShopping": "Continuar comprando",
 				"from": "A partir de",
+				"goToCart": "Avançar para o carrinho",
 				"notFound": "Produto não encontrado.",
+				"notePlaceholder": "Ex: sem cebola, ovo…",
 				"popularOptions": "Itens mais pedidos",
+				"quantity": "Quantidade",
 				"required": "Obrigatório",
 				"searchOptions": "Pesquise pelas opções..."
 			},

@@ -30,7 +30,7 @@ export interface CartItem {
 export type CartItemInput = Omit<CartItem, "lineKey" | "note" | "quantity">;
 
 export interface CartState {
-	addItem: (unitId: string, item: CartItemInput) => void;
+	addItem: (unitId: string, item: CartItemInput, quantity?: number, note?: string) => void;
 	clear: () => void;
 	items: CartItem[];
 	removeItem: (lineKey: string) => void;
@@ -51,7 +51,7 @@ function makeLineKey(id: string, options: SelectedOption[]): string {
 export const useCartStore = create<CartState>()(
 	persist(
 		(set, get) => ({
-			addItem: (unitId, item) =>
+			addItem: (unitId, item, quantity = 1, note = "") =>
 				set(state => {
 					// Switching units starts a fresh cart (one unit at a time).
 					const base = state.unitId === unitId ? state.items : [];
@@ -59,9 +59,11 @@ export const useCartStore = create<CartState>()(
 					const existing = base.find(line => line.lineKey === lineKey);
 					const items = existing
 						? base.map(line =>
-								line.lineKey === lineKey ? { ...line, quantity: line.quantity + 1 } : line,
+								line.lineKey === lineKey
+									? { ...line, quantity: line.quantity + quantity }
+									: line,
 							)
-						: [...base, { ...item, lineKey, note: "", quantity: 1 }];
+						: [...base, { ...item, lineKey, note, quantity }];
 					return { items, unitId };
 				}),
 			clear: () => set({ items: [], unitId: null }),

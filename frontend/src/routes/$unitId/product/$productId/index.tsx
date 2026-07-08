@@ -11,7 +11,7 @@ import { useGetPublicUnitsByUnitIdMenu } from "@/lib/api";
 import type { SelectedOption } from "@/stores";
 import { useCartStore } from "@/stores";
 import { money } from "../../components/types";
-import { OptionGroupBlock, PopularOptionsStrip } from "./components";
+import { AddToCartModal, OptionGroupBlock, PopularOptionsStrip } from "./components";
 import type { OptionGroup, Selections } from "./components";
 
 function ProductPage() {
@@ -26,6 +26,7 @@ function ProductPage() {
 	const [query, setQuery] = useState("");
 	const [localQuery, setLocalQuery] = useDebouncedInput(query, setQuery);
 	const [selections, setSelections] = useState<Selections>({});
+	const [modalOpen, setModalOpen] = useState(false);
 
 	const basePriceCents = Number(item?.priceCents ?? 0);
 
@@ -118,15 +119,36 @@ function ProductPage() {
 
 	function handleAdd() {
 		if (!item || firstInvalidGroup) return;
-		addItem(unitId, {
-			id: item.id,
-			imageUrl: item.imageUrl,
-			options: buildOptions(),
-			priceCents: totalCents,
-			productId: item.productId,
-			title: item.title,
-		});
+		setModalOpen(true);
+	}
+
+	function commitAdd(quantity: number, note: string) {
+		if (!item) return;
+		addItem(
+			unitId,
+			{
+				id: item.id,
+				imageUrl: item.imageUrl,
+				options: buildOptions(),
+				priceCents: totalCents,
+				productId: item.productId,
+				title: item.title,
+			},
+			quantity,
+			note,
+		);
+	}
+
+	function handleConfirmAndStay(quantity: number, note: string) {
+		commitAdd(quantity, note);
+		setModalOpen(false);
 		void navigate({ params: { unitId }, to: "/$unitId" });
+	}
+
+	function handleConfirmAndCheckout(quantity: number, note: string) {
+		commitAdd(quantity, note);
+		setModalOpen(false);
+		void navigate({ params: { unitId }, to: "/$unitId/checkout" });
 	}
 
 	if (menu.isPending) {
@@ -153,6 +175,7 @@ function ProductPage() {
 	const hasGroups = item.optionGroups.length > 0;
 
 	return (
+		<>
 		<Container className="space-y-4 pb-32 pt-6">
 			<Link className="text-primary text-sm" params={{ unitId }} to="/$unitId">
 				← {t("store.checkout.back")}
@@ -220,6 +243,18 @@ function ProductPage() {
 				</div>
 			</div>
 		</Container>
+
+		{item && (
+			<AddToCartModal
+				isOpen={modalOpen}
+				onClose={() => setModalOpen(false)}
+				onConfirmAndCheckout={handleConfirmAndCheckout}
+				onConfirmAndStay={handleConfirmAndStay}
+				priceCents={totalCents}
+				title={item.title}
+			/>
+		)}
+		</>
 	);
 }
 
