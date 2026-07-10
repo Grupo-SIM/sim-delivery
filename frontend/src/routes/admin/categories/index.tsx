@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useGetCategories } from "@/lib/api";
 import { Container } from "@/components/ui/Container";
@@ -30,6 +30,7 @@ function CategoriesPage() {
 }
 
 export const Route = createFileRoute("/admin/categories/")({
-	beforeLoad: requireStaffBeforeLoad,
-	component: CategoriesPage,
+	beforeLoad: () => {
+		throw redirect({ to: "/admin/products", search: { tab: "categories" } });
+	},
 });

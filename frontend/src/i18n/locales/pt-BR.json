@@ -91,10 +91,18 @@
 				"title": "Empresas",
 				"variantUnset": "—"
 			},
-			"dashboard": {
-				"subtitle": "Gerencie o catálogo, a equipe e as unidades desta empresa.",
-				"title": "Admin"
-			},
+					"dashboard": {
+			"recentOrders": "Pedidos recentes",
+			"subtitle": "Gerencie o catálogo, a equipe e as unidades desta empresa.",
+			"title": "Admin",
+			"viewAll": "Ver todos",
+			"nav": {
+				"catalog": "Catálogo",
+				"operations": "Operações",
+				"platform": "Plataforma",
+				"settings": "Configurações"
+			}
+		},
 			"deliveries": {
 				"assign": {
 					"action": "Atribuir entregador",
@@ -189,7 +197,13 @@
 					"title": "Atualizar status do pedido"
 				}
 			},
-			"products": {
+					"products": {
+			"catalogSubtitle": "Produtos, categorias e etiquetas desta empresa.",
+			"tabs": {
+				"categories": "Categorias",
+				"products": "Produtos",
+				"tags": "Etiquetas"
+			},
 				"columns": {
 					"cashback": "Cashback",
 					"price": "Preço",

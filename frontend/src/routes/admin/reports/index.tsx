@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useGetReportsBestSellers, useGetReportsSummary } from "@/lib/api";
 import type { GetReportsSummaryQueryParamsPeriodEnumKey } from "@/lib/api";
@@ -104,6 +104,7 @@ function ReportsPage() {
 }
 
 export const Route = createFileRoute("/admin/reports/")({
-	beforeLoad: requireStaffBeforeLoad,
-	component: ReportsPage,
+	beforeLoad: () => {
+		throw redirect({ to: "/admin" });
+	},
 });
