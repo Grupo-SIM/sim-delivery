@@ -2,6 +2,7 @@ import { redirect } from "@tanstack/react-router";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useGetDeliveries } from "@/lib/api";
+import { authClient } from "@/lib/auth-client";
 import { Container } from "@/components/ui/Container";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -67,9 +68,10 @@ function CourierPage() {
 }
 
 export const Route = createFileRoute("/courier/")({
-	beforeLoad: () => {
-		const { isAuthenticated, role } = useAuthStore.getState();
-		if (!isAuthenticated || role !== "courier") {
+	beforeLoad: async () => {
+		const session = await authClient.getSession();
+		const role = (session.data?.user as { role?: string } | null)?.role ?? null;
+		if (!session.data?.user || role !== "courier") {
 			throw redirect({ to: "/login" });
 		}
 	},

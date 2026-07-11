@@ -1,5 +1,5 @@
 import { redirect } from "@tanstack/react-router";
-import { useAuthStore } from "@/stores/auth";
+import { authClient } from "@/lib/auth-client";
 
 const staffRoles = new Set(["superAdmin", "owner", "employee"]);
 
@@ -10,8 +10,9 @@ export function isStaff(role: string | null | undefined): boolean {
 
 /** Route `beforeLoad` gate: back-office roles (owner/employee/superAdmin) only (docs/03). */
 export async function requireStaffBeforeLoad() {
-	const { isAuthenticated, role } = useAuthStore.getState();
-	if (!isAuthenticated || !isStaff(role)) {
+	const session = await authClient.getSession();
+	const role = (session.data?.user as { role?: string } | null)?.role ?? null;
+	if (!session.data?.user || !isStaff(role)) {
 		throw redirect({ to: "/login" });
 	}
 }
