@@ -34,9 +34,6 @@ export const auth = betterAuth({
 			});
 		},
 	},
-	experimental: {
-		joins: true,
-	},
 	plugins: [
 		phoneNumber({
 			sendOTP: async ({ code, phoneNumber: to }) => {
