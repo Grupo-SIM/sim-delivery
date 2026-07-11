@@ -1,5 +1,6 @@
 import { DomainError } from "@/shared/errors";
 import { auth } from "@/shared/infra/betterAuth";
+import { prisma } from "@/shared/infra/sql";
 import { createPermissions, isEmployeeLevel, isRole, type PermissionSchema } from "@/shared/permissions";
 import { UserErrors } from "../../errors";
 import type { CompanyScopeReturn } from "./types";
@@ -16,7 +17,21 @@ export abstract class CompanyScopeGuard {
 			throw new DomainError(UserErrors.WRONG_CREDENTIALS);
 		}
 
-		const { companyId, id: userId, level, role } = session.user;
+		let { companyId, level, role } = session.user;
+		const { id: userId } = session.user;
+
+		// Better Auth currently omits the custom additionalFields (role/companyId/level) from
+		// the session payload, so fall back to the user row rather than silently degrading to
+		// "customer" (which produced blanket 403s on every staff route).
+		if (!isRole(role)) {
+			const user = await prisma.user.findUnique({
+				select: { companyId: true, level: true, role: true },
+				where: { id: userId },
+			});
+			role = user?.role ?? role;
+			level = user?.level ?? level;
+			companyId = user?.companyId ?? companyId;
+		}
 
 		return {
 			companyId: companyId ?? null,
