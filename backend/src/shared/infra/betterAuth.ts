@@ -60,7 +60,18 @@ export const auth = betterAuth({
 			},
 		}),
 	],
-	trustedOrigins: process.env.CORS_WHITELIST!.split(","),
+	// Same dev/prod split as the Elysia CORS plugin above: extend the whitelist
+	// with common localhost ports so the Vite dev server isn't blocked by
+	// CORS_WHITELIST pointing at the production URL.
+	trustedOrigins:
+		process.env.NODE_ENV === "production"
+			? process.env.CORS_WHITELIST!.split(",")
+			: [
+					...process.env.CORS_WHITELIST!.split(","),
+					"http://localhost:3000",
+					"http://localhost:3333",
+					"http://localhost:5173",
+			  ],
 	// Tenant + RBAC fields (docs/03). Surfaced on session.user so guards can scope by
 	// company/role without an extra query. `role` defaults to customer for self sign-ups.
 	user: {

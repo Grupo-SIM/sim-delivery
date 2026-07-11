@@ -24,7 +24,13 @@ export const app = new Elysia({ normalize: "typebox" })
 	.use([
 		cors({
 			credentials: true,
-			origin: process.env.CORS_WHITELIST?.split(",").filter(Boolean),
+			// In non-production, allow all origins so the local Vite dev server
+			// (localhost:5173) can reach a locally-running backend without requiring
+			// CORS_WHITELIST to be updated for every developer's setup.
+			origin:
+				process.env.NODE_ENV === "production"
+					? process.env.CORS_WHITELIST?.split(",").filter(Boolean)
+					: true,
 		}),
 		staticPlugin({
 			assets: process.env.STATIC_DIR!,
