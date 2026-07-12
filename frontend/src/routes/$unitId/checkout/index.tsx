@@ -14,7 +14,7 @@ import {
 	usePostOrders,
 	usePostPaymentsIntent,
 } from "@/lib/api";
-import { variantKey } from "@/lib/variant";
+import { slug } from "@/lib/variant";
 import { cartTotalCents, showAlert, useAuthStore, useCartStore, useDeliveryMethodStore } from "@/stores";
 import {
 	AddressForm,
@@ -45,7 +45,7 @@ function CheckoutPage() {
 	const [savedCustomer, setSavedCustomer] = useState<PostCustomersMe200 | null>(null);
 	const getMethod = useDeliveryMethodStore(state => state.getMethod);
 	const setStoredMethod = useDeliveryMethodStore(state => state.setMethod);
-	const { data: units } = useQuery(getPublicUnitsQueryOptions({ variantKey: variantKey ?? "" }));
+	const { data: units } = useQuery(getPublicUnitsQueryOptions({ slug: slug ?? "" }));
 	const unit = units?.find(u => u.id === unitId);
 	const availableMethods = unit?.deliveryMethods ?? ["delivery"];
 	const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>(() =>
@@ -62,19 +62,19 @@ function CheckoutPage() {
 	const { mutate: createPaymentIntent, isPending: isCreatingIntent } = usePostPaymentsIntent();
 
 	const { data: existingCustomer, isLoading: loadingCustomer } = useQuery({
-		...getCustomersMeQueryOptions({ variantKey: variantKey ?? "" }),
-		enabled: identified && !!variantKey,
+		...getCustomersMeQueryOptions({ slug: slug ?? "" }),
+		enabled: identified && !!slug,
 	});
 
 	const { data: cashbackData } = useGetCashbackMe(
-		{ variantKey: variantKey ?? "" },
-		{ query: { enabled: identified && !!variantKey } },
+		{ slug: slug ?? "" },
+		{ query: { enabled: identified && !!slug } },
 	);
 	const cashbackBalanceCents = Number(cashbackData?.balanceCents ?? 0);
 
 	const { data: loyaltyData } = useGetLoyaltyMe(
-		{ variantKey: variantKey ?? "" },
-		{ query: { enabled: identified && !!variantKey } },
+		{ slug: slug ?? "" },
+		{ query: { enabled: identified && !!slug } },
 	);
 	const loyaltyBalancePoints = Number(loyaltyData?.balancePoints ?? 0);
 
@@ -119,7 +119,7 @@ function CheckoutPage() {
 					},
 					cpf: profile.cpf || undefined,
 					name: profile.name,
-					variantKey: variantKey ?? "",
+					slug: slug ?? "",
 				},
 			},
 			{
@@ -145,7 +145,7 @@ function CheckoutPage() {
 					redeemCashbackCents: cashbackRedeemCents > 0 ? cashbackRedeemCents : undefined,
 					redeemLoyaltyPoints: loyaltyRedeemPoints > 0 ? loyaltyRedeemPoints : undefined,
 					unitId,
-					variantKey: variantKey ?? "",
+					slug: slug ?? "",
 				},
 			},
 			{
@@ -153,7 +153,7 @@ function CheckoutPage() {
 				onSuccess: order => {
 					setPlacedOrderId(order.id);
 					createPaymentIntent(
-						{ data: { orderId: order.id, variantKey: variantKey ?? "" } },
+						{ data: { orderId: order.id, slug: slug ?? "" } },
 						{
 							onError: () => void showAlert(t("store.checkout.payment.intentError")),
 							onSuccess: intent => setPaymentUrl(intent.paymentUrl),
@@ -241,7 +241,7 @@ function CheckoutPage() {
 						subtotal={cartTotalCents(cartItems)}
 						unitDeliveryFee={Number(unit?.deliveryFee ?? 0)}
 						unitId={unitId}
-						variantKey={variantKey ?? ""}
+						slug={slug ?? ""}
 					/>
 				</>
 			)}

@@ -3,13 +3,13 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import { ListPublicUnits } from "./ListPublicUnits";
 
 function prismaWith(
-	company: { id: string; variantKey: string } | null,
+	company: { id: string; slug: string } | null,
 	units: Array<{ companyId: string; id: string; isOpenManual: boolean | null }> = [],
 ) {
 	return {
 		company: {
-			findUnique: async ({ where }: { where: { variantKey: string } }) =>
-				company && company.variantKey === where.variantKey ? company : null,
+			findUnique: async ({ where }: { where: { slug: string } }) =>
+				company && company.slug === where.slug ? company : null,
 		},
 		unit: {
 			findMany: async ({ where }: { where: { companyId: string } }) =>
@@ -19,18 +19,18 @@ function prismaWith(
 }
 
 describe("ListPublicUnits", () => {
-	it("returns [] without a variantKey", async () => {
-		const prisma = prismaWith({ id: "c1", variantKey: "bliss" });
+	it("returns [] without a slug", async () => {
+		const prisma = prismaWith({ id: "c1", slug: "bliss" });
 		expect(await new ListPublicUnits(prisma).execute(undefined)).toEqual([]);
 	});
 
-	it("returns [] for an unknown variantKey", async () => {
-		const prisma = prismaWith({ id: "c1", variantKey: "bliss" });
+	it("returns [] for an unknown slug", async () => {
+		const prisma = prismaWith({ id: "c1", slug: "bliss" });
 		expect(await new ListPublicUnits(prisma).execute("nope")).toEqual([]);
 	});
 
 	it("returns only the matched company's units with computed status", async () => {
-		const prisma = prismaWith({ id: "c1", variantKey: "bliss" }, [
+		const prisma = prismaWith({ id: "c1", slug: "bliss" }, [
 			{ companyId: "c1", id: "u1", isOpenManual: true },
 			{ companyId: "c2", id: "u2", isOpenManual: true },
 		]);

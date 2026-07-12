@@ -7,7 +7,7 @@ import { UpdateOrderStatus } from "./UpdateOrderStatus";
 
 const noopWhatsApp = new DisabledWhatsAppProvider();
 
-const baseCompany = { id: "cmp_1", variantKey: "demo" };
+const baseCompany = { id: "cmp_1", slug: "demo" };
 const baseUnit = { companyId: "cmp_1", deliveryFee: 500, id: "unit_1" };
 const baseCustomer = { companyId: "cmp_1", id: "cust_1", userId: "user_1" };
 const baseProduct = { basePriceCents: 1000, id: "prod_1", title: "Pão de queijo" };
@@ -59,8 +59,8 @@ function makeOrderPrisma(
 			return fn(tx);
 		},
 		company: {
-			findUnique: async ({ where }: { where: { variantKey?: string } }) =>
-				company?.variantKey === where.variantKey ? company : null,
+			findUnique: async ({ where }: { where: { slug?: string } }) =>
+				company?.slug === where.slug ? company : null,
 		},
 		customer: {
 			findFirst: async ({ where }: { where: { companyId: string; userId: string } }) =>
@@ -83,14 +83,14 @@ const baseBody = {
 	deliveryMethod: "delivery" as const,
 	items: [{ note: undefined, quantity: 2, unitProductId: "up_1" }],
 	unitId: "unit_1",
-	variantKey: "demo",
+	slug: "demo",
 };
 
 describe("CreateOrder", () => {
-	it("throws COMPANY_NOT_FOUND when variantKey unknown", async () => {
+	it("throws COMPANY_NOT_FOUND when slug unknown", async () => {
 		const { prisma } = makeOrderPrisma({ company: null });
 		await expect(
-			new CreateOrder(prisma).execute("user_1", { ...baseBody, variantKey: "unknown" }),
+			new CreateOrder(prisma).execute("user_1", { ...baseBody, slug: "unknown" }),
 		).rejects.toThrow("COMPANY_NOT_FOUND");
 	});
 

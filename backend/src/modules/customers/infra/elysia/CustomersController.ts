@@ -20,7 +20,7 @@ export const CustomersController = new Elysia({
 				"/me",
 				async ({ getMyCustomer, query, request }) => {
 					const { userId } = await AuthGuard.execute(request.headers);
-					return getMyCustomer.execute(userId, query.variantKey);
+					return getMyCustomer.execute(userId, query.slug);
 				},
 				{ query: GetMyCustomerQuery, response: MaybeCustomerReturn },
 			)

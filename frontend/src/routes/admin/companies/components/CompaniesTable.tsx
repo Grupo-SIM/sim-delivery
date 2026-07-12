@@ -21,7 +21,6 @@ export function CompaniesTable({ companies }: CompaniesTableProps) {
 				<tr className="border-border border-b text-left text-muted-foreground">
 					<th className="px-4 py-3 font-medium">{t("admin.companies.columns.name")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.companies.columns.slug")}</th>
-					<th className="px-4 py-3 font-medium">{t("admin.companies.columns.variant")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.companies.columns.createdAt")}</th>
 					<th className="px-4 py-3" />
 				</tr>

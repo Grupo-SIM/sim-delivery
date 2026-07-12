@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { ValidateCoupon } from "./ValidateCoupon";
 
-const baseCompany = { id: "cmp_1", variantKey: "demo" };
+const baseCompany = { id: "cmp_1", slug: "demo" };
 
 function makePrisma(
 	opts: { company?: typeof baseCompany | null; coupon?: Record<string, unknown> | null } = {},
@@ -12,8 +12,8 @@ function makePrisma(
 	return {
 		prisma: {
 			company: {
-				findUnique: async ({ where }: { where: { variantKey?: string } }) =>
-					company?.variantKey === where.variantKey ? company : null,
+				findUnique: async ({ where }: { where: { slug?: string } }) =>
+					company?.slug === where.slug ? company : null,
 			},
 			coupon: {
 				findUnique: async ({ where }: { where: { companyId_code: { companyId: string; code: string } } }) => {
@@ -28,7 +28,7 @@ function makePrisma(
 	};
 }
 
-const baseBody = { code: "SAVE10", orderSubtotal: 5000, unitId: "unit_1", variantKey: "demo" };
+const baseBody = { code: "SAVE10", orderSubtotal: 5000, unitId: "unit_1", slug: "demo" };
 
 const baseCoupon = {
 	code: "SAVE10",
@@ -44,7 +44,7 @@ const baseCoupon = {
 };
 
 describe("ValidateCoupon", () => {
-	it("throws COMPANY_NOT_FOUND for unknown variantKey", async () => {
+	it("throws COMPANY_NOT_FOUND for unknown slug", async () => {
 		const { prisma } = makePrisma({ company: null });
 		await expect(new ValidateCoupon(prisma).execute(baseBody)).rejects.toThrow("COMPANY_NOT_FOUND");
 	});

@@ -1,11 +1,8 @@
-/// A tenant of the platform. Root scope of every business entity — each whitelabel
-/// app variant maps to exactly one Company (see docs/01, docs/02).
+/// A tenant of the platform. Root scope of every business entity.
 model Company {
     id         String   @id @default(cuid())
     name       String
     slug       String   @unique
-    /// Links the company to its whitelabel build variant (docs/02). Null until assigned.
-    variantKey  String?  @unique
     /// Branding fields rendered in the store footer and app shell.
     logoUrl     String?
     footerText  String?

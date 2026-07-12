@@ -17,7 +17,7 @@ export const LoyaltyController = new Elysia({ detail: { tags: ["Loyalty"] } })
 				"/me",
 				async ({ getLoyaltyBalance, query, request }) => {
 					const { userId } = await AuthGuard.execute(request.headers);
-					return getLoyaltyBalance.execute(userId, query.variantKey);
+					return getLoyaltyBalance.execute(userId, query.slug);
 				},
 				{ query: GetLoyaltyQuery, response: LoyaltyBalanceReturn },
 			),

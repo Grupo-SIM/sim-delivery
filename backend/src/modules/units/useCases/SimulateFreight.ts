@@ -6,8 +6,8 @@ import { UnitErrors } from "../errors";
 export class SimulateFreight {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute({ unitId, variantKey }: FreightSimulateBody): Promise<FreightSimulateReturn> {
-		const company = await this.prisma.company.findUnique({ where: { variantKey } });
+	async execute({ unitId, slug }: FreightSimulateBody): Promise<FreightSimulateReturn> {
+		const company = await this.prisma.company.findUnique({ where: { slug } });
 		if (!company) throw new DomainError(UnitErrors.NO_COMPANY);
 
 		const unit = await this.prisma.unit.findFirst({

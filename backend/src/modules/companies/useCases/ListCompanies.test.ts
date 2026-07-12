@@ -6,7 +6,6 @@ interface CompanyRow {
 	id: string;
 	name: string;
 	slug: string;
-	variantKey: string | null;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -19,7 +18,6 @@ describe("ListCompanies", () => {
 			name: "A",
 			slug: "a",
 			updatedAt: new Date(1),
-			variantKey: null,
 		};
 		const newer: CompanyRow = {
 			createdAt: new Date(2),
@@ -27,7 +25,6 @@ describe("ListCompanies", () => {
 			name: "B",
 			slug: "b",
 			updatedAt: new Date(2),
-			variantKey: null,
 		};
 
 		let capturedOrder: unknown;

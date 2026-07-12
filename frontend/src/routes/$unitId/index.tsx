@@ -7,7 +7,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetPublicUnits, useGetPublicUnitsByUnitIdMenu } from "@/lib/api";
-import { variantKey } from "@/lib/variant";
+import { slug } from "@/lib/variant";
 import { useDeliveryMethodStore } from "@/stores";
 import {
 	CartBar,
@@ -23,7 +23,7 @@ import { money } from "./components/types";
 function UnitStorePage() {
 	const { t } = useTranslation();
 	const { unitId } = Route.useParams();
-	const { data: units } = useGetPublicUnits({ variantKey });
+	const { data: units } = useGetPublicUnits({ slug });
 	const menu = useGetPublicUnitsByUnitIdMenu(unitId);
 	const unit = units?.find(item => item.id === unitId);
 	const [profileOpen, setProfileOpen] = useState(false);

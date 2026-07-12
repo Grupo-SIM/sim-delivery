@@ -20,12 +20,12 @@ export class CreateOrder {
 			redeemCashbackCents,
 			redeemLoyaltyPoints,
 			unitId,
-			variantKey,
+			slug,
 		} = data;
 
 		if (items.length === 0) throw new DomainError(OrderErrors.EMPTY_ORDER);
 
-		const company = await this.prisma.company.findUnique({ where: { variantKey } });
+		const company = await this.prisma.company.findUnique({ where: { slug } });
 		if (!company) throw new DomainError(OrderErrors.COMPANY_NOT_FOUND);
 
 		const unit = await this.prisma.unit.findFirst({ where: { companyId: company.id, id: unitId } });
@@ -66,7 +66,7 @@ export class CreateOrder {
 				code: couponCode,
 				orderSubtotal: subtotal,
 				unitId,
-				variantKey,
+				slug,
 			});
 			couponId = couponResult.couponId;
 			discountCents = couponResult.discountCents;
@@ -74,14 +74,14 @@ export class CreateOrder {
 
 		let cashbackCentsRedeemed = 0;
 		if (redeemCashbackCents && redeemCashbackCents > 0) {
-			const { balanceCents } = await new GetCashbackBalance(this.prisma).execute(userId, variantKey);
+			const { balanceCents } = await new GetCashbackBalance(this.prisma).execute(userId, slug);
 			if (redeemCashbackCents > balanceCents) throw new DomainError(CashbackErrors.INSUFFICIENT_BALANCE);
 			cashbackCentsRedeemed = redeemCashbackCents;
 		}
 
 		let loyaltyPointsRedeemed = 0;
 		if (redeemLoyaltyPoints && redeemLoyaltyPoints > 0) {
-			const { balancePoints } = await new GetLoyaltyBalance(this.prisma).execute(userId, variantKey);
+			const { balancePoints } = await new GetLoyaltyBalance(this.prisma).execute(userId, slug);
 			if (redeemLoyaltyPoints > balancePoints) throw new DomainError(LoyaltyErrors.INSUFFICIENT_BALANCE);
 			loyaltyPointsRedeemed = redeemLoyaltyPoints;
 		}

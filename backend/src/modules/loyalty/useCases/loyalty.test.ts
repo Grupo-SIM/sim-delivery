@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { GetLoyaltyBalance } from "./GetLoyaltyBalance";
 
-const baseCompany = { id: "cmp_1", variantKey: "demo" };
+const baseCompany = { id: "cmp_1", slug: "demo" };
 const baseCustomer = { companyId: "cmp_1", id: "cust_1", userId: "user_1" };
 
 function makePrisma(
@@ -17,8 +17,8 @@ function makePrisma(
 	return {
 		prisma: {
 			company: {
-				findUnique: async ({ where }: { where: { variantKey?: string } }) =>
-					company?.variantKey === where.variantKey ? company : null,
+				findUnique: async ({ where }: { where: { slug?: string } }) =>
+					company?.slug === where.slug ? company : null,
 			},
 			customer: {
 				findFirst: async ({ where }: { where: { companyId: string; userId: string } }) =>
@@ -32,7 +32,7 @@ function makePrisma(
 }
 
 describe("GetLoyaltyBalance", () => {
-	it("throws COMPANY_NOT_FOUND for unknown variantKey", async () => {
+	it("throws COMPANY_NOT_FOUND for unknown slug", async () => {
 		const { prisma } = makePrisma({ company: null });
 		await expect(new GetLoyaltyBalance(prisma).execute("user_1", "unknown")).rejects.toThrow(
 			"COMPANY_NOT_FOUND",

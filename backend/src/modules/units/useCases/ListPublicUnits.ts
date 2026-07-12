@@ -3,18 +3,18 @@ import type { PublicUnitListReturn } from "../dtos";
 import { isUnitOpen } from "../isUnitOpen";
 
 /**
- * Lists the storefront units of the company that owns `variantKey` (the value baked into
+ * Lists the storefront units of the company that owns `slug` (the value baked into
  * each whitelabel build). Public/no-auth; returns [] for a missing or unknown variant.
  */
 export class ListPublicUnits {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(variantKey: string | undefined): Promise<PublicUnitListReturn> {
-		if (!variantKey) {
+	async execute(slug: string | undefined): Promise<PublicUnitListReturn> {
+		if (!slug) {
 			return [];
 		}
 
-		const company = await this.prisma.company.findUnique({ where: { variantKey } });
+		const company = await this.prisma.company.findUnique({ where: { slug } });
 		if (!company) {
 			return [];
 		}

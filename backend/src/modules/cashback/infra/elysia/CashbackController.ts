@@ -17,7 +17,7 @@ export const CashbackController = new Elysia({ detail: { tags: ["Cashback"] } })
 				"/me",
 				async ({ getCashbackBalance, query, request }) => {
 					const { userId } = await AuthGuard.execute(request.headers);
-					return getCashbackBalance.execute(userId, query.variantKey);
+					return getCashbackBalance.execute(userId, query.slug);
 				},
 				{ query: GetCashbackQuery, response: CashbackBalanceReturn },
 			),

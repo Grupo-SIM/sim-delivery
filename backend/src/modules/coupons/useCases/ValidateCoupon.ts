@@ -7,9 +7,9 @@ export class ValidateCoupon {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(data: ValidateCouponBody): Promise<ValidateCouponReturn> {
-		const { code, orderSubtotal, unitId, variantKey } = data;
+		const { code, orderSubtotal, unitId, slug } = data;
 
-		const company = await this.prisma.company.findUnique({ where: { variantKey } });
+		const company = await this.prisma.company.findUnique({ where: { slug } });
 		if (!company) throw new DomainError(CouponErrors.COMPANY_NOT_FOUND);
 
 		const coupon = await this.prisma.coupon.findUnique({

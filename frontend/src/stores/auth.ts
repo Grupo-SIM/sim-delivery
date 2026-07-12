@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { authClient } from "@/lib/auth-client";
-import { variantKey } from "@/lib/variant";
+import { slug } from "@/lib/variant";
 
 /** Access roles mirror the backend (docs/03). */
 export type UserRole = "superAdmin" | "owner" | "manager" | "attendant" | "kitchen" | "courier" | "customer";
@@ -86,11 +86,11 @@ export const useAuthStore = create<AuthState>(set => ({
 	signIn: async ({ email, invalidCredentialsMessage, password }) => {
 		set({ error: null, isLoading: true });
 
-		// Sends this build's variantKey (docs/02) so the backend can scope superAdmin to
+		// Sends this build's slug (docs/02) so the backend can scope superAdmin to
 		// this site, or downgrade staff signing into a site that isn't their own (docs/03).
 		const { error } = await authClient.signIn.email(
 			{ email, password },
-			{ query: variantKey ? { variantKey } : undefined },
+			{ query: slug ? { slug } : undefined },
 		);
 		if (error) {
 			set({ error: invalidCredentialsMessage, isLoading: false });

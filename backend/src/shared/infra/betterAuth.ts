@@ -19,8 +19,8 @@ export const auth = betterAuth({
 		provider: "postgresql",
 	}),
 	// Site-scoped login (docs/02, docs/03): each whitelabel frontend build sends its own
-	// `variantKey` (VITE_VARIANT_KEY, same one used by the public storefront to resolve
-	// its company) as a `?variantKey=` query param on sign-in. A superAdmin session gets
+	// `slug` (VITE_COMPANY_SLUG, same one used by the public storefront to resolve
+	// its company) as a `?slug=` query param on sign-in. A superAdmin session gets
 	// scoped to that site's companyId without touching their (company-agnostic) user row;
 	// a staff member signing into a site that isn't their own is downgraded to "customer"
 	// for that session only, so their staff powers don't leak across tenants.
@@ -28,8 +28,8 @@ export const auth = betterAuth({
 		session: {
 			create: {
 				before: async (session, context) => {
-					const variantKey = context?.query?.variantKey as string | undefined;
-					if (!variantKey) {
+					const slug = context?.query?.slug as string | undefined;
+					if (!slug) {
 						return;
 					}
 
@@ -38,7 +38,7 @@ export const auth = betterAuth({
 							select: { companyId: true, role: true },
 							where: { id: session.userId },
 						}),
-						prisma.company.findUnique({ select: { id: true }, where: { variantKey } }),
+						prisma.company.findUnique({ select: { id: true }, where: { slug } }),
 					]);
 					if (!user || !company) {
 						return;

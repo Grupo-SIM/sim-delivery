@@ -16,11 +16,11 @@ export const CreateCustomerBody = t.Object({
 	address: AddressInput,
 	cpf: t.Optional(t.String()),
 	name: t.String({ minLength: 1 }),
-	variantKey: t.String({ minLength: 1 }),
+	slug: t.String({ minLength: 1 }),
 });
 export type CreateCustomerBody = typeof CreateCustomerBody.static;
 
 export const GetMyCustomerQuery = t.Object({
-	variantKey: t.String({ minLength: 1 }),
+	slug: t.String({ minLength: 1 }),
 });
 export type GetMyCustomerQuery = typeof GetMyCustomerQuery.static;

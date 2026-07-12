@@ -1,7 +1,7 @@
 import { t } from "elysia";
 
 export const GetLoyaltyQuery = t.Object({
-	variantKey: t.String({ minLength: 1 }),
+	slug: t.String({ minLength: 1 }),
 });
 export type GetLoyaltyQuery = typeof GetLoyaltyQuery.static;
 

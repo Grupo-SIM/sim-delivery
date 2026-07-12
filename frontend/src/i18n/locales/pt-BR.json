@@ -61,8 +61,7 @@
 				"columns": {
 					"createdAt": "Criado em",
 					"name": "Nome",
-					"slug": "Slug",
-					"variant": "Variante"
+					"slug": "Slug"
 				},
 				"create": {
 					"error": "Não foi possível criar a empresa.",
@@ -82,14 +81,13 @@
 					"error": "Não foi possível salvar a empresa.",
 					"save": "Salvar",
 					"saving": "Salvando...",
-					"variantPlaceholder": "chave de variante",
-					"variantTaken": "Esta chave de variante já está em uso."
+					"slugPlaceholder": "ex: bliss-cookie",
+					"slugTaken": "Este slug já está em uso."
 				},
 				"empty": "Nenhuma empresa ainda.",
 				"loadError": "Não foi possível carregar as empresas.",
 				"subtitle": "Clientes atendidos pela plataforma.",
-				"title": "Empresas",
-				"variantUnset": "—"
+				"title": "Empresas"
 			},
 			"dashboard": {
 				"nav": {

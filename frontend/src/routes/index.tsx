@@ -7,11 +7,11 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetPublicUnits } from "@/lib/api";
-import { variantKey } from "@/lib/variant";
+import { slug } from "@/lib/variant";
 
 function StorePage() {
 	const { t } = useTranslation();
-	const { data: units, isError, isPending } = useGetPublicUnits({ variantKey });
+	const { data: units, isError, isPending } = useGetPublicUnits({ slug });
 
 	return (
 		<Container className="space-y-6 py-8">

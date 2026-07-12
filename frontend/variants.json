@@ -4,8 +4,8 @@
 		"appName": "Zero Grau Delivery",
 		"appUrl": "http://localhost:5173",
 		"bundleIdentifier": "com.zerograu.delivery",
-		"description": "Default development build — no company-specific variant key.",
-		"key": "default"
+		"description": "Default development build — no company-specific slug.",
+		"slug": "default"
 	},
 	{
 		"apiUrl": "http://localhost:3000",
@@ -13,6 +13,6 @@
 		"appUrl": "http://localhost:5173",
 		"bundleIdentifier": "com.acaitop.delivery",
 		"description": "Demo açaí brand variant for local testing.",
-		"key": "demo-acai"
+		"slug": "demo-acai"
 	}
 ]

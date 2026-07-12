@@ -7,9 +7,9 @@ export class UpsertCustomer {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(userId: string, data: CreateCustomerBody): Promise<CustomerReturn> {
-		const { address, cpf, name, variantKey } = data;
+		const { address, cpf, name, slug } = data;
 
-		const company = await this.prisma.company.findUnique({ where: { variantKey } });
+		const company = await this.prisma.company.findUnique({ where: { slug } });
 		if (!company) throw new DomainError(CustomerErrors.COMPANY_NOT_FOUND);
 
 		await this.prisma.user.update({ data: { name }, where: { id: userId } });

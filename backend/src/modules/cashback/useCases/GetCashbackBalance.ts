@@ -6,8 +6,8 @@ import { CashbackErrors } from "../errors";
 export class GetCashbackBalance {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(userId: string, variantKey: string): Promise<CashbackBalanceReturn> {
-		const company = await this.prisma.company.findUnique({ where: { variantKey } });
+	async execute(userId: string, slug: string): Promise<CashbackBalanceReturn> {
+		const company = await this.prisma.company.findUnique({ where: { slug } });
 		if (!company) throw new DomainError(CashbackErrors.COMPANY_NOT_FOUND);
 
 		const customer = await this.prisma.customer.findFirst({

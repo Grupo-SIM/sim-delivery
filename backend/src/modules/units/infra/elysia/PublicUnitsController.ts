@@ -9,7 +9,7 @@ import {
 import { ListPublicMenu, ListPublicUnits, SimulateFreight } from "../../useCases";
 
 /** Customer-facing, unauthenticated storefront endpoints. Company is resolved from the
- * `variantKey` baked into each whitelabel build (docs/02). */
+ * `slug` baked into each whitelabel build (docs/02). */
 export const PublicUnitsController = new Elysia({
 	detail: {
 		tags: ["Public"],
@@ -25,8 +25,8 @@ export const PublicUnitsController = new Elysia({
 				prisma,
 				simulateFreight: new SimulateFreight(prisma),
 			}))
-			.get("/units", async ({ listPublicUnits, query }) => listPublicUnits.execute(query.variantKey), {
-				query: t.Object({ variantKey: t.Optional(t.String()) }),
+			.get("/units", async ({ listPublicUnits, query }) => listPublicUnits.execute(query.slug), {
+				query: t.Object({ slug: t.Optional(t.String()) }),
 				response: PublicUnitListReturn,
 			})
 			.get(

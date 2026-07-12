@@ -16,7 +16,7 @@ const baseAddress = {
 
 function makePrisma(
 	opts: {
-		company?: { id: string; variantKey: string } | null;
+		company?: { id: string; slug: string } | null;
 		customer?: {
 			id: string;
 			companyId: string;
@@ -26,7 +26,7 @@ function makePrisma(
 		} | null;
 	} = {},
 ) {
-	const { company = { id: "cmp_1", variantKey: "demo" }, customer = null } = opts;
+	const { company = { id: "cmp_1", slug: "demo" }, customer = null } = opts;
 	const users: Record<string, object> = {};
 	const customers: object[] = customer ? [customer] : [];
 	const addresses: object[] = [];
@@ -43,8 +43,8 @@ function makePrisma(
 				},
 			},
 			company: {
-				findUnique: async ({ where }: { where: { variantKey?: string } }) =>
-					company?.variantKey === where.variantKey ? company : null,
+				findUnique: async ({ where }: { where: { slug?: string } }) =>
+					company?.slug === where.slug ? company : null,
 			},
 			customer: {
 				findFirst: async ({ where }: { where: { companyId: string; userId: string } }) =>
@@ -97,13 +97,13 @@ describe("customers use-cases", () => {
 	});
 
 	describe("UpsertCustomer", () => {
-		it("throws COMPANY_NOT_FOUND when variantKey is unknown", async () => {
+		it("throws COMPANY_NOT_FOUND when slug is unknown", async () => {
 			const { prisma } = makePrisma({ company: null });
 			await expect(
 				new UpsertCustomer(prisma).execute("user_1", {
 					address: baseAddress,
 					name: "Maria",
-					variantKey: "unknown",
+					slug: "unknown",
 				}),
 			).rejects.toThrow("COMPANY_NOT_FOUND");
 		});
@@ -114,7 +114,7 @@ describe("customers use-cases", () => {
 				address: baseAddress,
 				cpf: "12345678901",
 				name: "Maria Silva",
-				variantKey: "demo",
+				slug: "demo",
 			});
 			expect(customers).toHaveLength(1);
 			expect(customers[0]).toMatchObject({ companyId: "cmp_1", userId: "user_1" });
@@ -130,7 +130,7 @@ describe("customers use-cases", () => {
 			await new UpsertCustomer(prisma).execute("user_1", {
 				address: { ...baseAddress, number: "2000" },
 				name: "Maria Silva",
-				variantKey: "demo",
+				slug: "demo",
 			});
 			expect(addresses).toHaveLength(1);
 			expect(addresses[0]).toMatchObject({ number: "2000" });

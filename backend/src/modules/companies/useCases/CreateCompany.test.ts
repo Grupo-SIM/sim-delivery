@@ -6,7 +6,6 @@ interface CompanyRow {
 	id: string;
 	name: string;
 	slug: string;
-	variantKey: string | null;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -20,10 +19,9 @@ function fakePrisma(seed: CompanyRow[] = []) {
 					const row: CompanyRow = {
 						createdAt: new Date(),
 						id: `cmp_${rows.length + 1}`,
-						name: data.name,
-						slug: data.slug,
-						updatedAt: new Date(),
-						variantKey: null,
+					name: data.name,
+					slug: data.slug,
+					updatedAt: new Date(),
 					};
 					rows.push(row);
 					return row;
@@ -42,7 +40,6 @@ describe("CreateCompany", () => {
 		const company = await new CreateCompany(prisma).execute({ name: "Bliss Cookie", slug: "bliss-cookie" });
 
 		expect(company.slug).toBe("bliss-cookie");
-		expect(company.variantKey).toBeNull();
 		expect(rows).toHaveLength(1);
 	});
 
@@ -54,7 +51,6 @@ describe("CreateCompany", () => {
 				name: "Existing",
 				slug: "taken",
 				updatedAt: new Date(),
-				variantKey: null,
 			},
 		]);
 

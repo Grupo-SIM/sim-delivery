@@ -4,8 +4,8 @@ import type { CustomerReturn } from "../dtos";
 export class GetMyCustomer {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(userId: string, variantKey: string): Promise<CustomerReturn | null> {
-		const company = await this.prisma.company.findUnique({ where: { variantKey } });
+	async execute(userId: string, slug: string): Promise<CustomerReturn | null> {
+		const company = await this.prisma.company.findUnique({ where: { slug } });
 		if (!company) return null;
 
 		return this.prisma.customer.findFirst({

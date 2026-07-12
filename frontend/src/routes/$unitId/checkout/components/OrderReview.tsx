@@ -34,7 +34,7 @@ interface OrderReviewProps {
 	subtotal: number;
 	unitDeliveryFee: number;
 	unitId: string;
-	variantKey: string;
+	slug: string;
 }
 
 export function OrderReview({
@@ -56,7 +56,7 @@ export function OrderReview({
 	subtotal,
 	unitDeliveryFee,
 	unitId,
-	variantKey,
+	slug,
 }: OrderReviewProps) {
 	const { t } = useTranslation();
 	const [couponInput, setCouponInput] = useState(appliedCoupon?.code ?? "");
@@ -79,7 +79,7 @@ export function OrderReview({
 				code: couponInput.trim(),
 				orderSubtotal: subtotal,
 				unitId,
-				variantKey,
+				slug,
 			});
 			onSetCoupon({ ...result, code: couponInput.trim().toUpperCase() });
 		} catch {

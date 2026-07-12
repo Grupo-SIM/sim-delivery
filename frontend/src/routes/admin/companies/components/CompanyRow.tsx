@@ -14,14 +14,14 @@ export function CompanyRow({ company }: CompanyRowProps) {
 	const queryClient = useQueryClient();
 	const [editing, setEditing] = useState(false);
 	const [name, setName] = useState(company.name);
-	const [variantKey, setVariantKey] = useState(company.variantKey ?? "");
+	const [slug, setSlug] = useState(company.slug);
 	const [error, setError] = useState<string | null>(null);
 
 	const { isPending, mutate } = usePatchCompaniesByCompanyId();
 
 	function reset() {
 		setName(company.name);
-		setVariantKey(company.variantKey ?? "");
+		setSlug(company.slug);
 		setError(null);
 		setEditing(false);
 	}
@@ -29,11 +29,11 @@ export function CompanyRow({ company }: CompanyRowProps) {
 	function save() {
 		setError(null);
 		mutate(
-			{ companyId: company.id, data: { name, variantKey: variantKey.trim() || null } },
+			{ companyId: company.id, data: { name, slug: slug.trim() } },
 			{
 				onError: caught =>
 					setError(
-						caught.status === 409 ? t("admin.companies.edit.variantTaken") : t("admin.companies.edit.error"),
+						caught.status === 409 ? t("admin.companies.edit.slugTaken") : t("admin.companies.edit.error"),
 					),
 				onSuccess: async () => {
 					setEditing(false);
@@ -49,9 +49,6 @@ export function CompanyRow({ company }: CompanyRowProps) {
 				<td className="px-4 py-3 font-medium">{company.name}</td>
 				<td className="px-4 py-3 text-muted-foreground">{company.slug}</td>
 				<td className="px-4 py-3 text-muted-foreground">
-					{company.variantKey ?? t("admin.companies.variantUnset")}
-				</td>
-				<td className="px-4 py-3 text-muted-foreground">
 					{new Date(company.createdAt).toLocaleDateString()}
 				</td>
 				<td className="px-4 py-3 text-right">
@@ -64,25 +61,31 @@ export function CompanyRow({ company }: CompanyRowProps) {
 	}
 
 	return (
-		<tr className="border-border/60 border-b last:border-0">
-			<td className="px-4 py-3">
-				<Input onChange={event => setName(event.currentTarget.value)} value={name} />
-			</td>
-			<td className="px-4 py-3 text-muted-foreground">{company.slug}</td>
-			<td className="px-4 py-3" colSpan={2}>
-				<Input
-					onChange={event => setVariantKey(event.currentTarget.value)}
-					placeholder={t("admin.companies.edit.variantPlaceholder")}
-					value={variantKey}
-				/>
-				{error && <p className="mt-1 text-destructive text-xs">{error}</p>}
-			</td>
+			<tr className="border-border/60 border-b last:border-0">
+				<td className="px-4 py-3">
+					<Input
+						onChange={event => setName(event.currentTarget.value)}
+						placeholder={t("admin.companies.create.namePlaceholder")}
+						value={name}
+					/>
+				</td>
+				<td className="px-4 py-3">
+					<Input
+						onChange={event => setSlug(event.currentTarget.value)}
+						placeholder={t("admin.companies.edit.slugPlaceholder")}
+						value={slug}
+					/>
+					{error && <p className="mt-1 text-destructive text-xs">{error}</p>}
+				</td>
+				<td className="px-4 py-3 text-muted-foreground">
+					{new Date(company.createdAt).toLocaleDateString()}
+				</td>
 			<td className="px-4 py-3">
 				<div className="flex justify-end gap-2">
 					<Button disabled={isPending} onClick={reset} size="sm" type="button" variant="outline">
 						{t("admin.companies.edit.cancel")}
 					</Button>
-					<Button disabled={isPending || !name} onClick={save} size="sm" type="button">
+					<Button disabled={isPending || !name || !slug.trim()} onClick={save} size="sm" type="button">
 						{isPending ? t("admin.companies.edit.saving") : t("admin.companies.edit.save")}
 					</Button>
 				</div>

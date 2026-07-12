@@ -10,9 +10,9 @@ export class CreatePaymentIntent {
 	) {}
 
 	async execute(userId: string, data: CreatePaymentIntentBody): Promise<PaymentIntentReturn> {
-		const { orderId, variantKey } = data;
+		const { orderId, slug } = data;
 
-		const company = await this.prisma.company.findUnique({ where: { variantKey } });
+		const company = await this.prisma.company.findUnique({ where: { slug } });
 
 		const customer = company
 			? await this.prisma.customer.findFirst({ where: { companyId: company.id, userId } })

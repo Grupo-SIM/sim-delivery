@@ -1,7 +1,7 @@
 import { t } from "elysia";
 
 export const GetCashbackQuery = t.Object({
-	variantKey: t.String({ minLength: 1 }),
+	slug: t.String({ minLength: 1 }),
 });
 export type GetCashbackQuery = typeof GetCashbackQuery.static;
 
