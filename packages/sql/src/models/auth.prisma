@@ -28,6 +28,12 @@ model Session {
     userAgent String?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    /// Per-session tenant/role override, set at sign-in from the requesting site's
+    /// companyId (docs/03). Null means "use the user's own companyId/role" — the
+    /// common case for every role except superAdmin logging into a specific site,
+    /// or staff logging into a site that isn't their own (downgraded to customer).
+    companyId String?
+    role      String?
 
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

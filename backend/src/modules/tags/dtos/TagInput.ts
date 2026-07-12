@@ -8,8 +8,7 @@ const fields = {
 	color: t.Optional(Color),
 };
 
-/** `companyId` is only honored when the caller has no scoped company (superAdmin); ignored otherwise. */
-export const CreateTagBody = t.Object({ ...fields, companyId: t.Optional(t.String()), name: t.String({ minLength: 1 }) });
+export const CreateTagBody = t.Object({ ...fields, name: t.String({ minLength: 1 }) });
 export type CreateTagBody = typeof CreateTagBody.static;
 
 export const UpdateTagBody = t.Object({ ...fields, name: t.Optional(t.String({ minLength: 1 })) });

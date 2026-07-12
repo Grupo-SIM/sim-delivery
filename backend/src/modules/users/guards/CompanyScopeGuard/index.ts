@@ -32,6 +32,24 @@ export abstract class CompanyScopeGuard {
 			companyId = user?.companyId ?? companyId;
 		}
 
+		// Session-level tenant/role override (site-scoped login, docs/03): superAdmin
+		// scoped to the site they logged into, or staff downgraded to customer on a site
+		// that isn't their own. Set once at sign-in by betterAuth's session.create hook.
+		const sessionRole = session.session.role;
+		if (sessionRole === undefined) {
+			const dbSession = await prisma.session.findUnique({
+				select: { companyId: true, role: true },
+				where: { id: session.session.id },
+			});
+			if (dbSession && isRole(dbSession.role)) {
+				role = dbSession.role;
+				companyId = dbSession.companyId ?? null;
+			}
+		} else if (isRole(sessionRole)) {
+			role = sessionRole;
+			companyId = session.session.companyId ?? null;
+		}
+
 		return {
 			companyId: companyId ?? null,
 			role: isRole(role) ? role : "customer",

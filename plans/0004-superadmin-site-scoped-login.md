@@ -1,56 +1,46 @@
 # 0004 — Site-scoped login (superAdmin cross-company access)
 
+**Status: implemented.** See commits following this plan's initial write-up.
+
 ## Context
 
 Follow-up to the superAdmin cross-company read/write fixes (reports 403, list use-cases,
-create/update/delete parity — see recent commits). Those fixes made `companyId === null`
-mean "no filter" wherever a use-case takes a `companyId`. This plan covers the remaining
-piece: how a session actually gets `companyId: null` (or a specific company) in the first
-place.
+create/update/delete parity). Those fixes made `companyId === null` mean "no filter"
+wherever a use-case takes a `companyId`. This plan covers how a session actually gets
+`companyId: null` (or a specific company) in the first place.
 
-Confirmed design (via user Q&A, not yet implemented):
+**Key discovery during implementation**: the codebase already has the exact "site" concept
+needed — `variantKey` (docs/02, whitelabel builds). Each frontend build bakes in
+`VITE_VARIANT_KEY` (`frontend/src/lib/variant.ts`), which resolves to `Company.variantKey`
+server-side. Public storefront routes (coupons, loyalty, cashback, orders) already thread
+`variantKey` through to resolve a companyId. So no new env var was needed — login reuses
+`variantKey` the same way.
 
-- Each frontend deployment belongs to exactly one company. The frontend knows its own
-  companyId via a build-time env var (e.g. `VITE_COMPANY_ID`).
-- On login, the frontend sends that companyId as a query param on the `signIn.email` call.
-- Backend behavior per role, given the requested site companyId:
-  - `superAdmin`: session gets scoped to the requested companyId for that session only.
-    The user's own DB row stays `companyId: null` (cross-tenant identity preserved).
-  - staff (`owner`/`manager`/`attendant`/`kitchen`/`courier`) whose own `companyId` matches
-    the requested site: unchanged, normal staff session.
-  - staff whose own `companyId` does **not** match the requested site: session is treated
-    as a plain `customer` for that site (their staff powers don't apply on someone else's
-    site, but they can still log in and shop as a customer there).
-  - `customer`: unaffected.
-- The effective (per-session) companyId/role must live on the **Session** row, not the
-  User row — a Prisma migration adds `companyId`/`role` override columns to `session`,
-  configured via Better Auth's `session.additionalFields`.
-- `CompanyScopeGuard.execute` needs to prefer the session-level override over
-  `session.user.companyId`/`role` when present, with a DB fallback consistent with the
-  existing comment about Better Auth omitting additionalFields from the session payload.
+Implemented design:
 
-## Steps
+- The frontend sends its own `variantKey` (if any) as a `?variantKey=` query param on
+  `authClient.signIn.email(...)` (`frontend/src/stores/auth.ts`).
+- `betterAuth.ts`'s `databaseHooks.session.create.before` hook resolves `variantKey` →
+  `Company.id`, then calls the pure `resolveSiteSessionOverride` (in
+  `backend/src/shared/infra/resolveSiteSessionOverride.ts`) to decide the session-level
+  override:
+  - `superAdmin`: session scoped to that company (user row stays `companyId: null`).
+  - staff whose own `companyId` matches: no override (normal session).
+  - staff whose own `companyId` doesn't match: downgraded to `customer` for that session.
+  - `customer`, or no `variantKey` sent: no override (unaffected / cross-tenant as before).
+- The override lives on the `Session` row (`companyId`/`role` columns added via migration
+  `20260712000000_add_session_tenant_override`), configured via Better Auth's
+  `session.additionalFields`, input-locked so clients can't set it directly.
+- `CompanyScopeGuard.execute` reads the session-level override first (with a DB fallback
+  mirroring the existing "Better Auth omits additionalFields" workaround for the user
+  fields), falling back to the user's own `companyId`/`role` when no override applies.
 
-1. **Schema**: add `companyId String?` and `role String?` to the `Session` model in
-   `packages/sql/src/models/auth.prisma`; generate a local migration (do not push to any
-   shared DB — local dev only, per repo policy).
-2. **Better Auth config** (`backend/src/shared/infra/betterAuth.ts`): register
-   `session: { additionalFields: { companyId: {...}, role: {...} } }`.
-3. **Sign-in hook**: add an `after` hook (via `createAuthMiddleware`) matching
-   `/sign-in/email` that reads `ctx.query.companyId`, looks up the just-created session +
-   user, and writes the effective `companyId`/`role` onto the session row per the rules
-   above.
-4. **`CompanyScopeGuard.execute`**: read `session.session.companyId`/`role` first, falling
-   back to `session.user.companyId`/`role`, then to the existing DB-lookup fallback.
-5. **Frontend**: add `VITE_COMPANY_ID` (or equivalent) env var; pass it as a query param in
-   `authClient.signIn.email(...)` in `frontend/src/stores/auth.ts`.
-6. Tests: unit-test the sign-in hook's role/companyId decision table directly (the 4 cases
-   above); update `CompanyScopeGuard` tests for the new precedence order.
+## Outstanding for whoever deploys this
 
-## Open questions to confirm before starting
-
-- Exact env var name and where it's injected (Vite `.env` per deployment vs. `apps/*`
-  build config — check how per-tenant frontend deployments are currently built, if at all;
-  today's codebase has a single frontend app with no existing multi-site build setup).
-- Whether "logged in as customer" on a mismatched site should be silent or surfaced to the
-  user (e.g. a toast saying "you're not staff here").
+- **Migration not applied**: `packages/sql/src/migrations/20260712000000_add_session_tenant_override/migration.sql`
+  was written by hand (not run via `prisma migrate dev`) because the configured
+  `DATABASE_URL` points at a non-local host — running migrations against it wasn't done
+  per the "never affect anything outside this machine" rule. Run
+  `bun run migrate:deploy` (in `packages/sql`) against your dev DB before relying on this.
+- Whether "logged in as customer" on a mismatched site should be surfaced to the user (e.g.
+  a toast) is still open — currently silent.

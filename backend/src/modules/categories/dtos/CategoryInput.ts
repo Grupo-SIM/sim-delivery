@@ -5,12 +5,7 @@ const fields = {
 	position: t.Optional(t.Integer({ minimum: 0 })),
 };
 
-/** `companyId` is only honored when the caller has no scoped company (superAdmin); ignored otherwise. */
-export const CreateCategoryBody = t.Object({
-	...fields,
-	companyId: t.Optional(t.String()),
-	name: t.String({ minLength: 1 }),
-});
+export const CreateCategoryBody = t.Object({ ...fields, name: t.String({ minLength: 1 }) });
 export type CreateCategoryBody = typeof CreateCategoryBody.static;
 
 export const UpdateCategoryBody = t.Object({ ...fields, name: t.Optional(t.String({ minLength: 1 })) });

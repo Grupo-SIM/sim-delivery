@@ -6,6 +6,7 @@ import { magicLink, phoneNumber } from "better-auth/plugins";
 import { MagicLinkEmail, ResetPasswordEmail } from "@/modules/users/emails";
 import { mailer } from "./mail";
 import { type PhoneOtpProviderKey, phoneOtpProviders } from "./phoneOtp";
+import { resolveSiteSessionOverride } from "./resolveSiteSessionOverride";
 import { prisma } from "./sql";
 
 const algorithm = "argon2id";
@@ -17,6 +18,38 @@ export const auth = betterAuth({
 	database: prismaAdapter(prisma, {
 		provider: "postgresql",
 	}),
+	// Site-scoped login (docs/02, docs/03): each whitelabel frontend build sends its own
+	// `variantKey` (VITE_VARIANT_KEY, same one used by the public storefront to resolve
+	// its company) as a `?variantKey=` query param on sign-in. A superAdmin session gets
+	// scoped to that site's companyId without touching their (company-agnostic) user row;
+	// a staff member signing into a site that isn't their own is downgraded to "customer"
+	// for that session only, so their staff powers don't leak across tenants.
+	databaseHooks: {
+		session: {
+			create: {
+				before: async (session, context) => {
+					const variantKey = context?.query?.variantKey as string | undefined;
+					if (!variantKey) {
+						return;
+					}
+
+					const [user, company] = await Promise.all([
+						prisma.user.findUnique({
+							select: { companyId: true, role: true },
+							where: { id: session.userId },
+						}),
+						prisma.company.findUnique({ select: { id: true }, where: { variantKey } }),
+					]);
+					if (!user || !company) {
+						return;
+					}
+
+					const override = resolveSiteSessionOverride(company.id, user);
+					return override ? { data: override } : undefined;
+				},
+			},
+		},
+	},
 	emailAndPassword: {
 		enabled: true,
 		minPasswordLength: 0,
@@ -75,6 +108,14 @@ export const auth = betterAuth({
 		additionalFields: {
 			companyId: { input: false, required: false, type: "string" },
 			role: { defaultValue: "customer", input: false, required: false, type: "string" },
+		},
+	},
+	// Per-session tenant/role override (see databaseHooks.session.create.before above).
+	// Only ever set programmatically by that hook, never accepted as client input.
+	session: {
+		additionalFields: {
+			companyId: { input: false, required: false, type: "string" },
+			role: { input: false, required: false, type: "string" },
 		},
 	},
 });

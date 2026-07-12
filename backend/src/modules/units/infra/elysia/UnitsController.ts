@@ -45,7 +45,7 @@ export const UnitsController = new Elysia({
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "units", "create");
 
-					return createUnit.execute(scope.companyId ?? body.companyId ?? null, body);
+					return createUnit.execute(scope.companyId, body);
 				},
 				{ body: CreateUnitBody, response: UnitReturn },
 			)

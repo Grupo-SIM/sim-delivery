@@ -36,7 +36,7 @@ export const ProductsController = new Elysia({
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "menu", "create");
 
-					return createProduct.execute(scope.companyId ?? body.companyId ?? null, body);
+					return createProduct.execute(scope.companyId, body);
 				},
 				{ body: CreateProductBody, response: ProductReturn },
 			)
