@@ -17,6 +17,15 @@ export function Modal({ children, isOpen, maxWidth = "640px", onClose, title }: 
 			isOpen={isOpen}
 			onClose={onClose}
 			overrides={{
+				Close: {
+					style: {
+						borderRadius: "10px",
+						height: "36px",
+						right: "14px",
+						top: "14px",
+						width: "36px",
+					},
+				},
 				Dialog: {
 					style: {
 						borderRadius: "24px",
@@ -37,8 +46,16 @@ export function Modal({ children, isOpen, maxWidth = "640px", onClose, title }: 
 			role={ROLE.dialog}
 			size={SIZE.auto}
 		>
-			{title && <ModalHeader>{title}</ModalHeader>}
-			<ModalBody>{children}</ModalBody>
+			{title && (
+				<ModalHeader
+					$style={{ fontSize: "20px", fontWeight: 700, lineHeight: "28px", padding: "28px 64px 0 28px" }}
+				>
+					{title}
+				</ModalHeader>
+			)}
+			<ModalBody $style={{ fontSize: "16px", lineHeight: "24px", padding: "28px 64px 28px 28px" }}>
+				{children}
+			</ModalBody>
 		</BaseModal>
 	);
 }

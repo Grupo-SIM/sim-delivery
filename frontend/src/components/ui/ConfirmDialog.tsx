@@ -17,6 +17,15 @@ export function ConfirmDialog() {
 			isOpen
 			onClose={() => close(false)}
 			overrides={{
+				Close: {
+					style: {
+						borderRadius: "10px",
+						height: "36px",
+						right: "14px",
+						top: "14px",
+						width: "36px",
+					},
+				},
 				Dialog: {
 					style: {
 						borderRadius: "24px",
@@ -37,11 +46,17 @@ export function ConfirmDialog() {
 			role={ROLE.alertdialog}
 			size={SIZE.auto}
 		>
-			{current.title && <ModalHeader>{current.title}</ModalHeader>}
-			<ModalBody>
+			{current.title && (
+				<ModalHeader
+					$style={{ fontSize: "20px", fontWeight: 700, lineHeight: "28px", padding: "28px 64px 0 28px" }}
+				>
+					{current.title}
+				</ModalHeader>
+			)}
+			<ModalBody $style={{ fontSize: "16px", lineHeight: "24px", padding: "28px 64px 24px 28px" }}>
 				<span className="whitespace-pre-line">{current.message}</span>
 			</ModalBody>
-			<ModalFooter>
+			<ModalFooter $style={{ gap: "12px", padding: "0 28px 28px" }}>
 				{isConfirm && (
 					<ModalButton kind="tertiary" onClick={() => close(false)}>
 						{t("actions.cancel")}
