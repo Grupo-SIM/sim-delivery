@@ -1,5 +1,3 @@
-import { DomainError } from "@/shared/errors";
-import { UserErrors } from "@/modules/users/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { ListDeliveriesQuery, DeliveryListReturn } from "../dtos";
 
@@ -7,7 +5,6 @@ export class ListDeliveries {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(companyId: string | null, query: ListDeliveriesQuery): Promise<DeliveryListReturn> {
-		if (!companyId) throw new DomainError(UserErrors.FORBIDDEN);
 		const { courierId, status } = query;
 
 		const deliveries = await this.prisma.delivery.findMany({
@@ -24,7 +21,7 @@ export class ListDeliveries {
 			},
 			orderBy: { assignedAt: "desc" },
 			where: {
-				companyId,
+				...(companyId ? { companyId } : {}),
 				...(courierId ? { courierId } : {}),
 				...(status ? { status } : {}),
 			},

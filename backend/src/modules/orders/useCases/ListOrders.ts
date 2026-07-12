@@ -1,5 +1,3 @@
-import { DomainError } from "@/shared/errors";
-import { UserErrors } from "@/modules/users/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { ListOrdersQuery, AdminOrderListReturn } from "../dtos";
 
@@ -7,7 +5,6 @@ export class ListOrders {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(companyId: string | null, query: ListOrdersQuery): Promise<AdminOrderListReturn> {
-		if (!companyId) throw new DomainError(UserErrors.FORBIDDEN);
 		const { deliveryMethod, from, hasCoupon, search, status, to, unitId } = query;
 
 		const orders = await this.prisma.order.findMany({
@@ -19,7 +16,7 @@ export class ListOrders {
 			},
 			orderBy: { createdAt: "desc" },
 			where: {
-				companyId,
+				...(companyId ? { companyId } : {}),
 				...(deliveryMethod ? { deliveryMethod } : {}),
 				...(status ? { status } : {}),
 				...(unitId ? { unitId } : {}),

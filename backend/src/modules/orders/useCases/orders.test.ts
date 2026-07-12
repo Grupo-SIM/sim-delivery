@@ -163,8 +163,10 @@ function makeUpdateStatusPrisma(order: { id: string; companyId: string; status: 
 
 	const prisma = {
 		order: {
-			findFirst: async ({ where }: { where: { companyId: string; id: string } }) =>
-				stored.companyId === where.companyId && stored.id === where.id ? stored : null,
+			findFirst: async ({ where }: { where: { companyId?: string; id: string } }) =>
+				(where.companyId ? stored.companyId === where.companyId : true) && stored.id === where.id
+					? stored
+					: null,
 			update: async ({ data }: { data: object }) => {
 				Object.assign(stored, data);
 				return { ...stored };
@@ -187,6 +189,12 @@ describe("UpdateOrderStatus", () => {
 		await expect(
 			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_2", "ord_1", { status: "em_preparo" }),
 		).rejects.toThrow("ORDER_NOT_FOUND");
+	});
+
+	it("allows superAdmin (null company) to update an order from any company", async () => {
+		const { stored, prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute(null, "ord_1", { status: "em_preparo" });
+		expect(stored.status).toBe("em_preparo");
 	});
 
 	it("throws INVALID_TRANSITION for illegal transition", async () => {
@@ -260,5 +268,11 @@ describe("ListOrders", () => {
 		const result = await new ListOrders(prisma).execute("cmp_1", {});
 		expect(result).toHaveLength(1);
 		expect(result[0]).toMatchObject({ customerName: "Maria", unitName: "Centro" });
+	});
+
+	it("allows superAdmin (null company) to list orders across companies", async () => {
+		const { prisma } = makeListOrdersPrisma();
+		const result = await new ListOrders(prisma).execute(null, {});
+		expect(result).toHaveLength(1);
 	});
 });

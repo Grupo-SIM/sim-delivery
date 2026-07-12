@@ -1,5 +1,4 @@
 import { DomainError } from "@/shared/errors";
-import { UserErrors } from "@/modules/users/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { AssignDeliveryBody, DeliveryReturn } from "../dtos";
 import { DeliveryErrors } from "../errors";
@@ -8,11 +7,10 @@ export class AssignDelivery {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(companyId: string | null, data: AssignDeliveryBody): Promise<DeliveryReturn> {
-		if (!companyId) throw new DomainError(UserErrors.FORBIDDEN);
 		const { courierId, orderId } = data;
 
 		const order = await this.prisma.order.findFirst({
-			where: { companyId, id: orderId },
+			where: { ...(companyId ? { companyId } : {}), id: orderId },
 		});
 		if (!order) throw new DomainError(DeliveryErrors.ORDER_NOT_FOUND);
 		if (order.deliveryMethod !== "delivery") throw new DomainError(DeliveryErrors.ORDER_NOT_DELIVERY);
@@ -22,7 +20,7 @@ export class AssignDelivery {
 
 		const delivery = await this.prisma.delivery.create({
 			data: {
-				companyId,
+				companyId: order.companyId,
 				courierId,
 				orderId,
 				unitId: order.unitId,

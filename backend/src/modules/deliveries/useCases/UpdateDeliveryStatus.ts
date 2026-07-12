@@ -1,5 +1,4 @@
 import { DomainError } from "@/shared/errors";
-import { UserErrors } from "@/modules/users/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { UpdateDeliveryStatusBody, DeliveryReturn } from "../dtos";
 import { DeliveryErrors } from "../errors";
@@ -25,11 +24,10 @@ export class UpdateDeliveryStatus {
 		data: UpdateDeliveryStatusBody,
 		isCourier: boolean,
 	): Promise<DeliveryReturn> {
-		if (!companyId) throw new DomainError(UserErrors.FORBIDDEN);
 		const { status } = data;
 
 		const delivery = await this.prisma.delivery.findFirst({
-			where: { companyId, id: deliveryId },
+			where: { ...(companyId ? { companyId } : {}), id: deliveryId },
 		});
 		if (!delivery) throw new DomainError(DeliveryErrors.DELIVERY_NOT_FOUND);
 
