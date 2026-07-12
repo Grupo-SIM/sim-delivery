@@ -3,9 +3,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { ColorField } from "@/components/ui/ColorField";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { FormSectionHeading } from "@/components/ui/FormSectionHeading";
+import { Label } from "@/components/ui/label";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
@@ -83,12 +85,10 @@ function BrandingPage() {
 							placeholder={t("admin.branding.logoUrlPlaceholder")}
 							value={logoUrl}
 						/>
-						<TextField
-							label={t("admin.branding.primaryColor")}
-							onValueChange={setPrimaryColor}
-							placeholder={t("admin.branding.colorHint")}
-							value={primaryColor}
-						/>
+						<div className="space-y-2">
+							<Label>{t("admin.branding.primaryColor")}</Label>
+							<ColorField onChange={setPrimaryColor} value={primaryColor} />
+						</div>
 						<TextField
 							label={t("admin.branding.footerText")}
 							onValueChange={setFooterText}

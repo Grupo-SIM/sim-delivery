@@ -2,11 +2,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { ColorField } from "@/components/ui/ColorField";
 import { Input } from "@/components/ui/input";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { type GetTags200, getTagsQueryKey, useDeleteTagsByTagId, usePatchTagsByTagId } from "@/lib/api";
 import { showAlert, showConfirm } from "@/stores";
-import { ColorField } from "./ColorField";
 
 interface TagRowProps {
 	tag: GetTags200[number];
