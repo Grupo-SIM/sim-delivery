@@ -156,6 +156,10 @@
 		font: inherit;
 	}
 
+	button:not(:disabled) {
+		cursor: pointer;
+	}
+
 	code {
 		padding: 0.125rem 0.25rem;
 		color: var(--primary);
