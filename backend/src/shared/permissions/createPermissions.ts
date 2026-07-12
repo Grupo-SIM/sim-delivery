@@ -1,22 +1,21 @@
 import { createPermix } from "permix";
-import type { EmployeeLevel, Role } from "./roles";
+import type { Role } from "./roles";
 import type { PermissionSchema } from "./schema";
 
 /**
  * Builds the Permix instance for a given user, encoding the docs/03 matrix.
  *
  * `superAdmin` is the only cross-tenant role; all others are company-scoped (the
- * `companyId` filter is enforced by module guards, not here). `level` refines an
- * `employee` into manager / attendant / kitchen.
+ * `companyId` filter is enforced by module guards, not here).
  */
-export function createPermissions(role: Role, level?: EmployeeLevel | null) {
+export function createPermissions(role: Role) {
 	const permix = createPermix<PermissionSchema>();
 
 	const isSuper = role === "superAdmin";
 	const isOwner = role === "owner";
-	const isManager = role === "employee" && level === "manager";
-	const isAttendant = role === "employee" && level === "attendant";
-	const isKitchen = role === "employee" && level === "kitchen";
+	const isManager = role === "manager";
+	const isAttendant = role === "attendant";
+	const isKitchen = role === "kitchen";
 	const isCourier = role === "courier";
 	const isCustomer = role === "customer";
 

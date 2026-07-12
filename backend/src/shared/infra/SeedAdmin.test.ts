@@ -51,7 +51,7 @@ describe("SeedAdmin", () => {
 		const { prisma, updates } = fakePrisma();
 		await new SeedAdmin(prisma, signUp).execute();
 
-		expect(updates).toEqual([{ data: { companyId: null, level: null, role: "superAdmin" }, id: "u_new" }]);
+		expect(updates).toEqual([{ data: { companyId: null, role: "superAdmin" }, id: "u_new" }]);
 	});
 
 	it("promotes an already-existing user instead of signing up again", async () => {
@@ -61,6 +61,6 @@ describe("SeedAdmin", () => {
 		const { prisma, updates } = fakePrisma([{ email: "admin@example.com", id: "u_existing" }]);
 		await new SeedAdmin(prisma, signUp).execute();
 
-		expect(updates).toEqual([{ data: { companyId: null, level: null, role: "superAdmin" }, id: "u_existing" }]);
+		expect(updates).toEqual([{ data: { companyId: null, role: "superAdmin" }, id: "u_existing" }]);
 	});
 });

@@ -20,7 +20,7 @@ export class SeedAdmin {
 		const existing = await this.prisma.user.findUnique({ where: { email } });
 		if (existing) {
 			await this.prisma.user.update({
-				data: { companyId: null, level: null, role: "superAdmin" },
+				data: { companyId: null, role: "superAdmin" },
 				where: { id: existing.id },
 			});
 			return;
@@ -28,7 +28,7 @@ export class SeedAdmin {
 
 		const { user } = await this.signUp({ body: { email, name, password } });
 		await this.prisma.user.update({
-			data: { companyId: null, level: null, role: "superAdmin" },
+			data: { companyId: null, role: "superAdmin" },
 			where: { id: user.id },
 		});
 	}

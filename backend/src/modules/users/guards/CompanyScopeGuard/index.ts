@@ -1,7 +1,7 @@
 import { DomainError } from "@/shared/errors";
 import { auth } from "@/shared/infra/betterAuth";
 import { prisma } from "@/shared/infra/sql";
-import { createPermissions, isEmployeeLevel, isRole, type PermissionSchema } from "@/shared/permissions";
+import { createPermissions, isRole, type PermissionSchema } from "@/shared/permissions";
 import { UserErrors } from "../../errors";
 import type { CompanyScopeReturn } from "./types";
 
@@ -17,37 +17,35 @@ export abstract class CompanyScopeGuard {
 			throw new DomainError(UserErrors.WRONG_CREDENTIALS);
 		}
 
-		let { companyId, level, role } = session.user;
+		let { companyId, role } = session.user;
 		const { id: userId } = session.user;
 
-		// Better Auth currently omits the custom additionalFields (role/companyId/level) from
+		// Better Auth currently omits the custom additionalFields (role/companyId) from
 		// the session payload, so fall back to the user row rather than silently degrading to
 		// "customer" (which produced blanket 403s on every staff route).
 		if (!isRole(role)) {
 			const user = await prisma.user.findUnique({
-				select: { companyId: true, level: true, role: true },
+				select: { companyId: true, role: true },
 				where: { id: userId },
 			});
 			role = user?.role ?? role;
-			level = user?.level ?? level;
 			companyId = user?.companyId ?? companyId;
 		}
 
 		return {
 			companyId: companyId ?? null,
-			level: isEmployeeLevel(level) ? level : null,
 			role: isRole(role) ? role : "customer",
 			userId,
 		};
 	}
 
-	/** Throws FORBIDDEN unless the user's role/level permits `action` on `resource`. */
+	/** Throws FORBIDDEN unless the user's role permits `action` on `resource`. */
 	static authorize<Resource extends keyof PermissionSchema>(
 		scope: CompanyScopeReturn,
 		resource: Resource,
 		action: PermissionSchema[Resource]["action"],
 	): void {
-		const permix = createPermissions(scope.role, scope.level);
+		const permix = createPermissions(scope.role);
 		// Permix's CheckFunctionParams is a per-key conditional tuple that TS cannot
 		// collapse under the generic `Resource`, so we narrow the call here — the public
 		// signature above keeps callers fully typed.
