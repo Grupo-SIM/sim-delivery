@@ -7,7 +7,6 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { requireStaffBeforeLoad } from "@/lib/staff-guard";
 import { KitchenOrderCard } from "./components";
 
 function KitchenPage() {
@@ -64,6 +63,5 @@ function KitchenPage() {
 }
 
 export const Route = createFileRoute("/admin/kitchen/")({
-	beforeLoad: requireStaffBeforeLoad,
 	component: KitchenPage,
 });

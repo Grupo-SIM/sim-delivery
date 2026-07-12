@@ -7,7 +7,6 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { requireStaffBeforeLoad } from "@/lib/staff-guard";
 
 function stars(rating: number): string {
 	return "⭐".repeat(rating) + "☆".repeat(5 - rating);
@@ -67,6 +66,5 @@ function ReviewsPage() {
 }
 
 export const Route = createFileRoute("/admin/reviews/")({
-	beforeLoad: requireStaffBeforeLoad,
 	component: ReviewsPage,
 });

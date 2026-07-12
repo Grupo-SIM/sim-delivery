@@ -9,7 +9,6 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
-import { requireStaffBeforeLoad } from "@/lib/staff-guard";
 import { OrdersTable } from "./components";
 
 const STATUS_FILTERS = [
@@ -109,6 +108,5 @@ function OrdersPage() {
 }
 
 export const Route = createFileRoute("/admin/orders/")({
-	beforeLoad: requireStaffBeforeLoad,
 	component: OrdersPage,
 });

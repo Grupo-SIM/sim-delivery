@@ -5,7 +5,6 @@ import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { requireStaffBeforeLoad } from "@/lib/staff-guard";
 import { InviteStaffForm, StaffTable } from "./components";
 
 function StaffPage() {
@@ -30,6 +29,5 @@ function StaffPage() {
 }
 
 export const Route = createFileRoute("/admin/staff/")({
-	beforeLoad: requireStaffBeforeLoad,
 	component: StaffPage,
 });

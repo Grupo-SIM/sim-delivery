@@ -5,7 +5,6 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetCategories, useGetProducts, useGetUnits, useGetUnitsByUnitIdProducts } from "@/lib/api";
-import { requireStaffBeforeLoad } from "@/lib/staff-guard";
 import { AssociateProductForm, UnitProductsTable } from "./components";
 
 function UnitProductsPage() {
@@ -55,6 +54,5 @@ function UnitProductsPage() {
 }
 
 export const Route = createFileRoute("/admin/units/$unitId/products/")({
-	beforeLoad: requireStaffBeforeLoad,
 	component: UnitProductsPage,
 });

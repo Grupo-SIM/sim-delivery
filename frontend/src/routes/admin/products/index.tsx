@@ -6,7 +6,6 @@ import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { requireStaffBeforeLoad } from "@/lib/staff-guard";
 import { CategoriesTable, CreateCategoryForm } from "../categories/components";
 import { CreateTagForm, TagsTable } from "../tags/components";
 import { CreateProductForm, ProductsTable } from "./components";
@@ -93,7 +92,6 @@ function ProductsPage() {
 }
 
 export const Route = createFileRoute("/admin/products/")({
-	beforeLoad: requireStaffBeforeLoad,
 	component: ProductsPage,
 	validateSearch: z.object({
 		tab: z.enum(["products", "categories", "tags"]).default("products"),

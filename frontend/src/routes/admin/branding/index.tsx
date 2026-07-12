@@ -10,7 +10,6 @@ import { FormSectionHeading } from "@/components/ui/FormSectionHeading";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
-import { requireStaffBeforeLoad } from "@/lib/staff-guard";
 import { showAlert } from "@/stores";
 
 function BrandingPage() {
@@ -138,6 +137,5 @@ function BrandingPage() {
 }
 
 export const Route = createFileRoute("/admin/branding/")({
-	beforeLoad: requireStaffBeforeLoad,
 	component: BrandingPage,
 });

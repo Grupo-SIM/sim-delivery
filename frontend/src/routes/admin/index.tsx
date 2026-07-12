@@ -11,7 +11,6 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { StatCard } from "@/components/ui/StatCard";
-import { requireStaffBeforeLoad } from "@/lib/staff-guard";
 
 function formatCents(cents: number): string {
 	return (cents / 100).toLocaleString("pt-BR", { currency: "BRL", style: "currency" });
@@ -166,6 +165,5 @@ function AdminDashboardPage() {
 }
 
 export const Route = createFileRoute("/admin/")({
-	beforeLoad: requireStaffBeforeLoad,
 	component: AdminDashboardPage,
 });

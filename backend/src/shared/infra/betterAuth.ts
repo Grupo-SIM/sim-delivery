@@ -117,5 +117,11 @@ export const auth = betterAuth({
 			companyId: { input: false, required: false, type: "string" },
 			role: { input: false, required: false, type: "string" },
 		},
+		// Short-lived signed cookie cache so repeated getSession() calls (every route's
+		// beforeLoad, useSession) don't hit the DB each time and blow the /auth rate limit.
+		cookieCache: {
+			enabled: true,
+			maxAge: 60,
+		},
 	},
 });
