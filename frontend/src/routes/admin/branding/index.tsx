@@ -79,22 +79,27 @@ function BrandingPage() {
 				<div className="space-y-6">
 					<div className="space-y-4">
 						<FormSectionHeading>{t("admin.branding.sectionAppearance")}</FormSectionHeading>
+
+						<div className="flex justify-between">
+							<div className="space-y-2">
+								<Label>{t("admin.branding.primaryColor")}</Label>
+								<ColorField onChange={setPrimaryColor} value={primaryColor} />
+							</div>
+							<TextField
+								label={t("admin.branding.footerText")}
+								onValueChange={setFooterText}
+								placeholder={t("admin.branding.footerTextPlaceholder")}
+								value={footerText}
+							/>
+						</div>
+
 						<TextField
 							label={t("admin.branding.logoUrl")}
 							onValueChange={setLogoUrl}
 							placeholder={t("admin.branding.logoUrlPlaceholder")}
 							value={logoUrl}
 						/>
-						<div className="space-y-2">
-							<Label>{t("admin.branding.primaryColor")}</Label>
-							<ColorField onChange={setPrimaryColor} value={primaryColor} />
-						</div>
-						<TextField
-							label={t("admin.branding.footerText")}
-							onValueChange={setFooterText}
-							placeholder={t("admin.branding.footerTextPlaceholder")}
-							value={footerText}
-						/>
+
 						{logoUrl && (
 							<div className="rounded border border-border p-3">
 								<p className="mb-2 font-medium text-muted-foreground text-xs uppercase">
