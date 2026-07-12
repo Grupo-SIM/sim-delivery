@@ -72,7 +72,7 @@ function OrdersPage() {
 					<TextField
 						label={t("admin.orders.filter.search")}
 						onValueChange={setSearch}
-						placeholder="Search by name, phone or order id"
+						placeholder={t("admin.orders.filter.searchPlaceholder")}
 						value={search}
 					/>
 				</div>

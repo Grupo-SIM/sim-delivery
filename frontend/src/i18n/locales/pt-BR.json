@@ -160,6 +160,7 @@
 					"date": "Data",
 					"from": "De",
 					"search": "Buscar",
+					"searchPlaceholder": "Buscar por nome, telefone ou pedido",
 					"to": "Até",
 					"unit": "Unidade",
 					"unitAll": "Todas as unidades"
