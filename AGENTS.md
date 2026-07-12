@@ -121,6 +121,14 @@ This is the same pattern used for `challenges.$challengeId` → `challenges.$cha
 - **No native `<select>`.** Native selects have inconsistent cross-browser styling and a cramped arrow affordance. Always use `CustomSelect` from `@/components/ui/CustomSelect` instead — it renders a `<button>` trigger with a portal-based popover (`createPortal` + `position: fixed`) so it escapes `overflow: hidden/auto` containers (e.g. modals). Never wrap `CustomSelect` in a `<label>`; use a `<div>` with the label text above it since the trigger is a button, not an input.
 - **No ghost (borderless) buttons.** Never render a button without a visible border. A ghost/borderless button is invisible at rest — users can't tell it's interactive. Always use `variant: "outline"` for secondary/subtle actions; reserve `variant: "ghost"` only for icon-only toolbar buttons where the icon itself communicates interactivity, and even then ensure a clear hover background.
 
+## Auth Guards — Never Conflate Rate Limiting with Unauthenticated
+
+`requireStaffBeforeLoad` ([frontend/src/lib/staff-guard.ts](frontend/src/lib/staff-guard.ts)) and its super-admin equivalent ([frontend/src/lib/super-admin-guard.ts](frontend/src/lib/super-admin-guard.ts)) redirect to `/login` whenever `authClient.getSession()` returns no user — but that call returns `data: null` both when the session is genuinely missing/expired AND when the underlying request was rate-limited (HTTP 429). A 429 must never be treated as "not authenticated": redirecting to login on a 429 forces the user to log back in for something that isn't an auth problem, and masks the real rate-limit issue.
+
+When touching these guards (or any other code that decides to redirect to `/login` based on a failed session/auth request), inspect the actual HTTP status of the underlying response before redirecting:
+- 401/403 (or a genuinely empty session) → redirect to `/login`, as today.
+- 429 → do **not** redirect to login; surface a rate-limit message/retry instead (e.g. via `showAlert`), or retry after a backoff, but keep the user on the current route.
+
 ## Backend DTOs (Elysia / TypeBox)
 
 **DTOs are always TypeBox schemas, never TypeScript interfaces.** The type is derived with `typeof XxxDTO.static`:

@@ -1,5 +1,6 @@
 import { redirect } from "@tanstack/react-router";
 import { authClient } from "@/lib/auth-client";
+import { showAlert } from "@/stores";
 
 const staffRoles = new Set(["superAdmin", "owner", "manager", "attendant", "kitchen"]);
 
@@ -11,6 +12,11 @@ export function isStaff(role: string | null | undefined): boolean {
 /** Route `beforeLoad` gate: back-office roles (owner/manager/attendant/kitchen/superAdmin) only (docs/03). */
 export async function requireStaffBeforeLoad() {
 	const session = await authClient.getSession();
+	// A rate-limited session fetch is not "unauthenticated" — don't kick the user to /login for it.
+	if (session.error?.status === 429) {
+		void showAlert("Muitas requisições. Tente novamente em instantes.");
+		return;
+	}
 	const role = (session.data?.user as { role?: string } | null)?.role ?? null;
 	if (!session.data?.user || !isStaff(role)) {
 		throw redirect({ to: "/login" });
