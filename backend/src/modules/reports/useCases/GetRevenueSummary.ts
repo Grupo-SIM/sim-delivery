@@ -1,5 +1,3 @@
-import { DomainError } from "@/shared/errors";
-import { UserErrors } from "@/modules/users/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { GetReportsQuery, RevenueSummaryReturn } from "../dtos";
 
@@ -26,7 +24,6 @@ export class GetRevenueSummary {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(companyId: string | null, query: GetReportsQuery): Promise<RevenueSummaryReturn> {
-		if (!companyId) throw new DomainError(UserErrors.FORBIDDEN);
 		const { period, unitId } = query;
 		const since = periodStart(period);
 
@@ -34,7 +31,7 @@ export class GetRevenueSummary {
 			_count: { id: true },
 			_sum: { total: true },
 			where: {
-				companyId,
+				...(companyId ? { companyId } : {}),
 				status: { in: COMPLETED },
 				...(unitId ? { unitId } : {}),
 				...(since ? { createdAt: { gte: since } } : {}),

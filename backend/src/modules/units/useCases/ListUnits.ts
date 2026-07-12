@@ -6,14 +6,10 @@ export class ListUnits {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(companyId: string | null): Promise<UnitWithStatusListReturn> {
-		if (!companyId) {
-			return [];
-		}
-
 		const units = await this.prisma.unit.findMany({
 			include: { hours: true },
 			orderBy: { createdAt: "asc" },
-			where: { companyId },
+			where: { ...(companyId ? { companyId } : {}) },
 		});
 
 		return units.map(({ hours, ...unit }) => ({ ...unit, isOpenNow: isUnitOpen(hours, unit.isOpenManual) }));

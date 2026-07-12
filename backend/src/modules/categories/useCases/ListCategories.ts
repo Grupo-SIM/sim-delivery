@@ -5,13 +5,9 @@ export class ListCategories {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(companyId: string | null): Promise<CategoryListReturn> {
-		if (!companyId) {
-			return [];
-		}
-
 		return this.prisma.category.findMany({
 			orderBy: [{ position: "asc" }, { createdAt: "asc" }],
-			where: { companyId },
+			where: { ...(companyId ? { companyId } : {}) },
 		});
 	}
 }

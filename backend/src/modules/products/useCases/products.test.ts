@@ -23,8 +23,8 @@ function prismaWith(products: Array<{ id: string; companyId: string }>) {
 				},
 				findFirst: async ({ where }: { where: { companyId: string | null; id: string } }) =>
 					products.find(product => product.companyId === where.companyId && product.id === where.id) ?? null,
-				findMany: async ({ where }: { where: { companyId: string } }) =>
-					products.filter(product => product.companyId === where.companyId),
+				findMany: async ({ where }: { where: { companyId?: string } }) =>
+					where.companyId ? products.filter(product => product.companyId === where.companyId) : products,
 				update: async ({ data, where }: { data: object; where: { id: string } }) => ({
 					id: where.id,
 					...data,
@@ -58,9 +58,9 @@ describe("products use-cases", () => {
 		expect(created[0]).toMatchObject({ basePriceCents: 1200, companyId: "cmp_1", title: "Cheese bread" });
 	});
 
-	it("ListProducts returns [] without a company and scopes otherwise", async () => {
+	it("ListProducts lists across companies without a company and scopes otherwise", async () => {
 		const { prisma } = prismaWith([{ companyId: "cmp_1", id: "prod1" }]);
-		expect(await new ListProducts(prisma).execute(null)).toEqual([]);
+		expect(await new ListProducts(prisma).execute(null)).toHaveLength(1);
 		expect(await new ListProducts(prisma).execute("cmp_1")).toHaveLength(1);
 	});
 

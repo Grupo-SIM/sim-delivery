@@ -23,8 +23,8 @@ function prismaWith(units: Array<{ id: string; companyId: string }>) {
 				},
 				findFirst: async ({ where }: { where: { companyId: string | null; id: string } }) =>
 					units.find(u => u.companyId === where.companyId && u.id === where.id) ?? null,
-				findMany: async ({ where }: { where: { companyId: string } }) =>
-					units.filter(u => u.companyId === where.companyId),
+				findMany: async ({ where }: { where: { companyId?: string } }) =>
+					where.companyId ? units.filter(u => u.companyId === where.companyId) : units,
 				update: async ({ data, where }: { data: object; where: { id: string } }) => ({ id: where.id, ...data }),
 			},
 		} as unknown as PrismaInstance,
@@ -43,9 +43,9 @@ describe("units use-cases", () => {
 		expect(created[0]).toMatchObject({ companyId: "cmp_1", name: "Center" });
 	});
 
-	it("ListUnits returns [] without a company and scopes otherwise", async () => {
+	it("ListUnits lists across companies without a company and scopes otherwise", async () => {
 		const { prisma } = prismaWith([{ companyId: "cmp_1", id: "u1" }]);
-		expect(await new ListUnits(prisma).execute(null)).toEqual([]);
+		expect(await new ListUnits(prisma).execute(null)).toHaveLength(1);
 		expect(await new ListUnits(prisma).execute("cmp_1")).toHaveLength(1);
 	});
 

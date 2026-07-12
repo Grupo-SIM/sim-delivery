@@ -14,9 +14,14 @@ function fakePrisma(capture: { where?: unknown } = {}) {
 }
 
 describe("ListStaff", () => {
-	it("returns [] without a company (e.g. superAdmin)", async () => {
-		const staff = await new ListStaff(fakePrisma()).execute(null);
-		expect(staff).toEqual([]);
+	it("lists staff across all companies without a company (e.g. superAdmin)", async () => {
+		const capture: { where?: unknown } = {};
+		const staff = await new ListStaff(fakePrisma(capture)).execute(null);
+
+		expect(staff).toHaveLength(1);
+		expect(capture.where).toEqual({
+			role: { in: ["owner", "manager", "attendant", "kitchen", "courier"] },
+		});
 	});
 
 	it("scopes the query to the company and staff roles", async () => {

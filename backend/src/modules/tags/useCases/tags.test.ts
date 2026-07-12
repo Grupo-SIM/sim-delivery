@@ -23,8 +23,8 @@ function prismaWith(tags: Array<{ id: string; companyId: string }>) {
 				},
 				findFirst: async ({ where }: { where: { companyId: string | null; id: string } }) =>
 					tags.find(tag => tag.companyId === where.companyId && tag.id === where.id) ?? null,
-				findMany: async ({ where }: { where: { companyId: string } }) =>
-					tags.filter(tag => tag.companyId === where.companyId),
+				findMany: async ({ where }: { where: { companyId?: string } }) =>
+					where.companyId ? tags.filter(tag => tag.companyId === where.companyId) : tags,
 				update: async ({ data, where }: { data: object; where: { id: string } }) => ({ id: where.id, ...data }),
 			},
 		} as unknown as PrismaInstance,
@@ -43,9 +43,9 @@ describe("tags use-cases", () => {
 		expect(created[0]).toMatchObject({ color: "#22c55e", companyId: "cmp_1", name: "Vegan" });
 	});
 
-	it("ListTags returns [] without a company and scopes otherwise", async () => {
+	it("ListTags lists across companies without a company and scopes otherwise", async () => {
 		const { prisma } = prismaWith([{ companyId: "cmp_1", id: "tag1" }]);
-		expect(await new ListTags(prisma).execute(null)).toEqual([]);
+		expect(await new ListTags(prisma).execute(null)).toHaveLength(1);
 		expect(await new ListTags(prisma).execute("cmp_1")).toHaveLength(1);
 	});
 

@@ -5,13 +5,9 @@ export class ListTags {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(companyId: string | null): Promise<TagListReturn> {
-		if (!companyId) {
-			return [];
-		}
-
 		return this.prisma.tag.findMany({
 			orderBy: [{ name: "asc" }],
-			where: { companyId },
+			where: { ...(companyId ? { companyId } : {}) },
 		});
 	}
 }

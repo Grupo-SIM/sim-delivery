@@ -5,14 +5,13 @@ export class ListStaff {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(companyId: string | null): Promise<StaffListReturn> {
-		if (!companyId) {
-			return [];
-		}
-
 		const staff = await this.prisma.user.findMany({
 			orderBy: { createdAt: "asc" },
 			select: { createdAt: true, email: true, id: true, name: true, role: true },
-			where: { companyId, role: { in: ["owner", "manager", "attendant", "kitchen", "courier"] } },
+			where: {
+				...(companyId ? { companyId } : {}),
+				role: { in: ["owner", "manager", "attendant", "kitchen", "courier"] },
+			},
 		});
 
 		return staff as StaffListReturn;
