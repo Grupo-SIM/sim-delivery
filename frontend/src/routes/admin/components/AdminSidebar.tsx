@@ -1,9 +1,10 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import {
 	LuBuilding2,
 	LuChartBar,
 	LuClipboardList,
+	LuLogOut,
 	LuPackage,
 	LuPalette,
 	LuStar,
@@ -56,7 +57,13 @@ function NavGroup({ children, label }: NavGroupProps) {
 
 export function AdminSidebar() {
 	const { t } = useTranslation();
-	const { role } = useAuthStore();
+	const { logout, role } = useAuthStore();
+	const navigate = useNavigate();
+
+	async function handleLogout() {
+		await logout();
+		void navigate({ to: "/login" });
+	}
 
 	return (
 		<div className="flex h-full flex-col gap-6 overflow-y-auto p-4">
@@ -87,6 +94,15 @@ export function AdminSidebar() {
 					<NavItem icon={LuBuilding2} label={t("admin.companies.title")} to="/admin/companies" />
 				</NavGroup>
 			)}
+
+			<button
+				className="mt-auto flex items-center gap-3 rounded-md px-3 py-2 text-left text-muted-foreground text-sm transition-colors hover:bg-accent hover:text-foreground"
+				onClick={() => void handleLogout()}
+				type="button"
+			>
+				<LuLogOut className="size-4 shrink-0" />
+				{t("admin.dashboard.nav.logout")}
+			</button>
 		</div>
 	);
 }
