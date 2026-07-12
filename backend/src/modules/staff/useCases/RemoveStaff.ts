@@ -6,8 +6,10 @@ export class RemoveStaff {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(companyId: string | null, staffId: string): Promise<void> {
-		// Only an employee within the caller's own company may be removed (never the owner).
-		const target = await this.prisma.user.findFirst({ where: { companyId, id: staffId, role: "employee" } });
+		// Only a manager/attendant/kitchen staff member within the caller's own company may be removed (never the owner).
+		const target = await this.prisma.user.findFirst({
+			where: { companyId, id: staffId, role: { in: ["manager", "attendant", "kitchen"] } },
+		});
 		if (!companyId || !target) {
 			throw new DomainError(StaffErrors.STAFF_NOT_FOUND);
 		}

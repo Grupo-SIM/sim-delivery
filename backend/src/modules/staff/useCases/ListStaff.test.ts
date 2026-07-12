@@ -7,7 +7,7 @@ function fakePrisma(capture: { where?: unknown } = {}) {
 		user: {
 			findMany: async ({ where }: { where: unknown }) => {
 				capture.where = where;
-				return [{ createdAt: new Date(), email: "a@b.c", id: "u1", level: null, name: "Owner", role: "owner" }];
+				return [{ createdAt: new Date(), email: "a@b.c", id: "u1", name: "Owner", role: "owner" }];
 			},
 		},
 	} as unknown as PrismaInstance;
@@ -24,6 +24,9 @@ describe("ListStaff", () => {
 		const staff = await new ListStaff(fakePrisma(capture)).execute("cmp_1");
 
 		expect(staff).toHaveLength(1);
-		expect(capture.where).toEqual({ companyId: "cmp_1", role: { in: ["owner", "employee", "courier"] } });
+		expect(capture.where).toEqual({
+			companyId: "cmp_1",
+			role: { in: ["owner", "manager", "attendant", "kitchen", "courier"] },
+		});
 	});
 });

@@ -20,7 +20,7 @@ function fakePrisma(target: { id: string; companyId: string } | null) {
 }
 
 describe("RemoveStaff", () => {
-	it("deletes an employee of the same company", async () => {
+	it("deletes a staff member of the same company", async () => {
 		const { deleted, prisma } = fakePrisma({ companyId: "cmp_1", id: "u1" });
 		await new RemoveStaff(prisma).execute("cmp_1", "u1");
 		expect(deleted).toEqual(["u1"]);

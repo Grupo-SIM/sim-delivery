@@ -12,13 +12,12 @@ function fakePrisma(existingEmails: string[] = []) {
 			user: {
 				findUnique: async ({ where }: { where: { email: string } }) =>
 					existingEmails.includes(where.email) ? { id: "existing" } : null,
-				update: async ({ data, where }: { data: { level: string; role: string }; where: { id: string } }) => {
+				update: async ({ data, where }: { data: { role: string }; where: { id: string } }) => {
 					updates.push({ data, id: where.id });
 					return {
 						createdAt: new Date(),
 						email: "new@staff.com",
 						id: where.id,
-						level: data.level,
 						name: "New Staff",
 						role: data.role,
 					};
@@ -30,16 +29,15 @@ function fakePrisma(existingEmails: string[] = []) {
 
 const signUp: SignUpFn = async () => ({ user: { id: "u_new" } });
 
-const baseInput = { email: "new@staff.com", level: "manager" as const, name: "New Staff", password: "secret1" };
+const baseInput = { email: "new@staff.com", name: "New Staff", password: "secret1", role: "manager" as const };
 
 describe("InviteStaff", () => {
-	it("creates an employee scoped to the company", async () => {
+	it("creates a staff member scoped to the company", async () => {
 		const { prisma, updates } = fakePrisma();
 		const staff = await new InviteStaff(prisma, signUp).execute({ ...baseInput, companyId: "cmp_1" });
 
-		expect(staff.role).toBe("employee");
-		expect(staff.level).toBe("manager");
-		expect(updates[0]).toEqual({ data: { companyId: "cmp_1", level: "manager", role: "employee" }, id: "u_new" });
+		expect(staff.role).toBe("manager");
+		expect(updates[0]).toEqual({ data: { companyId: "cmp_1", role: "manager" }, id: "u_new" });
 	});
 
 	it("throws NO_COMPANY when the inviter has no tenant", async () => {

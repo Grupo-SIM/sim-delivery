@@ -2,8 +2,8 @@ import Elysia, { t } from "elysia";
 import { CompanyScopeGuard } from "@/modules/users/guards";
 import { auth } from "@/shared/infra/betterAuth";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
-import { InviteStaffBody, StaffListReturn, StaffReturn, UpdateStaffLevelBody } from "../../dtos";
-import { InviteStaff, ListStaff, RemoveStaff, UpdateStaffLevel } from "../../useCases";
+import { InviteStaffBody, StaffListReturn, StaffReturn, UpdateStaffRoleBody } from "../../dtos";
+import { InviteStaff, ListStaff, RemoveStaff, UpdateStaffRole } from "../../useCases";
 
 export const StaffController = new Elysia({
 	detail: {
@@ -19,7 +19,7 @@ export const StaffController = new Elysia({
 				listStaff: new ListStaff(prisma),
 				prisma,
 				removeStaff: new RemoveStaff(prisma),
-				updateStaffLevel: new UpdateStaffLevel(prisma),
+				updateStaffRole: new UpdateStaffRole(prisma),
 			}))
 			.get(
 				"/",
@@ -48,14 +48,14 @@ export const StaffController = new Elysia({
 			)
 			.patch(
 				"/:staffId",
-				async ({ body, params, request, updateStaffLevel }) => {
+				async ({ body, params, request, updateStaffRole }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "staff", "setRole");
 
-					return updateStaffLevel.execute({ ...body, companyId: scope.companyId, staffId: params.staffId });
+					return updateStaffRole.execute({ ...body, companyId: scope.companyId, staffId: params.staffId });
 				},
 				{
-					body: UpdateStaffLevelBody,
+					body: UpdateStaffRoleBody,
 					response: StaffReturn,
 				},
 			)
