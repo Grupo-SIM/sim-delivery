@@ -61,27 +61,27 @@ export function CompanyRow({ company }: CompanyRowProps) {
 	}
 
 	return (
-			<tr className="border-border/60 border-b last:border-0">
-				<td className="px-4 py-3">
-					<Input
-						onChange={event => setName(event.currentTarget.value)}
-						placeholder={t("admin.companies.create.namePlaceholder")}
-						value={name}
-					/>
-				</td>
-				<td className="px-4 py-3">
-					<Input
-						onChange={event => setSlug(event.currentTarget.value)}
-						placeholder={t("admin.companies.edit.slugPlaceholder")}
-						value={slug}
-					/>
-					{error && <p className="mt-1 text-destructive text-xs">{error}</p>}
-				</td>
-				<td className="px-4 py-3 text-muted-foreground">
-					{new Date(company.createdAt).toLocaleDateString()}
-				</td>
+		<tr className="border-border/60 border-b last:border-0">
 			<td className="px-4 py-3">
-				<div className="flex justify-end gap-2">
+				<Input
+					className="min-w-0"
+					onChange={event => setName(event.currentTarget.value)}
+					placeholder={t("admin.companies.create.namePlaceholder")}
+					value={name}
+				/>
+			</td>
+			<td className="px-4 py-3">
+				<Input
+					className="min-w-0"
+					onChange={event => setSlug(event.currentTarget.value)}
+					placeholder={t("admin.companies.edit.slugPlaceholder")}
+					value={slug}
+				/>
+				{error && <p className="mt-1 text-destructive text-xs">{error}</p>}
+			</td>
+			<td className="px-4 py-3 text-muted-foreground">{new Date(company.createdAt).toLocaleDateString()}</td>
+			<td className="px-4 py-3">
+				<div className="flex justify-end gap-2 whitespace-nowrap">
 					<Button disabled={isPending} onClick={reset} size="sm" type="button" variant="outline">
 						{t("admin.companies.edit.cancel")}
 					</Button>

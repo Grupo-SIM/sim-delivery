@@ -16,7 +16,13 @@ export function CompaniesTable({ companies }: CompaniesTableProps) {
 	}
 
 	return (
-		<DataTable>
+		<DataTable tableClassName="table-fixed">
+			<colgroup>
+				<col />
+				<col />
+				<col className="w-40" />
+				<col className="w-52" />
+			</colgroup>
 			<thead>
 				<tr className="border-border border-b text-left text-muted-foreground">
 					<th className="px-4 py-3 font-medium">{t("admin.companies.columns.name")}</th>
