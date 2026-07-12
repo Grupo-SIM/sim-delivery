@@ -1,5 +1,5 @@
-import { toaster } from "baseui/toast";
+import { toast } from "react-toastify";
 
 export function showToast(message: string, kind: "info" | "positive" | "warning" | "negative" = "info") {
-	toaster[kind](message, { autoHideDuration: 4000 });
+	toast[kind === "positive" ? "success" : kind === "negative" ? "error" : kind](message);
 }

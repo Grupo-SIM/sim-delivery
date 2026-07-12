@@ -12,7 +12,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
 import { getBrandingQueryKey, useGetBranding, usePutBranding } from "@/lib/api";
-import { showAlert } from "@/stores";
+import { showToast } from "@/stores";
 
 function BrandingPage() {
 	const { t } = useTranslation();
@@ -51,10 +51,10 @@ function BrandingPage() {
 				},
 			},
 			{
-				onError: () => void showAlert(t("admin.branding.saveError")),
+				onError: () => showToast(t("admin.branding.saveError"), "negative"),
 				onSuccess: () => {
 					queryClient.invalidateQueries({ queryKey: getBrandingQueryKey() });
-					void showAlert(t("admin.branding.saveSuccess"));
+					showToast(t("admin.branding.saveSuccess"), "positive");
 				},
 			},
 		);

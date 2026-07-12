@@ -1,7 +1,8 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { BaseProvider } from "baseui";
-import { PLACEMENT, ToasterContainer } from "baseui/toast";
 import { type ReactNode, useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Client as Styletron } from "styletron-engine-monolithic";
 import { Provider as StyletronProvider } from "styletron-react";
 import { ConfirmDialog } from "./components/ui/ConfirmDialog";
@@ -65,7 +66,7 @@ export function Providers({ children }: ProvidersProps) {
 				<BaseProvider theme={getAppTheme(themeMode)}>
 					{children}
 					<ConfirmDialog />
-					<ToasterContainer autoHideDuration={4000} placement={PLACEMENT.bottomRight} />
+						<ToastContainer autoClose={4000} position="top-right" theme={themeMode} />
 				</BaseProvider>
 			</StyletronProvider>
 		</QueryClientProvider>
