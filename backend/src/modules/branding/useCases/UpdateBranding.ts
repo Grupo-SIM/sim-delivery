@@ -15,6 +15,7 @@ export class UpdateBranding {
 		metaPixelId,
 		primaryColor,
 	}: UpdateBrandingDTO): Promise<BrandingReturn> {
+		console.log(companyId);
 		if (!companyId) throw new DomainError(UserErrors.FORBIDDEN);
 
 		const company = await this.prisma.company.update({
