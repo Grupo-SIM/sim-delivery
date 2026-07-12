@@ -7,8 +7,7 @@ import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-type Level = "manager" | "attendant" | "kitchen";
-type Role = "employee" | "courier";
+type Role = "manager" | "attendant" | "kitchen" | "courier";
 
 export function InviteStaffForm() {
 	const { t } = useTranslation();
@@ -16,21 +15,16 @@ export function InviteStaffForm() {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [level, setLevel] = useState<Level>("attendant");
-	const [role, setRole] = useState<Role>("employee");
+	const [role, setRole] = useState<Role>("attendant");
 	const [error, setError] = useState<string | null>(null);
 
 	const { isPending, mutate } = usePostStaff();
 
 	const roleOptions = [
-		{ label: t("admin.staff.roles.employee"), value: "employee" },
+		{ label: t("admin.staff.roles.manager"), value: "manager" },
+		{ label: t("admin.staff.roles.attendant"), value: "attendant" },
+		{ label: t("admin.staff.roles.kitchen"), value: "kitchen" },
 		{ label: t("admin.staff.roles.courier"), value: "courier" },
-	];
-
-	const levelOptions = [
-		{ label: t("admin.staff.levels.manager"), value: "manager" },
-		{ label: t("admin.staff.levels.attendant"), value: "attendant" },
-		{ label: t("admin.staff.levels.kitchen"), value: "kitchen" },
 	];
 
 	return (
@@ -40,7 +34,7 @@ export function InviteStaffForm() {
 				event.preventDefault();
 				setError(null);
 				mutate(
-					{ data: { email, level: role === "employee" ? level : undefined, name, password, role } },
+					{ data: { email, name, password, role } },
 					{
 						onError: caught =>
 							setError(caught.status === 409 ? t("admin.staff.invite.emailTaken") : t("admin.staff.invite.error")),
@@ -48,8 +42,7 @@ export function InviteStaffForm() {
 							setName("");
 							setEmail("");
 							setPassword("");
-							setLevel("attendant");
-							setRole("employee");
+							setRole("attendant");
 							await queryClient.invalidateQueries({ queryKey: getStaffQueryKey() });
 						},
 					},
@@ -88,13 +81,6 @@ export function InviteStaffForm() {
 				<span className="font-medium text-sm">{t("admin.staff.invite.role")}</span>
 				<CustomSelect onChange={value => setRole(value as Role)} options={roleOptions} value={role} />
 			</div>
-
-			{role === "employee" && (
-				<div className="flex flex-col gap-1.5">
-					<span className="font-medium text-sm">{t("admin.staff.invite.level")}</span>
-					<CustomSelect onChange={value => setLevel(value as Level)} options={levelOptions} value={level} />
-				</div>
-			)}
 
 			<div className="sm:col-span-2 lg:col-span-4">
 				<Button disabled={isPending || !name || !email || password.length < 6} type="submit">

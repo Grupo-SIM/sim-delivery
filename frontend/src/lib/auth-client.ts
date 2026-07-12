@@ -12,7 +12,6 @@ export const authClient = createAuthClient({
 		inferAdditionalFields({
 			user: {
 				companyId: { required: false, type: "string" },
-				level: { required: false, type: "string" },
 				role: { required: false, type: "string" },
 			},
 		}),

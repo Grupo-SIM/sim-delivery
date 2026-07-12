@@ -283,7 +283,6 @@
 			"staff": {
 				"columns": {
 					"email": "E-mail",
-					"level": "Nível",
 					"name": "Nome",
 					"role": "Cargo"
 				},
@@ -293,7 +292,6 @@
 					"emailPlaceholder": "pessoa@empresa.com",
 					"emailTaken": "Este e-mail já está em uso.",
 					"error": "Não foi possível convidar o funcionário.",
-					"level": "Nível",
 					"name": "Nome",
 					"namePlaceholder": "Nome completo",
 					"password": "Senha temporária",
@@ -302,23 +300,19 @@
 					"submitting": "Convidando...",
 					"title": "Convidar funcionário"
 				},
-				"levels": {
-					"attendant": "Atendente",
-					"kitchen": "Cozinha",
-					"manager": "Gerente",
-					"none": "—"
-				},
 				"loadError": "Não foi possível carregar a equipe.",
 				"roles": {
+					"attendant": "Atendente",
 					"courier": "Entregador",
-					"employee": "Funcionário",
+					"kitchen": "Cozinha",
+					"manager": "Gerente",
 					"owner": "Proprietário"
 				},
 				"row": {
 					"remove": "Remover",
 					"removeConfirm": "Remover {{name}} da equipe?",
 					"removeError": "Não foi possível remover o funcionário.",
-					"updateError": "Não foi possível atualizar o nível."
+					"updateError": "Não foi possível atualizar o cargo."
 				},
 				"subtitle": "Pessoas que gerenciam esta empresa.",
 				"title": "Equipe"

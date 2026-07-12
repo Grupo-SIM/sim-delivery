@@ -22,7 +22,6 @@ export function StaffTable({ staff }: StaffTableProps) {
 					<th className="px-4 py-3 font-medium">{t("admin.staff.columns.name")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.staff.columns.email")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.staff.columns.role")}</th>
-					<th className="px-4 py-3 font-medium">{t("admin.staff.columns.level")}</th>
 					<th className="px-4 py-3" />
 				</tr>
 			</thead>

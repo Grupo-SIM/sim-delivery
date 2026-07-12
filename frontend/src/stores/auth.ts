@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { authClient } from "@/lib/auth-client";
 
 /** Access roles mirror the backend (docs/03). */
-export type UserRole = "superAdmin" | "owner" | "employee" | "courier" | "customer";
+export type UserRole = "superAdmin" | "owner" | "manager" | "attendant" | "kitchen" | "courier" | "customer";
 
 interface SessionUser {
 	companyId?: string | null;
@@ -11,7 +11,6 @@ interface SessionUser {
 	emailVerified: boolean;
 	id: string;
 	image?: string | null;
-	level?: string | null;
 	name: string;
 	role?: string | null;
 }
@@ -25,7 +24,6 @@ export function mapSessionUser(user: SessionUser): AuthUser {
 		emailVerified: user.emailVerified,
 		id: user.id,
 		image: user.image ?? null,
-		level: user.level ?? null,
 		name: user.name,
 		role: user.role ?? "customer",
 	};
@@ -38,8 +36,6 @@ export interface AuthUser {
 	emailVerified: boolean;
 	id: string;
 	image: string | null;
-	/** Employee sub-level when role = employee (docs/03). */
-	level: string | null;
 	name: string;
 	role: string;
 }
