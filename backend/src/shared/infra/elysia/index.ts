@@ -41,7 +41,7 @@ export const app = new Elysia({ normalize: "typebox" })
 	.all("/auth/*", ({ request, set }) => {
 		const outcome = consume(request, {
 			keyPrefix: "auth",
-			max: 30,
+			max: 1000,
 			windowMs: timeConversion(1, "minutes", "milliseconds"),
 		});
 

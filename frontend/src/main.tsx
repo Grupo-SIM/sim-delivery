@@ -13,7 +13,10 @@ const router = createRouter({
 		queryClient: reactQueryClient,
 	},
 	defaultPreload: "intent",
-	defaultPreloadStaleTime: 0,
+	// 0 forced every hover-intent preload to re-run beforeLoad (and its authClient.getSession()
+	// call) from scratch, flooding /auth/get-session. Match the server's cookieCache maxAge (60s)
+	// so repeated hovers within that window reuse the last preload instead of refetching.
+	defaultPreloadStaleTime: 60_000,
 	routeTree,
 });
 
