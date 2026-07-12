@@ -24,7 +24,7 @@ possui **N unidades** (lojas físicas). Detalhes em
 - **Empresa / tenant** — cliente da plataforma. Escopo raiz de todos os dados (`companyId`).
 - **Unidade** — loja física de uma empresa (endereço, horário, taxas próprios).
 - **Variante** — configuração de build whitelabel (nome, ícone, tema) ligada a 1 empresa.
-- **Papel (role)** — nível de acesso: `superAdmin`, `owner`, `employee` (com subníveis),
+- **Papel (role)** — nível de acesso: `superAdmin`, `owner`, `manager`, `attendant`, `kitchen`,
   `courier` (motoboy), `customer`.
 - **Cardápio** — conjunto de produtos/categorias que uma unidade oferece.
 - **Cashback** — crédito acumulado pelo cliente, resgatável em pedidos futuros.

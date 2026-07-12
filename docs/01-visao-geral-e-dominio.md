@@ -24,7 +24,7 @@ branding) acontece em um **painel do dono**. Ver [08-app-cliente.md](08-app-clie
 |---|---|---|
 | **Company** (Empresa) | Tenant. Raiz de tudo. Dados de marca, plano, config global. | — |
 | **Unit** (Unidade) | Loja física: endereço, horário, taxas, formas de entrega/pagamento. | `companyId` |
-| **User** (Staff) | Usuário do painel: `owner` ou `employee` (com nível). | `companyId` |
+| **User** (Staff) | Usuário do painel: `owner`, `manager`, `attendant` ou `kitchen`. | `companyId` |
 | **Courier** (Motoboy) | Entregador vinculado à empresa/unidade. | `companyId` |
 | **Customer** (Cliente) | Consumidor final. Login passwordless. | `companyId` |
 | **Address** (Endereço) | Endereço de um cliente (deduzido por CEP). | `customerId` |
@@ -43,7 +43,7 @@ branding) acontece em um **painel do dono**. Ver [08-app-cliente.md](08-app-clie
 ```
 Company (tenant)
 ├── Variant (whitelabel build) ── 1:1 ──> Company
-├── User (owner | employee[nível])
+├── User (owner | manager | attendant | kitchen)
 ├── Courier
 ├── Customer
 │   ├── Address (N)

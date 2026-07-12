@@ -1,6 +1,6 @@
 # 10 — Painel do Dono
 
-O que o **dono** (e níveis de `employee`) precisa para operar a empresa. Vai além do
+O que o **dono** (e os papéis `manager`/`attendant`/`kitchen`) precisa para operar a empresa. Vai além do
 esboço original — **deduzido** do escopo de televenda/delivery e do benchmark
 (ver [12](12-referencias-e-benchmark.md)). Acesso conforme [03](03-papeis-e-permissoes.md).
 

@@ -10,21 +10,14 @@ escopada por `companyId`; permissões operacionais podem ainda ser escopadas por
 |---|---|---|
 | `superAdmin` | Operador da plataforma (você). Cria empresas, variantes, planos. | Cross-tenant (todas as empresas). |
 | `owner` | Dono da empresa. Acesso total ao próprio tenant. | 1 empresa (todas as unidades). |
-| `employee` | Funcionário. Acesso conforme **nível**. | 1 empresa, opcional 1..N unidades. |
+| `manager` | Gerente — quase tudo do `owner`, exceto branding/variante, gestão de outros donos e exclusão da empresa. | 1 empresa, opcional 1..N unidades. |
+| `attendant` | Atendente/caixa — cria e acompanha pedidos, atende clientes, aplica cupons. Sem acesso a relatórios financeiros nem edição de cardápio. | 1 empresa, opcional 1..N unidades. |
+| `kitchen` | Cozinha — vê pedidos em preparo, muda status de produção. Sem finanças nem cadastro. | 1 empresa, opcional 1..N unidades. |
 | `courier` | Motoboy. Vê e atualiza suas entregas. | Entregas atribuídas. |
 | `customer` | Consumidor final (app). | Próprios pedidos/dados. |
 
-### Níveis de `employee` (subroles)
-
-- `manager` (gerente) — quase tudo do `owner`, exceto branding/variante, gestão de
-  outros donos e exclusão da empresa.
-- `attendant` (atendente/caixa) — cria e acompanha pedidos, atende clientes, aplica
-  cupons. Sem acesso a relatórios financeiros nem edição de cardápio.
-- `kitchen` (cozinha) — vê pedidos em preparo, muda status de produção. Sem finanças
-  nem cadastro.
-
-Ponto em aberto: se `employee` é vinculado a unidades específicas (permissão por unidade)
-ou à empresa toda. Ver "Pontos em aberto".
+Ponto em aberto: se `manager`/`attendant`/`kitchen` são vinculados a unidades específicas
+(permissão por unidade) ou à empresa toda. Ver "Pontos em aberto".
 
 ## Matriz de permissões (ação × role)
 
@@ -74,8 +67,8 @@ interface PermissionSchema extends PermixDefinition {
 }
 ```
 
-O `setup` liga cada ação conforme a tabela acima, derivando de `role` (e `level` quando
-`employee`). Ações escopadas por unidade recebem o `unitId` no `check`.
+O `setup` liga cada ação conforme a tabela acima, derivando apenas de `role`. Ações
+escopadas por unidade recebem o `unitId` no `check`.
 
 ## Autenticação
 
@@ -85,7 +78,7 @@ O `setup` liga cada ação conforme a tabela acima, derivando de `role` (e `leve
 
 ## Pontos em aberto
 
-- Permissão de `employee` por unidade vs por empresa (multi-unidade).
+- Permissão de `manager`/`attendant`/`kitchen` por unidade vs por empresa (multi-unidade).
 - Se `manager` pode gerir outros `manager` ou só níveis abaixo.
 - Papel de "financeiro" dedicado (roadmap, quando entrar módulo financeiro/caixa).
 - Como `courier` autentica (mesmo Better Auth ou fluxo próprio) — ver [01](01-visao-geral-e-dominio.md).
