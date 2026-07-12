@@ -107,7 +107,6 @@ export function AssociateProductForm({
 					decimalScale={2}
 					decimalSeparator=","
 					disabled={!priceEnabled}
-					fixedDecimalScale
 					onValueChange={({ floatValue }) => setPriceReais(floatValue ?? 0)}
 					placeholder="R$ 18,90"
 					prefix="R$ "

@@ -1,49 +1,22 @@
-import { FormControl, type FormControlProps } from "baseui/form-control";
-import { Input, type InputProps } from "baseui/input";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-interface TextFieldProps extends Omit<InputProps, "error" | "onChange" | "value"> {
-	caption?: FormControlProps["caption"];
-	error?: FormControlProps["error"];
-	label: FormControlProps["label"];
+interface TextFieldProps extends Omit<ComponentPropsWithoutRef<"input">, "onChange" | "value"> {
+	label: ReactNode;
 	onValueChange: (value: string) => void;
 	value: string;
 }
 
-export function TextField({
-	caption,
-	error,
-	label,
-	onBlur,
-	onValueChange,
-	overrides,
-	placeholder,
-	type = "text",
-	value,
-	...props
-}: TextFieldProps) {
+export function TextField({ label, onBlur, onValueChange, type = "text", value, ...props }: TextFieldProps) {
 	const shouldDebounce = type === "text" || type === "search";
 	const [localValue, setLocalValue, flushLocalValue] = useDebouncedInput(value, onValueChange);
 	const inputValue = shouldDebounce ? localValue : value;
 
 	return (
-		<FormControl
-			caption={caption}
-			error={error}
-			label={label}
-			overrides={{
-				ControlContainer: { style: { marginBottom: 0 } },
-				Label: {
-					style: {
-						color: "var(--muted-foreground)",
-						fontSize: "12px",
-						fontWeight: 800,
-						letterSpacing: "0.04em",
-						textTransform: "uppercase",
-					},
-				},
-			}}
-		>
+		<Label>
+			{label}
 			<Input
 				onBlur={event => {
 					if (shouldDebounce) flushLocalValue();
@@ -57,28 +30,10 @@ export function TextField({
 					}
 					onValueChange(next);
 				}}
-				overrides={{
-					...overrides,
-					InputContainer: {
-						...overrides?.InputContainer,
-						style: {
-							backgroundColor: "var(--surface-sunken)",
-						borderColor: "var(--input)",
-						borderRadius: "8px",
-						},
-					},
-					Input: {
-						...overrides?.Input,
-						style: {
-							color: "var(--foreground)",
-						},
-					},
-				}}
-				placeholder={placeholder}
 				type={type}
 				value={inputValue}
 				{...props}
 			/>
-		</FormControl>
+		</Label>
 	);
 }

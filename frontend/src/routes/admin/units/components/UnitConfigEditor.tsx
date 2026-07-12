@@ -94,7 +94,6 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 					<NumericInput
 						decimalScale={2}
 						decimalSeparator=","
-						fixedDecimalScale
 						onValueChange={({ floatValue }) => setFeeReais(floatValue ?? 0)}
 						placeholder="R$ 10,00"
 						prefix="R$ "
