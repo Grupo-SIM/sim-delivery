@@ -1,7 +1,14 @@
 <!doctype html>
-<html lang="pt-BR" class="light">
+<html lang="pt-BR">
 	<head>
 		<meta charset="UTF-8" />
+		<script>
+			// Applied before first paint to avoid a light->dark flash; kept in sync
+			// at runtime by Providers (src/providers.tsx).
+			document.documentElement.classList.add(
+				window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light",
+			);
+		</script>
 		<link rel="icon" type="image/svg+xml" href="/vite.svg" />
 		<meta
 			name="viewport"

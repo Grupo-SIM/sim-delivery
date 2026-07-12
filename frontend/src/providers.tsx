@@ -44,11 +44,17 @@ export function Providers({ children }: ProvidersProps) {
 		observer.observe(root, { attributeFilter: ["class"], attributes: true });
 
 		const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-		mediaQuery.addEventListener("change", syncThemeMode);
+		// No manual light/dark toggle exists yet — the app always mirrors the OS preference live.
+		const applySystemPreference = () => {
+			root.classList.toggle("dark", mediaQuery.matches);
+			root.classList.toggle("light", !mediaQuery.matches);
+		};
+		applySystemPreference();
+		mediaQuery.addEventListener("change", applySystemPreference);
 
 		return () => {
 			observer.disconnect();
-			mediaQuery.removeEventListener("change", syncThemeMode);
+			mediaQuery.removeEventListener("change", applySystemPreference);
 		};
 	}, []);
 
