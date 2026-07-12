@@ -1,5 +1,5 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
-import type { GetBrandingQuery, BrandingReturn } from "../dtos";
+import type { BrandingReturn, GetBrandingQuery } from "../dtos";
 
 export class GetBranding {
 	constructor(private readonly prisma: PrismaInstance) {}
@@ -16,11 +16,25 @@ export class GetBranding {
 		}
 
 		if (!resolvedCompanyId) {
-			return { footerText: null, ga4Id: null, gtmId: null, logoUrl: null, metaPixelId: null, primaryColor: null };
+			return {
+				footerText: null,
+				ga4Id: null,
+				gtmId: null,
+				logoUrl: null,
+				metaPixelId: null,
+				primaryColor: null,
+			};
 		}
 
 		const company = await this.prisma.company.findUnique({
-			select: { footerText: true, ga4Id: true, gtmId: true, logoUrl: true, metaPixelId: true, primaryColor: true },
+			select: {
+				footerText: true,
+				ga4Id: true,
+				gtmId: true,
+				logoUrl: true,
+				metaPixelId: true,
+				primaryColor: true,
+			},
 			where: { id: resolvedCompanyId },
 		});
 

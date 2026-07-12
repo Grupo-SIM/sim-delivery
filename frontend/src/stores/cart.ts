@@ -59,9 +59,7 @@ export const useCartStore = create<CartState>()(
 					const existing = base.find(line => line.lineKey === lineKey);
 					const items = existing
 						? base.map(line =>
-								line.lineKey === lineKey
-									? { ...line, quantity: line.quantity + quantity }
-									: line,
+								line.lineKey === lineKey ? { ...line, quantity: line.quantity + quantity } : line,
 							)
 						: [...base, { ...item, lineKey, note, quantity }];
 					return { items, unitId };
@@ -83,9 +81,7 @@ export const useCartStore = create<CartState>()(
 					return;
 				}
 				set(state => ({
-					items: state.items.map(line =>
-						line.lineKey === lineKey ? { ...line, quantity } : line,
-					),
+					items: state.items.map(line => (line.lineKey === lineKey ? { ...line, quantity } : line)),
 				}));
 			},
 			unitId: null,

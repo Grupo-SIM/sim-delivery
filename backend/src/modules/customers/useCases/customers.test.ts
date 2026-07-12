@@ -14,14 +14,22 @@ const baseAddress = {
 	zipCode: "01310100",
 };
 
-function makePrisma(opts: {
-	company?: { id: string; variantKey: string } | null;
-	customer?: { id: string; companyId: string; userId: string; cpf: string | null; phone: string | null } | null;
-} = {}) {
+function makePrisma(
+	opts: {
+		company?: { id: string; variantKey: string } | null;
+		customer?: {
+			id: string;
+			companyId: string;
+			userId: string;
+			cpf: string | null;
+			phone: string | null;
+		} | null;
+	} = {},
+) {
 	const { company = { id: "cmp_1", variantKey: "demo" }, customer = null } = opts;
 	const users: Record<string, object> = {};
-	const customers: Array<object> = customer ? [customer] : [];
-	const addresses: Array<object> = [];
+	const customers: object[] = customer ? [customer] : [];
+	const addresses: object[] = [];
 
 	return {
 		addresses,
@@ -29,7 +37,7 @@ function makePrisma(opts: {
 		prisma: {
 			address: {
 				create: async ({ data }: { data: object }) => {
-					const a = { id: "addr_1", isDefault: false, createdAt: new Date(), updatedAt: new Date(), ...data };
+					const a = { createdAt: new Date(), id: "addr_1", isDefault: false, updatedAt: new Date(), ...data };
 					addresses.push(a);
 					return a;
 				},
@@ -40,7 +48,8 @@ function makePrisma(opts: {
 			},
 			customer: {
 				findFirst: async ({ where }: { where: { companyId: string; userId: string } }) =>
-					(customers.find((c: any) => c.companyId === where.companyId && c.userId === where.userId) ?? null) as any,
+					(customers.find((c: any) => c.companyId === where.companyId && c.userId === where.userId) ??
+						null) as any,
 				findUniqueOrThrow: async () => ({ ...customer, addresses }),
 				upsert: async ({ create, update, where }: { create: object; update: object; where: object }) => {
 					const existing = customers.find((c: any) => (c as any).userId === (where as any).userId);
@@ -48,7 +57,7 @@ function makePrisma(opts: {
 						Object.assign(existing as object, update);
 						return existing;
 					}
-					const c = { id: "cust_1", createdAt: new Date(), updatedAt: new Date(), ...create };
+					const c = { createdAt: new Date(), id: "cust_1", updatedAt: new Date(), ...create };
 					customers.push(c);
 					return c;
 				},
@@ -80,7 +89,7 @@ describe("customers use-cases", () => {
 
 		it("returns the customer when found", async () => {
 			const { prisma } = makePrisma({
-				customer: { id: "cust_1", companyId: "cmp_1", userId: "user_1", cpf: null, phone: null },
+				customer: { companyId: "cmp_1", cpf: null, id: "cust_1", phone: null, userId: "user_1" },
 			});
 			const result = await new GetMyCustomer(prisma).execute("user_1", "demo");
 			expect(result).toMatchObject({ id: "cust_1", userId: "user_1" });
@@ -111,12 +120,12 @@ describe("customers use-cases", () => {
 			expect(customers[0]).toMatchObject({ companyId: "cmp_1", userId: "user_1" });
 			expect(addresses).toHaveLength(1);
 			expect(addresses[0]).toMatchObject({ addressLine: "Av. Paulista", number: "1000" });
-			expect(users["user_1"]).toMatchObject({ name: "Maria Silva" });
+			expect(users.user_1).toMatchObject({ name: "Maria Silva" });
 		});
 
 		it("adds a new address on repeat call", async () => {
 			const { addresses, prisma } = makePrisma({
-				customer: { id: "cust_1", companyId: "cmp_1", userId: "user_1", cpf: null, phone: null },
+				customer: { companyId: "cmp_1", cpf: null, id: "cust_1", phone: null, userId: "user_1" },
 			});
 			await new UpsertCustomer(prisma).execute("user_1", {
 				address: { ...baseAddress, number: "2000" },

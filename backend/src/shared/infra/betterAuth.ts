@@ -90,26 +90,6 @@ export const auth = betterAuth({
 			},
 		}),
 	],
-	// Same dev/prod split as the Elysia CORS plugin above: extend the whitelist
-	// with common localhost ports so the Vite dev server isn't blocked by
-	// CORS_WHITELIST pointing at the production URL.
-	trustedOrigins:
-		process.env.NODE_ENV === "production"
-			? process.env.CORS_WHITELIST!.split(",")
-			: [
-					...process.env.CORS_WHITELIST!.split(","),
-					"http://localhost:3000",
-					"http://localhost:3333",
-					"http://localhost:5173",
-			  ],
-	// Tenant + RBAC fields (docs/03). Surfaced on session.user so guards can scope by
-	// company/role without an extra query. `role` defaults to customer for self sign-ups.
-	user: {
-		additionalFields: {
-			companyId: { input: false, required: false, type: "string" },
-			role: { defaultValue: "customer", input: false, required: false, type: "string" },
-		},
-	},
 	// Per-session tenant/role override (see databaseHooks.session.create.before above).
 	// Only ever set programmatically by that hook, never accepted as client input.
 	session: {
@@ -122,6 +102,26 @@ export const auth = betterAuth({
 		cookieCache: {
 			enabled: true,
 			maxAge: 60,
+		},
+	},
+	// Same dev/prod split as the Elysia CORS plugin above: extend the whitelist
+	// with common localhost ports so the Vite dev server isn't blocked by
+	// CORS_WHITELIST pointing at the production URL.
+	trustedOrigins:
+		process.env.NODE_ENV === "production"
+			? process.env.CORS_WHITELIST!.split(",")
+			: [
+					...process.env.CORS_WHITELIST!.split(","),
+					"http://localhost:3000",
+					"http://localhost:3333",
+					"http://localhost:5173",
+				],
+	// Tenant + RBAC fields (docs/03). Surfaced on session.user so guards can scope by
+	// company/role without an extra query. `role` defaults to customer for self sign-ups.
+	user: {
+		additionalFields: {
+			companyId: { input: false, required: false, type: "string" },
+			role: { defaultValue: "customer", input: false, required: false, type: "string" },
 		},
 	},
 });

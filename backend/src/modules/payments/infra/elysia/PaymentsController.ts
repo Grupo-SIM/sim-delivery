@@ -48,15 +48,15 @@ export const PaymentsController = new Elysia({ detail: { tags: ["Payments"] } })
 						where: { token: params.token },
 					});
 
-					if (!payment || payment.status !== "pending") {
+					if (payment?.status !== "pending") {
 						return new Response(
-							`<!DOCTYPE html><html><body><p>Payment not found or already processed.</p></body></html>`,
+							"<!DOCTYPE html><html><body><p>Payment not found or already processed.</p></body></html>",
 							{ headers: { "Content-Type": "text/html" } },
 						);
 					}
 
 					const fmt = (cents: number) =>
-						new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(cents / 100);
+						new Intl.NumberFormat("pt-BR", { currency: "BRL", style: "currency" }).format(cents / 100);
 
 					const itemsHtml = payment.order.items
 						.map(i => `<li>${i.quantity}× ${i.productName} — ${fmt(i.total)}</li>`)

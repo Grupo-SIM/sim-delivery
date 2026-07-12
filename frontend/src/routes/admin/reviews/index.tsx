@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { useGetReviews } from "@/lib/api";
 import { Container } from "@/components/ui/Container";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useGetReviews } from "@/lib/api";
 
 function stars(rating: number): string {
 	return "⭐".repeat(rating) + "☆".repeat(5 - rating);

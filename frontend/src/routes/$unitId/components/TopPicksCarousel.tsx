@@ -72,12 +72,7 @@ export function TopPicksCarousel({ sections, unitId }: TopPicksCarouselProps) {
 						type="button"
 					>
 						<Card className="flex h-full flex-col overflow-hidden">
-							<img
-								alt={item.title}
-								className="h-24 w-full object-cover"
-								loading="lazy"
-								src={item.imageUrl}
-							/>
+							<img alt={item.title} className="h-24 w-full object-cover" loading="lazy" src={item.imageUrl} />
 							<div className="flex flex-1 flex-col gap-1 p-3">
 								<p className="truncate font-medium text-sm">{item.title}</p>
 								<div className="mt-auto flex items-center gap-2 pt-1">
@@ -87,7 +82,7 @@ export function TopPicksCarousel({ sections, unitId }: TopPicksCarouselProps) {
 											: money.format(Number(item.priceCents) / 100)}
 									</span>
 									{item.cashbackPercent != null && (
-										<Badge className="border-green-500/30 bg-green-500/10 text-green-500 shrink-0">
+										<Badge className="shrink-0 border-green-500/30 bg-green-500/10 text-green-500">
 											{item.cashbackPercent}%
 										</Badge>
 									)}

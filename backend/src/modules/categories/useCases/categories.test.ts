@@ -22,11 +22,15 @@ function prismaWith(categories: Array<{ id: string; companyId: string }>) {
 					return {};
 				},
 				findFirst: async ({ where }: { where: { companyId?: string; id: string } }) =>
-					categories.find(c => (where.companyId ? c.companyId === where.companyId : true) && c.id === where.id) ??
-					null,
+					categories.find(
+						c => (where.companyId ? c.companyId === where.companyId : true) && c.id === where.id,
+					) ?? null,
 				findMany: async ({ where }: { where: { companyId?: string } }) =>
 					where.companyId ? categories.filter(c => c.companyId === where.companyId) : categories,
-				update: async ({ data, where }: { data: object; where: { id: string } }) => ({ id: where.id, ...data }),
+				update: async ({ data, where }: { data: object; where: { id: string } }) => ({
+					id: where.id,
+					...data,
+				}),
 			},
 		} as unknown as PrismaInstance,
 	};

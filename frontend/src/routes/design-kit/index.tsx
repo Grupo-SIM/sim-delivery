@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Badge } from "@/components/ui/badge";
 import { BrandButton } from "@/components/ui/BrandButton";
+import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/Container";
 import { DisplayHeading } from "@/components/ui/DisplayHeading";
 import { GradientCard } from "@/components/ui/GradientCard";
@@ -17,8 +17,8 @@ function DesignKitPage() {
 						Zero Grau
 					</DisplayHeading>
 					<p className="max-w-2xl text-lg text-muted-foreground">
-						Identidade visual do cardápio — cores, tipografia, componentes e animações da marca,
-						sobre Base Web + Tailwind.
+						Identidade visual do cardápio — cores, tipografia, componentes e animações da marca, sobre Base
+						Web + Tailwind.
 					</p>
 				</header>
 
@@ -30,7 +30,12 @@ function DesignKitPage() {
 					<div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
 						<Swatch className="bg-brand-blue" name="Blue" value="#0012FF" />
 						<Swatch className="bg-brand-blue-light" name="Blue Light" value="#3342FF" />
-						<Swatch className="bg-brand-yellow" name="Yellow" textClassName="text-brand-blue" value="#FFED00" />
+						<Swatch
+							className="bg-brand-yellow"
+							name="Yellow"
+							textClassName="text-brand-blue"
+							value="#FFED00"
+						/>
 						<Swatch
 							className="bg-brand-yellow-dark"
 							name="Yellow Dark"
@@ -51,7 +56,9 @@ function DesignKitPage() {
 				>
 					<div className="space-y-6 rounded-brand border border-border bg-card p-8 shadow-soft">
 						<div className="space-y-1">
-							<span className="text-muted-foreground text-xs uppercase tracking-wide">Display — Luckiest Guy</span>
+							<span className="text-muted-foreground text-xs uppercase tracking-wide">
+								Display — Luckiest Guy
+							</span>
 							<DisplayHeading size="lg">Monte do seu jeito</DisplayHeading>
 						</div>
 						<div className="space-y-2">
@@ -66,7 +73,10 @@ function DesignKitPage() {
 				</KitSection>
 
 				{/* Buttons */}
-				<KitSection description="CTAs em pílula, com leve elevação no hover. Base Web + overrides de marca." title="Botões">
+				<KitSection
+					description="CTAs em pílula, com leve elevação no hover. Base Web + overrides de marca."
+					title="Botões"
+				>
 					<div className="flex flex-wrap items-center gap-4">
 						<BrandButton tone="primary">Fazer pedido</BrandButton>
 						<BrandButton tone="accent">Ver cardápio</BrandButton>
@@ -77,7 +87,10 @@ function DesignKitPage() {
 				</KitSection>
 
 				{/* Cards */}
-				<KitSection description="Cards de produto com gradiente e hover 3D — a assinatura visual da vitrine." title="Cards">
+				<KitSection
+					description="Cards de produto com gradiente e hover 3D — a assinatura visual da vitrine."
+					title="Cards"
+				>
 					<div className="grid gap-6 sm:grid-cols-2">
 						<GradientCard tone="blue">
 							<div>

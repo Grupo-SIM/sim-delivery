@@ -2,7 +2,14 @@ import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { UpdateCompany } from "./UpdateCompany";
 
-type CompanyRow = { id: string; name: string; slug: string; variantKey: string | null; createdAt: Date; updatedAt: Date };
+interface CompanyRow {
+	id: string;
+	name: string;
+	slug: string;
+	variantKey: string | null;
+	createdAt: Date;
+	updatedAt: Date;
+}
 
 function fakePrisma(seed: CompanyRow[]) {
 	const rows = [...seed];
@@ -19,12 +26,23 @@ function fakePrisma(seed: CompanyRow[]) {
 	} as unknown as PrismaInstance;
 }
 
-const base: CompanyRow = { createdAt: new Date(), id: "cmp_1", name: "Old", slug: "old", updatedAt: new Date(), variantKey: null };
+const base: CompanyRow = {
+	createdAt: new Date(),
+	id: "cmp_1",
+	name: "Old",
+	slug: "old",
+	updatedAt: new Date(),
+	variantKey: null,
+};
 
 describe("UpdateCompany", () => {
 	it("updates name and links a variant", async () => {
 		const prisma = fakePrisma([{ ...base }]);
-		const updated = await new UpdateCompany(prisma).execute({ companyId: "cmp_1", name: "New", variantKey: "new-variant" });
+		const updated = await new UpdateCompany(prisma).execute({
+			companyId: "cmp_1",
+			name: "New",
+			variantKey: "new-variant",
+		});
 
 		expect(updated.name).toBe("New");
 		expect(updated.variantKey).toBe("new-variant");
@@ -45,10 +63,7 @@ describe("UpdateCompany", () => {
 	});
 
 	it("throws VARIANT_TAKEN when the variant belongs to another company", async () => {
-		const prisma = fakePrisma([
-			{ ...base },
-			{ ...base, id: "cmp_2", slug: "two", variantKey: "shared" },
-		]);
+		const prisma = fakePrisma([{ ...base }, { ...base, id: "cmp_2", slug: "two", variantKey: "shared" }]);
 		await expect(
 			new UpdateCompany(prisma).execute({ companyId: "cmp_1", variantKey: "shared" }),
 		).rejects.toThrow("VARIANT_TAKEN");

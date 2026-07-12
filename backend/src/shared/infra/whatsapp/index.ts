@@ -1,6 +1,6 @@
-export { WhatsAppProvider } from "./WhatsAppProvider";
 export { ConsoleWhatsAppProvider } from "./implementations/ConsoleWhatsAppProvider";
 export { DisabledWhatsAppProvider } from "./implementations/DisabledWhatsAppProvider";
+export { WhatsAppProvider } from "./WhatsAppProvider";
 
 import { ConsoleWhatsAppProvider } from "./implementations/ConsoleWhatsAppProvider";
 import { DisabledWhatsAppProvider } from "./implementations/DisabledWhatsAppProvider";

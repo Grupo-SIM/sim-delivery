@@ -2,12 +2,33 @@ import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { ListCompanies } from "./ListCompanies";
 
-type CompanyRow = { id: string; name: string; slug: string; variantKey: string | null; createdAt: Date; updatedAt: Date };
+interface CompanyRow {
+	id: string;
+	name: string;
+	slug: string;
+	variantKey: string | null;
+	createdAt: Date;
+	updatedAt: Date;
+}
 
 describe("ListCompanies", () => {
 	it("returns companies newest-first", async () => {
-		const older: CompanyRow = { createdAt: new Date(1), id: "a", name: "A", slug: "a", updatedAt: new Date(1), variantKey: null };
-		const newer: CompanyRow = { createdAt: new Date(2), id: "b", name: "B", slug: "b", updatedAt: new Date(2), variantKey: null };
+		const older: CompanyRow = {
+			createdAt: new Date(1),
+			id: "a",
+			name: "A",
+			slug: "a",
+			updatedAt: new Date(1),
+			variantKey: null,
+		};
+		const newer: CompanyRow = {
+			createdAt: new Date(2),
+			id: "b",
+			name: "B",
+			slug: "b",
+			updatedAt: new Date(2),
+			variantKey: null,
+		};
 
 		let capturedOrder: unknown;
 		const prisma = {

@@ -1,16 +1,16 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getCompaniesQueryKey, usePostCompanies } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getCompaniesQueryKey, usePostCompanies } from "@/lib/api";
 
 function slugify(value: string): string {
 	return value
 		.toLowerCase()
 		.normalize("NFD")
-		.replace(new RegExp("[\\u0300-\\u036f]", "g"), "")
+		.replace(/[\u0300-\u036f]/g, "")
 		.replace(/[^a-z0-9]+/g, "-")
 		.replace(/^-+|-+$/g, "");
 }

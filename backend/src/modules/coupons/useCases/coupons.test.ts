@@ -4,10 +4,9 @@ import { ValidateCoupon } from "./ValidateCoupon";
 
 const baseCompany = { id: "cmp_1", variantKey: "demo" };
 
-function makePrisma(opts: {
-	company?: typeof baseCompany | null;
-	coupon?: Record<string, unknown> | null;
-} = {}) {
+function makePrisma(
+	opts: { company?: typeof baseCompany | null; coupon?: Record<string, unknown> | null } = {},
+) {
 	const { company = baseCompany, coupon = null } = opts;
 
 	return {
@@ -19,7 +18,9 @@ function makePrisma(opts: {
 			coupon: {
 				findUnique: async ({ where }: { where: { companyId_code: { companyId: string; code: string } } }) => {
 					if (!coupon) return null;
-					const { companyId_code: { companyId, code } } = where;
+					const {
+						companyId_code: { companyId, code },
+					} = where;
 					return (coupon as any).companyId === companyId && (coupon as any).code === code ? coupon : null;
 				},
 			},
@@ -30,16 +31,16 @@ function makePrisma(opts: {
 const baseBody = { code: "SAVE10", orderSubtotal: 5000, unitId: "unit_1", variantKey: "demo" };
 
 const baseCoupon = {
-	id: "cpn_1",
-	companyId: "cmp_1",
-	unitId: null,
 	code: "SAVE10",
-	type: "percent",
-	value: 10,
-	minOrderCents: 0,
-	maxUses: null,
-	usedCount: 0,
+	companyId: "cmp_1",
 	expiresAt: null,
+	id: "cpn_1",
+	maxUses: null,
+	minOrderCents: 0,
+	type: "percent",
+	unitId: null,
+	usedCount: 0,
+	value: 10,
 };
 
 describe("ValidateCoupon", () => {

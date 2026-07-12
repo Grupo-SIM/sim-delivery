@@ -1,7 +1,7 @@
 import Elysia from "elysia";
-import { prisma } from "@/shared/infra/sql";
 import { CompanyScopeGuard } from "@/modules/users/guards";
-import { GetReportsQuery, BestSellersReturn, RevenueSummaryReturn } from "../../dtos";
+import { prisma } from "@/shared/infra/sql";
+import { BestSellersReturn, GetReportsQuery, RevenueSummaryReturn } from "../../dtos";
 import { GetBestSellers, GetRevenueSummary } from "../../useCases";
 
 const getBestSellers = new GetBestSellers(prisma);

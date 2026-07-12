@@ -1,4 +1,11 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ComponentPropsWithoutRef, type KeyboardEvent } from "react";
+import {
+	type ComponentPropsWithoutRef,
+	type KeyboardEvent,
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from "react";
 import { Input } from "@/components/ui/input";
 
 interface NumericInputProps extends Omit<ComponentPropsWithoutRef<"input">, "onChange" | "prefix" | "value"> {
@@ -71,7 +78,7 @@ export function NumericInput({
 		if (!input || document.activeElement !== input) return;
 		const position = input.value.length - suffix.length;
 		input.setSelectionRange(position, position);
-	}, [digits, suffix]);
+	}, [suffix]);
 
 	function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
 		const input = event.currentTarget;

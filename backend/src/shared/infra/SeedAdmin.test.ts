@@ -3,12 +3,14 @@ import type { SignUpFn } from "@/modules/staff/useCases/InviteStaff";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { SeedAdmin } from "./SeedAdmin";
 
-type UserRow = { id: string; email: string };
+interface UserRow {
+	id: string;
+	email: string;
+}
 
 function fakePrisma(existing: UserRow[] = []) {
 	const updates: Array<{ id: string; data: unknown }> = [];
 	return {
-		updates,
 		prisma: {
 			user: {
 				findUnique: async ({ where }: { where: { email: string } }) =>
@@ -19,6 +21,7 @@ function fakePrisma(existing: UserRow[] = []) {
 				},
 			},
 		} as unknown as PrismaInstance,
+		updates,
 	};
 }
 

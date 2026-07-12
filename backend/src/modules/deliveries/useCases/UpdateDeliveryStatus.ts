@@ -1,12 +1,12 @@
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import type { UpdateDeliveryStatusBody, DeliveryReturn } from "../dtos";
+import type { DeliveryReturn, UpdateDeliveryStatusBody } from "../dtos";
 import { DeliveryErrors } from "../errors";
 
 const VALID_TRANSITIONS: Record<string, string[]> = {
-	atribuida: ["aceita", "recusada"],
-	aceita: ["a_caminho", "recusada"],
 	a_caminho: ["entregue", "falhou"],
+	aceita: ["a_caminho", "recusada"],
+	atribuida: ["aceita", "recusada"],
 };
 
 const ORDER_STATUS_MAP: Record<string, string> = {
@@ -34,7 +34,7 @@ export class UpdateDeliveryStatus {
 		if (isCourier && delivery.courierId !== userId) throw new DomainError(DeliveryErrors.FORBIDDEN_COURIER);
 
 		const allowed = VALID_TRANSITIONS[delivery.status];
-		if (!allowed || !allowed.includes(status)) throw new DomainError(DeliveryErrors.INVALID_TRANSITION);
+		if (!allowed?.includes(status)) throw new DomainError(DeliveryErrors.INVALID_TRANSITION);
 
 		const now = new Date();
 		const timestamps: Record<string, Date> = {};

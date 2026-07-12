@@ -21,7 +21,11 @@ function fakePrisma(target: { id: string; companyId: string } | null) {
 describe("UpdateStaffRole", () => {
 	it("changes the role of a staff member in the same company", async () => {
 		const prisma = fakePrisma({ companyId: "cmp_1", id: "u1" });
-		const staff = await new UpdateStaffRole(prisma).execute({ companyId: "cmp_1", role: "kitchen", staffId: "u1" });
+		const staff = await new UpdateStaffRole(prisma).execute({
+			companyId: "cmp_1",
+			role: "kitchen",
+			staffId: "u1",
+		});
 
 		expect(staff.role).toBe("kitchen");
 	});

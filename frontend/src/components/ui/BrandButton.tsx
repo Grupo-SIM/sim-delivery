@@ -55,9 +55,9 @@ export function BrandButton({
 				BaseButton: {
 					...overrides?.BaseButton,
 					style: {
+						borderRadius: "50px",
 						borderStyle: "solid",
 						borderWidth: "2px",
-						borderRadius: "50px",
 						fontWeight: 800,
 						letterSpacing: "0.02em",
 						minHeight: size === "mini" ? "36px" : "48px",

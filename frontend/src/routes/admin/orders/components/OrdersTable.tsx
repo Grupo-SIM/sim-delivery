@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
-import type { GetOrders200 } from "@/lib/api";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
+import type { GetOrders200 } from "@/lib/api";
 import { OrderRow } from "./OrderRow";
 
 interface OrdersTableProps {

@@ -11,8 +11,8 @@ import { useGetPublicUnitsByUnitIdMenu } from "@/lib/api";
 import type { SelectedOption } from "@/stores";
 import { useCartStore } from "@/stores";
 import { money } from "../../components/types";
-import { AddToCartModal, OptionGroupBlock, PopularOptionsStrip } from "./components";
 import type { OptionGroup, Selections } from "./components";
+import { AddToCartModal, OptionGroupBlock, PopularOptionsStrip } from "./components";
 
 function ProductPage() {
 	const { t } = useTranslation();
@@ -58,9 +58,7 @@ function ProductPage() {
 			const isAlreadySelected = current.some(s => s.optionId === optionId);
 			return {
 				...prev,
-				[groupId]: isAlreadySelected
-					? []
-					: [{ optionId, optionName, priceDeltaCents, quantity: 1 }],
+				[groupId]: isAlreadySelected ? [] : [{ optionId, optionName, priceDeltaCents, quantity: 1 }],
 			};
 		});
 	}
@@ -75,7 +73,8 @@ function ProductPage() {
 		setSelections(prev => {
 			const current = prev[groupId] ?? [];
 			const existing = current.find(s => s.optionId === optionId);
-			let next;
+			let next: any[];
+
 			if (!existing) {
 				if (delta <= 0) return prev;
 				next = [...current, { optionId, optionName, priceDeltaCents, quantity: delta }];
@@ -176,84 +175,79 @@ function ProductPage() {
 
 	return (
 		<>
-		<Container className="space-y-4 pb-32 pt-6">
-			<Link className="text-primary text-sm" params={{ unitId }} to="/$unitId">
-				← {t("store.checkout.back")}
-			</Link>
+			<Container className="space-y-4 pt-6 pb-32">
+				<Link className="text-primary text-sm" params={{ unitId }} to="/$unitId">
+					← {t("store.checkout.back")}
+				</Link>
 
-			<div className="overflow-hidden rounded-brand">
-				<img alt={item.title} className="h-52 w-full object-cover" src={item.imageUrl} />
-			</div>
-
-			<div className="space-y-1">
-				<h1 className="font-bold text-xl">{item.title}</h1>
-				{item.description && <p className="text-muted-foreground text-sm">{item.description}</p>}
-				<p className="font-semibold text-primary">
-					{hasGroups
-						? `${t("store.product.from")} ${money.format(Number(item.fromPriceCents) / 100)}`
-						: money.format(basePriceCents / 100)}
-				</p>
-			</div>
-
-			{hasGroups && (
-				<>
-					<PopularOptionsStrip
-						groups={item.optionGroups}
-						onSelect={handleSelectPopular}
-						selections={selections}
-					/>
-
-					<Input
-						onChange={e => setLocalQuery(e.currentTarget.value)}
-						placeholder={t("store.product.searchOptions")}
-						value={localQuery}
-					/>
-
-					<div className="space-y-3">
-						{item.optionGroups.map(group => (
-							<OptionGroupBlock
-								group={group}
-								key={group.id}
-								onChangeQty={(optionId, optionName, priceDeltaCents, delta) =>
-									handleChangeQty(group.id, optionId, optionName, priceDeltaCents, delta)
-								}
-								onToggle={(optionId, optionName, priceDeltaCents) =>
-									handleToggle(group.id, optionId, optionName, priceDeltaCents)
-								}
-								query={query}
-								selections={selections[group.id] ?? []}
-							/>
-						))}
-					</div>
-				</>
-			)}
-
-			<div className="fixed inset-x-0 bottom-0 border-border/60 border-t bg-background px-4 py-4 shadow-lg">
-				<div className="mx-auto max-w-3xl">
-					<Button
-						className="w-full"
-						disabled={!!firstInvalidGroup}
-						onClick={handleAdd}
-						type="button"
-					>
-						{firstInvalidGroup
-							? t("store.product.chooseGroup", { group: firstInvalidGroup.name })
-							: `${t("store.cart.add")} · ${money.format(totalCents / 100)}`}
-					</Button>
+				<div className="overflow-hidden rounded-brand">
+					<img alt={item.title} className="h-52 w-full object-cover" src={item.imageUrl} />
 				</div>
-			</div>
-		</Container>
 
-		{item && (
-			<AddToCartModal
-				isOpen={modalOpen}
-				onClose={() => setModalOpen(false)}
-				onConfirmAndCheckout={handleConfirmAndCheckout}
-				onConfirmAndStay={handleConfirmAndStay}
-				priceCents={totalCents}
-				title={item.title}
-			/>
-		)}
+				<div className="space-y-1">
+					<h1 className="font-bold text-xl">{item.title}</h1>
+					{item.description && <p className="text-muted-foreground text-sm">{item.description}</p>}
+					<p className="font-semibold text-primary">
+						{hasGroups
+							? `${t("store.product.from")} ${money.format(Number(item.fromPriceCents) / 100)}`
+							: money.format(basePriceCents / 100)}
+					</p>
+				</div>
+
+				{hasGroups && (
+					<>
+						<PopularOptionsStrip
+							groups={item.optionGroups}
+							onSelect={handleSelectPopular}
+							selections={selections}
+						/>
+
+						<Input
+							onChange={e => setLocalQuery(e.currentTarget.value)}
+							placeholder={t("store.product.searchOptions")}
+							value={localQuery}
+						/>
+
+						<div className="space-y-3">
+							{item.optionGroups.map(group => (
+								<OptionGroupBlock
+									group={group}
+									key={group.id}
+									onChangeQty={(optionId, optionName, priceDeltaCents, delta) =>
+										handleChangeQty(group.id, optionId, optionName, priceDeltaCents, delta)
+									}
+									onToggle={(optionId, optionName, priceDeltaCents) =>
+										handleToggle(group.id, optionId, optionName, priceDeltaCents)
+									}
+									query={query}
+									selections={selections[group.id] ?? []}
+								/>
+							))}
+						</div>
+					</>
+				)}
+
+				<div className="fixed inset-x-0 bottom-0 border-border/60 border-t bg-background px-4 py-4 shadow-lg">
+					<div className="mx-auto max-w-3xl">
+						<Button className="w-full" disabled={!!firstInvalidGroup} onClick={handleAdd} type="button">
+							{firstInvalidGroup
+								? t("store.product.chooseGroup", { group: firstInvalidGroup.name })
+								: `${t("store.cart.add")} · ${money.format(totalCents / 100)}`}
+						</Button>
+					</div>
+				</div>
+			</Container>
+
+			{item && (
+				<AddToCartModal
+					isOpen={modalOpen}
+					onClose={() => setModalOpen(false)}
+					onConfirmAndCheckout={handleConfirmAndCheckout}
+					onConfirmAndStay={handleConfirmAndStay}
+					priceCents={totalCents}
+					title={item.title}
+				/>
+			)}
 		</>
 	);
 }

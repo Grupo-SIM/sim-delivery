@@ -22,11 +22,15 @@ function prismaWith(tags: Array<{ id: string; companyId: string }>) {
 					return {};
 				},
 				findFirst: async ({ where }: { where: { companyId?: string; id: string } }) =>
-					tags.find(tag => (where.companyId ? tag.companyId === where.companyId : true) && tag.id === where.id) ??
-					null,
+					tags.find(
+						tag => (where.companyId ? tag.companyId === where.companyId : true) && tag.id === where.id,
+					) ?? null,
 				findMany: async ({ where }: { where: { companyId?: string } }) =>
 					where.companyId ? tags.filter(tag => tag.companyId === where.companyId) : tags,
-				update: async ({ data, where }: { data: object; where: { id: string } }) => ({ id: where.id, ...data }),
+				update: async ({ data, where }: { data: object; where: { id: string } }) => ({
+					id: where.id,
+					...data,
+				}),
 			},
 		} as unknown as PrismaInstance,
 	};
@@ -52,7 +56,9 @@ describe("tags use-cases", () => {
 
 	it("UpdateTag rejects a tag from another company", async () => {
 		const { prisma } = prismaWith([{ companyId: "cmp_1", id: "tag1" }]);
-		await expect(new UpdateTag(prisma).execute("cmp_2", "tag1", { name: "X" })).rejects.toThrow("TAG_NOT_FOUND");
+		await expect(new UpdateTag(prisma).execute("cmp_2", "tag1", { name: "X" })).rejects.toThrow(
+			"TAG_NOT_FOUND",
+		);
 	});
 
 	it("UpdateTag allows superAdmin (null company) to update a tag from any company", async () => {

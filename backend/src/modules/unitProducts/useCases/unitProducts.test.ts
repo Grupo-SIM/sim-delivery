@@ -5,8 +5,15 @@ import { ListUnitProducts } from "./ListUnitProducts";
 import { RemoveUnitProduct } from "./RemoveUnitProduct";
 import { UpdateUnitProduct } from "./UpdateUnitProduct";
 
-type Scoped = { id: string; companyId: string };
-type Assoc = { id: string; unitId: string; productId: string };
+interface Scoped {
+	id: string;
+	companyId: string;
+}
+interface Assoc {
+	id: string;
+	unitId: string;
+	productId: string;
+}
 
 function prismaWith(opts: {
 	units?: Scoped[];
@@ -46,8 +53,10 @@ function prismaWith(opts: {
 				findMany: async ({ where }: { where: { unitId: string } }) =>
 					associations.filter(a => a.unitId === where.unitId),
 				findUnique: async ({
-						where,
-					}: { where: { unitId_productId: { productId: string; unitId: string } } }) =>
+					where,
+				}: {
+					where: { unitId_productId: { productId: string; unitId: string } };
+				}) =>
 					associations.find(
 						a =>
 							a.unitId === where.unitId_productId.unitId && a.productId === where.unitId_productId.productId,
@@ -64,16 +73,16 @@ function prismaWith(opts: {
 describe("unit-products use-cases", () => {
 	it("AssociateProduct rejects a unit outside the company", async () => {
 		const { prisma } = prismaWith({ units: [{ companyId: "cmp_1", id: "unit1" }] });
-		await expect(new AssociateProduct(prisma).execute("cmp_2", "unit1", { productId: "prod1" })).rejects.toThrow(
-			"UNIT_NOT_FOUND",
-		);
+		await expect(
+			new AssociateProduct(prisma).execute("cmp_2", "unit1", { productId: "prod1" }),
+		).rejects.toThrow("UNIT_NOT_FOUND");
 	});
 
 	it("AssociateProduct rejects a product from another company", async () => {
 		const { prisma } = prismaWith({ units: [{ companyId: "cmp_1", id: "unit1" }] });
-		await expect(new AssociateProduct(prisma).execute("cmp_1", "unit1", { productId: "prod1" })).rejects.toThrow(
-			"PRODUCT_NOT_FOUND",
-		);
+		await expect(
+			new AssociateProduct(prisma).execute("cmp_1", "unit1", { productId: "prod1" }),
+		).rejects.toThrow("PRODUCT_NOT_FOUND");
 	});
 
 	it("AssociateProduct rejects an unknown category", async () => {
@@ -92,9 +101,9 @@ describe("unit-products use-cases", () => {
 			products: [{ companyId: "cmp_1", id: "prod1" }],
 			units: [{ companyId: "cmp_1", id: "unit1" }],
 		});
-		await expect(new AssociateProduct(prisma).execute("cmp_1", "unit1", { productId: "prod1" })).rejects.toThrow(
-			"UNIT_PRODUCT_EXISTS",
-		);
+		await expect(
+			new AssociateProduct(prisma).execute("cmp_1", "unit1", { productId: "prod1" }),
+		).rejects.toThrow("UNIT_PRODUCT_EXISTS");
 	});
 
 	it("AssociateProduct persists the unit, product and overrides", async () => {

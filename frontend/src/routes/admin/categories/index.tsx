@@ -1,11 +1,10 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { useGetCategories } from "@/lib/api";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { requireStaffBeforeLoad } from "@/lib/staff-guard";
+import { useGetCategories } from "@/lib/api";
 import { CategoriesTable, CreateCategoryForm } from "./components";
 
 function CategoriesPage() {
@@ -31,6 +30,6 @@ function CategoriesPage() {
 
 export const Route = createFileRoute("/admin/categories/")({
 	beforeLoad: () => {
-		throw redirect({ to: "/admin/products", search: { tab: "categories" } });
+		throw redirect({ search: { tab: "categories" }, to: "/admin/products" });
 	},
 });

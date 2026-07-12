@@ -23,7 +23,8 @@ function prismaWith(products: Array<{ id: string; companyId: string }>) {
 				},
 				findFirst: async ({ where }: { where: { companyId?: string; id: string } }) =>
 					products.find(
-						product => (where.companyId ? product.companyId === where.companyId : true) && product.id === where.id,
+						product =>
+							(where.companyId ? product.companyId === where.companyId : true) && product.id === where.id,
 					) ?? null,
 				findMany: async ({ where }: { where: { companyId?: string } }) =>
 					where.companyId ? products.filter(product => product.companyId === where.companyId) : products,

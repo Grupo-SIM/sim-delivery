@@ -1,11 +1,11 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getTagsQueryKey, usePostTags } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { getTagsQueryKey, usePostTags } from "@/lib/api";
 import { ColorField } from "./ColorField";
 
 const DEFAULT_COLOR = "#22c55e";

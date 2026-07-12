@@ -1,13 +1,13 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 import {
-	getStaffQueryKey,
 	type GetStaff200,
+	getStaffQueryKey,
 	useDeleteStaffByStaffId,
 	usePatchStaffByStaffId,
 } from "@/lib/api";
-import { Button } from "@/components/ui/button";
-import { CustomSelect } from "@/components/ui/CustomSelect";
 import { showAlert, showConfirm } from "@/stores";
 
 type EditableRole = "manager" | "attendant" | "kitchen";
@@ -71,7 +71,13 @@ export function StaffRow({ member }: StaffRowProps) {
 			</td>
 			<td className="px-4 py-3 text-right">
 				{isEditableRole && (
-					<Button disabled={remove.isPending} onClick={removeMember} size="sm" type="button" variant="outline">
+					<Button
+						disabled={remove.isPending}
+						onClick={removeMember}
+						size="sm"
+						type="button"
+						variant="outline"
+					>
 						{t("admin.staff.row.remove")}
 					</Button>
 				)}

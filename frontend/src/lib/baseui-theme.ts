@@ -8,13 +8,13 @@ export type ThemeMode = "dark" | "light";
  */
 const brand = {
 	blue: "#0012FF",
-	blueLight: "#3342FF",
 	blueDark: "#000FCC",
-	yellow: "#FFED00",
+	blueLight: "#3342FF",
 	cyan: "#00E5FF",
-	red: "#E33E2B",
 	ink: "#1A1A2E",
+	red: "#E33E2B",
 	white: "#FFFFFF",
+	yellow: "#FFED00",
 } as const;
 
 /** Outfit is the brand UI font; applied to Base Web components via typography overrides. */

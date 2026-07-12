@@ -1,7 +1,7 @@
 import Elysia from "elysia";
 import { AuthGuard } from "@/modules/users/guards";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
-import { CreateCustomerBody, GetMyCustomerQuery, MaybeCustomerReturn, CustomerReturn } from "../../dtos";
+import { CreateCustomerBody, CustomerReturn, GetMyCustomerQuery, MaybeCustomerReturn } from "../../dtos";
 import { GetMyCustomer, UpsertCustomer } from "../../useCases";
 
 export const CustomersController = new Elysia({

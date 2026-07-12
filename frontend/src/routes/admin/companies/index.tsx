@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { useGetCompanies } from "@/lib/api";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useGetCompanies } from "@/lib/api";
 import { requireSuperAdminBeforeLoad } from "@/lib/super-admin-guard";
 import { CompaniesTable, CreateCompanyForm } from "./components";
 

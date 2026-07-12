@@ -10,7 +10,7 @@ export function InfoPill({ children, className }: InfoPillProps) {
 	return (
 		<span
 			className={cn(
-				"inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-muted-foreground text-xs font-medium",
+				"inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 font-medium text-muted-foreground text-xs",
 				className,
 			)}
 		>

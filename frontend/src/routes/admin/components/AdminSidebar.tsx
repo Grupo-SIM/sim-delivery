@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import type { IconType } from "react-icons";
 import {
 	LuBuilding2,
 	LuChartBar,
@@ -12,7 +13,6 @@ import {
 	LuUsers,
 	LuUtensilsCrossed,
 } from "react-icons/lu";
-import type { IconType } from "react-icons";
 import { cn } from "@/lib/utils";
 import { isSuperAdmin, useAuthStore } from "@/stores/auth";
 
@@ -29,7 +29,7 @@ function NavItem({ exact = false, icon: Icon, label, to }: NavItemProps) {
 			activeOptions={{ exact }}
 			activeProps={{ className: "bg-primary/10 text-primary font-semibold" }}
 			className={cn(
-				"flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
+				"flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground text-sm transition-colors hover:bg-accent hover:text-foreground",
 			)}
 			to={to}
 		>
@@ -47,7 +47,7 @@ interface NavGroupProps {
 function NavGroup({ children, label }: NavGroupProps) {
 	return (
 		<div className="space-y-1">
-			<p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+			<p className="mb-1 px-3 font-semibold text-[11px] text-muted-foreground/60 uppercase tracking-wider">
 				{label}
 			</p>
 			{children}

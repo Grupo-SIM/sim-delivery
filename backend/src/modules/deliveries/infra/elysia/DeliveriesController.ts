@@ -1,7 +1,13 @@
 import Elysia from "elysia";
 import { CompanyScopeGuard } from "@/modules/users/guards";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
-import { AssignDeliveryBody, DeliveryListReturn, DeliveryReturn, ListDeliveriesQuery, UpdateDeliveryStatusBody } from "../../dtos";
+import {
+	AssignDeliveryBody,
+	DeliveryListReturn,
+	DeliveryReturn,
+	ListDeliveriesQuery,
+	UpdateDeliveryStatusBody,
+} from "../../dtos";
 import { AssignDelivery, ListDeliveries, UpdateDeliveryStatus } from "../../useCases";
 
 export const DeliveriesController = new Elysia({
@@ -41,7 +47,13 @@ export const DeliveriesController = new Elysia({
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "deliveries", "updateStatus");
 					const isCourier = scope.role === "courier";
-					return updateDeliveryStatus.execute(scope.companyId, scope.userId, params.deliveryId, body, isCourier);
+					return updateDeliveryStatus.execute(
+						scope.companyId,
+						scope.userId,
+						params.deliveryId,
+						body,
+						isCourier,
+					);
 				},
 				{ body: UpdateDeliveryStatusBody, response: DeliveryReturn },
 			),

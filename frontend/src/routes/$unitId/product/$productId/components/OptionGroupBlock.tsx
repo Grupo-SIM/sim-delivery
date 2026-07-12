@@ -31,9 +31,7 @@ export function OptionGroupBlock({ group, onChangeQty, onToggle, query, selectio
 
 	const q = query.trim().toLowerCase();
 	const filteredOptions = q
-		? group.options.filter(o =>
-				`${o.name} ${o.description}`.toLowerCase().includes(q),
-			)
+		? group.options.filter(o => `${o.name} ${o.description}`.toLowerCase().includes(q))
 		: group.options;
 
 	if (filteredOptions.length === 0) return null;
@@ -57,7 +55,7 @@ export function OptionGroupBlock({ group, onChangeQty, onToggle, query, selectio
 					<p className="text-muted-foreground text-xs">{subtitle}</p>
 				</div>
 				<div className="flex shrink-0 items-center gap-2">
-					<span className="text-muted-foreground text-sm font-medium">
+					<span className="font-medium text-muted-foreground text-sm">
 						{totalSelected}/{maxSelect}
 					</span>
 					<span className="text-muted-foreground text-xs">{open ? "▲" : "▼"}</span>
@@ -69,8 +67,7 @@ export function OptionGroupBlock({ group, onChangeQty, onToggle, query, selectio
 					{filteredOptions.map(option => {
 						const sel = selections.find(s => s.optionId === option.id);
 						const qty = sel?.quantity ?? 0;
-						const perItemMax =
-							option.maxPerItem != null ? Number(option.maxPerItem) : maxSelect;
+						const perItemMax = option.maxPerItem != null ? Number(option.maxPerItem) : maxSelect;
 						const groupRemainder = maxSelect - totalSelected + qty;
 						const maxQty = Math.min(perItemMax, groupRemainder);
 
@@ -81,9 +78,7 @@ export function OptionGroupBlock({ group, onChangeQty, onToggle, query, selectio
 								onChangeQty={delta =>
 									onChangeQty(option.id, option.name, Number(option.priceDeltaCents), delta)
 								}
-								onToggle={() =>
-									onToggle(option.id, option.name, Number(option.priceDeltaCents))
-								}
+								onToggle={() => onToggle(option.id, option.name, Number(option.priceDeltaCents))}
 								option={option}
 								quantity={qty}
 								selectionType={group.selectionType}

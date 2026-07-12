@@ -31,7 +31,9 @@ export class AssociateProduct {
 			}
 		}
 
-		const existing = await this.prisma.unitProduct.findUnique({ where: { unitId_productId: { productId, unitId } } });
+		const existing = await this.prisma.unitProduct.findUnique({
+			where: { unitId_productId: { productId, unitId } },
+		});
 		if (existing) {
 			throw new DomainError(UnitProductErrors.UNIT_PRODUCT_EXISTS);
 		}

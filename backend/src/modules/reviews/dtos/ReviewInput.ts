@@ -3,7 +3,7 @@ import { t } from "elysia";
 export const CreateReviewBody = t.Object({
 	comment: t.Optional(t.String({ maxLength: 500 })),
 	orderId: t.String(),
-	rating: t.Integer({ minimum: 1, maximum: 5 }),
+	rating: t.Integer({ maximum: 5, minimum: 1 }),
 });
 export type CreateReviewBody = typeof CreateReviewBody.static;
 
@@ -14,7 +14,7 @@ export type ListReviewsQuery = typeof ListReviewsQuery.static;
 
 export const CreateReviewDTO = t.Object({
 	...CreateReviewBody.properties,
-	customerId: t.String(),
 	companyId: t.Nullable(t.String()),
+	customerId: t.String(),
 });
 export type CreateReviewDTO = typeof CreateReviewDTO.static;

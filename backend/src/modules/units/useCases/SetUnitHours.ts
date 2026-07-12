@@ -7,7 +7,11 @@ export class SetUnitHours {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	/** Replaces the unit's weekly schedule, upserting one row per provided weekday. */
-	async execute(companyId: string | null, unitId: string, days: SetUnitHoursBody["hours"]): Promise<UnitHoursListReturn> {
+	async execute(
+		companyId: string | null,
+		unitId: string,
+		days: SetUnitHoursBody["hours"],
+	): Promise<UnitHoursListReturn> {
 		const unit = companyId ? await this.prisma.unit.findFirst({ where: { companyId, id: unitId } }) : null;
 		if (!unit) {
 			throw new DomainError(UnitErrors.UNIT_NOT_FOUND);

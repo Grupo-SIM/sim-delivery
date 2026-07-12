@@ -1,11 +1,11 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getUnitsByUnitIdHoursQueryKey, useGetUnitsByUnitIdHours, usePutUnitsByUnitIdHours } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { getUnitsByUnitIdHoursQueryKey, useGetUnitsByUnitIdHours, usePutUnitsByUnitIdHours } from "@/lib/api";
 import { showAlert } from "@/stores";
 
 const WEEKDAYS = [0, 1, 2, 3, 4, 5, 6] as const;
@@ -52,7 +52,7 @@ export function UnitHoursEditor({ onClose, unitId }: UnitHoursEditorProps) {
 					: { ...emptyDay };
 			}),
 		);
-	}, [data, unitId]);
+	}, [data]);
 
 	function update(index: number, patch: Partial<DayState>) {
 		setDays(prev => prev.map((day, i) => (i === index ? { ...day, ...patch } : day)));

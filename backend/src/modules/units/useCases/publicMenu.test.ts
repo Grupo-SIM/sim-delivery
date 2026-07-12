@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { ListPublicMenu } from "./ListPublicMenu";
 
-type Assoc = {
+interface Assoc {
 	available: boolean;
 	cashbackPercentOverride: number | null;
 	category: { id: string; name: string; position: number } | null;
@@ -37,7 +37,7 @@ type Assoc = {
 		title: string;
 	};
 	unitId: string;
-};
+}
 
 function prismaWith(unit: { id: string } | null, associations: Assoc[] = []) {
 	return {

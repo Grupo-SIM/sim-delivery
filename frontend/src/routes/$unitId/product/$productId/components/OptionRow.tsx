@@ -10,14 +10,21 @@ interface OptionRowProps {
 	selectionType: string;
 }
 
-export function OptionRow({ maxQty, onChangeQty, onToggle, option, quantity, selectionType }: OptionRowProps) {
+export function OptionRow({
+	maxQty,
+	onChangeQty,
+	onToggle,
+	option,
+	quantity,
+	selectionType,
+}: OptionRowProps) {
 	const isSelected = quantity > 0;
 	const delta = Number(option.priceDeltaCents);
 
 	if (selectionType === "single") {
 		return (
 			<button
-				className={`flex w-full items-start gap-3 p-3 text-left transition-colors ${isSelected ? "bg-primary/5 ring-1 ring-inset ring-primary" : "hover:bg-muted/40"}`}
+				className={`flex w-full items-start gap-3 p-3 text-left transition-colors ${isSelected ? "bg-primary/5 ring-1 ring-primary ring-inset" : "hover:bg-muted/40"}`}
 				onClick={onToggle}
 				type="button"
 			>
@@ -32,9 +39,7 @@ export function OptionRow({ maxQty, onChangeQty, onToggle, option, quantity, sel
 				<div className="min-w-0 flex-1">
 					<p className="font-medium text-sm">{option.name}</p>
 					{option.description && <p className="text-muted-foreground text-xs">{option.description}</p>}
-					{delta !== 0 && (
-						<p className="mt-0.5 font-medium text-sm">+{money.format(delta / 100)}</p>
-					)}
+					{delta !== 0 && <p className="mt-0.5 font-medium text-sm">+{money.format(delta / 100)}</p>}
 				</div>
 				<div
 					className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2 ${isSelected ? "border-primary" : "border-muted-foreground/40"}`}
@@ -58,9 +63,7 @@ export function OptionRow({ maxQty, onChangeQty, onToggle, option, quantity, sel
 			<div className="min-w-0 flex-1">
 				<p className="font-medium text-sm">{option.name}</p>
 				{option.description && <p className="text-muted-foreground text-xs">{option.description}</p>}
-				{delta !== 0 && (
-					<p className="mt-0.5 font-medium text-sm">+{money.format(delta / 100)}</p>
-				)}
+				{delta !== 0 && <p className="mt-0.5 font-medium text-sm">+{money.format(delta / 100)}</p>}
 			</div>
 			<div className="flex shrink-0 items-center gap-2">
 				<button

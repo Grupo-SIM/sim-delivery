@@ -14,7 +14,7 @@ export const DeliveryErrorsStatusCodes: Record<keyof typeof DeliveryErrors, Stat
 	DELIVERY_NOT_FOUND: StatusCodes.NOT_FOUND,
 	FORBIDDEN_COURIER: StatusCodes.FORBIDDEN,
 	INVALID_TRANSITION: StatusCodes.UNPROCESSABLE_ENTITY,
+	ORDER_ALREADY_ASSIGNED: StatusCodes.CONFLICT,
 	ORDER_NOT_DELIVERY: StatusCodes.BAD_REQUEST,
 	ORDER_NOT_FOUND: StatusCodes.NOT_FOUND,
-	ORDER_ALREADY_ASSIGNED: StatusCodes.CONFLICT,
 };

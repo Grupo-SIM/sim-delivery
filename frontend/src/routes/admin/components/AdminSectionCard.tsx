@@ -20,7 +20,7 @@ export function AdminSectionCard({ description, icon: Icon, title, to }: AdminSe
 					</IconBadge>
 					<CardTitle className="text-base">{title}</CardTitle>
 				</CardHeader>
-				<CardContent className="text-muted-foreground text-body-sm">{description}</CardContent>
+				<CardContent className="text-body-sm text-muted-foreground">{description}</CardContent>
 			</Card>
 		</Link>
 	);

@@ -15,8 +15,8 @@ export class ConfirmPayment {
 			where: { id: payment.orderId },
 		});
 
-		const earnedCashbackCents = Math.floor(order.total * order.unit.cashbackPercent / 100);
-		const earnedLoyaltyPoints = Math.floor(order.total * order.unit.loyaltyPointsRate / 100);
+		const earnedCashbackCents = Math.floor((order.total * order.unit.cashbackPercent) / 100);
+		const earnedLoyaltyPoints = Math.floor((order.total * order.unit.loyaltyPointsRate) / 100);
 
 		await this.prisma.$transaction(async tx => {
 			await tx.payment.update({

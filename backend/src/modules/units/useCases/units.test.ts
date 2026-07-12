@@ -22,10 +22,14 @@ function prismaWith(units: Array<{ id: string; companyId: string }>) {
 					return {};
 				},
 				findFirst: async ({ where }: { where: { companyId?: string; id: string } }) =>
-					units.find(u => (where.companyId ? u.companyId === where.companyId : true) && u.id === where.id) ?? null,
+					units.find(u => (where.companyId ? u.companyId === where.companyId : true) && u.id === where.id) ??
+					null,
 				findMany: async ({ where }: { where: { companyId?: string } }) =>
 					where.companyId ? units.filter(u => u.companyId === where.companyId) : units,
-				update: async ({ data, where }: { data: object; where: { id: string } }) => ({ id: where.id, ...data }),
+				update: async ({ data, where }: { data: object; where: { id: string } }) => ({
+					id: where.id,
+					...data,
+				}),
 			},
 		} as unknown as PrismaInstance,
 	};
@@ -51,7 +55,9 @@ describe("units use-cases", () => {
 
 	it("UpdateUnit rejects a unit from another company", async () => {
 		const { prisma } = prismaWith([{ companyId: "cmp_1", id: "u1" }]);
-		await expect(new UpdateUnit(prisma).execute("cmp_2", "u1", { name: "Y" })).rejects.toThrow("UNIT_NOT_FOUND");
+		await expect(new UpdateUnit(prisma).execute("cmp_2", "u1", { name: "Y" })).rejects.toThrow(
+			"UNIT_NOT_FOUND",
+		);
 	});
 
 	it("UpdateUnit allows superAdmin (null company) to update a unit from any company", async () => {

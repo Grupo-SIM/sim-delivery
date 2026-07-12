@@ -18,7 +18,9 @@ describe("isUnitOpen", () => {
 
 	it("is closed outside the range or on a closed/missing weekday", () => {
 		expect(isUnitOpen(openWed, null, new Date(2026, 6, 1, 20, 0))).toBe(false);
-		expect(isUnitOpen([{ closed: true, closesAt: null, opensAt: null, weekday: 3 }], null, wed10)).toBe(false);
+		expect(isUnitOpen([{ closed: true, closesAt: null, opensAt: null, weekday: 3 }], null, wed10)).toBe(
+			false,
+		);
 		expect(isUnitOpen([], null, wed10)).toBe(false);
 	});
 

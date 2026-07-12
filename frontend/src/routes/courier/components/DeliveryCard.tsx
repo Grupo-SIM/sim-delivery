@@ -1,27 +1,27 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { Button, buttonClassName } from "@/components/ui/button";
 import {
-	getDeliveriesQueryKey,
 	type GetDeliveries200,
+	getDeliveriesQueryKey,
 	usePatchDeliveriesByDeliveryIdStatus,
 } from "@/lib/api";
-import { Button, buttonClassName } from "@/components/ui/button";
 import { showAlert, showConfirm } from "@/stores";
 
 type Delivery = GetDeliveries200[number];
 
 const NEXT_ACTIONS: Record<string, { status: string; labelKey: string; destructive?: boolean }[]> = {
-	atribuida: [
-		{ status: "aceita", labelKey: "courier.actions.accept" },
-		{ status: "recusada", labelKey: "courier.actions.refuse", destructive: true },
+	a_caminho: [
+		{ labelKey: "courier.actions.markDelivered", status: "entregue" },
+		{ destructive: true, labelKey: "courier.actions.markFailed", status: "falhou" },
 	],
 	aceita: [
-		{ status: "a_caminho", labelKey: "courier.actions.startRoute" },
-		{ status: "recusada", labelKey: "courier.actions.refuse", destructive: true },
+		{ labelKey: "courier.actions.startRoute", status: "a_caminho" },
+		{ destructive: true, labelKey: "courier.actions.refuse", status: "recusada" },
 	],
-	a_caminho: [
-		{ status: "entregue", labelKey: "courier.actions.markDelivered" },
-		{ status: "falhou", labelKey: "courier.actions.markFailed", destructive: true },
+	atribuida: [
+		{ labelKey: "courier.actions.accept", status: "aceita" },
+		{ destructive: true, labelKey: "courier.actions.refuse", status: "recusada" },
 	],
 };
 
@@ -57,7 +57,10 @@ export function DeliveryCard({ delivery }: DeliveryCardProps) {
 		}
 
 		patch.mutate(
-			{ data: { status: status as "aceita" | "a_caminho" | "entregue" | "recusada" | "falhou" }, deliveryId: delivery.id },
+			{
+				data: { status: status as "aceita" | "a_caminho" | "entregue" | "recusada" | "falhou" },
+				deliveryId: delivery.id,
+			},
 			{
 				onError: () => void showAlert(t("courier.loadError")),
 				onSuccess: () => queryClient.invalidateQueries({ queryKey: getDeliveriesQueryKey() }),
@@ -66,18 +69,18 @@ export function DeliveryCard({ delivery }: DeliveryCardProps) {
 	}
 
 	return (
-		<div className="rounded-lg border border-border bg-card p-4 space-y-3">
+		<div className="space-y-3 rounded-lg border border-border bg-card p-4">
 			<div className="flex items-start justify-between gap-2">
 				<div>
 					<p className="font-semibold">{delivery.order.customerName}</p>
 					<p className="text-muted-foreground text-sm">{delivery.unitName}</p>
 				</div>
-				<span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium shrink-0">
+				<span className="shrink-0 rounded-full bg-muted px-2 py-0.5 font-medium text-xs">
 					{t(`admin.deliveries.status.${delivery.status}`, { defaultValue: delivery.status })}
 				</span>
 			</div>
 
-			<div className="text-sm text-muted-foreground space-y-0.5">
+			<div className="space-y-0.5 text-muted-foreground text-sm">
 				<p>
 					{t("courier.order.items", { count: delivery.order.items.length })}
 					{" · "}

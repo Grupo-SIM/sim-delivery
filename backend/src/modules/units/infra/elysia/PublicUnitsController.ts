@@ -1,6 +1,11 @@
 import Elysia, { t } from "elysia";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
-import { FreightSimulateBody, FreightSimulateReturn, PublicMenuReturn, PublicUnitListReturn } from "../../dtos";
+import {
+	FreightSimulateBody,
+	FreightSimulateReturn,
+	PublicMenuReturn,
+	PublicUnitListReturn,
+} from "../../dtos";
 import { ListPublicMenu, ListPublicUnits, SimulateFreight } from "../../useCases";
 
 /** Customer-facing, unauthenticated storefront endpoints. Company is resolved from the
@@ -32,9 +37,8 @@ export const PublicUnitsController = new Elysia({
 					response: PublicMenuReturn,
 				},
 			)
-			.post(
-				"/freight/simulate",
-				async ({ body, simulateFreight }) => simulateFreight.execute(body),
-				{ body: FreightSimulateBody, response: FreightSimulateReturn },
-			),
+			.post("/freight/simulate", async ({ body, simulateFreight }) => simulateFreight.execute(body), {
+				body: FreightSimulateBody,
+				response: FreightSimulateReturn,
+			}),
 	);

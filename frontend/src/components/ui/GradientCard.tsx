@@ -16,8 +16,7 @@ const toneClassName: Record<GradientCardTone, string> = {
 	blue: "bg-linear-135 from-brand-blue to-brand-blue-light text-white",
 	cyan: "bg-linear-135 from-brand-cyan to-brand-cyan-deep text-white",
 	ink: "bg-linear-135 from-brand-ink to-[#2a2a4a] text-white",
-	instagram:
-		"bg-linear-45 from-[#f09433] via-[#dc2743] to-[#bc1888] text-white",
+	instagram: "bg-linear-45 from-[#f09433] via-[#dc2743] to-[#bc1888] text-white",
 	yellow: "bg-linear-135 from-brand-yellow to-brand-yellow-dark text-brand-blue",
 };
 

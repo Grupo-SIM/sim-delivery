@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getBrandingQueryKey, useGetBranding, usePutBranding } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -10,6 +9,7 @@ import { FormSectionHeading } from "@/components/ui/FormSectionHeading";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
+import { getBrandingQueryKey, useGetBranding, usePutBranding } from "@/lib/api";
 import { showAlert } from "@/stores";
 
 function BrandingPage() {
@@ -97,7 +97,7 @@ function BrandingPage() {
 						/>
 						{logoUrl && (
 							<div className="rounded border border-border p-3">
-								<p className="mb-2 text-xs font-medium uppercase text-muted-foreground">
+								<p className="mb-2 font-medium text-muted-foreground text-xs uppercase">
 									{t("admin.branding.logoPreview")}
 								</p>
 								<img alt="logo preview" className="h-12 object-contain" src={logoUrl} />

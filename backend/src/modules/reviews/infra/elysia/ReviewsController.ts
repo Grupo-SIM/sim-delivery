@@ -1,12 +1,7 @@
 import Elysia from "elysia";
-import { prisma } from "@/shared/infra/sql";
 import { CompanyScopeGuard } from "@/modules/users/guards";
-import {
-	CreateReviewBody,
-	ListReviewsQuery,
-	ReviewListReturn,
-	ReviewReturn,
-} from "../../dtos";
+import { prisma } from "@/shared/infra/sql";
+import { CreateReviewBody, ListReviewsQuery, ReviewListReturn, ReviewReturn } from "../../dtos";
 import { CreateReview, ListReviews } from "../../useCases";
 
 const createReview = new CreateReview(prisma);

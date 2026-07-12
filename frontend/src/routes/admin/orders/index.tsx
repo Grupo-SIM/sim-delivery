@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useGetOrders, useGetUnits } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/Container";
 import { CustomSelect } from "@/components/ui/CustomSelect";
@@ -9,6 +8,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
+import { useGetOrders, useGetUnits } from "@/lib/api";
 import { OrdersTable } from "./components";
 
 const STATUS_FILTERS = [
@@ -31,7 +31,11 @@ function OrdersPage() {
 
 	const { data: units } = useGetUnits();
 
-	const { data: orders, isError, isPending } = useGetOrders({
+	const {
+		data: orders,
+		isError,
+		isPending,
+	} = useGetOrders({
 		...(statusFilter !== "all" ? { status: statusFilter } : {}),
 		...(unitId !== "all" ? { unitId } : {}),
 		...(deliveryMethod !== "all" ? { deliveryMethod: deliveryMethod as "delivery" | "pickup" } : {}),
@@ -77,16 +81,11 @@ function OrdersPage() {
 					/>
 				</div>
 				<div>
-					<p className="mb-1 text-sm font-medium">{t("admin.orders.filter.unit")}</p>
-					<CustomSelect
-						className="w-48"
-						onChange={setUnitId}
-						options={unitOptions}
-						value={unitId}
-					/>
+					<p className="mb-1 font-medium text-sm">{t("admin.orders.filter.unit")}</p>
+					<CustomSelect className="w-48" onChange={setUnitId} options={unitOptions} value={unitId} />
 				</div>
 				<div>
-					<p className="mb-1 text-sm font-medium">{t("admin.orders.columns.method")}</p>
+					<p className="mb-1 font-medium text-sm">{t("admin.orders.columns.method")}</p>
 					<CustomSelect
 						className="w-40"
 						onChange={setDeliveryMethod}

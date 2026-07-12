@@ -2,12 +2,18 @@ import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { CreateCompany } from "./CreateCompany";
 
-type CompanyRow = { id: string; name: string; slug: string; variantKey: string | null; createdAt: Date; updatedAt: Date };
+interface CompanyRow {
+	id: string;
+	name: string;
+	slug: string;
+	variantKey: string | null;
+	createdAt: Date;
+	updatedAt: Date;
+}
 
 function fakePrisma(seed: CompanyRow[] = []) {
 	const rows = [...seed];
 	return {
-		rows,
 		prisma: {
 			company: {
 				create: async ({ data }: { data: { name: string; slug: string } }) => {
@@ -26,6 +32,7 @@ function fakePrisma(seed: CompanyRow[] = []) {
 					rows.find(row => row.slug === where.slug) ?? null,
 			},
 		} as unknown as PrismaInstance,
+		rows,
 	};
 }
 
@@ -41,9 +48,18 @@ describe("CreateCompany", () => {
 
 	it("rejects a duplicate slug with SLUG_TAKEN", async () => {
 		const { prisma } = fakePrisma([
-			{ createdAt: new Date(), id: "cmp_1", name: "Existing", slug: "taken", updatedAt: new Date(), variantKey: null },
+			{
+				createdAt: new Date(),
+				id: "cmp_1",
+				name: "Existing",
+				slug: "taken",
+				updatedAt: new Date(),
+				variantKey: null,
+			},
 		]);
 
-		await expect(new CreateCompany(prisma).execute({ name: "New", slug: "taken" })).rejects.toThrow("SLUG_TAKEN");
+		await expect(new CreateCompany(prisma).execute({ name: "New", slug: "taken" })).rejects.toThrow(
+			"SLUG_TAKEN",
+		);
 	});
 });

@@ -2,8 +2,12 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+	type PostCustomersMe200,
+	type PostPublicCouponsValidate200,
+	postPublicCouponsValidate,
+} from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
-import { postPublicCouponsValidate, type PostCustomersMe200, type PostPublicCouponsValidate200 } from "@/lib/api";
 import type { CartItem } from "@/stores";
 
 export type DeliveryMethod = "delivery" | "pickup";
@@ -61,7 +65,10 @@ export function OrderReview({
 
 	const deliveryFee = deliveryMethod === "delivery" ? unitDeliveryFee : 0;
 	const discountCents = Number(appliedCoupon?.discountCents ?? 0);
-	const total = Math.max(0, subtotal + deliveryFee - discountCents - cashbackRedeemCents - loyaltyRedeemPoints);
+	const total = Math.max(
+		0,
+		subtotal + deliveryFee - discountCents - cashbackRedeemCents - loyaltyRedeemPoints,
+	);
 
 	async function handleApplyCoupon() {
 		if (!couponInput.trim()) return;
@@ -100,26 +107,32 @@ export function OrderReview({
 				<div className="space-y-2">
 					<span className="font-medium text-sm">{t("store.checkout.order.deliveryMethod")}</span>
 					<div className="flex gap-2">
-						{(["delivery", "pickup"] as DeliveryMethod[]).filter(m => availableMethods.includes(m)).map(method => (
-							<Button
-								key={method}
-								onClick={() => onChangeDeliveryMethod(method)}
-								size="sm"
-								type="button"
-								variant={deliveryMethod === method ? "default" : "outline"}
-							>
-								{t(`store.checkout.order.${method}`)}
-							</Button>
-						))}
+						{(["delivery", "pickup"] as DeliveryMethod[])
+							.filter(m => availableMethods.includes(m))
+							.map(method => (
+								<Button
+									key={method}
+									onClick={() => onChangeDeliveryMethod(method)}
+									size="sm"
+									type="button"
+									variant={deliveryMethod === method ? "default" : "outline"}
+								>
+									{t(`store.checkout.order.${method}`)}
+								</Button>
+							))}
 					</div>
 				</div>
 			)}
 
 			{address && (
 				<div className="rounded-md border border-border bg-muted/30 p-3 text-sm">
-					<p className="font-medium">{address.addressLine}, {address.number}</p>
+					<p className="font-medium">
+						{address.addressLine}, {address.number}
+					</p>
 					{address.complement && <p className="text-muted-foreground">{address.complement}</p>}
-					<p className="text-muted-foreground">{[address.neighborhood, address.city, address.state].filter(Boolean).join(", ")}</p>
+					<p className="text-muted-foreground">
+						{[address.neighborhood, address.city, address.state].filter(Boolean).join(", ")}
+					</p>
 				</div>
 			)}
 
@@ -129,7 +142,10 @@ export function OrderReview({
 					<div className="flex items-center justify-between rounded-md border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm">
 						<span className="font-mono font-semibold text-green-700">{appliedCoupon.code}</span>
 						<Button
-							onClick={() => { onSetCoupon(null); setCouponInput(""); }}
+							onClick={() => {
+								onSetCoupon(null);
+								setCouponInput("");
+							}}
 							size="sm"
 							type="button"
 							variant="ghost"
@@ -150,7 +166,9 @@ export function OrderReview({
 							type="button"
 							variant="outline"
 						>
-							{isValidating ? t("store.checkout.order.couponApplying") : t("store.checkout.order.couponApply")}
+							{isValidating
+								? t("store.checkout.order.couponApplying")
+								: t("store.checkout.order.couponApply")}
 						</Button>
 					</div>
 				)}
@@ -165,9 +183,7 @@ export function OrderReview({
 							{t("store.checkout.order.cashbackBalance", { amount: formatMoney(cashbackBalanceCents / 100) })}
 						</span>
 						<Button
-							onClick={() =>
-								onChangeCashbackRedeem(cashbackRedeemCents > 0 ? 0 : cashbackBalanceCents)
-							}
+							onClick={() => onChangeCashbackRedeem(cashbackRedeemCents > 0 ? 0 : cashbackBalanceCents)}
 							size="sm"
 							type="button"
 							variant={cashbackRedeemCents > 0 ? "default" : "outline"}
@@ -185,12 +201,13 @@ export function OrderReview({
 					<span className="font-medium text-sm">{t("store.checkout.order.loyalty")}</span>
 					<div className="flex items-center justify-between rounded-md border border-border bg-muted/30 px-3 py-2 text-sm">
 						<span className="text-muted-foreground">
-							{t("store.checkout.order.loyaltyBalance", { points: loyaltyBalancePoints, amount: formatMoney(loyaltyBalancePoints / 100) })}
+							{t("store.checkout.order.loyaltyBalance", {
+								amount: formatMoney(loyaltyBalancePoints / 100),
+								points: loyaltyBalancePoints,
+							})}
 						</span>
 						<Button
-							onClick={() =>
-								onChangeLoyaltyRedeem(loyaltyRedeemPoints > 0 ? 0 : loyaltyBalancePoints)
-							}
+							onClick={() => onChangeLoyaltyRedeem(loyaltyRedeemPoints > 0 ? 0 : loyaltyBalancePoints)}
 							size="sm"
 							type="button"
 							variant={loyaltyRedeemPoints > 0 ? "default" : "outline"}
@@ -211,19 +228,19 @@ export function OrderReview({
 					</div>
 				)}
 				{discountCents > 0 && (
-					<div className="flex justify-between text-sm text-green-700">
+					<div className="flex justify-between text-green-700 text-sm">
 						<span>{t("store.checkout.order.discount")}</span>
 						<span>−{formatMoney(discountCents / 100)}</span>
 					</div>
 				)}
 				{cashbackRedeemCents > 0 && (
-					<div className="flex justify-between text-sm text-green-700">
+					<div className="flex justify-between text-green-700 text-sm">
 						<span>{t("store.checkout.order.cashbackRedeemed")}</span>
 						<span>−{formatMoney(cashbackRedeemCents / 100)}</span>
 					</div>
 				)}
 				{loyaltyRedeemPoints > 0 && (
-					<div className="flex justify-between text-sm text-green-700">
+					<div className="flex justify-between text-green-700 text-sm">
 						<span>{t("store.checkout.order.loyaltyRedeemed")}</span>
 						<span>−{formatMoney(loyaltyRedeemPoints / 100)}</span>
 					</div>

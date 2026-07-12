@@ -1,5 +1,5 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
-import type { ListDeliveriesQuery, DeliveryListReturn } from "../dtos";
+import type { DeliveryListReturn, ListDeliveriesQuery } from "../dtos";
 
 export class ListDeliveries {
 	constructor(private readonly prisma: PrismaInstance) {}
@@ -12,7 +12,16 @@ export class ListDeliveries {
 				courier: { select: { name: true } },
 				order: {
 					include: {
-						address: { select: { addressLine: true, city: true, complement: true, neighborhood: true, number: true, state: true } },
+						address: {
+							select: {
+								addressLine: true,
+								city: true,
+								complement: true,
+								neighborhood: true,
+								number: true,
+								state: true,
+							},
+						},
 						customer: { include: { user: true } },
 						items: true,
 					},

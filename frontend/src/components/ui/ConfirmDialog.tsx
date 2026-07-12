@@ -17,17 +17,17 @@ export function ConfirmDialog() {
 			isOpen
 			onClose={() => close(false)}
 			overrides={{
-				DialogContainer: {
-					style: {
-						backdropFilter: "blur(4px)",
-						backgroundColor: "rgba(0,0,0,0.55)",
-					},
-				},
 				Dialog: {
 					style: {
 						borderRadius: "24px",
 						maxWidth: "420px",
 						width: "92vw",
+					},
+				},
+				DialogContainer: {
+					style: {
+						backdropFilter: "blur(4px)",
+						backgroundColor: "rgba(0,0,0,0.55)",
 					},
 				},
 				Root: {
@@ -47,10 +47,7 @@ export function ConfirmDialog() {
 						{t("actions.cancel")}
 					</ModalButton>
 				)}
-				<ModalButton
-					autoFocus
-					onClick={() => close(true)}
-				>
+				<ModalButton autoFocus onClick={() => close(true)}>
 					{isConfirm ? (current.confirmLabel ?? t("actions.confirm")) : t("actions.ok")}
 				</ModalButton>
 			</ModalFooter>

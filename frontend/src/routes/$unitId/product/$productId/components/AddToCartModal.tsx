@@ -68,12 +68,7 @@ export function AddToCartModal({
 							−
 						</Button>
 						<span className="min-w-6 text-center font-semibold">{quantity}</span>
-						<Button
-							onClick={() => setQuantity(q => q + 1)}
-							size="sm"
-							type="button"
-							variant="outline"
-						>
+						<Button onClick={() => setQuantity(q => q + 1)} size="sm" type="button" variant="outline">
 							+
 						</Button>
 						<span className="ml-auto font-semibold text-primary">

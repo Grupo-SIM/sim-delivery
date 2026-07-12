@@ -51,14 +51,14 @@ const envLines: string[] = [];
 if (key !== "default") {
 	envLines.push(`VITE_VARIANT_KEY=${key}`);
 } else {
-	envLines.push(`# VITE_VARIANT_KEY= (unset — serves all companies)`);
+	envLines.push("# VITE_VARIANT_KEY= (unset — serves all companies)");
 }
 if (variant.apiUrl) envLines.push(`VITE_API_URL=${variant.apiUrl}`);
 if (variant.appUrl) envLines.push(`VITE_APP_URL=${variant.appUrl}`);
 
 const envPath = join(FRONTEND, ".env.local");
-await writeFile(envPath, envLines.join("\n") + "\n");
-console.log(`  ✓ Wrote frontend/.env.local`);
+await writeFile(envPath, `${envLines.join("\n")}\n`);
+console.log("  ✓ Wrote frontend/.env.local");
 
 // --- 2. Copy variant assets (if present) ---
 const assetsDir = join(FRONTEND, "variants", key);
@@ -83,8 +83,8 @@ if (existsSync(tauriConfPath)) {
 	if (conf.app?.windows?.[0]) {
 		conf.app.windows[0].title = variant.appName;
 	}
-	await writeFile(tauriConfPath, JSON.stringify(conf, null, "\t") + "\n");
-	console.log(`  ✓ Patched src-tauri/tauri.conf.json`);
+	await writeFile(tauriConfPath, `${JSON.stringify(conf, null, "\t")}\n`);
+	console.log("  ✓ Patched src-tauri/tauri.conf.json");
 }
 
 console.log(`Done — ${variant.appName} variant active.`);

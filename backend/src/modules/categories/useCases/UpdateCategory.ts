@@ -6,7 +6,11 @@ import { CategoryErrors } from "../errors";
 export class UpdateCategory {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(companyId: string | null, categoryId: string, data: UpdateCategoryBody): Promise<CategoryReturn> {
+	async execute(
+		companyId: string | null,
+		categoryId: string,
+		data: UpdateCategoryBody,
+	): Promise<CategoryReturn> {
 		const category = await this.prisma.category.findFirst({
 			where: { ...(companyId ? { companyId } : {}), id: categoryId },
 		});

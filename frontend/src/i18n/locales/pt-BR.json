@@ -91,19 +91,19 @@
 				"title": "Empresas",
 				"variantUnset": "—"
 			},
-					"dashboard": {
-			"recentOrders": "Pedidos recentes",
-			"subtitle": "Gerencie o catálogo, a equipe e as unidades desta empresa.",
-			"title": "Admin",
-			"viewAll": "Ver todos",
-			"nav": {
-				"catalog": "Catálogo",
-				"logout": "Sair",
-				"operations": "Operações",
-				"platform": "Plataforma",
-				"settings": "Configurações"
-			}
-		},
+			"dashboard": {
+				"nav": {
+					"catalog": "Catálogo",
+					"logout": "Sair",
+					"operations": "Operações",
+					"platform": "Plataforma",
+					"settings": "Configurações"
+				},
+				"recentOrders": "Pedidos recentes",
+				"subtitle": "Gerencie o catálogo, a equipe e as unidades desta empresa.",
+				"title": "Admin",
+				"viewAll": "Ver todos"
+			},
 			"deliveries": {
 				"assign": {
 					"action": "Atribuir entregador",
@@ -199,13 +199,8 @@
 					"title": "Atualizar status do pedido"
 				}
 			},
-					"products": {
-			"catalogSubtitle": "Produtos, categorias e etiquetas desta empresa.",
-			"tabs": {
-				"categories": "Categorias",
-				"products": "Produtos",
-				"tags": "Etiquetas"
-			},
+			"products": {
+				"catalogSubtitle": "Produtos, categorias e etiquetas desta empresa.",
 				"columns": {
 					"cashback": "Cashback",
 					"price": "Preço",
@@ -241,6 +236,11 @@
 					"unitDefault": "Padrão da unidade"
 				},
 				"subtitle": "Catálogo base desta empresa.",
+				"tabs": {
+					"categories": "Categorias",
+					"products": "Produtos",
+					"tags": "Etiquetas"
+				},
 				"title": "Produtos"
 			},
 			"reports": {
@@ -261,12 +261,12 @@
 					"today": "Hoje",
 					"week": "Últimos 7 dias"
 				},
+				"subtitle": "Relatórios de receita e vendas.",
 				"summary": {
 					"averageOrderValue": "Ticket médio",
 					"orderCount": "Pedidos concluídos",
 					"totalRevenue": "Receita total"
 				},
-				"subtitle": "Relatórios de receita e vendas.",
 				"title": "Relatórios"
 			},
 			"reviews": {
@@ -673,8 +673,8 @@
 				"continueShopping": "Continuar comprando",
 				"from": "A partir de",
 				"goToCart": "Avançar para o carrinho",
-				"notFound": "Produto não encontrado.",
 				"notePlaceholder": "Ex: sem cebola, ovo…",
+				"notFound": "Produto não encontrado.",
 				"popularOptions": "Itens mais pedidos",
 				"quantity": "Quantidade",
 				"required": "Obrigatório",

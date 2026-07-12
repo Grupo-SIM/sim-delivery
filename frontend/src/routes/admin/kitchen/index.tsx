@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { useGetOrders } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/Container";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useGetOrders } from "@/lib/api";
 import { KitchenOrderCard } from "./components";
 
 function KitchenPage() {
@@ -41,7 +41,7 @@ function KitchenPage() {
 			) : (
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
 					<section className="space-y-3">
-						<h2 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
+						<h2 className="font-semibold text-muted-foreground text-sm uppercase tracking-wide">
 							{t("admin.kitchen.columns.recebido")} ({recebido.length})
 						</h2>
 						{recebido.map(o => (
@@ -49,7 +49,7 @@ function KitchenPage() {
 						))}
 					</section>
 					<section className="space-y-3">
-						<h2 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
+						<h2 className="font-semibold text-muted-foreground text-sm uppercase tracking-wide">
 							{t("admin.kitchen.columns.emPreparo")} ({emPreparo.length})
 						</h2>
 						{emPreparo.map(o => (

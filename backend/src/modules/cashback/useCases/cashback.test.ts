@@ -3,29 +3,29 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import { GetCashbackBalance } from "./GetCashbackBalance";
 
 const baseCompany = { id: "cmp_1", variantKey: "demo" };
-const baseCustomer = { id: "cust_1", companyId: "cmp_1", userId: "user_1" };
+const baseCustomer = { companyId: "cmp_1", id: "cust_1", userId: "user_1" };
 
-function makePrisma(opts: {
-	company?: typeof baseCompany | null;
-	customer?: typeof baseCustomer | null;
-	ledgerEntries?: { amount: number }[];
-} = {}) {
+function makePrisma(
+	opts: {
+		company?: typeof baseCompany | null;
+		customer?: typeof baseCustomer | null;
+		ledgerEntries?: { amount: number }[];
+	} = {},
+) {
 	const { company = baseCompany, customer = baseCustomer, ledgerEntries = [] } = opts;
 
 	return {
 		prisma: {
+			cashbackLedger: {
+				findMany: async () => ledgerEntries,
+			},
 			company: {
 				findUnique: async ({ where }: { where: { variantKey?: string } }) =>
 					company?.variantKey === where.variantKey ? company : null,
 			},
 			customer: {
 				findFirst: async ({ where }: { where: { companyId: string; userId: string } }) =>
-					customer?.companyId === where.companyId && customer?.userId === where.userId
-						? customer
-						: null,
-			},
-			cashbackLedger: {
-				findMany: async () => ledgerEntries,
+					customer?.companyId === where.companyId && customer?.userId === where.userId ? customer : null,
 			},
 		} as unknown as PrismaInstance,
 	};
@@ -34,12 +34,16 @@ function makePrisma(opts: {
 describe("GetCashbackBalance", () => {
 	it("throws COMPANY_NOT_FOUND for unknown variantKey", async () => {
 		const { prisma } = makePrisma({ company: null });
-		await expect(new GetCashbackBalance(prisma).execute("user_1", "unknown")).rejects.toThrow("COMPANY_NOT_FOUND");
+		await expect(new GetCashbackBalance(prisma).execute("user_1", "unknown")).rejects.toThrow(
+			"COMPANY_NOT_FOUND",
+		);
 	});
 
 	it("throws CUSTOMER_NOT_FOUND when no customer record", async () => {
 		const { prisma } = makePrisma({ customer: null });
-		await expect(new GetCashbackBalance(prisma).execute("user_1", "demo")).rejects.toThrow("CUSTOMER_NOT_FOUND");
+		await expect(new GetCashbackBalance(prisma).execute("user_1", "demo")).rejects.toThrow(
+			"CUSTOMER_NOT_FOUND",
+		);
 	});
 
 	it("returns 0 when ledger is empty", async () => {

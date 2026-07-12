@@ -21,27 +21,31 @@ export const DeliveryListReturn = t.Array(
 	t.Object({
 		...DeliveryReturn.properties,
 		courierName: t.String(),
-		unitName: t.String(),
 		order: t.Object({
-			id: t.String(),
+			address: __nullable__(
+				t.Object({
+					addressLine: t.String(),
+					city: __nullable__(t.String()),
+					complement: __nullable__(t.String()),
+					neighborhood: __nullable__(t.String()),
+					number: t.String(),
+					state: __nullable__(t.String()),
+				}),
+			),
 			customerName: t.String(),
 			deliveryMethod: t.String(),
-			items: t.Array(t.Object({
-				id: t.String(),
-				productName: t.String(),
-				quantity: t.Integer(),
-				note: __nullable__(t.String()),
-			})),
+			id: t.String(),
+			items: t.Array(
+				t.Object({
+					id: t.String(),
+					note: __nullable__(t.String()),
+					productName: t.String(),
+					quantity: t.Integer(),
+				}),
+			),
 			total: t.Integer(),
-			address: __nullable__(t.Object({
-				addressLine: t.String(),
-				city: __nullable__(t.String()),
-				complement: __nullable__(t.String()),
-				neighborhood: __nullable__(t.String()),
-				number: t.String(),
-				state: __nullable__(t.String()),
-			})),
 		}),
+		unitName: t.String(),
 	}),
 );
 export type DeliveryListReturn = typeof DeliveryListReturn.static;

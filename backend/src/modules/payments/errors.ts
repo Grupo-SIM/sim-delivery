@@ -10,7 +10,7 @@ export const PaymentErrors = createEnumFromArray([
 
 export const PaymentErrorsStatusCodes: Record<keyof typeof PaymentErrors, StatusCodes> = {
 	ORDER_NOT_FOUND: StatusCodes.NOT_FOUND,
-	PAYMENT_NOT_FOUND: StatusCodes.NOT_FOUND,
 	PAYMENT_ALREADY_CONFIRMED: StatusCodes.CONFLICT,
+	PAYMENT_NOT_FOUND: StatusCodes.NOT_FOUND,
 	UNAUTHORIZED_ORDER: StatusCodes.FORBIDDEN,
 };

@@ -1,5 +1,5 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
-import type { ListOrdersQuery, AdminOrderListReturn } from "../dtos";
+import type { AdminOrderListReturn, ListOrdersQuery } from "../dtos";
 
 export class ListOrders {
 	constructor(private readonly prisma: PrismaInstance) {}

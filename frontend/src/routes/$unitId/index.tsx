@@ -9,7 +9,15 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetPublicUnits, useGetPublicUnitsByUnitIdMenu } from "@/lib/api";
 import { variantKey } from "@/lib/variant";
 import { useDeliveryMethodStore } from "@/stores";
-import { CartBar, DeliveryMethodSelector, InfoPill, MenuBrowser, StoreFooter, StoreInfoModal, UnitSwitcher } from "./components";
+import {
+	CartBar,
+	DeliveryMethodSelector,
+	InfoPill,
+	MenuBrowser,
+	StoreFooter,
+	StoreInfoModal,
+	UnitSwitcher,
+} from "./components";
 import { money } from "./components/types";
 
 function UnitStorePage() {
@@ -65,7 +73,9 @@ function UnitStorePage() {
 			<div className="flex flex-wrap items-center gap-2">
 				<DeliveryMethodSelector deliveryMethods={unit.deliveryMethods} unitId={unitId} />
 				{prepMin != null && prepMax != null && (
-					<InfoPill>⏱ {prepMin}–{prepMax} min</InfoPill>
+					<InfoPill>
+						⏱ {prepMin}–{prepMax} min
+					</InfoPill>
 				)}
 				{minOrder > 0 && (
 					<InfoPill>

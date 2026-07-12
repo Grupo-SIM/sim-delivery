@@ -1,10 +1,10 @@
+import { CashbackErrors } from "@/modules/cashback/errors";
+import { GetCashbackBalance } from "@/modules/cashback/useCases";
+import { ValidateCoupon } from "@/modules/coupons/useCases";
+import { LoyaltyErrors } from "@/modules/loyalty/errors";
+import { GetLoyaltyBalance } from "@/modules/loyalty/useCases";
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import { ValidateCoupon } from "@/modules/coupons/useCases";
-import { GetCashbackBalance } from "@/modules/cashback/useCases";
-import { CashbackErrors } from "@/modules/cashback/errors";
-import { GetLoyaltyBalance } from "@/modules/loyalty/useCases";
-import { LoyaltyErrors } from "@/modules/loyalty/errors";
 import type { CreateOrderBody, OrderReturn } from "../dtos";
 import { OrderErrors } from "../errors";
 
@@ -12,7 +12,16 @@ export class CreateOrder {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(userId: string, data: CreateOrderBody): Promise<OrderReturn> {
-		const { addressId, couponCode, deliveryMethod, items, redeemCashbackCents, redeemLoyaltyPoints, unitId, variantKey } = data;
+		const {
+			addressId,
+			couponCode,
+			deliveryMethod,
+			items,
+			redeemCashbackCents,
+			redeemLoyaltyPoints,
+			unitId,
+			variantKey,
+		} = data;
 
 		if (items.length === 0) throw new DomainError(OrderErrors.EMPTY_ORDER);
 
@@ -77,7 +86,10 @@ export class CreateOrder {
 			loyaltyPointsRedeemed = redeemLoyaltyPoints;
 		}
 
-		const total = Math.max(0, subtotal + deliveryFee - discountCents - cashbackCentsRedeemed - loyaltyPointsRedeemed);
+		const total = Math.max(
+			0,
+			subtotal + deliveryFee - discountCents - cashbackCentsRedeemed - loyaltyPointsRedeemed,
+		);
 
 		const order = await this.prisma.$transaction(async tx => {
 			const created = await tx.order.create({

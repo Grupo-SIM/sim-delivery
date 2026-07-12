@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { useGetCategories, useGetProducts, useGetTags } from "@/lib/api";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useGetCategories, useGetProducts, useGetTags } from "@/lib/api";
 import { CategoriesTable, CreateCategoryForm } from "../categories/components";
 import { CreateTagForm, TagsTable } from "../tags/components";
 import { CreateProductForm, ProductsTable } from "./components";
@@ -29,17 +29,17 @@ function ProductsPage() {
 			<SectionHeading subtitle={t("admin.products.catalogSubtitle")} title={t("admin.products.title")} />
 
 			{/* Tab bar */}
-			<div className="flex gap-1 border-b border-border">
+			<div className="flex gap-1 border-border border-b">
 				{tabs.map(({ key, label }) => (
 					<Link
-						key={key}
-						search={{ tab: key }}
-						to="/admin/products"
-						className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
+						className={`-mb-px border-b-2 px-4 py-2 font-medium text-sm transition-colors ${
 							tab === key
 								? "border-primary text-primary"
 								: "border-transparent text-muted-foreground hover:text-foreground"
 						}`}
+						key={key}
+						search={{ tab: key }}
+						to="/admin/products"
 					>
 						{label}
 					</Link>

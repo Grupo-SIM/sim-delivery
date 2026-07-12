@@ -1,13 +1,13 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "@tanstack/react-query";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import {
-	type PostCustomersMe200,
 	getCustomersMeQueryOptions,
 	getPublicUnitsQueryOptions,
+	type PostCustomersMe200,
 	useGetCashbackMe,
 	useGetLoyaltyMe,
 	usePostCustomersMe,
@@ -16,7 +16,17 @@ import {
 } from "@/lib/api";
 import { variantKey } from "@/lib/variant";
 import { cartTotalCents, showAlert, useAuthStore, useCartStore, useDeliveryMethodStore } from "@/stores";
-import { AddressForm, IdentifyForm, OrderReview, PaymentFrame, ProfileForm, type AppliedCoupon, type AddressValue, type DeliveryMethod, type ProfileValue } from "./components";
+import {
+	AddressForm,
+	type AddressValue,
+	type AppliedCoupon,
+	type DeliveryMethod,
+	IdentifyForm,
+	OrderReview,
+	PaymentFrame,
+	ProfileForm,
+	type ProfileValue,
+} from "./components";
 
 type Step = "identify" | "profile" | "address" | "review" | "payment";
 
@@ -70,16 +80,17 @@ function CheckoutPage() {
 
 	const isPickup = deliveryMethod === "pickup";
 	const hasCustomer = savedCustomer !== null || existingCustomer !== null;
-	const reviewStep: Step = !identified || loadingCustomer
-		? "identify"
-		: !hasCustomer && profileValue === null
-			? "profile"
-			: !hasCustomer
-				? "address"
-				// Existing customer + pickup: skip address entirely
-				: existingCustomer !== null && savedCustomer === null && !isPickup
+	const reviewStep: Step =
+		!identified || loadingCustomer
+			? "identify"
+			: !hasCustomer && profileValue === null
+				? "profile"
+				: !hasCustomer
 					? "address"
-					: "review";
+					: // Existing customer + pickup: skip address entirely
+						existingCustomer !== null && savedCustomer === null && !isPickup
+						? "address"
+						: "review";
 
 	const step: Step = paymentUrl ? "payment" : reviewStep;
 
@@ -126,13 +137,13 @@ function CheckoutPage() {
 					addressId: savedAddress?.id,
 					couponCode: appliedCoupon?.code,
 					deliveryMethod,
-					redeemCashbackCents: cashbackRedeemCents > 0 ? cashbackRedeemCents : undefined,
-					redeemLoyaltyPoints: loyaltyRedeemPoints > 0 ? loyaltyRedeemPoints : undefined,
 					items: cartItems.map(item => ({
 						note: item.note || undefined,
 						quantity: item.quantity,
 						unitProductId: item.id,
 					})),
+					redeemCashbackCents: cashbackRedeemCents > 0 ? cashbackRedeemCents : undefined,
+					redeemLoyaltyPoints: loyaltyRedeemPoints > 0 ? loyaltyRedeemPoints : undefined,
 					unitId,
 					variantKey: variantKey ?? "",
 				},
@@ -214,6 +225,7 @@ function CheckoutPage() {
 					<OrderReview
 						address={savedAddress}
 						appliedCoupon={appliedCoupon}
+						availableMethods={availableMethods}
 						cashbackBalanceCents={cashbackBalanceCents}
 						cashbackRedeemCents={cashbackRedeemCents}
 						deliveryMethod={deliveryMethod}
@@ -222,8 +234,7 @@ function CheckoutPage() {
 						loyaltyBalancePoints={loyaltyBalancePoints}
 						loyaltyRedeemPoints={loyaltyRedeemPoints}
 						onChangeCashbackRedeem={setCashbackRedeemCents}
-						availableMethods={availableMethods}
-					onChangeDeliveryMethod={handleChangeDeliveryMethod}
+						onChangeDeliveryMethod={handleChangeDeliveryMethod}
 						onChangeLoyaltyRedeem={setLoyaltyRedeemPoints}
 						onSetCoupon={setAppliedCoupon}
 						onSubmit={handlePlaceOrder}

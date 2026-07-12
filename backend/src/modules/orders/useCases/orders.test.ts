@@ -2,23 +2,25 @@ import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { DisabledWhatsAppProvider } from "@/shared/infra/whatsapp";
 import { CreateOrder } from "./CreateOrder";
-import { UpdateOrderStatus } from "./UpdateOrderStatus";
 import { ListOrders } from "./ListOrders";
+import { UpdateOrderStatus } from "./UpdateOrderStatus";
 
 const noopWhatsApp = new DisabledWhatsAppProvider();
 
 const baseCompany = { id: "cmp_1", variantKey: "demo" };
-const baseUnit = { id: "unit_1", companyId: "cmp_1", deliveryFee: 500 };
-const baseCustomer = { id: "cust_1", companyId: "cmp_1", userId: "user_1" };
-const baseProduct = { id: "prod_1", title: "Pão de queijo", basePriceCents: 1000 };
-const baseUnitProduct = { id: "up_1", unitId: "unit_1", product: baseProduct, priceCentsOverride: null };
+const baseUnit = { companyId: "cmp_1", deliveryFee: 500, id: "unit_1" };
+const baseCustomer = { companyId: "cmp_1", id: "cust_1", userId: "user_1" };
+const baseProduct = { basePriceCents: 1000, id: "prod_1", title: "Pão de queijo" };
+const baseUnitProduct = { id: "up_1", priceCentsOverride: null, product: baseProduct, unitId: "unit_1" };
 
-function makeOrderPrisma(opts: {
-	company?: typeof baseCompany | null;
-	customer?: typeof baseCustomer | null;
-	unit?: typeof baseUnit | null;
-	unitProducts?: typeof baseUnitProduct[];
-} = {}) {
+function makeOrderPrisma(
+	opts: {
+		company?: typeof baseCompany | null;
+		customer?: typeof baseCustomer | null;
+		unit?: typeof baseUnit | null;
+		unitProducts?: (typeof baseUnitProduct)[];
+	} = {},
+) {
 	const {
 		company = baseCompany,
 		customer = baseCustomer,
@@ -30,29 +32,18 @@ function makeOrderPrisma(opts: {
 	const orderItems: object[] = [];
 
 	const prisma = {
-		company: {
-			findUnique: async ({ where }: { where: { variantKey?: string } }) =>
-				company?.variantKey === where.variantKey ? company : null,
-		},
-		customer: {
-			findFirst: async ({ where }: { where: { companyId: string; userId: string } }) =>
-				customer?.companyId === where.companyId && customer?.userId === where.userId
-					? customer
-					: null,
-		},
-		unit: {
-			findFirst: async ({ where }: { where: { companyId: string; id: string } }) =>
-				unit?.companyId === where.companyId && unit?.id === where.id ? unit : null,
-		},
-		unitProduct: {
-			findMany: async ({ where }: { where: { id: { in: string[] }; unitId: string } }) =>
-				unitProducts.filter(up => where.id.in.includes(up.id) && up.unitId === where.unitId),
-		},
 		$transaction: async (fn: (tx: unknown) => Promise<unknown>) => {
 			const tx = {
 				order: {
 					create: async ({ data }: { data: object }) => {
-						const o = { id: "ord_1", status: "recebido", cancelReason: null, createdAt: new Date(), updatedAt: new Date(), ...data };
+						const o = {
+							cancelReason: null,
+							createdAt: new Date(),
+							id: "ord_1",
+							status: "recebido",
+							updatedAt: new Date(),
+							...data,
+						};
 						orders.push(o);
 						return o;
 					},
@@ -67,14 +58,30 @@ function makeOrderPrisma(opts: {
 			};
 			return fn(tx);
 		},
+		company: {
+			findUnique: async ({ where }: { where: { variantKey?: string } }) =>
+				company?.variantKey === where.variantKey ? company : null,
+		},
+		customer: {
+			findFirst: async ({ where }: { where: { companyId: string; userId: string } }) =>
+				customer?.companyId === where.companyId && customer?.userId === where.userId ? customer : null,
+		},
+		unit: {
+			findFirst: async ({ where }: { where: { companyId: string; id: string } }) =>
+				unit?.companyId === where.companyId && unit?.id === where.id ? unit : null,
+		},
+		unitProduct: {
+			findMany: async ({ where }: { where: { id: { in: string[] }; unitId: string } }) =>
+				unitProducts.filter(up => where.id.in.includes(up.id) && up.unitId === where.unitId),
+		},
 	} as unknown as PrismaInstance;
 
-	return { orders, orderItems, prisma };
+	return { orderItems, orders, prisma };
 }
 
 const baseBody = {
 	deliveryMethod: "delivery" as const,
-	items: [{ unitProductId: "up_1", quantity: 2, note: undefined }],
+	items: [{ note: undefined, quantity: 2, unitProductId: "up_1" }],
 	unitId: "unit_1",
 	variantKey: "demo",
 };
@@ -96,9 +103,7 @@ describe("CreateOrder", () => {
 
 	it("throws CUSTOMER_NOT_FOUND when no customer record", async () => {
 		const { prisma } = makeOrderPrisma({ customer: null });
-		await expect(
-			new CreateOrder(prisma).execute("user_1", baseBody),
-		).rejects.toThrow("CUSTOMER_NOT_FOUND");
+		await expect(new CreateOrder(prisma).execute("user_1", baseBody)).rejects.toThrow("CUSTOMER_NOT_FOUND");
 	});
 
 	it("throws INVALID_ITEM when unitProductId not found in unit", async () => {
@@ -106,7 +111,7 @@ describe("CreateOrder", () => {
 		await expect(
 			new CreateOrder(prisma).execute("user_1", {
 				...baseBody,
-				items: [{ unitProductId: "up_unknown", quantity: 1 }],
+				items: [{ quantity: 1, unitProductId: "up_unknown" }],
 			}),
 		).rejects.toThrow("INVALID_ITEM");
 	});
@@ -119,19 +124,19 @@ describe("CreateOrder", () => {
 		expect(orders[0]).toMatchObject({
 			companyId: "cmp_1",
 			customerId: "cust_1",
-			unitId: "unit_1",
-			subtotal: 2000,
 			deliveryFee: 500,
-			total: 2500,
 			deliveryMethod: "delivery",
+			subtotal: 2000,
+			total: 2500,
+			unitId: "unit_1",
 		});
 		expect(orderItems).toHaveLength(1);
 		expect(orderItems[0]).toMatchObject({
 			productId: "prod_1",
 			productName: "Pão de queijo",
-			unitPrice: 1000,
 			quantity: 2,
 			total: 2000,
+			unitPrice: 1000,
 		});
 		expect(result.items).toHaveLength(1);
 	});
@@ -154,7 +159,14 @@ describe("CreateOrder", () => {
 });
 
 function makeUpdateStatusPrisma(order: { id: string; companyId: string; status: string }) {
-	const stored: { id: string; companyId: string; status: string; cancelReason: string | null; items: unknown[]; customer: { phone: string | null } } = {
+	const stored: {
+		id: string;
+		companyId: string;
+		status: string;
+		cancelReason: string | null;
+		items: unknown[];
+		customer: { phone: string | null };
+	} = {
 		...order,
 		cancelReason: null,
 		customer: { phone: null },
@@ -174,53 +186,68 @@ function makeUpdateStatusPrisma(order: { id: string; companyId: string; status: 
 		},
 	} as unknown as PrismaInstance;
 
-	return { stored, prisma };
+	return { prisma, stored };
 }
 
 describe("UpdateOrderStatus", () => {
 	it("transitions recebido → em_preparo", async () => {
-		const { stored, prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
+		const { stored, prisma } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			id: "ord_1",
+			status: "recebido",
+		});
 		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "em_preparo" });
 		expect(stored.status).toBe("em_preparo");
 	});
 
 	it("throws ORDER_NOT_FOUND for wrong companyId", async () => {
-		const { prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
+		const { prisma } = makeUpdateStatusPrisma({ companyId: "cmp_1", id: "ord_1", status: "recebido" });
 		await expect(
 			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_2", "ord_1", { status: "em_preparo" }),
 		).rejects.toThrow("ORDER_NOT_FOUND");
 	});
 
 	it("allows superAdmin (null company) to update an order from any company", async () => {
-		const { stored, prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
+		const { stored, prisma } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			id: "ord_1",
+			status: "recebido",
+		});
 		await new UpdateOrderStatus(prisma, noopWhatsApp).execute(null, "ord_1", { status: "em_preparo" });
 		expect(stored.status).toBe("em_preparo");
 	});
 
 	it("throws INVALID_TRANSITION for illegal transition", async () => {
-		const { prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
+		const { prisma } = makeUpdateStatusPrisma({ companyId: "cmp_1", id: "ord_1", status: "recebido" });
 		await expect(
 			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "entregue" }),
 		).rejects.toThrow("INVALID_TRANSITION");
 	});
 
 	it("throws INVALID_TRANSITION when order is terminal", async () => {
-		const { prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "cancelado" });
+		const { prisma } = makeUpdateStatusPrisma({ companyId: "cmp_1", id: "ord_1", status: "cancelado" });
 		await expect(
 			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "em_preparo" }),
 		).rejects.toThrow("INVALID_TRANSITION");
 	});
 
 	it("throws CANCEL_REASON_REQUIRED when cancelling without reason", async () => {
-		const { prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
+		const { prisma } = makeUpdateStatusPrisma({ companyId: "cmp_1", id: "ord_1", status: "recebido" });
 		await expect(
 			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "cancelado" }),
 		).rejects.toThrow("CANCEL_REASON_REQUIRED");
 	});
 
 	it("cancels with reason", async () => {
-		const { stored, prisma } = makeUpdateStatusPrisma({ id: "ord_1", companyId: "cmp_1", status: "recebido" });
-		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "cancelado", cancelReason: "Cliente desistiu" });
+		const { stored, prisma } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			id: "ord_1",
+			status: "recebido",
+		});
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", {
+			cancelReason: "Cliente desistiu",
+			status: "cancelado",
+		});
 		expect(stored.status).toBe("cancelado");
 		expect(stored.cancelReason).toBe("Cliente desistiu");
 	});
@@ -228,29 +255,35 @@ describe("UpdateOrderStatus", () => {
 
 function makeListOrdersPrisma() {
 	const baseUser = { id: "user_1", name: "Maria" };
-	const baseCustomer = { id: "cust_1", companyId: "cmp_1", userId: "user_1", phone: "11999999999", user: baseUser };
-	const baseUnit = { id: "unit_1", companyId: "cmp_1", name: "Centro" };
-	const order1 = {
-		id: "ord_1",
+	const baseCustomer = {
 		companyId: "cmp_1",
-		customerId: "cust_1",
-		unitId: "unit_1",
-		status: "recebido",
+		id: "cust_1",
+		phone: "11999999999",
+		user: baseUser,
+		userId: "user_1",
+	};
+	const baseUnit = { companyId: "cmp_1", id: "unit_1", name: "Centro" };
+	const order1 = {
 		addressId: null,
 		cancelReason: null,
 		cashbackCentsRedeemed: 0,
+		companyId: "cmp_1",
 		couponId: null,
 		createdAt: new Date("2024-01-01"),
+		customer: baseCustomer,
+		customerId: "cust_1",
 		deliveryFee: 500,
 		deliveryMethod: "delivery",
 		discountCents: 0,
+		id: "ord_1",
+		items: [],
 		loyaltyPointsRedeemed: 0,
+		status: "recebido",
 		subtotal: 2000,
 		total: 2500,
-		updatedAt: new Date("2024-01-01"),
-		items: [],
-		customer: baseCustomer,
 		unit: baseUnit,
+		unitId: "unit_1",
+		updatedAt: new Date("2024-01-01"),
 	};
 
 	const prisma = {

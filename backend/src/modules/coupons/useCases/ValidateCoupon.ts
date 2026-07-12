@@ -13,7 +13,7 @@ export class ValidateCoupon {
 		if (!company) throw new DomainError(CouponErrors.COMPANY_NOT_FOUND);
 
 		const coupon = await this.prisma.coupon.findUnique({
-			where: { companyId_code: { companyId: company.id, code: code.toUpperCase() } },
+			where: { companyId_code: { code: code.toUpperCase(), companyId: company.id } },
 		});
 		if (!coupon) throw new DomainError(CouponErrors.COUPON_NOT_FOUND);
 
@@ -32,6 +32,11 @@ export class ValidateCoupon {
 				? Math.round((orderSubtotal * coupon.value) / 100)
 				: Math.min(coupon.value, orderSubtotal);
 
-		return { couponId: coupon.id, discountCents, type: coupon.type as "percent" | "fixed", value: coupon.value };
+		return {
+			couponId: coupon.id,
+			discountCents,
+			type: coupon.type as "percent" | "fixed",
+			value: coupon.value,
+		};
 	}
 }

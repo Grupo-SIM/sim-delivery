@@ -20,7 +20,9 @@ export class UpsertCustomer {
 			where: { userId },
 		});
 
-		await this.prisma.address.create({ data: { ...this.mapAddress(address), customerId: customer.id, isDefault: true } });
+		await this.prisma.address.create({
+			data: { ...this.mapAddress(address), customerId: customer.id, isDefault: true },
+		});
 
 		return this.prisma.customer.findUniqueOrThrow({
 			include: { addresses: { orderBy: { isDefault: "desc" } } },

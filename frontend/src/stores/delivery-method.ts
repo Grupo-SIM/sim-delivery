@@ -12,14 +12,13 @@ interface DeliveryMethodState {
 export const useDeliveryMethodStore = create<DeliveryMethodState>()(
 	persist(
 		(set, get) => ({
-			methods: {},
 			getMethod: (unitId, available) => {
 				const saved = get().methods[unitId];
 				if (saved && available.includes(saved)) return saved;
 				return available.includes("delivery") ? "delivery" : "pickup";
 			},
-			setMethod: (unitId, method) =>
-				set(state => ({ methods: { ...state.methods, [unitId]: method } })),
+			methods: {},
+			setMethod: (unitId, method) => set(state => ({ methods: { ...state.methods, [unitId]: method } })),
 		}),
 		{ name: "delivery-method" },
 	),

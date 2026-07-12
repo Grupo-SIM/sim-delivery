@@ -12,9 +12,8 @@ export const CouponsController = new Elysia({ detail: { tags: ["Coupons"] } })
 				prisma,
 				validateCoupon: new ValidateCoupon(prisma),
 			}))
-			.post(
-				"/validate",
-				async ({ body, validateCoupon }) => validateCoupon.execute(body),
-				{ body: ValidateCouponBody, response: ValidateCouponReturn },
-			),
+			.post("/validate", async ({ body, validateCoupon }) => validateCoupon.execute(body), {
+				body: ValidateCouponBody,
+				response: ValidateCouponReturn,
+			}),
 	);

@@ -1,13 +1,12 @@
-import { redirect } from "@tanstack/react-router";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { useGetDeliveries } from "@/lib/api";
-import { authClient } from "@/lib/auth-client";
 import { Container } from "@/components/ui/Container";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useGetDeliveries } from "@/lib/api";
+import { authClient } from "@/lib/auth-client";
 import { useAuthStore } from "@/stores/auth";
 import { DeliveryCard } from "./components";
 
@@ -18,10 +17,11 @@ function CourierPage() {
 	const { t } = useTranslation();
 	const userId = useAuthStore(s => s.user?.id ?? "");
 
-	const { data: deliveries, isError, isPending } = useGetDeliveries(
-		{ courierId: userId },
-		{ query: { refetchInterval: 30_000 } },
-	);
+	const {
+		data: deliveries,
+		isError,
+		isPending,
+	} = useGetDeliveries({ courierId: userId }, { query: { refetchInterval: 30_000 } });
 
 	const active = (deliveries ?? []).filter(d => ACTIVE_STATUSES.has(d.status));
 	const history = (deliveries ?? []).filter(d => TERMINAL_STATUSES.has(d.status)).slice(0, 10);

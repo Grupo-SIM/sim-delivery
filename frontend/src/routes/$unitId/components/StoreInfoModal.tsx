@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Modal } from "@/components/ui/Modal";
 import { money } from "./types";
 
-type Unit = {
+interface Unit {
 	addressLine: string | null;
 	city: string | null;
 	deliveryFee: string | number;
@@ -13,7 +13,7 @@ type Unit = {
 	phone: string | null;
 	prepTimeMaxMinutes: string | number | null;
 	prepTimeMinMinutes: string | number | null;
-};
+}
 
 interface StoreInfoModalProps {
 	isOpen: boolean;
@@ -63,7 +63,7 @@ export function StoreInfoModal({ isOpen, onClose, unit }: StoreInfoModalProps) {
 				)}
 				<div>
 					<dt className="font-medium text-muted-foreground">{t("store.unit.deliveryMethods")}</dt>
-					<dd className="flex flex-wrap gap-1 mt-0.5">
+					<dd className="mt-0.5 flex flex-wrap gap-1">
 						{unit.deliveryMethods.map(m => (
 							<span className="rounded bg-muted px-2 py-0.5 text-xs capitalize" key={m}>
 								{t(`store.checkout.order.${m}`, { defaultValue: m })}

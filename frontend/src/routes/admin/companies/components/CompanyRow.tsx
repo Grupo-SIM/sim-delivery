@@ -1,9 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getCompaniesQueryKey, type GetCompanies200, usePatchCompaniesByCompanyId } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { type GetCompanies200, getCompaniesQueryKey, usePatchCompaniesByCompanyId } from "@/lib/api";
 
 interface CompanyRowProps {
 	company: GetCompanies200[number];
@@ -32,7 +32,9 @@ export function CompanyRow({ company }: CompanyRowProps) {
 			{ companyId: company.id, data: { name, variantKey: variantKey.trim() || null } },
 			{
 				onError: caught =>
-					setError(caught.status === 409 ? t("admin.companies.edit.variantTaken") : t("admin.companies.edit.error")),
+					setError(
+						caught.status === 409 ? t("admin.companies.edit.variantTaken") : t("admin.companies.edit.error"),
+					),
 				onSuccess: async () => {
 					setEditing(false);
 					await queryClient.invalidateQueries({ queryKey: getCompaniesQueryKey() });
@@ -49,7 +51,9 @@ export function CompanyRow({ company }: CompanyRowProps) {
 				<td className="px-4 py-3 text-muted-foreground">
 					{company.variantKey ?? t("admin.companies.variantUnset")}
 				</td>
-				<td className="px-4 py-3 text-muted-foreground">{new Date(company.createdAt).toLocaleDateString()}</td>
+				<td className="px-4 py-3 text-muted-foreground">
+					{new Date(company.createdAt).toLocaleDateString()}
+				</td>
 				<td className="px-4 py-3 text-right">
 					<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
 						{t("admin.companies.edit.action")}

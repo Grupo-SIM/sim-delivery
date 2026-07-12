@@ -1,11 +1,11 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getStaffQueryKey, usePostStaff } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getStaffQueryKey, usePostStaff } from "@/lib/api";
 
 type Role = "manager" | "attendant" | "kitchen" | "courier";
 
@@ -37,7 +37,9 @@ export function InviteStaffForm() {
 					{ data: { email, name, password, role } },
 					{
 						onError: caught =>
-							setError(caught.status === 409 ? t("admin.staff.invite.emailTaken") : t("admin.staff.invite.error")),
+							setError(
+								caught.status === 409 ? t("admin.staff.invite.emailTaken") : t("admin.staff.invite.error"),
+							),
 						onSuccess: async () => {
 							setName("");
 							setEmail("");

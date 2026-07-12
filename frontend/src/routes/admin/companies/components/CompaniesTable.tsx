@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
-import type { GetCompanies200 } from "@/lib/api";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
+import type { GetCompanies200 } from "@/lib/api";
 import { CompanyRow } from "./CompanyRow";
 
 interface CompaniesTableProps {

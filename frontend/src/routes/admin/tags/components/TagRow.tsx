@@ -1,15 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-	getTagsQueryKey,
-	type GetTags200,
-	useDeleteTagsByTagId,
-	usePatchTagsByTagId,
-} from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { type GetTags200, getTagsQueryKey, useDeleteTagsByTagId, usePatchTagsByTagId } from "@/lib/api";
 import { showAlert, showConfirm } from "@/stores";
 import { ColorField } from "./ColorField";
 

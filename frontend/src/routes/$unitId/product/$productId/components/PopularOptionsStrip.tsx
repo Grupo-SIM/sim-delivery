@@ -47,10 +47,8 @@ export function PopularOptionsStrip({ groups, onSelect, selections }: PopularOpt
 									src={option.imageUrl}
 								/>
 							)}
-							<p className="max-w-20 truncate text-xs font-medium">{option.name}</p>
-							{delta > 0 && (
-								<p className="text-muted-foreground text-xs">+{money.format(delta / 100)}</p>
-							)}
+							<p className="max-w-20 truncate font-medium text-xs">{option.name}</p>
+							{delta > 0 && <p className="text-muted-foreground text-xs">+{money.format(delta / 100)}</p>}
 						</button>
 					);
 				})}

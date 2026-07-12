@@ -6,10 +6,9 @@ import root from "./package.json" with { type: "json" };
 // runs the ones it actually defines in its package.json `scripts`.
 const PRECOMMIT_TASKS = ["check-types", "test:unit"];
 
-
 /** Expand the root `workspaces` globs to concrete package dirs (those with a package.json). */
 function workspaceDirs() {
-	const dirs = new Set<string>();
+	const dirs = new Set();
 	for (const pattern of root.workspaces ?? []) {
 		if (pattern.endsWith("/*")) {
 			const base = pattern.slice(0, -2);

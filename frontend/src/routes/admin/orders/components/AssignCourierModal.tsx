@@ -1,11 +1,11 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getDeliveriesQueryKey, usePostDeliveries, useGetStaff } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Modal } from "@/components/ui/Modal";
+import { getDeliveriesQueryKey, useGetStaff, usePostDeliveries } from "@/lib/api";
 import { showAlert } from "@/stores";
-import { useQueryClient } from "@tanstack/react-query";
 
 interface AssignCourierModalProps {
 	isOpen: boolean;
@@ -48,10 +48,10 @@ export function AssignCourierModal({ isOpen, onClose, orderId }: AssignCourierMo
 		<Modal isOpen={isOpen} maxWidth="420px" onClose={handleClose} title={t("admin.deliveries.assign.title")}>
 			<div className="space-y-4">
 				{couriers.length === 0 ? (
-					<p className="text-sm text-muted-foreground">{t("admin.deliveries.assign.noCouriers")}</p>
+					<p className="text-muted-foreground text-sm">{t("admin.deliveries.assign.noCouriers")}</p>
 				) : (
 					<>
-						<p className="mb-1 text-sm font-medium">{t("admin.deliveries.assign.courier")}</p>
+						<p className="mb-1 font-medium text-sm">{t("admin.deliveries.assign.courier")}</p>
 						<CustomSelect
 							className="w-full"
 							onChange={setCourierId}

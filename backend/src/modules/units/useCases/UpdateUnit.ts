@@ -7,7 +7,9 @@ export class UpdateUnit {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(companyId: string | null, unitId: string, data: UpdateUnitBody): Promise<UnitReturn> {
-		const unit = await this.prisma.unit.findFirst({ where: { ...(companyId ? { companyId } : {}), id: unitId } });
+		const unit = await this.prisma.unit.findFirst({
+			where: { ...(companyId ? { companyId } : {}), id: unitId },
+		});
 		if (!unit) {
 			throw new DomainError(UnitErrors.UNIT_NOT_FOUND);
 		}

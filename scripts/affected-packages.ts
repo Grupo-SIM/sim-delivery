@@ -89,7 +89,10 @@ const stdout = execFileSync(
 const affected = new Set(JSON.parse(stdout).tasks.map((t: DryRun["tasks"][number]) => t.package));
 
 const byTask = Object.fromEntries(
-	tasks.map(task => [task, packages.filter(pkg => affected.has(pkg.name) && pkg.scripts[task]).map(pkg => pkg.name)]),
+	tasks.map(task => [
+		task,
+		packages.filter(pkg => affected.has(pkg.name) && pkg.scripts[task]).map(pkg => pkg.name),
+	]),
 );
 
 console.log(JSON.stringify(byTask));

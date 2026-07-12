@@ -1,7 +1,7 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
-import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useDebouncedInput } from "@/hooks/use-debounced-input";
 
 interface TextFieldProps extends Omit<ComponentPropsWithoutRef<"input">, "onChange" | "value"> {
 	label: ReactNode;

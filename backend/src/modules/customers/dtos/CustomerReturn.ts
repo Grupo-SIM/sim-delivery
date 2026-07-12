@@ -1,5 +1,5 @@
 import { t } from "elysia";
-import { AddressPlain, CustomerPlain, __nullable__ } from "sql/typebox";
+import { __nullable__, AddressPlain, CustomerPlain } from "sql/typebox";
 
 export const AddressReturn = AddressPlain;
 export type AddressReturn = typeof AddressReturn.static;

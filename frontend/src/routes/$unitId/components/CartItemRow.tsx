@@ -41,7 +41,8 @@ export function CartItemRow({ item }: CartItemRowProps) {
 					<ul className="space-y-0.5 text-muted-foreground text-xs">
 						{item.options.map(opt => (
 							<li key={opt.optionId}>
-								{opt.groupName}: {opt.quantity > 1 ? `${opt.quantity}x ` : ""}{opt.optionName}
+								{opt.groupName}: {opt.quantity > 1 ? `${opt.quantity}x ` : ""}
+								{opt.optionName}
 							</li>
 						))}
 					</ul>

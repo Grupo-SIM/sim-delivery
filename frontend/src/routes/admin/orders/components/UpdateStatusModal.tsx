@@ -1,18 +1,18 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getOrdersQueryKey, usePatchOrdersByOrderIdStatus } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { TextField } from "@/components/ui/TextField";
+import { getOrdersQueryKey, usePatchOrdersByOrderIdStatus } from "@/lib/api";
 import { showAlert } from "@/stores";
-import { useQueryClient } from "@tanstack/react-query";
 
 type NextStatus = "em_preparo" | "pronto" | "saiu_para_entrega" | "entregue" | "retirado" | "cancelado";
 
 const TRANSITIONS: Record<string, NextStatus[]> = {
-	recebido: ["em_preparo", "cancelado"],
 	em_preparo: ["pronto", "cancelado"],
 	pronto: ["saiu_para_entrega", "retirado", "cancelado"],
+	recebido: ["em_preparo", "cancelado"],
 	saiu_para_entrega: ["entregue", "cancelado"],
 };
 
@@ -24,7 +24,13 @@ interface UpdateStatusModalProps {
 	currentStatus: string;
 }
 
-export function UpdateStatusModal({ currentStatus, deliveryMethod, isOpen, onClose, orderId }: UpdateStatusModalProps) {
+export function UpdateStatusModal({
+	currentStatus,
+	deliveryMethod,
+	isOpen,
+	onClose,
+	orderId,
+}: UpdateStatusModalProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const patch = usePatchOrdersByOrderIdStatus();
@@ -66,7 +72,12 @@ export function UpdateStatusModal({ currentStatus, deliveryMethod, isOpen, onClo
 	}
 
 	return (
-		<Modal isOpen={isOpen} maxWidth="480px" onClose={handleClose} title={t("admin.orders.updateStatus.title")}>
+		<Modal
+			isOpen={isOpen}
+			maxWidth="480px"
+			onClose={handleClose}
+			title={t("admin.orders.updateStatus.title")}
+		>
 			<div className="space-y-4">
 				<div className="flex flex-wrap gap-2">
 					{nexts.map(s => (

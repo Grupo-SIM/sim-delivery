@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { getOrdersQueryKey, usePatchOrdersByOrderIdStatus, type GetOrders200 } from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { type GetOrders200, getOrdersQueryKey, usePatchOrdersByOrderIdStatus } from "@/lib/api";
 import { showAlert } from "@/stores";
 
 interface KitchenOrderCardProps {
@@ -26,17 +26,17 @@ export function KitchenOrderCard({ order }: KitchenOrderCardProps) {
 	}
 
 	return (
-		<div className="rounded-lg border border-border bg-card p-4 space-y-3 shadow-sm">
+		<div className="space-y-3 rounded-lg border border-border bg-card p-4 shadow-sm">
 			<div className="flex items-center justify-between">
-				<span className="font-mono text-xs text-muted-foreground">#{order.id.slice(-6).toUpperCase()}</span>
-				<span className="text-xs text-muted-foreground">{elapsed}m ago</span>
+				<span className="font-mono text-muted-foreground text-xs">#{order.id.slice(-6).toUpperCase()}</span>
+				<span className="text-muted-foreground text-xs">{elapsed}m ago</span>
 			</div>
 
-			<p className="text-sm font-medium">{order.customerName}</p>
+			<p className="font-medium text-sm">{order.customerName}</p>
 
 			<ul className="space-y-1">
 				{order.items.map(item => (
-					<li key={item.id} className="text-sm text-muted-foreground">
+					<li className="text-muted-foreground text-sm" key={item.id}>
 						{item.quantity}× {item.productName}
 						{item.note && <span className="italic"> — {item.note}</span>}
 					</li>

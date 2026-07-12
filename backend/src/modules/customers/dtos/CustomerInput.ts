@@ -8,7 +8,7 @@ export const AddressInput = t.Object({
 	number: t.String({ minLength: 1 }),
 	reference: t.Optional(t.String()),
 	state: t.Optional(t.String()),
-	zipCode: t.String({ minLength: 8, maxLength: 8 }),
+	zipCode: t.String({ maxLength: 8, minLength: 8 }),
 });
 export type AddressInput = typeof AddressInput.static;
 

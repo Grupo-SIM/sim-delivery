@@ -1,17 +1,32 @@
-import { DomainError } from "@/shared/errors";
 import { UserErrors } from "@/modules/users/errors";
+import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import type { UpdateBrandingDTO, BrandingReturn } from "../dtos";
+import type { BrandingReturn, UpdateBrandingDTO } from "../dtos";
 
 export class UpdateBranding {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute({ companyId, footerText, ga4Id, gtmId, logoUrl, metaPixelId, primaryColor }: UpdateBrandingDTO): Promise<BrandingReturn> {
+	async execute({
+		companyId,
+		footerText,
+		ga4Id,
+		gtmId,
+		logoUrl,
+		metaPixelId,
+		primaryColor,
+	}: UpdateBrandingDTO): Promise<BrandingReturn> {
 		if (!companyId) throw new DomainError(UserErrors.FORBIDDEN);
 
 		const company = await this.prisma.company.update({
 			data: { footerText, ga4Id, gtmId, logoUrl, metaPixelId, primaryColor },
-			select: { footerText: true, ga4Id: true, gtmId: true, logoUrl: true, metaPixelId: true, primaryColor: true },
+			select: {
+				footerText: true,
+				ga4Id: true,
+				gtmId: true,
+				logoUrl: true,
+				metaPixelId: true,
+				primaryColor: true,
+			},
 			where: { id: companyId },
 		});
 

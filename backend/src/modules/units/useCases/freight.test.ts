@@ -2,10 +2,9 @@ import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { SimulateFreight } from "./SimulateFreight";
 
-function makeFreightPrisma(opts: {
-	company?: { id: string; variantKey: string } | null;
-	unit?: { deliveryFee: number } | null;
-} = {}) {
+function makeFreightPrisma(
+	opts: { company?: { id: string; variantKey: string } | null; unit?: { deliveryFee: number } | null } = {},
+) {
 	const { company = { id: "cmp_1", variantKey: "demo" }, unit = { deliveryFee: 500 } } = opts;
 
 	return {

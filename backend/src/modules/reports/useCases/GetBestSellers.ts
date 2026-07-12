@@ -1,5 +1,5 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
-import type { GetReportsQuery, BestSellersReturn } from "../dtos";
+import type { BestSellersReturn, GetReportsQuery } from "../dtos";
 
 const COMPLETED = ["entregue", "retirado"];
 
@@ -28,8 +28,8 @@ export class GetBestSellers {
 		const since = periodStart(period);
 
 		const rows = await this.prisma.orderItem.groupBy({
-			by: ["productId", "productName"],
 			_sum: { quantity: true, total: true },
+			by: ["productId", "productName"],
 			orderBy: { _sum: { quantity: "desc" } },
 			take: 10,
 			where: {

@@ -2,12 +2,14 @@ import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { InviteStaff, type SignUpFn } from "./InviteStaff";
 
-type UserRow = { id: string; email: string };
+interface UserRow {
+	id: string;
+	email: string;
+}
 
 function fakePrisma(existingEmails: string[] = []) {
 	const updates: Array<{ id: string; data: unknown }> = [];
 	return {
-		updates,
 		prisma: {
 			user: {
 				findUnique: async ({ where }: { where: { email: string } }) =>
@@ -24,12 +26,18 @@ function fakePrisma(existingEmails: string[] = []) {
 				},
 			},
 		} as unknown as PrismaInstance,
+		updates,
 	};
 }
 
 const signUp: SignUpFn = async () => ({ user: { id: "u_new" } });
 
-const baseInput = { email: "new@staff.com", name: "New Staff", password: "secret1", role: "manager" as const };
+const baseInput = {
+	email: "new@staff.com",
+	name: "New Staff",
+	password: "secret1",
+	role: "manager" as const,
+};
 
 describe("InviteStaff", () => {
 	it("creates a staff member scoped to the company", async () => {

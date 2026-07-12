@@ -26,7 +26,8 @@ export function StatCard({ hint, label, onClick, tone = "default", value }: Stat
 		</>
 	);
 
-	const baseClass = "rounded-brand border border-border bg-card p-4 text-left shadow-soft transition-[box-shadow,border-color] duration-300";
+	const baseClass =
+		"rounded-brand border border-border bg-card p-4 text-left shadow-soft transition-[box-shadow,border-color] duration-300";
 
 	if (!interactive) {
 		return <div className={baseClass}>{body}</div>;

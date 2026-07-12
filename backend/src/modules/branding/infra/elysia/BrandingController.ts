@@ -1,6 +1,6 @@
 import Elysia from "elysia";
-import { prisma } from "@/shared/infra/sql";
 import { CompanyScopeGuard } from "@/modules/users/guards";
+import { prisma } from "@/shared/infra/sql";
 import { BrandingReturn, GetBrandingQuery, UpdateBrandingBody } from "../../dtos";
 import { GetBranding, UpdateBranding } from "../../useCases";
 

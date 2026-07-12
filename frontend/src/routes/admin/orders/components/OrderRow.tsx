@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { GetOrders200 } from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import type { GetOrders200 } from "@/lib/api";
 import { AssignCourierModal } from "./AssignCourierModal";
 import { UpdateStatusModal } from "./UpdateStatusModal";
 
@@ -29,8 +29,7 @@ export function OrderRow({ order }: OrderRowProps) {
 	});
 
 	const isTerminal = TERMINAL.has(order.status);
-	const canAssign =
-		order.status === "pronto" && order.deliveryMethod === "delivery" && !order.delivery;
+	const canAssign = order.status === "pronto" && order.deliveryMethod === "delivery" && !order.delivery;
 
 	return (
 		<>
@@ -39,19 +38,17 @@ export function OrderRow({ order }: OrderRowProps) {
 				<td className="px-4 py-3 font-medium">{order.customerName}</td>
 				<td className="px-4 py-3 text-muted-foreground text-sm">{order.unitName}</td>
 				<td className="px-4 py-3 text-sm">
-					<span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium">
+					<span className="rounded-full bg-muted px-2 py-0.5 font-medium text-xs">
 						{t(`admin.orders.status.${order.status}`, { defaultValue: order.status })}
 					</span>
 				</td>
 				<td className="px-4 py-3 text-muted-foreground text-sm">
-					{t(`admin.orders.columns.method`) === "Method"
-						? order.deliveryMethod
-						: order.deliveryMethod}
+					{t("admin.orders.columns.method") === "Method" ? order.deliveryMethod : order.deliveryMethod}
 					{" · "}
 					{t("admin.orders.items", { count: order.items.length })}
 				</td>
 				<td className="px-4 py-3 font-medium text-sm">{totalBRL}</td>
-				<td className="px-4 py-3 text-right flex justify-end gap-2">
+				<td className="flex justify-end gap-2 px-4 py-3 text-right">
 					{canAssign && (
 						<Button onClick={() => setAssignOpen(true)} size="sm" type="button" variant="outline">
 							{t("admin.deliveries.assign.action")}
@@ -73,11 +70,7 @@ export function OrderRow({ order }: OrderRowProps) {
 				orderId={order.id}
 			/>
 
-			<AssignCourierModal
-				isOpen={assignOpen}
-				onClose={() => setAssignOpen(false)}
-				orderId={order.id}
-			/>
+			<AssignCourierModal isOpen={assignOpen} onClose={() => setAssignOpen(false)} orderId={order.id} />
 		</>
 	);
 }
