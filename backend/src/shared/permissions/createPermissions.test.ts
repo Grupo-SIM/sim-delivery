@@ -15,8 +15,11 @@ describe("roles guards", () => {
 
 describe("createPermissions matrix", () => {
 	it("superAdmin manages companies; nobody else can", () => {
-		expect(createPermissions("superAdmin").check("company", "create")).toBe(true);
+		const superAdmin = createPermissions("superAdmin");
+		expect(superAdmin.check("company", "create")).toBe(true);
+		expect(superAdmin.check("company", "read")).toBe(true);
 		expect(createPermissions("owner").check("company", "create")).toBe(false);
+		expect(createPermissions("owner").check("company", "read")).toBe(false);
 		expect(createPermissions("manager").check("company", "delete")).toBe(false);
 	});
 
