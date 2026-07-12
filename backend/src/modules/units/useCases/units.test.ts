@@ -21,8 +21,8 @@ function prismaWith(units: Array<{ id: string; companyId: string }>) {
 					deleted.push(where.id);
 					return {};
 				},
-				findFirst: async ({ where }: { where: { companyId: string | null; id: string } }) =>
-					units.find(u => u.companyId === where.companyId && u.id === where.id) ?? null,
+				findFirst: async ({ where }: { where: { companyId?: string; id: string } }) =>
+					units.find(u => (where.companyId ? u.companyId === where.companyId : true) && u.id === where.id) ?? null,
 				findMany: async ({ where }: { where: { companyId?: string } }) =>
 					where.companyId ? units.filter(u => u.companyId === where.companyId) : units,
 				update: async ({ data, where }: { data: object; where: { id: string } }) => ({ id: where.id, ...data }),
@@ -54,9 +54,21 @@ describe("units use-cases", () => {
 		await expect(new UpdateUnit(prisma).execute("cmp_2", "u1", { name: "Y" })).rejects.toThrow("UNIT_NOT_FOUND");
 	});
 
+	it("UpdateUnit allows superAdmin (null company) to update a unit from any company", async () => {
+		const { prisma } = prismaWith([{ companyId: "cmp_1", id: "u1" }]);
+		const unit = await new UpdateUnit(prisma).execute(null, "u1", { name: "Y" });
+		expect(unit).toMatchObject({ id: "u1", name: "Y" });
+	});
+
 	it("DeleteUnit removes a unit of the same company", async () => {
 		const { deleted, prisma } = prismaWith([{ companyId: "cmp_1", id: "u1" }]);
 		await new DeleteUnit(prisma).execute("cmp_1", "u1");
+		expect(deleted).toEqual(["u1"]);
+	});
+
+	it("DeleteUnit allows superAdmin (null company) to delete a unit from any company", async () => {
+		const { deleted, prisma } = prismaWith([{ companyId: "cmp_1", id: "u1" }]);
+		await new DeleteUnit(prisma).execute(null, "u1");
 		expect(deleted).toEqual(["u1"]);
 	});
 });

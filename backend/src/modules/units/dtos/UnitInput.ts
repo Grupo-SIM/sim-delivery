@@ -17,7 +17,8 @@ const fields = {
 	zipCode: t.Optional(t.Nullable(t.String())),
 };
 
-export const CreateUnitBody = t.Object({ ...fields, name: t.String({ minLength: 1 }) });
+/** `companyId` is only honored when the caller has no scoped company (superAdmin); ignored otherwise. */
+export const CreateUnitBody = t.Object({ ...fields, companyId: t.Optional(t.String()), name: t.String({ minLength: 1 }) });
 export type CreateUnitBody = typeof CreateUnitBody.static;
 
 export const UpdateUnitBody = t.Object({ ...fields, name: t.Optional(t.String({ minLength: 1 })) });

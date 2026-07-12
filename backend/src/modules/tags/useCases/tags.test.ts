@@ -21,8 +21,9 @@ function prismaWith(tags: Array<{ id: string; companyId: string }>) {
 					deleted.push(where.id);
 					return {};
 				},
-				findFirst: async ({ where }: { where: { companyId: string | null; id: string } }) =>
-					tags.find(tag => tag.companyId === where.companyId && tag.id === where.id) ?? null,
+				findFirst: async ({ where }: { where: { companyId?: string; id: string } }) =>
+					tags.find(tag => (where.companyId ? tag.companyId === where.companyId : true) && tag.id === where.id) ??
+					null,
 				findMany: async ({ where }: { where: { companyId?: string } }) =>
 					where.companyId ? tags.filter(tag => tag.companyId === where.companyId) : tags,
 				update: async ({ data, where }: { data: object; where: { id: string } }) => ({ id: where.id, ...data }),
@@ -54,9 +55,21 @@ describe("tags use-cases", () => {
 		await expect(new UpdateTag(prisma).execute("cmp_2", "tag1", { name: "X" })).rejects.toThrow("TAG_NOT_FOUND");
 	});
 
+	it("UpdateTag allows superAdmin (null company) to update a tag from any company", async () => {
+		const { prisma } = prismaWith([{ companyId: "cmp_1", id: "tag1" }]);
+		const tag = await new UpdateTag(prisma).execute(null, "tag1", { name: "X" });
+		expect(tag).toMatchObject({ id: "tag1", name: "X" });
+	});
+
 	it("DeleteTag removes a tag of the same company", async () => {
 		const { deleted, prisma } = prismaWith([{ companyId: "cmp_1", id: "tag1" }]);
 		await new DeleteTag(prisma).execute("cmp_1", "tag1");
+		expect(deleted).toEqual(["tag1"]);
+	});
+
+	it("DeleteTag allows superAdmin (null company) to delete a tag from any company", async () => {
+		const { deleted, prisma } = prismaWith([{ companyId: "cmp_1", id: "tag1" }]);
+		await new DeleteTag(prisma).execute(null, "tag1");
 		expect(deleted).toEqual(["tag1"]);
 	});
 });

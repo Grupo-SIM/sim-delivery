@@ -21,8 +21,9 @@ function prismaWith(categories: Array<{ id: string; companyId: string }>) {
 					deleted.push(where.id);
 					return {};
 				},
-				findFirst: async ({ where }: { where: { companyId: string | null; id: string } }) =>
-					categories.find(c => c.companyId === where.companyId && c.id === where.id) ?? null,
+				findFirst: async ({ where }: { where: { companyId?: string; id: string } }) =>
+					categories.find(c => (where.companyId ? c.companyId === where.companyId : true) && c.id === where.id) ??
+					null,
 				findMany: async ({ where }: { where: { companyId?: string } }) =>
 					where.companyId ? categories.filter(c => c.companyId === where.companyId) : categories,
 				update: async ({ data, where }: { data: object; where: { id: string } }) => ({ id: where.id, ...data }),
@@ -56,9 +57,21 @@ describe("categories use-cases", () => {
 		);
 	});
 
+	it("UpdateCategory allows superAdmin (null company) to update a category from any company", async () => {
+		const { prisma } = prismaWith([{ companyId: "cmp_1", id: "cat1" }]);
+		const category = await new UpdateCategory(prisma).execute(null, "cat1", { name: "X" });
+		expect(category).toMatchObject({ id: "cat1", name: "X" });
+	});
+
 	it("DeleteCategory removes a category of the same company", async () => {
 		const { deleted, prisma } = prismaWith([{ companyId: "cmp_1", id: "cat1" }]);
 		await new DeleteCategory(prisma).execute("cmp_1", "cat1");
+		expect(deleted).toEqual(["cat1"]);
+	});
+
+	it("DeleteCategory allows superAdmin (null company) to delete a category from any company", async () => {
+		const { deleted, prisma } = prismaWith([{ companyId: "cmp_1", id: "cat1" }]);
+		await new DeleteCategory(prisma).execute(null, "cat1");
 		expect(deleted).toEqual(["cat1"]);
 	});
 });

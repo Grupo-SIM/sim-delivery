@@ -36,7 +36,7 @@ export const CategoriesController = new Elysia({
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "menu", "create");
 
-					return createCategory.execute(scope.companyId, body);
+					return createCategory.execute(scope.companyId ?? body.companyId ?? null, body);
 				},
 				{ body: CreateCategoryBody, response: CategoryReturn },
 			)

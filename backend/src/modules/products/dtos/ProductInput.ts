@@ -7,9 +7,11 @@ const fields = {
 	imageUrl: t.Optional(t.String({ minLength: 1 })),
 };
 
+/** `companyId` is only honored when the caller has no scoped company (superAdmin); ignored otherwise. */
 export const CreateProductBody = t.Object({
 	...fields,
 	basePriceCents: t.Integer({ minimum: 0 }),
+	companyId: t.Optional(t.String()),
 	imageUrl: t.String({ minLength: 1 }),
 	title: t.String({ minLength: 1 }),
 });

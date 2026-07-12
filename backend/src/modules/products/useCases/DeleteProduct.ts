@@ -6,9 +6,9 @@ export class DeleteProduct {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(companyId: string | null, productId: string): Promise<void> {
-		const product = companyId
-			? await this.prisma.product.findFirst({ where: { companyId, id: productId } })
-			: null;
+		const product = await this.prisma.product.findFirst({
+			where: { ...(companyId ? { companyId } : {}), id: productId },
+		});
 		if (!product) {
 			throw new DomainError(ProductErrors.PRODUCT_NOT_FOUND);
 		}

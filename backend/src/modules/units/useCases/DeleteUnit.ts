@@ -6,11 +6,7 @@ export class DeleteUnit {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(companyId: string | null, unitId: string): Promise<void> {
-		if (!companyId) {
-			throw new DomainError(UnitErrors.UNIT_NOT_FOUND);
-		}
-
-		const unit = await this.prisma.unit.findFirst({ where: { companyId, id: unitId } });
+		const unit = await this.prisma.unit.findFirst({ where: { ...(companyId ? { companyId } : {}), id: unitId } });
 		if (!unit) {
 			throw new DomainError(UnitErrors.UNIT_NOT_FOUND);
 		}

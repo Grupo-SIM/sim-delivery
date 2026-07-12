@@ -7,7 +7,7 @@ export class UpdateTag {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(companyId: string | null, tagId: string, data: UpdateTagBody): Promise<TagReturn> {
-		const tag = companyId ? await this.prisma.tag.findFirst({ where: { companyId, id: tagId } }) : null;
+		const tag = await this.prisma.tag.findFirst({ where: { ...(companyId ? { companyId } : {}), id: tagId } });
 		if (!tag) {
 			throw new DomainError(TagErrors.TAG_NOT_FOUND);
 		}

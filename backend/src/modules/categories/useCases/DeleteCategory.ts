@@ -6,9 +6,9 @@ export class DeleteCategory {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(companyId: string | null, categoryId: string): Promise<void> {
-		const category = companyId
-			? await this.prisma.category.findFirst({ where: { companyId, id: categoryId } })
-			: null;
+		const category = await this.prisma.category.findFirst({
+			where: { ...(companyId ? { companyId } : {}), id: categoryId },
+		});
 		if (!category) {
 			throw new DomainError(CategoryErrors.CATEGORY_NOT_FOUND);
 		}

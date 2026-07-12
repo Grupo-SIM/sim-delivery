@@ -21,8 +21,10 @@ function prismaWith(products: Array<{ id: string; companyId: string }>) {
 					deleted.push(where.id);
 					return {};
 				},
-				findFirst: async ({ where }: { where: { companyId: string | null; id: string } }) =>
-					products.find(product => product.companyId === where.companyId && product.id === where.id) ?? null,
+				findFirst: async ({ where }: { where: { companyId?: string; id: string } }) =>
+					products.find(
+						product => (where.companyId ? product.companyId === where.companyId : true) && product.id === where.id,
+					) ?? null,
 				findMany: async ({ where }: { where: { companyId?: string } }) =>
 					where.companyId ? products.filter(product => product.companyId === where.companyId) : products,
 				update: async ({ data, where }: { data: object; where: { id: string } }) => ({
@@ -71,9 +73,21 @@ describe("products use-cases", () => {
 		);
 	});
 
+	it("UpdateProduct allows superAdmin (null company) to update a product from any company", async () => {
+		const { prisma } = prismaWith([{ companyId: "cmp_1", id: "prod1" }]);
+		const product = await new UpdateProduct(prisma).execute(null, "prod1", { title: "X" });
+		expect(product).toMatchObject({ id: "prod1", title: "X" });
+	});
+
 	it("DeleteProduct removes a product of the same company", async () => {
 		const { deleted, prisma } = prismaWith([{ companyId: "cmp_1", id: "prod1" }]);
 		await new DeleteProduct(prisma).execute("cmp_1", "prod1");
+		expect(deleted).toEqual(["prod1"]);
+	});
+
+	it("DeleteProduct allows superAdmin (null company) to delete a product from any company", async () => {
+		const { deleted, prisma } = prismaWith([{ companyId: "cmp_1", id: "prod1" }]);
+		await new DeleteProduct(prisma).execute(null, "prod1");
 		expect(deleted).toEqual(["prod1"]);
 	});
 });
