@@ -1,4 +1,4 @@
-import { LuCopy } from "react-icons/lu";
+import { LuCopy, LuRotateCcw } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ColorField } from "@/components/ui/ColorField";
@@ -10,6 +10,7 @@ interface ThemeColorFieldsProps {
 	colors: ThemeColorSet;
 	onChange: (name: keyof ThemeColorSet, value: string) => void;
 	onCopy: (name: keyof ThemeColorSet) => void;
+	onReset: (name: keyof ThemeColorSet) => void;
 	mode: keyof ThemeColors;
 }
 
@@ -34,7 +35,7 @@ const groups = [
 	{ name: "boundaries", colors: ["border", "input", "ring"] },
 ] as const satisfies readonly { colors: readonly (keyof ThemeColorSet)[]; name: string }[];
 
-export function ThemeColorFields({ colors, mode, onChange, onCopy }: ThemeColorFieldsProps) {
+export function ThemeColorFields({ colors, mode, onChange, onCopy, onReset }: ThemeColorFieldsProps) {
 	const { t } = useTranslation();
 	const sourceMode = mode === "light" ? "dark" : "light";
 
@@ -67,6 +68,19 @@ export function ThemeColorFields({ colors, mode, onChange, onCopy }: ThemeColorF
 											variant="outline"
 										>
 											<LuCopy aria-hidden />
+										</Button>
+									</Tooltip>
+									<Tooltip content={t("admin.branding.resetColor")}>
+										<Button
+											aria-label={t("admin.branding.resetColor", {
+												color: t(`admin.branding.colors.${name}`),
+											})}
+											onClick={() => onReset(name)}
+											size="icon"
+											type="button"
+											variant="outline"
+										>
+											<LuRotateCcw aria-hidden />
 										</Button>
 									</Tooltip>
 								</div>

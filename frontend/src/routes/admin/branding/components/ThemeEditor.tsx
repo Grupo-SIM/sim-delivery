@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LuCopy, LuMoon, LuSun } from "react-icons/lu";
+import { LuCopy, LuMoon, LuRotateCcw, LuSun } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import type { ThemeColorSet, ThemeColors } from "@/lib/theme-colors";
@@ -10,9 +10,18 @@ interface ThemeEditorProps {
 	onChange: (mode: keyof ThemeColors, name: keyof ThemeColorSet, value: string) => void;
 	onCopyAll: (mode: keyof ThemeColors) => void;
 	onCopyColor: (mode: keyof ThemeColors, name: keyof ThemeColorSet) => void;
+	onResetAll: (mode: keyof ThemeColors) => void;
+	onResetColor: (mode: keyof ThemeColors, name: keyof ThemeColorSet) => void;
 }
 
-export function ThemeEditor({ colors, onChange, onCopyAll, onCopyColor }: ThemeEditorProps) {
+export function ThemeEditor({
+	colors,
+	onChange,
+	onCopyAll,
+	onCopyColor,
+	onResetAll,
+	onResetColor,
+}: ThemeEditorProps) {
 	const { t } = useTranslation();
 	const [mode, setMode] = useState<keyof ThemeColors>("light");
 	const sourceMode = mode === "light" ? "dark" : "light";
@@ -42,16 +51,28 @@ export function ThemeEditor({ colors, onChange, onCopyAll, onCopyColor }: ThemeE
 						<LuMoon aria-hidden /> {t("admin.branding.darkTheme")}
 					</Button>
 				</div>
-				<Button
-					className="h-11 lg:shrink-0"
-					onClick={() => onCopyAll(mode)}
-					size="sm"
-					type="button"
-					variant="outline"
-				>
-					<LuCopy aria-hidden />{" "}
-					{t("admin.branding.copyAllColors", { mode: t(`admin.branding.${sourceMode}Theme`) })}
-				</Button>
+				<div className="flex flex-col gap-2 sm:flex-row">
+					<Button
+						className="h-11 lg:shrink-0"
+						onClick={() => onCopyAll(mode)}
+						size="sm"
+						type="button"
+						variant="outline"
+					>
+						<LuCopy aria-hidden />
+						{t("admin.branding.copyAllColors", { mode: t(`admin.branding.${sourceMode}Theme`) })}
+					</Button>
+					<Button
+						className="h-11 lg:shrink-0"
+						onClick={() => onResetAll(mode)}
+						size="sm"
+						type="button"
+						variant="outline"
+					>
+						<LuRotateCcw aria-hidden />
+						{t("admin.branding.resetAllColors", { mode: t(`admin.branding.${mode}Theme`) })}
+					</Button>
+				</div>
 			</div>
 
 			<ThemeColorFields
@@ -59,6 +80,7 @@ export function ThemeEditor({ colors, onChange, onCopyAll, onCopyColor }: ThemeE
 				mode={mode}
 				onChange={(name, value) => onChange(mode, name, value)}
 				onCopy={name => onCopyColor(mode, name)}
+				onReset={name => onResetColor(mode, name)}
 			/>
 		</section>
 	);

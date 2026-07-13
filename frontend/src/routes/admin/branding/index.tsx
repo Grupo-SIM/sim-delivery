@@ -50,9 +50,17 @@ function BrandingPage() {
 		setThemeColor(mode, name, themeColors[sourceMode][name]);
 	}
 
+	function resetThemeColor(mode: keyof ThemeColors, name: keyof ThemeColors["light"]) {
+		setThemeColor(mode, name, defaultThemeColors[mode][name]);
+	}
+
 	function copyAllThemeColors(mode: keyof ThemeColors) {
 		const sourceMode = mode === "light" ? "dark" : "light";
 		setThemeColors(current => ({ ...current, [mode]: current[sourceMode] }));
+	}
+
+	function resetAllThemeColors(mode: keyof ThemeColors) {
+		setThemeColors(current => ({ ...current, [mode]: { ...defaultThemeColors[mode] } }));
 	}
 
 	function save() {
@@ -79,7 +87,7 @@ function BrandingPage() {
 	}
 
 	return (
-		<Container className="max-w-4xl space-y-6 py-8">
+		<Container className="max-w-5xl space-y-6 py-8">
 			<SectionHeading subtitle={t("admin.branding.subtitle")} title={t("admin.branding.title")} />
 
 			{isPending ? (
@@ -127,6 +135,8 @@ function BrandingPage() {
 							onChange={setThemeColor}
 							onCopyAll={copyAllThemeColors}
 							onCopyColor={copyThemeColor}
+							onResetAll={resetAllThemeColors}
+							onResetColor={resetThemeColor}
 						/>
 					</div>
 
