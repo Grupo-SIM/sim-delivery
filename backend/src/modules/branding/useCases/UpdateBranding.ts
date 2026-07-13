@@ -26,6 +26,7 @@ export class UpdateBranding {
 				gtmId: true,
 				logoUrl: true,
 				metaPixelId: true,
+				name: true,
 				primaryColor: true,
 				themeColors: true,
 			},
@@ -33,6 +34,7 @@ export class UpdateBranding {
 		});
 
 		return {
+			companyName: company.name,
 			footerText: company.footerText ?? null,
 			ga4Id: company.ga4Id ?? null,
 			gtmId: company.gtmId ?? null,

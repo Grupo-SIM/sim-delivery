@@ -1,58 +1,48 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Badge } from "@/components/ui/badge";
-import { Container } from "@/components/ui/Container";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { useGetPublicUnits } from "@/lib/api";
+import { useGetBranding, useGetPublicUnits } from "@/lib/api";
 import { slug } from "@/lib/variant";
+import { StorefrontFooter, StorefrontHeader, UnitCard } from "./components/storefront";
 
 function StorePage() {
 	const { t } = useTranslation();
 	const { data: units, isError, isPending } = useGetPublicUnits({ slug });
+	const { data: branding } = useGetBranding({ slug });
 
 	return (
-		<Container className="space-y-6 py-8">
-			<SectionHeading subtitle={t("store.chooseUnit.subtitle")} title={t("store.chooseUnit.title")} />
+		<div className="flex min-h-screen flex-col">
+			<StorefrontHeader branding={branding} />
+			<main className="flex-1">
+				<section className="border-border/70 border-b bg-muted/35">
+					<div className="mx-auto max-w-6xl px-5 py-12 sm:py-16">
+						<p className="font-semibold text-primary text-sm uppercase tracking-[0.2em]">Peça onde estiver</p>
+						<h1 className="mt-3 max-w-2xl font-display text-4xl tracking-wide sm:text-5xl">{t("store.chooseUnit.title")}</h1>
+						<p className="mt-4 max-w-xl text-muted-foreground text-lg">{t("store.chooseUnit.subtitle")}</p>
+					</div>
+				</section>
 
-			{isPending ? (
-				<Skeleton className="h-40 w-full" />
-			) : isError ? (
-				<ErrorState title={t("store.chooseUnit.loadError")} />
-			) : units.length === 0 ? (
-				<EmptyState title={t("store.chooseUnit.empty")} />
-			) : (
-				<div className="grid gap-4 sm:grid-cols-2">
-					{units.map(unit => (
-						<Link
-							className="flex flex-col gap-2 rounded-lg border border-border bg-card p-4 transition-colors hover:border-primary"
-							key={unit.id}
-							params={{ unitId: unit.id }}
-							to="/$unitId"
-						>
-							<div className="flex items-center justify-between gap-2">
-								<span className="font-medium">{unit.name}</span>
-								<Badge
-									className={
-										unit.isOpenNow
-											? "border-green-500/30 bg-green-500/10 text-green-500"
-											: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
-									}
-								>
-									{unit.isOpenNow ? t("store.status.open") : t("store.status.closed")}
-								</Badge>
-							</div>
-							<span className="text-muted-foreground text-sm">
-								{[unit.addressLine, unit.neighborhood, unit.city].filter(Boolean).join(", ") ||
-									t("store.chooseUnit.noAddress")}
-							</span>
-						</Link>
-					))}
-				</div>
-			)}
-		</Container>
+				<section className="mx-auto max-w-6xl px-5 py-10 sm:py-14" id="unidades">
+					{isPending ? (
+						<div className="grid gap-5 sm:grid-cols-2">
+							<Skeleton className="h-64 w-full" />
+							<Skeleton className="h-64 w-full" />
+						</div>
+					) : isError ? (
+						<ErrorState title={t("store.chooseUnit.loadError")} />
+					) : units.length === 0 ? (
+						<EmptyState title={t("store.chooseUnit.empty")} />
+					) : (
+						<div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+							{units.map(unit => <UnitCard key={unit.id} unit={unit} />)}
+						</div>
+					)}
+				</section>
+			</main>
+			<StorefrontFooter branding={branding} />
+		</div>
 	);
 }
 

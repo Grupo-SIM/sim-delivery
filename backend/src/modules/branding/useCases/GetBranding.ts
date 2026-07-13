@@ -25,6 +25,7 @@ export class GetBranding {
 
 		if (!resolvedCompanyId) {
 			return {
+				companyName: null,
 				footerText: null,
 				ga4Id: null,
 				gtmId: null,
@@ -42,6 +43,7 @@ export class GetBranding {
 				gtmId: true,
 				logoUrl: true,
 				metaPixelId: true,
+				name: true,
 				primaryColor: true,
 				themeColors: true,
 			},
@@ -49,6 +51,7 @@ export class GetBranding {
 		});
 
 		return {
+			companyName: company?.name ?? null,
 			footerText: company?.footerText ?? null,
 			ga4Id: company?.ga4Id ?? null,
 			gtmId: company?.gtmId ?? null,
