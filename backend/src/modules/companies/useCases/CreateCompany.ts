@@ -6,12 +6,12 @@ import { CompanyErrors } from "../errors";
 export class CreateCompany {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute({ name, slug }: CreateCompanyDTO): Promise<CompanyReturn> {
+	async execute({ apiUrl, name, packageName, siteUrl, slug }: CreateCompanyDTO): Promise<CompanyReturn> {
 		const existing = await this.prisma.company.findUnique({ where: { slug } });
 		if (existing) {
 			throw new DomainError(CompanyErrors.SLUG_TAKEN);
 		}
 
-		return this.prisma.company.create({ data: { name, slug } });
+		return this.prisma.company.create({ data: { apiUrl, name, packageName, siteUrl, slug } });
 	}
 }

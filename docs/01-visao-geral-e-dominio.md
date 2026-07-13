@@ -13,8 +13,9 @@ branding) acontece em um **painel do dono**. Ver [08-app-cliente.md](08-app-clie
 - **Tenant = empresa**, identificado por `companyId`. Um único backend/DB servem todas.
 - **Toda entidade de negócio carrega `companyId`** e toda query é filtrada por ele. Nenhum
   dado cruza tenants, exceto para `superAdmin` (ver [03-papeis-e-permissoes.md](03-papeis-e-permissoes.md)).
-- Uma **variante** whitelabel do app aponta para exatamente uma empresa (via `VITE_API_URL`
-  + config da variante). Ver [02-whitelabel-e-builds.md](02-whitelabel-e-builds.md).
+- Uma build whitelabel aponta para exatamente uma empresa via `VITE_COMPANY_SLUG`. Antes de
+  compilar, o script consulta a configuração da empresa diretamente no banco. Ver
+  [02-whitelabel-e-builds.md](02-whitelabel-e-builds.md).
 - Uma empresa tem **1..N unidades**. Preços, horários, taxas e formas de pagamento podem
   variar por unidade.
 
@@ -42,7 +43,7 @@ branding) acontece em um **painel do dono**. Ver [08-app-cliente.md](08-app-clie
 
 ```
 Company (tenant)
-├── Variant (whitelabel build) ── 1:1 ──> Company
+├── Build whitelabel (via slug) ── 1:1 ──> Company
 ├── User (owner | manager | attendant | kitchen)
 ├── Courier
 ├── Customer

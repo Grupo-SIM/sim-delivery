@@ -6,7 +6,14 @@ import { CompanyErrors } from "../errors";
 export class UpdateCompany {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute({ companyId, name, slug }: UpdateCompanyDTO): Promise<CompanyReturn> {
+	async execute({
+		apiUrl,
+		companyId,
+		name,
+		packageName,
+		siteUrl,
+		slug,
+	}: UpdateCompanyDTO): Promise<CompanyReturn> {
 		const company = await this.prisma.company.findUnique({ where: { id: companyId } });
 		if (!company) {
 			throw new DomainError(CompanyErrors.COMPANY_NOT_FOUND);
@@ -21,7 +28,10 @@ export class UpdateCompany {
 
 		return this.prisma.company.update({
 			data: {
+				...(apiUrl !== undefined && { apiUrl }),
 				...(name !== undefined && { name }),
+				...(packageName !== undefined && { packageName }),
+				...(siteUrl !== undefined && { siteUrl }),
 				...(slug !== undefined && { slug }),
 			},
 			where: { id: companyId },

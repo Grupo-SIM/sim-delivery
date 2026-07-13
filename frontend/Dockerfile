@@ -15,13 +15,13 @@ FROM deps AS build
 
 WORKDIR /app
 
-# Vite inlines VITE_* vars at build time, so they must be present here.
-ARG VITE_API_URL=http://localhost:3333
-ARG VITE_APP_URL=http://localhost:3000
+# Branding is queried from Prisma during the build, never at first render.
+ARG DATABASE_URL
+ARG VITE_COMPANY_SLUG
 ARG NODE_ENV=production
 
-ENV VITE_API_URL=${VITE_API_URL}
-ENV VITE_APP_URL=${VITE_APP_URL}
+ENV DATABASE_URL=${DATABASE_URL}
+ENV VITE_COMPANY_SLUG=${VITE_COMPANY_SLUG}
 ENV NODE_ENV=${NODE_ENV}
 
 COPY . .

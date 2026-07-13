@@ -6,21 +6,27 @@ import type { ThemeColors } from "./theme-colors";
  */
 export interface BuildBranding {
 	companyName: string;
+	apiUrl: string;
 	footerText: string | null;
 	ga4Id: string | null;
 	gtmId: string | null;
 	logoUrl: string | null;
 	metaPixelId: string | null;
+	packageName: string;
+	siteUrl: string;
 	themeColors: ThemeColors;
 }
 
 export const buildBranding: BuildBranding = {
 	companyName: "Zero Grau Delivery",
+	apiUrl: "http://localhost:3333",
 	footerText: null,
 	ga4Id: null,
 	gtmId: null,
 	logoUrl: null,
 	metaPixelId: null,
+	packageName: "com.zerograu.delivery",
+	siteUrl: "http://localhost:5173",
 	themeColors: {
 		dark: {
 			accent: "#FFED00",

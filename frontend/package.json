@@ -4,9 +4,9 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build": "tsc -b && vite build",
+		"build": "bun ../scripts/inject-branding.ts && tsc -b && vite build",
 		"check-types": "tsc --noEmit",
-		"dev": "vite --host",
+		"dev": "bun ../scripts/inject-branding.ts && vite --host",
 		"preview": "vite preview",
 		"start": "vite preview",
 		"tauri": "tauri",
@@ -14,8 +14,7 @@
 		"tauri:build": "tauri build",
 		"tauri:dev": "tauri dev",
 		"tauri:ios": "tauri ios dev",
-		"test:unit": "bun test --coverage",
-		"variant": "bun ../scripts/inject-variant.ts"
+		"test:unit": "bun test --coverage"
 	},
 	"dependencies": {
 		"@fontsource-variable/inter": "^5.2.8",

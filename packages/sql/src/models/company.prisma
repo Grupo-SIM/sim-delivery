@@ -3,6 +3,10 @@ model Company {
     id         String   @id @default(cuid())
     name       String
     slug       String   @unique
+    /// Per-company deployment configuration, consumed by static storefront builds.
+    packageName String?  @unique
+    siteUrl     String?
+    apiUrl      String?
     /// Branding fields rendered in the store footer and app shell.
     logoUrl     String?
     footerText  String?
