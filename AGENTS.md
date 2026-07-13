@@ -38,10 +38,10 @@ If the user requests an adjustment to something just delivered, amend or rebase 
 
 ## Plans — Versioned in the Repo
 
-AI work plans live in the top-level [`plans/`](plans/) folder, **committed** as part of the repo — they are the decision/execution history. Keep `docs/` for product/domain knowledge and `plans/` for planning/execution history; do not keep working plans under `~/.claude/plans`.
+Use a plan in the top-level [`plans/`](plans/) folder only for large features executed in Plan mode, so progress survives long or interrupted work. Small tasks, fixes, and work outside Plan mode do not need a plan. Keep `docs/` for product/domain knowledge and `plans/` for planning/execution history; do not keep working plans under `~/.claude/plans`.
 
-- One file per task, named with a zero-padded sequential prefix: `NNNN-kebab-slug.md` (e.g. `0001-jb-delivery-mvp.md`). The number gives chronological order; the next plan takes the next number.
-- When starting or resuming a task, **read** the relevant plan from `plans/`. After **each completed step**, update the plan (mark progress, adjust upcoming steps) and commit that update alongside the step's changes.
+- For a required plan, create one file per feature, named with a zero-padded sequential prefix: `NNNN-kebab-slug.md` (e.g. `0001-jb-delivery-mvp.md`). The number gives chronological order; the next plan takes the next number.
+- When starting or resuming work covered by a plan, **read** it from `plans/`. After **each completed step**, update progress and upcoming steps, then commit that update alongside the step's changes.
 
 ## Pre-PR / Pre-Merge Checks — Required Before Staging or Main
 
