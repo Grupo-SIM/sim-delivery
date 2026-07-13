@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Input } from "@/components/ui/input";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
@@ -18,6 +18,9 @@ interface PopoverPos {
 	top: number;
 }
 
+const POPOVER_GAP = 12;
+const VIEWPORT_GUTTER = 8;
+
 /** Custom hue/saturation color picker, paired with a hex text input. Both edit the same "#rrggbb" value. */
 export function ColorField({ onChange, value }: ColorFieldProps) {
 	const [localValue, setLocalValue, flushLocalValue] = useDebouncedInput(value, onChange);
@@ -31,8 +34,6 @@ export function ColorField({ onChange, value }: ColorFieldProps) {
 
 	function openPopover() {
 		if (!triggerRef.current) return;
-		const rect = triggerRef.current.getBoundingClientRect();
-		setPos({ left: rect.left, top: rect.bottom + 12 });
 		setHsv(hexToHsv(swatch));
 		setOpen(true);
 	}
@@ -68,6 +69,34 @@ export function ColorField({ onChange, value }: ColorFieldProps) {
 		};
 	}, [open]);
 
+	useLayoutEffect(() => {
+		if (!open || !triggerRef.current || !popoverRef.current) return;
+
+		function updatePopoverPosition() {
+			const triggerRect = triggerRef.current?.getBoundingClientRect();
+			const popoverRect = popoverRef.current?.getBoundingClientRect();
+			if (!triggerRect || !popoverRect) return;
+
+			const maxLeft = Math.max(VIEWPORT_GUTTER, window.innerWidth - popoverRect.width - VIEWPORT_GUTTER);
+			const maxTop = Math.max(VIEWPORT_GUTTER, window.innerHeight - popoverRect.height - VIEWPORT_GUTTER);
+			const top =
+				window.innerHeight - triggerRect.bottom >= popoverRect.height + POPOVER_GAP
+					? triggerRect.bottom + POPOVER_GAP
+					: triggerRect.top - popoverRect.height - POPOVER_GAP;
+
+			setPos({
+				left: Math.min(Math.max(triggerRect.left, VIEWPORT_GUTTER), maxLeft) + window.scrollX,
+				top: Math.min(Math.max(top, VIEWPORT_GUTTER), maxTop) + window.scrollY,
+			});
+		}
+
+		updatePopoverPosition();
+		window.addEventListener("resize", updatePopoverPosition);
+		return () => {
+			window.removeEventListener("resize", updatePopoverPosition);
+		};
+	}, [open]);
+
 	return (
 		<div className="flex items-center gap-2">
 			<button
@@ -91,10 +120,10 @@ export function ColorField({ onChange, value }: ColorFieldProps) {
 			{open &&
 				createPortal(
 					<div
-						className="w-56 overflow-hidden rounded-brand border border-border bg-popover shadow-medium"
+						className="absolute w-56 overflow-hidden rounded-brand border border-border bg-popover shadow-medium"
 						ref={popoverRef}
 						role="dialog"
-						style={{ left: pos.left, position: "fixed", top: pos.top, zIndex: 9999 }}
+						style={{ left: pos.left, top: pos.top, zIndex: 9999 }}
 					>
 						<SaturationPanel
 							color={hsvToHex(hsv)}
