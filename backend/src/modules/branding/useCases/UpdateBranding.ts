@@ -13,13 +13,12 @@ export class UpdateBranding {
 		gtmId,
 		logoUrl,
 		metaPixelId,
-		primaryColor,
 		themeColors,
 	}: UpdateBrandingDTO): Promise<BrandingReturn> {
 		if (!companyId) throw new DomainError(UserErrors.FORBIDDEN);
 
 		const company = await this.prisma.company.update({
-			data: { footerText, ga4Id, gtmId, logoUrl, metaPixelId, primaryColor, themeColors },
+			data: { footerText, ga4Id, gtmId, logoUrl, metaPixelId, themeColors },
 			select: {
 				footerText: true,
 				ga4Id: true,
@@ -27,7 +26,6 @@ export class UpdateBranding {
 				logoUrl: true,
 				metaPixelId: true,
 				name: true,
-				primaryColor: true,
 				themeColors: true,
 			},
 			where: { id: companyId },
@@ -40,7 +38,6 @@ export class UpdateBranding {
 			gtmId: company.gtmId ?? null,
 			logoUrl: company.logoUrl ?? null,
 			metaPixelId: company.metaPixelId ?? null,
-			primaryColor: company.primaryColor ?? null,
 			themeColors: (company.themeColors as BrandingReturn["themeColors"]) ?? null,
 		};
 	}

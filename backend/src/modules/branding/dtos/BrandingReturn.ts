@@ -9,7 +9,6 @@ export const BrandingReturn = t.Object({
 	gtmId: __nullable__(t.String()),
 	logoUrl: __nullable__(t.String()),
 	metaPixelId: __nullable__(t.String()),
-	primaryColor: __nullable__(t.String()),
 	themeColors: __nullable__(ThemeColors),
 });
 export type BrandingReturn = typeof BrandingReturn.static;

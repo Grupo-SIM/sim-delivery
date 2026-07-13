@@ -52,16 +52,8 @@ export const defaultThemeColors: ThemeColors = {
 	},
 };
 
-export function resolveThemeColors(
-	themeColors: GetBrandingQueryResponse["themeColors"],
-	primaryColor?: string | null,
-): ThemeColors {
-	const colors = themeColors ?? defaultThemeColors;
-	if (!primaryColor || themeColors) return colors;
-	return {
-		dark: { ...colors.dark, primary: primaryColor, ring: primaryColor },
-		light: { ...colors.light, primary: primaryColor, ring: primaryColor },
-	};
+export function resolveThemeColors(themeColors: GetBrandingQueryResponse["themeColors"]): ThemeColors {
+	return themeColors ?? defaultThemeColors;
 }
 
 export function toThemeVariable(name: keyof ThemeColorSet) {

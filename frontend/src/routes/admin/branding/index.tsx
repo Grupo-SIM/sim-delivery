@@ -30,7 +30,7 @@ function BrandingPage() {
 	useEffect(() => {
 		if (branding) {
 			setLogoUrl(branding.logoUrl ?? "");
-			setThemeColors(resolveThemeColors(branding.themeColors, branding.primaryColor));
+			setThemeColors(resolveThemeColors(branding.themeColors));
 			setFooterText(branding.footerText ?? "");
 			setMetaPixelId(branding.metaPixelId ?? "");
 			setGa4Id(branding.ga4Id ?? "");
@@ -69,7 +69,6 @@ function BrandingPage() {
 					gtmId: gtmId.trim() || undefined,
 					logoUrl: logoUrl.trim() || undefined,
 					metaPixelId: metaPixelId.trim() || undefined,
-					primaryColor: themeColors.light.primary,
 					themeColors,
 				},
 			},

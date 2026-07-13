@@ -3,12 +3,12 @@ import { resolveThemeColors, toThemeVariable, type ThemeColors } from "@/lib/the
 
 /**
  * Applies a company's theme colors as CSS variables on :root.
- * Reverts to the built-in theme value when color is null/undefined.
+ * Reverts to the built-in theme values when colors are null/undefined.
  */
-export function useBrandingTheme(themeColors: ThemeColors | null | undefined, primaryColor?: string | null) {
+export function useBrandingTheme(themeColors: ThemeColors | null | undefined) {
 	useEffect(() => {
 		const root = document.documentElement;
-		const colors = resolveThemeColors(themeColors ?? null, primaryColor);
+		const colors = resolveThemeColors(themeColors ?? null);
 		const style = document.createElement("style");
 		style.dataset.brandingTheme = "true";
 		style.textContent = (["light", "dark"] as const)
@@ -28,5 +28,5 @@ export function useBrandingTheme(themeColors: ThemeColors | null | undefined, pr
 				new CustomEvent<ThemeColors>("branding-theme-change", { detail: resolveThemeColors(null) }),
 			);
 		};
-	}, [primaryColor, themeColors]);
+	}, [themeColors]);
 }

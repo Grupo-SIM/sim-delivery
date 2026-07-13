@@ -10,7 +10,6 @@ model Company {
     /// Branding fields rendered in the store footer and app shell.
     logoUrl     String?
     footerText  String?
-    primaryColor String?
     themeColors Json?
     /// Marketing tracking IDs injected into the store at runtime.
     metaPixelId String?
