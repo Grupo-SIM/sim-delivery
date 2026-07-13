@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { PatternFormat } from "react-number-format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -45,8 +46,12 @@ export function CreateUnitForm() {
 			</Label>
 			<Label className="flex-1">
 				{t("admin.units.create.phone")}
-				<Input
-					onChange={event => setPhone(event.currentTarget.value)}
+				<PatternFormat
+					customInput={Input}
+					format="(##) #####-####"
+					inputMode="numeric"
+					mask="_"
+					onValueChange={({ value: digits }) => setPhone(digits)}
 					placeholder={t("admin.units.create.phonePlaceholder")}
 					value={phone}
 				/>

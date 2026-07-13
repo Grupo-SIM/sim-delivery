@@ -432,6 +432,29 @@
 				"title": "Cardápio da unidade"
 			},
 			"units": {
+				"address": {
+					"action": "Endereço",
+					"cancel": "Cancelar",
+					"cep": "CEP",
+					"cepNotFound": "CEP não encontrado.",
+					"city": "Cidade",
+					"cityPlaceholder": "Ex: São Paulo",
+					"complement": "Complemento",
+					"complementPlaceholder": "Ex: Sala 2",
+					"error": "Não foi possível salvar o endereço.",
+					"neighborhood": "Bairro",
+					"neighborhoodPlaceholder": "Ex: Centro",
+					"number": "Número",
+					"reference": "Referência",
+					"referencePlaceholder": "Ex: Perto da praça",
+					"save": "Salvar endereço",
+					"saving": "Salvando...",
+					"searching": "Buscando CEP...",
+					"state": "UF",
+					"street": "Logradouro",
+					"streetPlaceholder": "Ex: Av. Paulista",
+					"title": "Endereço da unidade"
+				},
 				"columns": {
 					"actions": "",
 					"city": "Cidade",
