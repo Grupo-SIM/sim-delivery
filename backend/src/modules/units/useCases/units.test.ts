@@ -44,7 +44,7 @@ describe("units use-cases", () => {
 	it("CreateUnit attaches the companyId", async () => {
 		const { created, prisma } = prismaWith([]);
 		await new CreateUnit(prisma).execute("cmp_1", { name: "Center" });
-		expect(created[0]).toMatchObject({ companyId: "cmp_1", name: "Center" });
+		expect(created[0]).toMatchObject({ companyId: "cmp_1", name: "Center", slug: "center" });
 	});
 
 	it("ListUnits lists across companies without a company and scopes otherwise", async () => {

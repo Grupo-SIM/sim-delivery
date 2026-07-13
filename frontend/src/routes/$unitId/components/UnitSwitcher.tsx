@@ -26,7 +26,7 @@ export function UnitSwitcher({ unitId, units }: UnitSwitcherProps) {
 						void navigate({ params: { unitId: value }, to: "/$unitId" });
 					}
 				}}
-				options={units.map(unit => ({ label: unit.name, value: unit.id }))}
+				options={units.map(unit => ({ label: unit.name, value: unit.slug }))}
 				value={unitId}
 			/>
 		</div>

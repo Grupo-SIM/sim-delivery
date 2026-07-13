@@ -14,6 +14,7 @@ export const PublicUnitReturn = t.Object({
 	phone: t.Nullable(t.String()),
 	prepTimeMaxMinutes: t.Nullable(t.Integer()),
 	prepTimeMinMinutes: t.Nullable(t.Integer()),
+	slug: t.String(),
 });
 export type PublicUnitReturn = typeof PublicUnitReturn.static;
 

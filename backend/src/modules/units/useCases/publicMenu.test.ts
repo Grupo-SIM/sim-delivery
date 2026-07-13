@@ -34,16 +34,20 @@ interface Assoc {
 			sortOrder: number;
 		}[];
 		popularity: number;
+		slug: string;
 		title: string;
 	};
 	unitId: string;
 }
 
-function prismaWith(unit: { id: string } | null, associations: Assoc[] = []) {
+function prismaWith(unit: { id: string; slug: string } | null, associations: Assoc[] = []) {
 	return {
+		company: {
+			findUnique: async ({ where }: { where: { slug: string } }) => (where.slug === "demo" ? { id: "c1" } : null),
+		},
 		unit: {
-			findUnique: async ({ where }: { where: { id: string } }) =>
-				unit && unit.id === where.id ? unit : null,
+			findUnique: async ({ where }: { where: { companyId_slug: { companyId: string; slug: string } } }) =>
+				unit && where.companyId_slug.companyId === "c1" && unit.slug === where.companyId_slug.slug ? unit : null,
 		},
 		unitProduct: {
 			findMany: async ({ where }: { where: { available: boolean; unitId: string } }) =>
@@ -60,6 +64,7 @@ const product = (id: string, over: Partial<Assoc["product"]> = {}): Assoc["produ
 	imageUrl: "https://x/img.jpg",
 	optionGroups: [],
 	popularity: 0,
+	slug: id,
 	title: id,
 	...over,
 });
@@ -67,11 +72,11 @@ const product = (id: string, over: Partial<Assoc["product"]> = {}): Assoc["produ
 describe("ListPublicMenu", () => {
 	it("returns [] for a missing unit", async () => {
 		const prisma = prismaWith(null);
-		expect(await new ListPublicMenu(prisma).execute("nope")).toEqual([]);
+		expect(await new ListPublicMenu(prisma).execute("demo", "nope")).toEqual([]);
 	});
 
 	it("resolves per-unit price/cashback overrides, base otherwise", async () => {
-		const prisma = prismaWith({ id: "u1" }, [
+		const prisma = prismaWith({ id: "u1", slug: "ipês" }, [
 			{
 				available: true,
 				cashbackPercentOverride: 7,
@@ -93,7 +98,7 @@ describe("ListPublicMenu", () => {
 				unitId: "u1",
 			},
 		]);
-		const result = await new ListPublicMenu(prisma).execute("u1");
+		const result = await new ListPublicMenu(prisma).execute("demo", "ipês");
 		expect(result).toHaveLength(1);
 		expect(result[0].items).toEqual([
 			expect.objectContaining({ cashbackPercent: 7, id: "up1", priceCents: 1500 }),
@@ -102,7 +107,7 @@ describe("ListPublicMenu", () => {
 	});
 
 	it("orders sections by category position with the loose group last", async () => {
-		const prisma = prismaWith({ id: "u1" }, [
+		const prisma = prismaWith({ id: "u1", slug: "ipês" }, [
 			{
 				available: true,
 				cashbackPercentOverride: null,
@@ -134,7 +139,7 @@ describe("ListPublicMenu", () => {
 				unitId: "u1",
 			},
 		]);
-		const result = await new ListPublicMenu(prisma).execute("u1");
+		const result = await new ListPublicMenu(prisma).execute("demo", "ipês");
 		expect(result.map(s => s.categoryName)).toEqual(["Salgados", "Bebidas", null]);
 	});
 
@@ -158,7 +163,7 @@ describe("ListPublicMenu", () => {
 			sortOrder: 0,
 		});
 
-		const prisma = prismaWith({ id: "u1" }, [
+		const prisma = prismaWith({ id: "u1", slug: "ipês" }, [
 			{
 				available: true,
 				cashbackPercentOverride: null,
@@ -183,7 +188,7 @@ describe("ListPublicMenu", () => {
 				unitId: "u1",
 			},
 		]);
-		const result = await new ListPublicMenu(prisma).execute("u1");
+		const result = await new ListPublicMenu(prisma).execute("demo", "ipês");
 		const items = result[0].items;
 		// p1: 4800 + cheapest required group delta (200) = 5000
 		expect(items.find(i => i.id === "up1")).toMatchObject({ fromPriceCents: 5000, priceCents: 4800 });

@@ -10,10 +10,11 @@ interface CartBarProps {
 	minOrderCents: number;
 	sections: MenuSection[];
 	unitId: string;
+	unitSlug: string;
 }
 
 /** Sticky bottom bar summarizing the current unit's cart; opens the cart modal. */
-export function CartBar({ deliveryFee, minOrderCents, sections, unitId }: CartBarProps) {
+export function CartBar({ deliveryFee, minOrderCents, sections, unitId, unitSlug }: CartBarProps) {
 	const { t } = useTranslation();
 	const [open, setOpen] = useState(false);
 	const cartUnitId = useCartStore(state => state.unitId);
@@ -50,6 +51,7 @@ export function CartBar({ deliveryFee, minOrderCents, sections, unitId }: CartBa
 				open={open}
 				sections={sections}
 				unitId={unitId}
+				unitSlug={unitSlug}
 			/>
 		</>
 	);

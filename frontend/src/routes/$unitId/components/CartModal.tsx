@@ -14,9 +14,10 @@ interface CartModalProps {
 	open: boolean;
 	sections: MenuSection[];
 	unitId: string;
+	unitSlug: string;
 }
 
-export function CartModal({ deliveryFee, minOrderCents, onClose, open, sections, unitId }: CartModalProps) {
+export function CartModal({ deliveryFee, minOrderCents, onClose, open, sections, unitId, unitSlug }: CartModalProps) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const items = useCartStore(state => state.items);
@@ -70,7 +71,7 @@ export function CartModal({ deliveryFee, minOrderCents, onClose, open, sections,
 						disabled={belowMin}
 						onClick={() => {
 							onClose();
-							void navigate({ params: { unitId }, to: "/$unitId/checkout" });
+							void navigate({ params: { unitId: unitSlug }, to: "/$unitId/checkout" });
 						}}
 						type="button"
 					>

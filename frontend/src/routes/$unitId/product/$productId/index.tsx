@@ -7,7 +7,8 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
-import { useGetPublicUnitsByUnitIdMenu } from "@/lib/api";
+import { useGetPublicUnits, useGetPublicUnitsByUnitSlugMenu } from "@/lib/api";
+import { slug } from "@/lib/variant";
 import type { SelectedOption } from "@/stores";
 import { useCartStore } from "@/stores";
 import { money } from "../../components/types";
@@ -16,12 +17,14 @@ import { AddToCartModal, OptionGroupBlock, PopularOptionsStrip } from "./compone
 
 function ProductPage() {
 	const { t } = useTranslation();
-	const { productId, unitId } = Route.useParams();
+	const { productId: productSlug, unitId: unitSlug } = Route.useParams();
 	const navigate = useNavigate();
 	const addItem = useCartStore(s => s.addItem);
-	const menu = useGetPublicUnitsByUnitIdMenu(unitId);
+	const { data: units } = useGetPublicUnits({ slug });
+	const unit = units?.find(item => item.slug === unitSlug);
+	const menu = useGetPublicUnitsByUnitSlugMenu(unitSlug, { slug });
 
-	const item = menu.data?.flatMap(s => s.items).find(i => i.productId === productId);
+	const item = menu.data?.flatMap(s => s.items).find(i => i.productSlug === productSlug);
 
 	const [query, setQuery] = useState("");
 	const [localQuery, setLocalQuery] = useDebouncedInput(query, setQuery);
@@ -124,7 +127,7 @@ function ProductPage() {
 	function commitAdd(quantity: number, note: string) {
 		if (!item) return;
 		addItem(
-			unitId,
+			unit?.id ?? "",
 			{
 				id: item.id,
 				imageUrl: item.imageUrl,
@@ -141,13 +144,13 @@ function ProductPage() {
 	function handleConfirmAndStay(quantity: number, note: string) {
 		commitAdd(quantity, note);
 		setModalOpen(false);
-		void navigate({ params: { unitId }, to: "/$unitId" });
+		void navigate({ params: { unitId: unitSlug }, to: "/$unitId" });
 	}
 
 	function handleConfirmAndCheckout(quantity: number, note: string) {
 		commitAdd(quantity, note);
 		setModalOpen(false);
-		void navigate({ params: { unitId }, to: "/$unitId/checkout" });
+		void navigate({ params: { unitId: unitSlug }, to: "/$unitId/checkout" });
 	}
 
 	if (menu.isPending) {
@@ -164,7 +167,7 @@ function ProductPage() {
 		return (
 			<Container className="space-y-4 py-8">
 				<ErrorState title={t("store.product.notFound")} />
-				<Link className="text-primary text-sm" params={{ unitId }} to="/$unitId">
+				<Link className="text-primary text-sm" params={{ unitId: unitSlug }} to="/$unitId">
 					← {t("store.checkout.back")}
 				</Link>
 			</Container>
@@ -176,7 +179,7 @@ function ProductPage() {
 	return (
 		<>
 			<Container className="space-y-4 pt-6 pb-32">
-				<Link className="text-primary text-sm" params={{ unitId }} to="/$unitId">
+				<Link className="text-primary text-sm" params={{ unitId: unitSlug }} to="/$unitId">
 					← {t("store.checkout.back")}
 				</Link>
 

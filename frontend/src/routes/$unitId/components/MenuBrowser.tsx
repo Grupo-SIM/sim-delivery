@@ -12,9 +12,10 @@ import type { MenuSection } from "./types";
 interface MenuBrowserProps {
 	sections: MenuSection[];
 	unitId: string;
+	unitSlug: string;
 }
 
-export function MenuBrowser({ sections, unitId }: MenuBrowserProps) {
+export function MenuBrowser({ sections, unitId, unitSlug }: MenuBrowserProps) {
 	const { t } = useTranslation();
 	const [search, setSearch] = useState("");
 	const [localSearch, setLocalSearch] = useDebouncedInput(search, setSearch);
@@ -39,7 +40,7 @@ export function MenuBrowser({ sections, unitId }: MenuBrowserProps) {
 				value={localSearch}
 			/>
 
-			{!query && <TopPicksCarousel sections={sections} unitId={unitId} />}
+			{!query && <TopPicksCarousel sections={sections} unitId={unitId} unitSlug={unitSlug} />}
 
 			{filtered.length === 0 ? (
 				<EmptyState title={query ? t("store.menu.noResults") : t("store.menu.empty")} />
@@ -51,7 +52,7 @@ export function MenuBrowser({ sections, unitId }: MenuBrowserProps) {
 							<CategoryNav sections={filtered} />
 						</div>
 						{filtered.map(section => (
-							<MenuSectionBlock key={section.categoryId ?? "loose"} section={section} unitId={unitId} />
+							<MenuSectionBlock key={section.categoryId ?? "loose"} section={section} unitId={unitId} unitSlug={unitSlug} />
 						))}
 					</div>
 				</div>

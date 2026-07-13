@@ -10,14 +10,14 @@ type Channel = "email" | "sms" | "whatsapp";
 type Step = "form" | "sms-code" | "email-sent";
 
 interface IdentifyFormProps {
-	unitId: string;
+	unitSlug: string;
 }
 
 function toE164(digits: string) {
 	return `+55${digits}`;
 }
 
-export function IdentifyForm({ unitId }: IdentifyFormProps) {
+export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 	const { t } = useTranslation();
 	const [channel, setChannel] = useState<Channel>("sms");
 	const [step, setStep] = useState<Step>("form");
@@ -53,7 +53,7 @@ export function IdentifyForm({ unitId }: IdentifyFormProps) {
 	async function requestMagicLink() {
 		setError(null);
 		setLoading(true);
-		const { error: caught } = await authClient.signIn.magicLink({ email, metadata: { unitId } });
+		const { error: caught } = await authClient.signIn.magicLink({ email, metadata: { unitId: unitSlug } });
 		setLoading(false);
 		if (caught) {
 			setError(t("store.checkout.identify.errors.send"));

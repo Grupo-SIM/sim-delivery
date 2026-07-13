@@ -8,12 +8,13 @@ import { type MenuItem, type MenuSection, money } from "./types";
 interface TopPicksCarouselProps {
 	sections: MenuSection[];
 	unitId: string;
+	unitSlug: string;
 }
 
 const MAX_PICKS = 10;
 
 /** "Os mais pedidos" strip: featuredRank items first (asc), then by popularity (desc). */
-export function TopPicksCarousel({ sections, unitId }: TopPicksCarouselProps) {
+export function TopPicksCarousel({ sections, unitId, unitSlug }: TopPicksCarouselProps) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const addItem = useCartStore(s => s.addItem);
@@ -45,7 +46,7 @@ export function TopPicksCarousel({ sections, unitId }: TopPicksCarouselProps) {
 	function handleClick(item: MenuItem) {
 		if (item.optionGroups.length > 0) {
 			void navigate({
-				params: { productId: item.productId, unitId },
+				params: { productId: item.productSlug, unitId: unitSlug },
 				to: "/$unitId/product/$productId",
 			});
 		} else {

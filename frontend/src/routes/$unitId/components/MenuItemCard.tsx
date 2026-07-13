@@ -9,9 +9,10 @@ import { type MenuItem, money } from "./types";
 interface MenuItemCardProps {
 	item: MenuItem;
 	unitId: string;
+	unitSlug: string;
 }
 
-export function MenuItemCard({ item, unitId }: MenuItemCardProps) {
+export function MenuItemCard({ item, unitId, unitSlug }: MenuItemCardProps) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const addItem = useCartStore(state => state.addItem);
@@ -23,7 +24,7 @@ export function MenuItemCard({ item, unitId }: MenuItemCardProps) {
 
 	function handleAdd() {
 		if (hasGroups) {
-			void navigate({ params: { productId: item.productId, unitId }, to: "/$unitId/product/$productId" });
+			void navigate({ params: { productId: item.productSlug, unitId: unitSlug }, to: "/$unitId/product/$productId" });
 		} else {
 			addItem(unitId, {
 				id: item.id,

@@ -33,7 +33,7 @@ type Step = "identify" | "profile" | "address" | "review" | "payment";
 function CheckoutPage() {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
-	const { unitId } = Route.useParams();
+	const { unitId: unitSlug } = Route.useParams();
 	const { isAuthenticated: identified, user } = useAuthStore(state => ({
 		isAuthenticated: state.isAuthenticated,
 		user: state.user,
@@ -46,7 +46,8 @@ function CheckoutPage() {
 	const getMethod = useDeliveryMethodStore(state => state.getMethod);
 	const setStoredMethod = useDeliveryMethodStore(state => state.setMethod);
 	const { data: units } = useQuery(getPublicUnitsQueryOptions({ slug: slug ?? "" }));
-	const unit = units?.find(u => u.id === unitId);
+	const unit = units?.find(u => u.slug === unitSlug);
+	const unitId = unit?.id ?? "";
 	const availableMethods = unit?.deliveryMethods ?? ["delivery"];
 	const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>(() =>
 		getMethod(unitId, availableMethods),
@@ -111,6 +112,8 @@ function CheckoutPage() {
 						addressLine: address.addressLine,
 						city: address.city || undefined,
 						complement: address.complement || undefined,
+						latitude: address.latitude,
+						longitude: address.longitude,
 						neighborhood: address.neighborhood || undefined,
 						number: address.number,
 						reference: address.reference || undefined,
@@ -167,7 +170,7 @@ function CheckoutPage() {
 	function handlePaymentConfirmed() {
 		clearCart();
 		void navigate({
-			params: { unitId },
+			params: { unitId: unitSlug },
 			search: placedOrderId ? { orderId: placedOrderId } : {},
 			to: "/$unitId/checkout/thank-you",
 		});
@@ -178,7 +181,7 @@ function CheckoutPage() {
 	return (
 		<Container className="max-w-lg space-y-6 py-8">
 			{step !== "payment" && (
-				<Link className="text-primary text-sm" params={{ unitId }} to="/$unitId">
+				<Link className="text-primary text-sm" params={{ unitId: unitSlug }} to="/$unitId">
 					← {t("store.checkout.back")}
 				</Link>
 			)}
@@ -189,7 +192,7 @@ function CheckoutPage() {
 						subtitle={t("store.checkout.identify.subtitle")}
 						title={t("store.checkout.identify.title")}
 					/>
-					<IdentifyForm unitId={unitId} />
+					<IdentifyForm unitSlug={unitSlug} />
 				</>
 			)}
 

@@ -4,6 +4,7 @@ model Unit {
     id           String   @id @default(cuid())
     companyId    String
     name         String
+    slug         String
     phone        String?
     // Address (deduced from CEP on the client app; see docs/08).
     zipCode      String?
@@ -46,5 +47,6 @@ model Unit {
     orders        Order[]
 
     @@index([companyId])
+    @@unique([companyId, slug])
     @@map("unit")
 }

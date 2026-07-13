@@ -6,7 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { useGetPublicUnits, useGetPublicUnitsByUnitIdMenu } from "@/lib/api";
+import { useGetPublicUnits, useGetPublicUnitsByUnitSlugMenu } from "@/lib/api";
 import { slug } from "@/lib/variant";
 import { useDeliveryMethodStore } from "@/stores";
 import {
@@ -22,10 +22,10 @@ import { money } from "./components/types";
 
 function UnitStorePage() {
 	const { t } = useTranslation();
-	const { unitId } = Route.useParams();
+	const { unitId: unitSlug } = Route.useParams();
 	const { data: units } = useGetPublicUnits({ slug });
-	const menu = useGetPublicUnitsByUnitIdMenu(unitId);
-	const unit = units?.find(item => item.id === unitId);
+	const menu = useGetPublicUnitsByUnitSlugMenu(unitSlug, { slug });
+	const unit = units?.find(item => item.slug === unitSlug);
 	const [profileOpen, setProfileOpen] = useState(false);
 	const getMethod = useDeliveryMethodStore(state => state.getMethod);
 
@@ -46,7 +46,7 @@ function UnitStorePage() {
 	const prepMin = unit.prepTimeMinMinutes != null ? Number(unit.prepTimeMinMinutes) : null;
 	const prepMax = unit.prepTimeMaxMinutes != null ? Number(unit.prepTimeMaxMinutes) : null;
 	const hasDelivery = unit.deliveryMethods.includes("delivery");
-	const deliveryMethod = getMethod(unitId, unit.deliveryMethods);
+	const deliveryMethod = getMethod(unit.id, unit.deliveryMethods);
 
 	return (
 		<Container className="space-y-4 py-8">
@@ -67,11 +67,11 @@ function UnitStorePage() {
 						{unit.isOpenNow ? t("store.status.open") : t("store.status.closed")}
 					</Badge>
 				</div>
-				{units && <UnitSwitcher unitId={unitId} units={units} />}
+				{units && <UnitSwitcher unitId={unitSlug} units={units} />}
 			</div>
 
 			<div className="flex flex-wrap items-center gap-2">
-				<DeliveryMethodSelector deliveryMethods={unit.deliveryMethods} unitId={unitId} />
+				<DeliveryMethodSelector deliveryMethods={unit.deliveryMethods} unitId={unit.id} />
 				{prepMin != null && prepMax != null && (
 					<InfoPill>
 						⏱ {prepMin}–{prepMax} min
@@ -101,10 +101,10 @@ function UnitStorePage() {
 			) : menu.isError ? (
 				<ErrorState title={t("store.menu.loadError")} />
 			) : (
-				<MenuBrowser sections={menu.data} unitId={unitId} />
+				<MenuBrowser sections={menu.data} unitId={unit.id} unitSlug={unitSlug} />
 			)}
 
-			<CartBar deliveryFee={fee} minOrderCents={minOrder} sections={menu.data ?? []} unitId={unitId} />
+			<CartBar deliveryFee={fee} minOrderCents={minOrder} sections={menu.data ?? []} unitId={unit.id} unitSlug={unitSlug} />
 			<StoreFooter />
 
 			<StoreInfoModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} unit={unit} />

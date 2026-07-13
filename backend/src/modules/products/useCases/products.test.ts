@@ -58,7 +58,12 @@ describe("products use-cases", () => {
 			imageUrl: "https://x.test/a.png",
 			title: "Cheese bread",
 		});
-		expect(created[0]).toMatchObject({ basePriceCents: 1200, companyId: "cmp_1", title: "Cheese bread" });
+		expect(created[0]).toMatchObject({
+			basePriceCents: 1200,
+			companyId: "cmp_1",
+			slug: "cheese-bread",
+			title: "Cheese bread",
+		});
 	});
 
 	it("ListProducts lists across companies without a company and scopes otherwise", async () => {

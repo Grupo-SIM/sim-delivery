@@ -4,6 +4,7 @@ model Product {
     id                      String   @id @default(cuid())
     companyId               String
     title                   String
+    slug                    String
     imageUrl                String
     description             String   @default("")
     /// Base price in cents; unit associations may override it.
@@ -20,5 +21,6 @@ model Product {
     unitProducts UnitProduct[]
 
     @@index([companyId])
+    @@unique([companyId, slug])
     @@map("product")
 }

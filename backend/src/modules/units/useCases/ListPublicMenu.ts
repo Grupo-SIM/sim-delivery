@@ -9,8 +9,15 @@ import type { PublicMenuReturn, PublicMenuSectionReturn } from "../dtos";
 export class ListPublicMenu {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(unitId: string): Promise<PublicMenuReturn> {
-		const unit = await this.prisma.unit.findUnique({ where: { id: unitId } });
+	async execute(companySlug: string | undefined, unitSlug: string): Promise<PublicMenuReturn> {
+		if (!companySlug) {
+			return [];
+		}
+
+		const company = await this.prisma.company.findUnique({ where: { slug: companySlug } });
+		const unit = company
+			? await this.prisma.unit.findUnique({ where: { companyId_slug: { companyId: company.id, slug: unitSlug } } })
+			: null;
 		if (!unit) {
 			return [];
 		}
@@ -33,7 +40,7 @@ export class ListPublicMenu {
 				},
 			},
 			orderBy: { product: { title: "asc" } },
-			where: { available: true, unitId },
+			where: { available: true, unitId: unit.id },
 		});
 
 		// Preserve category order (position asc) with the loose group last.
@@ -91,6 +98,7 @@ export class ListPublicMenu {
 				popularity: product.popularity,
 				priceCents: basePriceCents,
 				productId: product.id,
+				productSlug: product.slug,
 				title: product.title,
 			});
 		}

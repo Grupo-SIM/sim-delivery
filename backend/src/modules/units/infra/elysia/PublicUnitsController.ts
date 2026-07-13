@@ -30,10 +30,11 @@ export const PublicUnitsController = new Elysia({
 				response: PublicUnitListReturn,
 			})
 			.get(
-				"/units/:unitId/menu",
-				async ({ listPublicMenu, params }) => listPublicMenu.execute(params.unitId),
+				"/units/:unitSlug/menu",
+				async ({ listPublicMenu, params, query }) => listPublicMenu.execute(query.slug, params.unitSlug),
 				{
-					params: t.Object({ unitId: t.String() }),
+					params: t.Object({ unitSlug: t.String() }),
+					query: t.Object({ slug: t.Optional(t.String()) }),
 					response: PublicMenuReturn,
 				},
 			)

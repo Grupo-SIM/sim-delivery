@@ -37,7 +37,7 @@ export class SimulateFreight {
 		if (zone) {
 			return {
 				deliveryFee: zone.fee,
-				distanceKm,
+				distanceKm: distanceKm ?? undefined,
 				etaMaxMinutes: zone.etaMaxMinutes ?? undefined,
 				etaMinMinutes: zone.etaMinMinutes ?? undefined,
 			};

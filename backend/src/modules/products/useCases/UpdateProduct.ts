@@ -1,5 +1,6 @@
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
+import { slugify } from "@/shared/slug";
 import type { ProductReturn, UpdateProductBody } from "../dtos";
 import { ProductErrors } from "../errors";
 
@@ -18,6 +19,9 @@ export class UpdateProduct {
 			throw new DomainError(ProductErrors.PRODUCT_NOT_FOUND);
 		}
 
-		return this.prisma.product.update({ data, where: { id: productId } });
+		return this.prisma.product.update({
+			data: { ...data, ...(data.title && { slug: slugify(data.title, "produto") }) },
+			where: { id: productId },
+		});
 	}
 }

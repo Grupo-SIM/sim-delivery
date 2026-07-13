@@ -1,5 +1,6 @@
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
+import { slugify } from "@/shared/slug";
 import type { CreateProductBody, ProductReturn } from "../dtos";
 import { ProductErrors } from "../errors";
 
@@ -11,6 +12,6 @@ export class CreateProduct {
 			throw new DomainError(ProductErrors.NO_COMPANY);
 		}
 
-		return this.prisma.product.create({ data: { ...data, companyId } });
+		return this.prisma.product.create({ data: { ...data, companyId, slug: slugify(data.title, "produto") } });
 	}
 }
