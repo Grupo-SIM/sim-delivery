@@ -1,3 +1,5 @@
+export * from "./DeliveryZoneInput";
+export * from "./DeliveryZoneReturn";
 export * from "./FreightReturn";
 export * from "./PublicMenuReturn";
 export * from "./PublicUnitReturn";

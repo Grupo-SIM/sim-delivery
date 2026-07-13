@@ -13,30 +13,48 @@ afterEach(() => {
 });
 
 describe("LookupCep", () => {
-	it("normalizes a ViaCEP response into address fields", async () => {
+	it("normalizes a Brasil API response with coordinates into address fields", async () => {
 		mockFetch({
-			bairro: "Sé",
-			cep: "01001-000",
-			complemento: "lado ímpar",
-			localidade: "São Paulo",
-			logradouro: "Praça da Sé",
-			uf: "SP",
+			cep: "04038001",
+			city: "São Paulo",
+			location: { coordinates: { latitude: "-23.5970665", longitude: "-46.6432640" } },
+			neighborhood: "Vila Clementino",
+			state: "SP",
+			street: "Rua Borges Lagoa",
 		});
 
-		const result = await new LookupCep().execute("01001-000");
+		const result = await new LookupCep().execute("04038-001");
 
 		expect(result).toEqual({
-			addressLine: "Praça da Sé",
+			addressLine: "Rua Borges Lagoa",
 			city: "São Paulo",
-			complement: "lado ímpar",
-			neighborhood: "Sé",
+			complement: "",
+			latitude: -23.5970665,
+			longitude: -46.643264,
+			neighborhood: "Vila Clementino",
 			state: "SP",
-			zipCode: "01001000",
+			zipCode: "04038001",
 		});
 	});
 
+	it("returns null coordinates when Brasil API has no geolocation for the CEP", async () => {
+		mockFetch({
+			cep: "01001000",
+			city: "São Paulo",
+			location: { coordinates: {} },
+			neighborhood: "Sé",
+			state: "SP",
+			street: "Praça da Sé",
+		});
+
+		const result = await new LookupCep().execute("01001000");
+
+		expect(result.latitude).toBeNull();
+		expect(result.longitude).toBeNull();
+	});
+
 	it("defaults missing optional fields to empty strings", async () => {
-		mockFetch({ cep: "12345-678", localidade: "Testville", uf: "TS" });
+		mockFetch({ cep: "12345678", city: "Testville", state: "TS" });
 
 		const result = await new LookupCep().execute("12345678");
 
@@ -49,8 +67,8 @@ describe("LookupCep", () => {
 		await expect(new LookupCep().execute("123")).rejects.toThrow(DomainError);
 	});
 
-	it("rejects an unknown CEP (ViaCEP `erro`)", async () => {
-		mockFetch({ erro: true });
+	it("rejects an unknown CEP (Brasil API 404)", async () => {
+		mockFetch({ message: "not found" }, false);
 
 		await expect(new LookupCep().execute("00000000")).rejects.toThrow("CEP_NOT_FOUND");
 	});

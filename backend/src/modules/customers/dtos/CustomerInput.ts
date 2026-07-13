@@ -4,6 +4,8 @@ export const AddressInput = t.Object({
 	addressLine: t.String({ minLength: 1 }),
 	city: t.Optional(t.String()),
 	complement: t.Optional(t.String()),
+	latitude: t.Optional(t.Nullable(t.Number())),
+	longitude: t.Optional(t.Nullable(t.Number())),
 	neighborhood: t.Optional(t.String()),
 	number: t.String({ minLength: 1 }),
 	reference: t.Optional(t.String()),

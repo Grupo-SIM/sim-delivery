@@ -35,6 +35,8 @@ export class UpsertCustomer {
 			addressLine: address.addressLine,
 			city: address.city ?? null,
 			complement: address.complement ?? null,
+			latitude: address.latitude ?? null,
+			longitude: address.longitude ?? null,
 			neighborhood: address.neighborhood ?? null,
 			number: address.number,
 			reference: address.reference ?? null,

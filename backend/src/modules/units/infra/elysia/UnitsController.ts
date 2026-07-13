@@ -3,13 +3,24 @@ import { CompanyScopeGuard } from "@/modules/users/guards";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
 import {
 	CreateUnitBody,
+	DeliveryZoneListReturn,
+	SetDeliveryZonesBody,
 	SetUnitHoursBody,
 	UnitHoursListReturn,
 	UnitReturn,
 	UnitWithStatusListReturn,
 	UpdateUnitBody,
 } from "../../dtos";
-import { CreateUnit, DeleteUnit, GetUnitHours, ListUnits, SetUnitHours, UpdateUnit } from "../../useCases";
+import {
+	CreateUnit,
+	DeleteUnit,
+	GetUnitHours,
+	ListDeliveryZones,
+	ListUnits,
+	SetDeliveryZones,
+	SetUnitHours,
+	UpdateUnit,
+} from "../../useCases";
 
 export const UnitsController = new Elysia({
 	detail: {
@@ -24,8 +35,10 @@ export const UnitsController = new Elysia({
 				createUnit: new CreateUnit(prisma),
 				deleteUnit: new DeleteUnit(prisma),
 				getUnitHours: new GetUnitHours(prisma),
+				listDeliveryZones: new ListDeliveryZones(prisma),
 				listUnits: new ListUnits(prisma),
 				prisma,
+				setDeliveryZones: new SetDeliveryZones(prisma),
 				setUnitHours: new SetUnitHours(prisma),
 				updateUnit: new UpdateUnit(prisma),
 			}))
@@ -78,6 +91,26 @@ export const UnitsController = new Elysia({
 					return setUnitHours.execute(scope.companyId, params.unitId, body.hours);
 				},
 				{ body: SetUnitHoursBody, response: UnitHoursListReturn },
+			)
+			.get(
+				"/:unitId/delivery-zones",
+				async ({ listDeliveryZones, params, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "units", "read");
+
+					return listDeliveryZones.execute(scope.companyId, params.unitId);
+				},
+				{ response: DeliveryZoneListReturn },
+			)
+			.put(
+				"/:unitId/delivery-zones",
+				async ({ body, params, request, setDeliveryZones }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "units", "update");
+
+					return setDeliveryZones.execute(scope.companyId, params.unitId, body.zones);
+				},
+				{ body: SetDeliveryZonesBody, response: DeliveryZoneListReturn },
 			)
 			.delete(
 				"/:unitId",
