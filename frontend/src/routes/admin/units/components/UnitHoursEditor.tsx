@@ -112,9 +112,18 @@ export function UnitHoursEditor({ onClose, unitId }: UnitHoursEditorProps) {
 				<Skeleton className="h-64 w-full" />
 			) : (
 				<div className="space-y-3">
+					<div className="grid grid-cols-[6rem_1fr_7rem_1rem_7rem] items-center gap-3">
+						<span />
+						<span />
+						<span className="text-center text-muted-foreground text-xs">{t("admin.units.hours.opensAt")}</span>
+						<span />
+						<span className="text-center text-muted-foreground text-xs">
+							{t("admin.units.hours.closesAt")}
+						</span>
+					</div>
 					{days.map((day, index) => (
-						<div className="flex items-center gap-3" key={WEEKDAYS[index]}>
-							<span className="w-24 text-sm">{weekdayLabels[index]}</span>
+						<div className="grid grid-cols-[6rem_1fr_7rem_1rem_7rem] items-center gap-3" key={WEEKDAYS[index]}>
+							<span className="text-sm">{weekdayLabels[index]}</span>
 							<label className="flex items-center gap-1 text-muted-foreground text-xs">
 								<input
 									checked={day.closed}
@@ -133,7 +142,7 @@ export function UnitHoursEditor({ onClose, unitId }: UnitHoursEditorProps) {
 								onValueChange={({ value }) => update(index, { opensAt: value })}
 								value={day.opensAt}
 							/>
-							<span className="text-muted-foreground">—</span>
+							<span className="text-center text-muted-foreground">—</span>
 							<PatternFormat
 								className="w-28"
 								customInput={Input}
