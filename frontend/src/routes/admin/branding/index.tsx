@@ -9,7 +9,6 @@ import { FormSectionHeading } from "@/components/ui/FormSectionHeading";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
-import { useBrandingTheme } from "@/hooks/use-branding-theme";
 import { getBrandingQueryKey, useGetBranding, usePutBranding } from "@/lib/api";
 import { defaultThemeColors, resolveThemeColors, type ThemeColors } from "@/lib/theme-colors";
 import { showToast } from "@/stores";
@@ -38,8 +37,6 @@ function BrandingPage() {
 			setGtmId(branding.gtmId ?? "");
 		}
 	}, [branding]);
-
-	useBrandingTheme(themeColors);
 
 	function setThemeColor(mode: keyof ThemeColors, name: keyof ThemeColors["light"], value: string) {
 		setThemeColors(current => ({ ...current, [mode]: { ...current[mode], [name]: value } }));
