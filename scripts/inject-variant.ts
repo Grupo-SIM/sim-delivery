@@ -2,8 +2,11 @@
  * Injects a whitelabel variant into the frontend build by:
  * 1. Writing VITE_COMPANY_SLUG (and optionally VITE_API_URL/VITE_APP_URL) to
  *    frontend/.env.local
- * 2. Copying frontend/variants/<key>/ assets into frontend/public/ (if present)
+ * 2. Copying frontend/variants/<key>/ assets into frontend/public/ (if present) —
+ *    this is what bakes in favicon.svg/apple-touch-icon.png for the web build
  * 3. Patching src-tauri/tauri.conf.json with the variant's productName and identifier
+ * 4. Regenerating src-tauri/icons/ (Android/iOS/desktop app-store icons) from the
+ *    variant's icon.png, since store icons are bundled at build time, not fetched at runtime
  *
  * Usage:  bun scripts/inject-variant.ts --slug=demo-acai
  *         bun scripts/inject-variant.ts --slug=default
@@ -85,6 +88,25 @@ if (existsSync(tauriConfPath)) {
 	}
 	await writeFile(tauriConfPath, `${JSON.stringify(conf, null, "\t")}\n`);
 	console.log("  ✓ Patched src-tauri/tauri.conf.json");
+}
+
+// --- 4. Generate Tauri app-store icons (Android/iOS/desktop) from the variant's icon ---
+const iconSource = join(assetsDir, "icon.png");
+if (existsSync(iconSource) && existsSync(tauriConfPath)) {
+	console.log(`  → Generating src-tauri/icons/ from variants/${slug}/icon.png...`);
+	const proc = Bun.spawnSync(["bunx", "@tauri-apps/cli", "icon", iconSource], {
+		cwd: FRONTEND,
+		stderr: "inherit",
+		stdout: "inherit",
+	});
+	if (proc.exitCode === 0) {
+		console.log("  ✓ Generated src-tauri/icons/");
+	} else {
+		console.error("  ✗ Failed to generate src-tauri/icons/ (tauri icon exited non-zero)");
+		process.exit(1);
+	}
+} else {
+	console.log(`  — No variants/${slug}/icon.png — skipping app-store icon generation`);
 }
 
 console.log(`Done — ${variant.appName} variant active.`);

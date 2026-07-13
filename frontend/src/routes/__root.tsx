@@ -1,4 +1,5 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { useBrandingFavicon } from "@/hooks/use-branding-favicon";
 import { useBrandingTheme } from "@/hooks/use-branding-theme";
 import { useTracking } from "@/hooks/use-tracking";
 import { useSyncSession } from "@/hooks/useSyncSession";
@@ -16,6 +17,7 @@ function RootComponent() {
 		metaPixelId: branding?.metaPixelId,
 	});
 	useBrandingTheme(branding?.themeColors, branding?.primaryColor);
+	useBrandingFavicon(branding?.logoUrl);
 
 	return (
 		<div className="min-h-screen bg-background text-foreground">

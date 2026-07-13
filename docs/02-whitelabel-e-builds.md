@@ -55,6 +55,14 @@ Cada variante tem um diretório de assets (ex.: `frontend/variants/<key>/` com
 antes de `tauri build`. Alternativa (roadmap): baixar de um bucket por `key` para não
 inchar o repositório — **ponto em aberto** (ver abaixo).
 
+Favicon/ícone de app (build-time, `scripts/inject-variant.ts`):
+- `favicon.svg` / `apple-touch-icon.png`: copiados para `frontend/public/` — usados
+  pelo `index.html` como favicon padrão da web (fallback antes do branding runtime
+  carregar, e único favicon possível em builds sem JS/branding dinâmico).
+- `icon.png`: fonte para `bunx @tauri-apps/cli icon`, que regenera
+  `src-tauri/icons/` (ícones Android/iOS/desktop) — obrigatório para builds de loja de
+  app, já que o ícone da loja é um asset estático da build, não pode vir de runtime.
+
 ## Tema
 
 - Tokens de cor/tipografia da variante alimentam o tema do frontend (CSS vars /
@@ -63,6 +71,11 @@ inchar o repositório — **ponto em aberto** (ver abaixo).
 - Recomendado: **cores essenciais em build time** (splash/ícone precisam ser estáticos)
   + **branding editável do footer/loja em runtime** (o dono muda sem rebuild — ver
   [10-painel-do-dono.md](10-painel-do-dono.md)).
+- Favicon segue a mesma regra dupla: `useBrandingFavicon` (frontend/src/hooks/use-branding-favicon.ts)
+  troca o `<link rel="icon">` para `branding.logoUrl` assim que o branding carrega em
+  runtime (dono muda sem rebuild, só afeta a aba do navegador); o `favicon.svg`/
+  `apple-touch-icon.png` da variante (ver acima) é o valor estático usado antes disso
+  carregar e nas builds de app/loja, onde não há como trocar o ícone em runtime.
 
 ## Injeção no build (fluxo)
 
