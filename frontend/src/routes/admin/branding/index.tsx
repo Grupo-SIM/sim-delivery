@@ -79,7 +79,7 @@ function BrandingPage() {
 	}
 
 	return (
-		<Container className="max-w-6xl space-y-6 py-8">
+		<Container className="max-w-4xl space-y-6 py-8">
 			<SectionHeading subtitle={t("admin.branding.subtitle")} title={t("admin.branding.title")} />
 
 			{isPending ? (
