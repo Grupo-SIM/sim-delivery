@@ -9,8 +9,9 @@
 				window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light",
 			);
 		</script>
-		<!-- favicon.svg/apple-touch-icon.png are baked per whitelabel variant by scripts/inject-variant.ts -->
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<!-- Build script downloads branding assets and writes this stylesheet before Vite builds. -->
+		<link rel="stylesheet" href="/branding.css" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<meta
 			name="viewport"

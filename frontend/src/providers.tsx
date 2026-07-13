@@ -7,8 +7,8 @@ import { Client as Styletron } from "styletron-engine-monolithic";
 import { Provider as StyletronProvider } from "styletron-react";
 import { ConfirmDialog } from "./components/ui/ConfirmDialog";
 import { getAppTheme, type ThemeMode } from "./lib/baseui-theme";
+import { buildBranding } from "./lib/build-branding";
 import { reactQueryClient } from "./lib/tanstack";
-import { defaultThemeColors, type ThemeColors } from "./lib/theme-colors";
 
 const styletron = new Styletron();
 
@@ -34,7 +34,7 @@ function getDocumentThemeMode(): ThemeMode {
 
 export function Providers({ children }: ProvidersProps) {
 	const [themeMode, setThemeMode] = useState<ThemeMode>(getDocumentThemeMode);
-	const [themeColors, setThemeColors] = useState<ThemeColors>(defaultThemeColors);
+	const [themeColors] = useState(buildBranding.themeColors);
 
 	useEffect(() => {
 		const syncThemeMode = () => {
@@ -60,12 +60,6 @@ export function Providers({ children }: ProvidersProps) {
 			observer.disconnect();
 			mediaQuery.removeEventListener("change", applySystemPreference);
 		};
-	}, []);
-
-	useEffect(() => {
-		const syncThemeColors = (event: Event) => setThemeColors((event as CustomEvent<ThemeColors>).detail);
-		window.addEventListener("branding-theme-change", syncThemeColors);
-		return () => window.removeEventListener("branding-theme-change", syncThemeColors);
 	}, []);
 
 	return (

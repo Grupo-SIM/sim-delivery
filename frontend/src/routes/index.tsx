@@ -3,24 +3,26 @@ import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { useGetBranding, useGetPublicUnits } from "@/lib/api";
+import { useGetPublicUnits } from "@/lib/api";
+import { buildBranding } from "@/lib/build-branding";
 import { slug } from "@/lib/variant";
 import { StorefrontFooter, StorefrontHeader, UnitCard } from "./components/storefront";
 
 function StorePage() {
 	const { t } = useTranslation();
 	const { data: units, isError, isPending } = useGetPublicUnits({ slug });
-	const { data: branding } = useGetBranding({ slug });
 
 	return (
 		<div className="flex min-h-screen flex-col">
-			<StorefrontHeader branding={branding} />
+			<StorefrontHeader branding={buildBranding} />
 			<main className="flex-1">
-					<section className="border-border/70 border-b bg-muted/35">
-						<div className="mx-auto max-w-6xl px-5 py-7 sm:py-9">
-							<p className="font-semibold text-primary text-sm uppercase tracking-[0.2em]">Peça onde estiver</p>
-							<h1 className="mt-2 max-w-3xl font-display text-5xl tracking-wide sm:text-6xl">{t("store.chooseUnit.title")}</h1>
-							<p className="mt-3 max-w-2xl text-muted-foreground text-xl">{t("store.chooseUnit.subtitle")}</p>
+				<section className="border-border/70 border-b bg-muted/35">
+					<div className="mx-auto max-w-6xl px-5 py-7 sm:py-9">
+						<p className="font-semibold text-primary text-sm uppercase tracking-[0.2em]">Peça onde estiver</p>
+						<h1 className="mt-2 max-w-3xl font-display text-5xl tracking-wide sm:text-6xl">
+							{t("store.chooseUnit.title")}
+						</h1>
+						<p className="mt-3 max-w-2xl text-muted-foreground text-xl">{t("store.chooseUnit.subtitle")}</p>
 					</div>
 				</section>
 
@@ -36,12 +38,14 @@ function StorePage() {
 						<EmptyState title={t("store.chooseUnit.empty")} />
 					) : (
 						<div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-							{units.map(unit => <UnitCard key={unit.id} unit={unit} />)}
+							{units.map(unit => (
+								<UnitCard key={unit.id} unit={unit} />
+							))}
 						</div>
 					)}
 				</section>
 			</main>
-			<StorefrontFooter branding={branding} />
+			<StorefrontFooter branding={buildBranding} />
 		</div>
 	);
 }

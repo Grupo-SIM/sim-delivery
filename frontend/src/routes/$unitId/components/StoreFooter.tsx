@@ -1,13 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { useGetBranding } from "@/lib/api";
-import { slug } from "@/lib/variant";
+import { buildBranding } from "@/lib/build-branding";
 
 export function StoreFooter() {
 	const { t } = useTranslation();
-	const { data: branding } = useGetBranding({ slug });
-
-	const text = branding?.footerText;
-	const logoUrl = branding?.logoUrl;
+	const text = buildBranding.footerText;
+	const logoUrl = buildBranding.logoUrl;
 
 	if (!text && !logoUrl) return null;
 
