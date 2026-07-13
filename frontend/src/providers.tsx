@@ -8,6 +8,7 @@ import { Provider as StyletronProvider } from "styletron-react";
 import { ConfirmDialog } from "./components/ui/ConfirmDialog";
 import { getAppTheme, type ThemeMode } from "./lib/baseui-theme";
 import { reactQueryClient } from "./lib/tanstack";
+import { defaultThemeColors, type ThemeColors } from "./lib/theme-colors";
 
 const styletron = new Styletron();
 
@@ -33,6 +34,7 @@ function getDocumentThemeMode(): ThemeMode {
 
 export function Providers({ children }: ProvidersProps) {
 	const [themeMode, setThemeMode] = useState<ThemeMode>(getDocumentThemeMode);
+	const [themeColors, setThemeColors] = useState<ThemeColors>(defaultThemeColors);
 
 	useEffect(() => {
 		const syncThemeMode = () => {
@@ -60,13 +62,19 @@ export function Providers({ children }: ProvidersProps) {
 		};
 	}, []);
 
+	useEffect(() => {
+		const syncThemeColors = (event: Event) => setThemeColors((event as CustomEvent<ThemeColors>).detail);
+		window.addEventListener("branding-theme-change", syncThemeColors);
+		return () => window.removeEventListener("branding-theme-change", syncThemeColors);
+	}, []);
+
 	return (
 		<QueryClientProvider client={reactQueryClient}>
 			<StyletronProvider value={styletron}>
-				<BaseProvider theme={getAppTheme(themeMode)}>
+				<BaseProvider theme={getAppTheme(themeMode, themeColors)}>
 					{children}
 					<ConfirmDialog />
-						<ToastContainer autoClose={4000} position="top-right" theme={themeMode} />
+					<ToastContainer autoClose={4000} position="top-right" theme={themeMode} />
 				</BaseProvider>
 			</StyletronProvider>
 		</QueryClientProvider>

@@ -3,16 +3,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { ColorField } from "@/components/ui/ColorField";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { FormSectionHeading } from "@/components/ui/FormSectionHeading";
-import { Label } from "@/components/ui/label";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
+import { useBrandingTheme } from "@/hooks/use-branding-theme";
 import { getBrandingQueryKey, useGetBranding, usePutBranding } from "@/lib/api";
+import { defaultThemeColors, resolveThemeColors, type ThemeColors } from "@/lib/theme-colors";
 import { showToast } from "@/stores";
+import { ThemeEditor } from "./components";
 
 function BrandingPage() {
 	const { t } = useTranslation();
@@ -21,7 +22,7 @@ function BrandingPage() {
 	const put = usePutBranding();
 
 	const [logoUrl, setLogoUrl] = useState("");
-	const [primaryColor, setPrimaryColor] = useState("");
+	const [themeColors, setThemeColors] = useState<ThemeColors>(defaultThemeColors);
 	const [footerText, setFooterText] = useState("");
 	const [metaPixelId, setMetaPixelId] = useState("");
 	const [ga4Id, setGa4Id] = useState("");
@@ -30,13 +31,29 @@ function BrandingPage() {
 	useEffect(() => {
 		if (branding) {
 			setLogoUrl(branding.logoUrl ?? "");
-			setPrimaryColor(branding.primaryColor ?? "");
+			setThemeColors(resolveThemeColors(branding.themeColors, branding.primaryColor));
 			setFooterText(branding.footerText ?? "");
 			setMetaPixelId(branding.metaPixelId ?? "");
 			setGa4Id(branding.ga4Id ?? "");
 			setGtmId(branding.gtmId ?? "");
 		}
 	}, [branding]);
+
+	useBrandingTheme(themeColors);
+
+	function setThemeColor(mode: keyof ThemeColors, name: keyof ThemeColors["light"], value: string) {
+		setThemeColors(current => ({ ...current, [mode]: { ...current[mode], [name]: value } }));
+	}
+
+	function copyThemeColor(mode: keyof ThemeColors, name: keyof ThemeColors["light"]) {
+		const sourceMode = mode === "light" ? "dark" : "light";
+		setThemeColor(mode, name, themeColors[sourceMode][name]);
+	}
+
+	function copyAllThemeColors(mode: keyof ThemeColors) {
+		const sourceMode = mode === "light" ? "dark" : "light";
+		setThemeColors(current => ({ ...current, [mode]: current[sourceMode] }));
+	}
 
 	function save() {
 		put.mutate(
@@ -47,7 +64,8 @@ function BrandingPage() {
 					gtmId: gtmId.trim() || undefined,
 					logoUrl: logoUrl.trim() || undefined,
 					metaPixelId: metaPixelId.trim() || undefined,
-					primaryColor: primaryColor.trim() || undefined,
+					primaryColor: themeColors.light.primary,
+					themeColors,
 				},
 			},
 			{
@@ -61,7 +79,7 @@ function BrandingPage() {
 	}
 
 	return (
-		<Container className="max-w-lg space-y-6 py-8">
+		<Container className="max-w-6xl space-y-6 py-8">
 			<SectionHeading subtitle={t("admin.branding.subtitle")} title={t("admin.branding.title")} />
 
 			{isPending ? (
@@ -80,18 +98,12 @@ function BrandingPage() {
 					<div className="space-y-4">
 						<FormSectionHeading>{t("admin.branding.sectionAppearance")}</FormSectionHeading>
 
-						<div className="flex justify-between">
-							<div className="space-y-2">
-								<Label>{t("admin.branding.primaryColor")}</Label>
-								<ColorField onChange={setPrimaryColor} value={primaryColor} />
-							</div>
-							<TextField
-								label={t("admin.branding.footerText")}
-								onValueChange={setFooterText}
-								placeholder={t("admin.branding.footerTextPlaceholder")}
-								value={footerText}
-							/>
-						</div>
+						<TextField
+							label={t("admin.branding.footerText")}
+							onValueChange={setFooterText}
+							placeholder={t("admin.branding.footerTextPlaceholder")}
+							value={footerText}
+						/>
 
 						<TextField
 							label={t("admin.branding.logoUrl")}
@@ -108,6 +120,14 @@ function BrandingPage() {
 								<img alt="logo preview" className="h-12 object-contain" src={logoUrl} />
 							</div>
 						)}
+
+						<FormSectionHeading>{t("admin.branding.themeColors")}</FormSectionHeading>
+						<ThemeEditor
+							colors={themeColors}
+							onChange={setThemeColor}
+							onCopyAll={copyAllThemeColors}
+							onCopyColor={copyThemeColor}
+						/>
 					</div>
 
 					<div className="space-y-4">

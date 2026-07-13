@@ -16,7 +16,7 @@ export function StoreFooter({ unitId }: StoreFooterProps) {
 		gtmId: branding?.gtmId,
 		metaPixelId: branding?.metaPixelId,
 	});
-	useBrandingTheme(branding?.primaryColor);
+	useBrandingTheme(branding?.themeColors, branding?.primaryColor);
 
 	const text = branding?.footerText;
 	const logoUrl = branding?.logoUrl;

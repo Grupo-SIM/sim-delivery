@@ -23,6 +23,7 @@ export class GetBranding {
 				logoUrl: null,
 				metaPixelId: null,
 				primaryColor: null,
+				themeColors: null,
 			};
 		}
 
@@ -34,6 +35,7 @@ export class GetBranding {
 				logoUrl: true,
 				metaPixelId: true,
 				primaryColor: true,
+				themeColors: true,
 			},
 			where: { id: resolvedCompanyId },
 		});
@@ -45,6 +47,7 @@ export class GetBranding {
 			logoUrl: company?.logoUrl ?? null,
 			metaPixelId: company?.metaPixelId ?? null,
 			primaryColor: company?.primaryColor ?? null,
+			themeColors: (company?.themeColors as BrandingReturn["themeColors"]) ?? null,
 		};
 	}
 }

@@ -7,7 +7,41 @@
 		},
 		"admin": {
 			"branding": {
+				"colorGroups": {
+					"actions": "Ações e destaques",
+					"boundaries": "Bordas e foco",
+					"feedback": "Mensagens de estado",
+					"support": "Superfícies de apoio",
+					"surfaces": "Superfícies e conteúdo"
+				},
 				"colorHint": "Cor hexadecimal, ex: #FF5733",
+				"colors": {
+					"accent": "Destaque",
+					"accentForeground": "Texto do destaque",
+					"background": "Fundo",
+					"border": "Borda",
+					"card": "Cartão",
+					"cardForeground": "Texto do cartão",
+					"destructive": "Destrutiva",
+					"foreground": "Texto principal",
+					"input": "Borda do campo",
+					"muted": "Fundo discreto",
+					"mutedForeground": "Texto discreto",
+					"popover": "Pop-up",
+					"popoverForeground": "Texto do pop-up",
+					"primary": "Primária",
+					"primaryForeground": "Texto da primária",
+					"ring": "Foco",
+					"secondary": "Secundária",
+					"secondaryForeground": "Texto da secundária",
+					"success": "Sucesso",
+					"surfaceSunken": "Superfície rebaixada",
+					"warning": "Alerta"
+				},
+				"copyAllColors": "Copiar tudo do {{mode}}",
+				"copyColor": "Copiar {{color}} do {{mode}}",
+				"copyFromTheme": "Copiar do {{mode}}",
+				"darkTheme": "Tema escuro",
 				"footerText": "Texto do rodapé",
 				"footerTextPlaceholder": "© 2025 Meu Restaurante",
 				"ga4Id": "ID do Google Analytics 4",
@@ -17,7 +51,6 @@
 				"logoUrl": "URL do logotipo",
 				"logoUrlPlaceholder": "https://example.com/logo.png",
 				"metaPixelId": "ID do Meta Pixel",
-				"primaryColor": "Cor primária",
 				"save": "Salvar identidade visual",
 				"saveError": "Não foi possível salvar as configurações de identidade visual.",
 				"saveSuccess": "Identidade visual atualizada.",
@@ -25,6 +58,8 @@
 				"sectionAppearance": "Aparência",
 				"sectionTracking": "Rastreamento de marketing",
 				"subtitle": "Personalize a aparência da sua loja e as análises.",
+				"themeColors": "Cores do tema",
+				"lightTheme": "Tema claro",
 				"title": "Identidade visual"
 			},
 			"categories": {

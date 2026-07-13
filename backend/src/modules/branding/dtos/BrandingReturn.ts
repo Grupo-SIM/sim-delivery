@@ -1,5 +1,6 @@
 import { t } from "elysia";
 import { __nullable__ } from "sql/typebox";
+import { ThemeColors } from "./BrandingInput";
 
 export const BrandingReturn = t.Object({
 	footerText: __nullable__(t.String()),
@@ -8,5 +9,6 @@ export const BrandingReturn = t.Object({
 	logoUrl: __nullable__(t.String()),
 	metaPixelId: __nullable__(t.String()),
 	primaryColor: __nullable__(t.String()),
+	themeColors: __nullable__(ThemeColors),
 });
 export type BrandingReturn = typeof BrandingReturn.static;
