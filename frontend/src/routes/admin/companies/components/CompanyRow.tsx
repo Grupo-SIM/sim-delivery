@@ -3,7 +3,13 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { type GetCompanies200, getCompaniesQueryKey, usePatchCompaniesByCompanyId } from "@/lib/api";
+import {
+	type GetCompanies200,
+	getCompaniesQueryKey,
+	useDeleteCompaniesByCompanyId,
+	usePatchCompaniesByCompanyId,
+} from "@/lib/api";
+import { showAlert, showConfirm } from "@/stores";
 
 interface CompanyRowProps {
 	company: GetCompanies200[number];
@@ -17,7 +23,8 @@ export function CompanyRow({ company }: CompanyRowProps) {
 	const [slug, setSlug] = useState(company.slug);
 	const [error, setError] = useState<string | null>(null);
 
-	const { isPending, mutate } = usePatchCompaniesByCompanyId();
+	const update = usePatchCompaniesByCompanyId();
+	const remove = useDeleteCompaniesByCompanyId();
 
 	function reset() {
 		setName(company.name);
@@ -28,7 +35,7 @@ export function CompanyRow({ company }: CompanyRowProps) {
 
 	function save() {
 		setError(null);
-		mutate(
+		update.mutate(
 			{ companyId: company.id, data: { name, slug: slug.trim() } },
 			{
 				onError: caught =>
@@ -43,6 +50,20 @@ export function CompanyRow({ company }: CompanyRowProps) {
 		);
 	}
 
+	async function del() {
+		if (!(await showConfirm(t("admin.companies.row.deleteConfirm", { name: company.name })))) {
+			return;
+		}
+
+		remove.mutate(
+			{ companyId: company.id },
+			{
+				onError: () => void showAlert(t("admin.companies.row.deleteError")),
+				onSuccess: () => queryClient.invalidateQueries({ queryKey: getCompaniesQueryKey() }),
+			},
+		);
+	}
+
 	if (!editing) {
 		return (
 			<tr className="border-border/60 border-b last:border-0">
@@ -52,9 +73,14 @@ export function CompanyRow({ company }: CompanyRowProps) {
 					{new Date(company.createdAt).toLocaleDateString()}
 				</td>
 				<td className="px-4 py-3 text-right">
-					<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
-						{t("admin.companies.edit.action")}
-					</Button>
+					<div className="flex justify-end gap-2">
+						<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
+							{t("admin.companies.edit.action")}
+						</Button>
+						<Button disabled={remove.isPending} onClick={del} size="sm" type="button" variant="outline">
+							{t("admin.companies.row.delete")}
+						</Button>
+					</div>
 				</td>
 			</tr>
 		);
@@ -82,11 +108,11 @@ export function CompanyRow({ company }: CompanyRowProps) {
 			<td className="px-4 py-3 text-muted-foreground">{new Date(company.createdAt).toLocaleDateString()}</td>
 			<td className="px-4 py-3">
 				<div className="flex justify-end gap-2 whitespace-nowrap">
-					<Button disabled={isPending} onClick={reset} size="sm" type="button" variant="outline">
+					<Button disabled={update.isPending} onClick={reset} size="sm" type="button" variant="outline">
 						{t("admin.companies.edit.cancel")}
 					</Button>
-					<Button disabled={isPending || !name || !slug.trim()} onClick={save} size="sm" type="button">
-						{isPending ? t("admin.companies.edit.saving") : t("admin.companies.edit.save")}
+					<Button disabled={update.isPending || !name || !slug.trim()} onClick={save} size="sm" type="button">
+						{update.isPending ? t("admin.companies.edit.saving") : t("admin.companies.edit.save")}
 					</Button>
 				</div>
 			</td>

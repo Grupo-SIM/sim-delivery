@@ -1,8 +1,8 @@
-import Elysia from "elysia";
+import Elysia, { t } from "elysia";
 import { CompanyScopeGuard } from "@/modules/users/guards";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
 import { CompanyListReturn, CompanyReturn, CreateCompanyBody, UpdateCompanyBody } from "../../dtos";
-import { CreateCompany, ListCompanies, UpdateCompany } from "../../useCases";
+import { CreateCompany, DeleteCompany, ListCompanies, UpdateCompany } from "../../useCases";
 
 export const CompaniesController = new Elysia({
 	detail: {
@@ -15,6 +15,7 @@ export const CompaniesController = new Elysia({
 			.decorate(({ prisma, ...injected }) => ({
 				...injected,
 				createCompany: new CreateCompany(prisma),
+				deleteCompany: new DeleteCompany(prisma),
 				listCompanies: new ListCompanies(prisma),
 				prisma,
 				updateCompany: new UpdateCompany(prisma),
@@ -56,5 +57,17 @@ export const CompaniesController = new Elysia({
 					body: UpdateCompanyBody,
 					response: CompanyReturn,
 				},
+			)
+			.delete(
+				"/:companyId",
+				async ({ deleteCompany, params, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "company", "delete");
+
+					await deleteCompany.execute(params.companyId);
+
+					return { ok: true };
+				},
+				{ response: t.Object({ ok: t.Boolean() }) },
 			),
 	);

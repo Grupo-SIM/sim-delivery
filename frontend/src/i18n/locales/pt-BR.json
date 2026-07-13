@@ -86,6 +86,11 @@
 				},
 				"empty": "Nenhuma empresa ainda.",
 				"loadError": "Não foi possível carregar as empresas.",
+				"row": {
+					"delete": "Excluir",
+					"deleteConfirm": "Excluir empresa {{name}}?",
+					"deleteError": "Não foi possível excluir a empresa."
+				},
 				"subtitle": "Clientes atendidos pela plataforma.",
 				"title": "Empresas"
 			},
