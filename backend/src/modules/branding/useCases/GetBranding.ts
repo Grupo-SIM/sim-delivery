@@ -15,6 +15,14 @@ export class GetBranding {
 			resolvedCompanyId = unit?.companyId ?? null;
 		}
 
+		if (!resolvedCompanyId && query.slug) {
+			const company = await this.prisma.company.findUnique({
+				select: { id: true },
+				where: { slug: query.slug },
+			});
+			resolvedCompanyId = company?.id ?? null;
+		}
+
 		if (!resolvedCompanyId) {
 			return {
 				footerText: null,

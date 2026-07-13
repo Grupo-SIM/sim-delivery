@@ -1,6 +1,7 @@
 import { t } from "elysia";
 
 export const GetBrandingQuery = t.Object({
+	slug: t.Optional(t.String()),
 	unitId: t.Optional(t.String()),
 });
 export type GetBrandingQuery = typeof GetBrandingQuery.static;

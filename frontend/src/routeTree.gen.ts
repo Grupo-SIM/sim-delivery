@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AdminRouteImport } from './routes/admin'
-import { Route as UnitIdRouteImport } from './routes/$unitId'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as DesignKitIndexRouteImport } from './routes/design-kit/index'
@@ -40,11 +39,6 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UnitIdRoute = UnitIdRouteImport.update({
-  id: '/$unitId',
-  path: '/$unitId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -71,9 +65,9 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   getParentRoute: () => AdminRoute,
 } as any)
 const UnitIdIndexRoute = UnitIdIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => UnitIdRoute,
+  id: '/$unitId/',
+  path: '/$unitId/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const IdentifyMagicLinkIndexRoute = IdentifyMagicLinkIndexRouteImport.update({
   id: '/identify/magic-link/',
@@ -166,7 +160,6 @@ const AdminUnitsUnitIdProductsIndexRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/$unitId': typeof UnitIdRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/$unitId/': typeof UnitIdIndexRoute
   '/admin/': typeof AdminIndexRoute
@@ -219,7 +212,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/$unitId': typeof UnitIdRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/$unitId/': typeof UnitIdIndexRoute
   '/admin/': typeof AdminIndexRoute
@@ -248,7 +240,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/$unitId'
     | '/admin'
     | '/$unitId/'
     | '/admin/'
@@ -300,7 +291,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/$unitId'
     | '/admin'
     | '/$unitId/'
     | '/admin/'
@@ -328,8 +318,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  UnitIdRoute: typeof UnitIdRouteWithChildren
   AdminRoute: typeof AdminRouteWithChildren
+  UnitIdIndexRoute: typeof UnitIdIndexRoute
   CourierIndexRoute: typeof CourierIndexRoute
   DesignKitIndexRoute: typeof DesignKitIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
@@ -343,13 +333,6 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$unitId': {
-      id: '/$unitId'
-      path: '/$unitId'
-      fullPath: '/$unitId'
-      preLoaderRoute: typeof UnitIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -389,10 +372,10 @@ declare module '@tanstack/react-router' {
     }
     '/$unitId/': {
       id: '/$unitId/'
-      path: '/'
+      path: '/$unitId'
       fullPath: '/$unitId/'
       preLoaderRoute: typeof UnitIdIndexRouteImport
-      parentRoute: typeof UnitIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/identify/magic-link/': {
       id: '/identify/magic-link/'
@@ -516,25 +499,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface UnitIdRouteChildren {
-  UnitIdIndexRoute: typeof UnitIdIndexRoute
-  UnitIdCheckoutIndexRoute: typeof UnitIdCheckoutIndexRoute
-  UnitIdRateIndexRoute: typeof UnitIdRateIndexRoute
-  UnitIdCheckoutThankYouIndexRoute: typeof UnitIdCheckoutThankYouIndexRoute
-  UnitIdProductProductIdIndexRoute: typeof UnitIdProductProductIdIndexRoute
-}
-
-const UnitIdRouteChildren: UnitIdRouteChildren = {
-  UnitIdIndexRoute: UnitIdIndexRoute,
-  UnitIdCheckoutIndexRoute: UnitIdCheckoutIndexRoute,
-  UnitIdRateIndexRoute: UnitIdRateIndexRoute,
-  UnitIdCheckoutThankYouIndexRoute: UnitIdCheckoutThankYouIndexRoute,
-  UnitIdProductProductIdIndexRoute: UnitIdProductProductIdIndexRoute,
-}
-
-const UnitIdRouteWithChildren =
-  UnitIdRoute._addFileChildren(UnitIdRouteChildren)
-
 interface AdminRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminBrandingIndexRoute: typeof AdminBrandingIndexRoute
@@ -571,8 +535,8 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  UnitIdRoute: UnitIdRouteWithChildren,
   AdminRoute: AdminRouteWithChildren,
+  UnitIdIndexRoute: UnitIdIndexRoute,
   CourierIndexRoute: CourierIndexRoute,
   DesignKitIndexRoute: DesignKitIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
