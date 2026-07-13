@@ -5,7 +5,7 @@ import { PatternFormat } from "react-number-format";
 import { Button } from "@/components/ui/button";
 import { FormSectionHeading } from "@/components/ui/FormSectionHeading";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Label, RequiredMark } from "@/components/ui/label";
 import { getCepByCep, getUnitsQueryKey, usePostUnits } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
@@ -43,7 +43,10 @@ export function CreateUnitForm() {
 
 	const { isPending, mutate } = usePostUnits();
 
-	const hasAddressData = useMemo(() => Object.values(address).some(value => value.trim() !== ""), [address]);
+	const hasData = useMemo(
+		() => name.trim() !== "" || phone.trim() !== "" || Object.values(address).some(value => value.trim() !== ""),
+		[name, phone, address],
+	);
 
 	function set<K extends keyof AddressState>(key: K, next: AddressState[K]) {
 		setAddress(prev => ({ ...prev, [key]: next }));
@@ -93,7 +96,9 @@ export function CreateUnitForm() {
 			<FormSectionHeading>{t("admin.units.create.sectionBasic")}</FormSectionHeading>
 			<div className="grid gap-4 sm:grid-cols-2">
 				<Label>
-					{t("admin.units.create.name")}
+					<span>
+						{t("admin.units.create.name")} <RequiredMark />
+					</span>
 					<Input
 						onChange={event => setName(event.currentTarget.value)}
 						placeholder={t("admin.units.create.namePlaceholder")}
@@ -119,7 +124,7 @@ export function CreateUnitForm() {
 			<div
 				className={cn(
 					"space-y-4 overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out",
-					hasAddressData
+					hasData
 						? "max-h-[999px] opacity-100"
 						: "max-h-0 opacity-0 group-focus-within:max-h-[999px] group-focus-within:opacity-100 group-hover:max-h-[999px] group-hover:opacity-100",
 				)}

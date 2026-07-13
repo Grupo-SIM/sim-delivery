@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Label, RequiredMark } from "@/components/ui/label";
 import { getCompaniesQueryKey, usePostCompanies } from "@/lib/api";
 
 function slugify(value: string): string {
@@ -51,7 +51,9 @@ export function CreateCompanyForm() {
 			}}
 		>
 			<Label className="flex-1">
-				{t("admin.companies.create.name")}
+				<span>
+					{t("admin.companies.create.name")} <RequiredMark />
+				</span>
 				<Input
 					onChange={event => setName(event.currentTarget.value)}
 					placeholder={t("admin.companies.create.namePlaceholder")}

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Label, RequiredMark } from "@/components/ui/label";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { getProductsQueryKey, usePostProducts } from "@/lib/api";
@@ -66,7 +66,9 @@ export function CreateProductForm() {
 			}}
 		>
 			<Label>
-				{t("admin.products.create.title")}
+				<span>
+					{t("admin.products.create.title")} <RequiredMark />
+				</span>
 				<Input
 					onBlur={flushTitle}
 					onChange={event => setLocalTitle(event.currentTarget.value)}
@@ -77,7 +79,9 @@ export function CreateProductForm() {
 			</Label>
 
 			<Label>
-				{t("admin.products.create.imageUrl")}
+				<span>
+					{t("admin.products.create.imageUrl")} <RequiredMark />
+				</span>
 				<Input
 					onBlur={flushImageUrl}
 					onChange={event => setLocalImageUrl(event.currentTarget.value)}
@@ -88,7 +92,9 @@ export function CreateProductForm() {
 			</Label>
 
 			<div>
-				<span className="font-medium text-sm">{t("admin.products.create.price")}</span>
+				<span className="font-medium text-sm">
+					{t("admin.products.create.price")} <RequiredMark />
+				</span>
 				<NumericInput
 					decimalScale={2}
 					decimalSeparator=","

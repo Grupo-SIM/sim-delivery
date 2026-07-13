@@ -13,3 +13,12 @@ export function Label({ children, className, ...props }: LabelProps) {
 		</label>
 	);
 }
+
+/** Marks a field as required. Wrap it with the label text in one element, e.g. `<span>{text} <RequiredMark /></span>`, so both stay on the same row inside a grid `Label`. */
+export function RequiredMark() {
+	return (
+		<span aria-hidden className="text-destructive">
+			*
+		</span>
+	);
+}

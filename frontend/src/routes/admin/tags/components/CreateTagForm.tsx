@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ColorField } from "@/components/ui/ColorField";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Label, RequiredMark } from "@/components/ui/label";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { getTagsQueryKey, usePostTags } from "@/lib/api";
 
@@ -41,7 +41,9 @@ export function CreateTagForm() {
 			}}
 		>
 			<Label className="flex-1">
-				{t("admin.tags.create.name")}
+				<span>
+					{t("admin.tags.create.name")} <RequiredMark />
+				</span>
 				<Input
 					onBlur={flushName}
 					onChange={event => setLocalName(event.currentTarget.value)}

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/Container";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Label, RequiredMark } from "@/components/ui/label";
 import { isStaff } from "@/lib/staff-guard";
 import { useAuthStore } from "@/stores";
 
@@ -42,7 +42,9 @@ function LoginPage() {
 						}}
 					>
 						<Label>
-							{t("auth.login.email")}
+							<span>
+								{t("auth.login.email")} <RequiredMark />
+							</span>
 							<Input
 								onChange={event => {
 									setEmail(event.currentTarget.value);
@@ -55,7 +57,9 @@ function LoginPage() {
 							/>
 						</Label>
 						<Label>
-							{t("auth.login.password")}
+							<span>
+								{t("auth.login.password")} <RequiredMark />
+							</span>
 							<Input
 								onChange={event => {
 									setPassword(event.currentTarget.value);

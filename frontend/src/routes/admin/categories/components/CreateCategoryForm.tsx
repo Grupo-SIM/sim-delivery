@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Label, RequiredMark } from "@/components/ui/label";
 import { getCategoriesQueryKey, usePostCategories } from "@/lib/api";
 
 export function CreateCategoryForm() {
@@ -33,7 +33,9 @@ export function CreateCategoryForm() {
 			}}
 		>
 			<Label className="flex-1">
-				{t("admin.categories.create.name")}
+				<span>
+					{t("admin.categories.create.name")} <RequiredMark />
+				</span>
 				<Input
 					onChange={event => setName(event.currentTarget.value)}
 					placeholder={t("admin.categories.create.namePlaceholder")}

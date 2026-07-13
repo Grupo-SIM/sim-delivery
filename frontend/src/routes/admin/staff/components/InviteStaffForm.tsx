@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Label, RequiredMark } from "@/components/ui/label";
 import { getStaffQueryKey, usePostStaff } from "@/lib/api";
 
 type Role = "manager" | "attendant" | "kitchen" | "courier";
@@ -52,7 +52,9 @@ export function InviteStaffForm() {
 			}}
 		>
 			<Label>
-				{t("admin.staff.invite.name")}
+				<span>
+					{t("admin.staff.invite.name")} <RequiredMark />
+				</span>
 				<Input
 					onChange={event => setName(event.currentTarget.value)}
 					placeholder={t("admin.staff.invite.namePlaceholder")}
@@ -61,7 +63,9 @@ export function InviteStaffForm() {
 				/>
 			</Label>
 			<Label>
-				{t("admin.staff.invite.email")}
+				<span>
+					{t("admin.staff.invite.email")} <RequiredMark />
+				</span>
 				<Input
 					onChange={event => setEmail(event.currentTarget.value)}
 					placeholder={t("admin.staff.invite.emailPlaceholder")}
@@ -71,7 +75,9 @@ export function InviteStaffForm() {
 				/>
 			</Label>
 			<Label>
-				{t("admin.staff.invite.password")}
+				<span>
+					{t("admin.staff.invite.password")} <RequiredMark />
+				</span>
 				<Input
 					onChange={event => setPassword(event.currentTarget.value)}
 					required
