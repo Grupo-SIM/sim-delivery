@@ -7,7 +7,7 @@ import { Client as Styletron } from "styletron-engine-monolithic";
 import { Provider as StyletronProvider } from "styletron-react";
 import { ConfirmDialog } from "./components/ui/ConfirmDialog";
 import { getAppTheme, type ThemeMode } from "./lib/baseui-theme";
-import { buildBranding } from "./lib/build-branding";
+import { branding } from "./lib/branding";
 import { reactQueryClient } from "./lib/tanstack";
 
 const styletron = new Styletron();
@@ -34,7 +34,7 @@ function getDocumentThemeMode(): ThemeMode {
 
 export function Providers({ children }: ProvidersProps) {
 	const [themeMode, setThemeMode] = useState<ThemeMode>(getDocumentThemeMode);
-	const [themeColors] = useState(buildBranding.themeColors);
+	const [themeColors] = useState(branding.themeColors);
 
 	useEffect(() => {
 		const syncThemeMode = () => {

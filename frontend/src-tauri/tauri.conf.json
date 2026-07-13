@@ -9,7 +9,7 @@
 				"fullscreen": false,
 				"height": 800,
 				"resizable": true,
-				"title": "Zero Grau Delivery",
+				"title": "Zero Grau",
 				"width": 400
 			}
 		],
@@ -32,7 +32,7 @@
 		],
 		"targets": "all"
 	},
-	"identifier": "com.zerograu.delivery",
-	"productName": "Zero Grau Delivery",
+	"identifier": "com.jbmidia.zero_grau",
+	"productName": "Zero Grau",
 	"version": "1.0.0"
 }

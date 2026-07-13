@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { buildBranding } from "@/lib/build-branding";
+import { branding } from "@/lib/branding";
 
 export function StoreFooter() {
 	const { t } = useTranslation();
-	const text = buildBranding.footerText;
-	const logoUrl = buildBranding.logoUrl;
+	const text = branding.footerText;
+	const logoUrl = branding.logoUrl;
 
 	if (!text && !logoUrl) return null;
 

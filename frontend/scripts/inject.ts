@@ -9,10 +9,10 @@ import { existsSync } from "node:fs";
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+const ROOT = new URL("../..", import.meta.url).pathname;
 const FRONTEND = join(ROOT, "frontend");
 const publicDir = join(FRONTEND, "public");
-const buildBrandingPath = join(FRONTEND, "src", "lib", "build-branding.ts");
+const brandingPath = join(FRONTEND, "src", "lib", "branding.ts");
 
 async function readEnvFile(path: string) {
 	if (!existsSync(path)) return {};
@@ -77,10 +77,7 @@ function extensionFrom(contentType: string | null, sourceUrl: string) {
 function createBrandingCss(colors: ThemeColors) {
 	const variables = (colorSet: Record<string, string>) =>
 		Object.entries(colorSet)
-			.map(
-				([name, value]) =>
-					`--${name.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}:${value}`,
-			)
+			.map(([name, value]) => `--${name.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}:${value}`)
 			.join(";");
 	return `:root{${variables(colors.light)}}:root.dark{${variables(colors.dark)}}\n`;
 }
@@ -90,7 +87,7 @@ function requireBuildValue<T>(value: T | null, name: string): T {
 	return value;
 }
 
-const { PrismaClient, adapter } = await import("../packages/sql/src/index");
+const { PrismaClient, adapter } = await import("../../packages/sql/src/index.ts");
 const prisma = new PrismaClient({ adapter });
 
 let company: CompanyBranding | null;
@@ -131,14 +128,14 @@ await mkdir(publicDir, { recursive: true });
 const logoResponse = await fetch(logoSourceUrl);
 if (!logoResponse.ok) throw new Error(`Could not download branding logo: HTTP ${logoResponse.status}.`);
 
-const logoFilename = `branding-logo.${extensionFrom(logoResponse.headers.get("content-type"), logoSourceUrl)}`;
+const logoFilename = `logo.${extensionFrom(logoResponse.headers.get("content-type"), logoSourceUrl)}`;
 const logoPath = join(publicDir, logoFilename);
 await writeFile(logoPath, await logoResponse.arrayBuffer());
 await writeFile(join(publicDir, "branding.css"), createBrandingCss(themeColors));
 
 await writeFile(
-	buildBrandingPath,
-	`import type { ThemeColors } from "./theme-colors";\n\nexport interface BuildBranding {\n\tapiUrl: string;\n\tcompanyName: string;\n\tfooterText: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n}\n\nexport const buildBranding: BuildBranding = ${JSON.stringify(
+	brandingPath,
+	`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tapiUrl: string;\n\tcompanyName: string;\n\tfooterText: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n}\n\nexport const branding: Branding = ${JSON.stringify(
 		{
 			apiUrl,
 			companyName: company.name,
@@ -153,7 +150,7 @@ await writeFile(
 		},
 		null,
 		"\t",
-	)} as BuildBranding;\n`,
+	)} as Branding;\n`,
 );
 
 const tauriConfPath = join(FRONTEND, "src-tauri", "tauri.conf.json");

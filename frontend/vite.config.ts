@@ -19,7 +19,7 @@ export default defineConfig({
 		tsconfigPaths: true,
 	},
 	server: {
-		allowedHosts: [process.env.VITE_APP_URL || ""]
+		allowedHosts: [process.env.VITE_APP_URL?.replace(/https?:\/\//, "") || ""]
 			.filter(Boolean)
 			.map(each => each.replace(/(^https?:\/\/|\/$)/, "")),
 		hmr: host

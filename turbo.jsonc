@@ -5,7 +5,7 @@
 			"dependsOn": ["^export", "generate"],
 			"inputs": ["src/**", "!src/**/generated/**"],
 			"outputLogs": "new-only",
-			"outputs": ["build/**", "dist/**", "out/**", ".next/**", "!.next/cache/**"]
+			"outputs": ["build/**", "dist/**", "out/**"]
 		},
 		"check-types": {
 			"dependsOn": ["^export", "generate"],
@@ -24,11 +24,36 @@
 			"outputLogs": "new-only",
 			"outputs": ["out/**"]
 		},
+		"frontend#build": {
+			"dependsOn": ["^export", "generate", "inject"],
+			"inputs": ["src/**", "!src/**/generated/**"],
+			"outputLogs": "new-only",
+			"outputs": ["build/**", "dist/**", "out/**", ".next/**", "!.next/cache/**"]
+		},
+		"frontend#dev": {
+			"cache": false,
+			"dependsOn": ["^export", "generate", "inject"],
+			"persistent": true
+		},
 		"frontend#generate": {
 			"dependsOn": ["^export"],
 			"inputs": ["kubb.config.ts"],
 			"outputLogs": "new-only",
 			"outputs": ["src/lib/api/generated/**"]
+		},
+		"frontend#inject": {
+			"env": ["VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
+			"inputs": ["scripts/inject.ts", ".env*"],
+			"outputLogs": "new-only",
+			"outputs": [
+				"public/apple-touch-icon.png",
+				"public/branding.css",
+				"public/favicon.png",
+				"public/logo.*",
+				"src/lib/branding.ts",
+				"src-tauri/icons",
+				"src-tauri/tauri.conf.json"
+			]
 		},
 		"generate": {
 			"dependsOn": ["^export"],

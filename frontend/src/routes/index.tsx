@@ -4,7 +4,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetPublicUnits } from "@/lib/api";
-import { buildBranding } from "@/lib/build-branding";
+import { branding } from "@/lib/branding";
 import { slug } from "@/lib/variant";
 import { StorefrontFooter, StorefrontHeader, UnitCard } from "./components/storefront";
 
@@ -14,7 +14,7 @@ function StorePage() {
 
 	return (
 		<div className="flex min-h-screen flex-col">
-			<StorefrontHeader branding={buildBranding} />
+			<StorefrontHeader branding={branding} />
 			<main className="flex-1">
 				<section className="border-border/70 border-b bg-muted/35">
 					<div className="mx-auto max-w-6xl px-5 py-7 sm:py-9">
@@ -45,7 +45,7 @@ function StorePage() {
 					)}
 				</section>
 			</main>
-			<StorefrontFooter branding={buildBranding} />
+			<StorefrontFooter branding={branding} />
 		</div>
 	);
 }

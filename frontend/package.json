@@ -4,9 +4,10 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build": "bun ../scripts/inject-branding.ts && tsc -b && vite build",
+		"build": "bun ./scripts/build.ts",
 		"check-types": "tsc --noEmit",
-		"dev": "bun ../scripts/inject-branding.ts && vite --host",
+		"dev": "vite --host",
+		"inject": "bun ./scripts/inject.ts",
 		"preview": "vite preview",
 		"start": "vite preview",
 		"tauri": "tauri",

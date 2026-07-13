@@ -1,15 +1,15 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { useTracking } from "@/hooks/use-tracking";
 import { useSyncSession } from "@/hooks/useSyncSession";
-import { buildBranding } from "@/lib/build-branding";
+import { branding } from "@/lib/branding";
 
 function RootComponent() {
 	useSyncSession();
 
 	useTracking({
-		ga4Id: buildBranding.ga4Id,
-		gtmId: buildBranding.gtmId,
-		metaPixelId: buildBranding.metaPixelId,
+		ga4Id: branding.ga4Id,
+		gtmId: branding.gtmId,
+		metaPixelId: branding.metaPixelId,
 	});
 
 	return (
