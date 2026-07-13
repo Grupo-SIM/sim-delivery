@@ -1,6 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { useBrandingTheme } from "@/hooks/use-branding-theme";
-import { useTracking } from "@/hooks/use-tracking";
 import { useGetBranding } from "@/lib/api";
 
 interface StoreFooterProps {
@@ -10,13 +8,6 @@ interface StoreFooterProps {
 export function StoreFooter({ unitId }: StoreFooterProps) {
 	const { t } = useTranslation();
 	const { data: branding } = useGetBranding({ unitId });
-
-	useTracking({
-		ga4Id: branding?.ga4Id,
-		gtmId: branding?.gtmId,
-		metaPixelId: branding?.metaPixelId,
-	});
-	useBrandingTheme(branding?.themeColors, branding?.primaryColor);
 
 	const text = branding?.footerText;
 	const logoUrl = branding?.logoUrl;

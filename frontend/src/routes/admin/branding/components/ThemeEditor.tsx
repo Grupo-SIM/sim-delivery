@@ -70,7 +70,7 @@ export function ThemeEditor({
 						variant="outline"
 					>
 						<LuRotateCcw aria-hidden />
-						{t("admin.branding.resetAllColors", { mode: t(`admin.branding.${mode}Theme`) })}
+							{t("admin.branding.resetAllColors")}
 					</Button>
 				</div>
 			</div>

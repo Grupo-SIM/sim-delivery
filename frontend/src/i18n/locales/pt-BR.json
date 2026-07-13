@@ -51,7 +51,7 @@
 				"logoUrl": "URL do logotipo",
 				"logoUrlPlaceholder": "https://example.com/logo.png",
 				"metaPixelId": "ID do Meta Pixel",
-				"resetAllColors": "Restaurar cores do {{mode}}",
+				"resetAllColors": "Restaurar cores",
 				"resetColor": "Restaurar {{color}} para a cor padrão",
 				"save": "Salvar identidade visual",
 				"saveError": "Não foi possível salvar as configurações de identidade visual.",

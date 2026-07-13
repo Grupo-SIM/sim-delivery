@@ -2,8 +2,7 @@ import { useEffect } from "react";
 import { resolveThemeColors, toThemeVariable, type ThemeColors } from "@/lib/theme-colors";
 
 /**
- * Applies a company's primaryColor as --primary CSS variable on :root.
- * Only active in the store (customer-facing) context; admin pages are unaffected.
+ * Applies a company's theme colors as CSS variables on :root.
  * Reverts to the built-in theme value when color is null/undefined.
  */
 export function useBrandingTheme(themeColors: ThemeColors | null | undefined, primaryColor?: string | null) {
