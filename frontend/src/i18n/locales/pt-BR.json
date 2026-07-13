@@ -487,6 +487,8 @@
 					"namePlaceholder": "Ex: Centro",
 					"phone": "Telefone",
 					"phonePlaceholder": "(11) 90000-0000",
+					"sectionAddress": "Endereço",
+					"sectionBasic": "Dados básicos",
 					"submit": "Adicionar unidade",
 					"submitting": "Adicionando...",
 					"title": "Nova unidade"
