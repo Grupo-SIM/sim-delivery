@@ -130,26 +130,26 @@ const AdminBrandingIndexRoute = AdminBrandingIndexRouteImport.update({
   getParentRoute: () => AdminRoute,
 } as any)
 const UnitIdRateIndexRoute = UnitIdRateIndexRouteImport.update({
-  id: '/rate/',
-  path: '/rate/',
-  getParentRoute: () => UnitIdRoute,
+  id: '/$unitId/rate/',
+  path: '/$unitId/rate/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const UnitIdCheckoutIndexRoute = UnitIdCheckoutIndexRouteImport.update({
-  id: '/checkout/',
-  path: '/checkout/',
-  getParentRoute: () => UnitIdRoute,
+  id: '/$unitId/checkout/',
+  path: '/$unitId/checkout/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const UnitIdProductProductIdIndexRoute =
   UnitIdProductProductIdIndexRouteImport.update({
-    id: '/product/$productId/',
-    path: '/product/$productId/',
-    getParentRoute: () => UnitIdRoute,
+    id: '/$unitId/product/$productId/',
+    path: '/$unitId/product/$productId/',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const UnitIdCheckoutThankYouIndexRoute =
   UnitIdCheckoutThankYouIndexRouteImport.update({
-    id: '/checkout/thank-you/',
-    path: '/checkout/thank-you/',
-    getParentRoute: () => UnitIdRoute,
+    id: '/$unitId/checkout/thank-you/',
+    path: '/$unitId/checkout/thank-you/',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const AdminUnitsUnitIdProductsIndexRoute =
   AdminUnitsUnitIdProductsIndexRouteImport.update({
@@ -323,7 +323,11 @@ export interface RootRouteChildren {
   CourierIndexRoute: typeof CourierIndexRoute
   DesignKitIndexRoute: typeof DesignKitIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
+  UnitIdCheckoutIndexRoute: typeof UnitIdCheckoutIndexRoute
+  UnitIdRateIndexRoute: typeof UnitIdRateIndexRoute
   IdentifyMagicLinkIndexRoute: typeof IdentifyMagicLinkIndexRoute
+  UnitIdCheckoutThankYouIndexRoute: typeof UnitIdCheckoutThankYouIndexRoute
+  UnitIdProductProductIdIndexRoute: typeof UnitIdProductProductIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -463,31 +467,31 @@ declare module '@tanstack/react-router' {
     }
     '/$unitId/rate/': {
       id: '/$unitId/rate/'
-      path: '/rate'
+      path: '/$unitId/rate'
       fullPath: '/$unitId/rate/'
       preLoaderRoute: typeof UnitIdRateIndexRouteImport
-      parentRoute: typeof UnitIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/$unitId/checkout/': {
       id: '/$unitId/checkout/'
-      path: '/checkout'
+      path: '/$unitId/checkout'
       fullPath: '/$unitId/checkout/'
       preLoaderRoute: typeof UnitIdCheckoutIndexRouteImport
-      parentRoute: typeof UnitIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/$unitId/product/$productId/': {
       id: '/$unitId/product/$productId/'
-      path: '/product/$productId'
+      path: '/$unitId/product/$productId'
       fullPath: '/$unitId/product/$productId/'
       preLoaderRoute: typeof UnitIdProductProductIdIndexRouteImport
-      parentRoute: typeof UnitIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/$unitId/checkout/thank-you/': {
       id: '/$unitId/checkout/thank-you/'
-      path: '/checkout/thank-you'
+      path: '/$unitId/checkout/thank-you'
       fullPath: '/$unitId/checkout/thank-you/'
       preLoaderRoute: typeof UnitIdCheckoutThankYouIndexRouteImport
-      parentRoute: typeof UnitIdRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/units/$unitId/products/': {
       id: '/admin/units/$unitId/products/'
@@ -540,7 +544,11 @@ const rootRouteChildren: RootRouteChildren = {
   CourierIndexRoute: CourierIndexRoute,
   DesignKitIndexRoute: DesignKitIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
+  UnitIdCheckoutIndexRoute: UnitIdCheckoutIndexRoute,
+  UnitIdRateIndexRoute: UnitIdRateIndexRoute,
   IdentifyMagicLinkIndexRoute: IdentifyMagicLinkIndexRoute,
+  UnitIdCheckoutThankYouIndexRoute: UnitIdCheckoutThankYouIndexRoute,
+  UnitIdProductProductIdIndexRoute: UnitIdProductProductIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
