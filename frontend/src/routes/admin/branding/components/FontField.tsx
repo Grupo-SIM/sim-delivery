@@ -1,35 +1,52 @@
-import { TextField } from "@/components/ui/TextField";
+import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { useGoogleFont } from "@/hooks/use-google-font";
+import type { MediaAsset } from "@/lib/api";
+import { useTranslation } from "react-i18next";
 
 interface FontFieldProps {
 	label: string;
-	onValueChange: (value: string) => void;
-	placeholder: string;
+	onUrlChange: (value: string) => void;
 	previewLabel: string;
 	sampleClassName?: string;
 	sampleText: string;
-	value: string;
+	family: string;
+	url: string;
+	uploadAsset: MediaAsset;
+	onUploadError: () => void;
 }
 
 export function FontField({
 	label,
-	onValueChange,
-	placeholder,
+	onUrlChange,
 	previewLabel,
 	sampleClassName,
 	sampleText,
-	value,
+	family,
+	url,
+	uploadAsset,
+	onUploadError,
 }: FontFieldProps) {
-	useGoogleFont(value);
+	const { t } = useTranslation();
+	useGoogleFont(url ? "" : family);
 
 	return (
 		<div className="space-y-3">
-			<TextField label={label} onValueChange={onValueChange} placeholder={placeholder} value={value} />
+			<div className="space-y-1">
+				<span className="font-medium text-sm">{label}</span>
+				<MediaUrlInput
+					asset={uploadAsset}
+					onUploadError={onUploadError}
+					onValueChange={onUrlChange}
+					placeholder={t("admin.branding.fontFileUrlPlaceholder")}
+					uploadLabel={t("admin.branding.fontUpload")}
+					value={url}
+				/>
+			</div>
 
-			{value && (
+			{family && (
 				<div className="rounded border border-border p-3">
 					<p className="mb-2 font-medium text-muted-foreground text-xs uppercase">{previewLabel}</p>
-					<p className={sampleClassName} style={{ fontFamily: `"${value}", sans-serif` }}>
+					<p className={sampleClassName} style={{ fontFamily: `"${family}", sans-serif` }}>
 						{sampleText}
 					</p>
 				</div>

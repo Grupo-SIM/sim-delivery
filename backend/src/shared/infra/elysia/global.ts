@@ -1,5 +1,5 @@
 import "@/env";
-import { mailProviders } from "@hyoretsu/providers";
+import { mailProviders, resolveProvider, storageProviders } from "@hyoretsu/providers";
 import { timeConversion } from "@hyoretsu/utils";
 import Elysia from "elysia";
 import type { ElysiaCookie } from "elysia/cookies";
@@ -17,8 +17,9 @@ export const GlobalPlugin = new Elysia({
 		cookie: Cookies,
 	})
 	.decorate({
-		mailProvider: new mailProviders[process.env.MAIL_DRIVER](),
+		mailProvider: await resolveProvider(mailProviders, process.env.MAIL_DRIVER),
 		prisma,
+		storageProvider: await resolveProvider(storageProviders, process.env.STORAGE_DRIVER),
 	})
 	.derive(() => ({
 		setCookies: {} as Record<string, string | ElysiaCookie>,

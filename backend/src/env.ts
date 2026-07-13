@@ -1,5 +1,5 @@
 import path from "node:path";
-import { MailProvidersEnum } from "@hyoretsu/providers";
+import { MailProvidersEnum, StorageProvidersEnum } from "@hyoretsu/providers";
 import { Value } from "@sinclair/typebox/value";
 import { t, type UnwrapSchema } from "elysia";
 import { PhoneOtpProvidersEnum } from "@/shared/infra/phoneOtp";
@@ -62,6 +62,7 @@ export const envSchema = t.Object({
 			default: path.resolve(__dirname, "..", "static"),
 		}),
 	),
+	STORAGE_DRIVER: t.Enum(StorageProvidersEnum),
 	TWILIO_ACCOUNT_SID: t.Optional(t.String()),
 	TWILIO_AUTH_TOKEN: t.Optional(t.String()),
 	TWILIO_FROM_NUMBER: t.Optional(t.String()),

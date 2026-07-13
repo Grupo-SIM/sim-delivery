@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { getProductsQueryKey, usePatchProductsByProductId } from "@/lib/api";
@@ -29,6 +30,7 @@ export function ProductEditRow({ onCancel, product }: ProductEditRowProps) {
 	const [cashbackEnabled, setCashbackEnabled] = useState(product.cashbackPercentOverride !== null);
 	const [cashback, setCashback] = useState(product.cashbackPercentOverride ?? 0);
 	const [error, setError] = useState<string | null>(null);
+	const [isUploadingImage, setIsUploadingImage] = useState(false);
 
 	const { isPending, mutate } = usePatchProductsByProductId();
 
@@ -68,11 +70,14 @@ export function ProductEditRow({ onCancel, product }: ProductEditRowProps) {
 						placeholder={t("admin.products.create.titlePlaceholder")}
 						value={localTitle}
 					/>
-					<Input
-						onBlur={flushImageUrl}
-						onChange={event => setLocalImageUrl(event.currentTarget.value)}
+					<MediaUrlInput
+						asset="product"
+						onUploadError={() => setError(t("admin.products.create.uploadError"))}
+						onUploadingChange={setIsUploadingImage}
+						onValueChange={setImageUrl}
 						placeholder={t("admin.products.create.imageUrlPlaceholder")}
-						value={localImageUrl}
+						uploadLabel={t("admin.products.create.imageUpload")}
+						value={imageUrl}
 					/>
 					<NumericInput
 						decimalScale={2}
@@ -116,7 +121,7 @@ export function ProductEditRow({ onCancel, product }: ProductEditRowProps) {
 						{t("admin.products.edit.cancel")}
 					</Button>
 					<Button
-						disabled={isPending || !localTitle || !localImageUrl || priceReais <= 0}
+						disabled={isPending || isUploadingImage || !localTitle || !localImageUrl || priceReais <= 0}
 						onClick={save}
 						type="button"
 					>

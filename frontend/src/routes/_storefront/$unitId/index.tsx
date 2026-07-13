@@ -49,10 +49,6 @@ function UnitStorePage() {
 
 	return (
 		<Container className="space-y-4 py-8">
-			<Link className="text-primary text-sm" to="/">
-				← {t("store.unit.change")}
-			</Link>
-
 			<div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
 				<div className="flex items-center gap-3">
 					<SectionHeading subtitle={address || t("store.chooseUnit.noAddress")} title={unit.name} />

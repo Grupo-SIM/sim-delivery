@@ -9,6 +9,7 @@ import { CustomersController } from "./modules/customers/infra";
 import { DeliveriesController } from "./modules/deliveries/infra/elysia";
 import { ExampleController } from "./modules/example/infra";
 import { LoyaltyController } from "./modules/loyalty/infra";
+import { MediaController } from "./modules/media/infra/elysia";
 import { OrdersController } from "./modules/orders/infra";
 import { PaymentsController } from "./modules/payments/infra";
 import { ProductsController } from "./modules/products/infra";
@@ -25,6 +26,7 @@ await mkdir(process.env.STATIC_DIR!, { recursive: true });
 
 export const server = app.use([
 	BrandingController,
+	MediaController,
 	ExampleController,
 	CompaniesController,
 	UsersController,

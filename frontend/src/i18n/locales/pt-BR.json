@@ -8,6 +8,7 @@
 		"admin": {
 			"branding": {
 				"bannerPreview": "Prévia do banner",
+				"bannerUpload": "Enviar banner",
 				"bannerUrl": "URL do banner",
 				"bannerUrlPlaceholder": "https://example.com/banner.png",
 				"colorGroups": {
@@ -48,9 +49,12 @@
 				"fontDisplay": "Fonte de destaque",
 				"fontDisplayPlaceholder": "Ex: Luckiest Guy",
 				"fontDisplayPreview": "Prévia da fonte de destaque",
+				"fontFileUrl": "URL do arquivo da fonte",
+				"fontFileUrlPlaceholder": "https://example.com/fonte.woff2",
 				"fontFamily": "Fonte do texto",
 				"fontFamilyPlaceholder": "Ex: Outfit",
 				"fontFamilyPreview": "Prévia da fonte do texto",
+				"fontUpload": "Enviar arquivo da fonte",
 				"footerText": "Texto do rodapé",
 				"footerTextPlaceholder": "© 2025 Meu Restaurante",
 				"ga4Id": "ID do Google Analytics 4",
@@ -58,6 +62,7 @@
 				"lightTheme": "Tema claro",
 				"loadError": "Não foi possível carregar as configurações de identidade visual.",
 				"logoPreview": "Prévia do logotipo",
+				"logoUpload": "Enviar logotipo",
 				"logoUrl": "URL do logotipo",
 				"logoUrlPlaceholder": "https://example.com/logo.png",
 				"metaPixelId": "ID do Meta Pixel",
@@ -71,7 +76,8 @@
 				"sectionTracking": "Rastreamento de marketing",
 				"subtitle": "Personalize a aparência da sua loja e as análises.",
 				"themeColors": "Cores do tema",
-				"title": "Identidade visual"
+				"title": "Identidade visual",
+				"uploadError": "Não foi possível enviar o arquivo."
 			},
 			"categories": {
 				"columns": {
@@ -262,11 +268,13 @@
 					"error": "Não foi possível criar o produto.",
 					"imageUrl": "URL da imagem",
 					"imageUrlPlaceholder": "https://example.com/produto.jpg",
+					"imageUpload": "Enviar imagem",
 					"price": "Preço base",
 					"submit": "Adicionar produto",
 					"submitting": "Adicionando...",
 					"title": "Título",
-					"titlePlaceholder": "Ex: Pão de queijo tradicional"
+					"titlePlaceholder": "Ex: Pão de queijo tradicional",
+					"uploadError": "Não foi possível enviar a imagem."
 				},
 				"edit": {
 					"action": "Editar",

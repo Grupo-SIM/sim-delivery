@@ -9,6 +9,8 @@ import { FormSectionHeading } from "@/components/ui/FormSectionHeading";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
+import { Label } from "@/components/ui/label";
+import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { getBrandingQueryKey, useGetBranding, usePutBranding } from "@/lib/api";
 import { defaultThemeColors, resolveThemeColors, type ThemeColors } from "@/lib/theme-colors";
 import { showToast } from "@/stores";
@@ -23,7 +25,9 @@ function BrandingPage() {
 	const [logoUrl, setLogoUrl] = useState("");
 	const [bannerUrl, setBannerUrl] = useState("");
 	const [fontFamily, setFontFamily] = useState("");
+	const [fontFamilyUrl, setFontFamilyUrl] = useState("");
 	const [fontDisplay, setFontDisplay] = useState("");
+	const [fontDisplayUrl, setFontDisplayUrl] = useState("");
 	const [themeColors, setThemeColors] = useState<ThemeColors>(defaultThemeColors);
 	const [footerText, setFooterText] = useState("");
 	const [metaPixelId, setMetaPixelId] = useState("");
@@ -35,7 +39,9 @@ function BrandingPage() {
 			setLogoUrl(branding.logoUrl ?? "");
 			setBannerUrl(branding.bannerUrl ?? "");
 			setFontFamily(branding.fontFamily ?? "");
+			setFontFamilyUrl(branding.fontFamilyUrl ?? "");
 			setFontDisplay(branding.fontDisplay ?? "");
+			setFontDisplayUrl(branding.fontDisplayUrl ?? "");
 			setThemeColors(resolveThemeColors(branding.themeColors));
 			setFooterText(branding.footerText ?? "");
 			setMetaPixelId(branding.metaPixelId ?? "");
@@ -72,7 +78,9 @@ function BrandingPage() {
 				data: {
 					bannerUrl: bannerUrl.trim() || undefined,
 					fontDisplay: fontDisplay.trim() || undefined,
+					fontDisplayUrl: fontDisplayUrl.trim() || undefined,
 					fontFamily: fontFamily.trim() || undefined,
+					fontFamilyUrl: fontFamilyUrl.trim() || undefined,
 					footerText: footerText.trim() || undefined,
 					ga4Id: ga4Id.trim() || undefined,
 					gtmId: gtmId.trim() || undefined,
@@ -117,13 +125,17 @@ function BrandingPage() {
 							placeholder={t("admin.branding.footerTextPlaceholder")}
 							value={footerText}
 						/>
-
-						<TextField
-							label={t("admin.branding.logoUrl")}
-							onValueChange={setLogoUrl}
-							placeholder={t("admin.branding.logoUrlPlaceholder")}
-							value={logoUrl}
-						/>
+						<Label>
+							{t("admin.branding.logoUrl")}
+							<MediaUrlInput
+								asset="logo"
+								onUploadError={() => showToast(t("admin.branding.uploadError"), "negative")}
+								onValueChange={setLogoUrl}
+								placeholder={t("admin.branding.logoUrlPlaceholder")}
+								uploadLabel={t("admin.branding.logoUpload")}
+								value={logoUrl}
+							/>
+						</Label>
 
 						{logoUrl && (
 							<div className="rounded border border-border p-3">
@@ -134,12 +146,17 @@ function BrandingPage() {
 							</div>
 						)}
 
-						<TextField
-							label={t("admin.branding.bannerUrl")}
-							onValueChange={setBannerUrl}
-							placeholder={t("admin.branding.bannerUrlPlaceholder")}
-							value={bannerUrl}
-						/>
+						<Label>
+							{t("admin.branding.bannerUrl")}
+							<MediaUrlInput
+								asset="banner"
+								onUploadError={() => showToast(t("admin.branding.uploadError"), "negative")}
+								onValueChange={setBannerUrl}
+								placeholder={t("admin.branding.bannerUrlPlaceholder")}
+								uploadLabel={t("admin.branding.bannerUpload")}
+								value={bannerUrl}
+							/>
+						</Label>
 
 						{bannerUrl && (
 							<div className="rounded border border-border p-3">
@@ -151,23 +168,33 @@ function BrandingPage() {
 						)}
 
 						<FontField
+							family={fontFamily}
 							label={t("admin.branding.fontFamily")}
-							onValueChange={setFontFamily}
-							placeholder={t("admin.branding.fontFamilyPlaceholder")}
 							previewLabel={t("admin.branding.fontFamilyPreview")}
 							sampleClassName="text-lg"
 							sampleText="Aa Bb Cc 123"
-							value={fontFamily}
+							url={fontFamilyUrl}
+							uploadAsset="font-family"
+							onUploadError={() => showToast(t("admin.branding.uploadError"), "negative")}
+							onUrlChange={url => {
+								setFontFamilyUrl(url);
+								if (url) setFontFamily("Brand Text");
+							}}
 						/>
 
 						<FontField
+							family={fontDisplay}
 							label={t("admin.branding.fontDisplay")}
-							onValueChange={setFontDisplay}
-							placeholder={t("admin.branding.fontDisplayPlaceholder")}
 							previewLabel={t("admin.branding.fontDisplayPreview")}
 							sampleClassName="text-2xl"
 							sampleText="Aa Bb Cc 123"
-							value={fontDisplay}
+							url={fontDisplayUrl}
+							uploadAsset="font-display"
+							onUploadError={() => showToast(t("admin.branding.uploadError"), "negative")}
+							onUrlChange={url => {
+								setFontDisplayUrl(url);
+								if (url) setFontDisplay("Brand Display");
+							}}
 						/>
 
 						<FormSectionHeading>{t("admin.branding.themeColors")}</FormSectionHeading>

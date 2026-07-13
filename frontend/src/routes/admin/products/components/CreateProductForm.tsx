@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
+import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { getProductsQueryKey, usePostProducts } from "@/lib/api";
@@ -24,6 +25,7 @@ export function CreateProductForm() {
 	const [cashbackEnabled, setCashbackEnabled] = useState(false);
 	const [cashback, setCashback] = useState(0);
 	const [error, setError] = useState<string | null>(null);
+	const [isUploadingImage, setIsUploadingImage] = useState(false);
 
 	const { isPending, mutate } = usePostProducts();
 
@@ -82,12 +84,14 @@ export function CreateProductForm() {
 				<span>
 					{t("admin.products.create.imageUrl")} <RequiredMark />
 				</span>
-				<Input
-					onBlur={flushImageUrl}
-					onChange={event => setLocalImageUrl(event.currentTarget.value)}
+				<MediaUrlInput
+					asset="product"
+					onUploadError={() => setError(t("admin.products.create.uploadError"))}
+					onUploadingChange={setIsUploadingImage}
+					onValueChange={setImageUrl}
 					placeholder={t("admin.products.create.imageUrlPlaceholder")}
-					required
-					value={localImageUrl}
+					uploadLabel={t("admin.products.create.imageUpload")}
+					value={imageUrl}
 				/>
 			</Label>
 
@@ -138,7 +142,10 @@ export function CreateProductForm() {
 			</Label>
 
 			<div className="flex items-center gap-3 md:col-span-2">
-				<Button disabled={isPending || !localTitle || !localImageUrl || priceReais <= 0} type="submit">
+				<Button
+					disabled={isPending || isUploadingImage || !localTitle || !localImageUrl || priceReais <= 0}
+					type="submit"
+				>
 					{isPending ? t("admin.products.create.submitting") : t("admin.products.create.submit")}
 				</Button>
 				{error && <p className="text-destructive text-xs">{error}</p>}

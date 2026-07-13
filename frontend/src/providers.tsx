@@ -44,7 +44,7 @@ export function Providers({ children }: ProvidersProps) {
 
 function BrandedProviders({ children }: ProvidersProps) {
 	const [themeMode, setThemeMode] = useState<ThemeMode>(getDocumentThemeMode);
-	const { fontDisplay, fontFamily, themeColors } = useLiveBranding();
+	const { fontDisplay, fontDisplayUrl, fontFamily, fontFamilyUrl, themeColors } = useLiveBranding();
 
 	useEffect(() => {
 		const syncThemeMode = () => {
@@ -85,8 +85,8 @@ function BrandedProviders({ children }: ProvidersProps) {
 	}, [themeColors]);
 
 	useEffect(() => {
-		loadGoogleFont(fontFamily);
-		loadGoogleFont(fontDisplay);
+		if (!fontFamilyUrl) loadGoogleFont(fontFamily);
+		if (!fontDisplayUrl) loadGoogleFont(fontDisplay);
 
 		let style = document.getElementById("live-branding-fonts") as HTMLStyleElement | null;
 		if (!style) {
@@ -94,8 +94,8 @@ function BrandedProviders({ children }: ProvidersProps) {
 			style.id = "live-branding-fonts";
 			document.head.appendChild(style);
 		}
-		style.textContent = fontsToCss(fontFamily, fontDisplay);
-	}, [fontFamily, fontDisplay]);
+		style.textContent = fontsToCss(fontFamily, fontDisplay, fontFamilyUrl, fontDisplayUrl);
+	}, [fontDisplay, fontDisplayUrl, fontFamily, fontFamilyUrl]);
 
 	return (
 		<StyletronProvider value={styletron}>

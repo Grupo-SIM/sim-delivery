@@ -10,7 +10,10 @@ export function googleFontsUrl(families: string[]) {
 }
 
 function googleFontLinkId(family: string) {
-	return `google-font-${family.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+	return `google-font-${family
+		.trim()
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, "-")}`;
 }
 
 /** Injects (once per family) a Google Fonts stylesheet link so the family becomes usable via font-family. */
@@ -27,7 +30,24 @@ export function loadGoogleFont(family: string | null | undefined) {
 	document.head.appendChild(link);
 }
 
-/** CSS overriding --font-sans/--font-display with the company's chosen font families. */
-export function fontsToCss(fontFamily: string, fontDisplay: string) {
-	return `:root{--font-sans:"${fontFamily}", system-ui, sans-serif;--font-display:"${fontDisplay}", "${fontFamily}", system-ui, sans-serif}`;
+function escapeCssValue(value: string) {
+	return value.replace(/["\\\\]/g, "\\\\$&");
+}
+
+export function fontsToCss(
+	fontFamily: string,
+	fontDisplay: string,
+	fontFamilyUrl?: string | null,
+	fontDisplayUrl?: string | null,
+) {
+	const fontFaces = [
+		fontFamilyUrl &&
+			`@font-face{font-family:"${escapeCssValue(fontFamily)}";src:url("${escapeCssValue(fontFamilyUrl)}") format("woff2");font-display:swap;}`,
+		fontDisplayUrl &&
+			`@font-face{font-family:"${escapeCssValue(fontDisplay)}";src:url("${escapeCssValue(fontDisplayUrl)}") format("woff2");font-display:swap;}`,
+	]
+		.filter(Boolean)
+		.join("");
+
+	return `${fontFaces}:root{--font-sans:"${escapeCssValue(fontFamily)}", system-ui, sans-serif;--font-display:"${escapeCssValue(fontDisplay)}", "${escapeCssValue(fontFamily)}", system-ui, sans-serif}`;
 }

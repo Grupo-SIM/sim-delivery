@@ -13,6 +13,8 @@ model Company {
     footerText  String?
     fontFamily  String?
     fontDisplay String?
+    fontFamilyUrl String?
+    fontDisplayUrl String?
     themeColors Json?
     /// Marketing tracking IDs injected into the store at runtime.
     metaPixelId String?

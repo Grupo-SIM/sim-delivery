@@ -55,7 +55,9 @@ interface CompanyBranding {
 	apiUrl: string | null;
 	bannerUrl: string | null;
 	fontDisplay: string | null;
+	fontDisplayUrl: string | null;
 	fontFamily: string | null;
+	fontFamilyUrl: string | null;
 	footerText: string | null;
 	ga4Id: string | null;
 	gtmId: string | null;
@@ -92,7 +94,10 @@ function createBrandingCss(colors: ThemeColors, fontFamily: string, fontDisplay:
 
 function googleFontsUrl(families: string[]) {
 	const params = [...new Set(families)]
-		.map(family => `family=${encodeURIComponent(family.trim()).replace(/%20/g, "+")}:wght@400;500;600;700;800;900`)
+		.map(
+			family =>
+				`family=${encodeURIComponent(family.trim()).replace(/%20/g, "+")}:wght@400;500;600;700;800;900`,
+		)
 		.join("&");
 	return `https://fonts.googleapis.com/css2?${params}&display=swap`;
 }
@@ -112,7 +117,9 @@ try {
 			apiUrl: true,
 			bannerUrl: true,
 			fontDisplay: true,
+			fontDisplayUrl: true,
 			fontFamily: true,
+			fontFamilyUrl: true,
 			footerText: true,
 			ga4Id: true,
 			gtmId: true,
@@ -155,13 +162,15 @@ await writeFile(join(publicDir, "branding.css"), createBrandingCss(themeColors, 
 
 await writeFile(
 	brandingPath,
-	`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tapiUrl: string;\n\tbannerUrl: string | null;\n\tcompanyName: string;\n\tfontDisplay: string;\n\tfontFamily: string;\n\tfooterText: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n}\n\nexport const branding: Branding = ${JSON.stringify(
+	`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tapiUrl: string;\n\tbannerUrl: string | null;\n\tcompanyName: string;\n\tfontDisplay: string;\n\tfontDisplayUrl: string | null;\n\tfontFamily: string;\n\tfontFamilyUrl: string | null;\n\tfooterText: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n}\n\nexport const branding: Branding = ${JSON.stringify(
 		{
 			apiUrl,
 			bannerUrl: company.bannerUrl,
 			companyName: company.name,
 			fontDisplay,
+			fontDisplayUrl: company.fontDisplayUrl,
 			fontFamily,
+			fontFamilyUrl: company.fontFamilyUrl,
 			footerText: company.footerText,
 			ga4Id: company.ga4Id,
 			gtmId: company.gtmId,
