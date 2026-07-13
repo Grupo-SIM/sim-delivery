@@ -13,6 +13,7 @@ const ROOT = new URL("../..", import.meta.url).pathname;
 const FRONTEND = join(ROOT, "frontend");
 const publicDir = join(FRONTEND, "public");
 const brandingPath = join(FRONTEND, "src", "lib", "branding.ts");
+const indexHtmlPath = join(FRONTEND, "index.html");
 
 async function readEnvFile(path: string) {
 	if (!existsSync(path)) return {};
@@ -47,9 +48,14 @@ interface ThemeColors {
 	light: Record<string, string>;
 }
 
+const DEFAULT_FONT_FAMILY = "Outfit";
+const DEFAULT_FONT_DISPLAY = "Luckiest Guy";
+
 interface CompanyBranding {
 	apiUrl: string | null;
 	bannerUrl: string | null;
+	fontDisplay: string | null;
+	fontFamily: string | null;
 	footerText: string | null;
 	ga4Id: string | null;
 	gtmId: string | null;
@@ -75,12 +81,20 @@ function extensionFrom(contentType: string | null, sourceUrl: string) {
 	return fromUrl && ["avif", "jpg", "jpeg", "png", "svg", "webp"].includes(fromUrl) ? fromUrl : "png";
 }
 
-function createBrandingCss(colors: ThemeColors) {
+function createBrandingCss(colors: ThemeColors, fontFamily: string, fontDisplay: string) {
 	const variables = (colorSet: Record<string, string>) =>
 		Object.entries(colorSet)
 			.map(([name, value]) => `--${name.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}:${value}`)
 			.join(";");
-	return `:root{${variables(colors.light)}}:root.dark{${variables(colors.dark)}}\n`;
+	const fontVariables = `--font-sans:"${fontFamily}", system-ui, sans-serif;--font-display:"${fontDisplay}", "${fontFamily}", system-ui, sans-serif`;
+	return `:root{${variables(colors.light)};${fontVariables}}:root.dark{${variables(colors.dark)}}\n`;
+}
+
+function googleFontsUrl(families: string[]) {
+	const params = [...new Set(families)]
+		.map(family => `family=${encodeURIComponent(family.trim()).replace(/%20/g, "+")}:wght@400;500;600;700;800;900`)
+		.join("&");
+	return `https://fonts.googleapis.com/css2?${params}&display=swap`;
 }
 
 function requireBuildValue<T>(value: T | null, name: string): T {
@@ -97,6 +111,8 @@ try {
 		select: {
 			apiUrl: true,
 			bannerUrl: true,
+			fontDisplay: true,
+			fontFamily: true,
 			footerText: true,
 			ga4Id: true,
 			gtmId: true,
@@ -119,6 +135,8 @@ const apiUrl =
 	company.apiUrl?.trim() ||
 	requireBuildValue(process.env.VITE_API_URL?.trim() || null, "apiUrl or VITE_API_URL");
 const logoSourceUrl = requireBuildValue(company.logoUrl, "logoUrl");
+const fontFamily = company.fontFamily?.trim() || DEFAULT_FONT_FAMILY;
+const fontDisplay = company.fontDisplay?.trim() || DEFAULT_FONT_DISPLAY;
 const packageName =
 	company.packageName?.trim() || `com.jbmidia.${slug.toLowerCase().replace(/[^a-z0-9_]/g, "_")}`;
 const siteUrl =
@@ -133,15 +151,17 @@ if (!logoResponse.ok) throw new Error(`Could not download branding logo: HTTP ${
 const logoFilename = `logo.${extensionFrom(logoResponse.headers.get("content-type"), logoSourceUrl)}`;
 const logoPath = join(publicDir, logoFilename);
 await writeFile(logoPath, await logoResponse.arrayBuffer());
-await writeFile(join(publicDir, "branding.css"), createBrandingCss(themeColors));
+await writeFile(join(publicDir, "branding.css"), createBrandingCss(themeColors, fontFamily, fontDisplay));
 
 await writeFile(
 	brandingPath,
-	`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tapiUrl: string;\n\tbannerUrl: string | null;\n\tcompanyName: string;\n\tfooterText: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n}\n\nexport const branding: Branding = ${JSON.stringify(
+	`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tapiUrl: string;\n\tbannerUrl: string | null;\n\tcompanyName: string;\n\tfontDisplay: string;\n\tfontFamily: string;\n\tfooterText: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n}\n\nexport const branding: Branding = ${JSON.stringify(
 		{
 			apiUrl,
 			bannerUrl: company.bannerUrl,
 			companyName: company.name,
+			fontDisplay,
+			fontFamily,
 			footerText: company.footerText,
 			ga4Id: company.ga4Id,
 			gtmId: company.gtmId,
@@ -176,5 +196,12 @@ if (existsSync(tauriConfPath)) {
 	if (conf.app?.windows?.[0]) conf.app.windows[0].title = company.name;
 	await writeFile(tauriConfPath, `${JSON.stringify(conf, null, "\t")}\n`);
 }
+
+const indexHtml = await readFile(indexHtmlPath, "utf8");
+const updatedIndexHtml = indexHtml.replace(
+	/https:\/\/fonts\.googleapis\.com\/css2\?[^"]+/,
+	googleFontsUrl([fontDisplay, fontFamily]),
+);
+await writeFile(indexHtmlPath, updatedIndexHtml);
 
 console.log(`Injected branding for ${company.name} (${slug}).`);

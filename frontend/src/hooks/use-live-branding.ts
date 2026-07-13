@@ -20,6 +20,8 @@ export function useLiveBranding(): Branding {
 			...staticBranding,
 			bannerUrl: data.bannerUrl,
 			companyName: data.companyName ?? staticBranding.companyName,
+			fontDisplay: data.fontDisplay?.trim() || staticBranding.fontDisplay,
+			fontFamily: data.fontFamily?.trim() || staticBranding.fontFamily,
 			footerText: data.footerText,
 			ga4Id: data.ga4Id,
 			gtmId: data.gtmId,

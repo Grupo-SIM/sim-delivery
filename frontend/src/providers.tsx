@@ -8,6 +8,7 @@ import { Provider as StyletronProvider } from "styletron-react";
 import { ConfirmDialog } from "./components/ui/ConfirmDialog";
 import { useLiveBranding } from "./hooks/use-live-branding";
 import { getAppTheme, type ThemeMode } from "./lib/baseui-theme";
+import { fontsToCss, loadGoogleFont } from "./lib/google-fonts";
 import { reactQueryClient } from "./lib/tanstack";
 import { themeColorsToCss } from "./lib/theme-colors";
 
@@ -43,7 +44,7 @@ export function Providers({ children }: ProvidersProps) {
 
 function BrandedProviders({ children }: ProvidersProps) {
 	const [themeMode, setThemeMode] = useState<ThemeMode>(getDocumentThemeMode);
-	const { themeColors } = useLiveBranding();
+	const { fontDisplay, fontFamily, themeColors } = useLiveBranding();
 
 	useEffect(() => {
 		const syncThemeMode = () => {
@@ -82,6 +83,19 @@ function BrandedProviders({ children }: ProvidersProps) {
 		}
 		style.textContent = themeColorsToCss(themeColors);
 	}, [themeColors]);
+
+	useEffect(() => {
+		loadGoogleFont(fontFamily);
+		loadGoogleFont(fontDisplay);
+
+		let style = document.getElementById("live-branding-fonts") as HTMLStyleElement | null;
+		if (!style) {
+			style = document.createElement("style");
+			style.id = "live-branding-fonts";
+			document.head.appendChild(style);
+		}
+		style.textContent = fontsToCss(fontFamily, fontDisplay);
+	}, [fontFamily, fontDisplay]);
 
 	return (
 		<StyletronProvider value={styletron}>

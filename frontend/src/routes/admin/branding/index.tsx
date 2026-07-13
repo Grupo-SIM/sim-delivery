@@ -12,7 +12,7 @@ import { TextField } from "@/components/ui/TextField";
 import { getBrandingQueryKey, useGetBranding, usePutBranding } from "@/lib/api";
 import { defaultThemeColors, resolveThemeColors, type ThemeColors } from "@/lib/theme-colors";
 import { showToast } from "@/stores";
-import { ThemeEditor } from "./components";
+import { FontField, ThemeEditor } from "./components";
 
 function BrandingPage() {
 	const { t } = useTranslation();
@@ -22,6 +22,8 @@ function BrandingPage() {
 
 	const [logoUrl, setLogoUrl] = useState("");
 	const [bannerUrl, setBannerUrl] = useState("");
+	const [fontFamily, setFontFamily] = useState("");
+	const [fontDisplay, setFontDisplay] = useState("");
 	const [themeColors, setThemeColors] = useState<ThemeColors>(defaultThemeColors);
 	const [footerText, setFooterText] = useState("");
 	const [metaPixelId, setMetaPixelId] = useState("");
@@ -32,6 +34,8 @@ function BrandingPage() {
 		if (branding) {
 			setLogoUrl(branding.logoUrl ?? "");
 			setBannerUrl(branding.bannerUrl ?? "");
+			setFontFamily(branding.fontFamily ?? "");
+			setFontDisplay(branding.fontDisplay ?? "");
 			setThemeColors(resolveThemeColors(branding.themeColors));
 			setFooterText(branding.footerText ?? "");
 			setMetaPixelId(branding.metaPixelId ?? "");
@@ -67,6 +71,8 @@ function BrandingPage() {
 			{
 				data: {
 					bannerUrl: bannerUrl.trim() || undefined,
+					fontDisplay: fontDisplay.trim() || undefined,
+					fontFamily: fontFamily.trim() || undefined,
 					footerText: footerText.trim() || undefined,
 					ga4Id: ga4Id.trim() || undefined,
 					gtmId: gtmId.trim() || undefined,
@@ -143,6 +149,26 @@ function BrandingPage() {
 								<img alt="banner preview" className="h-32 w-full rounded object-cover" src={bannerUrl} />
 							</div>
 						)}
+
+						<FontField
+							label={t("admin.branding.fontFamily")}
+							onValueChange={setFontFamily}
+							placeholder={t("admin.branding.fontFamilyPlaceholder")}
+							previewLabel={t("admin.branding.fontFamilyPreview")}
+							sampleClassName="text-lg"
+							sampleText="Aa Bb Cc 123"
+							value={fontFamily}
+						/>
+
+						<FontField
+							label={t("admin.branding.fontDisplay")}
+							onValueChange={setFontDisplay}
+							placeholder={t("admin.branding.fontDisplayPlaceholder")}
+							previewLabel={t("admin.branding.fontDisplayPreview")}
+							sampleClassName="text-2xl"
+							sampleText="Aa Bb Cc 123"
+							value={fontDisplay}
+						/>
 
 						<FormSectionHeading>{t("admin.branding.themeColors")}</FormSectionHeading>
 						<ThemeEditor

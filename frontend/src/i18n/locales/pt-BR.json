@@ -45,6 +45,12 @@
 				"copyColor": "Copiar {{color}} do {{mode}}",
 				"copyFromTheme": "Copiar do {{mode}}",
 				"darkTheme": "Tema escuro",
+				"fontDisplay": "Fonte de destaque",
+				"fontDisplayPlaceholder": "Ex: Luckiest Guy",
+				"fontDisplayPreview": "Prévia da fonte de destaque",
+				"fontFamily": "Fonte do texto",
+				"fontFamilyPlaceholder": "Ex: Outfit",
+				"fontFamilyPreview": "Prévia da fonte do texto",
 				"footerText": "Texto do rodapé",
 				"footerTextPlaceholder": "© 2025 Meu Restaurante",
 				"ga4Id": "ID do Google Analytics 4",
@@ -498,7 +504,7 @@
 					"title": "Nova unidade"
 				},
 				"deliveryZones": {
-					"action": "Faixas de entrega",
+					"action": "Entrega",
 					"add": "Adicionar faixa",
 					"cancel": "Cancelar",
 					"description": "Defina taxas de entrega por raio de distância da unidade (em km). A primeira faixa cujo raio cubra a distância do cliente é usada; se nenhuma cobrir, a taxa fixa da unidade é aplicada (quando habilitada).",
@@ -738,9 +744,14 @@
 				}
 			},
 			"chooseUnit": {
+				"available": "Disponível",
+				"delivery": "Entrega",
 				"empty": "Nenhuma unidade disponível ainda.",
 				"loadError": "Não foi possível carregar as unidades.",
+				"minOrder": "Pedido mínimo",
 				"noAddress": "Endereço não informado",
+				"pickup": "Retirada",
+				"prepTime": "Preparo",
 				"subtitle": "Escolha uma unidade para iniciar seu pedido.",
 				"title": "Nossas unidades"
 			},
