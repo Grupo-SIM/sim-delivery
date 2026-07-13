@@ -116,10 +116,15 @@ try {
 
 if (!company) throw new Error(`Company "${slug}" was not found.`);
 
-const apiUrl = requireBuildValue(company.apiUrl, "apiUrl");
+const apiUrl =
+	company.apiUrl?.trim() ||
+	requireBuildValue(process.env.VITE_API_URL?.trim() || null, "apiUrl or VITE_API_URL");
 const logoSourceUrl = requireBuildValue(company.logoUrl, "logoUrl");
-const packageName = requireBuildValue(company.packageName, "packageName");
-const siteUrl = requireBuildValue(company.siteUrl, "siteUrl");
+const packageName =
+	company.packageName?.trim() || `com.jbmidia.${slug.toLowerCase().replace(/[^a-z0-9_]/g, "_")}`;
+const siteUrl =
+	company.siteUrl?.trim() ||
+	requireBuildValue(process.env.VITE_APP_URL?.trim() || null, "siteUrl or VITE_APP_URL");
 const themeColors = requireBuildValue(company.themeColors, "themeColors");
 
 await mkdir(publicDir, { recursive: true });
