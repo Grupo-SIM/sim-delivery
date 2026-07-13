@@ -89,7 +89,7 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 					</div>
 				</div>
 
-				<div>
+				<div className="space-y-2">
 					<span className="font-medium text-sm">{t("admin.units.config.deliveryFee")}</span>
 					<NumericInput
 						decimalScale={2}
@@ -102,7 +102,7 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 					/>
 				</div>
 
-				<div>
+				<div className="space-y-2">
 					<span className="font-medium text-sm">{t("admin.units.config.cashback")}</span>
 					<NumericInput
 						decimalScale={2}
@@ -114,7 +114,7 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 					/>
 				</div>
 
-				<div>
+				<div className="space-y-2">
 					<span className="font-medium text-sm">{t("admin.units.config.availability")}</span>
 					<CustomSelect
 						onChange={value => setAvailability(value as Availability)}
