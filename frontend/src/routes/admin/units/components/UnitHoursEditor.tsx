@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { PatternFormat } from "react-number-format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/Modal";
@@ -17,6 +18,23 @@ interface DayState {
 }
 
 const emptyDay: DayState = { closed: true, closesAt: "", opensAt: "" };
+
+function isAllowedTime({ value }: { value: string }) {
+	if (value.length < 2) {
+		return true;
+	}
+	if (Number(value.slice(0, 2)) > 23) {
+		return false;
+	}
+	if (value.length < 4) {
+		return true;
+	}
+	return Number(value.slice(2, 4)) <= 59;
+}
+
+function toTimeString(digits: string) {
+	return digits.length === 4 ? `${digits.slice(0, 2)}:${digits.slice(2, 4)}` : null;
+}
 
 interface UnitHoursEditorProps {
 	onClose: () => void;
@@ -48,7 +66,11 @@ export function UnitHoursEditor({ onClose, unitId }: UnitHoursEditorProps) {
 			WEEKDAYS.map(weekday => {
 				const row = data.find(hours => Number(hours.weekday) === weekday);
 				return row
-					? { closed: row.closed, closesAt: row.closesAt ?? "", opensAt: row.opensAt ?? "" }
+					? {
+							closed: row.closed,
+							closesAt: (row.closesAt ?? "").replace(":", ""),
+							opensAt: (row.opensAt ?? "").replace(":", ""),
+						}
 					: { ...emptyDay };
 			}),
 		);
@@ -67,8 +89,8 @@ export function UnitHoursEditor({ onClose, unitId }: UnitHoursEditorProps) {
 				data: {
 					hours: days.map((day, weekday) => ({
 						closed: day.closed,
-						closesAt: day.closed ? null : day.closesAt || null,
-						opensAt: day.closed ? null : day.opensAt || null,
+						closesAt: day.closed ? null : toTimeString(day.closesAt),
+						opensAt: day.closed ? null : toTimeString(day.opensAt),
 						weekday,
 					})),
 				},
@@ -101,19 +123,25 @@ export function UnitHoursEditor({ onClose, unitId }: UnitHoursEditorProps) {
 								/>
 								{t("admin.units.hours.closed")}
 							</label>
-							<Input
+							<PatternFormat
 								className="w-28"
+								customInput={Input}
 								disabled={day.closed}
-								onChange={event => update(index, { opensAt: event.currentTarget.value })}
-								placeholder="09:00"
+								format="##:##"
+								isAllowed={isAllowedTime}
+								mask="_"
+								onValueChange={({ value }) => update(index, { opensAt: value })}
 								value={day.opensAt}
 							/>
 							<span className="text-muted-foreground">—</span>
-							<Input
+							<PatternFormat
 								className="w-28"
+								customInput={Input}
 								disabled={day.closed}
-								onChange={event => update(index, { closesAt: event.currentTarget.value })}
-								placeholder="18:00"
+								format="##:##"
+								isAllowed={isAllowedTime}
+								mask="_"
+								onValueChange={({ value }) => update(index, { closesAt: value })}
 								value={day.closesAt}
 							/>
 						</div>
