@@ -6,11 +6,18 @@ import { Modal } from "@/components/ui/Modal";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { Skeleton } from "@/components/ui/Skeleton";
 import {
+	type GetUnits200,
 	getUnitsByUnitIdDeliveryZonesQueryKey,
+	getUnitsQueryKey,
 	useGetUnitsByUnitIdDeliveryZones,
+	usePatchUnitsByUnitId,
 	usePutUnitsByUnitIdDeliveryZones,
 } from "@/lib/api";
 import { showAlert } from "@/stores";
+
+type Unit = GetUnits200[number];
+type DeliveryMethod = "delivery" | "pickup";
+const METHODS: DeliveryMethod[] = ["delivery", "pickup"];
 
 interface ZoneRow {
 	radiusKm: number;
@@ -23,15 +30,21 @@ const emptyRow: ZoneRow = { etaMaxMinutes: null, etaMinMinutes: null, feeReais: 
 
 interface UnitDeliveryZonesEditorProps {
 	onClose: () => void;
-	unitId: string | null;
+	unit: Unit | null;
 }
 
-export function UnitDeliveryZonesEditor({ onClose, unitId }: UnitDeliveryZonesEditorProps) {
+export function UnitDeliveryZonesEditor({ onClose, unit }: UnitDeliveryZonesEditorProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
+	const unitId = unit?.id ?? null;
 	const { data, isPending } = useGetUnitsByUnitIdDeliveryZones(unitId ?? undefined);
-	const { isPending: isSaving, mutate } = usePutUnitsByUnitIdDeliveryZones();
+	const { isPending: isSavingZones, mutateAsync: saveZones } = usePutUnitsByUnitIdDeliveryZones();
+	const { isPending: isSavingUnit, mutateAsync: saveUnit } = usePatchUnitsByUnitId();
+	const isSaving = isSavingZones || isSavingUnit;
 	const [rows, setRows] = useState<ZoneRow[]>([]);
+	const [methods, setMethods] = useState<DeliveryMethod[]>([]);
+	const [feeReais, setFeeReais] = useState(0);
+	const [feeFallbackEnabled, setFeeFallbackEnabled] = useState(true);
 
 	useEffect(() => {
 		if (!data) {
@@ -47,6 +60,19 @@ export function UnitDeliveryZonesEditor({ onClose, unitId }: UnitDeliveryZonesEd
 		);
 	}, [data]);
 
+	useEffect(() => {
+		if (!unit) {
+			return;
+		}
+		setMethods(METHODS.filter(method => unit.deliveryMethods.includes(method)));
+		setFeeReais(Number(unit.deliveryFee) / 100);
+		setFeeFallbackEnabled(unit.deliveryFeeFallbackEnabled);
+	}, [unit]);
+
+	function toggleMethod(method: DeliveryMethod, checked: boolean) {
+		setMethods(prev => (checked ? [...new Set([...prev, method])] : prev.filter(m => m !== method)));
+	}
+
 	function update(index: number, patch: Partial<ZoneRow>) {
 		setRows(prev => prev.map((row, i) => (i === index ? { ...row, ...patch } : row)));
 	}
@@ -59,30 +85,40 @@ export function UnitDeliveryZonesEditor({ onClose, unitId }: UnitDeliveryZonesEd
 		setRows(prev => prev.filter((_, i) => i !== index));
 	}
 
-	function save() {
+	async function save() {
 		if (!unitId) {
 			return;
 		}
-		mutate(
-			{
-				data: {
-					zones: rows.map(row => ({
-						etaMaxMinutes: row.etaMaxMinutes,
-						etaMinMinutes: row.etaMinMinutes,
-						fee: Math.round(row.feeReais * 100),
-						radiusKm: row.radiusKm,
-					})),
-				},
-				unitId,
-			},
-			{
-				onError: () => void showAlert(t("admin.units.deliveryZones.error")),
-				onSuccess: async () => {
-					await queryClient.invalidateQueries({ queryKey: getUnitsByUnitIdDeliveryZonesQueryKey(unitId) });
-					onClose();
-				},
-			},
-		);
+		try {
+			await Promise.all([
+				saveZones({
+					data: {
+						zones: rows.map(row => ({
+							etaMaxMinutes: row.etaMaxMinutes,
+							etaMinMinutes: row.etaMinMinutes,
+							fee: Math.round(row.feeReais * 100),
+							radiusKm: row.radiusKm,
+						})),
+					},
+					unitId,
+				}),
+				saveUnit({
+					data: {
+						deliveryFee: Math.round(feeReais * 100),
+						deliveryFeeFallbackEnabled: feeFallbackEnabled,
+						deliveryMethods: methods,
+					},
+					unitId,
+				}),
+			]);
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: getUnitsByUnitIdDeliveryZonesQueryKey(unitId) }),
+				queryClient.invalidateQueries({ queryKey: getUnitsQueryKey() }),
+			]);
+			onClose();
+		} catch {
+			void showAlert(t("admin.units.deliveryZones.error"));
+		}
 	}
 
 	return (
@@ -92,6 +128,43 @@ export function UnitDeliveryZonesEditor({ onClose, unitId }: UnitDeliveryZonesEd
 			) : (
 				<div className="space-y-4">
 					<p className="text-muted-foreground text-sm">{t("admin.units.deliveryZones.description")}</p>
+
+					<div className="space-y-2">
+						<span className="font-medium text-sm">{t("admin.units.config.deliveryMethods")}</span>
+						<div className="flex gap-4">
+							{METHODS.map(method => (
+								<label className="flex items-center gap-2 text-sm" key={method}>
+									<input
+										checked={methods.includes(method)}
+										onChange={event => toggleMethod(method, event.currentTarget.checked)}
+										type="checkbox"
+									/>
+									{t(`admin.units.config.method.${method}`)}
+								</label>
+							))}
+						</div>
+					</div>
+
+					<div className="space-y-2">
+						<span className="font-medium text-sm">{t("admin.units.config.deliveryFee")}</span>
+						<NumericInput
+							decimalScale={2}
+							decimalSeparator=","
+							onValueChange={({ floatValue }) => setFeeReais(floatValue ?? 0)}
+							placeholder="R$ 10,00"
+							prefix="R$ "
+							thousandSeparator="."
+							value={feeReais}
+						/>
+						<label className="flex items-center gap-2 text-muted-foreground text-xs">
+							<input
+								checked={feeFallbackEnabled}
+								onChange={event => setFeeFallbackEnabled(event.currentTarget.checked)}
+								type="checkbox"
+							/>
+							{t("admin.units.config.deliveryFeeFallback")}
+						</label>
+					</div>
 
 					<div className="space-y-3">
 						{rows.map((row, index) => (

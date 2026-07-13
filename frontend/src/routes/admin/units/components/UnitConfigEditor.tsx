@@ -9,8 +9,6 @@ import { type GetUnits200, getUnitsQueryKey, usePatchUnitsByUnitId } from "@/lib
 import { showAlert } from "@/stores";
 
 type Unit = GetUnits200[number];
-type DeliveryMethod = "delivery" | "pickup";
-const METHODS: DeliveryMethod[] = ["delivery", "pickup"];
 
 type Availability = "auto" | "closed" | "open";
 const toAvailability = (isOpenManual: boolean | null): Availability =>
@@ -27,9 +25,6 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const { isPending: isSaving, mutate } = usePatchUnitsByUnitId();
-	const [methods, setMethods] = useState<DeliveryMethod[]>([]);
-	const [feeReais, setFeeReais] = useState(0);
-	const [feeFallbackEnabled, setFeeFallbackEnabled] = useState(true);
 	const [cashback, setCashback] = useState(0);
 	const [availability, setAvailability] = useState<Availability>("auto");
 
@@ -37,16 +32,9 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 		if (!unit) {
 			return;
 		}
-		setMethods(METHODS.filter(method => unit.deliveryMethods.includes(method)));
-		setFeeReais(Number(unit.deliveryFee) / 100);
-		setFeeFallbackEnabled(unit.deliveryFeeFallbackEnabled);
 		setCashback(unit.cashbackPercent);
 		setAvailability(toAvailability(unit.isOpenManual));
 	}, [unit]);
-
-	function toggleMethod(method: DeliveryMethod, checked: boolean) {
-		setMethods(prev => (checked ? [...new Set([...prev, method])] : prev.filter(m => m !== method)));
-	}
 
 	function save() {
 		if (!unit) {
@@ -56,9 +44,6 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 			{
 				data: {
 					cashbackPercent: cashback,
-					deliveryFee: Math.round(feeReais * 100),
-					deliveryFeeFallbackEnabled: feeFallbackEnabled,
-					deliveryMethods: methods,
 					isOpenManual: toIsOpenManual(availability),
 				},
 				unitId: unit.id,
@@ -76,43 +61,6 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 	return (
 		<Modal isOpen={unit !== null} onClose={onClose} title={t("admin.units.config.title")}>
 			<div className="space-y-4">
-				<div className="space-y-2">
-					<span className="font-medium text-sm">{t("admin.units.config.deliveryMethods")}</span>
-					<div className="flex gap-4">
-						{METHODS.map(method => (
-							<label className="flex items-center gap-2 text-sm" key={method}>
-								<input
-									checked={methods.includes(method)}
-									onChange={event => toggleMethod(method, event.currentTarget.checked)}
-									type="checkbox"
-								/>
-								{t(`admin.units.config.method.${method}`)}
-							</label>
-						))}
-					</div>
-				</div>
-
-				<div className="space-y-2">
-					<span className="font-medium text-sm">{t("admin.units.config.deliveryFee")}</span>
-					<NumericInput
-						decimalScale={2}
-						decimalSeparator=","
-						onValueChange={({ floatValue }) => setFeeReais(floatValue ?? 0)}
-						placeholder="R$ 10,00"
-						prefix="R$ "
-						thousandSeparator="."
-						value={feeReais}
-					/>
-					<label className="flex items-center gap-2 text-muted-foreground text-xs">
-						<input
-							checked={feeFallbackEnabled}
-							onChange={event => setFeeFallbackEnabled(event.currentTarget.checked)}
-							type="checkbox"
-						/>
-						{t("admin.units.config.deliveryFeeFallback")}
-					</label>
-				</div>
-
 				<div className="space-y-2">
 					<span className="font-medium text-sm">{t("admin.units.config.cashback")}</span>
 					<NumericInput
