@@ -1,5 +1,16 @@
 # Taxa de entrega por raio de distância
 
+## Status: concluído
+
+Todas as 10 seções do plano foram implementadas e commitadas:
+- `ecfcd68` schema (DeliveryZone + deliveryFeeFallbackEnabled)
+- `38c741c` backend (Brasil API V2, lat/lng, CRUD de zonas, SimulateFreight)
+- `ab012f0` frontend (admin de zonas/fallback, captura de lat/lng, uso do
+  frete simulado no checkout)
+
+Backend `bun test` (156 pass) e `check-types`, frontend `check-types`,
+`build` e `bun test` (9 pass) todos verdes no momento do commit.
+
 ## Contexto
 
 Hoje `Unit.deliveryFee` é um valor fixo por unidade. `docs/09` já lista "por
