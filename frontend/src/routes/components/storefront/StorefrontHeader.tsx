@@ -1,12 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { LuMapPin } from "react-icons/lu";
+import { useTranslation } from "react-i18next";
 import type { StorefrontBranding } from "./types";
 
 interface StorefrontHeaderProps {
 	branding?: StorefrontBranding;
+	unitName?: string;
 }
 
-export function StorefrontHeader({ branding }: StorefrontHeaderProps) {
+export function StorefrontHeader({ branding, unitName }: StorefrontHeaderProps) {
+	const { t } = useTranslation();
 	const companyName = branding?.companyName ?? "JB Delivery";
 
 	return (
@@ -20,13 +23,16 @@ export function StorefrontHeader({ branding }: StorefrontHeaderProps) {
 							{companyName.slice(0, 2).toUpperCase()}
 						</span>
 					)}
-					<span className="truncate font-display text-xl tracking-wide">{companyName}</span>
+					<span className="flex min-w-0 flex-col">
+						<span className="truncate font-display text-xl tracking-wide">{companyName}</span>
+						{unitName && <span className="truncate text-muted-foreground text-sm">{unitName}</span>}
+					</span>
 				</Link>
 
-				<a className="hidden items-center gap-2 text-muted-foreground text-sm sm:flex" href="#unidades">
+				<Link className="hidden items-center gap-2 text-muted-foreground text-sm sm:flex" hash="unidades" to="/">
 					<LuMapPin aria-hidden className="h-4 w-4 text-primary" />
-					Escolha sua unidade
-				</a>
+					{t("store.unit.change")}
+				</Link>
 			</div>
 		</header>
 	);

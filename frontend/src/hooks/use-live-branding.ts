@@ -18,6 +18,7 @@ export function useLiveBranding(): Branding {
 
 		return {
 			...staticBranding,
+			bannerUrl: data.bannerUrl,
 			companyName: data.companyName ?? staticBranding.companyName,
 			footerText: data.footerText,
 			ga4Id: data.ga4Id,

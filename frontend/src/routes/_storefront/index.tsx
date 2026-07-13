@@ -3,16 +3,20 @@ import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useLiveBranding } from "@/hooks/use-live-branding";
 import { useGetPublicUnits } from "@/lib/api";
 import { slug } from "@/lib/variant";
-import { UnitCard } from "../components/storefront";
+import { StorefrontBanner, UnitCard } from "../components/storefront";
 
 function StorePage() {
 	const { t } = useTranslation();
+	const branding = useLiveBranding();
 	const { data: units, isError, isPending } = useGetPublicUnits({ slug });
 
 	return (
 		<>
+			<StorefrontBanner branding={branding} />
+
 			<section className="border-border/70 border-b bg-muted/35">
 				<div className="mx-auto max-w-6xl px-5 py-7 sm:py-9">
 					<p className="font-semibold text-primary text-sm uppercase tracking-[0.2em]">Peça onde estiver</p>

@@ -25,7 +25,10 @@ export class GetBranding {
 
 		if (!resolvedCompanyId) {
 			return {
+				bannerUrl: null,
 				companyName: null,
+				fontDisplay: null,
+				fontFamily: null,
 				footerText: null,
 				ga4Id: null,
 				gtmId: null,
@@ -37,6 +40,9 @@ export class GetBranding {
 
 		const company = await this.prisma.company.findUnique({
 			select: {
+				bannerUrl: true,
+				fontDisplay: true,
+				fontFamily: true,
 				footerText: true,
 				ga4Id: true,
 				gtmId: true,
@@ -49,7 +55,10 @@ export class GetBranding {
 		});
 
 		return {
+			bannerUrl: company?.bannerUrl ?? null,
 			companyName: company?.name ?? null,
+			fontDisplay: company?.fontDisplay ?? null,
+			fontFamily: company?.fontFamily ?? null,
 			footerText: company?.footerText ?? null,
 			ga4Id: company?.ga4Id ?? null,
 			gtmId: company?.gtmId ?? null,

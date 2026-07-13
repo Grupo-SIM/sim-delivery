@@ -7,6 +7,9 @@
 		},
 		"admin": {
 			"branding": {
+				"bannerPreview": "Prévia do banner",
+				"bannerUrl": "URL do banner",
+				"bannerUrlPlaceholder": "https://example.com/banner.png",
 				"colorGroups": {
 					"actions": "Ações e destaques",
 					"boundaries": "Bordas e foco",

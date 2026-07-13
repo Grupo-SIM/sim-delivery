@@ -49,6 +49,7 @@ interface ThemeColors {
 
 interface CompanyBranding {
 	apiUrl: string | null;
+	bannerUrl: string | null;
 	footerText: string | null;
 	ga4Id: string | null;
 	gtmId: string | null;
@@ -95,6 +96,7 @@ try {
 	company = await prisma.company.findUnique({
 		select: {
 			apiUrl: true,
+			bannerUrl: true,
 			footerText: true,
 			ga4Id: true,
 			gtmId: true,
@@ -135,9 +137,10 @@ await writeFile(join(publicDir, "branding.css"), createBrandingCss(themeColors))
 
 await writeFile(
 	brandingPath,
-	`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tapiUrl: string;\n\tcompanyName: string;\n\tfooterText: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n}\n\nexport const branding: Branding = ${JSON.stringify(
+	`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tapiUrl: string;\n\tbannerUrl: string | null;\n\tcompanyName: string;\n\tfooterText: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n}\n\nexport const branding: Branding = ${JSON.stringify(
 		{
 			apiUrl,
+			bannerUrl: company.bannerUrl,
 			companyName: company.name,
 			footerText: company.footerText,
 			ga4Id: company.ga4Id,

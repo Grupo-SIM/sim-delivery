@@ -21,6 +21,7 @@ function BrandingPage() {
 	const put = usePutBranding();
 
 	const [logoUrl, setLogoUrl] = useState("");
+	const [bannerUrl, setBannerUrl] = useState("");
 	const [themeColors, setThemeColors] = useState<ThemeColors>(defaultThemeColors);
 	const [footerText, setFooterText] = useState("");
 	const [metaPixelId, setMetaPixelId] = useState("");
@@ -30,6 +31,7 @@ function BrandingPage() {
 	useEffect(() => {
 		if (branding) {
 			setLogoUrl(branding.logoUrl ?? "");
+			setBannerUrl(branding.bannerUrl ?? "");
 			setThemeColors(resolveThemeColors(branding.themeColors));
 			setFooterText(branding.footerText ?? "");
 			setMetaPixelId(branding.metaPixelId ?? "");
@@ -64,6 +66,7 @@ function BrandingPage() {
 		put.mutate(
 			{
 				data: {
+					bannerUrl: bannerUrl.trim() || undefined,
 					footerText: footerText.trim() || undefined,
 					ga4Id: ga4Id.trim() || undefined,
 					gtmId: gtmId.trim() || undefined,
@@ -122,6 +125,22 @@ function BrandingPage() {
 									{t("admin.branding.logoPreview")}
 								</p>
 								<img alt="logo preview" className="h-12 object-contain" src={logoUrl} />
+							</div>
+						)}
+
+						<TextField
+							label={t("admin.branding.bannerUrl")}
+							onValueChange={setBannerUrl}
+							placeholder={t("admin.branding.bannerUrlPlaceholder")}
+							value={bannerUrl}
+						/>
+
+						{bannerUrl && (
+							<div className="rounded border border-border p-3">
+								<p className="mb-2 font-medium text-muted-foreground text-xs uppercase">
+									{t("admin.branding.bannerPreview")}
+								</p>
+								<img alt="banner preview" className="h-32 w-full rounded object-cover" src={bannerUrl} />
 							</div>
 						)}
 
