@@ -30,6 +30,7 @@ export function Modal({ children, isOpen, maxWidth = "640px", onClose, title }: 
 					style: {
 						borderRadius: "24px",
 						maxWidth,
+						transitionDuration: "150ms",
 						width: "92vw",
 					},
 				},
@@ -37,6 +38,7 @@ export function Modal({ children, isOpen, maxWidth = "640px", onClose, title }: 
 					style: {
 						backdropFilter: "blur(4px)",
 						backgroundColor: "rgba(0,0,0,0.55)",
+						transitionDuration: "150ms",
 					},
 				},
 				Root: {
