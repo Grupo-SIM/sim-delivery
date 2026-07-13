@@ -262,6 +262,6 @@ function CheckoutPage() {
 	);
 }
 
-export const Route = createFileRoute("/$unitId/checkout/")({
+export const Route = createFileRoute("/_storefront/$unitId/checkout/")({
 	component: CheckoutPage,
 });

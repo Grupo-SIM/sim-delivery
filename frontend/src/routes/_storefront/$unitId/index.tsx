@@ -14,7 +14,6 @@ import {
 	DeliveryMethodSelector,
 	InfoPill,
 	MenuBrowser,
-	StoreFooter,
 	StoreInfoModal,
 	UnitSwitcher,
 } from "./components";
@@ -111,13 +110,12 @@ function UnitStorePage() {
 				unitId={unit.id}
 				unitSlug={unitSlug}
 			/>
-			<StoreFooter />
 
 			<StoreInfoModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} unit={unit} />
 		</Container>
 	);
 }
 
-export const Route = createFileRoute("/$unitId/")({
+export const Route = createFileRoute("/_storefront/$unitId/")({
 	component: UnitStorePage,
 });

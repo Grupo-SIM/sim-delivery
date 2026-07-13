@@ -10,13 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AdminRouteImport } from './routes/admin'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as StorefrontRouteImport } from './routes/_storefront'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as DesignKitIndexRouteImport } from './routes/design-kit/index'
 import { Route as CourierIndexRouteImport } from './routes/courier/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as UnitIdIndexRouteImport } from './routes/$unitId/index'
-import { Route as IdentifyMagicLinkIndexRouteImport } from './routes/identify/magic-link/index'
+import { Route as StorefrontIndexRouteImport } from './routes/_storefront/index'
 import { Route as AdminUnitsIndexRouteImport } from './routes/admin/units/index'
 import { Route as AdminTagsIndexRouteImport } from './routes/admin/tags/index'
 import { Route as AdminStaffIndexRouteImport } from './routes/admin/staff/index'
@@ -28,20 +27,21 @@ import { Route as AdminKitchenIndexRouteImport } from './routes/admin/kitchen/in
 import { Route as AdminCompaniesIndexRouteImport } from './routes/admin/companies/index'
 import { Route as AdminCategoriesIndexRouteImport } from './routes/admin/categories/index'
 import { Route as AdminBrandingIndexRouteImport } from './routes/admin/branding/index'
-import { Route as UnitIdRateIndexRouteImport } from './routes/$unitId/rate/index'
-import { Route as UnitIdCheckoutIndexRouteImport } from './routes/$unitId/checkout/index'
-import { Route as UnitIdProductProductIdIndexRouteImport } from './routes/$unitId/product/$productId/index'
-import { Route as UnitIdCheckoutThankYouIndexRouteImport } from './routes/$unitId/checkout/thank-you/index'
+import { Route as StorefrontUnitIdIndexRouteImport } from './routes/_storefront/$unitId/index'
+import { Route as StorefrontIdentifyMagicLinkIndexRouteImport } from './routes/_storefront/identify/magic-link/index'
+import { Route as StorefrontUnitIdRateIndexRouteImport } from './routes/_storefront/$unitId/rate/index'
+import { Route as StorefrontUnitIdCheckoutIndexRouteImport } from './routes/_storefront/$unitId/checkout/index'
 import { Route as AdminUnitsUnitIdProductsIndexRouteImport } from './routes/admin/units/$unitId/products/index'
+import { Route as StorefrontUnitIdProductProductIdIndexRouteImport } from './routes/_storefront/$unitId/product/$productId/index'
+import { Route as StorefrontUnitIdCheckoutThankYouIndexRouteImport } from './routes/_storefront/$unitId/checkout/thank-you/index'
 
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const StorefrontRoute = StorefrontRouteImport.update({
+  id: '/_storefront',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginIndexRoute = LoginIndexRouteImport.update({
@@ -64,15 +64,10 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
-const UnitIdIndexRoute = UnitIdIndexRouteImport.update({
-  id: '/$unitId/',
-  path: '/$unitId/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IdentifyMagicLinkIndexRoute = IdentifyMagicLinkIndexRouteImport.update({
-  id: '/identify/magic-link/',
-  path: '/identify/magic-link/',
-  getParentRoute: () => rootRouteImport,
+const StorefrontIndexRoute = StorefrontIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StorefrontRoute,
 } as any)
 const AdminUnitsIndexRoute = AdminUnitsIndexRouteImport.update({
   id: '/units/',
@@ -129,27 +124,28 @@ const AdminBrandingIndexRoute = AdminBrandingIndexRouteImport.update({
   path: '/branding/',
   getParentRoute: () => AdminRoute,
 } as any)
-const UnitIdRateIndexRoute = UnitIdRateIndexRouteImport.update({
-  id: '/$unitId/rate/',
-  path: '/$unitId/rate/',
-  getParentRoute: () => rootRouteImport,
+const StorefrontUnitIdIndexRoute = StorefrontUnitIdIndexRouteImport.update({
+  id: '/$unitId/',
+  path: '/$unitId/',
+  getParentRoute: () => StorefrontRoute,
 } as any)
-const UnitIdCheckoutIndexRoute = UnitIdCheckoutIndexRouteImport.update({
-  id: '/$unitId/checkout/',
-  path: '/$unitId/checkout/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UnitIdProductProductIdIndexRoute =
-  UnitIdProductProductIdIndexRouteImport.update({
-    id: '/$unitId/product/$productId/',
-    path: '/$unitId/product/$productId/',
-    getParentRoute: () => rootRouteImport,
+const StorefrontIdentifyMagicLinkIndexRoute =
+  StorefrontIdentifyMagicLinkIndexRouteImport.update({
+    id: '/identify/magic-link/',
+    path: '/identify/magic-link/',
+    getParentRoute: () => StorefrontRoute,
   } as any)
-const UnitIdCheckoutThankYouIndexRoute =
-  UnitIdCheckoutThankYouIndexRouteImport.update({
-    id: '/$unitId/checkout/thank-you/',
-    path: '/$unitId/checkout/thank-you/',
-    getParentRoute: () => rootRouteImport,
+const StorefrontUnitIdRateIndexRoute =
+  StorefrontUnitIdRateIndexRouteImport.update({
+    id: '/$unitId/rate/',
+    path: '/$unitId/rate/',
+    getParentRoute: () => StorefrontRoute,
+  } as any)
+const StorefrontUnitIdCheckoutIndexRoute =
+  StorefrontUnitIdCheckoutIndexRouteImport.update({
+    id: '/$unitId/checkout/',
+    path: '/$unitId/checkout/',
+    getParentRoute: () => StorefrontRoute,
   } as any)
 const AdminUnitsUnitIdProductsIndexRoute =
   AdminUnitsUnitIdProductsIndexRouteImport.update({
@@ -157,17 +153,27 @@ const AdminUnitsUnitIdProductsIndexRoute =
     path: '/units/$unitId/products/',
     getParentRoute: () => AdminRoute,
   } as any)
+const StorefrontUnitIdProductProductIdIndexRoute =
+  StorefrontUnitIdProductProductIdIndexRouteImport.update({
+    id: '/$unitId/product/$productId/',
+    path: '/$unitId/product/$productId/',
+    getParentRoute: () => StorefrontRoute,
+  } as any)
+const StorefrontUnitIdCheckoutThankYouIndexRoute =
+  StorefrontUnitIdCheckoutThankYouIndexRouteImport.update({
+    id: '/$unitId/checkout/thank-you/',
+    path: '/$unitId/checkout/thank-you/',
+    getParentRoute: () => StorefrontRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof StorefrontIndexRoute
   '/admin': typeof AdminRouteWithChildren
-  '/$unitId/': typeof UnitIdIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/courier/': typeof CourierIndexRoute
   '/design-kit/': typeof DesignKitIndexRoute
   '/login/': typeof LoginIndexRoute
-  '/$unitId/checkout/': typeof UnitIdCheckoutIndexRoute
-  '/$unitId/rate/': typeof UnitIdRateIndexRoute
+  '/$unitId/': typeof StorefrontUnitIdIndexRoute
   '/admin/branding/': typeof AdminBrandingIndexRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
   '/admin/companies/': typeof AdminCompaniesIndexRoute
@@ -179,20 +185,20 @@ export interface FileRoutesByFullPath {
   '/admin/staff/': typeof AdminStaffIndexRoute
   '/admin/tags/': typeof AdminTagsIndexRoute
   '/admin/units/': typeof AdminUnitsIndexRoute
-  '/identify/magic-link/': typeof IdentifyMagicLinkIndexRoute
-  '/$unitId/checkout/thank-you/': typeof UnitIdCheckoutThankYouIndexRoute
-  '/$unitId/product/$productId/': typeof UnitIdProductProductIdIndexRoute
+  '/$unitId/checkout/': typeof StorefrontUnitIdCheckoutIndexRoute
+  '/$unitId/rate/': typeof StorefrontUnitIdRateIndexRoute
+  '/identify/magic-link/': typeof StorefrontIdentifyMagicLinkIndexRoute
+  '/$unitId/checkout/thank-you/': typeof StorefrontUnitIdCheckoutThankYouIndexRoute
+  '/$unitId/product/$productId/': typeof StorefrontUnitIdProductProductIdIndexRoute
   '/admin/units/$unitId/products/': typeof AdminUnitsUnitIdProductsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/$unitId': typeof UnitIdIndexRoute
+  '/': typeof StorefrontIndexRoute
   '/admin': typeof AdminIndexRoute
   '/courier': typeof CourierIndexRoute
   '/design-kit': typeof DesignKitIndexRoute
   '/login': typeof LoginIndexRoute
-  '/$unitId/checkout': typeof UnitIdCheckoutIndexRoute
-  '/$unitId/rate': typeof UnitIdRateIndexRoute
+  '/$unitId': typeof StorefrontUnitIdIndexRoute
   '/admin/branding': typeof AdminBrandingIndexRoute
   '/admin/categories': typeof AdminCategoriesIndexRoute
   '/admin/companies': typeof AdminCompaniesIndexRoute
@@ -204,22 +210,23 @@ export interface FileRoutesByTo {
   '/admin/staff': typeof AdminStaffIndexRoute
   '/admin/tags': typeof AdminTagsIndexRoute
   '/admin/units': typeof AdminUnitsIndexRoute
-  '/identify/magic-link': typeof IdentifyMagicLinkIndexRoute
-  '/$unitId/checkout/thank-you': typeof UnitIdCheckoutThankYouIndexRoute
-  '/$unitId/product/$productId': typeof UnitIdProductProductIdIndexRoute
+  '/$unitId/checkout': typeof StorefrontUnitIdCheckoutIndexRoute
+  '/$unitId/rate': typeof StorefrontUnitIdRateIndexRoute
+  '/identify/magic-link': typeof StorefrontIdentifyMagicLinkIndexRoute
+  '/$unitId/checkout/thank-you': typeof StorefrontUnitIdCheckoutThankYouIndexRoute
+  '/$unitId/product/$productId': typeof StorefrontUnitIdProductProductIdIndexRoute
   '/admin/units/$unitId/products': typeof AdminUnitsUnitIdProductsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_storefront': typeof StorefrontRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
-  '/$unitId/': typeof UnitIdIndexRoute
+  '/_storefront/': typeof StorefrontIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/courier/': typeof CourierIndexRoute
   '/design-kit/': typeof DesignKitIndexRoute
   '/login/': typeof LoginIndexRoute
-  '/$unitId/checkout/': typeof UnitIdCheckoutIndexRoute
-  '/$unitId/rate/': typeof UnitIdRateIndexRoute
+  '/_storefront/$unitId/': typeof StorefrontUnitIdIndexRoute
   '/admin/branding/': typeof AdminBrandingIndexRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
   '/admin/companies/': typeof AdminCompaniesIndexRoute
@@ -231,9 +238,11 @@ export interface FileRoutesById {
   '/admin/staff/': typeof AdminStaffIndexRoute
   '/admin/tags/': typeof AdminTagsIndexRoute
   '/admin/units/': typeof AdminUnitsIndexRoute
-  '/identify/magic-link/': typeof IdentifyMagicLinkIndexRoute
-  '/$unitId/checkout/thank-you/': typeof UnitIdCheckoutThankYouIndexRoute
-  '/$unitId/product/$productId/': typeof UnitIdProductProductIdIndexRoute
+  '/_storefront/$unitId/checkout/': typeof StorefrontUnitIdCheckoutIndexRoute
+  '/_storefront/$unitId/rate/': typeof StorefrontUnitIdRateIndexRoute
+  '/_storefront/identify/magic-link/': typeof StorefrontIdentifyMagicLinkIndexRoute
+  '/_storefront/$unitId/checkout/thank-you/': typeof StorefrontUnitIdCheckoutThankYouIndexRoute
+  '/_storefront/$unitId/product/$productId/': typeof StorefrontUnitIdProductProductIdIndexRoute
   '/admin/units/$unitId/products/': typeof AdminUnitsUnitIdProductsIndexRoute
 }
 export interface FileRouteTypes {
@@ -241,13 +250,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
-    | '/$unitId/'
     | '/admin/'
     | '/courier/'
     | '/design-kit/'
     | '/login/'
-    | '/$unitId/checkout/'
-    | '/$unitId/rate/'
+    | '/$unitId/'
     | '/admin/branding/'
     | '/admin/categories/'
     | '/admin/companies/'
@@ -259,6 +266,8 @@ export interface FileRouteTypes {
     | '/admin/staff/'
     | '/admin/tags/'
     | '/admin/units/'
+    | '/$unitId/checkout/'
+    | '/$unitId/rate/'
     | '/identify/magic-link/'
     | '/$unitId/checkout/thank-you/'
     | '/$unitId/product/$productId/'
@@ -266,13 +275,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/$unitId'
     | '/admin'
     | '/courier'
     | '/design-kit'
     | '/login'
-    | '/$unitId/checkout'
-    | '/$unitId/rate'
+    | '/$unitId'
     | '/admin/branding'
     | '/admin/categories'
     | '/admin/companies'
@@ -284,21 +291,22 @@ export interface FileRouteTypes {
     | '/admin/staff'
     | '/admin/tags'
     | '/admin/units'
+    | '/$unitId/checkout'
+    | '/$unitId/rate'
     | '/identify/magic-link'
     | '/$unitId/checkout/thank-you'
     | '/$unitId/product/$productId'
     | '/admin/units/$unitId/products'
   id:
     | '__root__'
-    | '/'
+    | '/_storefront'
     | '/admin'
-    | '/$unitId/'
+    | '/_storefront/'
     | '/admin/'
     | '/courier/'
     | '/design-kit/'
     | '/login/'
-    | '/$unitId/checkout/'
-    | '/$unitId/rate/'
+    | '/_storefront/$unitId/'
     | '/admin/branding/'
     | '/admin/categories/'
     | '/admin/companies/'
@@ -310,24 +318,20 @@ export interface FileRouteTypes {
     | '/admin/staff/'
     | '/admin/tags/'
     | '/admin/units/'
-    | '/identify/magic-link/'
-    | '/$unitId/checkout/thank-you/'
-    | '/$unitId/product/$productId/'
+    | '/_storefront/$unitId/checkout/'
+    | '/_storefront/$unitId/rate/'
+    | '/_storefront/identify/magic-link/'
+    | '/_storefront/$unitId/checkout/thank-you/'
+    | '/_storefront/$unitId/product/$productId/'
     | '/admin/units/$unitId/products/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  StorefrontRoute: typeof StorefrontRouteWithChildren
   AdminRoute: typeof AdminRouteWithChildren
-  UnitIdIndexRoute: typeof UnitIdIndexRoute
   CourierIndexRoute: typeof CourierIndexRoute
   DesignKitIndexRoute: typeof DesignKitIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
-  UnitIdCheckoutIndexRoute: typeof UnitIdCheckoutIndexRoute
-  UnitIdRateIndexRoute: typeof UnitIdRateIndexRoute
-  IdentifyMagicLinkIndexRoute: typeof IdentifyMagicLinkIndexRoute
-  UnitIdCheckoutThankYouIndexRoute: typeof UnitIdCheckoutThankYouIndexRoute
-  UnitIdProductProductIdIndexRoute: typeof UnitIdProductProductIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -339,11 +343,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
+    '/_storefront': {
+      id: '/_storefront'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof StorefrontRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login/': {
@@ -374,19 +378,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/$unitId/': {
-      id: '/$unitId/'
-      path: '/$unitId'
-      fullPath: '/$unitId/'
-      preLoaderRoute: typeof UnitIdIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/identify/magic-link/': {
-      id: '/identify/magic-link/'
-      path: '/identify/magic-link'
-      fullPath: '/identify/magic-link/'
-      preLoaderRoute: typeof IdentifyMagicLinkIndexRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_storefront/': {
+      id: '/_storefront/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof StorefrontIndexRouteImport
+      parentRoute: typeof StorefrontRoute
     }
     '/admin/units/': {
       id: '/admin/units/'
@@ -465,33 +462,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBrandingIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/$unitId/rate/': {
-      id: '/$unitId/rate/'
+    '/_storefront/$unitId/': {
+      id: '/_storefront/$unitId/'
+      path: '/$unitId'
+      fullPath: '/$unitId/'
+      preLoaderRoute: typeof StorefrontUnitIdIndexRouteImport
+      parentRoute: typeof StorefrontRoute
+    }
+    '/_storefront/identify/magic-link/': {
+      id: '/_storefront/identify/magic-link/'
+      path: '/identify/magic-link'
+      fullPath: '/identify/magic-link/'
+      preLoaderRoute: typeof StorefrontIdentifyMagicLinkIndexRouteImport
+      parentRoute: typeof StorefrontRoute
+    }
+    '/_storefront/$unitId/rate/': {
+      id: '/_storefront/$unitId/rate/'
       path: '/$unitId/rate'
       fullPath: '/$unitId/rate/'
-      preLoaderRoute: typeof UnitIdRateIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof StorefrontUnitIdRateIndexRouteImport
+      parentRoute: typeof StorefrontRoute
     }
-    '/$unitId/checkout/': {
-      id: '/$unitId/checkout/'
+    '/_storefront/$unitId/checkout/': {
+      id: '/_storefront/$unitId/checkout/'
       path: '/$unitId/checkout'
       fullPath: '/$unitId/checkout/'
-      preLoaderRoute: typeof UnitIdCheckoutIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$unitId/product/$productId/': {
-      id: '/$unitId/product/$productId/'
-      path: '/$unitId/product/$productId'
-      fullPath: '/$unitId/product/$productId/'
-      preLoaderRoute: typeof UnitIdProductProductIdIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$unitId/checkout/thank-you/': {
-      id: '/$unitId/checkout/thank-you/'
-      path: '/$unitId/checkout/thank-you'
-      fullPath: '/$unitId/checkout/thank-you/'
-      preLoaderRoute: typeof UnitIdCheckoutThankYouIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof StorefrontUnitIdCheckoutIndexRouteImport
+      parentRoute: typeof StorefrontRoute
     }
     '/admin/units/$unitId/products/': {
       id: '/admin/units/$unitId/products/'
@@ -500,8 +497,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUnitsUnitIdProductsIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/_storefront/$unitId/product/$productId/': {
+      id: '/_storefront/$unitId/product/$productId/'
+      path: '/$unitId/product/$productId'
+      fullPath: '/$unitId/product/$productId/'
+      preLoaderRoute: typeof StorefrontUnitIdProductProductIdIndexRouteImport
+      parentRoute: typeof StorefrontRoute
+    }
+    '/_storefront/$unitId/checkout/thank-you/': {
+      id: '/_storefront/$unitId/checkout/thank-you/'
+      path: '/$unitId/checkout/thank-you'
+      fullPath: '/$unitId/checkout/thank-you/'
+      preLoaderRoute: typeof StorefrontUnitIdCheckoutThankYouIndexRouteImport
+      parentRoute: typeof StorefrontRoute
+    }
   }
 }
+
+interface StorefrontRouteChildren {
+  StorefrontIndexRoute: typeof StorefrontIndexRoute
+  StorefrontUnitIdIndexRoute: typeof StorefrontUnitIdIndexRoute
+  StorefrontUnitIdCheckoutIndexRoute: typeof StorefrontUnitIdCheckoutIndexRoute
+  StorefrontUnitIdRateIndexRoute: typeof StorefrontUnitIdRateIndexRoute
+  StorefrontIdentifyMagicLinkIndexRoute: typeof StorefrontIdentifyMagicLinkIndexRoute
+  StorefrontUnitIdCheckoutThankYouIndexRoute: typeof StorefrontUnitIdCheckoutThankYouIndexRoute
+  StorefrontUnitIdProductProductIdIndexRoute: typeof StorefrontUnitIdProductProductIdIndexRoute
+}
+
+const StorefrontRouteChildren: StorefrontRouteChildren = {
+  StorefrontIndexRoute: StorefrontIndexRoute,
+  StorefrontUnitIdIndexRoute: StorefrontUnitIdIndexRoute,
+  StorefrontUnitIdCheckoutIndexRoute: StorefrontUnitIdCheckoutIndexRoute,
+  StorefrontUnitIdRateIndexRoute: StorefrontUnitIdRateIndexRoute,
+  StorefrontIdentifyMagicLinkIndexRoute: StorefrontIdentifyMagicLinkIndexRoute,
+  StorefrontUnitIdCheckoutThankYouIndexRoute:
+    StorefrontUnitIdCheckoutThankYouIndexRoute,
+  StorefrontUnitIdProductProductIdIndexRoute:
+    StorefrontUnitIdProductProductIdIndexRoute,
+}
+
+const StorefrontRouteWithChildren = StorefrontRoute._addFileChildren(
+  StorefrontRouteChildren,
+)
 
 interface AdminRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
@@ -538,17 +575,11 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  StorefrontRoute: StorefrontRouteWithChildren,
   AdminRoute: AdminRouteWithChildren,
-  UnitIdIndexRoute: UnitIdIndexRoute,
   CourierIndexRoute: CourierIndexRoute,
   DesignKitIndexRoute: DesignKitIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
-  UnitIdCheckoutIndexRoute: UnitIdCheckoutIndexRoute,
-  UnitIdRateIndexRoute: UnitIdRateIndexRoute,
-  IdentifyMagicLinkIndexRoute: IdentifyMagicLinkIndexRoute,
-  UnitIdCheckoutThankYouIndexRoute: UnitIdCheckoutThankYouIndexRoute,
-  UnitIdProductProductIdIndexRoute: UnitIdProductProductIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

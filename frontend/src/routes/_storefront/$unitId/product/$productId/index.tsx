@@ -255,6 +255,6 @@ function ProductPage() {
 	);
 }
 
-export const Route = createFileRoute("/$unitId/product/$productId/")({
+export const Route = createFileRoute("/_storefront/$unitId/product/$productId/")({
 	component: ProductPage,
 });

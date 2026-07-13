@@ -92,7 +92,7 @@ function RatePage() {
 	);
 }
 
-export const Route = createFileRoute("/$unitId/rate/")({
+export const Route = createFileRoute("/_storefront/$unitId/rate/")({
 	component: RatePage,
 	validateSearch: searchSchema,
 });

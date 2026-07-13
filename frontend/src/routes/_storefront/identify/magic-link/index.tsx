@@ -41,7 +41,7 @@ function MagicLinkVerifyPage() {
 	);
 }
 
-export const Route = createFileRoute("/identify/magic-link/")({
+export const Route = createFileRoute("/_storefront/identify/magic-link/")({
 	component: MagicLinkVerifyPage,
 	validateSearch: (search: Record<string, unknown>): MagicLinkSearch => ({
 		token: String(search.token ?? ""),

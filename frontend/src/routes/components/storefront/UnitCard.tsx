@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { LuBike, LuClock3, LuMapPin, LuShoppingBag } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import type { PublicUnit } from "./types";
@@ -16,6 +17,7 @@ function toPhraseCase(value: string) {
 }
 
 export function UnitCard({ unit }: UnitCardProps) {
+	const { t } = useTranslation();
 	const address = [unit.addressLine, unit.neighborhood, unit.city].filter(Boolean).join(", ");
 	const prepTime =
 		unit.prepTimeMinMinutes !== null && unit.prepTimeMaxMinutes !== null
@@ -38,7 +40,7 @@ export function UnitCard({ unit }: UnitCardProps) {
 					<p className="font-display text-xl tracking-wide">{toPhraseCase(unit.name)}</p>
 					<p className="mt-2 flex items-start gap-2 text-muted-foreground text-sm">
 						<LuMapPin aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-						<span>{address || "Endereço não informado"}</span>
+						<span>{address || t("store.chooseUnit.noAddress")}</span>
 					</p>
 				</div>
 				<Badge
@@ -55,22 +57,32 @@ export function UnitCard({ unit }: UnitCardProps) {
 								: "mr-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground"
 						}
 					/>
-					{unit.isOpenNow ? "Aberto agora" : "Fechado"}
+					{unit.isOpenNow ? t("store.status.open") : t("store.status.closed")}
 				</Badge>
 			</div>
 
 			<div className="mt-auto grid grid-cols-2 gap-2 border-border/70 border-t pt-4 text-xs">
-				{prepTime && <Indicator Icon={LuClock3} label="Preparo" value={prepTime} />}
+				{prepTime && <Indicator Icon={LuClock3} label={t("store.chooseUnit.prepTime")} value={prepTime} />}
 				{hasDelivery && (
 					<Indicator
 						Icon={LuBike}
-						label="Entrega"
-						value={deliveryFee > 0 ? formatCurrency(deliveryFee) : "Grátis"}
+						label={t("store.chooseUnit.delivery")}
+						value={deliveryFee > 0 ? formatCurrency(deliveryFee) : t("store.unit.freeDelivery")}
 					/>
 				)}
-				{hasPickup && <Indicator Icon={LuShoppingBag} label="Retirada" value="Disponível" />}
+				{hasPickup && (
+					<Indicator
+						Icon={LuShoppingBag}
+						label={t("store.chooseUnit.pickup")}
+						value={t("store.chooseUnit.available")}
+					/>
+				)}
 				{minOrderCents > 0 && (
-					<Indicator Icon={LuShoppingBag} label="Pedido mínimo" value={formatCurrency(minOrderCents)} />
+					<Indicator
+						Icon={LuShoppingBag}
+						label={t("store.chooseUnit.minOrder")}
+						value={formatCurrency(minOrderCents)}
+					/>
 				)}
 			</div>
 		</Link>

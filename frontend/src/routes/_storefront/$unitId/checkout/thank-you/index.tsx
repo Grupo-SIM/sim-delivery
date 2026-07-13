@@ -43,7 +43,7 @@ function ThankYouPage() {
 	);
 }
 
-export const Route = createFileRoute("/$unitId/checkout/thank-you/")({
+export const Route = createFileRoute("/_storefront/$unitId/checkout/thank-you/")({
 	component: ThankYouPage,
 	validateSearch: searchSchema,
 });
