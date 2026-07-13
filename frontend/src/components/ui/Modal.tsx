@@ -30,7 +30,9 @@ export function Modal({ children, isOpen, maxWidth = "640px", onClose, title }: 
 					style: {
 						borderRadius: "24px",
 						maxWidth,
+						transform: "none",
 						transitionDuration: "150ms",
+						transitionProperty: "opacity",
 						width: "92vw",
 					},
 				},
