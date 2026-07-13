@@ -15,12 +15,16 @@ export interface AddressValue {
 	city: string;
 	state: string;
 	reference: string;
+	latitude: number | null;
+	longitude: number | null;
 }
 
 const emptyAddress: AddressValue = {
 	addressLine: "",
 	city: "",
 	complement: "",
+	latitude: null,
+	longitude: null,
 	neighborhood: "",
 	number: "",
 	reference: "",
@@ -54,6 +58,8 @@ export function AddressForm({ disabled, onSubmit }: AddressFormProps) {
 				addressLine: address.addressLine,
 				city: address.city,
 				complement: address.complement || prev.complement,
+				latitude: address.latitude,
+				longitude: address.longitude,
 				neighborhood: address.neighborhood,
 				state: address.state,
 				zipCode: digits,

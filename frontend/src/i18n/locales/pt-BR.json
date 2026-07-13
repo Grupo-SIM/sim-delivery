@@ -471,6 +471,7 @@
 					"cancel": "Cancelar",
 					"cashback": "Cashback",
 					"deliveryFee": "Taxa de entrega",
+					"deliveryFeeFallback": "Usar essa taxa fixa quando o endereço estiver fora de todas as faixas de raio",
 					"deliveryMethods": "Métodos de entrega",
 					"error": "Não foi possível salvar as configurações.",
 					"method": {
@@ -492,6 +493,21 @@
 					"submit": "Adicionar unidade",
 					"submitting": "Adicionando...",
 					"title": "Nova unidade"
+				},
+				"deliveryZones": {
+					"action": "Faixas de entrega",
+					"add": "Adicionar faixa",
+					"cancel": "Cancelar",
+					"description": "Defina taxas de entrega por raio de distância da unidade (em km). A primeira faixa cujo raio cubra a distância do cliente é usada; se nenhuma cobrir, a taxa fixa da unidade é aplicada (quando habilitada).",
+					"error": "Não foi possível salvar as faixas de entrega.",
+					"etaMax": "Tempo máx.",
+					"etaMin": "Tempo mín.",
+					"fee": "Taxa",
+					"radiusKm": "Raio",
+					"remove": "Remover",
+					"save": "Salvar faixas",
+					"saving": "Salvando...",
+					"title": "Faixas de entrega por raio"
 				},
 				"empty": "Nenhuma unidade ainda.",
 				"hours": {
@@ -675,6 +691,9 @@
 					"deliveryMethod": "Método de entrega",
 					"discount": "Desconto",
 					"error": "Não foi possível realizar o pedido. Tente novamente.",
+					"freightCalculating": "Calculando frete…",
+					"freightError": "Não foi possível calcular o frete para este endereço.",
+					"freightEta": "Previsão de entrega: {{min}}–{{max}} min",
 					"loyalty": "Pontos de fidelidade",
 					"loyaltyBalance": "{{points}} pts ({{amount}})",
 					"loyaltyRedeemed": "Pontos resgatados",

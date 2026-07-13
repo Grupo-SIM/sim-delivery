@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,7 @@ import {
 	type PostCustomersMe200,
 	type PostPublicCouponsValidate200,
 	postPublicCouponsValidate,
+	usePostPublicFreightSimulate,
 } from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
 import type { CartItem } from "@/stores";
@@ -63,7 +64,24 @@ export function OrderReview({
 	const [couponError, setCouponError] = useState<string | null>(null);
 	const [isValidating, setIsValidating] = useState(false);
 
-	const deliveryFee = deliveryMethod === "delivery" ? unitDeliveryFee : 0;
+	const { data: freight, error: freightError, isPending: isSimulatingFreight, mutate: simulateFreight } =
+		usePostPublicFreightSimulate();
+
+	useEffect(() => {
+		if (deliveryMethod !== "delivery" || address?.latitude == null || address?.longitude == null) {
+			return;
+		}
+		simulateFreight({ data: { latitude: address.latitude, longitude: address.longitude, slug, unitId } });
+	}, [deliveryMethod, address?.latitude, address?.longitude, unitId, slug, simulateFreight]);
+
+	const hasCoordinates = address?.latitude != null && address?.longitude != null;
+	const deliveryFee =
+		deliveryMethod !== "delivery"
+			? 0
+			: hasCoordinates && freight
+				? Number(freight.deliveryFee)
+				: unitDeliveryFee;
+	const blockedByFreight = deliveryMethod === "delivery" && hasCoordinates && (isSimulatingFreight || !!freightError);
 	const discountCents = Number(appliedCoupon?.discountCents ?? 0);
 	const total = Math.max(
 		0,
@@ -133,6 +151,20 @@ export function OrderReview({
 					<p className="text-muted-foreground">
 						{[address.neighborhood, address.city, address.state].filter(Boolean).join(", ")}
 					</p>
+					{deliveryMethod === "delivery" && hasCoordinates && (
+						<p className="mt-1 text-muted-foreground">
+							{isSimulatingFreight && t("store.checkout.order.freightCalculating")}
+							{!isSimulatingFreight && freightError && t("store.checkout.order.freightError")}
+							{!isSimulatingFreight &&
+								!freightError &&
+								freight?.etaMinMinutes != null &&
+								freight.etaMaxMinutes != null &&
+								t("store.checkout.order.freightEta", {
+									max: Number(freight.etaMaxMinutes),
+									min: Number(freight.etaMinMinutes),
+								})}
+						</p>
+					)}
 				</div>
 			)}
 
@@ -251,7 +283,7 @@ export function OrderReview({
 				</div>
 			</div>
 
-			<Button className="w-full" disabled={isPending} onClick={onSubmit} type="button">
+			<Button className="w-full" disabled={isPending || blockedByFreight} onClick={onSubmit} type="button">
 				{isPending ? t("store.checkout.order.placing") : t("store.checkout.order.place")}
 			</Button>
 		</div>

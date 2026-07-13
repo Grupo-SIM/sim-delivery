@@ -10,6 +10,7 @@ import { type GetUnits200, getUnitsQueryKey, useDeleteUnitsByUnitId } from "@/li
 import { showAlert, showConfirm } from "@/stores";
 import { UnitAddressEditor } from "./UnitAddressEditor";
 import { UnitConfigEditor } from "./UnitConfigEditor";
+import { UnitDeliveryZonesEditor } from "./UnitDeliveryZonesEditor";
 import { UnitHoursEditor } from "./UnitHoursEditor";
 
 interface UnitsTableProps {
@@ -23,6 +24,7 @@ export function UnitsTable({ units }: UnitsTableProps) {
 	const [hoursUnitId, setHoursUnitId] = useState<string | null>(null);
 	const [configUnit, setConfigUnit] = useState<GetUnits200[number] | null>(null);
 	const [addressUnit, setAddressUnit] = useState<GetUnits200[number] | null>(null);
+	const [zonesUnitId, setZonesUnitId] = useState<string | null>(null);
 
 	if (units.length === 0) {
 		return <EmptyState title={t("admin.units.empty")} />;
@@ -88,6 +90,9 @@ export function UnitsTable({ units }: UnitsTableProps) {
 									<Button onClick={() => setHoursUnitId(unit.id)} size="sm" type="button" variant="outline">
 										{t("admin.units.hours.action")}
 									</Button>
+									<Button onClick={() => setZonesUnitId(unit.id)} size="sm" type="button" variant="outline">
+										{t("admin.units.deliveryZones.action")}
+									</Button>
 									<Button
 										disabled={remove.isPending}
 										onClick={() => deleteUnit(unit.id, unit.name)}
@@ -107,6 +112,7 @@ export function UnitsTable({ units }: UnitsTableProps) {
 			<UnitHoursEditor onClose={() => setHoursUnitId(null)} unitId={hoursUnitId} />
 			<UnitConfigEditor onClose={() => setConfigUnit(null)} unit={configUnit} />
 			<UnitAddressEditor onClose={() => setAddressUnit(null)} unit={addressUnit} />
+			<UnitDeliveryZonesEditor onClose={() => setZonesUnitId(null)} unitId={zonesUnitId} />
 		</>
 	);
 }

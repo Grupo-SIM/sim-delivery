@@ -20,12 +20,16 @@ interface AddressState {
 	city: string;
 	state: string;
 	reference: string;
+	latitude: number | null;
+	longitude: number | null;
 }
 
 const emptyAddress: AddressState = {
 	addressLine: "",
 	city: "",
 	complement: "",
+	latitude: null,
+	longitude: null,
 	neighborhood: "",
 	number: "",
 	reference: "",
@@ -41,6 +45,8 @@ function toAddressState(unit: Unit | null): AddressState {
 		addressLine: unit.addressLine ?? "",
 		city: unit.city ?? "",
 		complement: unit.complement ?? "",
+		latitude: unit.latitude ?? null,
+		longitude: unit.longitude ?? null,
 		neighborhood: unit.neighborhood ?? "",
 		number: unit.number ?? "",
 		reference: unit.reference ?? "",
@@ -81,6 +87,8 @@ export function UnitAddressEditor({ onClose, unit }: UnitAddressEditorProps) {
 				addressLine: address.addressLine,
 				city: address.city,
 				complement: address.complement || prev.complement,
+				latitude: address.latitude,
+				longitude: address.longitude,
 				neighborhood: address.neighborhood,
 				state: address.state,
 				zipCode: digits,

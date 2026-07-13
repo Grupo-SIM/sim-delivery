@@ -29,6 +29,7 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 	const { isPending: isSaving, mutate } = usePatchUnitsByUnitId();
 	const [methods, setMethods] = useState<DeliveryMethod[]>([]);
 	const [feeReais, setFeeReais] = useState(0);
+	const [feeFallbackEnabled, setFeeFallbackEnabled] = useState(true);
 	const [cashback, setCashback] = useState(0);
 	const [availability, setAvailability] = useState<Availability>("auto");
 
@@ -38,6 +39,7 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 		}
 		setMethods(METHODS.filter(method => unit.deliveryMethods.includes(method)));
 		setFeeReais(Number(unit.deliveryFee) / 100);
+		setFeeFallbackEnabled(unit.deliveryFeeFallbackEnabled);
 		setCashback(unit.cashbackPercent);
 		setAvailability(toAvailability(unit.isOpenManual));
 	}, [unit]);
@@ -55,6 +57,7 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 				data: {
 					cashbackPercent: cashback,
 					deliveryFee: Math.round(feeReais * 100),
+					deliveryFeeFallbackEnabled: feeFallbackEnabled,
 					deliveryMethods: methods,
 					isOpenManual: toIsOpenManual(availability),
 				},
@@ -100,6 +103,14 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 						thousandSeparator="."
 						value={feeReais}
 					/>
+					<label className="flex items-center gap-2 text-muted-foreground text-xs">
+						<input
+							checked={feeFallbackEnabled}
+							onChange={event => setFeeFallbackEnabled(event.currentTarget.checked)}
+							type="checkbox"
+						/>
+						{t("admin.units.config.deliveryFeeFallback")}
+					</label>
 				</div>
 
 				<div className="space-y-2">
