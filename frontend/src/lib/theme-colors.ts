@@ -62,3 +62,11 @@ export function resolveThemeColors(themeColors: GetBrandingQueryResponse["themeC
 export function toThemeVariable(name: keyof ThemeColorSet) {
 	return name.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
 }
+
+export function themeColorsToCss(colors: ThemeColors) {
+	const declarations = (colorSet: ThemeColorSet) =>
+		Object.entries(colorSet)
+			.map(([name, value]) => `--${toThemeVariable(name as keyof ThemeColorSet)}:${value}`)
+			.join(";");
+	return `:root{${declarations(colors.light)}}:root.dark{${declarations(colors.dark)}}`;
+}

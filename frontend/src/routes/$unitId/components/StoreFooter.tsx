@@ -1,8 +1,9 @@
 import { useTranslation } from "react-i18next";
-import { branding } from "@/lib/branding";
+import { useLiveBranding } from "@/hooks/use-live-branding";
 
 export function StoreFooter() {
 	const { t } = useTranslation();
+	const branding = useLiveBranding();
 	const text = branding.footerText;
 	const logoUrl = branding.logoUrl;
 

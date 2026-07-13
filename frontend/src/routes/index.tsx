@@ -3,13 +3,14 @@ import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useLiveBranding } from "@/hooks/use-live-branding";
 import { useGetPublicUnits } from "@/lib/api";
-import { branding } from "@/lib/branding";
 import { slug } from "@/lib/variant";
 import { StorefrontFooter, StorefrontHeader, UnitCard } from "./components/storefront";
 
 function StorePage() {
 	const { t } = useTranslation();
+	const branding = useLiveBranding();
 	const { data: units, isError, isPending } = useGetPublicUnits({ slug });
 
 	return (

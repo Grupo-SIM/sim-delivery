@@ -6,9 +6,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { Client as Styletron } from "styletron-engine-monolithic";
 import { Provider as StyletronProvider } from "styletron-react";
 import { ConfirmDialog } from "./components/ui/ConfirmDialog";
+import { useLiveBranding } from "./hooks/use-live-branding";
 import { getAppTheme, type ThemeMode } from "./lib/baseui-theme";
-import { branding } from "./lib/branding";
 import { reactQueryClient } from "./lib/tanstack";
+import { themeColorsToCss } from "./lib/theme-colors";
 
 const styletron = new Styletron();
 
@@ -33,8 +34,16 @@ function getDocumentThemeMode(): ThemeMode {
 }
 
 export function Providers({ children }: ProvidersProps) {
+	return (
+		<QueryClientProvider client={reactQueryClient}>
+			<BrandedProviders>{children}</BrandedProviders>
+		</QueryClientProvider>
+	);
+}
+
+function BrandedProviders({ children }: ProvidersProps) {
 	const [themeMode, setThemeMode] = useState<ThemeMode>(getDocumentThemeMode);
-	const [themeColors] = useState(branding.themeColors);
+	const { themeColors } = useLiveBranding();
 
 	useEffect(() => {
 		const syncThemeMode = () => {
@@ -62,15 +71,25 @@ export function Providers({ children }: ProvidersProps) {
 		};
 	}, []);
 
+	useEffect(() => {
+		// Overrides the build-time /branding.css link once live colors are fetched, so an admin
+		// edit updates Tailwind's CSS vars without requiring a rebuild.
+		let style = document.getElementById("live-branding-theme") as HTMLStyleElement | null;
+		if (!style) {
+			style = document.createElement("style");
+			style.id = "live-branding-theme";
+			document.head.appendChild(style);
+		}
+		style.textContent = themeColorsToCss(themeColors);
+	}, [themeColors]);
+
 	return (
-		<QueryClientProvider client={reactQueryClient}>
-			<StyletronProvider value={styletron}>
-				<BaseProvider theme={getAppTheme(themeMode, themeColors)}>
-					{children}
-					<ConfirmDialog />
-					<ToastContainer autoClose={4000} position="top-right" theme={themeMode} />
-				</BaseProvider>
-			</StyletronProvider>
-		</QueryClientProvider>
+		<StyletronProvider value={styletron}>
+			<BaseProvider theme={getAppTheme(themeMode, themeColors)}>
+				{children}
+				<ConfirmDialog />
+				<ToastContainer autoClose={4000} position="top-right" theme={themeMode} />
+			</BaseProvider>
+		</StyletronProvider>
 	);
 }

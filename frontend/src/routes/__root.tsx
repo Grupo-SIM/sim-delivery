@@ -1,11 +1,12 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { useLiveBranding } from "@/hooks/use-live-branding";
 import { useTracking } from "@/hooks/use-tracking";
 import { useSyncSession } from "@/hooks/useSyncSession";
-import { branding } from "@/lib/branding";
 
 function RootComponent() {
 	useSyncSession();
 
+	const branding = useLiveBranding();
 	useTracking({
 		ga4Id: branding.ga4Id,
 		gtmId: branding.gtmId,
