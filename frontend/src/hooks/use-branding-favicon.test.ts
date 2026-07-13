@@ -3,14 +3,17 @@ import * as actualReact from "react";
 
 mock.module("react", () => ({
 	...actualReact,
-	useEffect: (effect: () => void | (() => void)) => effect(),
+	useEffect: (effect: () => undefined | (() => void)) => effect(),
 }));
 
 const { useBrandingFavicon } = await import("./use-branding-favicon");
 
 function createLink() {
 	return {
-		attributes: new Map<string, string>([["rel", "icon"], ["type", "image/svg+xml"]]),
+		attributes: new Map<string, string>([
+			["rel", "icon"],
+			["type", "image/svg+xml"],
+		]),
 		href: "/favicon.png",
 		removeAttribute(name: string) {
 			this.attributes.delete(name);

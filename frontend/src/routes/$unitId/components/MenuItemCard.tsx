@@ -24,7 +24,10 @@ export function MenuItemCard({ item, unitId, unitSlug }: MenuItemCardProps) {
 
 	function handleAdd() {
 		if (hasGroups) {
-			void navigate({ params: { productId: item.productSlug, unitId: unitSlug }, to: "/$unitId/product/$productId" });
+			void navigate({
+				params: { productId: item.productSlug, unitId: unitSlug },
+				to: "/$unitId/product/$productId",
+			});
 		} else {
 			addItem(unitId, {
 				id: item.id,

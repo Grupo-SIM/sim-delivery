@@ -82,16 +82,16 @@ function makeOrderPrisma(
 const baseBody = {
 	deliveryMethod: "delivery" as const,
 	items: [{ note: undefined, quantity: 2, unitProductId: "up_1" }],
-	unitId: "unit_1",
 	slug: "demo",
+	unitId: "unit_1",
 };
 
 describe("CreateOrder", () => {
 	it("throws COMPANY_NOT_FOUND when slug unknown", async () => {
 		const { prisma } = makeOrderPrisma({ company: null });
-		await expect(
-			new CreateOrder(prisma).execute("user_1", { ...baseBody, slug: "unknown" }),
-		).rejects.toThrow("COMPANY_NOT_FOUND");
+		await expect(new CreateOrder(prisma).execute("user_1", { ...baseBody, slug: "unknown" })).rejects.toThrow(
+			"COMPANY_NOT_FOUND",
+		);
 	});
 
 	it("throws UNIT_NOT_FOUND when unit not in company", async () => {

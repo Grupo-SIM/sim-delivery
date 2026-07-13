@@ -17,7 +17,15 @@ interface CartModalProps {
 	unitSlug: string;
 }
 
-export function CartModal({ deliveryFee, minOrderCents, onClose, open, sections, unitId, unitSlug }: CartModalProps) {
+export function CartModal({
+	deliveryFee,
+	minOrderCents,
+	onClose,
+	open,
+	sections,
+	unitId,
+	unitSlug,
+}: CartModalProps) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const items = useCartStore(state => state.items);

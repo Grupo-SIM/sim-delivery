@@ -64,8 +64,12 @@ export function OrderReview({
 	const [couponError, setCouponError] = useState<string | null>(null);
 	const [isValidating, setIsValidating] = useState(false);
 
-	const { data: freight, error: freightError, isPending: isSimulatingFreight, mutate: simulateFreight } =
-		usePostPublicFreightSimulate();
+	const {
+		data: freight,
+		error: freightError,
+		isPending: isSimulatingFreight,
+		mutate: simulateFreight,
+	} = usePostPublicFreightSimulate();
 
 	useEffect(() => {
 		if (deliveryMethod !== "delivery" || address?.latitude == null || address?.longitude == null) {
@@ -81,7 +85,8 @@ export function OrderReview({
 			: hasCoordinates && freight
 				? Number(freight.deliveryFee)
 				: unitDeliveryFee;
-	const blockedByFreight = deliveryMethod === "delivery" && hasCoordinates && (isSimulatingFreight || !!freightError);
+	const blockedByFreight =
+		deliveryMethod === "delivery" && hasCoordinates && (isSimulatingFreight || !!freightError);
 	const discountCents = Number(appliedCoupon?.discountCents ?? 0);
 	const total = Math.max(
 		0,
@@ -96,8 +101,8 @@ export function OrderReview({
 			const result = await postPublicCouponsValidate({
 				code: couponInput.trim(),
 				orderSubtotal: subtotal,
-				unitId,
 				slug,
+				unitId,
 			});
 			onSetCoupon({ ...result, code: couponInput.trim().toUpperCase() });
 		} catch {

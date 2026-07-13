@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { resolveThemeColors, toThemeVariable, type ThemeColors } from "@/lib/theme-colors";
+import { resolveThemeColors, type ThemeColors, toThemeVariable } from "@/lib/theme-colors";
 
 /**
  * Applies a company's theme colors as CSS variables on :root.

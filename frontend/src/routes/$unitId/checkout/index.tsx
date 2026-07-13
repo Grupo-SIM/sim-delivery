@@ -147,8 +147,8 @@ function CheckoutPage() {
 					})),
 					redeemCashbackCents: cashbackRedeemCents > 0 ? cashbackRedeemCents : undefined,
 					redeemLoyaltyPoints: loyaltyRedeemPoints > 0 ? loyaltyRedeemPoints : undefined,
-					unitId,
 					slug: slug ?? "",
+					unitId,
 				},
 			},
 			{
@@ -241,10 +241,10 @@ function CheckoutPage() {
 						onChangeLoyaltyRedeem={setLoyaltyRedeemPoints}
 						onSetCoupon={setAppliedCoupon}
 						onSubmit={handlePlaceOrder}
+						slug={slug ?? ""}
 						subtotal={cartTotalCents(cartItems)}
 						unitDeliveryFee={Number(unit?.deliveryFee ?? 0)}
 						unitId={unitId}
-						slug={slug ?? ""}
 					/>
 				</>
 			)}

@@ -1,5 +1,5 @@
-import { LuCopy, LuRotateCcw } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
+import { LuCopy, LuRotateCcw } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { ColorField } from "@/components/ui/ColorField";
 import { Label } from "@/components/ui/label";
@@ -16,11 +16,10 @@ interface ThemeColorFieldsProps {
 
 const groups = [
 	{
-		name: "surfaces",
 		colors: ["background", "foreground", "card", "cardForeground", "popover", "popoverForeground"],
+		name: "surfaces",
 	},
 	{
-		name: "actions",
 		colors: [
 			"primary",
 			"primaryForeground",
@@ -29,10 +28,11 @@ const groups = [
 			"accent",
 			"accentForeground",
 		],
+		name: "actions",
 	},
-	{ name: "support", colors: ["muted", "mutedForeground", "surfaceSunken"] },
-	{ name: "feedback", colors: ["success", "warning", "destructive"] },
-	{ name: "boundaries", colors: ["border", "input", "ring"] },
+	{ colors: ["muted", "mutedForeground", "surfaceSunken"], name: "support" },
+	{ colors: ["success", "warning", "destructive"], name: "feedback" },
+	{ colors: ["border", "input", "ring"], name: "boundaries" },
 ] as const satisfies readonly { colors: readonly (keyof ThemeColorSet)[]; name: string }[];
 
 export function ThemeColorFields({ colors, mode, onChange, onCopy, onReset }: ThemeColorFieldsProps) {

@@ -124,26 +124,26 @@ export function UnitDeliveryZonesEditor({ onClose, unitId }: UnitDeliveryZonesEd
 									/>
 								</div>
 								<div className="space-y-1">
-									<span className="text-muted-foreground text-xs">{t("admin.units.deliveryZones.etaMin")}</span>
+									<span className="text-muted-foreground text-xs">
+										{t("admin.units.deliveryZones.etaMin")}
+									</span>
 									<NumericInput
 										className="w-20"
 										decimalScale={0}
-										onValueChange={({ floatValue }) =>
-											update(index, { etaMinMinutes: floatValue ?? null })
-										}
+										onValueChange={({ floatValue }) => update(index, { etaMinMinutes: floatValue ?? null })}
 										placeholder="20"
 										suffix=" min"
 										value={row.etaMinMinutes ?? 0}
 									/>
 								</div>
 								<div className="space-y-1">
-									<span className="text-muted-foreground text-xs">{t("admin.units.deliveryZones.etaMax")}</span>
+									<span className="text-muted-foreground text-xs">
+										{t("admin.units.deliveryZones.etaMax")}
+									</span>
 									<NumericInput
 										className="w-20"
 										decimalScale={0}
-										onValueChange={({ floatValue }) =>
-											update(index, { etaMaxMinutes: floatValue ?? null })
-										}
+										onValueChange={({ floatValue }) => update(index, { etaMaxMinutes: floatValue ?? null })}
 										placeholder="30"
 										suffix=" min"
 										value={row.etaMaxMinutes ?? 0}

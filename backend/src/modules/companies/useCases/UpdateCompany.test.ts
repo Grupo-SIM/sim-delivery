@@ -55,8 +55,8 @@ describe("UpdateCompany", () => {
 
 	it("throws SLUG_TAKEN when the slug belongs to another company", async () => {
 		const prisma = fakePrisma([{ ...base }, { ...base, id: "cmp_2", slug: "shared" }]);
-		await expect(
-			new UpdateCompany(prisma).execute({ companyId: "cmp_1", slug: "shared" }),
-		).rejects.toThrow("SLUG_TAKEN");
+		await expect(new UpdateCompany(prisma).execute({ companyId: "cmp_1", slug: "shared" })).rejects.toThrow(
+			"SLUG_TAKEN",
+		);
 	});
 });

@@ -25,14 +25,10 @@ export class SimulateFreight {
 
 		const distanceKm =
 			unit.latitude !== null && unit.longitude !== null
-				? haversineKm(
-						{ latitude: unit.latitude, longitude: unit.longitude },
-						{ latitude, longitude },
-					)
+				? haversineKm({ latitude: unit.latitude, longitude: unit.longitude }, { latitude, longitude })
 				: null;
 
-		const zone =
-			distanceKm !== null ? unit.deliveryZones.find(z => distanceKm <= z.radiusKm) : undefined;
+		const zone = distanceKm !== null ? unit.deliveryZones.find(z => distanceKm <= z.radiusKm) : undefined;
 
 		if (zone) {
 			return {

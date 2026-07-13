@@ -52,20 +52,20 @@ describe("SimulateFreight", () => {
 	it("throws NO_COMPANY when slug unknown", async () => {
 		const { prisma } = makeFreightPrisma({ company: null });
 		await expect(
-			new SimulateFreight(prisma).execute({ unitId: "unit_1", slug: "unknown", ...NEARBY }),
+			new SimulateFreight(prisma).execute({ slug: "unknown", unitId: "unit_1", ...NEARBY }),
 		).rejects.toThrow("NO_COMPANY");
 	});
 
 	it("throws UNIT_NOT_FOUND when unit not in company", async () => {
 		const { prisma } = makeFreightPrisma({ unit: null });
 		await expect(
-			new SimulateFreight(prisma).execute({ unitId: "unit_missing", slug: "demo", ...NEARBY }),
+			new SimulateFreight(prisma).execute({ slug: "demo", unitId: "unit_missing", ...NEARBY }),
 		).rejects.toThrow("UNIT_NOT_FOUND");
 	});
 
 	it("falls back to the flat deliveryFee when the unit has no coordinates", async () => {
 		const { prisma } = makeFreightPrisma({ unit: { deliveryFee: 500 } });
-		const result = await new SimulateFreight(prisma).execute({ unitId: "unit_1", slug: "demo", ...NEARBY });
+		const result = await new SimulateFreight(prisma).execute({ slug: "demo", unitId: "unit_1", ...NEARBY });
 		expect(result).toEqual({ deliveryFee: 500, distanceKm: undefined });
 	});
 
@@ -81,7 +81,7 @@ describe("SimulateFreight", () => {
 			},
 		});
 
-		const result = await new SimulateFreight(prisma).execute({ unitId: "unit_1", slug: "demo", ...NEARBY });
+		const result = await new SimulateFreight(prisma).execute({ slug: "demo", unitId: "unit_1", ...NEARBY });
 
 		expect(result.deliveryFee).toBe(500);
 		expect(result.etaMinMinutes).toBe(20);
@@ -99,7 +99,7 @@ describe("SimulateFreight", () => {
 			},
 		});
 
-		const result = await new SimulateFreight(prisma).execute({ unitId: "unit_1", slug: "demo", ...FAR_AWAY });
+		const result = await new SimulateFreight(prisma).execute({ slug: "demo", unitId: "unit_1", ...FAR_AWAY });
 
 		expect(result.deliveryFee).toBe(999);
 		expect(result.etaMinMinutes).toBeUndefined();
@@ -116,13 +116,13 @@ describe("SimulateFreight", () => {
 		});
 
 		await expect(
-			new SimulateFreight(prisma).execute({ unitId: "unit_1", slug: "demo", ...FAR_AWAY }),
+			new SimulateFreight(prisma).execute({ slug: "demo", unitId: "unit_1", ...FAR_AWAY }),
 		).rejects.toThrow("OUT_OF_DELIVERY_RANGE");
 	});
 
 	it("returns 0 when unit has no delivery fee and no zones", async () => {
 		const { prisma } = makeFreightPrisma({ unit: { deliveryFee: 0 } });
-		const result = await new SimulateFreight(prisma).execute({ unitId: "unit_1", slug: "demo", ...NEARBY });
+		const result = await new SimulateFreight(prisma).execute({ slug: "demo", unitId: "unit_1", ...NEARBY });
 		expect(result.deliveryFee).toBe(0);
 	});
 });

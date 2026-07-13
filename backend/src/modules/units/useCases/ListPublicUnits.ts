@@ -36,9 +36,9 @@ export class ListPublicUnits {
 			name: unit.name,
 			neighborhood: unit.neighborhood,
 			phone: unit.phone,
-				prepTimeMaxMinutes: unit.prepTimeMaxMinutes,
-				prepTimeMinMinutes: unit.prepTimeMinMinutes,
-				slug: unit.slug,
+			prepTimeMaxMinutes: unit.prepTimeMaxMinutes,
+			prepTimeMinMinutes: unit.prepTimeMinMinutes,
+			slug: unit.slug,
 		}));
 	}
 }

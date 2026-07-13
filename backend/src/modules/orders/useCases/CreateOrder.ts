@@ -65,8 +65,8 @@ export class CreateOrder {
 			const couponResult = await new ValidateCoupon(this.prisma).execute({
 				code: couponCode,
 				orderSubtotal: subtotal,
-				unitId,
 				slug,
+				unitId,
 			});
 			couponId = couponResult.couponId;
 			discountCents = couponResult.discountCents;

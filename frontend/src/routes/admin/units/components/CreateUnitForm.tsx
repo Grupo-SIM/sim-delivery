@@ -44,7 +44,8 @@ export function CreateUnitForm() {
 	const { isPending, mutate } = usePostUnits();
 
 	const hasData = useMemo(
-		() => name.trim() !== "" || phone.trim() !== "" || Object.values(address).some(value => value.trim() !== ""),
+		() =>
+			name.trim() !== "" || phone.trim() !== "" || Object.values(address).some(value => value.trim() !== ""),
 		[name, phone, address],
 	);
 

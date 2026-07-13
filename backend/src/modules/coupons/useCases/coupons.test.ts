@@ -28,7 +28,7 @@ function makePrisma(
 	};
 }
 
-const baseBody = { code: "SAVE10", orderSubtotal: 5000, unitId: "unit_1", slug: "demo" };
+const baseBody = { code: "SAVE10", orderSubtotal: 5000, slug: "demo", unitId: "unit_1" };
 
 const baseCoupon = {
 	code: "SAVE10",

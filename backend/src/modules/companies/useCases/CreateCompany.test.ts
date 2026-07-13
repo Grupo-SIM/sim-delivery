@@ -19,9 +19,9 @@ function fakePrisma(seed: CompanyRow[] = []) {
 					const row: CompanyRow = {
 						createdAt: new Date(),
 						id: `cmp_${rows.length + 1}`,
-					name: data.name,
-					slug: data.slug,
-					updatedAt: new Date(),
+						name: data.name,
+						slug: data.slug,
+						updatedAt: new Date(),
 					};
 					rows.push(row);
 					return row;

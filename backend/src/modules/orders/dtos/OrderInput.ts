@@ -38,7 +38,7 @@ export const CreateOrderBody = t.Object({
 	items: t.Array(CreateOrderItemBody, { minItems: 1 }),
 	redeemCashbackCents: t.Optional(t.Integer({ minimum: 0 })),
 	redeemLoyaltyPoints: t.Optional(t.Integer({ minimum: 0 })),
-	unitId: t.String({ minLength: 1 }),
 	slug: t.String({ minLength: 1 }),
+	unitId: t.String({ minLength: 1 }),
 });
 export type CreateOrderBody = typeof CreateOrderBody.static;

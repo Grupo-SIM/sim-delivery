@@ -1,7 +1,10 @@
 import type { GetBrandingQueryResponse } from "@/lib/api";
 
 export type ThemeColorSet = NonNullable<GetBrandingQueryResponse["themeColors"]>["light"];
-export type ThemeColors = { dark: ThemeColorSet; light: ThemeColorSet };
+export interface ThemeColors {
+	dark: ThemeColorSet;
+	light: ThemeColorSet;
+}
 
 export const defaultThemeColors: ThemeColors = {
 	dark: {

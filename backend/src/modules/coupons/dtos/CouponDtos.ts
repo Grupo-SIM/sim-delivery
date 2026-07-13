@@ -3,8 +3,8 @@ import { t } from "elysia";
 export const ValidateCouponBody = t.Object({
 	code: t.String({ minLength: 1 }),
 	orderSubtotal: t.Integer({ minimum: 0 }),
-	unitId: t.String({ minLength: 1 }),
 	slug: t.String({ minLength: 1 }),
+	unitId: t.String({ minLength: 1 }),
 });
 export type ValidateCouponBody = typeof ValidateCouponBody.static;
 

@@ -19,7 +19,6 @@ function createDocument() {
 	const scripts: ScriptElement[] = [];
 
 	return {
-		getElementById: (id: string) => scripts.find(script => script.id === id) ?? null,
 		createElement: (tagName: string) => {
 			if (tagName === "script") {
 				return { async: false, id: "", src: "", textContent: null } satisfies ScriptElement;
@@ -37,6 +36,7 @@ function createDocument() {
 				querySelectorAll: (selector: string) => (selector === "script" ? nestedScripts : []),
 			};
 		},
+		getElementById: (id: string) => scripts.find(script => script.id === id) ?? null,
 		head: {
 			appendChild: (script: ScriptElement) => scripts.push(script),
 		},

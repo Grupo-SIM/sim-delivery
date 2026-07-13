@@ -52,7 +52,12 @@ export function MenuBrowser({ sections, unitId, unitSlug }: MenuBrowserProps) {
 							<CategoryNav sections={filtered} />
 						</div>
 						{filtered.map(section => (
-							<MenuSectionBlock key={section.categoryId ?? "loose"} section={section} unitId={unitId} unitSlug={unitSlug} />
+							<MenuSectionBlock
+								key={section.categoryId ?? "loose"}
+								section={section}
+								unitId={unitId}
+								unitSlug={unitSlug}
+							/>
 						))}
 					</div>
 				</div>

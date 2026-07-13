@@ -46,6 +46,7 @@
 				"footerTextPlaceholder": "© 2025 Meu Restaurante",
 				"ga4Id": "ID do Google Analytics 4",
 				"gtmId": "ID do Google Tag Manager",
+				"lightTheme": "Tema claro",
 				"loadError": "Não foi possível carregar as configurações de identidade visual.",
 				"logoPreview": "Prévia do logotipo",
 				"logoUrl": "URL do logotipo",
@@ -61,7 +62,6 @@
 				"sectionTracking": "Rastreamento de marketing",
 				"subtitle": "Personalize a aparência da sua loja e as análises.",
 				"themeColors": "Cores do tema",
-				"lightTheme": "Tema claro",
 				"title": "Identidade visual"
 			},
 			"categories": {

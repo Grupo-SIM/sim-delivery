@@ -31,8 +31,8 @@ describe("ListPublicUnits", () => {
 
 	it("returns only the matched company's units with computed status", async () => {
 		const prisma = prismaWith({ id: "c1", slug: "bliss" }, [
-		{ companyId: "c1", id: "u1", isOpenManual: true, slug: "ipes" },
-		{ companyId: "c2", id: "u2", isOpenManual: true, slug: "centro" },
+			{ companyId: "c1", id: "u1", isOpenManual: true, slug: "ipes" },
+			{ companyId: "c2", id: "u2", isOpenManual: true, slug: "centro" },
 		]);
 		const result = await new ListPublicUnits(prisma).execute("bliss");
 		expect(result).toHaveLength(1);

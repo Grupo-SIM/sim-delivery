@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { LuCopy, LuMoon, LuRotateCcw, LuSun } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
+import { LuCopy, LuMoon, LuRotateCcw, LuSun } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import type { ThemeColorSet, ThemeColors } from "@/lib/theme-colors";
 import { ThemeColorFields } from "./ThemeColorFields";
@@ -70,7 +70,7 @@ export function ThemeEditor({
 						variant="outline"
 					>
 						<LuRotateCcw aria-hidden />
-							{t("admin.branding.resetAllColors")}
+						{t("admin.branding.resetAllColors")}
 					</Button>
 				</div>
 			</div>
