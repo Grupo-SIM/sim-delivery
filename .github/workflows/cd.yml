@@ -16,7 +16,7 @@ jobs:
       # "frontend" is in it. A push that touches neither builds nothing.
       # An empty base-sha (workflow_dispatch / first push) plans every service.
       tasks: ${{ steps.affected.outputs.tasks }}
-      # JSON array of company slugs from frontend/variants.json, e.g. ["default","demo-acai"]
+      # JSON array of company slugs from the comma-separated GitHub VARIANTS variable.
       variants: ${{ steps.variants.outputs.slugs }}
     steps:
       - name: Checkout repository
@@ -32,10 +32,12 @@ jobs:
           tasks: build
           base-sha: ${{ github.event.before }}
 
-      - name: Read variant keys
+      - name: Parse variant keys
         id: variants
+        env:
+          VARIANTS: ${{ vars.VARIANTS }}
         run: |
-          slugs=$(jq -c '[.[].slug]' frontend/variants.json)
+          slugs=$(jq -cn --arg variants "$VARIANTS" '$variants | split(",") | map(gsub("^\\s+|\\s+$"; "")) | map(select(length > 0))')
           echo "slugs=$slugs" >> "$GITHUB_OUTPUT"
 
   ghcr-backend:
