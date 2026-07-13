@@ -1,33 +1,38 @@
 import { describe, expect, it } from "bun:test";
 import { isUnitOpen } from "./isUnitOpen";
 
-// A Wednesday 10:00 local time.
-const wed10 = new Date(2026, 6, 1, 10, 0);
-
-const openWed = [{ closed: false, closesAt: "18:00", opensAt: "09:00", weekday: 3 }];
+const day = (weekday: number, opensAt: string, closesAt: string) => ({
+	closed: false,
+	closesAt,
+	opensAt,
+	weekday,
+});
 
 describe("isUnitOpen", () => {
-	it("manual override wins over the schedule", () => {
-		expect(isUnitOpen(openWed, false, wed10)).toBe(false);
-		expect(isUnitOpen([], true, wed10)).toBe(true);
+	it("uses the manual availability when configured", () => {
+		const now = new Date(2026, 6, 13, 12);
+		expect(isUnitOpen([], true, now)).toBe(true);
+		expect(isUnitOpen([day(1, "09:00", "18:00")], false, now)).toBe(false);
 	});
 
-	it("is open inside the weekday range", () => {
-		expect(isUnitOpen(openWed, null, wed10)).toBe(true);
+	it("identifies regular hours on the current weekday", () => {
+		const monday = day(1, "09:00", "18:00");
+		expect(isUnitOpen([monday], null, new Date(2026, 6, 13, 12))).toBe(true);
+		expect(isUnitOpen([monday], null, new Date(2026, 6, 13, 18))).toBe(false);
+		expect(isUnitOpen([], null, new Date(2026, 6, 13, 12))).toBe(false);
 	});
 
-	it("is closed outside the range or on a closed/missing weekday", () => {
-		expect(isUnitOpen(openWed, null, new Date(2026, 6, 1, 20, 0))).toBe(false);
-		expect(isUnitOpen([{ closed: true, closesAt: null, opensAt: null, weekday: 3 }], null, wed10)).toBe(
-			false,
-		);
-		expect(isUnitOpen([], null, wed10)).toBe(false);
+	it("keeps an overnight schedule open after midnight on the following weekday", () => {
+		const monday = day(1, "18:00", "02:00");
+		const tuesday = day(2, "09:00", "18:00");
+
+		expect(isUnitOpen([monday, tuesday], null, new Date(2026, 6, 14, 1))).toBe(true);
+		expect(isUnitOpen([monday, tuesday], null, new Date(2026, 6, 14, 2))).toBe(false);
 	});
 
-	it("handles a range crossing midnight", () => {
-		const overnight = [{ closed: false, closesAt: "02:00", opensAt: "18:00", weekday: 3 }];
-		expect(isUnitOpen(overnight, null, new Date(2026, 6, 1, 23, 0))).toBe(true);
-		expect(isUnitOpen(overnight, null, new Date(2026, 6, 1, 1, 0))).toBe(true);
-		expect(isUnitOpen(overnight, null, new Date(2026, 6, 1, 12, 0))).toBe(false);
+	it("opens an overnight schedule only after its opening time", () => {
+		const tuesday = day(2, "18:00", "02:00");
+		expect(isUnitOpen([tuesday], null, new Date(2026, 6, 14, 23))).toBe(true);
+		expect(isUnitOpen([tuesday], null, new Date(2026, 6, 14, 1))).toBe(false);
 	});
 });

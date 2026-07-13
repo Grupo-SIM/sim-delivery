@@ -20,14 +20,34 @@ export function isUnitOpen(hours: HoursRow[], isOpenManual: boolean | null, now:
 		return isOpenManual;
 	}
 
-	const today = hours.find(row => row.weekday === now.getDay());
-	if (!today || today.closed || !today.opensAt || !today.closesAt) {
+	const current = now.getHours() * 60 + now.getMinutes();
+	const isOpenDuringDay = (day: HoursRow | undefined) => {
+		if (!day || day.closed || !day.opensAt || !day.closesAt) {
+			return false;
+		}
+
+		const open = toMinutes(day.opensAt);
+		const close = toMinutes(day.closesAt);
+		if (close === open) {
+			return true;
+		}
+
+		return close > open ? current >= open && current < close : current >= open;
+	};
+
+	const weekday = now.getDay();
+	const today = hours.find(row => row.weekday === weekday);
+	if (isOpenDuringDay(today)) {
+		return true;
+	}
+
+	const yesterday = hours.find(row => row.weekday === (weekday + 6) % 7);
+	if (!yesterday || yesterday.closed || !yesterday.opensAt || !yesterday.closesAt) {
 		return false;
 	}
 
-	const current = now.getHours() * 60 + now.getMinutes();
-	const open = toMinutes(today.opensAt);
-	const close = toMinutes(today.closesAt);
+	const yesterdayOpen = toMinutes(yesterday.opensAt);
+	const yesterdayClose = toMinutes(yesterday.closesAt);
 
-	return close <= open ? current >= open || current < close : current >= open && current < close;
+	return yesterdayClose < yesterdayOpen && current < yesterdayClose;
 }
