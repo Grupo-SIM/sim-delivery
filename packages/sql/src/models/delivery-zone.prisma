@@ -1,0 +1,19 @@
+/// A distance-based delivery fee band for a unit. Zones are ordered ascending by
+/// `radiusKm`; the first zone whose radius covers the customer's distance wins (see
+/// docs/09 and SimulateFreight).
+model DeliveryZone {
+    id            String   @id @default(cuid())
+    unitId        String
+    radiusKm      Float
+    fee           Int
+    etaMinMinutes Int?
+    etaMaxMinutes Int?
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+
+    unit Unit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+    @@unique([unitId, radiusKm])
+    @@index([unitId])
+    @@map("delivery_zone")
+}

@@ -20,6 +20,9 @@ model Unit {
     deliveryMethods String[] @default(["delivery"])
     /// Delivery fee in cents (flat, MVP). See docs/09 for zone/distance evolution.
     deliveryFee     Int      @default(0)
+    /// Whether the flat `deliveryFee` is used as a fallback when the customer's address
+    /// falls outside every `deliveryZones` radius (or the unit has none configured).
+    deliveryFeeFallbackEnabled Boolean @default(true)
     /// Default cashback percentage granted on orders from this unit (docs/09).
     cashbackPercent Float    @default(0)
     /// Loyalty points rate: points earned per 100 cents spent on this unit (0 = disabled).
@@ -34,12 +37,13 @@ model Unit {
     createdAt          DateTime @default(now())
     updatedAt       DateTime @updatedAt
 
-    company    Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-    coupons    Coupon[]
-    deliveries Delivery[]
-    hours      UnitHours[]
-    products   UnitProduct[]
-    orders     Order[]
+    company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    coupons       Coupon[]
+    deliveries    Delivery[]
+    deliveryZones DeliveryZone[]
+    hours         UnitHours[]
+    products      UnitProduct[]
+    orders        Order[]
 
     @@index([companyId])
     @@map("unit")
