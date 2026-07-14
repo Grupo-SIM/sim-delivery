@@ -1,12 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Switch } from "baseui/switch";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Modal } from "@/components/ui/Modal";
-import { NumericInput } from "@/components/ui/NumericInput";
 import { getUnitsByUnitIdProductsQueryKey, usePatchUnitsByUnitIdProductsByUnitProductId } from "@/lib/api";
+import { UnitProductFormFields } from "./UnitProductFormFields";
 import type { Category, UnitProduct } from "./types";
 
 interface UnitProductEditModalProps {
@@ -42,11 +40,6 @@ export function UnitProductEditModal({ association, categories, onClose, unitId 
 		setError(null);
 	}, [association]);
 
-	const categoryOptions = [
-		{ label: t("admin.unitProducts.form.loose"), value: "" },
-		...categories.map(c => ({ label: c.name, value: c.id })),
-	];
-
 	function save() {
 		if (!association) {
 			return;
@@ -78,59 +71,23 @@ export function UnitProductEditModal({ association, categories, onClose, unitId 
 	return (
 		<Modal isOpen={association !== null} onClose={onClose} title={t("admin.unitProducts.edit.title")}>
 			<div className="space-y-4">
-				<div className="grid gap-4 md:grid-cols-2">
-					<div>
-						<span className="font-medium text-sm">{t("admin.unitProducts.form.category")}</span>
-						<CustomSelect onChange={setCategoryId} options={categoryOptions} value={categoryId} />
-					</div>
-				</div>
-
-				<div className="grid gap-4 md:grid-cols-2">
-					<div className="space-y-2">
-						<label className="flex items-center gap-2 font-medium text-sm">
-							<input
-								checked={priceEnabled}
-								onChange={event => setPriceEnabled(event.currentTarget.checked)}
-								type="checkbox"
-							/>
-							{t("admin.unitProducts.form.priceOverride")}
-						</label>
-						<NumericInput
-							decimalScale={2}
-							decimalSeparator=","
-							disabled={!priceEnabled}
-							onValueChange={({ floatValue }) => setPriceReais(floatValue ?? 0)}
-							placeholder="R$ 18,90"
-							prefix="R$ "
-							thousandSeparator="."
-							value={priceReais}
+					<div className="grid gap-4 md:grid-cols-2">
+						<UnitProductFormFields
+							available={available}
+							categoryId={categoryId}
+							categories={categories}
+							onAvailableChange={setAvailable}
+							onCategoryIdChange={setCategoryId}
+							onPriceEnabledChange={setPriceEnabled}
+							onPriceReaisChange={setPriceReais}
+							onStockChange={setStock}
+							onStockEnabledChange={setStockEnabled}
+							priceEnabled={priceEnabled}
+							priceReais={priceReais}
+							stock={stock}
+							stockEnabled={stockEnabled}
 						/>
 					</div>
-
-					<div className="space-y-2">
-						<label className="flex items-center gap-2 font-medium text-sm">
-							<input
-								checked={stockEnabled}
-								onChange={event => setStockEnabled(event.currentTarget.checked)}
-								type="checkbox"
-							/>
-						{t("admin.unitProducts.form.stock")}
-					</label>
-					{stockEnabled ? (
-						<NumericInput
-							decimalScale={0}
-							onValueChange={({ floatValue }) => setStock(floatValue ?? 0)}
-							placeholder="10"
-							value={stock}
-						/>
-					) : (
-							<div className="flex min-h-10 items-center justify-between">
-							<span className="font-medium text-sm">{t("admin.unitProducts.form.available")}</span>
-							<Switch checked={available} onChange={event => setAvailable(event.currentTarget.checked)} />
-						</div>
-					)}
-					</div>
-				</div>
 
 				{error && <p className="text-destructive text-xs">{error}</p>}
 				<div className="flex justify-end gap-2">

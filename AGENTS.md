@@ -108,6 +108,7 @@ This is the same pattern used for `challenges.$challengeId` → `challenges.$cha
 ## Component Architecture (Frontend)
 
 - **Simple, componentized components.** Break out parts that make sense into their own components — avoid bloated components with multiple responsibilities.
+- **Shared form fields.** When create and edit forms repeat field groups, extract one shared field component and pass their small variations as props (for example, an optional product select or layout width). Never copy input markup between these forms.
 - **Maximize reuse — design-system mindset.** Aggressively extract primitives (Container, Section, IconBadge, CheckList, BrandMark, SectionHeading, etc.) whenever a layout/presentation pattern repeats, even within a single page. Generic primitives go in [frontend/src/components/ui/](frontend/src/components/ui/); domain composites go in `frontend/src/components/<feature>/`. When in doubt, extract.
 - **Editable tables preserve layout.** Entering edit mode must not change column widths, alignment, or overall table layout. Keep display and edit cells structurally equivalent; constrain inputs and action groups within their existing columns.
 - **Component file naming in CamelCase (PascalCase).** Component files use PascalCase: `AuthTabs.tsx`, `LoginForm.tsx`, `FormField.tsx`. Files that are not components (utils, hooks, configs) stay in kebab-case.

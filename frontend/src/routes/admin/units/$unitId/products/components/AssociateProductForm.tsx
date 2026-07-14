@@ -1,11 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Switch } from "baseui/switch";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { CustomSelect } from "@/components/ui/CustomSelect";
-import { NumericInput } from "@/components/ui/NumericInput";
 import { getUnitsByUnitIdProductsQueryKey, usePostUnitsByUnitIdProducts } from "@/lib/api";
+import { UnitProductFormFields } from "./UnitProductFormFields";
 import type { Category, Product, UnitProduct } from "./types";
 
 interface AssociateProductFormProps {
@@ -41,11 +39,6 @@ export function AssociateProductForm({
 		{ label: t("admin.unitProducts.form.productPlaceholder"), value: "" },
 		...availableProducts.map(p => ({ label: p.title, value: p.id })),
 	];
-	const categoryOptions = [
-		{ label: t("admin.unitProducts.form.loose"), value: "" },
-		...categories.map(c => ({ label: c.name, value: c.id })),
-	];
-
 	function reset() {
 		setProductId("");
 		setCategoryId("");
@@ -65,7 +58,7 @@ export function AssociateProductForm({
 				mutate(
 					{
 						data: {
-						available: stockEnabled ? stock > 0 : available,
+							available: stockEnabled ? stock > 0 : available,
 							categoryId: categoryId || null,
 							priceCentsOverride: priceEnabled ? Math.round(priceReais * 100) : null,
 							productId,
@@ -85,60 +78,22 @@ export function AssociateProductForm({
 				);
 			}}
 		>
-			<div>
-				<span className="font-medium text-sm">{t("admin.unitProducts.form.product")}</span>
-				<CustomSelect onChange={setProductId} options={productOptions} value={productId} />
-			</div>
-
-			<div>
-				<span className="font-medium text-sm">{t("admin.unitProducts.form.category")}</span>
-				<CustomSelect onChange={setCategoryId} options={categoryOptions} value={categoryId} />
-			</div>
-
-			<div className="space-y-2">
-				<label className="flex items-center gap-2 font-medium text-sm">
-					<input
-						checked={priceEnabled}
-						onChange={event => setPriceEnabled(event.currentTarget.checked)}
-						type="checkbox"
-					/>
-					{t("admin.unitProducts.form.priceOverride")}
-				</label>
-				<NumericInput
-					decimalScale={2}
-					decimalSeparator=","
-					disabled={!priceEnabled}
-					onValueChange={({ floatValue }) => setPriceReais(floatValue ?? 0)}
-					placeholder="R$ 18,90"
-					prefix="R$ "
-					thousandSeparator="."
-					value={priceReais}
+				<UnitProductFormFields
+					available={available}
+					categoryId={categoryId}
+					categories={categories}
+					onAvailableChange={setAvailable}
+					onCategoryIdChange={setCategoryId}
+					onPriceEnabledChange={setPriceEnabled}
+					onPriceReaisChange={setPriceReais}
+					onStockChange={setStock}
+					onStockEnabledChange={setStockEnabled}
+					priceEnabled={priceEnabled}
+					priceReais={priceReais}
+					product={{ onChange: setProductId, options: productOptions, value: productId }}
+					stock={stock}
+					stockEnabled={stockEnabled}
 				/>
-			</div>
-
-			<div className="space-y-2">
-				<label className="flex items-center gap-2 font-medium text-sm">
-					<input
-						checked={stockEnabled}
-						onChange={event => setStockEnabled(event.currentTarget.checked)}
-						type="checkbox"
-					/>
-						{t("admin.unitProducts.form.stock")}
-					</label>
-					{stockEnabled ? (
-						<NumericInput
-							decimalScale={0}
-							onValueChange={({ floatValue }) => setStock(floatValue ?? 0)}
-							placeholder="10"
-							value={stock}
-						/>
-					) : (
-						<div className="flex items-center justify-between">
-							<span className="font-medium text-sm">{t("admin.unitProducts.form.available")}</span>
-							<Switch checked={available} onChange={event => setAvailable(event.currentTarget.checked)} />
-						</div>
-					)}
-				</div>
 
 			<div className="flex items-center gap-3 md:col-span-2">
 				<Button disabled={isPending || !productId} type="submit">
