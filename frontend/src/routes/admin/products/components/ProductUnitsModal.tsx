@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { Modal } from "@/components/ui/Modal";
 import {
 	getProductsByProductIdUnitsQueryKey,
@@ -58,20 +59,20 @@ export function ProductUnitsModal({ onClose, product }: ProductUnitsModalProps) 
 
 	return (
 		<Modal isOpen={product !== null} onClose={onClose} title={t("admin.products.units.title")}>
-			<div className="space-y-4">
+			<div className="space-y-3">
 				{units?.length === 0 ? (
 					<p className="text-muted-foreground text-sm">{t("admin.products.units.empty")}</p>
 				) : (
 					<div className="max-h-72 space-y-2 overflow-y-auto">
 						{units?.map(unit => (
-							<label className="flex items-center gap-2 text-sm" key={unit.id}>
-								<input
+							<div className="flex items-center gap-2 text-sm" key={unit.id}>
+								<Checkbox
 									checked={selectedUnitIds.includes(unit.id)}
+									id={`unit-${unit.id}`}
 									onChange={() => toggle(unit.id)}
-									type="checkbox"
 								/>
-								{unit.name}
-							</label>
+								<label htmlFor={`unit-${unit.id}`}>{unit.name}</label>
+							</div>
 						))}
 					</div>
 				)}

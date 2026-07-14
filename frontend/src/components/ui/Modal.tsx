@@ -52,7 +52,13 @@ export function Modal({ children, isOpen, maxWidth = "640px", onClose, title }: 
 		>
 			{title && (
 				<ModalHeader
-					$style={{ fontSize: "20px", fontWeight: 700, lineHeight: "28px", padding: "28px 64px 0 28px" }}
+					$style={{
+						fontSize: "20px",
+						fontWeight: 700,
+						lineHeight: "28px",
+						margin: 0,
+						padding: "28px 64px 0 28px",
+					}}
 				>
 					{title}
 				</ModalHeader>

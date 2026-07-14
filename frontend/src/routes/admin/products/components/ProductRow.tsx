@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuStore } from "react-icons/lu";
+import { LuPencil, LuStore, LuTrash2 } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { getProductsQueryKey, useDeleteProductsByProductId } from "@/lib/api";
 import { showAlert, showConfirm } from "@/stores";
@@ -68,9 +68,11 @@ export function ProductRow({ product }: ProductRowProps) {
 							{t("admin.products.units.action")}
 						</Button>
 						<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
+							<LuPencil className="h-4 w-4" />
 							{t("admin.products.edit.action")}
 						</Button>
 						<Button disabled={remove.isPending} onClick={del} size="sm" type="button" variant="outline">
+							<LuTrash2 className="h-4 w-4" />
 							{t("admin.products.row.delete")}
 						</Button>
 					</div>
