@@ -1,5 +1,7 @@
 import Elysia, { t } from "elysia";
 import { CompanyScopeGuard } from "@/modules/users/guards";
+import { ProductUnitsReturn, SetProductUnitsBody } from "@/modules/unitProducts/dtos";
+import { ListProductUnits, SetProductUnits } from "@/modules/unitProducts/useCases";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
 import { CreateProductBody, ProductListReturn, ProductReturn, UpdateProductBody } from "../../dtos";
 import { CreateProduct, DeleteProduct, ListProducts, UpdateProduct } from "../../useCases";
@@ -16,8 +18,10 @@ export const ProductsController = new Elysia({
 				...injected,
 				createProduct: new CreateProduct(prisma),
 				deleteProduct: new DeleteProduct(prisma),
+				listProductUnits: new ListProductUnits(prisma),
 				listProducts: new ListProducts(prisma),
 				prisma,
+				setProductUnits: new SetProductUnits(prisma),
 				updateProduct: new UpdateProduct(prisma),
 			}))
 			.get(
@@ -61,5 +65,25 @@ export const ProductsController = new Elysia({
 					return { ok: true };
 				},
 				{ response: t.Object({ ok: t.Boolean() }) },
+			)
+			.get(
+				"/:productId/units",
+				async ({ listProductUnits, params, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "menu", "read");
+
+					return listProductUnits.execute(scope.companyId, params.productId);
+				},
+				{ response: ProductUnitsReturn },
+			)
+			.put(
+				"/:productId/units",
+				async ({ body, params, request, setProductUnits }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "menu", "update");
+
+					return setProductUnits.execute(scope.companyId, params.productId, body.unitIds);
+				},
+				{ body: SetProductUnitsBody, response: ProductUnitsReturn },
 			),
 	);

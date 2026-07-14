@@ -1,10 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LuStore } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { getProductsQueryKey, useDeleteProductsByProductId } from "@/lib/api";
 import { showAlert, showConfirm } from "@/stores";
 import { ProductEditModal } from "./ProductEditModal";
+import { ProductUnitsModal } from "./ProductUnitsModal";
 import type { Product } from "./types";
 
 interface ProductRowProps {
@@ -17,6 +19,7 @@ export function ProductRow({ product }: ProductRowProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [editing, setEditing] = useState(false);
+	const [managingUnits, setManagingUnits] = useState(false);
 	const remove = useDeleteProductsByProductId();
 
 	async function del() {
@@ -60,6 +63,10 @@ export function ProductRow({ product }: ProductRowProps) {
 				</td>
 				<td className="px-4 py-3 text-right">
 					<div className="flex justify-end gap-2">
+						<Button onClick={() => setManagingUnits(true)} size="sm" type="button" variant="outline">
+							<LuStore className="h-4 w-4" />
+							{t("admin.products.units.action")}
+						</Button>
 						<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
 							{t("admin.products.edit.action")}
 						</Button>
@@ -70,6 +77,7 @@ export function ProductRow({ product }: ProductRowProps) {
 				</td>
 			</tr>
 			<ProductEditModal onClose={() => setEditing(false)} product={editing ? product : null} />
+			<ProductUnitsModal onClose={() => setManagingUnits(false)} product={managingUnits ? product : null} />
 		</>
 	);
 }

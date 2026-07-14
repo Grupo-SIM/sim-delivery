@@ -299,7 +299,16 @@
 					"products": "Produtos",
 					"tags": "Etiquetas"
 				},
-				"title": "Produtos"
+				"title": "Produtos",
+				"units": {
+					"action": "Lojas",
+					"cancel": "Cancelar",
+					"empty": "Nenhuma loja cadastrada.",
+					"error": "Não foi possível salvar as lojas.",
+					"save": "Salvar",
+					"saving": "Salvando...",
+					"title": "Lojas do produto"
+				}
 			},
 			"reports": {
 				"bestSellers": {

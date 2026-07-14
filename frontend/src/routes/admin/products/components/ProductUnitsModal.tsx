@@ -1,0 +1,91 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/Modal";
+import {
+	getProductsByProductIdUnitsQueryKey,
+	useGetProductsByProductIdUnits,
+	useGetUnits,
+	usePutProductsByProductIdUnits,
+} from "@/lib/api";
+import type { Product } from "./types";
+
+interface ProductUnitsModalProps {
+	onClose: () => void;
+	product: Product | null;
+}
+
+export function ProductUnitsModal({ onClose, product }: ProductUnitsModalProps) {
+	const { t } = useTranslation();
+	const queryClient = useQueryClient();
+	const [selectedUnitIds, setSelectedUnitIds] = useState<string[]>([]);
+	const [error, setError] = useState<string | null>(null);
+
+	const { data: units } = useGetUnits();
+	const { data: productUnits } = useGetProductsByProductIdUnits(product?.id);
+	const { isPending, mutate } = usePutProductsByProductIdUnits();
+
+	useEffect(() => {
+		setSelectedUnitIds(productUnits ?? []);
+		setError(null);
+	}, [productUnits]);
+
+	function toggle(unitId: string) {
+		setSelectedUnitIds(current =>
+			current.includes(unitId) ? current.filter(id => id !== unitId) : [...current, unitId],
+		);
+	}
+
+	function save() {
+		if (!product) {
+			return;
+		}
+		setError(null);
+		mutate(
+			{ data: { unitIds: selectedUnitIds }, productId: product.id },
+			{
+				onError: () => setError(t("admin.products.units.error")),
+				onSuccess: async () => {
+					await queryClient.invalidateQueries({
+						queryKey: getProductsByProductIdUnitsQueryKey(product.id),
+					});
+					onClose();
+				},
+			},
+		);
+	}
+
+	return (
+		<Modal isOpen={product !== null} onClose={onClose} title={t("admin.products.units.title")}>
+			<div className="space-y-4">
+				{units?.length === 0 ? (
+					<p className="text-muted-foreground text-sm">{t("admin.products.units.empty")}</p>
+				) : (
+					<div className="max-h-72 space-y-2 overflow-y-auto">
+						{units?.map(unit => (
+							<label className="flex items-center gap-2 text-sm" key={unit.id}>
+								<input
+									checked={selectedUnitIds.includes(unit.id)}
+									onChange={() => toggle(unit.id)}
+									type="checkbox"
+								/>
+								{unit.name}
+							</label>
+						))}
+					</div>
+				)}
+
+				{error && <p className="text-destructive text-xs">{error}</p>}
+				<div className="flex justify-end gap-2">
+					<Button disabled={isPending} onClick={onClose} type="button" variant="outline">
+						{t("admin.products.units.cancel")}
+					</Button>
+					<Button disabled={isPending} onClick={save} type="button">
+						{isPending ? t("admin.products.units.saving") : t("admin.products.units.save")}
+					</Button>
+				</div>
+			</div>
+		</Modal>
+	);
+}
