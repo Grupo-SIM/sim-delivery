@@ -3,11 +3,11 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PatternFormat } from "react-number-format";
 import { Button } from "@/components/ui/button";
+import { CollapsibleFormSection } from "@/components/ui/CollapsibleFormSection";
 import { FormSectionHeading } from "@/components/ui/FormSectionHeading";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { getCepByCep, getUnitsQueryKey, usePostUnits } from "@/lib/api";
-import { cn } from "@/lib/utils";
 
 interface AddressState {
 	zipCode: string;
@@ -121,15 +121,8 @@ export function CreateUnitForm() {
 				</Label>
 			</div>
 
-			<FormSectionHeading>{t("admin.units.create.sectionAddress")}</FormSectionHeading>
-			<div
-				className={cn(
-					"space-y-4 overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out",
-					hasData
-						? "max-h-[999px] opacity-100"
-						: "max-h-0 opacity-0 group-focus-within:max-h-[999px] group-focus-within:opacity-100 group-hover:max-h-[999px] group-hover:opacity-100",
-				)}
-			>
+			<CollapsibleFormSection expanded={hasData}>
+				<FormSectionHeading>{t("admin.units.create.sectionAddress")}</FormSectionHeading>
 				<div className="grid gap-4 sm:grid-cols-[10rem_1fr]">
 					<Label>
 						{t("admin.units.address.cep")}
@@ -216,7 +209,7 @@ export function CreateUnitForm() {
 						value={address.reference}
 					/>
 				</Label>
-			</div>
+			</CollapsibleFormSection>
 
 			<div className="flex items-center justify-between gap-4">
 				{error && <p className="text-destructive text-xs">{error}</p>}
