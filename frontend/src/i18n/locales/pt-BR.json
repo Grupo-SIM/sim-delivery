@@ -7,6 +7,9 @@
 		},
 		"admin": {
 			"branding": {
+				"allColorsCopied": "Cores copiadas de {{mode}}.",
+				"allColorsReset": "Cores restauradas para o padrão.",
+				"colorCopied": "Cor copiada de {{mode}}.",
 				"colorGroups": {
 					"actions": "Ações e destaques",
 					"boundaries": "Bordas e foco",
@@ -15,6 +18,7 @@
 					"surfaces": "Superfícies e conteúdo"
 				},
 				"colorHint": "Cor hexadecimal, ex: #FF5733",
+				"colorReset": "Cor restaurada para o padrão.",
 				"colors": {
 					"accent": "Destaque",
 					"accentForeground": "Texto do destaque",

@@ -55,19 +55,23 @@ function BrandingPage() {
 	function copyThemeColor(mode: keyof ThemeColors, name: keyof ThemeColors["light"]) {
 		const sourceMode = mode === "light" ? "dark" : "light";
 		setThemeColor(mode, name, themeColors[sourceMode][name]);
+		showToast(t("admin.branding.colorCopied", { mode: t(`admin.branding.${sourceMode}Theme`) }), "info");
 	}
 
 	function resetThemeColor(mode: keyof ThemeColors, name: keyof ThemeColors["light"]) {
 		setThemeColor(mode, name, defaultThemeColors[mode][name]);
+		showToast(t("admin.branding.colorReset"), "info");
 	}
 
 	function copyAllThemeColors(mode: keyof ThemeColors) {
 		const sourceMode = mode === "light" ? "dark" : "light";
 		setThemeColors(current => ({ ...current, [mode]: current[sourceMode] }));
+		showToast(t("admin.branding.allColorsCopied", { mode: t(`admin.branding.${sourceMode}Theme`) }), "info");
 	}
 
 	function resetAllThemeColors(mode: keyof ThemeColors) {
 		setThemeColors(current => ({ ...current, [mode]: { ...defaultThemeColors[mode] } }));
+		showToast(t("admin.branding.allColorsReset"), "info");
 	}
 
 	function save() {
