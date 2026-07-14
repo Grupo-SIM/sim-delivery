@@ -152,8 +152,15 @@
 	}
 
 	button,
-	input {
+	input,
+	textarea {
 		font: inherit;
+	}
+
+	input::placeholder,
+	textarea::placeholder {
+		color: color-mix(in srgb, var(--muted-foreground) 70%, transparent) !important;
+		opacity: 1;
 	}
 
 	button:not(:disabled) {
