@@ -40,7 +40,9 @@ export function CartSuggestions({ sections, unitId }: CartSuggestionsProps) {
 			<div className="scrollbar-none -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
 				{suggestions.map(item => (
 					<Card className="flex w-32 shrink-0 flex-col overflow-hidden" key={item.id}>
-						<img alt={item.title} className="h-20 w-full object-cover" loading="lazy" src={item.imageUrl} />
+						{item.imageUrl && (
+							<img alt={item.title} className="h-20 w-full object-cover" loading="lazy" src={item.imageUrl} />
+						)}
 						<div className="flex flex-1 flex-col gap-1 p-2">
 							<p className="truncate font-medium text-xs">{item.title}</p>
 							<span className="text-muted-foreground text-xs">

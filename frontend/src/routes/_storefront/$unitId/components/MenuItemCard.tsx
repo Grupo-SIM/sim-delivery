@@ -42,12 +42,14 @@ export function MenuItemCard({ item, unitId, unitSlug }: MenuItemCardProps) {
 
 	return (
 		<Card className="flex gap-3 overflow-hidden p-3">
-			<img
-				alt={item.title}
-				className="size-20 shrink-0 rounded-md object-cover"
-				loading="lazy"
-				src={item.imageUrl}
-			/>
+			{item.imageUrl && (
+				<img
+					alt={item.title}
+					className="size-20 shrink-0 rounded-md object-cover"
+					loading="lazy"
+					src={item.imageUrl}
+				/>
+			)}
 			<div className="flex min-w-0 flex-1 flex-col gap-1">
 				<p className="truncate font-medium">{item.title}</p>
 				{item.description && <p className="line-clamp-2 text-muted-foreground text-sm">{item.description}</p>}

@@ -183,9 +183,11 @@ function ProductPage() {
 					← {t("store.checkout.back")}
 				</Link>
 
-				<div className="overflow-hidden rounded-brand">
-					<img alt={item.title} className="h-52 w-full object-cover" src={item.imageUrl} />
-				</div>
+				{item.imageUrl && (
+					<div className="overflow-hidden rounded-brand">
+						<img alt={item.title} className="h-52 w-full object-cover" src={item.imageUrl} />
+					</div>
+				)}
 
 				<div className="space-y-1">
 					<h1 className="font-bold text-xl">{item.title}</h1>

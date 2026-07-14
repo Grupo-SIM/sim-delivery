@@ -75,7 +75,7 @@ export function ProductEditRow({ onCancel, product }: ProductEditRowProps) {
 						onUploadError={() => setError(t("admin.products.create.uploadError"))}
 						onUploadingChange={setIsUploadingImage}
 						onValueChange={setImageUrl}
-						placeholder={t("admin.products.create.imageUrlPlaceholder")}
+						placeholder={t("admin.products.create.imagePlaceholder")}
 						uploadLabel={t("admin.products.create.imageUpload")}
 						value={imageUrl}
 					/>
@@ -121,7 +121,7 @@ export function ProductEditRow({ onCancel, product }: ProductEditRowProps) {
 						{t("admin.products.edit.cancel")}
 					</Button>
 					<Button
-						disabled={isPending || isUploadingImage || !localTitle || !localImageUrl || priceReais <= 0}
+						disabled={isPending || isUploadingImage || !localTitle || priceReais <= 0}
 						onClick={save}
 						type="button"
 					>

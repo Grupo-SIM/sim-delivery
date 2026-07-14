@@ -40,11 +40,13 @@ export function ProductRow({ product }: ProductRowProps) {
 		<tr className="border-border/60 border-b last:border-0">
 			<td className="px-4 py-3">
 				<div className="flex items-center gap-3">
-					<img
-						alt=""
-						className="h-12 w-12 rounded border border-border object-cover"
-						src={product.imageUrl}
-					/>
+					{product.imageUrl && (
+						<img
+							alt=""
+							className="h-12 w-12 rounded border border-border object-cover"
+							src={product.imageUrl}
+						/>
+					)}
 					<div>
 						<p className="font-medium">{product.title}</p>
 						<p className="line-clamp-1 text-muted-foreground text-xs">{product.description}</p>

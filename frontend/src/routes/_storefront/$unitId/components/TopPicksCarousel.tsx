@@ -73,7 +73,14 @@ export function TopPicksCarousel({ sections, unitId, unitSlug }: TopPicksCarouse
 						type="button"
 					>
 						<Card className="flex h-full flex-col overflow-hidden">
-							<img alt={item.title} className="h-24 w-full object-cover" loading="lazy" src={item.imageUrl} />
+							{item.imageUrl && (
+								<img
+									alt={item.title}
+									className="h-24 w-full object-cover"
+									loading="lazy"
+									src={item.imageUrl}
+								/>
+							)}
 							<div className="flex flex-1 flex-col gap-1 p-3">
 								<p className="truncate font-medium text-sm">{item.title}</p>
 								<div className="mt-auto flex items-center gap-2 pt-1">

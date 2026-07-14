@@ -23,12 +23,14 @@ export function CartItemRow({ item }: CartItemRowProps) {
 
 	return (
 		<div className="flex gap-3 border-border/60 border-b py-3 last:border-0">
-			<img
-				alt={item.title}
-				className="size-14 shrink-0 rounded-md object-cover"
-				loading="lazy"
-				src={item.imageUrl}
-			/>
+			{item.imageUrl && (
+				<img
+					alt={item.title}
+					className="size-14 shrink-0 rounded-md object-cover"
+					loading="lazy"
+					src={item.imageUrl}
+				/>
+			)}
 			<div className="flex min-w-0 flex-1 flex-col gap-2">
 				<div className="flex items-start justify-between gap-2">
 					<p className="truncate font-medium">{item.title}</p>

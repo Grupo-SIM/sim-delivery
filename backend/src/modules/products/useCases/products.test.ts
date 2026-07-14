@@ -66,6 +66,16 @@ describe("products use-cases", () => {
 		});
 	});
 
+	it("CreateProduct allows a product without an image", async () => {
+		const { created, prisma } = prismaWith([]);
+		await new CreateProduct(prisma).execute("cmp_1", {
+			basePriceCents: 1200,
+			title: "Cheese bread",
+		});
+		expect(created[0]).toMatchObject({ companyId: "cmp_1", title: "Cheese bread" });
+		expect(created[0]).not.toHaveProperty("imageUrl");
+	});
+
 	it("ListProducts lists across companies without a company and scopes otherwise", async () => {
 		const { prisma } = prismaWith([{ companyId: "cmp_1", id: "prod1" }]);
 		expect(await new ListProducts(prisma).execute(null)).toHaveLength(1);

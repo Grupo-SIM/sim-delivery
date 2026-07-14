@@ -32,7 +32,9 @@ export function PromoCarousel({ sections }: PromoCarouselProps) {
 			<div className="scrollbar-none -mx-4 flex gap-3 overflow-x-auto px-4 pb-1">
 				{highlights.map(item => (
 					<Card className="flex w-40 shrink-0 flex-col overflow-hidden" key={item.id}>
-						<img alt={item.title} className="h-24 w-full object-cover" loading="lazy" src={item.imageUrl} />
+						{item.imageUrl && (
+							<img alt={item.title} className="h-24 w-full object-cover" loading="lazy" src={item.imageUrl} />
+						)}
 						<div className="flex flex-1 flex-col gap-1 p-3">
 							<p className="truncate font-medium text-sm">{item.title}</p>
 							<div className="mt-auto flex items-center gap-2 pt-1">

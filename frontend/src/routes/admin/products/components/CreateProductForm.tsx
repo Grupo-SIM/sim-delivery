@@ -81,15 +81,13 @@ export function CreateProductForm() {
 			</Label>
 
 			<Label>
-				<span>
-					{t("admin.products.create.imageUrl")} <RequiredMark />
-				</span>
+				<span>{t("admin.products.create.image")}</span>
 				<MediaUrlInput
 					asset="product"
 					onUploadError={() => setError(t("admin.products.create.uploadError"))}
 					onUploadingChange={setIsUploadingImage}
 					onValueChange={setImageUrl}
-					placeholder={t("admin.products.create.imageUrlPlaceholder")}
+					placeholder={t("admin.products.create.imagePlaceholder")}
 					uploadLabel={t("admin.products.create.imageUpload")}
 					value={imageUrl}
 				/>
@@ -142,10 +140,7 @@ export function CreateProductForm() {
 			</Label>
 
 			<div className="flex items-center gap-3 md:col-span-2">
-				<Button
-					disabled={isPending || isUploadingImage || !localTitle || !localImageUrl || priceReais <= 0}
-					type="submit"
-				>
+				<Button disabled={isPending || isUploadingImage || !localTitle || priceReais <= 0} type="submit">
 					{isPending ? t("admin.products.create.submitting") : t("admin.products.create.submit")}
 				</Button>
 				{error && <p className="text-destructive text-xs">{error}</p>}

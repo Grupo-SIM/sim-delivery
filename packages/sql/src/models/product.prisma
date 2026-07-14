@@ -5,7 +5,7 @@ model Product {
     companyId               String
     title                   String
     slug                    String
-    imageUrl                String
+    imageUrl                String   @default("")
     description             String   @default("")
     /// Base price in cents; unit associations may override it.
     basePriceCents          Int
