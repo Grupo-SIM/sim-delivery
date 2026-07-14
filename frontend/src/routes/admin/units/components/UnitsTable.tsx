@@ -2,10 +2,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LuBookOpen, LuClock, LuImage, LuMapPin, LuSettings, LuTrash2, LuTruck } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { type GetUnits200, getUnitsQueryKey, useDeleteUnitsByUnitId } from "@/lib/api";
 import { showAlert, showConfirm } from "@/stores";
 import { UnitAddressEditor } from "./UnitAddressEditor";
@@ -76,37 +78,83 @@ export function UnitsTable({ units }: UnitsTableProps) {
 							</td>
 							<td className="px-4 py-3 text-right">
 								<div className="flex justify-end gap-2">
-									<Link
-										className={buttonClassName({ size: "sm", variant: "outline" })}
-										params={{ unitId: unit.id }}
-										to="/admin/units/$unitId/products"
-									>
-										{t("admin.units.menu.action")}
-									</Link>
-									<Button onClick={() => setConfigUnit(unit)} size="sm" type="button" variant="outline">
-										{t("admin.units.config.action")}
-									</Button>
-									<Button onClick={() => setAddressUnit(unit)} size="sm" type="button" variant="outline">
-										{t("admin.units.address.action")}
-									</Button>
-									<Button onClick={() => setBannerUnit(unit)} size="sm" type="button" variant="outline">
-										{t("admin.units.banner.action")}
-									</Button>
-									<Button onClick={() => setHoursUnitId(unit.id)} size="sm" type="button" variant="outline">
-										{t("admin.units.hours.action")}
-									</Button>
-									<Button onClick={() => setZonesUnit(unit)} size="sm" type="button" variant="outline">
-										{t("admin.units.deliveryZones.action")}
-									</Button>
-									<Button
-										disabled={remove.isPending}
-										onClick={() => deleteUnit(unit.id, unit.name)}
-										size="sm"
-										type="button"
-										variant="outline"
-									>
-										{t("admin.units.row.delete")}
-									</Button>
+									<Tooltip content={t("admin.units.menu.action")}>
+										<Link
+											aria-label={t("admin.units.menu.action")}
+											className={buttonClassName({ size: "icon", variant: "outline" })}
+											params={{ unitId: unit.id }}
+											to="/admin/units/$unitId/products"
+										>
+											<LuBookOpen className="h-4 w-4" />
+										</Link>
+									</Tooltip>
+									<Tooltip content={t("admin.units.config.action")}>
+										<Button
+											aria-label={t("admin.units.config.action")}
+											onClick={() => setConfigUnit(unit)}
+											size="icon"
+											type="button"
+											variant="outline"
+										>
+											<LuSettings className="h-4 w-4" />
+										</Button>
+									</Tooltip>
+									<Tooltip content={t("admin.units.address.action")}>
+										<Button
+											aria-label={t("admin.units.address.action")}
+											onClick={() => setAddressUnit(unit)}
+											size="icon"
+											type="button"
+											variant="outline"
+										>
+											<LuMapPin className="h-4 w-4" />
+										</Button>
+									</Tooltip>
+									<Tooltip content={t("admin.units.banner.action")}>
+										<Button
+											aria-label={t("admin.units.banner.action")}
+											onClick={() => setBannerUnit(unit)}
+											size="icon"
+											type="button"
+											variant="outline"
+										>
+											<LuImage className="h-4 w-4" />
+										</Button>
+									</Tooltip>
+									<Tooltip content={t("admin.units.hours.action")}>
+										<Button
+											aria-label={t("admin.units.hours.action")}
+											onClick={() => setHoursUnitId(unit.id)}
+											size="icon"
+											type="button"
+											variant="outline"
+										>
+											<LuClock className="h-4 w-4" />
+										</Button>
+									</Tooltip>
+									<Tooltip content={t("admin.units.deliveryZones.action")}>
+										<Button
+											aria-label={t("admin.units.deliveryZones.action")}
+											onClick={() => setZonesUnit(unit)}
+											size="icon"
+											type="button"
+											variant="outline"
+										>
+											<LuTruck className="h-4 w-4" />
+										</Button>
+									</Tooltip>
+									<Tooltip content={t("admin.units.row.delete")}>
+										<Button
+											aria-label={t("admin.units.row.delete")}
+											disabled={remove.isPending}
+											onClick={() => deleteUnit(unit.id, unit.name)}
+											size="icon"
+											type="button"
+											variant="outline"
+										>
+											<LuTrash2 className="h-4 w-4" />
+										</Button>
+									</Tooltip>
 								</div>
 							</td>
 						</tr>
