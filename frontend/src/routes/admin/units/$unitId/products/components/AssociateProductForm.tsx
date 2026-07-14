@@ -1,4 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { Switch } from "baseui/switch";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -64,7 +65,7 @@ export function AssociateProductForm({
 				mutate(
 					{
 						data: {
-							available,
+						available: stockEnabled ? stock > 0 : available,
 							categoryId: categoryId || null,
 							priceCentsOverride: priceEnabled ? Math.round(priceReais * 100) : null,
 							productId,
@@ -122,27 +123,22 @@ export function AssociateProductForm({
 						onChange={event => setStockEnabled(event.currentTarget.checked)}
 						type="checkbox"
 					/>
-					{t("admin.unitProducts.form.stock")}
-				</label>
-				<NumericInput
-					decimalScale={0}
-					disabled={!stockEnabled}
-					onValueChange={({ floatValue }) => setStock(floatValue ?? 0)}
-					placeholder="10"
-					value={stock}
-				/>
-			</div>
-
-			<div className="flex items-center gap-3 md:col-span-2">
-				<label className="flex items-center gap-2 font-medium text-sm">
-					<input
-						checked={available}
-						onChange={event => setAvailable(event.currentTarget.checked)}
-						type="checkbox"
-					/>
-					{t("admin.unitProducts.form.available")}
-				</label>
-			</div>
+						{t("admin.unitProducts.form.stock")}
+					</label>
+					{stockEnabled ? (
+						<NumericInput
+							decimalScale={0}
+							onValueChange={({ floatValue }) => setStock(floatValue ?? 0)}
+							placeholder="10"
+							value={stock}
+						/>
+					) : (
+						<div className="flex items-center justify-between">
+							<span className="font-medium text-sm">{t("admin.unitProducts.form.available")}</span>
+							<Switch checked={available} onChange={event => setAvailable(event.currentTarget.checked)} />
+						</div>
+					)}
+				</div>
 
 			<div className="flex items-center gap-3 md:col-span-2">
 				<Button disabled={isPending || !productId} type="submit">

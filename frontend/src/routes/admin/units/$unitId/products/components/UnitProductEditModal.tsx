@@ -1,4 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { Switch } from "baseui/switch";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -54,7 +55,7 @@ export function UnitProductEditModal({ association, categories, onClose, unitId 
 		mutate(
 			{
 				data: {
-					available,
+					available: stockEnabled ? stock > 0 : available,
 					categoryId: categoryId || null,
 					priceCentsOverride: priceEnabled ? Math.round(priceReais * 100) : null,
 					stock: stockEnabled ? Math.round(stock) : null,
@@ -82,14 +83,6 @@ export function UnitProductEditModal({ association, categories, onClose, unitId 
 						<span className="font-medium text-sm">{t("admin.unitProducts.form.category")}</span>
 						<CustomSelect onChange={setCategoryId} options={categoryOptions} value={categoryId} />
 					</div>
-					<label className="flex items-center gap-2 font-medium text-sm">
-						<input
-							checked={available}
-							onChange={event => setAvailable(event.currentTarget.checked)}
-							type="checkbox"
-						/>
-						{t("admin.unitProducts.form.available")}
-					</label>
 				</div>
 
 				<div className="grid gap-4 md:grid-cols-2">
@@ -121,15 +114,21 @@ export function UnitProductEditModal({ association, categories, onClose, unitId 
 								onChange={event => setStockEnabled(event.currentTarget.checked)}
 								type="checkbox"
 							/>
-							{t("admin.unitProducts.form.stock")}
-						</label>
+						{t("admin.unitProducts.form.stock")}
+					</label>
+					{stockEnabled ? (
 						<NumericInput
 							decimalScale={0}
-							disabled={!stockEnabled}
 							onValueChange={({ floatValue }) => setStock(floatValue ?? 0)}
 							placeholder="10"
 							value={stock}
 						/>
+					) : (
+						<div className="flex items-center justify-between">
+							<span className="font-medium text-sm">{t("admin.unitProducts.form.available")}</span>
+							<Switch checked={available} onChange={event => setAvailable(event.currentTarget.checked)} />
+						</div>
+					)}
 					</div>
 				</div>
 

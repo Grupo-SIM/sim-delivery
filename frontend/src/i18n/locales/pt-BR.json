@@ -433,14 +433,14 @@
 				},
 				"empty": "Nenhum produto no cardápio desta unidade ainda.",
 				"form": {
-					"available": "Disponível nesta unidade",
+					"available": "Disponível",
 					"category": "Categoria",
 					"error": "Não foi possível associar o produto.",
 					"loose": "Sem categoria",
-					"priceOverride": "Substituir preço da unidade",
+					"priceOverride": "Substituir preço",
 					"product": "Produto",
 					"productPlaceholder": "Selecione um produto",
-					"stock": "Controlar estoque",
+					"stock": "Estoque",
 					"submit": "Adicionar ao cardápio",
 					"submitting": "Adicionando..."
 				},
