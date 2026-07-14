@@ -98,7 +98,7 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 			{open &&
 				createPortal(
 					<div
-						className="overflow-hidden rounded-brand border border-border bg-popover shadow-medium"
+						className="overflow-hidden rounded-md border border-border bg-popover shadow-medium"
 						onMouseDown={e => e.preventDefault()}
 						ref={dropdownRef}
 						role="listbox"
