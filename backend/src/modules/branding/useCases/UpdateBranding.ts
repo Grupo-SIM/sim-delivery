@@ -7,7 +7,6 @@ export class UpdateBranding {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute({
-		bannerUrl,
 		companyId,
 		fontDisplay,
 		fontDisplayUrl,
@@ -24,7 +23,6 @@ export class UpdateBranding {
 
 		const company = await this.prisma.company.update({
 			data: {
-				bannerUrl,
 				fontDisplay,
 				fontDisplayUrl,
 				fontFamily,
@@ -37,7 +35,6 @@ export class UpdateBranding {
 				themeColors,
 			},
 			select: {
-				bannerUrl: true,
 				fontDisplay: true,
 				fontDisplayUrl: true,
 				fontFamily: true,
@@ -54,7 +51,6 @@ export class UpdateBranding {
 		});
 
 		return {
-			bannerUrl: company.bannerUrl ?? null,
 			companyName: company.name,
 			fontDisplay: company.fontDisplay ?? null,
 			fontDisplayUrl: company.fontDisplayUrl ?? null,

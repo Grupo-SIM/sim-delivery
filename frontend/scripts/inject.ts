@@ -53,7 +53,6 @@ const DEFAULT_FONT_DISPLAY = "Luckiest Guy";
 
 interface CompanyBranding {
 	apiUrl: string | null;
-	bannerUrl: string | null;
 	fontDisplay: string | null;
 	fontDisplayUrl: string | null;
 	fontFamily: string | null;
@@ -115,7 +114,6 @@ try {
 	company = await prisma.company.findUnique({
 		select: {
 			apiUrl: true,
-			bannerUrl: true,
 			fontDisplay: true,
 			fontDisplayUrl: true,
 			fontFamily: true,
@@ -162,10 +160,9 @@ await writeFile(join(publicDir, "branding.css"), createBrandingCss(themeColors, 
 
 await writeFile(
 	brandingPath,
-	`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tapiUrl: string;\n\tbannerUrl: string | null;\n\tcompanyName: string;\n\tfontDisplay: string;\n\tfontDisplayUrl: string | null;\n\tfontFamily: string;\n\tfontFamilyUrl: string | null;\n\tfooterText: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n}\n\nexport const branding: Branding = ${JSON.stringify(
+	`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tapiUrl: string;\n\tcompanyName: string;\n\tfontDisplay: string;\n\tfontDisplayUrl: string | null;\n\tfontFamily: string;\n\tfontFamilyUrl: string | null;\n\tfooterText: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n}\n\nexport const branding: Branding = ${JSON.stringify(
 		{
 			apiUrl,
-			bannerUrl: company.bannerUrl,
 			companyName: company.name,
 			fontDisplay,
 			fontDisplayUrl: company.fontDisplayUrl,

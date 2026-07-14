@@ -36,7 +36,6 @@ export const ThemeColors = t.Object({ dark: ThemeColorSet, light: ThemeColorSet 
 export type ThemeColors = typeof ThemeColors.static;
 
 export const UpdateBrandingBody = t.Object({
-	bannerUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
 	fontDisplay: t.Optional(t.String({ maxLength: 100 })),
 	fontDisplayUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
 	fontFamily: t.Optional(t.String({ maxLength: 100 })),

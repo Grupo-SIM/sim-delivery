@@ -6,6 +6,8 @@ model Unit {
     name         String
     slug         String
     phone        String?
+    /// Storefront banner rendered only on this unit's page.
+    bannerUrl    String?
     // Address (deduced from CEP on the client app; see docs/08).
     zipCode      String?
     addressLine  String?

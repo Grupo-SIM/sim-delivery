@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { type GetUnits200, getUnitsQueryKey, useDeleteUnitsByUnitId } from "@/lib/api";
 import { showAlert, showConfirm } from "@/stores";
 import { UnitAddressEditor } from "./UnitAddressEditor";
+import { UnitBannerEditor } from "./UnitBannerEditor";
 import { UnitConfigEditor } from "./UnitConfigEditor";
 import { UnitDeliveryZonesEditor } from "./UnitDeliveryZonesEditor";
 import { UnitHoursEditor } from "./UnitHoursEditor";
@@ -24,6 +25,7 @@ export function UnitsTable({ units }: UnitsTableProps) {
 	const [hoursUnitId, setHoursUnitId] = useState<string | null>(null);
 	const [configUnit, setConfigUnit] = useState<GetUnits200[number] | null>(null);
 	const [addressUnit, setAddressUnit] = useState<GetUnits200[number] | null>(null);
+	const [bannerUnit, setBannerUnit] = useState<GetUnits200[number] | null>(null);
 	const [zonesUnit, setZonesUnit] = useState<GetUnits200[number] | null>(null);
 
 	if (units.length === 0) {
@@ -87,6 +89,9 @@ export function UnitsTable({ units }: UnitsTableProps) {
 									<Button onClick={() => setAddressUnit(unit)} size="sm" type="button" variant="outline">
 										{t("admin.units.address.action")}
 									</Button>
+									<Button onClick={() => setBannerUnit(unit)} size="sm" type="button" variant="outline">
+										{t("admin.units.banner.action")}
+									</Button>
 									<Button onClick={() => setHoursUnitId(unit.id)} size="sm" type="button" variant="outline">
 										{t("admin.units.hours.action")}
 									</Button>
@@ -112,6 +117,7 @@ export function UnitsTable({ units }: UnitsTableProps) {
 			<UnitHoursEditor onClose={() => setHoursUnitId(null)} unitId={hoursUnitId} />
 			<UnitConfigEditor onClose={() => setConfigUnit(null)} unit={configUnit} />
 			<UnitAddressEditor onClose={() => setAddressUnit(null)} unit={addressUnit} />
+			<UnitBannerEditor onClose={() => setBannerUnit(null)} unit={bannerUnit} />
 			<UnitDeliveryZonesEditor onClose={() => setZonesUnit(null)} unit={zonesUnit} />
 		</>
 	);

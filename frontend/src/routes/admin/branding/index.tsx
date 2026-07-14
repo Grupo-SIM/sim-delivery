@@ -23,7 +23,6 @@ function BrandingPage() {
 	const put = usePutBranding();
 
 	const [logoUrl, setLogoUrl] = useState("");
-	const [bannerUrl, setBannerUrl] = useState("");
 	const [fontFamily, setFontFamily] = useState("");
 	const [fontFamilyUrl, setFontFamilyUrl] = useState("");
 	const [fontDisplay, setFontDisplay] = useState("");
@@ -37,7 +36,6 @@ function BrandingPage() {
 	useEffect(() => {
 		if (branding) {
 			setLogoUrl(branding.logoUrl ?? "");
-			setBannerUrl(branding.bannerUrl ?? "");
 			setFontFamily(branding.fontFamily ?? "");
 			setFontFamilyUrl(branding.fontFamilyUrl ?? "");
 			setFontDisplay(branding.fontDisplay ?? "");
@@ -76,7 +74,6 @@ function BrandingPage() {
 		put.mutate(
 			{
 				data: {
-					bannerUrl: bannerUrl.trim() || undefined,
 					fontDisplay: fontDisplay.trim() || undefined,
 					fontDisplayUrl: fontDisplayUrl.trim() || undefined,
 					fontFamily: fontFamily.trim() || undefined,
@@ -143,27 +140,6 @@ function BrandingPage() {
 									{t("admin.branding.logoPreview")}
 								</p>
 								<img alt="logo preview" className="h-12 object-contain" src={logoUrl} />
-							</div>
-						)}
-
-						<Label>
-							{t("admin.branding.bannerUrl")}
-							<MediaUrlInput
-								asset="banner"
-								onUploadError={() => showToast(t("admin.branding.uploadError"), "negative")}
-								onValueChange={setBannerUrl}
-								placeholder={t("admin.branding.bannerUrlPlaceholder")}
-								uploadLabel={t("admin.branding.bannerUpload")}
-								value={bannerUrl}
-							/>
-						</Label>
-
-						{bannerUrl && (
-							<div className="rounded border border-border p-3">
-								<p className="mb-2 font-medium text-muted-foreground text-xs uppercase">
-									{t("admin.branding.bannerPreview")}
-								</p>
-								<img alt="banner preview" className="h-32 w-full rounded object-cover" src={bannerUrl} />
 							</div>
 						)}
 

@@ -18,7 +18,6 @@ export function useLiveBranding(): Branding {
 
 		return {
 			...staticBranding,
-			bannerUrl: data.bannerUrl,
 			companyName: data.companyName ?? staticBranding.companyName,
 			fontDisplay: data.fontDisplay?.trim() || staticBranding.fontDisplay,
 			fontDisplayUrl: data.fontDisplayUrl ?? staticBranding.fontDisplayUrl,

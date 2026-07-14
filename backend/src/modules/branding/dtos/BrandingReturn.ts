@@ -3,7 +3,6 @@ import { __nullable__ } from "sql/typebox";
 import { ThemeColors } from "./BrandingInput";
 
 export const BrandingReturn = t.Object({
-	bannerUrl: __nullable__(t.String()),
 	companyName: __nullable__(t.String()),
 	fontDisplay: __nullable__(t.String()),
 	fontDisplayUrl: __nullable__(t.String()),

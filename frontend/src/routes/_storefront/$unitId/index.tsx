@@ -15,6 +15,7 @@ import {
 	InfoPill,
 	MenuBrowser,
 	StoreInfoModal,
+	UnitBanner,
 	UnitSwitcher,
 } from "./components";
 import { money } from "./components/types";
@@ -48,67 +49,71 @@ function UnitStorePage() {
 	const deliveryMethod = getMethod(unit.id, unit.deliveryMethods);
 
 	return (
-		<Container className="space-y-4 py-8">
-			<div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-				<div className="flex items-center gap-3">
-					<SectionHeading subtitle={address || t("store.chooseUnit.noAddress")} title={unit.name} />
-					<Badge
-						className={
-							unit.isOpenNow
-								? "border-green-500/30 bg-green-500/10 text-green-500"
-								: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
-						}
-					>
-						{unit.isOpenNow ? t("store.status.open") : t("store.status.closed")}
-					</Badge>
+		<>
+			<UnitBanner bannerUrl={unit.bannerUrl} />
+			<Container className="space-y-4 py-8">
+				<div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+					<div className="flex items-center gap-3">
+						<SectionHeading subtitle={address || t("store.chooseUnit.noAddress")} title={unit.name} />
+						<Badge
+							className={
+								unit.isOpenNow
+									? "border-green-500/30 bg-green-500/10 text-green-500"
+									: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
+							}
+						>
+							{unit.isOpenNow ? t("store.status.open") : t("store.status.closed")}
+						</Badge>
+					</div>
+					{units && <UnitSwitcher unitId={unitSlug} units={units} />}
 				</div>
-				{units && <UnitSwitcher unitId={unitSlug} units={units} />}
-			</div>
 
-			<div className="flex flex-wrap items-center gap-2">
-				<DeliveryMethodSelector deliveryMethods={unit.deliveryMethods} unitId={unit.id} />
-				{prepMin != null && prepMax != null && (
-					<InfoPill>
-						⏱ {prepMin}–{prepMax} min
-					</InfoPill>
+				<div className="flex flex-wrap items-center gap-2">
+					<DeliveryMethodSelector deliveryMethods={unit.deliveryMethods} unitId={unit.id} />
+					{prepMin != null && prepMax != null && (
+						<InfoPill>
+							⏱ {prepMin}–{prepMax} min
+						</InfoPill>
+					)}
+					{minOrder > 0 && (
+						<InfoPill>
+							{t("store.unit.minOrder")} {money.format(minOrder / 100)}
+						</InfoPill>
+					)}
+					{hasDelivery && deliveryMethod === "delivery" && (
+						<InfoPill>
+							{t("store.cart.deliveryFee")}:{" "}
+							{fee > 0 ? money.format(fee / 100) : t("store.unit.freeDelivery")}
+						</InfoPill>
+					)}
+					<button
+						className="text-primary text-xs underline-offset-2 hover:underline"
+						onClick={() => setProfileOpen(true)}
+						type="button"
+					>
+						{t("store.unit.storeProfile")}
+					</button>
+				</div>
+
+				{menu.isPending ? (
+					<Skeleton className="h-64 w-full" />
+				) : menu.isError ? (
+					<ErrorState title={t("store.menu.loadError")} />
+				) : (
+					<MenuBrowser sections={menu.data} unitId={unit.id} unitSlug={unitSlug} />
 				)}
-				{minOrder > 0 && (
-					<InfoPill>
-						{t("store.unit.minOrder")} {money.format(minOrder / 100)}
-					</InfoPill>
-				)}
-				{hasDelivery && deliveryMethod === "delivery" && (
-					<InfoPill>
-						{t("store.cart.deliveryFee")}: {fee > 0 ? money.format(fee / 100) : t("store.unit.freeDelivery")}
-					</InfoPill>
-				)}
-				<button
-					className="text-primary text-xs underline-offset-2 hover:underline"
-					onClick={() => setProfileOpen(true)}
-					type="button"
-				>
-					{t("store.unit.storeProfile")}
-				</button>
-			</div>
 
-			{menu.isPending ? (
-				<Skeleton className="h-64 w-full" />
-			) : menu.isError ? (
-				<ErrorState title={t("store.menu.loadError")} />
-			) : (
-				<MenuBrowser sections={menu.data} unitId={unit.id} unitSlug={unitSlug} />
-			)}
+				<CartBar
+					deliveryFee={fee}
+					minOrderCents={minOrder}
+					sections={menu.data ?? []}
+					unitId={unit.id}
+					unitSlug={unitSlug}
+				/>
 
-			<CartBar
-				deliveryFee={fee}
-				minOrderCents={minOrder}
-				sections={menu.data ?? []}
-				unitId={unit.id}
-				unitSlug={unitSlug}
-			/>
-
-			<StoreInfoModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} unit={unit} />
-		</Container>
+				<StoreInfoModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} unit={unit} />
+			</Container>
+		</>
 	);
 }
 

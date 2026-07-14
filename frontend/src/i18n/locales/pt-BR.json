@@ -7,10 +7,6 @@
 		},
 		"admin": {
 			"branding": {
-				"bannerPreview": "Prévia do banner",
-				"bannerUpload": "Enviar banner",
-				"bannerUrl": "URL do banner",
-				"bannerUrlPlaceholder": "https://example.com/banner.png",
 				"colorGroups": {
 					"actions": "Ações e destaques",
 					"boundaries": "Bordas e foco",
@@ -471,6 +467,18 @@
 					"street": "Logradouro",
 					"streetPlaceholder": "Ex: Av. Paulista",
 					"title": "Endereço da unidade"
+				},
+				"banner": {
+					"action": "Banner",
+					"cancel": "Cancelar",
+					"error": "Não foi possível salvar o banner.",
+					"save": "Salvar banner",
+					"saving": "Salvando...",
+					"title": "Banner da unidade",
+					"upload": "Enviar banner",
+					"uploadError": "Não foi possível enviar o banner.",
+					"url": "URL do banner",
+					"urlPlaceholder": "https://exemplo.com/banner.png"
 				},
 				"columns": {
 					"actions": "",

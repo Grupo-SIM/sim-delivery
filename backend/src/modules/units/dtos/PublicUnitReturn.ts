@@ -3,6 +3,7 @@ import { t } from "elysia";
 /** Customer-facing shape of a unit: only the fields the storefront needs (docs/04, docs/08). */
 export const PublicUnitReturn = t.Object({
 	addressLine: t.Nullable(t.String()),
+	bannerUrl: t.Nullable(t.String()),
 	city: t.Nullable(t.String()),
 	deliveryFee: t.Integer(),
 	deliveryMethods: t.Array(t.String()),
