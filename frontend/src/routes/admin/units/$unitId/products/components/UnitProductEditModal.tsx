@@ -124,7 +124,7 @@ export function UnitProductEditModal({ association, categories, onClose, unitId 
 							value={stock}
 						/>
 					) : (
-						<div className="flex items-center justify-between">
+							<div className="flex min-h-10 items-center justify-between">
 							<span className="font-medium text-sm">{t("admin.unitProducts.form.available")}</span>
 							<Switch checked={available} onChange={event => setAvailable(event.currentTarget.checked)} />
 						</div>
