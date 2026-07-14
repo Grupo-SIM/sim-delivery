@@ -277,7 +277,8 @@
 					"cancel": "Cancelar",
 					"error": "Não foi possível salvar o produto.",
 					"save": "Salvar",
-					"saving": "Salvando..."
+					"saving": "Salvando...",
+					"title": "Editar produto"
 				},
 				"empty": "Nenhum produto ainda.",
 				"loadError": "Não foi possível carregar os produtos.",
@@ -414,7 +415,8 @@
 					"cancel": "Cancelar",
 					"error": "Não foi possível salvar a associação.",
 					"save": "Salvar",
-					"saving": "Salvando..."
+					"saving": "Salvando...",
+					"title": "Editar produto no cardápio"
 				},
 				"empty": "Nenhum produto no cardápio desta unidade ainda.",
 				"form": {

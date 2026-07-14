@@ -1,31 +1,45 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { CustomSelect } from "@/components/ui/CustomSelect";
+import { Modal } from "@/components/ui/Modal";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { getUnitsByUnitIdProductsQueryKey, usePatchUnitsByUnitIdProductsByUnitProductId } from "@/lib/api";
 import type { Category, UnitProduct } from "./types";
 
-interface UnitProductEditRowProps {
-	association: UnitProduct;
+interface UnitProductEditModalProps {
+	association: UnitProduct | null;
 	categories: Category[];
-	onCancel: () => void;
+	onClose: () => void;
 	unitId: string;
 }
 
-export function UnitProductEditRow({ association, categories, onCancel, unitId }: UnitProductEditRowProps) {
+export function UnitProductEditModal({ association, categories, onClose, unitId }: UnitProductEditModalProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
-	const [categoryId, setCategoryId] = useState(association.categoryId ?? "");
-	const [available, setAvailable] = useState(association.available);
-	const [priceEnabled, setPriceEnabled] = useState(association.priceCentsOverride !== null);
-	const [priceReais, setPriceReais] = useState(Number(association.priceCentsOverride ?? 0) / 100);
-	const [stockEnabled, setStockEnabled] = useState(association.stock !== null);
-	const [stock, setStock] = useState(Number(association.stock ?? 0));
+	const [categoryId, setCategoryId] = useState("");
+	const [available, setAvailable] = useState(true);
+	const [priceEnabled, setPriceEnabled] = useState(false);
+	const [priceReais, setPriceReais] = useState(0);
+	const [stockEnabled, setStockEnabled] = useState(false);
+	const [stock, setStock] = useState(0);
 	const [error, setError] = useState<string | null>(null);
 
 	const { isPending, mutate } = usePatchUnitsByUnitIdProductsByUnitProductId();
+
+	useEffect(() => {
+		if (!association) {
+			return;
+		}
+		setCategoryId(association.categoryId ?? "");
+		setAvailable(association.available);
+		setPriceEnabled(association.priceCentsOverride !== null);
+		setPriceReais(Number(association.priceCentsOverride ?? 0) / 100);
+		setStockEnabled(association.stock !== null);
+		setStock(Number(association.stock ?? 0));
+		setError(null);
+	}, [association]);
 
 	const categoryOptions = [
 		{ label: t("admin.unitProducts.form.loose"), value: "" },
@@ -33,6 +47,9 @@ export function UnitProductEditRow({ association, categories, onCancel, unitId }
 	];
 
 	function save() {
+		if (!association) {
+			return;
+		}
 		setError(null);
 		mutate(
 			{
@@ -51,15 +68,15 @@ export function UnitProductEditRow({ association, categories, onCancel, unitId }
 					await queryClient.invalidateQueries({
 						queryKey: getUnitsByUnitIdProductsQueryKey(unitId),
 					});
-					onCancel();
+					onClose();
 				},
 			},
 		);
 	}
 
 	return (
-		<tr className="border-border/60 border-b last:border-0">
-			<td className="px-4 py-3" colSpan={5}>
+		<Modal isOpen={association !== null} onClose={onClose} title={t("admin.unitProducts.edit.title")}>
+			<div className="space-y-4">
 				<div className="grid gap-4 md:grid-cols-2">
 					<div>
 						<span className="font-medium text-sm">{t("admin.unitProducts.form.category")}</span>
@@ -73,6 +90,9 @@ export function UnitProductEditRow({ association, categories, onCancel, unitId }
 						/>
 						{t("admin.unitProducts.form.available")}
 					</label>
+				</div>
+
+				<div className="grid gap-4 md:grid-cols-2">
 					<div className="space-y-2">
 						<label className="flex items-center gap-2 font-medium text-sm">
 							<input
@@ -93,6 +113,7 @@ export function UnitProductEditRow({ association, categories, onCancel, unitId }
 							value={priceReais}
 						/>
 					</div>
+
 					<div className="space-y-2">
 						<label className="flex items-center gap-2 font-medium text-sm">
 							<input
@@ -111,16 +132,17 @@ export function UnitProductEditRow({ association, categories, onCancel, unitId }
 						/>
 					</div>
 				</div>
-				{error && <p className="mt-2 text-destructive text-xs">{error}</p>}
-				<div className="mt-4 flex justify-end gap-2">
-					<Button disabled={isPending} onClick={onCancel} type="button" variant="outline">
+
+				{error && <p className="text-destructive text-xs">{error}</p>}
+				<div className="flex justify-end gap-2">
+					<Button disabled={isPending} onClick={onClose} type="button" variant="outline">
 						{t("admin.unitProducts.edit.cancel")}
 					</Button>
 					<Button disabled={isPending} onClick={save} type="button">
 						{isPending ? t("admin.unitProducts.edit.saving") : t("admin.unitProducts.edit.save")}
 					</Button>
 				</div>
-			</td>
-		</tr>
+			</div>
+		</Modal>
 	);
 }

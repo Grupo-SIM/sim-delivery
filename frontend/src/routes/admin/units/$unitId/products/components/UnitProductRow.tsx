@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { getUnitsByUnitIdProductsQueryKey, useDeleteUnitsByUnitIdProductsByUnitProductId } from "@/lib/api";
 import { showAlert, showConfirm } from "@/stores";
 import { type Category, money, type Product, type UnitProduct } from "./types";
-import { UnitProductEditRow } from "./UnitProductEditRow";
+import { UnitProductEditModal } from "./UnitProductEditModal";
 
 interface UnitProductRowProps {
 	association: UnitProduct;
@@ -39,52 +39,49 @@ export function UnitProductRow({ association, categories, products, unitId }: Un
 		);
 	}
 
-	if (editing) {
-		return (
-			<UnitProductEditRow
-				association={association}
+	return (
+		<>
+			<tr className="border-border/60 border-b last:border-0">
+				<td className="px-4 py-3 font-medium">{product?.title ?? association.productId}</td>
+				<td className="px-4 py-3 text-muted-foreground">
+					{category?.name ?? t("admin.unitProducts.form.loose")}
+				</td>
+				<td className="px-4 py-3 text-muted-foreground">
+					{money.format(priceCents / 100)}
+					{association.priceCentsOverride !== null && (
+						<span className="ml-1 text-xs">{t("admin.unitProducts.row.overridden")}</span>
+					)}
+				</td>
+				<td className="px-4 py-3">
+					<Badge
+						className={
+							association.available
+								? "border-green-500/30 bg-green-500/10 text-green-500"
+								: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
+						}
+					>
+						{association.available
+							? t("admin.unitProducts.status.available")
+							: t("admin.unitProducts.status.unavailable")}
+					</Badge>
+				</td>
+				<td className="px-4 py-3 text-right">
+					<div className="flex justify-end gap-2">
+						<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
+							{t("admin.unitProducts.row.edit")}
+						</Button>
+						<Button disabled={remove.isPending} onClick={del} size="sm" type="button" variant="outline">
+							{t("admin.unitProducts.row.remove")}
+						</Button>
+					</div>
+				</td>
+			</tr>
+			<UnitProductEditModal
+				association={editing ? association : null}
 				categories={categories}
-				onCancel={() => setEditing(false)}
+				onClose={() => setEditing(false)}
 				unitId={unitId}
 			/>
-		);
-	}
-
-	return (
-		<tr className="border-border/60 border-b last:border-0">
-			<td className="px-4 py-3 font-medium">{product?.title ?? association.productId}</td>
-			<td className="px-4 py-3 text-muted-foreground">
-				{category?.name ?? t("admin.unitProducts.form.loose")}
-			</td>
-			<td className="px-4 py-3 text-muted-foreground">
-				{money.format(priceCents / 100)}
-				{association.priceCentsOverride !== null && (
-					<span className="ml-1 text-xs">{t("admin.unitProducts.row.overridden")}</span>
-				)}
-			</td>
-			<td className="px-4 py-3">
-				<Badge
-					className={
-						association.available
-							? "border-green-500/30 bg-green-500/10 text-green-500"
-							: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
-					}
-				>
-					{association.available
-						? t("admin.unitProducts.status.available")
-						: t("admin.unitProducts.status.unavailable")}
-				</Badge>
-			</td>
-			<td className="px-4 py-3 text-right">
-				<div className="flex justify-end gap-2">
-					<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
-						{t("admin.unitProducts.row.edit")}
-					</Button>
-					<Button disabled={remove.isPending} onClick={del} size="sm" type="button" variant="outline">
-						{t("admin.unitProducts.row.remove")}
-					</Button>
-				</div>
-			</td>
-		</tr>
+		</>
 	);
 }

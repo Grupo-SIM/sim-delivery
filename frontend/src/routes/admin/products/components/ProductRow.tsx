@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { getProductsQueryKey, useDeleteProductsByProductId } from "@/lib/api";
 import { showAlert, showConfirm } from "@/stores";
-import { ProductEditRow } from "./ProductEditRow";
+import { ProductEditModal } from "./ProductEditModal";
 import type { Product } from "./types";
 
 interface ProductRowProps {
@@ -32,45 +32,44 @@ export function ProductRow({ product }: ProductRowProps) {
 		);
 	}
 
-	if (editing) {
-		return <ProductEditRow onCancel={() => setEditing(false)} product={product} />;
-	}
-
 	return (
-		<tr className="border-border/60 border-b last:border-0">
-			<td className="px-4 py-3">
-				<div className="flex items-center gap-3">
-					{product.imageUrl && (
-						<img
-							alt=""
-							className="h-12 w-12 rounded border border-border object-cover"
-							src={product.imageUrl}
-						/>
-					)}
-					<div>
-						<p className="font-medium">{product.title}</p>
-						<p className="line-clamp-1 text-muted-foreground text-xs">{product.description}</p>
+		<>
+			<tr className="border-border/60 border-b last:border-0">
+				<td className="px-4 py-3">
+					<div className="flex items-center gap-3">
+						{product.imageUrl && (
+							<img
+								alt=""
+								className="h-12 w-12 rounded border border-border object-cover"
+								src={product.imageUrl}
+							/>
+						)}
+						<div>
+							<p className="font-medium">{product.title}</p>
+							<p className="line-clamp-1 text-muted-foreground text-xs">{product.description}</p>
+						</div>
 					</div>
-				</div>
-			</td>
-			<td className="px-4 py-3 text-muted-foreground">
-				{money.format(Number(product.basePriceCents) / 100)}
-			</td>
-			<td className="px-4 py-3 text-muted-foreground">
-				{product.cashbackPercentOverride === null
-					? t("admin.products.row.unitDefault")
-					: t("admin.products.row.cashbackPercent", { value: product.cashbackPercentOverride })}
-			</td>
-			<td className="px-4 py-3 text-right">
-				<div className="flex justify-end gap-2">
-					<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
-						{t("admin.products.edit.action")}
-					</Button>
-					<Button disabled={remove.isPending} onClick={del} size="sm" type="button" variant="outline">
-						{t("admin.products.row.delete")}
-					</Button>
-				</div>
-			</td>
-		</tr>
+				</td>
+				<td className="px-4 py-3 text-muted-foreground">
+					{money.format(Number(product.basePriceCents) / 100)}
+				</td>
+				<td className="px-4 py-3 text-muted-foreground">
+					{product.cashbackPercentOverride === null
+						? t("admin.products.row.unitDefault")
+						: t("admin.products.row.cashbackPercent", { value: product.cashbackPercentOverride })}
+				</td>
+				<td className="px-4 py-3 text-right">
+					<div className="flex justify-end gap-2">
+						<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
+							{t("admin.products.edit.action")}
+						</Button>
+						<Button disabled={remove.isPending} onClick={del} size="sm" type="button" variant="outline">
+							{t("admin.products.row.delete")}
+						</Button>
+					</div>
+				</td>
+			</tr>
+			<ProductEditModal onClose={() => setEditing(false)} product={editing ? product : null} />
+		</>
 	);
 }
