@@ -63,7 +63,7 @@ export function Modal({ children, isOpen, maxWidth = "640px", onClose, title }: 
 					{title}
 				</ModalHeader>
 			)}
-			<ModalBody $style={{ fontSize: "16px", lineHeight: "24px", padding: "28px 64px 28px 28px" }}>
+				<ModalBody $style={{ fontSize: "16px", lineHeight: "24px", padding: "16px 64px 28px 28px" }}>
 				{children}
 			</ModalBody>
 		</BaseModal>

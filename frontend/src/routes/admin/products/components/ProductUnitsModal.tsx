@@ -59,7 +59,7 @@ export function ProductUnitsModal({ onClose, product }: ProductUnitsModalProps) 
 
 	return (
 		<Modal isOpen={product !== null} onClose={onClose} title={t("admin.products.units.title")}>
-			<div className="space-y-3">
+				<div className="space-y-4">
 				{units?.length === 0 ? (
 					<p className="text-muted-foreground text-sm">{t("admin.products.units.empty")}</p>
 				) : (
@@ -78,7 +78,7 @@ export function ProductUnitsModal({ onClose, product }: ProductUnitsModalProps) 
 				)}
 
 				{error && <p className="text-destructive text-xs">{error}</p>}
-				<div className="flex justify-end gap-2">
+					<div className="flex justify-end gap-2 pt-2">
 					<Button disabled={isPending} onClick={onClose} type="button" variant="outline">
 						{t("admin.products.units.cancel")}
 					</Button>
