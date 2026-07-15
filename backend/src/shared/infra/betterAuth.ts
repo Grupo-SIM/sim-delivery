@@ -78,8 +78,9 @@ export const auth = betterAuth({
 			},
 		}),
 		magicLink({
-			sendMagicLink: async ({ email, token }) => {
-				const url = `${process.env.APP_URL}/identify/magic-link?token=${token}`;
+			sendMagicLink: async ({ email, metadata, token }) => {
+				const unitId = typeof metadata?.unitId === "string" ? metadata.unitId : undefined;
+				const url = `${process.env.APP_URL}/identify/magic-link?token=${token}${unitId ? `&unitId=${unitId}` : ""}`;
 				await mailer.sendMail({
 					from: `"Template App" <${process.env.MAIL_USER}>`,
 					html: await render(MagicLinkEmail({ url })),
