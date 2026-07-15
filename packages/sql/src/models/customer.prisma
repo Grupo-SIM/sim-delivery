@@ -7,6 +7,8 @@ model Customer {
     userId    String   @unique
     cpf       String?
     phone     String?
+    /// DOM Pagamentos customer id, created lazily on the first card payment.
+    domId     String?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
@@ -17,6 +19,7 @@ model Customer {
     loyaltyLedger    LoyaltyLedger[]
     orders           Order[]
     reviews          Review[]
+    savedCards       SavedCard[]
 
     @@unique([companyId, cpf])
     @@index([companyId])

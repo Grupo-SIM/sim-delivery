@@ -1,18 +1,46 @@
-/// A payment record tied to one order. Created by POST /payments/intent.
+/// A payment record tied to one order. Created by POST /payments/pix or /payments/card.
 /// Status lifecycle: pending → confirmed | failed.
 model Payment {
-    id        String   @id @default(cuid())
-    orderId   String   @unique
-    /// One-time opaque token used as the URL path for the hosted payment page.
-    token     String   @unique @default(cuid())
+    id              String   @id @default(cuid())
+    orderId         String   @unique
+    /// One-time opaque token used by the storefront to poll payment status.
+    token           String   @unique @default(cuid())
     /// "pending" | "confirmed" | "failed"
-    status    String   @default("pending")
+    status          String   @default("pending")
+    /// "pix" | "credit_card"
+    method          String   @default("pix")
     /// Amount in cents, mirrors order total at intent creation time.
-    amount    Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    amount          Int
+    /// DOM payment id returned by the Simpay backend; used for status polling.
+    simpayPaymentId String?
+    /// PIX QR code image (data URL) and copy-paste payload, present when method = "pix".
+    pixQrcode       String?
+    pixContent      String?
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
 
     order Order @relation(fields: [orderId], references: [id])
 
     @@map("payment")
+}
+
+/// A tokenized credit card saved by a customer for reuse at checkout.
+/// The token comes from DOM Pagamentos; the PAN is never stored.
+model SavedCard {
+    id          String   @id @default(cuid())
+    customerId  String
+    cardToken   String
+    last4       String
+    brand       String
+    expiryMonth String
+    expiryYear  String
+    holderName  String
+    isDefault   Boolean  @default(false)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+    @@index([customerId])
+    @@map("saved_card")
 }
