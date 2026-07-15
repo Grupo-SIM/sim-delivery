@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Container } from "@/components/ui/Container";
 import { authClient } from "@/lib/auth-client";
@@ -14,11 +14,21 @@ function MagicLinkVerifyPage() {
 	const navigate = useNavigate();
 	const { token, unitId } = Route.useSearch();
 	const [error, setError] = useState(false);
+	// Magic link tokens are single-use server-side; StrictMode's double effect invocation
+	// in dev would otherwise fire verify() twice, failing the second call. Cache the request
+	// promise per token so both invocations await the same in-flight verification.
+	const verifyPromiseRef = useRef(new Map<string, Promise<{ error: unknown }>>());
 
 	useEffect(() => {
 		let cancelled = false;
 
-		void authClient.magicLink.verify({ query: { token } }).then(({ error: caught }) => {
+		let promise = verifyPromiseRef.current.get(token);
+		if (!promise) {
+			promise = authClient.magicLink.verify({ query: { token } });
+			verifyPromiseRef.current.set(token, promise);
+		}
+
+		void promise.then(({ error: caught }) => {
 			if (cancelled) return;
 			if (caught) {
 				setError(true);
