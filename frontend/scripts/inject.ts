@@ -8,8 +8,9 @@
 import { existsSync } from "node:fs";
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = new URL("../..", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const FRONTEND = join(ROOT, "frontend");
 const publicDir = join(FRONTEND, "public");
 const brandingPath = join(FRONTEND, "src", "lib", "branding.ts");
