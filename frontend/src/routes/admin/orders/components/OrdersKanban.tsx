@@ -234,8 +234,8 @@ export function OrdersKanban({ orders, statuses }: OrdersKanbanProps) {
 								if (orderId) moveOrder(orderId, column.status);
 							}}
 						>
-							<header className="flex items-center justify-between gap-2 px-4 py-3">
-								<OrderStatusBadge status={column.status} />
+							<header className="relative z-20 flex items-center justify-between gap-2 px-4 py-3">
+								<OrderStatusBadge showHelp status={column.status} />
 								<span className="rounded-md bg-background px-2 py-1 font-semibold text-foreground text-sm shadow-sm">
 									{column.orders.length}
 								</span>
