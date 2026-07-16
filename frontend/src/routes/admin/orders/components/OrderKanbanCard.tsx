@@ -1,13 +1,10 @@
 import { useState } from "react";
-import { LuBike, LuCircleDollarSign, LuPackageCheck, LuShoppingBag, LuUserRound } from "react-icons/lu";
+import { LuBike, LuCircleDollarSign, LuShoppingBag, LuUserRound } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import type { GetOrders200 } from "@/lib/api";
 import { AssignCourierModal } from "./AssignCourierModal";
 import { OrderStatusBadge } from "./OrderStatusBadge";
-import { UpdateStatusModal } from "./UpdateStatusModal";
-
-const TERMINAL = new Set(["entregue", "retirado", "cancelado"]);
 
 interface OrderKanbanCardProps {
 	onDragEnd: () => void;
@@ -17,11 +14,9 @@ interface OrderKanbanCardProps {
 
 export function OrderKanbanCard({ onDragEnd, onDragStart, order }: OrderKanbanCardProps) {
 	const { t } = useTranslation();
-	const [statusOpen, setStatusOpen] = useState(false);
 	const [assignOpen, setAssignOpen] = useState(false);
 
 	const DeliveryIcon = order.deliveryMethod === "delivery" ? LuBike : LuShoppingBag;
-	const isTerminal = TERMINAL.has(order.status);
 	const isDeliveryOrder = order.deliveryMethod === "delivery";
 	const hasDeliveryAssigned = !!order.delivery;
 	const canAssign = order.status === "pronto" && isDeliveryOrder && !hasDeliveryAssigned;
@@ -81,29 +76,15 @@ export function OrderKanbanCard({ onDragEnd, onDragStart, order }: OrderKanbanCa
 				)}
 			</div>
 
-			<div className="mt-4 flex flex-wrap gap-2 border-border border-t pt-3">
-				{canAssign && (
+			{canAssign && (
+				<div className="mt-4 flex flex-wrap gap-2 border-border border-t pt-3">
 					<Button onClick={() => setAssignOpen(true)} size="sm" type="button" variant="outline">
 						<LuUserRound aria-hidden className="size-4" />
 						{t("admin.deliveries.assign.action")}
 					</Button>
-				)}
-				{!isTerminal && (
-					<Button onClick={() => setStatusOpen(true)} size="sm" type="button" variant="outline">
-						<LuPackageCheck aria-hidden className="size-4" />
-						{t("admin.orders.updateStatus.action")}
-					</Button>
-				)}
-			</div>
+				</div>
+			)}
 
-			<UpdateStatusModal
-				currentStatus={order.status}
-				deliveryMethod={order.deliveryMethod}
-				hasDeliveryAssigned={hasDeliveryAssigned}
-				isOpen={statusOpen}
-				onClose={() => setStatusOpen(false)}
-				orderId={order.id}
-			/>
 			<AssignCourierModal isOpen={assignOpen} onClose={() => setAssignOpen(false)} orderId={order.id} />
 		</article>
 	);
