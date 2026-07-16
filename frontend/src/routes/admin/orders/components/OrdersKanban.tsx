@@ -42,6 +42,12 @@ function isMovableStatus(status: KanbanStatus): status is PatchOrdersByOrderIdSt
 	return MOVABLE_STATUSES.includes(status as PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey);
 }
 
+function getFlow(deliveryMethod: string) {
+	return deliveryMethod === "pickup"
+		? ["recebido", "em_preparo", "pronto", "retirado"]
+		: ["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue"];
+}
+
 interface OrdersKanbanProps {
 	orders: GetOrders200;
 	statuses: readonly KanbanStatus[];
@@ -118,20 +124,76 @@ export function OrdersKanban({ orders, statuses }: OrdersKanbanProps) {
 		setDraggedOrderId(null);
 	}
 
+	function showStatusAlert(message: string) {
+		void showAlert(message, t("admin.orders.updateStatus.blockedTitle", { defaultValue: "Status não alterado" }));
+	}
+
+	function getMoveBlockReason(order: GetOrders200[number], status: KanbanStatus) {
+		if (order.status === status) return null;
+		if (order.status === "awaiting_payment") {
+			return t("admin.orders.updateStatus.errors.awaitingPayment", {
+				defaultValue: "Este pedido ainda está aguardando pagamento. Ele só pode ir para preparo depois que o pagamento for confirmado e o status virar Recebido.",
+			});
+		}
+		if (!isMovableStatus(status)) {
+			return t("admin.orders.updateStatus.errors.cannotReturnToPayment", {
+				defaultValue: "Não é possível voltar um pedido para Aguardando pagamento pelo kanban. Esse status é controlado pelo pagamento.",
+			});
+		}
+		if (status === "saiu_para_entrega" && order.deliveryMethod !== "delivery") {
+			return t("admin.orders.updateStatus.errors.deliveryOnly", {
+				defaultValue: "Somente pedidos de entrega podem sair para entrega. Pedidos de retirada devem ir para Retirado.",
+			});
+		}
+		if (status === "saiu_para_entrega" && !order.delivery) {
+			return t("admin.orders.updateStatus.errors.needsCourier", {
+				defaultValue: "Antes de sair para entrega, atribua um entregador disponível ao pedido.",
+			});
+		}
+		if (status === "retirado" && order.deliveryMethod !== "pickup") {
+			return t("admin.orders.updateStatus.errors.pickupOnly", {
+				defaultValue: "Somente pedidos de retirada podem ser marcados como Retirado. Para delivery, use Saiu para entrega e depois Entregue.",
+			});
+		}
+		if (order.status === "cancelado" && !["recebido", "em_preparo", "pronto"].includes(status)) {
+			return t("admin.orders.updateStatus.errors.cancelledReopen", {
+				defaultValue: "Pedidos cancelados só podem ser reabertos para Recebido, Em preparo ou Pronto.",
+			});
+		}
+		if (status === "cancelado") return null;
+
+		const flow = getFlow(order.deliveryMethod);
+		const currentIndex = flow.indexOf(order.status);
+		const nextIndex = flow.indexOf(status);
+		if (currentIndex >= 0 && nextIndex >= 0 && Math.abs(nextIndex - currentIndex) === 1) return null;
+
+		return t("admin.orders.updateStatus.errors.sequence", {
+			defaultValue: "Esse movimento pula etapas do pedido. Avance ou volte apenas uma coluna por vez.",
+		});
+	}
+
 	function moveOrder(orderId: string, status: KanbanStatus) {
 		const order = orders.find(candidate => candidate.id === orderId);
-		if (!order || order.status === status || !isMovableStatus(status)) return;
-		if (status === "saiu_para_entrega" && (order.deliveryMethod !== "delivery" || !order.delivery)) {
-			void showAlert(t("admin.deliveries.assign.needsCourier"));
+		if (!order) return;
+
+		const blockReason = getMoveBlockReason(order, status);
+		if (blockReason) {
+			showStatusAlert(blockReason);
 			return;
 		}
-		if (status === "retirado" && order.deliveryMethod !== "pickup") return;
+		if (!isMovableStatus(status)) return;
 
 		const nextStatus = status as PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey;
 		patchStatus.mutate(
 			{ data: { status: nextStatus }, orderId },
 			{
-				onError: () => void showAlert(t("admin.orders.updateStatus.error")),
+				onError: () =>
+					void showAlert(
+						t("admin.orders.updateStatus.errors.generic", {
+							defaultValue: "Não foi possível atualizar o status agora. Atualize a página e tente novamente.",
+						}),
+						t("admin.orders.updateStatus.errorTitle", { defaultValue: "Falha ao atualizar" }),
+					),
 				onSuccess: () => queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() }),
 			},
 		);
