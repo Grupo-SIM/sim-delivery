@@ -26,6 +26,7 @@ export const KANBAN_STATUSES = [
 type KanbanStatus = (typeof KANBAN_STATUSES)[number];
 
 const MOVABLE_STATUSES: readonly PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey[] = [
+	"recebido",
 	"em_preparo",
 	"pronto",
 	"saiu_para_entrega",

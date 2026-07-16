@@ -7,13 +7,16 @@ import { TextField } from "@/components/ui/TextField";
 import { getOrdersQueryKey, usePatchOrdersByOrderIdStatus } from "@/lib/api";
 import { showAlert } from "@/stores";
 
-type NextStatus = "em_preparo" | "pronto" | "saiu_para_entrega" | "entregue" | "retirado" | "cancelado";
+type NextStatus = "recebido" | "em_preparo" | "pronto" | "saiu_para_entrega" | "entregue" | "retirado" | "cancelado";
 
 const TRANSITIONS: Record<string, NextStatus[]> = {
-	em_preparo: ["pronto", "cancelado"],
-	pronto: ["saiu_para_entrega", "retirado", "cancelado"],
+	cancelado: ["recebido", "em_preparo", "pronto"],
+	em_preparo: ["recebido", "pronto", "cancelado"],
+	entregue: ["saiu_para_entrega"],
+	pronto: ["em_preparo", "saiu_para_entrega", "retirado", "cancelado"],
 	recebido: ["em_preparo", "cancelado"],
-	saiu_para_entrega: ["entregue", "cancelado"],
+	retirado: ["pronto"],
+	saiu_para_entrega: ["pronto", "entregue", "cancelado"],
 };
 
 interface UpdateStatusModalProps {
