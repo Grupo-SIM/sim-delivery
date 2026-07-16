@@ -1,4 +1,6 @@
+import { LuInfo } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
+import { Tooltip } from "@/components/ui/Tooltip";
 
 const STATUS_CLASS_NAMES: Record<string, string> = {
 	awaiting_payment: "border-amber-200 bg-amber-50 text-amber-800",
@@ -11,20 +13,43 @@ const STATUS_CLASS_NAMES: Record<string, string> = {
 	saiu_para_entrega: "border-orange-200 bg-orange-50 text-orange-800",
 };
 
+const STATUS_DESCRIPTIONS: Record<string, string> = {
+	awaiting_payment: "Pedido criado, mas ainda sem pagamento confirmado. Esse status muda automaticamente quando o pagamento for aprovado.",
+	cancelado: "Pedido encerrado sem seguir o fluxo de preparo ou entrega.",
+	em_preparo: "Pedido aceito pela unidade e em produção.",
+	entregue: "Pedido delivery finalizado: chegou ao cliente.",
+	pronto: "Pedido finalizado pela cozinha e aguardando retirada ou saída para entrega.",
+	recebido: "Pagamento confirmado e pedido liberado para a operação.",
+	retirado: "Pedido pickup finalizado: o cliente retirou na unidade.",
+	saiu_para_entrega: "Pedido delivery atribuído e em rota com o entregador.",
+};
+
 interface OrderStatusBadgeProps {
 	status: string;
 }
 
 export function OrderStatusBadge({ status }: OrderStatusBadgeProps) {
 	const { t } = useTranslation();
+	const description = STATUS_DESCRIPTIONS[status];
 
 	return (
 		<span
-			className={`inline-flex max-w-full items-center rounded-full border px-2 py-0.5 font-semibold text-xs ${
+			className={`inline-flex max-w-full items-center gap-1 rounded-full border px-2 py-0.5 font-semibold text-xs ${
 				STATUS_CLASS_NAMES[status] ?? "border-border bg-muted text-muted-foreground"
 			}`}
 		>
 			<span className="truncate">{t(`admin.orders.status.${status}`, { defaultValue: status })}</span>
+			{description && (
+				<Tooltip content={t(`admin.orders.statusHelp.${status}`, { defaultValue: description })}>
+					<span
+						aria-label={t(`admin.orders.statusHelp.${status}`, { defaultValue: description })}
+						className="grid size-4 shrink-0 place-items-center rounded-full border border-current/20 bg-white/40 text-current/80"
+						tabIndex={0}
+					>
+						<LuInfo aria-hidden className="size-3" />
+					</span>
+				</Tooltip>
+			)}
 		</span>
 	);
 }

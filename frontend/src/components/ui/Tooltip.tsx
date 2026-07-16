@@ -24,7 +24,7 @@ export function Tooltip({ children, content }: TooltipProps) {
 			<span
 				aria-hidden={!visible}
 				className={cn(
-					"pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 w-max rounded-md border border-border bg-popover px-2 py-1 font-medium text-foreground text-xs shadow-soft",
+					"pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 max-w-[260px] rounded-md border border-border bg-popover px-2 py-1.5 font-medium text-foreground text-xs leading-5 shadow-soft",
 					visible ? "opacity-100" : "opacity-0",
 				)}
 				role="tooltip"
