@@ -65,6 +65,7 @@ export function OrderRow({ order }: OrderRowProps) {
 			<UpdateStatusModal
 				currentStatus={order.status}
 				deliveryMethod={order.deliveryMethod}
+				hasDeliveryAssigned={!!order.delivery}
 				isOpen={modalOpen}
 				onClose={() => setModalOpen(false)}
 				orderId={order.id}

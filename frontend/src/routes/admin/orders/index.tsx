@@ -9,10 +9,11 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
 import { useGetOrders, useGetUnits } from "@/lib/api";
-import { OrdersTable } from "./components";
+import { KANBAN_STATUSES, OrdersKanban } from "./components";
 
 const STATUS_FILTERS = [
 	"all",
+	"awaiting_payment",
 	"recebido",
 	"em_preparo",
 	"pronto",
@@ -22,9 +23,11 @@ const STATUS_FILTERS = [
 	"cancelado",
 ] as const;
 
+type StatusFilter = (typeof STATUS_FILTERS)[number];
+
 function OrdersPage() {
 	const { t } = useTranslation();
-	const [statusFilter, setStatusFilter] = useState<string>("all");
+	const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 	const [unitId, setUnitId] = useState<string>("all");
 	const [deliveryMethod, setDeliveryMethod] = useState<string>("all");
 	const [search, setSearch] = useState("");
@@ -52,6 +55,7 @@ function OrdersPage() {
 		{ label: t("store.checkout.order.delivery"), value: "delivery" },
 		{ label: t("store.checkout.order.pickup"), value: "pickup" },
 	];
+	const visibleStatuses = statusFilter === "all" ? KANBAN_STATUSES : [statusFilter];
 
 	return (
 		<Container className="space-y-6 py-8">
@@ -100,7 +104,7 @@ function OrdersPage() {
 			) : isError ? (
 				<ErrorState title={t("admin.orders.loadError")} />
 			) : (
-				<OrdersTable orders={orders} />
+				<OrdersKanban orders={orders} statuses={visibleStatuses} />
 			)}
 		</Container>
 	);

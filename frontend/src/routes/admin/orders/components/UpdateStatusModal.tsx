@@ -17,16 +17,18 @@ const TRANSITIONS: Record<string, NextStatus[]> = {
 };
 
 interface UpdateStatusModalProps {
+	currentStatus: string;
 	deliveryMethod: string;
+	hasDeliveryAssigned?: boolean;
 	isOpen: boolean;
 	onClose: () => void;
 	orderId: string;
-	currentStatus: string;
 }
 
 export function UpdateStatusModal({
 	currentStatus,
 	deliveryMethod,
+	hasDeliveryAssigned = false,
 	isOpen,
 	onClose,
 	orderId,
@@ -39,7 +41,7 @@ export function UpdateStatusModal({
 	const [cancelReason, setCancelReason] = useState("");
 
 	const nexts = (TRANSITIONS[currentStatus] ?? []).filter(s => {
-		if (s === "saiu_para_entrega" && deliveryMethod !== "delivery") return false;
+		if (s === "saiu_para_entrega" && (deliveryMethod !== "delivery" || !hasDeliveryAssigned)) return false;
 		if (s === "retirado" && deliveryMethod !== "pickup") return false;
 		return true;
 	});
