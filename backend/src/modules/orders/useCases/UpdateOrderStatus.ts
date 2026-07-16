@@ -4,14 +4,27 @@ import type { WhatsAppProvider } from "@/shared/infra/whatsapp";
 import type { OrderReturn, UpdateOrderStatusBody } from "../dtos";
 import { OrderErrors } from "../errors";
 
-const VALID_TRANSITIONS: Record<string, string[]> = {
-	em_preparo: ["pronto", "cancelado"],
-	pronto: ["saiu_para_entrega", "retirado", "cancelado"],
-	recebido: ["em_preparo", "cancelado"],
-	saiu_para_entrega: ["entregue", "cancelado"],
-};
+const DELIVERY_FLOW = ["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue"];
+const PICKUP_FLOW = ["recebido", "em_preparo", "pronto", "retirado"];
+const REOPENABLE_FROM_CANCELLED = new Set(["recebido", "em_preparo", "pronto"]);
 
 const NOTIFIABLE = new Set(["em_preparo", "saiu_para_entrega", "entregue", "retirado"]);
+
+function canTransition(current: string, next: string, deliveryMethod: string): boolean {
+	if (current === next) return true;
+	if (next === "cancelado") return true;
+	if (current === "cancelado") return REOPENABLE_FROM_CANCELLED.has(next);
+
+	const flow = deliveryMethod === "pickup" ? PICKUP_FLOW : DELIVERY_FLOW;
+	const currentIndex = flow.indexOf(current);
+	const nextIndex = flow.indexOf(next);
+	return currentIndex >= 0 && nextIndex >= 0 && Math.abs(nextIndex - currentIndex) === 1;
+}
+
+function shouldNotify(current: string, next: string, deliveryMethod: string): boolean {
+	const flow = deliveryMethod === "pickup" ? PICKUP_FLOW : DELIVERY_FLOW;
+	return NOTIFIABLE.has(next) && flow.indexOf(next) > flow.indexOf(current);
+}
 
 export class UpdateOrderStatus {
 	constructor(
@@ -32,8 +45,7 @@ export class UpdateOrderStatus {
 		});
 		if (!order) throw new DomainError(OrderErrors.ORDER_NOT_FOUND);
 
-		const allowed = VALID_TRANSITIONS[order.status];
-		if (!allowed?.includes(status)) throw new DomainError(OrderErrors.INVALID_TRANSITION);
+		if (!canTransition(order.status, status, order.deliveryMethod)) throw new DomainError(OrderErrors.INVALID_TRANSITION);
 		if (status === "cancelado" && !cancelReason) throw new DomainError(OrderErrors.CANCEL_REASON_REQUIRED);
 
 		const updated = await this.prisma.order.update({
@@ -45,7 +57,7 @@ export class UpdateOrderStatus {
 			where: { id: orderId },
 		});
 
-		if (NOTIFIABLE.has(status) && order.customer.phone) {
+		if (shouldNotify(order.status, status, order.deliveryMethod) && order.customer.phone) {
 			await this.whatsApp.sendOrderStatus(order.customer.phone, status, orderId).catch(() => {});
 		}
 

@@ -246,6 +246,7 @@
 						"em_preparo": "Iniciar preparo",
 						"entregue": "Marcar como entregue",
 						"pronto": "Marcar como pronto",
+						"recebido": "Voltar para recebido",
 						"retirado": "Marcar como retirado",
 						"saiu_para_entrega": "Saiu para entrega"
 					},

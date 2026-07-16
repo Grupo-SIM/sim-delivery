@@ -224,11 +224,11 @@ describe("UpdateOrderStatus", () => {
 		).rejects.toThrow("INVALID_TRANSITION");
 	});
 
-	it("throws INVALID_TRANSITION when order is terminal", async () => {
-		const { prisma } = makeUpdateStatusPrisma({ companyId: "cmp_1", id: "ord_1", status: "cancelado" });
-		await expect(
-			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "em_preparo" }),
-		).rejects.toThrow("INVALID_TRANSITION");
+	it("allows reopening a cancelled order for correction", async () => {
+		const { stored, prisma } = makeUpdateStatusPrisma({ companyId: "cmp_1", id: "ord_1", status: "cancelado" });
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "em_preparo" });
+		expect(stored.status).toBe("em_preparo");
+		expect(stored.cancelReason).toBeNull();
 	});
 
 	it("throws CANCEL_REASON_REQUIRED when cancelling without reason", async () => {
