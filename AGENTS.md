@@ -19,18 +19,15 @@ Project-specific product rules live in [`docs/business-rules.md`](docs/business-
 
 ## Git Commits — Required After Every Completed Task
 
-After finishing any task (feature, fix, refactor, or guideline addition), always create a git commit with **the agent doing the work as the author** and the local user as the committer:
+After finishing any task (feature, fix, refactor, or guideline addition), always create a git commit using **the machine's global Git identity** (`git config --global user.name` / `user.email`) as both author and committer:
 
 ```
-git -c commit.gpgsign=false -c user.name="Aran Leite" -c user.email="hyoretsu@gmail.com" commit --author="<Agent> <agent-email>"
+git -c commit.gpgsign=false commit -m "..."
 ```
 
-**Each agent authenticates as itself — Claude as Claude, Codex as Codex, and so on.** Use the identity of whichever agent actually authored the change; never sign under another agent's identity or any other third-party identity. Per-agent authors:
+**Never override the author or committer.** Do not pass `--author`, and do not set per-commit `user.name`/`user.email`. Never sign commits under an agent identity (Claude, Codex, etc.) or any other third-party identity — the commit must always reflect the local machine's configured Git user.
 
-- Claude → `--author="Claude <noreply@anthropic.com>"`
-- Codex → `--author="Codex <noreply@openai.com>"`
-
-The committer is always `Aran Leite <hyoretsu@gmail.com>` (never overridden), unless the user explicitly gives a different per-instance instruction.
+On this machine the global identity currently resolves to `Breno-Lima <breno.souza@academico.ufpb.br>`. If it ever changes, follow whatever `git config --global` reports; don't rely on the name hardcoded here.
 
 If the user requests an adjustment to something just delivered, amend or rebase rather than creating a separate noisy commit — keep history clean. Use Conventional Commits (`feat`, `fix`, `refactor`, `docs`, `style`, `chore`) with the monorepo package as scope (e.g. `feat(frontend)`, `fix(backend)`).
 
