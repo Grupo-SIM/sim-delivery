@@ -4,8 +4,10 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Modal } from "@/components/ui/Modal";
-import { getDeliveriesQueryKey, useGetStaff, usePostDeliveries } from "@/lib/api";
+import { getDeliveriesQueryKey, getOrdersQueryKey, useGetDeliveries, useGetStaff, usePostDeliveries } from "@/lib/api";
 import { showAlert } from "@/stores";
+
+const BUSY_DELIVERY_STATUSES = new Set(["atribuida", "pendente", "aceita", "a_caminho"]);
 
 interface AssignCourierModalProps {
 	isOpen: boolean;
@@ -17,11 +19,15 @@ export function AssignCourierModal({ isOpen, onClose, orderId }: AssignCourierMo
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const assign = usePostDeliveries();
+	const { data: deliveries } = useGetDeliveries(undefined, { query: { enabled: isOpen } });
 	const { data: staff } = useGetStaff();
 
 	const [courierId, setCourierId] = useState("");
 
-	const couriers = (staff ?? []).filter(s => s.role === "courier");
+	const busyCourierIds = new Set(
+		(deliveries ?? []).filter(delivery => BUSY_DELIVERY_STATUSES.has(delivery.status)).map(delivery => delivery.courierId),
+	);
+	const couriers = (staff ?? []).filter(s => s.role === "courier" && !busyCourierIds.has(s.id));
 	const courierOptions = couriers.map(c => ({ label: c.name, value: c.id }));
 
 	function handleClose() {
@@ -38,6 +44,7 @@ export function AssignCourierModal({ isOpen, onClose, orderId }: AssignCourierMo
 				onError: () => void showAlert(t("admin.deliveries.assign.error")),
 				onSuccess: () => {
 					queryClient.invalidateQueries({ queryKey: getDeliveriesQueryKey() });
+					queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() });
 					handleClose();
 				},
 			},
@@ -48,7 +55,7 @@ export function AssignCourierModal({ isOpen, onClose, orderId }: AssignCourierMo
 		<Modal isOpen={isOpen} maxWidth="420px" onClose={handleClose} title={t("admin.deliveries.assign.title")}>
 			<div className="space-y-4">
 				{couriers.length === 0 ? (
-					<p className="text-muted-foreground text-sm">{t("admin.deliveries.assign.noCouriers")}</p>
+					<p className="text-muted-foreground text-sm">{t("admin.deliveries.assign.noAvailableCouriers")}</p>
 				) : (
 					<>
 						<p className="mb-1 font-medium text-sm">{t("admin.deliveries.assign.courier")}</p>
