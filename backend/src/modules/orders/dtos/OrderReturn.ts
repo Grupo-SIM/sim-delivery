@@ -74,3 +74,38 @@ export const OrderReturn = t.Object({
 	updatedAt: t.Date(),
 });
 export type OrderReturn = typeof OrderReturn.static;
+
+export const OrderStatusEventReturn = t.Object({
+	createdAt: t.Date(),
+	id: t.String(),
+	status: t.String(),
+});
+export type OrderStatusEventReturn = typeof OrderStatusEventReturn.static;
+
+export const CustomerOrderTrackingReturn = t.Object({
+	cancelReason: __nullable__(t.String()),
+	createdAt: t.Date(),
+	deliveryMethod: t.String(),
+	id: t.String(),
+	items: t.Array(OrderItemReturn),
+	status: t.String(),
+	statusEvents: t.Array(OrderStatusEventReturn),
+	total: t.Integer(),
+	unitName: t.String(),
+});
+export type CustomerOrderTrackingReturn = typeof CustomerOrderTrackingReturn.static;
+
+export const CustomerOrderSummaryReturn = t.Object({
+	createdAt: t.Date(),
+	deliveryMethod: t.String(),
+	id: t.String(),
+	itemsCount: t.Integer(),
+	status: t.String(),
+	total: t.Integer(),
+	unitName: t.String(),
+	unitSlug: t.String(),
+});
+export type CustomerOrderSummaryReturn = typeof CustomerOrderSummaryReturn.static;
+
+export const CustomerOrderListReturn = t.Array(CustomerOrderSummaryReturn);
+export type CustomerOrderListReturn = typeof CustomerOrderListReturn.static;

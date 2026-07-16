@@ -32,6 +32,7 @@ model Order {
     items           OrderItem[]
     payment         Payment?
     review          Review?
+    statusEvents    OrderStatusEvent[]
 
     @@index([companyId, status])
     @@index([customerId])
@@ -39,6 +40,18 @@ model Order {
 }
 
 /// A single line item in an order. Price and name are snapshotted at creation time.
+model OrderStatusEvent {
+    id        String   @id @default(cuid())
+    orderId   String
+    status    String
+    createdAt DateTime @default(now())
+
+    order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+    @@index([orderId, createdAt])
+    @@map("order_status_event")
+}
+
 model OrderItem {
     id          String  @id @default(cuid())
     orderId     String
