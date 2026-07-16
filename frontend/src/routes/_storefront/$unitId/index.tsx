@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/Container";
@@ -8,7 +8,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetPublicUnits, useGetPublicUnitsByUnitSlugMenu } from "@/lib/api";
 import { slug } from "@/lib/variant";
-import { useDeliveryMethodStore } from "@/stores";
+import { useDeliveryMethodStore, useSelectedUnitStore } from "@/stores";
 import {
 	CartBar,
 	DeliveryMethodSelector,
@@ -28,6 +28,12 @@ function UnitStorePage() {
 	const unit = units?.find(item => item.slug === unitSlug);
 	const [profileOpen, setProfileOpen] = useState(false);
 	const getMethod = useDeliveryMethodStore(state => state.getMethod);
+	const setSelectedUnit = useSelectedUnitStore(state => state.setUnit);
+
+	// Remember the unit the customer is browsing so it persists into checkout and later visits.
+	useEffect(() => {
+		if (unit) setSelectedUnit({ id: unit.id, name: unit.name, slug: unit.slug });
+	}, [unit, setSelectedUnit]);
 
 	if (!unit) {
 		return (

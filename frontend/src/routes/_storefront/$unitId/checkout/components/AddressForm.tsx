@@ -3,10 +3,11 @@ import { useTranslation } from "react-i18next";
 import { PatternFormat } from "react-number-format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Label, RequiredMark } from "@/components/ui/label";
 import { getCepByCep } from "@/lib/api";
 
 export interface AddressValue {
+	cpf: string;
 	zipCode: string;
 	addressLine: string;
 	number: string;
@@ -23,6 +24,7 @@ const emptyAddress: AddressValue = {
 	addressLine: "",
 	city: "",
 	complement: "",
+	cpf: "",
 	latitude: null,
 	longitude: null,
 	neighborhood: "",
@@ -72,7 +74,8 @@ export function AddressForm({ disabled, onSubmit }: AddressFormProps) {
 	}
 
 	const number = noNumber ? "S/N" : value.number;
-	const canSubmit = value.zipCode.length === 8 && value.addressLine.trim() !== "" && number.trim() !== "";
+	const canSubmit =
+		value.cpf.length === 11 && value.zipCode.length === 8 && value.addressLine.trim() !== "" && number.trim() !== "";
 
 	return (
 		<form
@@ -83,6 +86,21 @@ export function AddressForm({ disabled, onSubmit }: AddressFormProps) {
 				onSubmit?.({ ...value, number });
 			}}
 		>
+			<Label>
+				<span>
+					{t("store.checkout.address.cpf")} <RequiredMark />
+				</span>
+				<PatternFormat
+					customInput={Input}
+					format="###.###.###-##"
+					inputMode="numeric"
+					mask="_"
+					onValueChange={({ value: digits }) => set("cpf", digits)}
+					placeholder={t("store.checkout.address.cpfPlaceholder")}
+					value={value.cpf}
+				/>
+			</Label>
+
 			<Label>
 				{t("store.checkout.address.cep")}
 				<PatternFormat

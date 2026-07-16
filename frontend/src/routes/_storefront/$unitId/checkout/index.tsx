@@ -12,7 +12,6 @@ import {
 	useGetLoyaltyMe,
 	usePostCustomersMe,
 	usePostOrders,
-	usePostPaymentsIntent,
 } from "@/lib/api";
 import { slug } from "@/lib/variant";
 import { cartTotalCents, showAlert, useAuthStore, useCartStore, useDeliveryMethodStore } from "@/stores";
@@ -23,7 +22,7 @@ import {
 	type DeliveryMethod,
 	IdentifyForm,
 	OrderReview,
-	PaymentFrame,
+	PaymentStep,
 	ProfileForm,
 	type ProfileValue,
 } from "./components";
@@ -34,10 +33,8 @@ function CheckoutPage() {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const { unitId: unitSlug } = Route.useParams();
-	const { isAuthenticated: identified, user } = useAuthStore(state => ({
-		isAuthenticated: state.isAuthenticated,
-		user: state.user,
-	}));
+	const identified = useAuthStore(state => state.isAuthenticated);
+	const user = useAuthStore(state => state.user);
 	const cartItems = useCartStore(state => state.items);
 	const clearCart = useCartStore(state => state.clear);
 
@@ -55,12 +52,10 @@ function CheckoutPage() {
 	const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
 	const [cashbackRedeemCents, setCashbackRedeemCents] = useState(0);
 	const [loyaltyRedeemPoints, setLoyaltyRedeemPoints] = useState(0);
-	const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
-	const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);
+	const [placedOrder, setPlacedOrder] = useState<{ id: string; totalCents: number } | null>(null);
 
 	const { mutate: saveCustomer, isPending: isSavingCustomer } = usePostCustomersMe();
 	const { mutate: placeOrder, isPending: isPlacingOrder } = usePostOrders();
-	const { mutate: createPaymentIntent, isPending: isCreatingIntent } = usePostPaymentsIntent();
 
 	const { data: existingCustomer, isLoading: loadingCustomer } = useQuery({
 		...getCustomersMeQueryOptions({ slug: slug ?? "" }),
@@ -81,6 +76,9 @@ function CheckoutPage() {
 
 	const isPickup = deliveryMethod === "pickup";
 	const hasCustomer = savedCustomer !== null || existingCustomer !== null;
+	// Magic-link/OTP accounts can end up with a blank name; without one we can't skip
+	// straight to address (the save would submit an empty name and fail server-side).
+	const hasUsableName = !!user?.name?.trim();
 	const reviewStep: Step =
 		!identified || loadingCustomer
 			? "identify"
@@ -88,12 +86,18 @@ function CheckoutPage() {
 				? "profile"
 				: !hasCustomer
 					? "address"
-					: // Existing customer + pickup: skip address entirely
-						existingCustomer !== null && savedCustomer === null && !isPickup
-						? "address"
-						: "review";
+					: existingCustomer !== null &&
+							savedCustomer === null &&
+							!isPickup &&
+							!hasUsableName &&
+							profileValue === null
+						? "profile"
+						: // Existing customer + pickup: skip address entirely
+							existingCustomer !== null && savedCustomer === null && !isPickup
+							? "address"
+							: "review";
 
-	const step: Step = paymentUrl ? "payment" : reviewStep;
+	const step: Step = placedOrder ? "payment" : reviewStep;
 
 	const activeCustomer = savedCustomer ?? existingCustomer ?? null;
 	const savedAddress = activeCustomer?.addresses[0] ?? null;
@@ -120,7 +124,7 @@ function CheckoutPage() {
 						state: address.state || undefined,
 						zipCode: address.zipCode,
 					},
-					cpf: profile.cpf || undefined,
+					cpf: address.cpf,
 					name: profile.name,
 					slug: slug ?? "",
 				},
@@ -153,30 +157,21 @@ function CheckoutPage() {
 			},
 			{
 				onError: () => void showAlert(t("store.checkout.order.error")),
-				onSuccess: order => {
-					setPlacedOrderId(order.id);
-					createPaymentIntent(
-						{ data: { orderId: order.id, slug: slug ?? "" } },
-						{
-							onError: () => void showAlert(t("store.checkout.payment.intentError")),
-							onSuccess: intent => setPaymentUrl(intent.paymentUrl),
-						},
-					);
-				},
+				onSuccess: order => setPlacedOrder({ id: order.id, totalCents: Number(order.total) }),
 			},
 		);
 	}
 
 	function handlePaymentConfirmed() {
 		clearCart();
+		if (!placedOrder) return;
 		void navigate({
-			params: { unitId: unitSlug },
-			search: placedOrderId ? { orderId: placedOrderId } : {},
-			to: "/$unitId/checkout/thank-you",
+			params: { orderId: placedOrder.id, unitId: unitSlug },
+			to: "/$unitId/orders/$orderId",
 		});
 	}
 
-	const isPendingOrder = isPlacingOrder || isCreatingIntent;
+	const isPendingOrder = isPlacingOrder;
 
 	return (
 		<Container className="max-w-lg space-y-6 py-8">
@@ -249,13 +244,19 @@ function CheckoutPage() {
 				</>
 			)}
 
-			{step === "payment" && paymentUrl && (
+			{step === "payment" && placedOrder && (
 				<>
 					<SectionHeading
 						subtitle={t("store.checkout.payment.subtitle")}
 						title={t("store.checkout.payment.title")}
 					/>
-					<PaymentFrame onConfirmed={handlePaymentConfirmed} paymentUrl={paymentUrl} />
+					<PaymentStep
+						amountCents={placedOrder.totalCents}
+						customerCpf={activeCustomer?.cpf ?? null}
+						onConfirmed={handlePaymentConfirmed}
+						orderId={placedOrder.id}
+						slug={slug ?? ""}
+					/>
 				</>
 			)}
 		</Container>

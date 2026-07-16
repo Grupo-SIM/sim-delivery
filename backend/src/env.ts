@@ -36,6 +36,7 @@ export const envSchema = t.Object({
 		default: "postgresql://postgres:password@localhost:5432/vivendo_de_bet",
 		format: "uri",
 	}),
+	DOM_API_KEY: t.Optional(t.String()),
 	MAIL_DRIVER: t.Enum(MailProvidersEnum),
 	MAIL_HOST: t.String(),
 	MAIL_PASS: t.String(),
@@ -57,6 +58,12 @@ export const envSchema = t.Object({
 		}),
 	),
 	S3_SECRET_ACCESS_KEY: t.Optional(t.String()),
+	SIMPAY_API_URL: t.Optional(
+		t.String({
+			default: "https://simpay-back.simintermediacoes.com",
+			format: "uri",
+		}),
+	),
 	STATIC_DIR: t.Optional(
 		t.String({
 			default: path.resolve(__dirname, "..", "static"),

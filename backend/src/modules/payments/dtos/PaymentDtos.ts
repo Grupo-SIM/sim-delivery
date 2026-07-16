@@ -1,16 +1,71 @@
 import { t } from "elysia";
 
-export const CreatePaymentIntentBody = t.Object({
+export const CreatePixPaymentBody = t.Object({
+	/** CPF digits; normally saved with the delivery address. */
+	cpf: t.Optional(t.String({ maxLength: 14, minLength: 11 })),
 	orderId: t.String({ minLength: 1 }),
 	slug: t.String({ minLength: 1 }),
 });
-export type CreatePaymentIntentBody = typeof CreatePaymentIntentBody.static;
+export type CreatePixPaymentBody = typeof CreatePixPaymentBody.static;
 
-export const PaymentIntentReturn = t.Object({
-	paymentUrl: t.String(),
+export const PixPaymentReturn = t.Object({
+	amount: t.Number(),
+	pixContent: t.String(),
+	pixQrcode: t.String(),
 	token: t.String(),
 });
-export type PaymentIntentReturn = typeof PaymentIntentReturn.static;
+export type PixPaymentReturn = typeof PixPaymentReturn.static;
+
+export const NewCardInput = t.Object({
+	cvv: t.String({ maxLength: 4, minLength: 3 }),
+	expMonth: t.Number({ maximum: 12, minimum: 1 }),
+	expYear: t.Number({ minimum: 2024 }),
+	holderName: t.String({ minLength: 2 }),
+	number: t.String({ maxLength: 19, minLength: 13 }),
+});
+export type NewCardInput = typeof NewCardInput.static;
+
+export const CreateCardPaymentBody = t.Object({
+	card: t.Optional(NewCardInput),
+	/** CPF digits; required when the customer profile has none yet. */
+	cpf: t.Optional(t.String({ maxLength: 14, minLength: 11 })),
+	orderId: t.String({ minLength: 1 }),
+	saveCard: t.Optional(t.Boolean()),
+	savedCardId: t.Optional(t.String()),
+	slug: t.String({ minLength: 1 }),
+});
+export type CreateCardPaymentBody = typeof CreateCardPaymentBody.static;
+
+export const CardPaymentReturn = t.Object({
+	status: t.String(),
+	token: t.String(),
+});
+export type CardPaymentReturn = typeof CardPaymentReturn.static;
+
+export const PaymentStatusReturn = t.Object({
+	/** "pending" | "confirmed" | "failed" */
+	status: t.String(),
+});
+export type PaymentStatusReturn = typeof PaymentStatusReturn.static;
+
+export const SavedCardReturn = t.Object({
+	brand: t.String(),
+	expiryMonth: t.String(),
+	expiryYear: t.String(),
+	holderName: t.String(),
+	id: t.String(),
+	isDefault: t.Boolean(),
+	last4: t.String(),
+});
+export type SavedCardReturn = typeof SavedCardReturn.static;
+
+export const SavedCardsReturn = t.Array(SavedCardReturn);
+export type SavedCardsReturn = typeof SavedCardsReturn.static;
+
+export const ListSavedCardsQuery = t.Object({
+	slug: t.String({ minLength: 1 }),
+});
+export type ListSavedCardsQuery = typeof ListSavedCardsQuery.static;
 
 export const WebhookBody = t.Object({
 	token: t.String({ minLength: 1 }),

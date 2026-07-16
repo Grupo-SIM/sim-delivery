@@ -3,11 +3,8 @@
 	<head>
 		<meta charset="UTF-8" />
 		<script>
-			// Applied before first paint to avoid a light->dark flash; kept in sync
-			// at runtime by Providers (src/providers.tsx).
-			document.documentElement.classList.add(
-				window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light",
-			);
+			// The storefront always starts in the light brand theme.
+			document.documentElement.classList.add("light");
 		</script>
 		<!-- Build script downloads branding assets and writes this stylesheet before Vite builds. -->
 		<link rel="stylesheet" href="/branding.css" />
