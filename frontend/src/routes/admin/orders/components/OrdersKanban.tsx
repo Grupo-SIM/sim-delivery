@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/EmptyState";
 import {
@@ -35,6 +35,9 @@ const MOVABLE_STATUSES: readonly PatchOrdersByOrderIdStatusMutationRequestStatus
 	"cancelado",
 ];
 
+const AUTO_SCROLL_EDGE_PX = 120;
+const AUTO_SCROLL_MAX_SPEED = 22;
+
 function isMovableStatus(status: KanbanStatus): status is PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey {
 	return MOVABLE_STATUSES.includes(status as PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey);
 }
@@ -48,6 +51,9 @@ export function OrdersKanban({ orders, statuses }: OrdersKanbanProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const patchStatus = usePatchOrdersByOrderIdStatus();
+	const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+	const scrollFrameRef = useRef<number | null>(null);
+	const scrollSpeedRef = useRef(0);
 	const [draggedOrderId, setDraggedOrderId] = useState<string | null>(null);
 	const [dragOverStatus, setDragOverStatus] = useState<string | null>(null);
 	const ordersByStatus = useMemo(
@@ -59,8 +65,57 @@ export function OrdersKanban({ orders, statuses }: OrdersKanbanProps) {
 		[orders, statuses],
 	);
 
+	useEffect(() => stopAutoScroll, []);
+
 	if (orders.length === 0) {
 		return <EmptyState title={t("admin.orders.empty")} />;
+	}
+
+	function runAutoScroll() {
+		const container = scrollContainerRef.current;
+		const speed = scrollSpeedRef.current;
+
+		if (!container || speed === 0) {
+			scrollFrameRef.current = null;
+			return;
+		}
+
+		container.scrollLeft += speed;
+		scrollFrameRef.current = window.requestAnimationFrame(runAutoScroll);
+	}
+
+	function stopAutoScroll() {
+		scrollSpeedRef.current = 0;
+		if (scrollFrameRef.current === null) return;
+		window.cancelAnimationFrame(scrollFrameRef.current);
+		scrollFrameRef.current = null;
+	}
+
+	function updateAutoScroll(clientX: number) {
+		const container = scrollContainerRef.current;
+		if (!container) return;
+
+		const rect = container.getBoundingClientRect();
+		const distanceFromLeft = clientX - rect.left;
+		const distanceFromRight = rect.right - clientX;
+		let nextSpeed = 0;
+
+		if (distanceFromLeft < AUTO_SCROLL_EDGE_PX) {
+			nextSpeed = -Math.ceil(((AUTO_SCROLL_EDGE_PX - distanceFromLeft) / AUTO_SCROLL_EDGE_PX) * AUTO_SCROLL_MAX_SPEED);
+		} else if (distanceFromRight < AUTO_SCROLL_EDGE_PX) {
+			nextSpeed = Math.ceil(((AUTO_SCROLL_EDGE_PX - distanceFromRight) / AUTO_SCROLL_EDGE_PX) * AUTO_SCROLL_MAX_SPEED);
+		}
+
+		scrollSpeedRef.current = nextSpeed;
+		if (nextSpeed !== 0 && scrollFrameRef.current === null) {
+			scrollFrameRef.current = window.requestAnimationFrame(runAutoScroll);
+		}
+	}
+
+	function finishDrag() {
+		stopAutoScroll();
+		setDragOverStatus(null);
+		setDraggedOrderId(null);
 	}
 
 	function moveOrder(orderId: string, status: KanbanStatus) {
@@ -83,7 +138,15 @@ export function OrdersKanban({ orders, statuses }: OrdersKanbanProps) {
 	}
 
 	return (
-		<div className="-mx-5 overflow-x-auto px-5 pb-3">
+		<div
+			className="-mx-5 overflow-x-auto px-5 pb-3"
+			onDragLeave={event => {
+				const nextTarget = event.relatedTarget as Node | null;
+				if (nextTarget && !event.currentTarget.contains(nextTarget)) finishDrag();
+			}}
+			onDragOver={event => updateAutoScroll(event.clientX)}
+			ref={scrollContainerRef}
+		>
 			<div className="flex min-w-max gap-3">
 				{ordersByStatus.map(column => {
 					const isDropTarget = dragOverStatus === column.status;
@@ -99,13 +162,13 @@ export function OrdersKanban({ orders, statuses }: OrdersKanbanProps) {
 							onDragOver={event => {
 								event.preventDefault();
 								event.dataTransfer.dropEffect = "move";
+								updateAutoScroll(event.clientX);
 								setDragOverStatus(column.status);
 							}}
 							onDrop={event => {
 								event.preventDefault();
 								const orderId = event.dataTransfer.getData("text/plain") || draggedOrderId;
-								setDragOverStatus(null);
-								setDraggedOrderId(null);
+								finishDrag();
 								if (orderId) moveOrder(orderId, column.status);
 							}}
 						>
@@ -122,7 +185,7 @@ export function OrdersKanban({ orders, statuses }: OrdersKanbanProps) {
 									</p>
 								) : (
 									column.orders.map(order => (
-										<OrderKanbanCard key={order.id} onDragStart={setDraggedOrderId} order={order} />
+										<OrderKanbanCard key={order.id} onDragEnd={finishDrag} onDragStart={setDraggedOrderId} order={order} />
 									))
 								)}
 							</div>
