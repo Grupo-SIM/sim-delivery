@@ -57,6 +57,12 @@ export class UpdateOrderStatus {
 			where: { id: orderId },
 		});
 
+		if (order.status !== status) {
+			await this.prisma.orderStatusEvent?.create({
+				data: { orderId, status },
+			});
+		}
+
 		if (shouldNotify(order.status, status, order.deliveryMethod) && order.customer.phone) {
 			await this.whatsApp.sendOrderStatus(order.customer.phone, status, orderId).catch(() => {});
 		}

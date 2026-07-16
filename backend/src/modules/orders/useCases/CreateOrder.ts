@@ -109,6 +109,13 @@ export class CreateOrder {
 				},
 			});
 
+			await tx.orderStatusEvent?.create({
+				data: {
+					orderId: created.id,
+					status: created.status,
+				},
+			});
+
 			if (couponId) {
 				await tx.coupon.update({
 					data: { usedCount: { increment: 1 } },
