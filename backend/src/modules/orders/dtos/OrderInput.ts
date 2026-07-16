@@ -25,6 +25,11 @@ export const ListOrdersQuery = t.Object({
 });
 export type ListOrdersQuery = typeof ListOrdersQuery.static;
 
+export const GetCustomerOrderQuery = t.Object({
+	slug: t.String({ minLength: 1 }),
+});
+export type GetCustomerOrderQuery = typeof GetCustomerOrderQuery.static;
+
 export const CreateOrderItemBody = t.Object({
 	note: t.Optional(t.String()),
 	quantity: t.Integer({ minimum: 1 }),

@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { DisabledWhatsAppProvider } from "@/shared/infra/whatsapp";
 import { CreateOrder } from "./CreateOrder";
+import { GetCustomerOrder } from "./GetCustomerOrder";
 import { ListOrders } from "./ListOrders";
 import { UpdateOrderStatus } from "./UpdateOrderStatus";
 
@@ -307,5 +308,39 @@ describe("ListOrders", () => {
 		const { prisma } = makeListOrdersPrisma();
 		const result = await new ListOrders(prisma).execute(null, {});
 		expect(result).toHaveLength(1);
+	});
+});
+
+function makeCustomerOrderPrisma(order: object | null) {
+	const prisma = {
+		company: { findUnique: async () => ({ id: "cmp_1", slug: "demo" }) },
+		order: { findFirst: async () => order },
+	} as unknown as PrismaInstance;
+
+	return prisma;
+}
+
+describe("GetCustomerOrder", () => {
+	it("returns the tracking details for the order owner", async () => {
+		const result = await new GetCustomerOrder(
+			makeCustomerOrderPrisma({
+				cancelReason: null,
+				createdAt: new Date("2024-01-01"),
+				deliveryMethod: "delivery",
+				id: "ord_1",
+				items: [],
+				status: "em_preparo",
+				total: 2500,
+				unit: { name: "Centro" },
+			}),
+		).execute("user_1", "ord_1", "demo");
+
+		expect(result).toMatchObject({ id: "ord_1", status: "em_preparo", unitName: "Centro" });
+	});
+
+	it("hides orders that do not belong to the authenticated customer", async () => {
+		await expect(new GetCustomerOrder(makeCustomerOrderPrisma(null)).execute("user_2", "ord_1", "demo")).rejects.toThrow(
+			"ORDER_NOT_FOUND",
+		);
 	});
 });

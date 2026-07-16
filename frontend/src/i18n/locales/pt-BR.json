@@ -162,11 +162,14 @@
 			"deliveries": {
 				"assign": {
 					"action": "Atribuir entregador",
+					"assigned": "Entregador atribuído",
 					"cancel": "Cancelar",
 					"courier": "Entregador",
 					"courierPlaceholder": "Selecione um entregador",
 					"error": "Não foi possível atribuir a entrega.",
-					"noCouriers": "Nenhum entregador disponível.",
+					"needsCourier": "Precisa de entregador",
+					"noAvailableCouriers": "Nenhum entregador disponível no momento.",
+					"noCouriers": "Nenhum entregador cadastrado.",
 					"save": "Atribuir",
 					"saving": "Atribuindo...",
 					"title": "Atribuir entrega"
@@ -190,9 +193,14 @@
 					"recebido": "Recebido"
 				},
 				"empty": "Nenhum pedido ativo.",
+				"emptyColumn": "Sem pedidos",
 				"loadError": "Não foi possível carregar os pedidos.",
 				"order": {
+					"ago": "há {{time}}",
 					"items": "{{count}} item(s)",
+					"itemsCount_one": "{{count}} item",
+					"itemsCount_other": "{{count}} itens",
+					"justNow": "agora",
 					"ready": "Marcar como pronto",
 					"start": "Iniciar preparo"
 				},
@@ -221,6 +229,9 @@
 					"unitAll": "Todas as unidades"
 				},
 				"items": "{{count}} item(s)",
+				"kanban": {
+					"emptyColumn": "Sem pedidos"
+				},
 				"loadError": "Não foi possível carregar os pedidos.",
 				"status": {
 					"all": "Todos",
@@ -652,6 +663,37 @@
 			}
 		},
 		"store": {
+			"account": {
+				"identify": {
+					"subtitle": "Entre com seu telefone ou email para acompanhar seus pedidos.",
+					"title": "Entrar"
+				},
+				"myOrders": "Meus pedidos",
+				"myProfile": "Meu perfil",
+				"orders": {
+					"empty": "Você ainda não fez nenhum pedido.",
+					"itemsCount_one": "{{count}} item",
+					"itemsCount_other": "{{count}} itens",
+					"loadError": "Não foi possível carregar seus pedidos.",
+					"signInPrompt": "Entre para ver seus pedidos.",
+					"subtitle": "Acompanhe o status de todos os seus pedidos.",
+					"title": "Meus pedidos"
+				},
+				"profile": {
+					"email": "Email",
+					"emailHint": "O email não pode ser alterado.",
+					"name": "Nome",
+					"namePlaceholder": "Ex: Maria Silva",
+					"save": "Salvar",
+					"saveError": "Não foi possível salvar. Tente novamente.",
+					"saved": "Perfil atualizado!",
+					"saving": "Salvando...",
+					"subtitle": "Gerencie seus dados.",
+					"title": "Meu perfil"
+				},
+				"signIn": "Entrar",
+				"signOut": "Sair"
+			},
 			"branding": {
 				"poweredBy": "Desenvolvido por"
 			},
@@ -678,6 +720,8 @@
 					"cityPlaceholder": "Ex: São Paulo",
 					"complement": "Complemento",
 					"complementPlaceholder": "Ex: apto 42",
+					"cpf": "CPF do comprador",
+					"cpfPlaceholder": "000.000.000-00",
 					"continue": "Continuar",
 					"neighborhood": "Bairro",
 					"neighborhoodPlaceholder": "Ex: Centro",
@@ -751,10 +795,36 @@
 					"total": "Total"
 				},
 				"payment": {
-					"instructions": "Conclua seu pagamento com segurança no formulário abaixo.",
-					"intentError": "Não foi possível iniciar o pagamento. Tente novamente.",
 					"subtitle": "Conclua o pagamento para confirmar o pedido.",
-					"title": "Pagamento"
+					"title": "Pagamento",
+					"card": {
+						"cvc": "CVC",
+						"error": "Não foi possível processar o pagamento. Verifique os dados do cartão.",
+						"expiry": "Validade",
+						"holder": "Nome no cartão",
+						"holderPlaceholder": "Como impresso no cartão",
+						"newCard": "Usar outro cartão",
+						"number": "Número do cartão",
+						"pay": "Pagar {{amount}}",
+						"paying": "Processando…",
+						"save": "Salvar cartão para próximas compras"
+					},
+					"cpf": "CPF",
+					"cpfPlaceholder": "000.000.000-00",
+					"methodCard": "Cartão",
+					"methodPix": "PIX",
+					"pix": {
+						"copied": "Código copiado!",
+						"copy": "Copiar código PIX",
+						"error": "Não foi possível gerar o PIX. Tente novamente.",
+						"generate": "Gerar QR Code",
+						"generating": "Gerando QR Code…",
+					"qrAlt": "QR Code PIX",
+					"retry": "Tentar novamente",
+					"scan": "Abra o app do seu banco e escaneie o QR Code, ou copie o código abaixo.",
+						"waiting": "Aguardando confirmação do pagamento…",
+						"failedRetry": "Não foi possível gerar o PIX. Verifique seu CPF e tente novamente."
+					}
 				},
 				"profile": {
 					"cpf": "CPF (opcional)",
@@ -766,6 +836,32 @@
 					"submitting": "Salvando…",
 					"subtitle": "Informe seu nome para personalizarmos seu pedido.",
 					"title": "Seu perfil"
+				},
+				"tracking": {
+					"back": "Voltar ao cardápio",
+					"cancelled": "Pedido cancelado",
+					"cancelledDescription": "Este pedido não seguirá para preparo.",
+					"empty": "Não encontramos este pedido.",
+					"items": "Itens do pedido",
+					"refreshing": "Atualização automática ativa",
+					"status": {
+						"em_preparo": "Em preparo",
+						"em_preparoDescription": "A cozinha já está preparando seu pedido.",
+						"entregue": "Pedido entregue",
+						"entregueDescription": "Esperamos que aproveite.",
+						"pronto": "Pedido pronto",
+						"prontoDeliveryDescription": "Seu pedido está pronto e aguardando saída.",
+						"prontoPickupDescription": "Seu pedido está pronto para retirada.",
+						"recebido": "Pagamento confirmado",
+						"recebidoDescription": "A loja recebeu seu pedido.",
+						"retirado": "Pedido retirado",
+						"retiradoDescription": "Pedido finalizado. Até a próxima!",
+						"saiu_para_entrega": "Saiu para entrega",
+						"saiu_para_entregaDescription": "Seu pedido está a caminho.",
+						"awaiting_payment": "Aguardando pagamento"
+					},
+					"subtitle": "Acompanhe cada etapa em tempo real.",
+					"title": "Seu pedido"
 				},
 				"thankYou": {
 					"continue": "Continuar navegando",
@@ -786,6 +882,17 @@
 				"prepTime": "Preparo",
 				"subtitle": "Escolha uma unidade para iniciar seu pedido.",
 				"title": "Nossas unidades"
+			},
+			"home": {
+				"acai": "Açai",
+				"acaiDesc": "Geladinho, cremoso e do jeitinho que você ama.",
+				"club": "Clube de benefícios",
+				"clubDesc": "Vantagens exclusivas e descontos só para membros.",
+				"explore": "Explore também",
+				"other": "Outros",
+				"otherDesc": "Muito mais sabores esperando por você.",
+				"pizza": "Pizza",
+				"pizzaDesc": "Massa artesanal com recheios generosos."
 			},
 			"menu": {
 				"empty": "Esta unidade ainda não tem produtos.",

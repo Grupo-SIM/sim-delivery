@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { LuMapPin } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
+import { ProfileMenu } from "./ProfileMenu";
 import type { StorefrontBranding } from "./types";
 
 interface StorefrontHeaderProps {
@@ -29,10 +30,13 @@ export function StorefrontHeader({ branding, unitName }: StorefrontHeaderProps) 
 					</span>
 				</Link>
 
-				<Link className="hidden items-center gap-2 text-muted-foreground text-sm sm:flex" hash="unidades" to="/">
-					<LuMapPin aria-hidden className="h-4 w-4 text-primary" />
-					{t("store.unit.change")}
-				</Link>
+				<div className="flex items-center gap-4">
+					<Link className="hidden items-center gap-2 text-muted-foreground text-sm sm:flex" hash="unidades" to="/">
+						<LuMapPin aria-hidden className="h-4 w-4 text-primary" />
+						{t("store.unit.change")}
+					</Link>
+					<ProfileMenu />
+				</div>
 			</div>
 		</header>
 	);
