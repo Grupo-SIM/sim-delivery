@@ -25,10 +25,11 @@ const STATUS_DESCRIPTIONS: Record<string, string> = {
 };
 
 interface OrderStatusBadgeProps {
+	showHelp?: boolean;
 	status: string;
 }
 
-export function OrderStatusBadge({ status }: OrderStatusBadgeProps) {
+export function OrderStatusBadge({ showHelp = false, status }: OrderStatusBadgeProps) {
 	const { t } = useTranslation();
 	const description = STATUS_DESCRIPTIONS[status];
 
@@ -39,8 +40,8 @@ export function OrderStatusBadge({ status }: OrderStatusBadgeProps) {
 			}`}
 		>
 			<span className="truncate">{t(`admin.orders.status.${status}`, { defaultValue: status })}</span>
-			{description && (
-				<Tooltip content={t(`admin.orders.statusHelp.${status}`, { defaultValue: description })}>
+			{showHelp && description && (
+				<Tooltip content={t(`admin.orders.statusHelp.${status}`, { defaultValue: description })} placement="bottom">
 					<span
 						aria-label={t(`admin.orders.statusHelp.${status}`, { defaultValue: description })}
 						className="grid size-4 shrink-0 place-items-center rounded-full border border-current/20 bg-white/40 text-current/80"
