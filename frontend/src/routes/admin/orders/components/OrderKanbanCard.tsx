@@ -10,11 +10,12 @@ import { UpdateStatusModal } from "./UpdateStatusModal";
 const TERMINAL = new Set(["entregue", "retirado", "cancelado"]);
 
 interface OrderKanbanCardProps {
+	onDragEnd: () => void;
 	onDragStart: (orderId: string) => void;
 	order: GetOrders200[number];
 }
 
-export function OrderKanbanCard({ onDragStart, order }: OrderKanbanCardProps) {
+export function OrderKanbanCard({ onDragEnd, onDragStart, order }: OrderKanbanCardProps) {
 	const { t } = useTranslation();
 	const [statusOpen, setStatusOpen] = useState(false);
 	const [assignOpen, setAssignOpen] = useState(false);
@@ -40,6 +41,7 @@ export function OrderKanbanCard({ onDragStart, order }: OrderKanbanCardProps) {
 		<article
 			className="cursor-grab rounded-md border border-border bg-card p-4 shadow-sm transition active:cursor-grabbing hover:border-primary/40 hover:shadow-md"
 			draggable
+			onDragEnd={onDragEnd}
 			onDragStart={event => {
 				event.dataTransfer.effectAllowed = "move";
 				event.dataTransfer.setData("text/plain", order.id);
