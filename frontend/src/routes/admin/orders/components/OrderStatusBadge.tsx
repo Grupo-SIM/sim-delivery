@@ -14,14 +14,14 @@ const STATUS_CLASS_NAMES: Record<string, string> = {
 };
 
 const STATUS_DESCRIPTIONS: Record<string, string> = {
-	awaiting_payment: "Pedido criado, mas ainda sem pagamento confirmado. Esse status muda automaticamente quando o pagamento for aprovado.",
-	cancelado: "Pedido encerrado sem seguir o fluxo de preparo ou entrega.",
+	awaiting_payment: "Pedido criado, mas ainda sem pagamento confirmado. Muda automaticamente quando o pagamento for aprovado.",
+	cancelado: "Pedido encerrado sem seguir para preparo, retirada ou entrega.",
 	em_preparo: "Pedido aceito pela unidade e em produção.",
-	entregue: "Pedido delivery finalizado: chegou ao cliente.",
-	pronto: "Pedido finalizado pela cozinha e aguardando retirada ou saída para entrega.",
+	entregue: "Pedido de entrega finalizado: chegou ao cliente.",
+	pronto: "Pedido finalizado pela cozinha, aguardando retirada ou saída para entrega.",
 	recebido: "Pagamento confirmado e pedido liberado para a operação.",
-	retirado: "Pedido pickup finalizado: o cliente retirou na unidade.",
-	saiu_para_entrega: "Pedido delivery atribuído e em rota com o entregador.",
+	retirado: "Pedido de retirada finalizado: o cliente retirou na unidade.",
+	saiu_para_entrega: "Pedido de entrega atribuído e em rota com o entregador.",
 };
 
 interface OrderStatusBadgeProps {
@@ -41,7 +41,7 @@ export function OrderStatusBadge({ showHelp = false, status }: OrderStatusBadgeP
 		>
 			<span className="truncate">{t(`admin.orders.status.${status}`, { defaultValue: status })}</span>
 			{showHelp && description && (
-				<Tooltip content={t(`admin.orders.statusHelp.${status}`, { defaultValue: description })} placement="bottom">
+				<Tooltip content={t(`admin.orders.statusHelp.${status}`, { defaultValue: description })}>
 					<span
 						aria-label={t(`admin.orders.statusHelp.${status}`, { defaultValue: description })}
 						className="grid size-4 shrink-0 place-items-center rounded-full border border-current/20 bg-white/40 text-current/80"
