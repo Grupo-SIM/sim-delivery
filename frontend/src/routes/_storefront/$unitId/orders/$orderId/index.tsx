@@ -128,7 +128,7 @@ function OrderTrackingPage() {
 							const copy = STATUS_COPY[status as keyof typeof STATUS_COPY];
 							const Icon = copy.icon;
 							const complete = stageIndex >= index;
-							const statusTime = formatStatusTime(eventByStatus.get(status));
+							const statusTime = complete ? formatStatusTime(eventByStatus.get(status)) : null;
 							return (
 								<li className="flex gap-3" key={status}>
 									<div className="flex flex-col items-center">
