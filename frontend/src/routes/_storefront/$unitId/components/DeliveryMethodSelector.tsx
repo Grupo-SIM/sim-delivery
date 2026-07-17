@@ -12,7 +12,14 @@ export function DeliveryMethodSelector({ deliveryMethods, unitId }: DeliveryMeth
 	const setMethod = useDeliveryMethodStore(state => state.setMethod);
 	const current = getMethod(unitId, deliveryMethods);
 
-	if (deliveryMethods.length <= 1) return null;
+	if (deliveryMethods.length === 0) return <p className="font-semibold text-sm">—</p>;
+
+	if (deliveryMethods.length === 1) {
+		const method = deliveryMethods[0];
+		return (
+			<p className="font-semibold text-sm">{t(`store.checkout.order.${method}`, { defaultValue: method })}</p>
+		);
+	}
 
 	return (
 		<div className="flex overflow-hidden rounded-lg border border-border bg-muted text-xs">

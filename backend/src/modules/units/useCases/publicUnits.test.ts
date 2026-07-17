@@ -10,6 +10,12 @@ function prismaWith(
 		id: string;
 		imageUrl?: string | null;
 		isOpenManual: boolean | null;
+		hours?: Array<{
+			closed: boolean;
+			closesAt: string | null;
+			opensAt: string | null;
+			weekday: number;
+		}>;
 		slug: string;
 	}> = [],
 ) {
@@ -22,7 +28,7 @@ function prismaWith(
 			findMany: async ({ where }: { where: { companyId: string } }) =>
 				units
 					.filter(unit => unit.companyId === where.companyId)
-					.map(unit => ({ ...unit, hours: [], promotionalImages: [] })),
+					.map(unit => ({ ...unit, hours: unit.hours ?? [], promotionalImages: [] })),
 		},
 	} as unknown as PrismaInstance;
 }
@@ -43,6 +49,7 @@ describe("ListPublicUnits", () => {
 			{
 				bannerUrl: "https://example.com/ipes.png",
 				companyId: "c1",
+				hours: [{ closed: false, closesAt: "18:00", opensAt: "09:00", weekday: 5 }],
 				id: "u1",
 				imageUrl: "https://example.com/ipes-unit.png",
 				isOpenManual: true,
@@ -54,6 +61,7 @@ describe("ListPublicUnits", () => {
 		expect(result).toHaveLength(1);
 		expect(result[0]).toMatchObject({
 			bannerUrl: "https://example.com/ipes.png",
+			hours: [{ closed: false, closesAt: "18:00", opensAt: "09:00", weekday: 5 }],
 			id: "u1",
 			imageUrl: "https://example.com/ipes-unit.png",
 			isOpenNow: true,

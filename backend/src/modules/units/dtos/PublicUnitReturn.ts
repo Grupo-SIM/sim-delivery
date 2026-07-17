@@ -1,6 +1,13 @@
 import { t } from "elysia";
 import { PromotionalImageReturn } from "@/modules/promotionalImages/dtos";
 
+const PublicUnitHoursReturn = t.Object({
+	closed: t.Boolean(),
+	closesAt: t.Nullable(t.String()),
+	opensAt: t.Nullable(t.String()),
+	weekday: t.Integer({ maximum: 6, minimum: 0 }),
+});
+
 /** Customer-facing shape of a unit: only the fields the storefront needs (docs/04, docs/08). */
 export const PublicUnitReturn = t.Object({
 	addressLine: t.Nullable(t.String()),
@@ -8,6 +15,7 @@ export const PublicUnitReturn = t.Object({
 	city: t.Nullable(t.String()),
 	deliveryFee: t.Integer(),
 	deliveryMethods: t.Array(t.String()),
+	hours: t.Array(PublicUnitHoursReturn),
 	id: t.String(),
 	imageUrl: t.Nullable(t.String()),
 	isOpenNow: t.Boolean(),

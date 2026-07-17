@@ -14,6 +14,7 @@ import {
 	InfoPill,
 	MenuBrowser,
 	PromotionalCarousel,
+	StoreHoursModal,
 	StoreInfoModal,
 	StoreToolbar,
 	UnitBanner,
@@ -28,6 +29,7 @@ function UnitStorePage() {
 	const menu = useGetPublicUnitsByUnitSlugMenu(unitSlug, { slug });
 	const unit = units?.find(item => item.slug === unitSlug);
 	const [profileOpen, setProfileOpen] = useState(false);
+	const [hoursOpen, setHoursOpen] = useState(false);
 	const [search, setSearch] = useState("");
 	const setSelectedUnit = useSelectedUnitStore(state => state.setUnit);
 
@@ -80,28 +82,29 @@ function UnitStorePage() {
 						header={
 							<div className="space-y-3">
 								<StoreToolbar
-						deliveryFee={fee}
-						deliveryMethods={unit.deliveryMethods}
-						isOpen={unit.isOpenNow}
-						onSearchChange={setSearch}
-						prepMax={prepMax}
-						prepMin={prepMin}
-						search={search}
-						unitId={unit.id}
+									deliveryFee={fee}
+									deliveryMethods={unit.deliveryMethods}
+									hours={unit.hours}
+									onHoursClick={() => setHoursOpen(true)}
+									onSearchChange={setSearch}
+									prepMax={prepMax}
+									prepMin={prepMin}
+									search={search}
+									unitId={unit.id}
 								/>
 								<div className="flex flex-wrap items-center gap-2">
-						{minOrder > 0 && (
-							<InfoPill>
-								{t("store.unit.minOrder")} {money.format(minOrder / 100)}
-							</InfoPill>
-						)}
-						<button
-							className="text-primary text-xs underline-offset-2 hover:underline"
-							onClick={() => setProfileOpen(true)}
-							type="button"
-						>
-							{t("store.unit.storeProfile")}
-						</button>
+									{minOrder > 0 && (
+										<InfoPill>
+											{t("store.unit.minOrder")} {money.format(minOrder / 100)}
+										</InfoPill>
+									)}
+									<button
+										className="text-primary text-xs underline-offset-2 hover:underline"
+										onClick={() => setProfileOpen(true)}
+										type="button"
+									>
+										{t("store.unit.storeProfile")}
+									</button>
 								</div>
 								<PromotionalCarousel images={unit.promotionalImages} />
 							</div>
@@ -121,6 +124,7 @@ function UnitStorePage() {
 					unitSlug={unitSlug}
 				/>
 				<StoreInfoModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} unit={unit} />
+				<StoreHoursModal hours={unit.hours} isOpen={hoursOpen} onClose={() => setHoursOpen(false)} />
 			</Container>
 		</>
 	);

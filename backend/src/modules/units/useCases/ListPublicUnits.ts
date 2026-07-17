@@ -37,6 +37,7 @@ export class ListPublicUnits {
 			city: unit.city,
 			deliveryFee: unit.deliveryFee,
 			deliveryMethods: unit.deliveryMethods,
+			hours: hours.map(({ closed, closesAt, opensAt, weekday }) => ({ closed, closesAt, opensAt, weekday })),
 			id: unit.id,
 			imageUrl: unit.imageUrl,
 			isOpenNow: isUnitOpen(hours, unit.isOpenManual),

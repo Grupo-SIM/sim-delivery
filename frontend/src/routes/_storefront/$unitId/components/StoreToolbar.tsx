@@ -2,12 +2,14 @@ import { useTranslation } from "react-i18next";
 import { LuClock3, LuSearch, LuTruck } from "react-icons/lu";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { DeliveryMethodSelector } from "./DeliveryMethodSelector";
+import type { StoreHours } from "./store-hours-types";
 import { money } from "./types";
 
 interface StoreToolbarProps {
 	deliveryFee: number;
 	deliveryMethods: string[];
-	isOpen: boolean;
+	hours: StoreHours[];
+	onHoursClick: () => void;
 	onSearchChange: (value: string) => void;
 	prepMax: number | null;
 	prepMin: number | null;
@@ -18,7 +20,8 @@ interface StoreToolbarProps {
 export function StoreToolbar({
 	deliveryFee,
 	deliveryMethods,
-	isOpen,
+	hours,
+	onHoursClick,
 	onSearchChange,
 	prepMax,
 	prepMin,
@@ -27,6 +30,9 @@ export function StoreToolbar({
 }: StoreToolbarProps) {
 	const { t } = useTranslation();
 	const [localSearch, setLocalSearch] = useDebouncedInput(search, onSearchChange);
+	const today = hours.find(day => Number(day.weekday) === new Date().getDay());
+	const todayHours =
+		today && !today.closed && today.opensAt && today.closesAt ? `${today.opensAt}–${today.closesAt}` : null;
 	return (
 		<div className="grid gap-3 rounded-xl border border-border bg-muted/70 p-3 shadow-sm md:grid-cols-[1fr_1.2fr_1fr_minmax(15rem,1.4fr)] md:items-center">
 			<div className="flex items-center gap-3 px-2">
@@ -42,18 +48,22 @@ export function StoreToolbar({
 				<p className="text-muted-foreground text-xs">{t("store.unit.deliveryMethods")}</p>
 				<DeliveryMethodSelector deliveryMethods={deliveryMethods} unitId={unitId} />
 			</div>
-			<div className="flex items-center gap-3 px-2">
+			<button
+				className="flex items-center gap-3 rounded-lg border border-border px-2 py-1.5 text-left transition-colors hover:bg-muted"
+				onClick={onHoursClick}
+				type="button"
+			>
 				<LuClock3 className="size-5 text-primary" />
 				<div>
 					<p className="text-muted-foreground text-xs">{t("store.unit.operation")}</p>
-					<p className="font-semibold text-sm">
-						<span className={isOpen ? "text-success" : "text-muted-foreground"}>
-							{isOpen ? t("store.status.open") : t("store.status.closed")}
-						</span>
-						{prepMin != null && prepMax != null ? ` · ${prepMin}–${prepMax} min` : ""}
-					</p>
+					<p className="font-semibold text-sm">{todayHours ?? "—"}</p>
+					{prepMin != null && prepMax != null && (
+						<p className="text-muted-foreground text-xs">
+							{t("store.unit.etaRange", { max: prepMax, min: prepMin })}
+						</p>
+					)}
 				</div>
-			</div>
+			</button>
 			<label className="relative block">
 				<span className="sr-only">{t("store.menu.searchPlaceholder")}</span>
 				<input

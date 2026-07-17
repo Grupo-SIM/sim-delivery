@@ -990,13 +990,23 @@
 				"eta": "Tempo estimado",
 				"etaRange": "{{min}}–{{max}} min",
 				"freeDelivery": "Grátis",
+				"hoursTitle": "Horários de funcionamento",
 				"minOrder": "Pedido mín.",
 				"noMinOrder": "Sem pedido mínimo",
 				"notFound": "Esta unidade não está disponível.",
 				"operation": "Funcionamento",
 				"phone": "Telefone",
 				"storeProfile": "Perfil da loja",
-				"switch": "Trocar unidade"
+				"switch": "Trocar unidade",
+				"weekdays": {
+					"fri": "Sexta-feira",
+					"mon": "Segunda-feira",
+					"sat": "Sábado",
+					"sun": "Domingo",
+					"thu": "Quinta-feira",
+					"tue": "Terça-feira",
+					"wed": "Quarta-feira"
+				}
 			}
 		}
 	}
