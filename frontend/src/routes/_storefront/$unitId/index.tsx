@@ -71,10 +71,15 @@ function UnitStorePage() {
 					{units && <UnitSwitcher unitId={unitSlug} units={units} />}
 				</div>
 
-				<PromotionalCarousel images={unit.promotionalImages} />
-
-				<div className="space-y-3">
-					<StoreToolbar
+				{menu.isPending ? (
+					<Skeleton className="h-64 w-full" />
+				) : menu.isError ? (
+					<ErrorState title={t("store.menu.loadError")} />
+				) : (
+					<MenuBrowser
+						header={
+							<div className="space-y-3">
+								<StoreToolbar
 						deliveryFee={fee}
 						deliveryMethods={unit.deliveryMethods}
 						isOpen={unit.isOpenNow}
@@ -83,8 +88,8 @@ function UnitStorePage() {
 						prepMin={prepMin}
 						search={search}
 						unitId={unit.id}
-					/>
-					<div className="flex flex-wrap items-center gap-2">
+								/>
+								<div className="flex flex-wrap items-center gap-2">
 						{minOrder > 0 && (
 							<InfoPill>
 								{t("store.unit.minOrder")} {money.format(minOrder / 100)}
@@ -97,15 +102,15 @@ function UnitStorePage() {
 						>
 							{t("store.unit.storeProfile")}
 						</button>
-					</div>
-				</div>
-
-				{menu.isPending ? (
-					<Skeleton className="h-64 w-full" />
-				) : menu.isError ? (
-					<ErrorState title={t("store.menu.loadError")} />
-				) : (
-					<MenuBrowser search={search} sections={menu.data} unitId={unit.id} unitSlug={unitSlug} />
+								</div>
+								<PromotionalCarousel images={unit.promotionalImages} />
+							</div>
+						}
+						search={search}
+						sections={menu.data}
+						unitId={unit.id}
+						unitSlug={unitSlug}
+					/>
 				)}
 
 				<CartBar

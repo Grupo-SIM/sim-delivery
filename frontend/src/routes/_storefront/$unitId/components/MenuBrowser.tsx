@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CategoryNav } from "./CategoryNav";
@@ -7,13 +8,14 @@ import { TopPicksCarousel } from "./TopPicksCarousel";
 import type { MenuSection } from "./types";
 
 interface MenuBrowserProps {
+	header: ReactNode;
 	sections: MenuSection[];
 	unitId: string;
 	unitSlug: string;
 	search: string;
 }
 
-export function MenuBrowser({ search, sections, unitId, unitSlug }: MenuBrowserProps) {
+export function MenuBrowser({ header, search, sections, unitId, unitSlug }: MenuBrowserProps) {
 	const { t } = useTranslation();
 
 	const query = search.trim().toLowerCase();
@@ -27,17 +29,19 @@ export function MenuBrowser({ search, sections, unitId, unitSlug }: MenuBrowserP
 				}))
 				.filter(section => section.items.length > 0)
 		: sections;
+	const hasCategories = filtered.some(section => section.categoryId !== null);
 
 	return (
-		<div className="space-y-4">
-			{!query && <TopPicksCarousel sections={sections} unitId={unitId} unitSlug={unitSlug} />}
+		<div className={hasCategories ? "lg:grid lg:grid-cols-[12rem_1fr] lg:gap-6" : undefined}>
+			{hasCategories && <CategorySummary sections={filtered} />}
+			<div className="min-w-0 space-y-6">
+				{header}
+				{!query && <TopPicksCarousel sections={sections} unitId={unitId} unitSlug={unitSlug} />}
 
-			{filtered.length === 0 ? (
-				<EmptyState title={query ? t("store.menu.noResults") : t("store.menu.empty")} />
-			) : (
-				<div className="lg:grid lg:grid-cols-[12rem_1fr] lg:gap-6">
-					<CategorySummary sections={filtered} />
-					<div className="min-w-0 space-y-6">
+				{filtered.length === 0 ? (
+					<EmptyState title={query ? t("store.menu.noResults") : t("store.menu.empty")} />
+				) : (
+					<>
 						<div className="lg:hidden">
 							<CategoryNav sections={filtered} />
 						</div>
@@ -49,9 +53,9 @@ export function MenuBrowser({ search, sections, unitId, unitSlug }: MenuBrowserP
 								unitSlug={unitSlug}
 							/>
 						))}
-					</div>
-				</div>
-			)}
+					</>
+				)}
+			</div>
 		</div>
 	);
 }

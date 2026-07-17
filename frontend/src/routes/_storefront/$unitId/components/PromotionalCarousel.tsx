@@ -16,7 +16,7 @@ function Slide({ image }: { image: PromotionalImage }) {
 		/>
 	);
 	return (
-		<article className="group aspect-[16/7] min-w-full snap-center overflow-hidden rounded-xl border border-border bg-muted shadow-sm sm:min-w-[72%] lg:min-w-[58%]">
+		<article className="group aspect-square max-h-[25rem] min-w-[82%] snap-center overflow-hidden rounded-xl border border-border bg-muted shadow-sm sm:min-w-[calc((100%-1rem)/2)] lg:min-w-[calc((100%-2rem)/3)]">
 			{image.linkUrl ? (
 				<a aria-label={image.title} href={image.linkUrl}>
 					{content}
