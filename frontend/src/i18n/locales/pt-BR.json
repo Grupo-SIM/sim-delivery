@@ -567,6 +567,8 @@
 						"delivery": "Entrega",
 						"pickup": "Retirada"
 					},
+					"name": "Nome",
+					"namePlaceholder": "Ex: Unidade Centro",
 					"save": "Salvar configurações",
 					"saving": "Salvando...",
 					"title": "Configurações da unidade"
