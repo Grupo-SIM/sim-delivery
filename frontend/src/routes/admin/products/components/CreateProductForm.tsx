@@ -100,7 +100,6 @@ export function CreateProductForm() {
 						onUploadError={() => setError(t("admin.products.create.uploadError"))}
 						onUploadingChange={setIsUploadingImage}
 						onValueChange={setImageUrl}
-						placeholder={t("admin.products.create.imagePlaceholder")}
 						uploadLabel={t("admin.products.create.imageUpload")}
 						value={imageUrl}
 					/>

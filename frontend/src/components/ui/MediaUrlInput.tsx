@@ -18,7 +18,6 @@ interface MediaUrlInputProps {
 	onUploadError: () => void;
 	onUploadingChange?: (isUploading: boolean) => void;
 	onValueChange: (value: string) => void;
-	placeholder: string;
 	uploadLabel: string;
 	value: string;
 }
@@ -28,7 +27,6 @@ export function MediaUrlInput({
 	onUploadError,
 	onUploadingChange,
 	onValueChange,
-	placeholder,
 	uploadLabel,
 	value,
 }: MediaUrlInputProps) {
@@ -55,7 +53,7 @@ export function MediaUrlInput({
 				className="pr-11"
 				onBlur={flushValue}
 				onChange={event => setLocalValue(event.currentTarget.value)}
-				placeholder={placeholder}
+				placeholder="Envie um arquivo ou cole uma URL"
 				value={localValue}
 			/>
 			<input

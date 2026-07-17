@@ -72,7 +72,6 @@ export function PromotionalImageEditModal({ image, onClose }: PromotionalImageEd
 						asset="promotion"
 						onUploadError={() => showToast(t("admin.promotionalImages.uploadError"), "negative")}
 						onValueChange={setImageUrl}
-						placeholder="https://exemplo.com/promocao.png"
 						uploadLabel={t("admin.promotionalImages.upload")}
 						value={imageUrl}
 					/>

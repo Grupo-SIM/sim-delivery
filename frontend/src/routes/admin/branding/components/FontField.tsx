@@ -37,7 +37,6 @@ export function FontField({
 					asset={uploadAsset}
 					onUploadError={onUploadError}
 					onValueChange={onUrlChange}
-					placeholder={t("admin.branding.fontFileUrlPlaceholder")}
 					uploadLabel={t("admin.branding.fontUpload")}
 					value={url}
 				/>

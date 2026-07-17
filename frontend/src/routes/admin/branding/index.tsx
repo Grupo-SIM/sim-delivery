@@ -132,7 +132,6 @@ function BrandingPage() {
 								asset="logo"
 								onUploadError={() => showToast(t("admin.branding.uploadError"), "negative")}
 								onValueChange={setLogoUrl}
-								placeholder={t("admin.branding.logoUrlPlaceholder")}
 								uploadLabel={t("admin.branding.logoUpload")}
 								value={logoUrl}
 							/>

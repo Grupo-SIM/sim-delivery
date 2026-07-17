@@ -345,7 +345,7 @@
 				"empty": "Nenhuma imagem promocional ainda.",
 				"fields": {
 					"image": "Imagem",
-					"link": "Link opcional",
+					"link": "Link",
 					"title": "Título",
 					"titlePlaceholder": "Ex: Promoção de fim de semana"
 				},
