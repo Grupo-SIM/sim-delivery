@@ -7,8 +7,6 @@ interface UnitHeroCardProps {
 	unit: PublicUnit;
 }
 
-const fallbackImageUrl = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=85";
-
 export function UnitHeroCard({ openLabel, unit }: UnitHeroCardProps) {
 	const address = [unit.addressLine, unit.neighborhood, unit.city].filter(Boolean).join(", ");
 	const prepTime =
@@ -22,12 +20,14 @@ export function UnitHeroCard({ openLabel, unit }: UnitHeroCardProps) {
 			params={{ unitId: unit.slug }}
 			to="/$unitId"
 		>
-			<img
-				alt={`Unidade ${unit.name}`}
-				className="absolute inset-0 h-full w-full object-cover opacity-75 transition duration-500 group-hover:scale-105"
-				src={unit.imageUrl || fallbackImageUrl}
-			/>
-			<div className="absolute inset-0 bg-black/35" />
+			{unit.imageUrl && (
+				<img
+					alt={`Unidade ${unit.name}`}
+					className="absolute inset-0 h-full w-full object-cover opacity-75 transition duration-500 group-hover:scale-105"
+					src={unit.imageUrl}
+				/>
+			)}
+			<div className="absolute inset-0 bg-black/50" />
 			<div className="relative flex min-h-80 flex-col justify-between p-6">
 				<div className="flex items-start justify-between gap-4">
 					<span className="rounded-full bg-white/90 px-3 py-1.5 font-semibold text-brand-ink text-xs">
