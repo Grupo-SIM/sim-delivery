@@ -7,4 +7,5 @@ export { StoreHoursModal } from "./StoreHoursModal";
 export { StoreInfoModal } from "./StoreInfoModal";
 export { StoreToolbar } from "./StoreToolbar";
 export { UnitBanner } from "./UnitBanner";
+export { UnitStoreSkeleton } from "./UnitStoreSkeleton";
 export { UnitSwitcher } from "./UnitSwitcher";

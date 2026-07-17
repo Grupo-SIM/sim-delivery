@@ -11,9 +11,12 @@ function UnitProductsPage() {
 	const { t } = useTranslation();
 	const { unitId } = Route.useParams();
 	const associationsQuery = useGetUnitsByUnitIdProducts(unitId);
-	const { data: products } = useGetProducts();
-	const { data: categories } = useGetCategories();
-	const { data: units } = useGetUnits();
+	const productsQuery = useGetProducts();
+	const categoriesQuery = useGetCategories();
+	const unitsQuery = useGetUnits();
+	const products = productsQuery.data;
+	const categories = categoriesQuery.data;
+	const units = unitsQuery.data;
 
 	const unit = units?.find(u => u.id === unitId);
 
@@ -28,7 +31,10 @@ function UnitProductsPage() {
 				title={t("admin.unitProducts.title")}
 			/>
 
-			{associationsQuery.isPending ? (
+			{associationsQuery.isPending ||
+			productsQuery.isPending ||
+			categoriesQuery.isPending ||
+			unitsQuery.isPending ? (
 				<Skeleton className="h-40 w-full" />
 			) : associationsQuery.isError ? (
 				<ErrorState title={t("admin.unitProducts.loadError")} />

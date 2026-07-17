@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Modal } from "@/components/ui/Modal";
+import { Skeleton } from "@/components/ui/Skeleton";
 import {
 	getProductsByProductIdUnitsQueryKey,
 	useGetProductsByProductIdUnits,
@@ -23,8 +24,8 @@ export function ProductUnitsModal({ onClose, product }: ProductUnitsModalProps) 
 	const [selectedUnitIds, setSelectedUnitIds] = useState<string[]>([]);
 	const [error, setError] = useState<string | null>(null);
 
-	const { data: units } = useGetUnits();
-	const { data: productUnits } = useGetProductsByProductIdUnits(product?.id);
+	const { data: units, isPending: unitsPending } = useGetUnits();
+	const { data: productUnits, isPending: productUnitsPending } = useGetProductsByProductIdUnits(product?.id);
 	const { isPending, mutate } = usePutProductsByProductIdUnits();
 
 	useEffect(() => {
@@ -59,8 +60,14 @@ export function ProductUnitsModal({ onClose, product }: ProductUnitsModalProps) 
 
 	return (
 		<Modal isOpen={product !== null} onClose={onClose} title={t("admin.products.units.title")}>
-				<div className="space-y-4">
-				{units?.length === 0 ? (
+			<div className="space-y-4">
+				{unitsPending || productUnitsPending ? (
+					<div className="space-y-2">
+						<Skeleton className="h-8 w-full" />
+						<Skeleton className="h-8 w-full" />
+						<Skeleton className="h-8 w-full" />
+					</div>
+				) : units?.length === 0 ? (
 					<p className="text-muted-foreground text-sm">{t("admin.products.units.empty")}</p>
 				) : (
 					<div className="max-h-72 space-y-2 overflow-y-auto">
@@ -78,11 +85,11 @@ export function ProductUnitsModal({ onClose, product }: ProductUnitsModalProps) 
 				)}
 
 				{error && <p className="text-destructive text-xs">{error}</p>}
-					<div className="flex justify-end gap-2 pt-2">
+				<div className="flex justify-end gap-2 pt-2">
 					<Button disabled={isPending} onClick={onClose} type="button" variant="outline">
 						{t("admin.products.units.cancel")}
 					</Button>
-					<Button disabled={isPending} onClick={save} type="button">
+					<Button disabled={isPending || unitsPending || productUnitsPending} onClick={save} type="button">
 						{isPending ? t("admin.products.units.saving") : t("admin.products.units.save")}
 					</Button>
 				</div>

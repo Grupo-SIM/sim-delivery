@@ -18,6 +18,7 @@ import {
 	StoreInfoModal,
 	StoreToolbar,
 	UnitBanner,
+	UnitStoreSkeleton,
 	UnitSwitcher,
 } from "./components";
 import { money } from "./components/types";
@@ -25,8 +26,9 @@ import { money } from "./components/types";
 function UnitStorePage() {
 	const { t } = useTranslation();
 	const { unitId: unitSlug } = Route.useParams();
-	const { data: units } = useGetPublicUnits({ slug });
+	const unitsQuery = useGetPublicUnits({ slug });
 	const menu = useGetPublicUnitsByUnitSlugMenu(unitSlug, { slug });
+	const units = unitsQuery.data;
 	const unit = units?.find(item => item.slug === unitSlug);
 	const [profileOpen, setProfileOpen] = useState(false);
 	const [hoursOpen, setHoursOpen] = useState(false);
@@ -37,7 +39,9 @@ function UnitStorePage() {
 		if (unit) setSelectedUnit({ id: unit.id, name: unit.name, slug: unit.slug });
 	}, [unit, setSelectedUnit]);
 
-	if (!unit)
+	if (unitsQuery.isPending) return <UnitStoreSkeleton />;
+
+	if (unitsQuery.isError || !unit)
 		return (
 			<Container className="space-y-4 py-8">
 				<ErrorState title={t("store.unit.notFound")} />

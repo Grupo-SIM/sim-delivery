@@ -32,7 +32,7 @@ function OrdersPage() {
 	const [deliveryMethod, setDeliveryMethod] = useState<string>("all");
 	const [search, setSearch] = useState("");
 
-	const { data: units } = useGetUnits();
+	const { data: units, isPending: unitsPending } = useGetUnits();
 
 	const {
 		data: orders,
@@ -99,7 +99,7 @@ function OrdersPage() {
 				</div>
 			</div>
 
-			{isPending ? (
+			{isPending || unitsPending ? (
 				<Skeleton className="h-40 w-full" />
 			) : isError ? (
 				<ErrorState title={t("admin.orders.loadError")} />

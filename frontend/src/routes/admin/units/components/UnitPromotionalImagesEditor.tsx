@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Modal } from "@/components/ui/Modal";
+import { Skeleton } from "@/components/ui/Skeleton";
 import {
 	type GetUnits200,
 	getUnitsByUnitIdPromotionalImagesQueryKey,
@@ -21,8 +22,8 @@ export function UnitPromotionalImagesEditor({ onClose, unit }: UnitPromotionalIm
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [selected, setSelected] = useState<string[]>([]);
-	const { data: images } = useGetPromotionalImages();
-	const { data: assigned } = useGetUnitsByUnitIdPromotionalImages(unit?.id);
+	const { data: images, isPending: imagesPending } = useGetPromotionalImages();
+	const { data: assigned, isPending: assignedPending } = useGetUnitsByUnitIdPromotionalImages(unit?.id);
 	const save = usePutUnitsByUnitIdPromotionalImages();
 
 	useEffect(() => setSelected(assigned?.map(image => image.id) ?? []), [assigned]);
@@ -47,7 +48,13 @@ export function UnitPromotionalImagesEditor({ onClose, unit }: UnitPromotionalIm
 	return (
 		<Modal isOpen={unit !== null} onClose={onClose} title={t("admin.units.promotionalImages.title")}>
 			<div className="space-y-4">
-				{images?.length === 0 ? (
+				{imagesPending || assignedPending ? (
+					<div className="space-y-2">
+						<Skeleton className="h-16 w-full" />
+						<Skeleton className="h-16 w-full" />
+						<Skeleton className="h-16 w-full" />
+					</div>
+				) : images?.length === 0 ? (
 					<p className="text-muted-foreground text-sm">{t("admin.units.promotionalImages.empty")}</p>
 				) : (
 					<div className="max-h-80 space-y-2 overflow-y-auto">
@@ -72,7 +79,11 @@ export function UnitPromotionalImagesEditor({ onClose, unit }: UnitPromotionalIm
 					<Button onClick={onClose} type="button" variant="outline">
 						{t("actions.cancel")}
 					</Button>
-					<Button disabled={save.isPending} onClick={submit} type="button">
+					<Button
+						disabled={save.isPending || imagesPending || assignedPending}
+						onClick={submit}
+						type="button"
+					>
 						{t("actions.confirm")}
 					</Button>
 				</div>

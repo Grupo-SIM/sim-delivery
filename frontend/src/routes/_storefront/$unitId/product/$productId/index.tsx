@@ -20,8 +20,8 @@ function ProductPage() {
 	const { productId: productSlug, unitId: unitSlug } = Route.useParams();
 	const navigate = useNavigate();
 	const addItem = useCartStore(s => s.addItem);
-	const { data: units } = useGetPublicUnits({ slug });
-	const unit = units?.find(item => item.slug === unitSlug);
+	const unitsQuery = useGetPublicUnits({ slug });
+	const unit = unitsQuery.data?.find(item => item.slug === unitSlug);
 	const menu = useGetPublicUnitsByUnitSlugMenu(unitSlug, { slug });
 
 	const item = menu.data?.flatMap(s => s.items).find(i => i.productSlug === productSlug);
@@ -153,7 +153,7 @@ function ProductPage() {
 		void navigate({ params: { unitId: unitSlug }, to: "/$unitId/checkout" });
 	}
 
-	if (menu.isPending) {
+	if (unitsQuery.isPending || menu.isPending) {
 		return (
 			<Container className="space-y-4 py-8">
 				<Skeleton className="h-52 w-full" />

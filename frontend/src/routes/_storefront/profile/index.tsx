@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { authClient } from "@/lib/auth-client";
 import { mapSessionUser, useAuthStore } from "@/stores/auth";
@@ -39,6 +40,19 @@ function ProfilePage() {
 		if (hydrated && !isAuthenticated) void navigate({ to: "/identify" });
 	}, [hydrated, isAuthenticated, navigate]);
 
+	if (!hydrated || (isAuthenticated && !user)) {
+		return (
+			<Container className="max-w-xl space-y-6 py-8">
+				<div className="space-y-2">
+					<Skeleton className="h-8 w-56" />
+					<Skeleton className="h-4 w-80 max-w-full" />
+				</div>
+				<Skeleton className="h-28 w-full" />
+				<Skeleton className="h-64 w-full" />
+			</Container>
+		);
+	}
+
 	if (!user) return null;
 
 	const trimmedName = localName.trim();
@@ -63,7 +77,10 @@ function ProfilePage() {
 
 	return (
 		<Container className="max-w-xl space-y-6 py-8">
-			<SectionHeading subtitle={t("store.account.profile.subtitle")} title={t("store.account.profile.title")} />
+			<SectionHeading
+				subtitle={t("store.account.profile.subtitle")}
+				title={t("store.account.profile.title")}
+			/>
 
 			<div className="flex items-center gap-4 rounded-xl border border-border bg-card p-5">
 				{user.image ? (

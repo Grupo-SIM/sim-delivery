@@ -104,6 +104,7 @@ This is the same pattern used for `challenges.$challengeId` → `challenges.$cha
 
 ## Component Architecture (Frontend)
 
+- **Loading states before empty/error states.** While any request required to decide what a screen should render is pending, render skeletons that mirror the final content's dimensions and structure as closely as possible. Never infer "not found", "unavailable", or an empty collection from `undefined` data before the relevant request settles. Check `isPending`/`isLoading` first, then request errors, then settled empty/not-found states. When a screen depends on multiple requests, keep its skeleton until all required requests settle. Avoid generic spinner-only or one-block placeholders when shaped skeletons can preserve layout.
 - **Simple, componentized components.** Break out parts that make sense into their own components — avoid bloated components with multiple responsibilities.
 - **Shared form fields.** When create and edit forms repeat field groups, extract one shared field component and pass their small variations as props (for example, an optional product select or layout width). Never copy input markup between these forms.
 - **Maximize reuse — design-system mindset.** Aggressively extract primitives (Container, Section, IconBadge, CheckList, BrandMark, SectionHeading, etc.) whenever a layout/presentation pattern repeats, even within a single page. Generic primitives go in [frontend/src/components/ui/](frontend/src/components/ui/); domain composites go in `frontend/src/components/<feature>/`. When in doubt, extract.

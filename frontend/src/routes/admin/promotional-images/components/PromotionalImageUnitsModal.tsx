@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Modal } from "@/components/ui/Modal";
+import { Skeleton } from "@/components/ui/Skeleton";
 import {
 	type GetPromotionalImages200,
 	getPromotionalImagesByPromotionalImageIdUnitsQueryKey,
@@ -23,8 +24,10 @@ export function PromotionalImageUnitsModal({ image, onClose }: PromotionalImageU
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [selected, setSelected] = useState<string[]>([]);
-	const { data: units } = useGetUnits();
-	const { data: assigned } = useGetPromotionalImagesByPromotionalImageIdUnits(image?.id);
+	const { data: units, isPending: unitsPending } = useGetUnits();
+	const { data: assigned, isPending: assignedPending } = useGetPromotionalImagesByPromotionalImageIdUnits(
+		image?.id,
+	);
 	const save = usePutPromotionalImagesByPromotionalImageIdUnits();
 
 	useEffect(() => setSelected(assigned ?? []), [assigned]);
@@ -54,22 +57,30 @@ export function PromotionalImageUnitsModal({ image, onClose }: PromotionalImageU
 		<Modal isOpen={image !== null} onClose={onClose} title={t("admin.promotionalImages.units.title")}>
 			<div className="space-y-4">
 				<div className="max-h-72 space-y-2 overflow-y-auto">
-					{units?.map(unit => (
-						<div className="flex items-center gap-2 text-sm" key={unit.id}>
-							<Checkbox
-								checked={selected.includes(unit.id)}
-								id={`promotion-unit-${unit.id}`}
-								onChange={() => toggle(unit.id)}
-							/>
-							<label htmlFor={`promotion-unit-${unit.id}`}>{unit.name}</label>
-						</div>
-					))}
+					{unitsPending || assignedPending ? (
+						<>
+							<Skeleton className="h-8 w-full" />
+							<Skeleton className="h-8 w-full" />
+							<Skeleton className="h-8 w-full" />
+						</>
+					) : (
+						units?.map(unit => (
+							<div className="flex items-center gap-2 text-sm" key={unit.id}>
+								<Checkbox
+									checked={selected.includes(unit.id)}
+									id={`promotion-unit-${unit.id}`}
+									onChange={() => toggle(unit.id)}
+								/>
+								<label htmlFor={`promotion-unit-${unit.id}`}>{unit.name}</label>
+							</div>
+						))
+					)}
 				</div>
 				<div className="flex justify-end gap-2">
 					<Button onClick={onClose} type="button" variant="outline">
 						{t("actions.cancel")}
 					</Button>
-					<Button disabled={save.isPending} onClick={submit} type="button">
+					<Button disabled={save.isPending || unitsPending || assignedPending} onClick={submit} type="button">
 						{t("actions.confirm")}
 					</Button>
 				</div>
