@@ -2,7 +2,16 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuBookOpen, LuClock, LuImage, LuMapPin, LuSettings, LuTrash2, LuTruck } from "react-icons/lu";
+import {
+	LuBookOpen,
+	LuClock,
+	LuImage,
+	LuImages,
+	LuMapPin,
+	LuSettings,
+	LuTrash2,
+	LuTruck,
+} from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/DataTable";
@@ -15,6 +24,7 @@ import { UnitBannerEditor } from "./UnitBannerEditor";
 import { UnitConfigEditor } from "./UnitConfigEditor";
 import { UnitDeliveryZonesEditor } from "./UnitDeliveryZonesEditor";
 import { UnitHoursEditor } from "./UnitHoursEditor";
+import { UnitPromotionalImagesEditor } from "./UnitPromotionalImagesEditor";
 
 interface UnitsTableProps {
 	units: GetUnits200;
@@ -29,6 +39,7 @@ export function UnitsTable({ units }: UnitsTableProps) {
 	const [addressUnit, setAddressUnit] = useState<GetUnits200[number] | null>(null);
 	const [bannerUnit, setBannerUnit] = useState<GetUnits200[number] | null>(null);
 	const [zonesUnit, setZonesUnit] = useState<GetUnits200[number] | null>(null);
+	const [promotionsUnit, setPromotionsUnit] = useState<GetUnits200[number] | null>(null);
 
 	if (units.length === 0) {
 		return <EmptyState title={t("admin.units.empty")} />;
@@ -121,6 +132,17 @@ export function UnitsTable({ units }: UnitsTableProps) {
 											<LuImage className="h-4 w-4" />
 										</Button>
 									</Tooltip>
+									<Tooltip content={t("admin.units.promotionalImages.action")}>
+										<Button
+											aria-label={t("admin.units.promotionalImages.action")}
+											onClick={() => setPromotionsUnit(unit)}
+											size="icon"
+											type="button"
+											variant="outline"
+										>
+											<LuImages className="h-4 w-4" />
+										</Button>
+									</Tooltip>
 									<Tooltip content={t("admin.units.hours.action")}>
 										<Button
 											aria-label={t("admin.units.hours.action")}
@@ -167,6 +189,7 @@ export function UnitsTable({ units }: UnitsTableProps) {
 			<UnitAddressEditor onClose={() => setAddressUnit(null)} unit={addressUnit} />
 			<UnitBannerEditor onClose={() => setBannerUnit(null)} unit={bannerUnit} />
 			<UnitDeliveryZonesEditor onClose={() => setZonesUnit(null)} unit={zonesUnit} />
+			<UnitPromotionalImagesEditor onClose={() => setPromotionsUnit(null)} unit={promotionsUnit} />
 		</>
 	);
 }

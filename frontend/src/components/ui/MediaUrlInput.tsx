@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { LuLoaderCircle, LuUpload } from "react-icons/lu";
-import { uploadMedia, type MediaAsset } from "@/lib/api";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { type MediaAsset, uploadMedia } from "@/lib/api";
 import { Input } from "./input";
 
 const acceptByAsset: Record<MediaAsset, string> = {
@@ -10,6 +10,7 @@ const acceptByAsset: Record<MediaAsset, string> = {
 	"font-family": ".otf,.ttf,.woff,.woff2,font/otf,font/ttf,font/woff,font/woff2",
 	logo: "image/avif,image/jpeg,image/png,image/webp",
 	product: "image/avif,image/jpeg,image/png,image/webp",
+	promotion: "image/avif,image/jpeg,image/png,image/webp",
 };
 
 interface MediaUrlInputProps {

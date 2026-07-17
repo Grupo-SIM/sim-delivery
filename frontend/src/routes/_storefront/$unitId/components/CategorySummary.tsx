@@ -16,17 +16,19 @@ export function CategorySummary({ sections }: CategorySummaryProps) {
 	return (
 		<aside className="hidden lg:block">
 			<nav className="sticky top-4 space-y-1">
-				{sections.map(section => (
-					<button
-						className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-						key={section.categoryId ?? "loose"}
-						onClick={() => jumpTo(section.categoryId)}
-						type="button"
-					>
-						<span className="truncate">{section.categoryName ?? t("store.menu.loose")}</span>
-						<span className="ml-2 text-muted-foreground text-xs">{section.items.length}</span>
-					</button>
-				))}
+				{sections
+					.filter(section => section.categoryId !== null)
+					.map(section => (
+						<button
+							className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+							key={section.categoryId ?? "loose"}
+							onClick={() => jumpTo(section.categoryId)}
+							type="button"
+						>
+							<span className="truncate">{section.categoryName ?? t("store.menu.loose")}</span>
+							<span className="ml-2 text-muted-foreground text-xs">{section.items.length}</span>
+						</button>
+					))}
 			</nav>
 		</aside>
 	);

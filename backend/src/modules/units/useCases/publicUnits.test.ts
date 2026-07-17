@@ -19,7 +19,9 @@ function prismaWith(
 		},
 		unit: {
 			findMany: async ({ where }: { where: { companyId: string } }) =>
-				units.filter(unit => unit.companyId === where.companyId).map(unit => ({ ...unit, hours: [] })),
+				units
+					.filter(unit => unit.companyId === where.companyId)
+					.map(unit => ({ ...unit, hours: [], promotionalImages: [] })),
 		},
 	} as unknown as PrismaInstance;
 }
@@ -52,6 +54,7 @@ describe("ListPublicUnits", () => {
 			bannerUrl: "https://example.com/ipes.png",
 			id: "u1",
 			isOpenNow: true,
+			promotionalImages: [],
 			slug: "ipes",
 		});
 	});

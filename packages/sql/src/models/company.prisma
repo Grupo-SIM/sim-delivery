@@ -28,6 +28,7 @@ model Company {
     deliveries Delivery[]
     orders     Order[]
     products   Product[]
+    promotionalImages PromotionalImage[]
     reviews    Review[]
     tags       Tag[]
     units      Unit[]

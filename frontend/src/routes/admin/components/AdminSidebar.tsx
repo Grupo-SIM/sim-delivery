@@ -5,6 +5,7 @@ import {
 	LuBuilding2,
 	LuChartBar,
 	LuClipboardList,
+	LuImages,
 	LuLogOut,
 	LuPackage,
 	LuPalette,
@@ -75,6 +76,7 @@ export function AdminSidebar() {
 
 			<NavGroup label={t("admin.dashboard.nav.catalog")}>
 				<NavItem icon={LuPackage} label={t("admin.products.title")} to="/admin/products" />
+				<NavItem icon={LuImages} label={t("admin.promotionalImages.title")} to="/admin/promotional-images" />
 				<NavItem icon={LuStore} label={t("admin.units.title")} to="/admin/units" />
 			</NavGroup>
 

@@ -1,8 +1,5 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Input } from "@/components/ui/input";
-import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { CategoryNav } from "./CategoryNav";
 import { CategorySummary } from "./CategorySummary";
 import { MenuSectionBlock } from "./MenuSectionBlock";
@@ -13,12 +10,11 @@ interface MenuBrowserProps {
 	sections: MenuSection[];
 	unitId: string;
 	unitSlug: string;
+	search: string;
 }
 
-export function MenuBrowser({ sections, unitId, unitSlug }: MenuBrowserProps) {
+export function MenuBrowser({ search, sections, unitId, unitSlug }: MenuBrowserProps) {
 	const { t } = useTranslation();
-	const [search, setSearch] = useState("");
-	const [localSearch, setLocalSearch] = useDebouncedInput(search, setSearch);
 
 	const query = search.trim().toLowerCase();
 	const filtered = query
@@ -34,12 +30,6 @@ export function MenuBrowser({ sections, unitId, unitSlug }: MenuBrowserProps) {
 
 	return (
 		<div className="space-y-4">
-			<Input
-				onChange={event => setLocalSearch(event.currentTarget.value)}
-				placeholder={t("store.menu.searchPlaceholder")}
-				value={localSearch}
-			/>
-
 			{!query && <TopPicksCarousel sections={sections} unitId={unitId} unitSlug={unitSlug} />}
 
 			{filtered.length === 0 ? (

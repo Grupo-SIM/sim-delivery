@@ -19,16 +19,18 @@ export function CategoryNav({ sections }: CategoryNavProps) {
 
 	return (
 		<div className="scrollbar-none sticky top-0 z-10 -mx-4 flex gap-2 overflow-x-auto bg-background/90 px-4 py-2 backdrop-blur">
-			{sections.map(section => (
-				<button
-					className="shrink-0 rounded-full border border-border bg-card px-3 py-1 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-					key={section.categoryId ?? "loose"}
-					onClick={() => jumpTo(section.categoryId)}
-					type="button"
-				>
-					{section.categoryName ?? t("store.menu.loose")}
-				</button>
-			))}
+			{sections
+				.filter(section => section.categoryId !== null)
+				.map(section => (
+					<button
+						className="shrink-0 rounded-full border border-border bg-card px-3 py-1 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+						key={section.categoryId ?? "loose"}
+						onClick={() => jumpTo(section.categoryId)}
+						type="button"
+					>
+						{section.categoryName ?? t("store.menu.loose")}
+					</button>
+				))}
 		</div>
 	);
 }

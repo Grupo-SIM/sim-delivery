@@ -8,13 +8,14 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetPublicUnits, useGetPublicUnitsByUnitSlugMenu } from "@/lib/api";
 import { slug } from "@/lib/variant";
-import { useDeliveryMethodStore, useSelectedUnitStore } from "@/stores";
+import { useSelectedUnitStore } from "@/stores";
 import {
 	CartBar,
-	DeliveryMethodSelector,
 	InfoPill,
 	MenuBrowser,
+	PromotionalCarousel,
 	StoreInfoModal,
+	StoreToolbar,
 	UnitBanner,
 	UnitSwitcher,
 } from "./components";
@@ -27,15 +28,14 @@ function UnitStorePage() {
 	const menu = useGetPublicUnitsByUnitSlugMenu(unitSlug, { slug });
 	const unit = units?.find(item => item.slug === unitSlug);
 	const [profileOpen, setProfileOpen] = useState(false);
-	const getMethod = useDeliveryMethodStore(state => state.getMethod);
+	const [search, setSearch] = useState("");
 	const setSelectedUnit = useSelectedUnitStore(state => state.setUnit);
 
-	// Remember the unit the customer is browsing so it persists into checkout and later visits.
 	useEffect(() => {
 		if (unit) setSelectedUnit({ id: unit.id, name: unit.name, slug: unit.slug });
 	}, [unit, setSelectedUnit]);
 
-	if (!unit) {
+	if (!unit)
 		return (
 			<Container className="space-y-4 py-8">
 				<ErrorState title={t("store.unit.notFound")} />
@@ -44,20 +44,17 @@ function UnitStorePage() {
 				</Link>
 			</Container>
 		);
-	}
 
 	const address = [unit.addressLine, unit.neighborhood, unit.city].filter(Boolean).join(", ");
 	const minOrder = Number(unit.minOrderCents);
 	const fee = Number(unit.deliveryFee);
 	const prepMin = unit.prepTimeMinMinutes != null ? Number(unit.prepTimeMinMinutes) : null;
 	const prepMax = unit.prepTimeMaxMinutes != null ? Number(unit.prepTimeMaxMinutes) : null;
-	const hasDelivery = unit.deliveryMethods.includes("delivery");
-	const deliveryMethod = getMethod(unit.id, unit.deliveryMethods);
 
 	return (
 		<>
 			<UnitBanner bannerUrl={unit.bannerUrl} />
-			<Container className="space-y-4 py-8">
+			<Container className="space-y-6 py-8">
 				<div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
 					<div className="flex items-center gap-3">
 						<SectionHeading subtitle={address || t("store.chooseUnit.noAddress")} title={unit.name} />
@@ -74,31 +71,33 @@ function UnitStorePage() {
 					{units && <UnitSwitcher unitId={unitSlug} units={units} />}
 				</div>
 
-				<div className="flex flex-wrap items-center gap-2">
-					<DeliveryMethodSelector deliveryMethods={unit.deliveryMethods} unitId={unit.id} />
-					{prepMin != null && prepMax != null && (
-						<InfoPill>
-							⏱ {prepMin}–{prepMax} min
-						</InfoPill>
-					)}
-					{minOrder > 0 && (
-						<InfoPill>
-							{t("store.unit.minOrder")} {money.format(minOrder / 100)}
-						</InfoPill>
-					)}
-					{hasDelivery && deliveryMethod === "delivery" && (
-						<InfoPill>
-							{t("store.cart.deliveryFee")}:{" "}
-							{fee > 0 ? money.format(fee / 100) : t("store.unit.freeDelivery")}
-						</InfoPill>
-					)}
-					<button
-						className="text-primary text-xs underline-offset-2 hover:underline"
-						onClick={() => setProfileOpen(true)}
-						type="button"
-					>
-						{t("store.unit.storeProfile")}
-					</button>
+				<PromotionalCarousel images={unit.promotionalImages} />
+
+				<div className="space-y-3">
+					<StoreToolbar
+						deliveryFee={fee}
+						deliveryMethods={unit.deliveryMethods}
+						isOpen={unit.isOpenNow}
+						onSearchChange={setSearch}
+						prepMax={prepMax}
+						prepMin={prepMin}
+						search={search}
+						unitId={unit.id}
+					/>
+					<div className="flex flex-wrap items-center gap-2">
+						{minOrder > 0 && (
+							<InfoPill>
+								{t("store.unit.minOrder")} {money.format(minOrder / 100)}
+							</InfoPill>
+						)}
+						<button
+							className="text-primary text-xs underline-offset-2 hover:underline"
+							onClick={() => setProfileOpen(true)}
+							type="button"
+						>
+							{t("store.unit.storeProfile")}
+						</button>
+					</div>
 				</div>
 
 				{menu.isPending ? (
@@ -106,7 +105,7 @@ function UnitStorePage() {
 				) : menu.isError ? (
 					<ErrorState title={t("store.menu.loadError")} />
 				) : (
-					<MenuBrowser sections={menu.data} unitId={unit.id} unitSlug={unitSlug} />
+					<MenuBrowser search={search} sections={menu.data} unitId={unit.id} unitSlug={unitSlug} />
 				)}
 
 				<CartBar
@@ -116,13 +115,10 @@ function UnitStorePage() {
 					unitId={unit.id}
 					unitSlug={unitSlug}
 				/>
-
 				<StoreInfoModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} unit={unit} />
 			</Container>
 		</>
 	);
 }
 
-export const Route = createFileRoute("/_storefront/$unitId/")({
-	component: UnitStorePage,
-});
+export const Route = createFileRoute("/_storefront/$unitId/")({ component: UnitStorePage });

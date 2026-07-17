@@ -11,6 +11,7 @@ const assetTypes = {
 	"font-family": fontTypes,
 	logo: imageTypes,
 	product: imageTypes,
+	promotion: imageTypes,
 } as const;
 
 const extensionByType: Record<string, string> = {
@@ -35,6 +36,7 @@ const Asset = t.Union([
 	t.Literal("font-family"),
 	t.Literal("logo"),
 	t.Literal("product"),
+	t.Literal("promotion"),
 ]);
 
 export const MediaController = new Elysia({ prefix: "/media" })
@@ -48,7 +50,11 @@ export const MediaController = new Elysia({ prefix: "/media" })
 		"/:asset",
 		async ({ body, params, request, storageProvider }) => {
 			const scope = await CompanyScopeGuard.execute(request.headers);
-			CompanyScopeGuard.authorize(scope, params.asset === "product" ? "menu" : "branding", "update");
+			CompanyScopeGuard.authorize(
+				scope,
+				["product", "promotion"].includes(params.asset) ? "menu" : "branding",
+				"update",
+			);
 
 			const file = body.file;
 			const extension = extensionByType[file.type];
