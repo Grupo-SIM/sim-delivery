@@ -937,17 +937,6 @@
 				"subtitle": "Escolha uma unidade para iniciar seu pedido.",
 				"title": "Nossas unidades"
 			},
-			"home": {
-				"acai": "Açai",
-				"acaiDesc": "Geladinho, cremoso e do jeitinho que você ama.",
-				"club": "Clube de benefícios",
-				"clubDesc": "Vantagens exclusivas e descontos só para membros.",
-				"explore": "Explore também",
-				"other": "Outros",
-				"otherDesc": "Muito mais sabores esperando por você.",
-				"pizza": "Pizza",
-				"pizzaDesc": "Massa artesanal com recheios generosos."
-			},
 			"menu": {
 				"empty": "Esta unidade ainda não tem produtos.",
 				"highlights": "Destaques",
