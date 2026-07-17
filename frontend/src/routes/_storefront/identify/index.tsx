@@ -18,8 +18,11 @@ function IdentifyPage() {
 
 	return (
 		<Container className="max-w-md space-y-6 py-10" size="sm">
-			<SectionHeading subtitle={t("store.account.identify.subtitle")} title={t("store.account.identify.title")} />
-			<div className="rounded-xl border border-border bg-card p-5">
+			<SectionHeading
+				subtitle={t("store.account.identify.subtitle")}
+				title={t("store.account.identify.title")}
+			/>
+			<div className="rounded-brand border border-border bg-card p-6 shadow-soft sm:p-7">
 				<IdentifyForm />
 			</div>
 		</Container>

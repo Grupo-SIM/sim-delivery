@@ -49,11 +49,11 @@
 				"fontDisplay": "Fonte de destaque",
 				"fontDisplayPlaceholder": "Ex: Luckiest Guy",
 				"fontDisplayPreview": "Prévia da fonte de destaque",
-				"fontFileUrl": "URL do arquivo da fonte",
-				"fontFileUrlPlaceholder": "https://example.com/fonte.woff2",
 				"fontFamily": "Fonte do texto",
 				"fontFamilyPlaceholder": "Ex: Outfit",
 				"fontFamilyPreview": "Prévia da fonte do texto",
+				"fontFileUrl": "URL do arquivo da fonte",
+				"fontFileUrlPlaceholder": "https://example.com/fonte.woff2",
 				"fontUpload": "Enviar arquivo da fonte",
 				"footerText": "Texto do rodapé",
 				"footerTextPlaceholder": "© 2025 Meu Restaurante",
@@ -665,7 +665,7 @@
 		"store": {
 			"account": {
 				"identify": {
-					"subtitle": "Entre com seu telefone ou email para acompanhar seus pedidos.",
+					"subtitle": "Entre com seu e-mail para acompanhar seus pedidos.",
 					"title": "Entrar"
 				},
 				"myOrders": "Meus pedidos",
@@ -685,8 +685,8 @@
 					"name": "Nome",
 					"namePlaceholder": "Ex: Maria Silva",
 					"save": "Salvar",
-					"saveError": "Não foi possível salvar. Tente novamente.",
 					"saved": "Perfil atualizado!",
+					"saveError": "Não foi possível salvar. Tente novamente.",
 					"saving": "Salvando...",
 					"subtitle": "Gerencie seus dados.",
 					"title": "Meu perfil"
@@ -720,9 +720,9 @@
 					"cityPlaceholder": "Ex: São Paulo",
 					"complement": "Complemento",
 					"complementPlaceholder": "Ex: apto 42",
+					"continue": "Continuar",
 					"cpf": "CPF do comprador",
 					"cpfPlaceholder": "000.000.000-00",
-					"continue": "Continuar",
 					"neighborhood": "Bairro",
 					"neighborhoodPlaceholder": "Ex: Centro",
 					"noNumber": "Sem número",
@@ -739,27 +739,27 @@
 				},
 				"back": "Voltar ao cardápio",
 				"identify": {
+					"changeEmail": "Usar outro e-mail",
 					"channels": {
 						"email": "E-mail",
-						"sms": "SMS",
 						"soon": "em breve",
 						"whatsapp": "WhatsApp"
 					},
-					"code": "Código de verificação",
 					"email": "E-mail",
+					"emailHint": "Enviaremos um link de acesso. Sem senha, sem complicação.",
 					"errors": {
-						"code": "Código inválido. Tente novamente.",
 						"magicLink": "Este link é inválido ou expirou.",
-						"send": "Não foi possível enviar o código. Tente novamente."
+						"send": "Não foi possível enviar o link. Tente novamente."
 					},
-					"linkSent": "Enviamos um link de acesso para {{email}}. Verifique sua caixa de entrada.",
-					"phone": "Celular",
-					"sendCode": "Enviar código",
+					"linkResent": "Link reenviado!",
+					"linkSent": "Enviamos um link de acesso para <strong>{{email}}</strong>. Verifique sua caixa de entrada.",
+					"linkSentTitle": "Confira seu e-mail!",
+					"resend": "Reenviar link",
+					"resendIn": "Reenviar em {{seconds}}s",
 					"sending": "Enviando…",
-					"sendLink": "Enviar link",
-					"subtitle": "Informe seu e-mail e celular para entrar sem senha.",
+					"sendLink": "Enviar link de acesso",
+					"subtitle": "Informe seu e-mail para entrar sem senha.",
 					"title": "Identificação",
-					"verify": "Verificar",
 					"verifying": "Verificando…"
 				},
 				"order": {
@@ -795,8 +795,6 @@
 					"total": "Total"
 				},
 				"payment": {
-					"subtitle": "Conclua o pagamento para confirmar o pedido.",
-					"title": "Pagamento",
 					"card": {
 						"cvc": "CVC",
 						"error": "Não foi possível processar o pagamento. Verifique os dados do cartão.",
@@ -817,14 +815,16 @@
 						"copied": "Código copiado!",
 						"copy": "Copiar código PIX",
 						"error": "Não foi possível gerar o PIX. Tente novamente.",
+						"failedRetry": "Não foi possível gerar o PIX. Verifique seu CPF e tente novamente.",
 						"generate": "Gerar QR Code",
 						"generating": "Gerando QR Code…",
-					"qrAlt": "QR Code PIX",
-					"retry": "Tentar novamente",
-					"scan": "Abra o app do seu banco e escaneie o QR Code, ou copie o código abaixo.",
-						"waiting": "Aguardando confirmação do pagamento…",
-						"failedRetry": "Não foi possível gerar o PIX. Verifique seu CPF e tente novamente."
-					}
+						"qrAlt": "QR Code PIX",
+						"retry": "Tentar novamente",
+						"scan": "Abra o app do seu banco e escaneie o QR Code, ou copie o código abaixo.",
+						"waiting": "Aguardando confirmação do pagamento…"
+					},
+					"subtitle": "Conclua o pagamento para confirmar o pedido.",
+					"title": "Pagamento"
 				},
 				"profile": {
 					"cpf": "CPF (opcional)",
@@ -837,6 +837,13 @@
 					"subtitle": "Informe seu nome para personalizarmos seu pedido.",
 					"title": "Seu perfil"
 				},
+				"thankYou": {
+					"continue": "Continuar navegando",
+					"rate": "Avaliar pedido",
+					"subtitle": "Seu pedido foi confirmado e está sendo preparado.",
+					"title": "Obrigado pelo seu pedido!",
+					"whatsapp": "Você receberá atualizações sobre seu pedido via WhatsApp."
+				},
 				"tracking": {
 					"back": "Voltar ao cardápio",
 					"cancelled": "Pedido cancelado",
@@ -845,6 +852,7 @@
 					"items": "Itens do pedido",
 					"refreshing": "Atualização automática ativa",
 					"status": {
+						"awaiting_payment": "Aguardando pagamento",
 						"em_preparo": "Em preparo",
 						"em_preparoDescription": "A cozinha já está preparando seu pedido.",
 						"entregue": "Pedido entregue",
@@ -857,18 +865,10 @@
 						"retirado": "Pedido retirado",
 						"retiradoDescription": "Pedido finalizado. Até a próxima!",
 						"saiu_para_entrega": "Saiu para entrega",
-						"saiu_para_entregaDescription": "Seu pedido está a caminho.",
-						"awaiting_payment": "Aguardando pagamento"
+						"saiu_para_entregaDescription": "Seu pedido está a caminho."
 					},
 					"subtitle": "Acompanhe cada etapa em tempo real.",
 					"title": "Seu pedido"
-				},
-				"thankYou": {
-					"continue": "Continuar navegando",
-					"rate": "Avaliar pedido",
-					"subtitle": "Seu pedido foi confirmado e está sendo preparado.",
-					"title": "Obrigado pelo seu pedido!",
-					"whatsapp": "Você receberá atualizações sobre seu pedido via WhatsApp."
 				}
 			},
 			"chooseUnit": {
