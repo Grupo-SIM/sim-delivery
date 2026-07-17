@@ -38,6 +38,7 @@ export class ListPublicUnits {
 			deliveryFee: unit.deliveryFee,
 			deliveryMethods: unit.deliveryMethods,
 			id: unit.id,
+			imageUrl: unit.imageUrl,
 			isOpenNow: isUnitOpen(hours, unit.isOpenManual),
 			minOrderCents: unit.minOrderCents,
 			name: unit.name,

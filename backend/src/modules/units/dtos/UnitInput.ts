@@ -11,6 +11,7 @@ const fields = {
 	deliveryFeeFallbackEnabled: t.Optional(t.Boolean()),
 	deliveryMethods: t.Optional(t.Array(t.Union([t.Literal("delivery"), t.Literal("pickup")]))),
 	isOpenManual: t.Optional(t.Nullable(t.Boolean())),
+	imageUrl: t.Optional(t.Nullable(t.String({ format: "uri", maxLength: 1000 }))),
 	latitude: t.Optional(t.Nullable(t.Number())),
 	longitude: t.Optional(t.Nullable(t.Number())),
 	neighborhood: t.Optional(t.Nullable(t.String())),

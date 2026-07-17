@@ -8,6 +8,7 @@ function prismaWith(
 		bannerUrl?: string | null;
 		companyId: string;
 		id: string;
+		imageUrl?: string | null;
 		isOpenManual: boolean | null;
 		slug: string;
 	}> = [],
@@ -43,6 +44,7 @@ describe("ListPublicUnits", () => {
 				bannerUrl: "https://example.com/ipes.png",
 				companyId: "c1",
 				id: "u1",
+				imageUrl: "https://example.com/ipes-unit.png",
 				isOpenManual: true,
 				slug: "ipes",
 			},
@@ -53,6 +55,7 @@ describe("ListPublicUnits", () => {
 		expect(result[0]).toMatchObject({
 			bannerUrl: "https://example.com/ipes.png",
 			id: "u1",
+			imageUrl: "https://example.com/ipes-unit.png",
 			isOpenNow: true,
 			promotionalImages: [],
 			slug: "ipes",

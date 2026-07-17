@@ -12,6 +12,7 @@ const assetTypes = {
 	logo: imageTypes,
 	product: imageTypes,
 	promotion: imageTypes,
+	unit: imageTypes,
 } as const;
 
 const extensionByType: Record<string, string> = {
@@ -37,6 +38,7 @@ const Asset = t.Union([
 	t.Literal("logo"),
 	t.Literal("product"),
 	t.Literal("promotion"),
+	t.Literal("unit"),
 ]);
 
 export const MediaController = new Elysia({ prefix: "/media" })

@@ -619,6 +619,18 @@
 						"wed": "Quarta-feira"
 					}
 				},
+				"image": {
+					"action": "Imagem",
+					"cancel": "Cancelar",
+					"error": "Não foi possível salvar a imagem da unidade.",
+					"save": "Salvar imagem",
+					"saving": "Salvando...",
+					"title": "Imagem da unidade",
+					"upload": "Enviar imagem",
+					"uploadError": "Não foi possível enviar a imagem da unidade.",
+					"url": "URL da imagem",
+					"urlPlaceholder": "https://exemplo.com/unidade.png"
+				},
 				"loadError": "Não foi possível carregar as unidades.",
 				"menu": {
 					"action": "Cardápio"

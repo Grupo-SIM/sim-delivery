@@ -11,6 +11,7 @@ const acceptByAsset: Record<MediaAsset, string> = {
 	logo: "image/avif,image/jpeg,image/png,image/webp",
 	product: "image/avif,image/jpeg,image/png,image/webp",
 	promotion: "image/avif,image/jpeg,image/png,image/webp",
+	unit: "image/avif,image/jpeg,image/png,image/webp",
 };
 
 interface MediaUrlInputProps {

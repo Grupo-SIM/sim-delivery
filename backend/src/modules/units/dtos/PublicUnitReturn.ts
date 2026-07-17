@@ -9,6 +9,7 @@ export const PublicUnitReturn = t.Object({
 	deliveryFee: t.Integer(),
 	deliveryMethods: t.Array(t.String()),
 	id: t.String(),
+	imageUrl: t.Nullable(t.String()),
 	isOpenNow: t.Boolean(),
 	minOrderCents: t.Integer(),
 	name: t.String(),

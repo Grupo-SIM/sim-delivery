@@ -25,7 +25,7 @@ export function UnitHeroCard({ openLabel, unit }: UnitHeroCardProps) {
 			<img
 				alt={`Unidade ${unit.name}`}
 				className="absolute inset-0 h-full w-full object-cover opacity-75 transition duration-500 group-hover:scale-105"
-				src={unit.bannerUrl || fallbackImageUrl}
+				src={unit.imageUrl || fallbackImageUrl}
 			/>
 			<div className="absolute inset-0 bg-black/35" />
 			<div className="relative flex min-h-80 flex-col justify-between p-6">

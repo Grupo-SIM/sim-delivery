@@ -6,6 +6,7 @@ import {
 	LuBookOpen,
 	LuClock,
 	LuImage,
+	LuImagePlus,
 	LuImages,
 	LuMapPin,
 	LuSettings,
@@ -24,6 +25,7 @@ import { UnitBannerEditor } from "./UnitBannerEditor";
 import { UnitConfigEditor } from "./UnitConfigEditor";
 import { UnitDeliveryZonesEditor } from "./UnitDeliveryZonesEditor";
 import { UnitHoursEditor } from "./UnitHoursEditor";
+import { UnitImageEditor } from "./UnitImageEditor";
 import { UnitPromotionalImagesEditor } from "./UnitPromotionalImagesEditor";
 
 interface UnitsTableProps {
@@ -38,6 +40,7 @@ export function UnitsTable({ units }: UnitsTableProps) {
 	const [configUnit, setConfigUnit] = useState<GetUnits200[number] | null>(null);
 	const [addressUnit, setAddressUnit] = useState<GetUnits200[number] | null>(null);
 	const [bannerUnit, setBannerUnit] = useState<GetUnits200[number] | null>(null);
+	const [imageUnit, setImageUnit] = useState<GetUnits200[number] | null>(null);
 	const [zonesUnit, setZonesUnit] = useState<GetUnits200[number] | null>(null);
 	const [promotionsUnit, setPromotionsUnit] = useState<GetUnits200[number] | null>(null);
 
@@ -132,6 +135,17 @@ export function UnitsTable({ units }: UnitsTableProps) {
 											<LuImage className="h-4 w-4" />
 										</Button>
 									</Tooltip>
+									<Tooltip content={t("admin.units.image.action")}>
+										<Button
+											aria-label={t("admin.units.image.action")}
+											onClick={() => setImageUnit(unit)}
+											size="icon"
+											type="button"
+											variant="outline"
+										>
+											<LuImagePlus className="h-4 w-4" />
+										</Button>
+									</Tooltip>
 									<Tooltip content={t("admin.units.promotionalImages.action")}>
 										<Button
 											aria-label={t("admin.units.promotionalImages.action")}
@@ -188,6 +202,7 @@ export function UnitsTable({ units }: UnitsTableProps) {
 			<UnitConfigEditor onClose={() => setConfigUnit(null)} unit={configUnit} />
 			<UnitAddressEditor onClose={() => setAddressUnit(null)} unit={addressUnit} />
 			<UnitBannerEditor onClose={() => setBannerUnit(null)} unit={bannerUnit} />
+			<UnitImageEditor onClose={() => setImageUnit(null)} unit={imageUnit} />
 			<UnitDeliveryZonesEditor onClose={() => setZonesUnit(null)} unit={zonesUnit} />
 			<UnitPromotionalImagesEditor onClose={() => setPromotionsUnit(null)} unit={promotionsUnit} />
 		</>
