@@ -11,6 +11,7 @@ import { slug } from "@/lib/variant";
 import { useDeliveryMethodStore, useSelectedUnitStore } from "@/stores";
 import {
 	CartBar,
+	DesktopCart,
 	DeliveryMethodSelector,
 	InfoPill,
 	MenuBrowser,
@@ -101,13 +102,18 @@ function UnitStorePage() {
 					</button>
 				</div>
 
-				{menu.isPending ? (
-					<Skeleton className="h-64 w-full" />
-				) : menu.isError ? (
-					<ErrorState title={t("store.menu.loadError")} />
-				) : (
-					<MenuBrowser sections={menu.data} unitId={unit.id} unitSlug={unitSlug} />
-				)}
+				<div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start">
+					<div className="min-w-0">
+						{menu.isPending ? (
+							<Skeleton className="h-64 w-full" />
+						) : menu.isError ? (
+							<ErrorState title={t("store.menu.loadError")} />
+						) : (
+							<MenuBrowser sections={menu.data} unitId={unit.id} unitSlug={unitSlug} />
+						)}
+					</div>
+					<DesktopCart deliveryFee={fee} minOrderCents={minOrder} unitId={unit.id} unitSlug={unitSlug} />
+				</div>
 
 				<CartBar
 					deliveryFee={fee}
