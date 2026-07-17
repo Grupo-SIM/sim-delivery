@@ -41,26 +41,26 @@ export function MenuItemCard({ item, unitId, unitSlug }: MenuItemCardProps) {
 	}
 
 	return (
-		<Card className="flex gap-3 overflow-hidden p-3">
+		<Card className="flex gap-3 overflow-hidden p-3 xl:block">
 			{item.imageUrl && (
 				<img
 					alt={item.title}
-					className="size-20 shrink-0 rounded-md object-cover"
+					className="size-20 shrink-0 rounded-md object-cover xl:h-32 xl:w-full"
 					loading="lazy"
 					src={item.imageUrl}
 				/>
 			)}
-			<div className="flex min-w-0 flex-1 flex-col gap-1">
+			<div className="flex min-w-0 flex-1 flex-col gap-1 xl:mt-2">
 				<p className="truncate font-medium">{item.title}</p>
-				{item.description && <p className="line-clamp-2 text-muted-foreground text-sm">{item.description}</p>}
-				<div className="mt-auto flex items-center gap-2 pt-1">
+				{item.description && <p className="line-clamp-2 text-muted-foreground text-sm xl:hidden">{item.description}</p>}
+				<div className="mt-auto flex items-center gap-2 pt-1 xl:pt-2">
 					<span className="font-semibold">{displayPrice}</span>
 					{item.cashbackPercent != null && (
 						<Badge className="border-green-500/30 bg-green-500/10 text-green-500">
 							{item.cashbackPercent}%
 						</Badge>
 					)}
-					<Button className="ml-auto" onClick={handleAdd} size="sm" type="button">
+					<Button className="ml-auto xl:size-8 xl:px-0" onClick={handleAdd} size="sm" type="button">
 						{t("store.cart.add")}
 					</Button>
 				</div>

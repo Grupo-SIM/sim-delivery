@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cartCount, cartTotalCents, useCartStore, useDeliveryMethodStore } from "@/stores";
-import { CartItemRow } from "./CartItemRow";
+import { DesktopCartItem } from "./DesktopCartItem";
 import { money } from "./types";
 
 interface DesktopCartProps {
@@ -26,8 +26,8 @@ export function DesktopCart({ deliveryFee, minOrderCents, unitId, unitSlug }: De
 
 	return (
 		<aside className="hidden lg:block">
-			<div className="sticky top-6 overflow-hidden rounded-brand border border-border bg-card shadow-soft">
-				<div className="border-border border-b px-5 py-4">
+			<div className="sticky top-4 overflow-hidden rounded-brand border border-border bg-card shadow-soft">
+				<div className="border-border border-b px-5 py-5">
 					<h2 className="font-bold text-lg">{t("store.cart.title")}</h2>
 					<p className="text-muted-foreground text-sm">
 						{isCurrentUnit ? t("store.cart.open", { count }) : t("store.cart.empty")}
@@ -35,9 +35,9 @@ export function DesktopCart({ deliveryFee, minOrderCents, unitId, unitSlug }: De
 				</div>
 				{isCurrentUnit && count > 0 ? (
 					<>
-						<div className="max-h-[50vh] overflow-y-auto px-5">
+						<div className="max-h-[52vh] divide-y divide-border/70 overflow-y-auto px-5">
 							{items.map(item => (
-								<CartItemRow item={item} key={item.lineKey} />
+								<DesktopCartItem item={item} key={item.lineKey} />
 							))}
 						</div>
 						<div className="space-y-3 border-border border-t p-5">
