@@ -11,6 +11,6 @@ export class CreateTag {
 			throw new DomainError(TagErrors.NO_COMPANY);
 		}
 
-		return this.prisma.tag.create({ data: { ...data, companyId } });
+		return { ...(await this.prisma.tag.create({ data: { ...data, companyId } })), products: [] };
 	}
 }

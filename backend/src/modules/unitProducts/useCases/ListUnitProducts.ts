@@ -2,6 +2,7 @@ import { UnitErrors } from "@/modules/units/errors";
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { UnitProductListReturn } from "../dtos";
+import { mapUnitProductTaxonomy, unitProductTaxonomyInclude } from "./taxonomy";
 
 export class ListUnitProducts {
 	constructor(private readonly prisma: PrismaInstance) {}
@@ -12,6 +13,11 @@ export class ListUnitProducts {
 			throw new DomainError(UnitErrors.UNIT_NOT_FOUND);
 		}
 
-		return this.prisma.unitProduct.findMany({ orderBy: [{ createdAt: "asc" }], where: { unitId } });
+		const associations = await this.prisma.unitProduct.findMany({
+			include: unitProductTaxonomyInclude,
+			orderBy: [{ createdAt: "asc" }],
+			where: { unitId },
+		});
+		return associations.map(mapUnitProductTaxonomy);
 	}
 }

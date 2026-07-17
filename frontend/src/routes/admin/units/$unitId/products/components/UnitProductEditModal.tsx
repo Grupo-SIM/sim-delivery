@@ -4,20 +4,32 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { getUnitsByUnitIdProductsQueryKey, usePatchUnitsByUnitIdProductsByUnitProductId } from "@/lib/api";
+import type { Category, Product, Tag, UnitProduct } from "./types";
 import { UnitProductFormFields } from "./UnitProductFormFields";
-import type { Category, UnitProduct } from "./types";
 
 interface UnitProductEditModalProps {
 	association: UnitProduct | null;
 	categories: Category[];
+	product?: Product;
+	tags: Tag[];
 	onClose: () => void;
 	unitId: string;
 }
 
-export function UnitProductEditModal({ association, categories, onClose, unitId }: UnitProductEditModalProps) {
+export function UnitProductEditModal({
+	association,
+	categories,
+	onClose,
+	product,
+	tags,
+	unitId,
+}: UnitProductEditModalProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
-	const [categoryId, setCategoryId] = useState("");
+	const [categoriesOverridden, setCategoriesOverridden] = useState(false);
+	const [categoryIds, setCategoryIds] = useState<string[]>([]);
+	const [tagsOverridden, setTagsOverridden] = useState(false);
+	const [tagIds, setTagIds] = useState<string[]>([]);
 	const [available, setAvailable] = useState(true);
 	const [priceEnabled, setPriceEnabled] = useState(false);
 	const [priceReais, setPriceReais] = useState(0);
@@ -31,7 +43,10 @@ export function UnitProductEditModal({ association, categories, onClose, unitId 
 		if (!association) {
 			return;
 		}
-		setCategoryId(association.categoryId ?? "");
+		setCategoriesOverridden(association.categoriesOverridden);
+		setCategoryIds(association.categoryIds);
+		setTagsOverridden(association.tagsOverridden);
+		setTagIds(association.tagIds);
 		setAvailable(association.available);
 		setPriceEnabled(association.priceCentsOverride !== null);
 		setPriceReais(Number(association.priceCentsOverride ?? 0) / 100);
@@ -49,9 +64,10 @@ export function UnitProductEditModal({ association, categories, onClose, unitId 
 			{
 				data: {
 					available: stockEnabled ? stock > 0 : available,
-					categoryId: categoryId || null,
+					categoryIds: categoriesOverridden ? categoryIds : null,
 					priceCentsOverride: priceEnabled ? Math.round(priceReais * 100) : null,
 					stock: stockEnabled ? Math.round(stock) : null,
+					tagIds: tagsOverridden ? tagIds : null,
 				},
 				unitId,
 				unitProductId: association.id,
@@ -71,23 +87,31 @@ export function UnitProductEditModal({ association, categories, onClose, unitId 
 	return (
 		<Modal isOpen={association !== null} onClose={onClose} title={t("admin.unitProducts.edit.title")}>
 			<div className="space-y-4">
-					<div className="grid gap-4 md:grid-cols-2">
-						<UnitProductFormFields
-							available={available}
-							categoryId={categoryId}
-							categories={categories}
-							onAvailableChange={setAvailable}
-							onCategoryIdChange={setCategoryId}
-							onPriceEnabledChange={setPriceEnabled}
-							onPriceReaisChange={setPriceReais}
-							onStockChange={setStock}
-							onStockEnabledChange={setStockEnabled}
-							priceEnabled={priceEnabled}
-							priceReais={priceReais}
-							stock={stock}
-							stockEnabled={stockEnabled}
-						/>
-					</div>
+				<div className="grid gap-4 md:grid-cols-2">
+					<UnitProductFormFields
+						available={available}
+						categories={categories}
+						categoriesOverridden={categoriesOverridden}
+						categoryIds={categoryIds}
+						onAvailableChange={setAvailable}
+						onCategoriesOverriddenChange={setCategoriesOverridden}
+						onCategoryIdsChange={setCategoryIds}
+						onPriceEnabledChange={setPriceEnabled}
+						onPriceReaisChange={setPriceReais}
+						onStockChange={setStock}
+						onStockEnabledChange={setStockEnabled}
+						onTagIdsChange={setTagIds}
+						onTagsOverriddenChange={setTagsOverridden}
+						priceEnabled={priceEnabled}
+						priceReais={priceReais}
+						selectedProduct={product}
+						stock={stock}
+						stockEnabled={stockEnabled}
+						tagIds={tagIds}
+						tags={tags}
+						tagsOverridden={tagsOverridden}
+					/>
+				</div>
 
 				{error && <p className="text-destructive text-xs">{error}</p>}
 				<div className="flex justify-end gap-2">

@@ -1,7 +1,7 @@
 import Elysia, { t } from "elysia";
-import { CompanyScopeGuard } from "@/modules/users/guards";
 import { ProductUnitsReturn, SetProductUnitsBody } from "@/modules/unitProducts/dtos";
 import { ListProductUnits, SetProductUnits } from "@/modules/unitProducts/useCases";
+import { CompanyScopeGuard } from "@/modules/users/guards";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
 import { CreateProductBody, ProductListReturn, ProductReturn, UpdateProductBody } from "../../dtos";
 import { CreateProduct, DeleteProduct, ListProducts, UpdateProduct } from "../../useCases";
@@ -18,8 +18,8 @@ export const ProductsController = new Elysia({
 				...injected,
 				createProduct: new CreateProduct(prisma),
 				deleteProduct: new DeleteProduct(prisma),
-				listProductUnits: new ListProductUnits(prisma),
 				listProducts: new ListProducts(prisma),
+				listProductUnits: new ListProductUnits(prisma),
 				prisma,
 				setProductUnits: new SetProductUnits(prisma),
 				updateProduct: new UpdateProduct(prisma),

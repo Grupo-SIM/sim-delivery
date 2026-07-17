@@ -14,6 +14,6 @@ export class UpdateTag {
 			throw new DomainError(TagErrors.TAG_NOT_FOUND);
 		}
 
-		return this.prisma.tag.update({ data, where: { id: tagId } });
+		return { ...(await this.prisma.tag.update({ data, where: { id: tagId } })), products: [] };
 	}
 }

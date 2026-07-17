@@ -4,9 +4,10 @@ import { t } from "elysia";
 const fields = {
 	available: t.Optional(t.Boolean()),
 	cashbackPercentOverride: t.Optional(t.Nullable(t.Number({ minimum: 0 }))),
-	categoryId: t.Optional(t.Nullable(t.String())),
+	categoryIds: t.Optional(t.Nullable(t.Array(t.String(), { uniqueItems: true }))),
 	priceCentsOverride: t.Optional(t.Nullable(t.Integer({ minimum: 0 }))),
 	stock: t.Optional(t.Nullable(t.Integer({ minimum: 0 }))),
+	tagIds: t.Optional(t.Nullable(t.Array(t.String(), { uniqueItems: true }))),
 };
 
 export const AssociateProductBody = t.Object({ ...fields, productId: t.String({ minLength: 1 }) });

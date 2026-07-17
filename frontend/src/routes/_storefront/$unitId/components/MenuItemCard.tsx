@@ -63,6 +63,15 @@ export function MenuItemCard({ item, unitId, unitSlug }: MenuItemCardProps) {
 			</div>
 			<div className="flex min-w-0 flex-1 flex-col gap-2 p-4">
 				<p className="font-semibold leading-tight">{item.title}</p>
+				{item.tags.length > 0 && (
+					<div className="flex flex-wrap gap-1">
+						{item.tags.map(tag => (
+							<Badge key={tag.id} style={{ borderColor: tag.color, color: tag.color }}>
+								{tag.name}
+							</Badge>
+						))}
+					</div>
+				)}
 				{item.description && (
 					<p className="line-clamp-3 text-muted-foreground text-sm leading-relaxed">{item.description}</p>
 				)}

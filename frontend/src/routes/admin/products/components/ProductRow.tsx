@@ -1,11 +1,13 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuPencil, LuStore, LuTrash2 } from "react-icons/lu";
+import { LuPencil, LuStore, LuTags, LuTrash2 } from "react-icons/lu";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getProductsQueryKey, useDeleteProductsByProductId } from "@/lib/api";
 import { showAlert, showConfirm } from "@/stores";
 import { ProductEditModal } from "./ProductEditModal";
+import { ProductTaxonomyModal } from "./ProductTaxonomyModal";
 import { ProductUnitsModal } from "./ProductUnitsModal";
 import type { Product } from "./types";
 
@@ -20,6 +22,7 @@ export function ProductRow({ product }: ProductRowProps) {
 	const queryClient = useQueryClient();
 	const [editing, setEditing] = useState(false);
 	const [managingUnits, setManagingUnits] = useState(false);
+	const [managingTaxonomy, setManagingTaxonomy] = useState(false);
 	const remove = useDeleteProductsByProductId();
 
 	async function del() {
@@ -61,6 +64,32 @@ export function ProductRow({ product }: ProductRowProps) {
 						? t("admin.products.row.unitDefault")
 						: t("admin.products.row.cashbackPercent", { value: product.cashbackPercentOverride })}
 				</td>
+				<td className="px-4 py-3">
+					<div className="flex max-w-56 flex-wrap gap-1">
+						{product.categories.length === 0 ? (
+							<span className="text-muted-foreground text-xs">{t("admin.products.row.none")}</span>
+						) : (
+							product.categories.map(category => (
+								<Badge key={category.id} tone="neutral">
+									{category.name}
+								</Badge>
+							))
+						)}
+					</div>
+				</td>
+				<td className="px-4 py-3">
+					<div className="flex max-w-56 flex-wrap gap-1">
+						{product.tags.length === 0 ? (
+							<span className="text-muted-foreground text-xs">{t("admin.products.row.none")}</span>
+						) : (
+							product.tags.map(tag => (
+								<Badge key={tag.id} style={{ borderColor: tag.color, color: tag.color }}>
+									{tag.name}
+								</Badge>
+							))
+						)}
+					</div>
+				</td>
 				<td className="px-4 py-3 text-right">
 					<div className="flex justify-end gap-2">
 						<Button onClick={() => setManagingUnits(true)} size="sm" type="button" variant="outline">
@@ -71,6 +100,10 @@ export function ProductRow({ product }: ProductRowProps) {
 							<LuPencil className="h-4 w-4" />
 							{t("admin.products.edit.action")}
 						</Button>
+						<Button onClick={() => setManagingTaxonomy(true)} size="sm" type="button" variant="outline">
+							<LuTags className="h-4 w-4" />
+							{t("admin.products.taxonomy.action")}
+						</Button>
 						<Button disabled={remove.isPending} onClick={del} size="sm" type="button" variant="outline">
 							<LuTrash2 className="h-4 w-4" />
 							{t("admin.products.row.delete")}
@@ -80,6 +113,10 @@ export function ProductRow({ product }: ProductRowProps) {
 			</tr>
 			<ProductEditModal onClose={() => setEditing(false)} product={editing ? product : null} />
 			<ProductUnitsModal onClose={() => setManagingUnits(false)} product={managingUnits ? product : null} />
+			<ProductTaxonomyModal
+				onClose={() => setManagingTaxonomy(false)}
+				product={managingTaxonomy ? product : null}
+			/>
 		</>
 	);
 }

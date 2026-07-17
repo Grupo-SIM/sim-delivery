@@ -82,7 +82,8 @@
 			"categories": {
 				"columns": {
 					"name": "Nome",
-					"position": "Ordem"
+					"position": "Ordem",
+					"products": "Produtos associados"
 				},
 				"create": {
 					"error": "Não foi possível criar a categoria.",
@@ -101,6 +102,15 @@
 				},
 				"empty": "Nenhuma categoria ainda.",
 				"loadError": "Não foi possível carregar as categorias.",
+				"order": {
+					"down": "Mover para baixo",
+					"error": "Não foi possível alterar a ordem das categorias.",
+					"success": "Ordem das categorias atualizada.",
+					"up": "Mover para cima"
+				},
+				"products": {
+					"empty": "Nenhum produto associado"
+				},
 				"row": {
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir categoria {{name}}?",
@@ -270,8 +280,10 @@
 				"catalogSubtitle": "Produtos, categorias e etiquetas desta empresa.",
 				"columns": {
 					"cashback": "Cashback",
+					"categories": "Categorias",
 					"price": "Preço",
-					"product": "Produto"
+					"product": "Produto",
+					"tags": "Etiquetas"
 				},
 				"create": {
 					"cashbackOverride": "Substituir cashback da unidade",
@@ -303,6 +315,7 @@
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir produto {{title}}?",
 					"deleteError": "Não foi possível excluir o produto.",
+					"none": "Nenhuma",
 					"unitDefault": "Padrão da unidade"
 				},
 				"subtitle": "Catálogo base desta empresa.",
@@ -310,6 +323,22 @@
 					"categories": "Categorias",
 					"products": "Produtos",
 					"tags": "Etiquetas"
+				},
+				"taxonomy": {
+					"action": "Categorias e etiquetas",
+					"cancel": "Cancelar",
+					"categories": "Categorias",
+					"categoriesHint": "Selecione categorias existentes ou crie uma nova.",
+					"create": "Criar",
+					"createCategoryError": "Não foi possível criar a categoria.",
+					"createTagError": "Não foi possível criar a etiqueta.",
+					"error": "Não foi possível salvar categorias e etiquetas.",
+					"loadError": "Não foi possível carregar categorias e etiquetas.",
+					"save": "Salvar",
+					"saving": "Salvando...",
+					"tags": "Etiquetas",
+					"tagsHint": "Selecione etiquetas existentes ou crie uma nova.",
+					"title": "Categorias e etiquetas de {{title}}"
 				},
 				"title": "Produtos",
 				"units": {
@@ -438,7 +467,8 @@
 			"tags": {
 				"columns": {
 					"color": "Cor",
-					"name": "Nome"
+					"name": "Nome",
+					"products": "Produtos associados"
 				},
 				"create": {
 					"color": "Cor",
@@ -457,6 +487,9 @@
 				},
 				"empty": "Nenhuma etiqueta ainda.",
 				"loadError": "Não foi possível carregar as etiquetas.",
+				"products": {
+					"empty": "Nenhum produto associado"
+				},
 				"row": {
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir etiqueta {{name}}?",
@@ -469,9 +502,11 @@
 				"back": "Voltar para unidades",
 				"columns": {
 					"availability": "Disponibilidade",
+					"categories": "Categorias",
 					"category": "Categoria",
 					"price": "Preço",
-					"product": "Produto"
+					"product": "Produto",
+					"tags": "Etiquetas"
 				},
 				"edit": {
 					"cancel": "Cancelar",
@@ -483,19 +518,25 @@
 				"empty": "Nenhum produto no cardápio desta unidade ainda.",
 				"form": {
 					"available": "Disponível",
+					"categories": "Categorias",
+					"categoriesOverride": "Substituir categorias deste produto",
 					"category": "Categoria",
 					"error": "Não foi possível associar o produto.",
+					"inherited": "Herdado do produto",
 					"loose": "Sem categoria",
 					"priceOverride": "Substituir preço",
 					"product": "Produto",
 					"productPlaceholder": "Selecione um produto",
 					"stock": "Estoque",
 					"submit": "Adicionar ao cardápio",
-					"submitting": "Adicionando..."
+					"submitting": "Adicionando...",
+					"tags": "Etiquetas",
+					"tagsOverride": "Substituir etiquetas deste produto"
 				},
 				"loadError": "Não foi possível carregar o cardápio da unidade.",
 				"row": {
 					"edit": "Editar",
+					"none": "Nenhuma",
 					"overridden": "(substituído)",
 					"remove": "Remover",
 					"removeConfirm": "Remover {{title}} do cardápio desta unidade?",

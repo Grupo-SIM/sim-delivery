@@ -3,8 +3,10 @@ import { t } from "elysia";
 const fields = {
 	basePriceCents: t.Optional(t.Integer({ minimum: 0 })),
 	cashbackPercentOverride: t.Optional(t.Nullable(t.Number({ minimum: 0 }))),
+	categoryIds: t.Optional(t.Array(t.String(), { uniqueItems: true })),
 	description: t.Optional(t.String()),
 	imageUrl: t.Optional(t.String()),
+	tagIds: t.Optional(t.Array(t.String(), { uniqueItems: true })),
 };
 
 export const CreateProductBody = t.Object({

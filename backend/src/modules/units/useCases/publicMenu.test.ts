@@ -5,7 +5,10 @@ import { ListPublicMenu } from "./ListPublicMenu";
 interface Assoc {
 	available: boolean;
 	cashbackPercentOverride: number | null;
-	category: { id: string; name: string; position: number } | null;
+	categories: { category: { id: string; name: string; position: number } }[];
+	categoriesOverridden: boolean;
+	tags: { tag: { color: string; id: string; name: string } }[];
+	tagsOverridden: boolean;
 	featuredRank: number | null;
 	id: string;
 	priceCentsOverride: number | null;
@@ -15,6 +18,8 @@ interface Assoc {
 		description: string;
 		id: string;
 		imageUrl: string;
+		categories: { category: { id: string; name: string; position: number } }[];
+		tags: { tag: { color: string; id: string; name: string } }[];
 		optionGroups: {
 			id: string;
 			maxSelect: number;
@@ -62,12 +67,14 @@ function prismaWith(unit: { id: string; slug: string } | null, associations: Ass
 const product = (id: string, over: Partial<Assoc["product"]> = {}): Assoc["product"] => ({
 	basePriceCents: 1000,
 	cashbackPercentOverride: null,
+	categories: [],
 	description: "",
 	id,
 	imageUrl: "https://x/img.jpg",
 	optionGroups: [],
 	popularity: 0,
 	slug: id,
+	tags: [],
 	title: id,
 	...over,
 });
@@ -83,21 +90,27 @@ describe("ListPublicMenu", () => {
 			{
 				available: true,
 				cashbackPercentOverride: 7,
-				category: { id: "cat1", name: "Salgados", position: 0 },
+				categories: [{ category: { id: "cat1", name: "Salgados", position: 0 } }],
+				categoriesOverridden: true,
 				featuredRank: null,
 				id: "up1",
 				priceCentsOverride: 1500,
 				product: product("p1", { cashbackPercentOverride: 3 }),
+				tags: [],
+				tagsOverridden: true,
 				unitId: "u1",
 			},
 			{
 				available: true,
 				cashbackPercentOverride: null,
-				category: { id: "cat1", name: "Salgados", position: 0 },
+				categories: [{ category: { id: "cat1", name: "Salgados", position: 0 } }],
+				categoriesOverridden: true,
 				featuredRank: null,
 				id: "up2",
 				priceCentsOverride: null,
 				product: product("p2", { basePriceCents: 800, cashbackPercentOverride: 2 }),
+				tags: [],
+				tagsOverridden: true,
 				unitId: "u1",
 			},
 		]);
@@ -114,31 +127,40 @@ describe("ListPublicMenu", () => {
 			{
 				available: true,
 				cashbackPercentOverride: null,
-				category: null,
+				categories: [],
+				categoriesOverridden: true,
 				featuredRank: null,
 				id: "up-loose",
 				priceCentsOverride: null,
 				product: product("loose"),
+				tags: [],
+				tagsOverridden: true,
 				unitId: "u1",
 			},
 			{
 				available: true,
 				cashbackPercentOverride: null,
-				category: { id: "cat2", name: "Bebidas", position: 1 },
+				categories: [{ category: { id: "cat2", name: "Bebidas", position: 1 } }],
+				categoriesOverridden: true,
 				featuredRank: null,
 				id: "up-b",
 				priceCentsOverride: null,
 				product: product("b"),
+				tags: [],
+				tagsOverridden: true,
 				unitId: "u1",
 			},
 			{
 				available: true,
 				cashbackPercentOverride: null,
-				category: { id: "cat1", name: "Salgados", position: 0 },
+				categories: [{ category: { id: "cat1", name: "Salgados", position: 0 } }],
+				categoriesOverridden: true,
 				featuredRank: null,
 				id: "up-s",
 				priceCentsOverride: null,
 				product: product("s"),
+				tags: [],
+				tagsOverridden: true,
 				unitId: "u1",
 			},
 		]);
@@ -170,7 +192,8 @@ describe("ListPublicMenu", () => {
 			{
 				available: true,
 				cashbackPercentOverride: null,
-				category: null,
+				categories: [],
+				categoriesOverridden: true,
 				featuredRank: null,
 				id: "up1",
 				priceCentsOverride: null,
@@ -178,16 +201,21 @@ describe("ListPublicMenu", () => {
 					basePriceCents: 4800,
 					optionGroups: [optionGroup(1, [{ priceDeltaCents: 200 }, { priceDeltaCents: 800 }])],
 				}),
+				tags: [],
+				tagsOverridden: true,
 				unitId: "u1",
 			},
 			{
 				available: true,
 				cashbackPercentOverride: null,
-				category: null,
+				categories: [],
+				categoriesOverridden: true,
 				featuredRank: 1,
 				id: "up2",
 				priceCentsOverride: null,
 				product: product("p2", { optionGroups: [] }),
+				tags: [],
+				tagsOverridden: true,
 				unitId: "u1",
 			},
 		]);
