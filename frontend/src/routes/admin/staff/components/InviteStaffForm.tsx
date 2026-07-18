@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { LuEye, LuEyeOff } from "react-icons/lu";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
@@ -15,6 +16,7 @@ export function InviteStaffForm() {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [showPassword, setShowPassword] = useState(false);
 	const [role, setRole] = useState<Role>("attendant");
 	const [error, setError] = useState<string | null>(null);
 
@@ -78,12 +80,24 @@ export function InviteStaffForm() {
 				<span>
 					{t("admin.staff.invite.password")} <RequiredMark />
 				</span>
-				<Input
-					onChange={event => setPassword(event.currentTarget.value)}
-					required
-					type="password"
-					value={password}
-				/>
+				<div className="relative">
+					<Input
+						className="pr-11"
+						onChange={event => setPassword(event.currentTarget.value)}
+						required
+						type={showPassword ? "text" : "password"}
+						value={password}
+					/>
+					<button
+						aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+						className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+						onClick={() => setShowPassword(current => !current)}
+						title={showPassword ? "Ocultar senha" : "Mostrar senha"}
+						type="button"
+					>
+						{showPassword ? <LuEyeOff className="size-4" /> : <LuEye className="size-4" />}
+					</button>
+				</div>
 			</Label>
 			<div className="flex flex-col gap-1.5">
 				<span className="font-medium text-sm">{t("admin.staff.invite.role")}</span>

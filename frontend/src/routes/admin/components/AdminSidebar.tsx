@@ -27,9 +27,9 @@ function NavItem({ exact = false, icon: Icon, label, to }: NavItemProps) {
 	return (
 		<Link
 			activeOptions={{ exact }}
-			activeProps={{ className: "bg-primary/10 text-primary font-semibold" }}
+			activeProps={{ className: "bg-primary text-primary-foreground font-semibold" }}
 			className={cn(
-				"flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground text-sm transition-colors hover:bg-accent hover:text-foreground",
+				"flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground text-sm transition-colors hover:bg-primary hover:text-primary-foreground",
 			)}
 			to={to}
 		>
@@ -96,7 +96,7 @@ export function AdminSidebar() {
 			)}
 
 			<button
-				className="mt-auto flex items-center gap-3 rounded-md px-3 py-2 text-left text-muted-foreground text-sm transition-colors hover:bg-accent hover:text-foreground"
+				className="mt-auto flex items-center gap-3 rounded-md px-3 py-2 text-left text-muted-foreground text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
 				onClick={() => void handleLogout()}
 				type="button"
 			>

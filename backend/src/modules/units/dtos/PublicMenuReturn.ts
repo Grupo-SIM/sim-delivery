@@ -43,6 +43,7 @@ export type PublicMenuItemReturn = typeof PublicMenuItemReturn.static;
 /** A menu section: a category (or the loose group when `categoryId` is null) plus its items. */
 export const PublicMenuSectionReturn = t.Object({
 	categoryId: t.Nullable(t.String()),
+	categoryImageUrl: t.Nullable(t.String()),
 	categoryName: t.Nullable(t.String()),
 	items: t.Array(PublicMenuItemReturn),
 });

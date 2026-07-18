@@ -37,6 +37,9 @@ node_modules/
 .githooks/
 lefthook-local.yml
 
+# Worktrees
+.worktrees/
+
 # Vendor
 .codex
 !.codex/

@@ -2,13 +2,21 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { Modal } from "@/components/ui/Modal";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
-import { getProductsQueryKey, usePatchProductsByProductId } from "@/lib/api";
+import {
+	getProductsByProductIdCategoryQueryKey,
+	getProductsQueryKey,
+	useGetCategories,
+	useGetProductsByProductIdCategory,
+	usePatchProductsByProductId,
+	usePutProductsByProductIdCategory,
+} from "@/lib/api";
 import type { Product } from "./types";
 
 interface ProductEditModalProps {
@@ -31,10 +39,18 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 	const [priceReais, setPriceReais] = useState(0);
 	const [cashbackEnabled, setCashbackEnabled] = useState(false);
 	const [cashback, setCashback] = useState(0);
+	const [categoryId, setCategoryId] = useState("");
 	const [error, setError] = useState<string | null>(null);
 	const [isUploadingImage, setIsUploadingImage] = useState(false);
 
+	const { data: categories } = useGetCategories();
+	const { data: currentCategory } = useGetProductsByProductIdCategory(product?.id);
 	const { isPending, mutate } = usePatchProductsByProductId();
+	const { mutateAsync: setProductCategory } = usePutProductsByProductIdCategory();
+	const categoryOptions = [
+		{ label: t("admin.unitProducts.form.loose"), value: "" },
+		...(categories ?? []).map(category => ({ label: category.name, value: category.id })),
+	];
 
 	useEffect(() => {
 		if (!product) {
@@ -48,6 +64,10 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 		setCashback(product.cashbackPercentOverride ?? 0);
 		setError(null);
 	}, [product]);
+
+	useEffect(() => {
+		setCategoryId(currentCategory?.categoryId ?? "");
+	}, [currentCategory]);
 
 	function save() {
 		if (!product) {
@@ -71,7 +91,11 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 			{
 				onError: () => setError(t("admin.products.edit.error")),
 				onSuccess: async () => {
+					await setProductCategory({ data: { categoryId: categoryId || null }, productId: product.id });
 					await queryClient.invalidateQueries({ queryKey: getProductsQueryKey() });
+					await queryClient.invalidateQueries({
+						queryKey: getProductsByProductIdCategoryQueryKey(product.id),
+					});
 					onClose();
 				},
 			},
@@ -156,6 +180,11 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 						value={localDescription}
 					/>
 				</Label>
+
+				<div>
+					<span className="font-medium text-sm">{t("admin.products.create.category")}</span>
+					<CustomSelect onChange={setCategoryId} options={categoryOptions} value={categoryId} />
+				</div>
 
 				{error && <p className="text-destructive text-xs">{error}</p>}
 				<div className="flex justify-end gap-2">

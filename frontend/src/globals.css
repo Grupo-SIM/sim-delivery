@@ -5,7 +5,7 @@
 /*
  * Zero Grau design kit — brand tokens.
  * Source of truth for colors, typography, radii, shadows and motion.
- * Vibrant palette: royal blue + electric yellow + ice cyan, on a light base.
+ * Default palette: black, white and neutral grays.
  */
 @theme inline {
 	/* Semantic (ShadCN-compatible) tokens, repointed to the Zero Grau brand */
@@ -28,16 +28,16 @@
 	--color-input: var(--input);
 	--color-ring: var(--ring);
 
-	/* Raw brand palette — always the same hue regardless of theme */
-	--color-brand-blue: #0012ff;
-	--color-brand-blue-light: #3342ff;
-	--color-brand-yellow: #ffed00;
-	--color-brand-yellow-dark: #e6d600;
-	--color-brand-cyan: #00e5ff;
-	--color-brand-cyan-deep: #00b4d8;
-	--color-brand-red: #e33e2b;
-	--color-brand-ink: #1a1a2e;
-	--color-whatsapp: #25d366;
+	/* Legacy aliases remain monochrome for existing component classes. */
+	--color-brand-blue: #000000;
+	--color-brand-blue-light: #262626;
+	--color-brand-yellow: #ffffff;
+	--color-brand-yellow-dark: #e5e5e5;
+	--color-brand-cyan: #f5f5f5;
+	--color-brand-cyan-deep: #d4d4d4;
+	--color-brand-red: #000000;
+	--color-brand-ink: #000000;
+	--color-whatsapp: #000000;
 	--color-success: var(--success);
 	--color-warning: var(--warning);
 
@@ -55,8 +55,8 @@
 	/* Elevation */
 	--shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.08);
 	--shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.12);
-	--shadow-glow-blue: 0 12px 35px rgba(0, 18, 255, 0.35);
-	--shadow-glow-whatsapp: 0 8px 30px rgba(37, 211, 102, 0.4);
+	--shadow-glow-blue: 0 12px 35px rgba(0, 0, 0, 0.2);
+	--shadow-glow-whatsapp: 0 8px 30px rgba(0, 0, 0, 0.2);
 
 	/* Typography */
 	--font-sans: "Outfit", "Inter", system-ui, sans-serif;
@@ -76,61 +76,61 @@
 	:root {
 		--radius: 1rem;
 
-		--background: #f9fafb;
-		--foreground: #1a1a2e;
+		--background: #ffffff;
+		--foreground: #000000;
 		--card: #ffffff;
-		--card-foreground: #1a1a2e;
+		--card-foreground: #000000;
 		--popover: #ffffff;
-		--popover-foreground: #1a1a2e;
+		--popover-foreground: #000000;
 
-		--primary: #0012ff;
+		--primary: #000000;
 		--primary-foreground: #ffffff;
-		--secondary: #00e5ff;
-		--secondary-foreground: #062033;
-		--accent: #ffed00;
-		--accent-foreground: #0012ff;
+		--secondary: #f5f5f5;
+		--secondary-foreground: #000000;
+		--accent: #000000;
+		--accent-foreground: #ffffff;
 
-		--muted: #eef1f6;
-		--muted-foreground: #5b6472;
-		--destructive: #e33e2b;
+		--muted: #f5f5f5;
+		--muted-foreground: #525252;
+		--destructive: #000000;
 
-		--border: #e4e8f0;
-		--input: #e4e8f0;
-		--ring: #0012ff;
+		--border: #d4d4d4;
+		--input: #d4d4d4;
+		--ring: #000000;
 
 		--surface: var(--card);
-		--surface-sunken: #eef1f6;
-		--success: #1ebe5d;
-		--warning: #ffb800;
+		--surface-sunken: #f5f5f5;
+		--success: #000000;
+		--warning: #000000;
 	}
 
 	.dark {
-		--background: #0a0e1f;
-		--foreground: #eef1f8;
-		--card: #121734;
-		--card-foreground: #eef1f8;
-		--popover: #121734;
-		--popover-foreground: #eef1f8;
+		--background: #000000;
+		--foreground: #ffffff;
+		--card: #171717;
+		--card-foreground: #ffffff;
+		--popover: #171717;
+		--popover-foreground: #ffffff;
 
-		--primary: #3342ff;
-		--primary-foreground: #ffffff;
-		--secondary: #00e5ff;
-		--secondary-foreground: #062033;
-		--accent: #ffed00;
-		--accent-foreground: #0a0e1f;
+		--primary: #ffffff;
+		--primary-foreground: #000000;
+		--secondary: #262626;
+		--secondary-foreground: #ffffff;
+		--accent: #ffffff;
+		--accent-foreground: #000000;
 
-		--muted: #1b2145;
-		--muted-foreground: #9aa3c4;
-		--destructive: #f2543f;
+		--muted: #262626;
+		--muted-foreground: #a3a3a3;
+		--destructive: #ffffff;
 
-		--border: rgba(255, 255, 255, 0.1);
-		--input: rgba(255, 255, 255, 0.14);
-		--ring: #3342ff;
+		--border: #404040;
+		--input: #404040;
+		--ring: #262626;
 
 		--surface: var(--card);
-		--surface-sunken: #1b2145;
-		--success: #1ebe5d;
-		--warning: #ffb800;
+		--surface-sunken: #262626;
+		--success: #000000;
+		--warning: #000000;
 	}
 
 	* {

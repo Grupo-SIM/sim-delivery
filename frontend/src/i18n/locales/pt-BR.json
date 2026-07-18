@@ -80,32 +80,39 @@
 				"uploadError": "Não foi possível enviar o arquivo."
 			},
 			"categories": {
-				"columns": {
-					"name": "Nome",
-					"position": "Ordem"
+				"board": {
+					"noUnits": "Cadastre uma unidade pra organizar e ordenar as categorias por loja.",
+					"unassigned": "Sem unidade",
+					"unassignedHint": "Ainda não vinculadas a nenhuma unidade."
 				},
 				"create": {
 					"error": "Não foi possível criar a categoria.",
+					"image": "Imagem",
+					"imagePlaceholder": "Cole o link ou escolha um arquivo",
+					"imageUpload": "Escolher imagem",
 					"name": "Nome",
 					"namePlaceholder": "Ex: Bebidas",
 					"submit": "Adicionar categoria",
 					"submitting": "Adicionando...",
-					"title": "Nova categoria"
+					"title": "Nova categoria",
+					"units": "Unidades",
+					"uploadError": "Não foi possível enviar a imagem."
 				},
 				"edit": {
 					"action": "Editar",
 					"cancel": "Cancelar",
+					"delete": "Excluir categoria",
+					"deleteConfirm": "Excluir categoria {{name}}?",
+					"deleteError": "Não foi possível excluir a categoria.",
 					"error": "Não foi possível salvar a categoria.",
 					"save": "Salvar",
-					"saving": "Salvando..."
+					"saving": "Salvando...",
+					"title": "Editar categoria",
+					"units": "Unidades"
 				},
 				"empty": "Nenhuma categoria ainda.",
 				"loadError": "Não foi possível carregar as categorias.",
-				"row": {
-					"delete": "Excluir",
-					"deleteConfirm": "Excluir categoria {{name}}?",
-					"deleteError": "Não foi possível excluir a categoria."
-				},
+				"reorderError": "Não foi possível salvar a nova ordem.",
 				"subtitle": "Grupos do cardápio para esta empresa.",
 				"title": "Categorias"
 			},
@@ -275,6 +282,7 @@
 				},
 				"create": {
 					"cashbackOverride": "Substituir cashback da unidade",
+					"category": "Categoria",
 					"description": "Descrição",
 					"descriptionPlaceholder": "Ex: Fresquinho do forno, servido quentinho.",
 					"error": "Não foi possível criar o produto.",
@@ -286,6 +294,7 @@
 					"submitting": "Adicionando...",
 					"title": "Título",
 					"titlePlaceholder": "Ex: Pão de queijo tradicional",
+					"units": "Unidades",
 					"uploadError": "Não foi possível enviar a imagem."
 				},
 				"edit": {

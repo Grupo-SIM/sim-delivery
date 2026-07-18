@@ -4,7 +4,6 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Input } from "@/components/ui/input";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { CategoryNav } from "./CategoryNav";
-import { CategorySummary } from "./CategorySummary";
 import { MenuSectionBlock } from "./MenuSectionBlock";
 import { TopPicksCarousel } from "./TopPicksCarousel";
 import type { MenuSection } from "./types";
@@ -45,21 +44,16 @@ export function MenuBrowser({ sections, unitId, unitSlug }: MenuBrowserProps) {
 			{filtered.length === 0 ? (
 				<EmptyState title={query ? t("store.menu.noResults") : t("store.menu.empty")} />
 			) : (
-				<div className="lg:grid lg:grid-cols-[12rem_1fr] lg:gap-6">
-					<CategorySummary sections={filtered} />
-					<div className="min-w-0 space-y-6">
-						<div className="lg:hidden">
-							<CategoryNav sections={filtered} />
-						</div>
-						{filtered.map(section => (
-							<MenuSectionBlock
-								key={section.categoryId ?? "loose"}
-								section={section}
-								unitId={unitId}
-								unitSlug={unitSlug}
-							/>
-						))}
-					</div>
+				<div className="min-w-0 space-y-6">
+					<CategoryNav sections={filtered} />
+					{filtered.map(section => (
+						<MenuSectionBlock
+							key={section.categoryId ?? "loose"}
+							section={section}
+							unitId={unitId}
+							unitSlug={unitSlug}
+						/>
+					))}
 				</div>
 			)}
 		</div>

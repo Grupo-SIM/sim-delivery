@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { LuPlus } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useCartStore } from "@/stores";
 import { type MenuItem, money } from "./types";
@@ -41,6 +41,7 @@ export function MenuItemCard({ item, unitId, unitSlug }: MenuItemCardProps) {
 	}
 
 	return (
+<<<<<<< Updated upstream
 		<Card className="flex gap-3 overflow-hidden p-3">
 			{item.imageUrl && (
 				<img
@@ -54,15 +55,55 @@ export function MenuItemCard({ item, unitId, unitSlug }: MenuItemCardProps) {
 				<p className="truncate font-medium">{item.title}</p>
 				{item.description && <p className="line-clamp-2 text-muted-foreground text-sm">{item.description}</p>}
 				<div className="mt-auto flex items-center gap-2 pt-1">
+=======
+		<Card className="flex gap-3 overflow-hidden p-3 xl:block xl:p-0 xl:pb-3">
+			{item.imageUrl && (
+				<div className="relative shrink-0 xl:w-full">
+					<img
+						alt={item.title}
+						className="size-20 rounded-md object-cover xl:h-32 xl:w-full xl:rounded-none"
+						loading="lazy"
+						src={item.imageUrl}
+					/>
+					<button
+						aria-label={t("store.cart.add")}
+						className="absolute right-2 bottom-2 flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-soft transition-transform active:scale-90"
+						onClick={handleAdd}
+						type="button"
+					>
+						<LuPlus className="size-4" />
+					</button>
+				</div>
+			)}
+			<div className="flex min-w-0 flex-1 flex-col gap-1 xl:mt-2 xl:px-3">
+				<p className="truncate font-medium">{item.title}</p>
+				{item.description && (
+					<p className="line-clamp-2 text-muted-foreground text-sm xl:hidden">{item.description}</p>
+				)}
+				<div className="mt-auto flex items-center gap-2 pt-1 xl:pt-0">
+>>>>>>> Stashed changes
 					<span className="font-semibold">{displayPrice}</span>
 					{item.cashbackPercent != null && (
 						<Badge className="border-green-500/30 bg-green-500/10 text-green-500">
 							{item.cashbackPercent}%
 						</Badge>
 					)}
+<<<<<<< Updated upstream
 					<Button className="ml-auto" onClick={handleAdd} size="sm" type="button">
 						{t("store.cart.add")}
 					</Button>
+=======
+					{!item.imageUrl && (
+						<button
+							aria-label={t("store.cart.add")}
+							className="ml-auto flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground"
+							onClick={handleAdd}
+							type="button"
+						>
+							<LuPlus className="size-4" />
+						</button>
+					)}
+>>>>>>> Stashed changes
 				</div>
 			</div>
 		</Card>

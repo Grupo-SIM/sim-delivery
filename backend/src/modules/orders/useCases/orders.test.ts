@@ -288,6 +288,9 @@ function makeListOrdersPrisma() {
 	};
 
 	const prisma = {
+		company: {
+			findUnique: async () => ({ orderBoardStartedAt: null }),
+		},
 		order: {
 			findMany: async () => [order1],
 		},

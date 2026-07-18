@@ -45,7 +45,13 @@ export class ListPublicMenu {
 			where: { available: true, unitId: unit.id },
 		});
 
-		// Preserve category order (position asc) with the loose group last.
+		const unitCategories = await this.prisma.unitCategory.findMany({
+			select: { categoryId: true, position: true },
+			where: { unitId: unit.id },
+		});
+		const unitPositionOf = new Map(unitCategories.map(({ categoryId, position }) => [categoryId, position]));
+
+		// Preserve this unit's category order (position asc) with the loose group last.
 		const sections = new Map<string, PublicMenuSectionReturn>();
 		const positionOf = new Map<string, number>();
 
@@ -55,9 +61,17 @@ export class ListPublicMenu {
 
 			let section = sections.get(key);
 			if (!section) {
-				section = { categoryId: category?.id ?? null, categoryName: category?.name ?? null, items: [] };
+				section = {
+					categoryId: category?.id ?? null,
+					categoryImageUrl: category?.imageUrl || null,
+					categoryName: category?.name ?? null,
+					items: [],
+				};
 				sections.set(key, section);
-				positionOf.set(key, category?.position ?? Number.POSITIVE_INFINITY);
+				positionOf.set(
+					key,
+					(category ? unitPositionOf.get(category.id) : undefined) ?? Number.POSITIVE_INFINITY,
+				);
 			}
 
 			const basePriceCents = association.priceCentsOverride ?? product.basePriceCents;

@@ -2,13 +2,22 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { CollapsibleFormSection } from "@/components/ui/CollapsibleFormSection";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
-import { getProductsQueryKey, usePostProducts } from "@/lib/api";
+import {
+	getProductsQueryKey,
+	useGetCategories,
+	useGetUnits,
+	usePostProducts,
+	usePutProductsByProductIdCategory,
+	usePutProductsByProductIdUnits,
+} from "@/lib/api";
 
 export function CreateProductForm() {
 	const { t } = useTranslation();
@@ -25,10 +34,26 @@ export function CreateProductForm() {
 	const [priceReais, setPriceReais] = useState(0);
 	const [cashbackEnabled, setCashbackEnabled] = useState(false);
 	const [cashback, setCashback] = useState(0);
+	const [categoryId, setCategoryId] = useState("");
+	const [unitIds, setUnitIds] = useState<string[]>([]);
 	const [error, setError] = useState<string | null>(null);
 	const [isUploadingImage, setIsUploadingImage] = useState(false);
 
+	const { data: categories } = useGetCategories();
+	const { data: units } = useGetUnits();
 	const { isPending, mutate } = usePostProducts();
+	const { mutateAsync: setProductUnits } = usePutProductsByProductIdUnits();
+	const { mutateAsync: setProductCategory } = usePutProductsByProductIdCategory();
+	const categoryOptions = [
+		{ label: t("admin.unitProducts.form.loose"), value: "" },
+		...(categories ?? []).map(category => ({ label: category.name, value: category.id })),
+	];
+
+	function toggleUnit(unitId: string) {
+		setUnitIds(current =>
+			current.includes(unitId) ? current.filter(id => id !== unitId) : [...current, unitId],
+		);
+	}
 
 	const hasData = useMemo(
 		() =>
@@ -37,8 +62,10 @@ export function CreateProductForm() {
 			localDescription.trim() !== "" ||
 			priceReais > 0 ||
 			cashbackEnabled ||
-			cashback > 0,
-		[localTitle, localImageUrl, localDescription, priceReais, cashbackEnabled, cashback],
+			cashback > 0 ||
+			categoryId !== "" ||
+			unitIds.length > 0,
+		[localTitle, localImageUrl, localDescription, priceReais, cashbackEnabled, cashback, categoryId, unitIds],
 	);
 
 	function flushText() {
@@ -66,13 +93,21 @@ export function CreateProductForm() {
 					},
 					{
 						onError: () => setError(t("admin.products.create.error")),
-						onSuccess: async () => {
+						onSuccess: async product => {
+							if (unitIds.length > 0) {
+								await setProductUnits({ data: { unitIds }, productId: product.id });
+							}
+							if (categoryId) {
+								await setProductCategory({ data: { categoryId }, productId: product.id });
+							}
 							setTitle("");
 							setImageUrl("");
 							setDescription("");
 							setPriceReais(0);
 							setCashbackEnabled(false);
 							setCashback(0);
+							setCategoryId("");
+							setUnitIds([]);
 							await queryClient.invalidateQueries({ queryKey: getProductsQueryKey() });
 						},
 					},
@@ -155,6 +190,31 @@ export function CreateProductForm() {
 						value={localDescription}
 					/>
 				</Label>
+
+				<div className="grid gap-4 md:grid-cols-2">
+					<div>
+						<span className="font-medium text-sm">{t("admin.products.create.category")}</span>
+						<CustomSelect onChange={setCategoryId} options={categoryOptions} value={categoryId} />
+					</div>
+
+					{units && units.length > 0 && (
+						<div className="space-y-2">
+							<span className="font-medium text-sm">{t("admin.products.create.units")}</span>
+							<div className="flex flex-wrap gap-3">
+								{units.map(unit => (
+									<div className="flex items-center gap-2 text-sm" key={unit.id}>
+										<Checkbox
+											checked={unitIds.includes(unit.id)}
+											id={`create-product-unit-${unit.id}`}
+											onChange={() => toggleUnit(unit.id)}
+										/>
+										<label htmlFor={`create-product-unit-${unit.id}`}>{unit.name}</label>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
+				</div>
 			</CollapsibleFormSection>
 
 			<div className="flex items-center gap-3">

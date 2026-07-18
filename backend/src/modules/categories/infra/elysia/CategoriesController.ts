@@ -1,4 +1,6 @@
 import Elysia, { t } from "elysia";
+import { CategoryUnitsReturn, SetCategoryUnitsBody } from "@/modules/unitCategories/dtos";
+import { ListCategoryUnits, SetCategoryUnits } from "@/modules/unitCategories/useCases";
 import { CompanyScopeGuard } from "@/modules/users/guards";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
 import { CategoryListReturn, CategoryReturn, CreateCategoryBody, UpdateCategoryBody } from "../../dtos";
@@ -17,7 +19,9 @@ export const CategoriesController = new Elysia({
 				createCategory: new CreateCategory(prisma),
 				deleteCategory: new DeleteCategory(prisma),
 				listCategories: new ListCategories(prisma),
+				listCategoryUnits: new ListCategoryUnits(prisma),
 				prisma,
+				setCategoryUnits: new SetCategoryUnits(prisma),
 				updateCategory: new UpdateCategory(prisma),
 			}))
 			.get(
@@ -61,5 +65,25 @@ export const CategoriesController = new Elysia({
 					return { ok: true };
 				},
 				{ response: t.Object({ ok: t.Boolean() }) },
+			)
+			.get(
+				"/:categoryId/units",
+				async ({ listCategoryUnits, params, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "menu", "read");
+
+					return listCategoryUnits.execute(scope.companyId, params.categoryId);
+				},
+				{ response: CategoryUnitsReturn },
+			)
+			.put(
+				"/:categoryId/units",
+				async ({ body, params, request, setCategoryUnits }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "menu", "update");
+
+					return setCategoryUnits.execute(scope.companyId, params.categoryId, body.unitIds);
+				},
+				{ body: SetCategoryUnitsBody, response: CategoryUnitsReturn },
 			),
 	);

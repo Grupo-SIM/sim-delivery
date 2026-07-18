@@ -1,59 +1,8 @@
-import { Button, type ButtonProps } from "baseui/button";
-
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { Button } from "./button";
 type AppButtonTone = "default" | "destructive" | "secondary" | "tertiary";
-
-interface AppButtonProps extends Omit<ButtonProps, "kind"> {
-	fullWidth?: boolean;
-	tone?: AppButtonTone;
-}
-
-const toneKind: Record<AppButtonTone, ButtonProps["kind"]> = {
-	default: "primary",
-	destructive: "secondary",
-	secondary: "secondary",
-	tertiary: "tertiary",
-};
-
-export function AppButton({
-	children,
-	fullWidth,
-	overrides,
-	size = "compact",
-	tone = "default",
-	widthType,
-	...props
-}: AppButtonProps) {
-	return (
-		<Button
-			kind={toneKind[tone]}
-			overrides={{
-				...overrides,
-				BaseButton: {
-					...overrides?.BaseButton,
-					style: {
-						borderRadius: "8px",
-						fontSize: "12px",
-						fontWeight: 800,
-						letterSpacing: "0.04em",
-						minHeight: size === "mini" ? "32px" : "40px",
-						textTransform: "uppercase",
-						transitionDuration: "0.3s",
-						transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
-						width: fullWidth ? "100%" : undefined,
-						...(tone === "destructive"
-							? {
-									borderColor: "var(--destructive)",
-									color: "var(--destructive)",
-								}
-							: {}),
-					},
-				},
-			}}
-			size={size}
-			widthType={widthType ?? (fullWidth ? "fill" : "hug")}
-			{...props}
-		>
-			{children}
-		</Button>
-	);
+interface AppButtonProps extends ComponentPropsWithoutRef<"button"> { fullWidth?: boolean; tone?: AppButtonTone; children: ReactNode; }
+export function AppButton({ children, className, fullWidth, tone = "default", ...props }: AppButtonProps) {
+	const variant = tone === "default" ? "default" : tone === "secondary" ? "secondary" : tone === "destructive" ? "destructive" : "outline";
+	return <Button className={`min-h-10 rounded-md text-xs uppercase tracking-[0.04em] ${fullWidth ? "w-full" : ""} ${className ?? ""}`} type="button" variant={variant} {...props}>{children}</Button>;
 }

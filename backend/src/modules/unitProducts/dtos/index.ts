@@ -1,3 +1,5 @@
+export * from "./ProductCategoryInput";
+export * from "./ProductCategoryReturn";
 export * from "./ProductUnitsInput";
 export * from "./ProductUnitsReturn";
 export * from "./UnitProductInput";

@@ -5,7 +5,7 @@ import { ListPublicMenu } from "./ListPublicMenu";
 interface Assoc {
 	available: boolean;
 	cashbackPercentOverride: number | null;
-	category: { id: string; name: string; position: number } | null;
+	category: { id: string; name: string } | null;
 	featuredRank: number | null;
 	id: string;
 	priceCentsOverride: number | null;
@@ -40,7 +40,11 @@ interface Assoc {
 	unitId: string;
 }
 
-function prismaWith(unit: { id: string; slug: string } | null, associations: Assoc[] = []) {
+function prismaWith(
+	unit: { id: string; slug: string } | null,
+	associations: Assoc[] = [],
+	categoryPositions: Record<string, number> = {},
+) {
 	return {
 		company: {
 			findUnique: async ({ where }: { where: { slug: string } }) =>
@@ -51,6 +55,10 @@ function prismaWith(unit: { id: string; slug: string } | null, associations: Ass
 				unit && where.companyId_slug.companyId === "c1" && unit.slug === where.companyId_slug.slug
 					? unit
 					: null,
+		},
+		unitCategory: {
+			findMany: async () =>
+				Object.entries(categoryPositions).map(([categoryId, position]) => ({ categoryId, position })),
 		},
 		unitProduct: {
 			findMany: async ({ where }: { where: { available: boolean; unitId: string } }) =>
@@ -83,7 +91,7 @@ describe("ListPublicMenu", () => {
 			{
 				available: true,
 				cashbackPercentOverride: 7,
-				category: { id: "cat1", name: "Salgados", position: 0 },
+				category: { id: "cat1", name: "Salgados" },
 				featuredRank: null,
 				id: "up1",
 				priceCentsOverride: 1500,
@@ -93,7 +101,7 @@ describe("ListPublicMenu", () => {
 			{
 				available: true,
 				cashbackPercentOverride: null,
-				category: { id: "cat1", name: "Salgados", position: 0 },
+				category: { id: "cat1", name: "Salgados" },
 				featuredRank: null,
 				id: "up2",
 				priceCentsOverride: null,
@@ -110,38 +118,42 @@ describe("ListPublicMenu", () => {
 	});
 
 	it("orders sections by category position with the loose group last", async () => {
-		const prisma = prismaWith({ id: "u1", slug: "ipês" }, [
-			{
-				available: true,
-				cashbackPercentOverride: null,
-				category: null,
-				featuredRank: null,
-				id: "up-loose",
-				priceCentsOverride: null,
-				product: product("loose"),
-				unitId: "u1",
-			},
-			{
-				available: true,
-				cashbackPercentOverride: null,
-				category: { id: "cat2", name: "Bebidas", position: 1 },
-				featuredRank: null,
-				id: "up-b",
-				priceCentsOverride: null,
-				product: product("b"),
-				unitId: "u1",
-			},
-			{
-				available: true,
-				cashbackPercentOverride: null,
-				category: { id: "cat1", name: "Salgados", position: 0 },
-				featuredRank: null,
-				id: "up-s",
-				priceCentsOverride: null,
-				product: product("s"),
-				unitId: "u1",
-			},
-		]);
+		const prisma = prismaWith(
+			{ id: "u1", slug: "ipês" },
+			[
+				{
+					available: true,
+					cashbackPercentOverride: null,
+					category: null,
+					featuredRank: null,
+					id: "up-loose",
+					priceCentsOverride: null,
+					product: product("loose"),
+					unitId: "u1",
+				},
+				{
+					available: true,
+					cashbackPercentOverride: null,
+					category: { id: "cat2", name: "Bebidas" },
+					featuredRank: null,
+					id: "up-b",
+					priceCentsOverride: null,
+					product: product("b"),
+					unitId: "u1",
+				},
+				{
+					available: true,
+					cashbackPercentOverride: null,
+					category: { id: "cat1", name: "Salgados" },
+					featuredRank: null,
+					id: "up-s",
+					priceCentsOverride: null,
+					product: product("s"),
+					unitId: "u1",
+				},
+			],
+			{ cat1: 0, cat2: 1 },
+		);
 		const result = await new ListPublicMenu(prisma).execute("demo", "ipês");
 		expect(result.map(s => s.categoryName)).toEqual(["Salgados", "Bebidas", null]);
 	});

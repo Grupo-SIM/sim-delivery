@@ -1,4 +1,4 @@
-import { Switch } from "baseui/switch";
+
 import { useTranslation } from "react-i18next";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { NumericInput } from "@/components/ui/NumericInput";
@@ -101,7 +101,7 @@ export function UnitProductFormFields({
 				) : (
 					<div className="flex flex-1 items-center justify-between">
 						<span className="font-medium text-sm">{t("admin.unitProducts.form.available")}</span>
-						<Switch checked={available} onChange={event => onAvailableChange(event.currentTarget.checked)} />
+						<button aria-pressed={available} className={`h-6 w-11 rounded-full p-0.5 transition ${available ? "bg-primary" : "bg-muted"}`} onClick={() => onAvailableChange(!available)} type="button"><span className={`block size-5 rounded-full bg-white transition-transform ${available ? "translate-x-5" : "translate-x-0"}`} /></button>
 					</div>
 				)}
 			</div>

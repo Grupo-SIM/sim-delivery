@@ -1,7 +1,17 @@
 import Elysia, { t } from "elysia";
+import {
+	ProductCategoryReturn,
+	ProductUnitsReturn,
+	SetProductCategoryBody,
+	SetProductUnitsBody,
+} from "@/modules/unitProducts/dtos";
+import {
+	GetProductCategory,
+	ListProductUnits,
+	SetProductCategory,
+	SetProductUnits,
+} from "@/modules/unitProducts/useCases";
 import { CompanyScopeGuard } from "@/modules/users/guards";
-import { ProductUnitsReturn, SetProductUnitsBody } from "@/modules/unitProducts/dtos";
-import { ListProductUnits, SetProductUnits } from "@/modules/unitProducts/useCases";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
 import { CreateProductBody, ProductListReturn, ProductReturn, UpdateProductBody } from "../../dtos";
 import { CreateProduct, DeleteProduct, ListProducts, UpdateProduct } from "../../useCases";
@@ -18,9 +28,11 @@ export const ProductsController = new Elysia({
 				...injected,
 				createProduct: new CreateProduct(prisma),
 				deleteProduct: new DeleteProduct(prisma),
-				listProductUnits: new ListProductUnits(prisma),
+				getProductCategory: new GetProductCategory(prisma),
 				listProducts: new ListProducts(prisma),
+				listProductUnits: new ListProductUnits(prisma),
 				prisma,
+				setProductCategory: new SetProductCategory(prisma),
 				setProductUnits: new SetProductUnits(prisma),
 				updateProduct: new UpdateProduct(prisma),
 			}))
@@ -85,5 +97,25 @@ export const ProductsController = new Elysia({
 					return setProductUnits.execute(scope.companyId, params.productId, body.unitIds);
 				},
 				{ body: SetProductUnitsBody, response: ProductUnitsReturn },
+			)
+			.get(
+				"/:productId/category",
+				async ({ getProductCategory, params, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "menu", "read");
+
+					return getProductCategory.execute(scope.companyId, params.productId);
+				},
+				{ response: ProductCategoryReturn },
+			)
+			.put(
+				"/:productId/category",
+				async ({ body, params, request, setProductCategory }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "menu", "update");
+
+					return setProductCategory.execute(scope.companyId, params.productId, body.categoryId);
+				},
+				{ body: SetProductCategoryBody, response: ProductCategoryReturn },
 			),
 	);

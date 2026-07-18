@@ -19,6 +19,7 @@ model Company {
     metaPixelId String?
     ga4Id       String?
     gtmId       String?
+    orderBoardStartedAt DateTime?
     createdAt   DateTime @default(now())
     updatedAt  DateTime @updatedAt
 

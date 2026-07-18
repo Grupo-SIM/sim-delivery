@@ -1,0 +1,20 @@
+/// Opts a Category into a Unit's menu, with an ordering scoped to that unit (docs/08). A
+/// category only appears in a unit's admin category list when this row exists; whether it's
+/// visible to customers still depends on having at least one available product in it.
+model UnitCategory {
+    id         String   @id @default(cuid())
+    unitId     String
+    categoryId String
+    /// Manual ordering within this unit's category list; lower shows first.
+    position   Int      @default(0)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    unit     Unit     @relation(fields: [unitId], references: [id], onDelete: Cascade)
+    category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+    @@unique([unitId, categoryId])
+    @@index([unitId])
+    @@index([categoryId])
+    @@map("unit_category")
+}

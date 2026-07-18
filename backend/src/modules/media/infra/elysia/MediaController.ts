@@ -7,6 +7,7 @@ const imageTypes = ["image/avif", "image/jpeg", "image/png", "image/webp"];
 const fontTypes = ["font/otf", "font/ttf", "font/woff", "font/woff2"];
 const assetTypes = {
 	banner: imageTypes,
+	category: imageTypes,
 	"font-display": fontTypes,
 	"font-family": fontTypes,
 	logo: imageTypes,
@@ -31,6 +32,7 @@ const Filename = t.String({
 });
 const Asset = t.Union([
 	t.Literal("banner"),
+	t.Literal("category"),
 	t.Literal("font-display"),
 	t.Literal("font-family"),
 	t.Literal("logo"),
@@ -48,7 +50,11 @@ export const MediaController = new Elysia({ prefix: "/media" })
 		"/:asset",
 		async ({ body, params, request, storageProvider }) => {
 			const scope = await CompanyScopeGuard.execute(request.headers);
-			CompanyScopeGuard.authorize(scope, params.asset === "product" ? "menu" : "branding", "update");
+			CompanyScopeGuard.authorize(
+				scope,
+				params.asset === "product" || params.asset === "category" ? "menu" : "branding",
+				"update",
+			);
 
 			const file = body.file;
 			const extension = extensionByType[file.type];

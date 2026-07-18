@@ -46,6 +46,7 @@ model Unit {
     deliveryZones DeliveryZone[]
     hours         UnitHours[]
     products      UnitProduct[]
+    categories    UnitCategory[]
     orders        Order[]
 
     @@index([companyId])
