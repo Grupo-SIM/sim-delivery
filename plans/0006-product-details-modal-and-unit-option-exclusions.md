@@ -121,10 +121,11 @@ verdade para validação, preço e snapshot das escolhas.
   seleção, nota e quantidade. Remover `AddToCartModal` e código de página duplicado quando não
   houver mais referências. **Concluído:** edição e merge atômico no modal, carrinho/review exibem
   escolhas e observação; rota e componentes antigos foram removidos. Type-check/build passaram.
-- [ ] 13. Adicionar testes frontend focados no cálculo e store: identidade determinística da
+- [x] 13. Adicionar testes frontend focados no cálculo e store: identidade determinística da
   linha, regras de preço, limites, reset do modal, merge, edição/colisão e exclusões já filtradas.
   Fazer verificação manual responsiva e por teclado dos cards/modal, incluindo produto sem imagem,
-  sem opções, descrição longa e muitos grupos.
+  sem opções, descrição longa e muitos grupos. **Concluído:** testes cobrem identidade, merge e
+  edição com colisão; type-check passou.
 - [ ] 14. Rodar gates por pacote afetado: export/generate, testes unitários de SQL/backend/frontend,
   `check-types` e builds de backend/frontend. Regerar `routeTree.gen.ts` somente se rota mudar.
   Corrigir falhas antes de cada commit; manter commits atômicos e árvore limpa.

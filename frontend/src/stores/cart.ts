@@ -41,7 +41,7 @@ export interface CartState {
 	unitId: string | null;
 }
 
-function makeLineKey(id: string, options: SelectedOption[]): string {
+export function makeLineKey(id: string, options: SelectedOption[]): string {
 	const sorted = [...options]
 		.sort((a, b) => a.optionId.localeCompare(b.optionId))
 		.map(o => `${o.optionId}:${o.quantity}`)
