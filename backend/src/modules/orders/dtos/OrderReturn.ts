@@ -50,6 +50,16 @@ export const OrderItemReturn = t.Object({
 	quantity: t.Integer(),
 	total: t.Integer(),
 	unitPrice: t.Integer(),
+	options: t.Array(
+		t.Object({
+			groupName: t.String(),
+			id: t.String(),
+			optionId: __nullable__(t.String()),
+			optionName: t.String(),
+			priceDeltaCents: t.Integer(),
+			quantity: t.Integer(),
+		}),
+	),
 });
 export type OrderItemReturn = typeof OrderItemReturn.static;
 

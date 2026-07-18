@@ -83,12 +83,13 @@ verdade para validação, preço e snapshot das escolhas.
   e não expor produto cuja configuração obrigatória ficou impossível. Ampliar testes do menu com
   duas unidades que compartilham produto, mas veem sabores diferentes. **Concluído:** catálogo
   filtra exclusões, recalcula preço mínimo e omite grupos obrigatórios inviáveis; testes passaram.
-- [ ] 6. Completar contrato do pedido: adicionar seleções por item ao DTO, validar no
+- [x] 6. Completar contrato do pedido: adicionar seleções por item ao DTO, validar no
   `CreateOrder` grupos obrigatórios/opcionais, min/max, tipo, `maxPerItem`, disponibilidade global,
   exclusão da unidade e IDs duplicados; recalcular preço efetivo com `priceRule`. Criar itens e
   `OrderItemOption` em transação preservando nomes/preços como snapshot; retornar opções nos DTOs
   de pedido. Adicionar erro `INVALID_OPTIONS` 422 e testes de sum/highest/average, manipulação de
-  preço, exclusão regional e rollback.
+  preço, exclusão regional e rollback. **Concluído:** pedido recebe IDs/quantidades, recalcula
+  preço, valida catálogo efetivo e snapshots e retorna opções; testes alvo e check-types passaram.
 - [ ] 7. Exportar OpenAPI e regenerar SDK frontend após endpoints e contratos estabilizarem.
   Confirmar que respostas deixam de gerar `any`, que arquivos gerados são somente produto do
   gerador e que checkout envia `optionId`/`quantity` de cada seleção.

@@ -38,14 +38,77 @@ export class CreateOrder {
 
 		// Resolve prices from unit product associations
 		const unitProducts = await this.prisma.unitProduct.findMany({
-			include: { product: true },
+			include: { product: { include: { optionGroups: { include: { options: true } } } } },
 			where: { id: { in: items.map(i => i.unitProductId) }, unitId },
-		});
+		} as never) as Array<{
+			id: string;
+			priceCentsOverride: number | null;
+			product: {
+				basePriceCents: number;
+				id: string;
+				title: string;
+				optionGroups: Array<{
+					id: string;
+					maxSelect: number;
+					minSelect: number;
+					priceRule: string;
+					selectionType: string;
+					name: string;
+					options: Array<{ available: boolean; id: string; maxPerItem: number | null; name: string; priceDeltaCents: number }>;
+				}>;
+			};
+		}>;
+		const exclusionStore = this.prisma as unknown as {
+			unitProductExcludedOption: { findMany: (args: { where: { unitProductId: { in: string[] } } }) => Promise<{ optionId: string; unitProductId: string }[]> };
+		};
+		const exclusions = exclusionStore.unitProductExcludedOption
+			? await exclusionStore.unitProductExcludedOption.findMany({
+					where: { unitProductId: { in: unitProducts.map(association => association.id) } },
+				})
+			: [];
+		const excludedByAssociation = new Map<string, Set<string>>();
+		for (const exclusion of exclusions) {
+			const ids = excludedByAssociation.get(exclusion.unitProductId) ?? new Set<string>();
+			ids.add(exclusion.optionId);
+			excludedByAssociation.set(exclusion.unitProductId, ids);
+		}
 
 		const resolvedItems = items.map(item => {
 			const assoc = unitProducts.find(up => up.id === item.unitProductId);
 			if (!assoc) throw new DomainError(OrderErrors.INVALID_ITEM);
-			const unitPrice = assoc.priceCentsOverride ?? assoc.product.basePriceCents;
+			const selections = item.options ?? [];
+			if (new Set(selections.map(selection => selection.optionId)).size !== selections.length) {
+				throw new DomainError(OrderErrors.INVALID_OPTIONS);
+			}
+			const excludedOptionIds = excludedByAssociation.get(assoc.id) ?? new Set<string>();
+			let optionDelta = 0;
+			const snapshots: { groupName: string; optionId: string; optionName: string; priceDeltaCents: number; quantity: number }[] = [];
+			const optionGroups = assoc.product.optionGroups ?? [];
+			for (const group of optionGroups) {
+				const selected = selections.map(selection => ({ ...selection, option: group.options.find(option => option.id === selection.optionId) })).filter(selection => selection.option);
+				const selectedQuantity = selected.reduce((sum, selection) => sum + selection.quantity, 0);
+				if (selectedQuantity < group.minSelect || selectedQuantity > group.maxSelect) throw new DomainError(OrderErrors.INVALID_OPTIONS);
+				if (group.selectionType === "single" && selectedQuantity > 1) throw new DomainError(OrderErrors.INVALID_OPTIONS);
+				for (const selection of selected) {
+					const option = selection.option!;
+					if (!option.available || excludedOptionIds.has(option.id) || (option.maxPerItem !== null && selection.quantity > option.maxPerItem)) throw new DomainError(OrderErrors.INVALID_OPTIONS);
+					snapshots.push({ groupName: group.name, optionId: option.id, optionName: option.name, priceDeltaCents: option.priceDeltaCents, quantity: selection.quantity });
+				}
+				const validIds = new Set(group.options.map(option => option.id));
+				if (selections.some(selection => !optionGroups.some(candidate => candidate.options.some(option => option.id === selection.optionId))) || selected.some(selection => !validIds.has(selection.optionId))) throw new DomainError(OrderErrors.INVALID_OPTIONS);
+				const deltas = selected.flatMap(selection => Array.from({ length: selection.quantity }, () => selection.option!.priceDeltaCents));
+				if (group.priceRule === "highest") optionDelta += deltas.length ? Math.max(...deltas) : 0;
+				else if (group.priceRule === "average") optionDelta += deltas.length ? Math.round(deltas.reduce((sum, delta) => sum + delta, 0) / deltas.length) : 0;
+				else optionDelta += deltas.reduce((sum, delta) => sum + delta, 0);
+			}
+			if (
+				selections.some(selection =>
+					!optionGroups.some(group => group.options.some(option => option.id === selection.optionId)),
+				)
+			) {
+				throw new DomainError(OrderErrors.INVALID_OPTIONS);
+			}
+			const unitPrice = (assoc.priceCentsOverride ?? assoc.product.basePriceCents) + optionDelta;
 			return {
 				note: item.note ?? null,
 				productId: assoc.product.id,
@@ -53,6 +116,7 @@ export class CreateOrder {
 				quantity: item.quantity,
 				total: unitPrice * item.quantity,
 				unitPrice,
+				options: snapshots,
 			};
 		});
 
@@ -145,16 +209,26 @@ export class CreateOrder {
 				});
 			}
 
-			await tx.orderItem.createMany({
-				data: resolvedItems.map(item => ({ ...item, orderId: created.id })),
-			});
+			for (const item of resolvedItems) {
+				const orderItem = await tx.orderItem.create({
+					data: { ...item, options: undefined, orderId: created.id } as never,
+				});
+				if (item.options.length > 0) {
+					await tx.orderItemOption.createMany({
+						data: item.options.map(option => ({ ...option, orderItemId: orderItem.id })),
+					});
+				}
+			}
 
 			return tx.order.findUniqueOrThrow({
-				include: { items: true },
+				include: { items: { include: { optionSnapshots: true } } },
 				where: { id: created.id },
 			});
 		});
 
-		return order;
+		return {
+			...order,
+			items: order.items.map(item => ({ ...item, options: item.optionSnapshots })),
+		};
 	}
 }

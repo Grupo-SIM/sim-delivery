@@ -31,6 +31,7 @@ function makeOrderPrisma(
 
 	const orders: object[] = [];
 	const orderItems: object[] = [];
+	const orderItemOptions: object[] = [];
 
 	const prisma = {
 		$transaction: async (fn: (tx: unknown) => Promise<unknown>) => {
@@ -51,11 +52,17 @@ function makeOrderPrisma(
 					findUniqueOrThrow: async () => ({ ...(orders[0] as object), items: orderItems }),
 				},
 				orderItem: {
+					create: async ({ data }: { data: object }) => {
+						const item = { id: `oi_${orderItems.length + 1}`, ...data };
+						orderItems.push(item);
+						return item;
+					},
 					createMany: async ({ data }: { data: object[] }) => {
 						data.forEach(item => orderItems.push({ id: `oi_${orderItems.length + 1}`, ...item }));
 						return { count: data.length };
 					},
 				},
+				orderItemOption: { createMany: async ({ data }: { data: object[] }) => { orderItemOptions.push(...data); return { count: data.length }; } },
 			};
 			return fn(tx);
 		},
@@ -77,7 +84,7 @@ function makeOrderPrisma(
 		},
 	} as unknown as PrismaInstance;
 
-	return { orderItems, orders, prisma };
+	return { orderItemOptions, orderItems, orders, prisma };
 }
 
 const baseBody = {

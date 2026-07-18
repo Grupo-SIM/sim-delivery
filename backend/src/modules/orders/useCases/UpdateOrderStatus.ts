@@ -53,7 +53,7 @@ export class UpdateOrderStatus {
 				cancelReason: status === "cancelado" ? cancelReason : null,
 				status,
 			},
-			include: { items: true },
+			include: { items: { include: { optionSnapshots: true } } },
 			where: { id: orderId },
 		});
 
@@ -67,6 +67,6 @@ export class UpdateOrderStatus {
 			await this.whatsApp.sendOrderStatus(order.customer.phone, status, orderId).catch(() => {});
 		}
 
-		return updated;
+		return { ...updated, items: updated.items.map(item => ({ ...item, options: item.optionSnapshots })) };
 	}
 }

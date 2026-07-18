@@ -12,7 +12,7 @@ export class GetCustomerOrder {
 
 		const order = await this.prisma.order.findFirst({
 			include: {
-				items: true,
+				items: { include: { optionSnapshots: true } },
 				statusEvents: { orderBy: { createdAt: "asc" } },
 				unit: { select: { name: true } },
 			},
@@ -25,7 +25,7 @@ export class GetCustomerOrder {
 			createdAt: order.createdAt,
 			deliveryMethod: order.deliveryMethod,
 			id: order.id,
-			items: order.items,
+			items: order.items.map(item => ({ ...item, options: item.optionSnapshots })),
 			status: order.status,
 			statusEvents:
 				order.statusEvents?.length > 0
