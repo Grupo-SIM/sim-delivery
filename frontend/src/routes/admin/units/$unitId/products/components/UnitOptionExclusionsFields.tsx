@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/Checkbox";
 import type { GetProductsByProductIdOptionGroups200 } from "@/lib/api";
 
@@ -12,6 +13,8 @@ export function UnitOptionExclusionsFields({
 	groups,
 	onChange,
 }: UnitOptionExclusionsFieldsProps) {
+	const { t } = useTranslation();
+
 	function toggle(optionId: string) {
 		onChange(
 			excludedOptionIds.includes(optionId)
@@ -19,9 +22,10 @@ export function UnitOptionExclusionsFields({
 				: [...excludedOptionIds, optionId],
 		);
 	}
+
 	return (
 		<section className="space-y-2">
-			<h3 className="font-medium text-sm">Opções indisponíveis nesta unidade</h3>
+			<h3 className="font-medium text-sm">{t("admin.unitProducts.options.unavailableTitle")}</h3>
 			{groups.map(group => (
 				<div className="space-y-1 rounded border border-border p-2" key={group.id}>
 					<p className="font-medium text-sm">{group.name}</p>

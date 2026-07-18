@@ -536,6 +536,9 @@
 					"tagsOverride": "Substituir etiquetas deste produto"
 				},
 				"loadError": "Não foi possível carregar o cardápio da unidade.",
+				"options": {
+					"unavailableTitle": "Opções indisponíveis nesta unidade"
+				},
 				"row": {
 					"edit": "Editar",
 					"none": "Nenhuma",
