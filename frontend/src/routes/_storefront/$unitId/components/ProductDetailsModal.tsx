@@ -3,30 +3,32 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
-import type { SelectedOption } from "@/stores";
+import type { CartItem, SelectedOption } from "@/stores";
 import { useCartStore } from "@/stores";
 import { money, type MenuItem } from "./types";
 
 interface ProductDetailsModalProps {
 	item: MenuItem | null;
+	editingItem?: CartItem | null;
 	onClose: () => void;
 	unitId: string;
 }
 
-export function ProductDetailsModal({ item, onClose, unitId }: ProductDetailsModalProps) {
+export function ProductDetailsModal({ editingItem = null, item, onClose, unitId }: ProductDetailsModalProps) {
 	const { t } = useTranslation();
 	const addItem = useCartStore(state => state.addItem);
+	const replaceItem = useCartStore(state => state.replaceItem);
 	const [note, setNote] = useState("");
 	const [localNote, setLocalNote] = useDebouncedInput(note, setNote);
 	const [quantity, setQuantity] = useState(1);
 	const [options, setOptions] = useState<SelectedOption[]>([]);
 
 	useEffect(() => {
-		setNote("");
-		setLocalNote("");
-		setOptions([]);
-		setQuantity(1);
-	}, [item?.id, setLocalNote]);
+		setNote(editingItem?.note ?? "");
+		setLocalNote(editingItem?.note ?? "");
+		setOptions(editingItem?.options ?? []);
+		setQuantity(editingItem?.quantity ?? 1);
+	}, [editingItem, item?.id, setLocalNote]);
 
 	if (!item) return null;
 	const selectedItem = item;
@@ -50,7 +52,9 @@ export function ProductDetailsModal({ item, onClose, unitId }: ProductDetailsMod
 	}
 
 	function add() {
-		addItem(unitId, { id: selectedItem.id, imageUrl: selectedItem.imageUrl, options, priceCents: Number(selectedItem.priceCents) + delta, productId: selectedItem.productId, title: selectedItem.title }, quantity, note);
+		const input = { id: selectedItem.id, imageUrl: selectedItem.imageUrl, options, priceCents: Number(selectedItem.priceCents) + delta, productId: selectedItem.productId, title: selectedItem.title };
+		if (editingItem) replaceItem(unitId, editingItem.lineKey, input, quantity, note);
+		else addItem(unitId, input, quantity, note);
 		onClose();
 	}
 

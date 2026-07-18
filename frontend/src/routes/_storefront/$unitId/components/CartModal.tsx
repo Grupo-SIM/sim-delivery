@@ -1,4 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
@@ -6,6 +7,7 @@ import { Modal } from "@/components/ui/Modal";
 import { cartTotalCents, showToast, useCartStore } from "@/stores";
 import { CartItemRow } from "./CartItemRow";
 import { CartSuggestions } from "./CartSuggestions";
+import { ProductDetailsModal } from "./ProductDetailsModal";
 import { type MenuSection, money } from "./types";
 
 interface CartModalProps {
@@ -31,6 +33,11 @@ export function CartModal({
 	const navigate = useNavigate();
 	const items = useCartStore(state => state.items);
 	const clear = useCartStore(state => state.clear);
+	const [editingLineKey, setEditingLineKey] = useState<string | null>(null);
+	const editingItem = items.find(item => item.lineKey === editingLineKey) ?? null;
+	const menuItem = editingItem
+		? sections.flatMap(section => section.items).find(item => item.id === editingItem.id) ?? null
+		: null;
 
 	function handleClear() {
 		clear();
@@ -42,6 +49,7 @@ export function CartModal({
 	const belowMin = minOrderCents > 0 && total < minOrderCents;
 
 	return (
+		<>
 		<Modal isOpen={open} onClose={onClose} title={t("store.cart.title")}>
 			{items.length === 0 ? (
 				<p className="py-6 text-center text-muted-foreground text-sm">{t("store.cart.empty")}</p>
@@ -49,7 +57,7 @@ export function CartModal({
 				<div className="space-y-4">
 					<div>
 						{items.map(item => (
-							<CartItemRow item={item} key={item.lineKey} />
+							<CartItemRow item={item} key={item.lineKey} onEdit={() => setEditingLineKey(item.lineKey)} />
 						))}
 					</div>
 
@@ -99,5 +107,7 @@ export function CartModal({
 				</div>
 			)}
 		</Modal>
+		<ProductDetailsModal editingItem={editingItem} item={menuItem} onClose={() => setEditingLineKey(null)} unitId={unitId} />
+		</>
 	);
 }
