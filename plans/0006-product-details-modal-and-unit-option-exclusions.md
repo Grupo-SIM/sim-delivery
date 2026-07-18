@@ -126,9 +126,11 @@ verdade para validação, preço e snapshot das escolhas.
   Fazer verificação manual responsiva e por teclado dos cards/modal, incluindo produto sem imagem,
   sem opções, descrição longa e muitos grupos. **Concluído:** testes cobrem identidade, merge e
   edição com colisão; type-check passou.
-- [ ] 14. Rodar gates por pacote afetado: export/generate, testes unitários de SQL/backend/frontend,
+- [x] 14. Rodar gates por pacote afetado: export/generate, testes unitários de SQL/backend/frontend,
   `check-types` e builds de backend/frontend. Regerar `routeTree.gen.ts` somente se rota mudar.
-  Corrigir falhas antes de cada commit; manter commits atômicos e árvore limpa.
+  Corrigir falhas antes de cada commit; manter commits atômicos e árvore limpa. **Concluído:**
+  check-types de sql/backend/frontend, testes alvo backend/frontend e build frontend passaram;
+  árvore limpa.
 
 ## Verification Criteria
 
