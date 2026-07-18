@@ -2,6 +2,7 @@ export { CartBar } from "./CartBar";
 export { DeliveryMethodSelector } from "./DeliveryMethodSelector";
 export { InfoPill } from "./InfoPill";
 export { MenuBrowser } from "./MenuBrowser";
+export { ProductDetailsModal } from "./ProductDetailsModal";
 export { PromotionalCarousel } from "./PromotionalCarousel";
 export { StoreHoursModal } from "./StoreHoursModal";
 export { StoreToolbar } from "./StoreToolbar";

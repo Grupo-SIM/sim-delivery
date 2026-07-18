@@ -1,11 +1,12 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CategoryNav } from "./CategoryNav";
 import { CategorySummary } from "./CategorySummary";
 import { MenuSectionBlock } from "./MenuSectionBlock";
+import { ProductDetailsModal } from "./ProductDetailsModal";
 import { TopPicksCarousel } from "./TopPicksCarousel";
-import type { MenuSection } from "./types";
+import type { MenuItem, MenuSection } from "./types";
 
 interface MenuBrowserProps {
 	header: ReactNode;
@@ -17,6 +18,7 @@ interface MenuBrowserProps {
 
 export function MenuBrowser({ header, search, sections, unitId, unitSlug }: MenuBrowserProps) {
 	const { t } = useTranslation();
+	const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
 
 	const query = search.trim().toLowerCase();
 	const filtered = query
@@ -32,11 +34,12 @@ export function MenuBrowser({ header, search, sections, unitId, unitSlug }: Menu
 	const hasCategories = filtered.some(section => section.categoryId !== null);
 
 	return (
+		<>
 		<div className={hasCategories ? "lg:grid lg:grid-cols-[12rem_1fr] lg:gap-6" : undefined}>
 			{hasCategories && <CategorySummary sections={filtered} />}
 			<div className="min-w-0 space-y-6">
 				{header}
-				{!query && <TopPicksCarousel sections={sections} unitId={unitId} unitSlug={unitSlug} />}
+				{!query && <TopPicksCarousel onSelect={setSelectedItem} sections={sections} />}
 
 				{filtered.length === 0 ? (
 					<EmptyState title={query ? t("store.menu.noResults") : t("store.menu.empty")} />
@@ -49,13 +52,14 @@ export function MenuBrowser({ header, search, sections, unitId, unitSlug }: Menu
 							<MenuSectionBlock
 								key={section.categoryId ?? "loose"}
 								section={section}
-								unitId={unitId}
-								unitSlug={unitSlug}
+								onSelect={setSelectedItem}
 							/>
 						))}
 					</>
 				)}
 			</div>
 		</div>
+		<ProductDetailsModal item={selectedItem} onClose={() => setSelectedItem(null)} unitId={unitId} />
+		</>
 	);
 }
