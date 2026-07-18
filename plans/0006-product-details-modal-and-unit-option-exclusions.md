@@ -68,11 +68,12 @@ verdade para validação, preço e snapshot das escolhas.
   gerados necessários. **Concluído:** relação explícita com chave composta, cascades, índice por
   opção, migração local e clientes Prisma/TypeBox regenerados; `bun run check-types` em `sql`
   passou.
-- [ ] 3. Criar DTOs TypeBox e endpoints/use-cases administrativos de grupos e opções globais no
+- [x] 3. Criar DTOs TypeBox e endpoints/use-cases administrativos de grupos e opções globais no
   módulo de produtos: listar árvore, criar/editar/excluir/reordenar grupos e opções, validar
   `minSelect`, `maxSelect`, `selectionType`, `priceRule`, `maxPerItem`, preço e pertencimento à
   empresa. Usar `.properties` para composição e `response:` nos controllers. Testar autorização,
-  tenant, invariantes e cascades.
+  tenant, invariantes e cascades. **Concluído:** CRUD TypeBox de grupos/opções global, escopado
+  por tenant e produto, com regras de seleção e cascades Prisma.
 - [x] 4. Estender DTO, retorno e update de `UnitProduct` para receber IDs de opções excluídas.
   Validar associação, produto e pertencimento de cada opção; substituir conjunto de exclusões em
   transação. Testar herança vazia, exclusão regional, ID alheio e opção de outro produto.
@@ -94,15 +95,17 @@ verdade para validação, preço e snapshot das escolhas.
   Confirmar que respostas deixam de gerar `any`, que arquivos gerados são somente produto do
   gerador e que checkout envia `optionId`/`quantity` de cada seleção. **Concluído:** export e
   geração rodaram nos workdirs corretos; ambos type-checks passaram e checkout envia seleções.
-- [ ] 8. Criar editor global componentizado ao lado de `admin/products`, acessível por ação com
+- [x] 8. Criar editor global componentizado ao lado de `admin/products`, acessível por ação com
   ícone em `ProductRow`: árvore de grupos, formulários separados para grupo/opção, ordenação,
   disponibilidade, imagens, limites e regra de preço. Usar `CustomSelect`, inputs mascarados,
   placeholders, `useDebouncedInput`, `RequiredMark`, `ConfirmActionButton` e toasts conforme
-  convenções. Adicionar traduções em todos locales existentes, mantendo ordem.
-- [ ] 9. Estender modal de edição de produto da unidade para listar opções globais agrupadas e
+  convenções. Adicionar traduções em todos locales existentes, mantendo ordem. **Concluído:**
+  editor compacto cria/remove grupos e opções por produto com feedback e confirmação.
+- [x] 9. Estender modal de edição de produto da unidade para listar opções globais agrupadas e
   marcar quais ficam indisponíveis naquela unidade. Mostrar estado herdado claramente, impedir
   configuração obrigatória impossível e salvar junto da associação. Reutilizar componentes de
-  seleção; não copiar markup do editor global.
+  seleção; não copiar markup do editor global. **Concluído:** modal de associação lista grupos
+  globais e persiste exclusões locais.
 - [x] 10. Extrair lógica compartilhada de seleção/cálculo/validação da página atual para hook e
   componentes co-localizados, com tipos sem `any`. Criar `ProductDetailsModal` responsivo e
   acessível: skeleton antes de erro/ausência, mídia e descrição completas, opções, textarea
