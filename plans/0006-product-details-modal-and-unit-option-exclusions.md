@@ -73,9 +73,11 @@ verdade para validação, preço e snapshot das escolhas.
   `minSelect`, `maxSelect`, `selectionType`, `priceRule`, `maxPerItem`, preço e pertencimento à
   empresa. Usar `.properties` para composição e `response:` nos controllers. Testar autorização,
   tenant, invariantes e cascades.
-- [ ] 4. Estender DTO, retorno e update de `UnitProduct` para receber IDs de opções excluídas.
+- [x] 4. Estender DTO, retorno e update de `UnitProduct` para receber IDs de opções excluídas.
   Validar associação, produto e pertencimento de cada opção; substituir conjunto de exclusões em
   transação. Testar herança vazia, exclusão regional, ID alheio e opção de outro produto.
+  **Concluído:** contrato aceita e retorna exclusões, valida vínculo produto/tenant e substitui
+  conjunto salvo; `check-types` e teste de use-case passaram.
 - [ ] 5. Fazer `ListPublicMenu` carregar exclusões e produzir catálogo efetivo, omitindo opções
   globais indisponíveis ou excluídas pela unidade. Recalcular `fromPriceCents` com opções efetivas
   e não expor produto cuja configuração obrigatória ficou impossível. Ampliar testes do menu com

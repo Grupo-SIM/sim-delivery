@@ -6,6 +6,7 @@ import { UnitProductPlain } from "sql/typebox";
 export const UnitProductReturn = t.Object({
 	...UnitProductPlain.properties,
 	categoryIds: t.Array(t.String()),
+	excludedOptionIds: t.Array(t.String()),
 	tagIds: t.Array(t.String()),
 });
 export type UnitProductReturn = typeof UnitProductReturn.static;

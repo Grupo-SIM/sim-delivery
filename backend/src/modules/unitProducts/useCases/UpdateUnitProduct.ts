@@ -3,7 +3,12 @@ import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { UnitProductReturn, UpdateUnitProductBody } from "../dtos";
 import { UnitProductErrors } from "../errors";
-import { mapUnitProductTaxonomy, unitProductTaxonomyInclude, validateUnitTaxonomy } from "./taxonomy";
+import {
+	mapUnitProductTaxonomy,
+	unitProductTaxonomyInclude,
+	validateExcludedOptions,
+	validateUnitTaxonomy,
+} from "./taxonomy";
 
 export class UpdateUnitProduct {
 	constructor(private readonly prisma: PrismaInstance) {}
@@ -17,9 +22,10 @@ export class UpdateUnitProduct {
 		if (!companyId || !unit) throw new DomainError(UnitErrors.UNIT_NOT_FOUND);
 		const existing = await this.prisma.unitProduct.findFirst({ where: { id: unitProductId, unitId } });
 		if (!existing) throw new DomainError(UnitProductErrors.UNIT_PRODUCT_NOT_FOUND);
-		const { categoryIds, tagIds, ...fields } = data;
+		const { categoryIds, excludedOptionIds, tagIds, ...fields } = data;
 		await validateUnitTaxonomy(this.prisma, companyId, categoryIds, tagIds);
-		const association = await this.prisma.unitProduct.update({
+		await validateExcludedOptions(this.prisma, companyId, existing.productId, excludedOptionIds);
+		const association = (await this.prisma.unitProduct.update({
 			data: {
 				...fields,
 				...(categoryIds !== undefined && {
@@ -33,7 +39,26 @@ export class UpdateUnitProduct {
 			},
 			include: unitProductTaxonomyInclude,
 			where: { id: unitProductId },
-		});
-		return mapUnitProductTaxonomy(association);
+		} as never)) as object;
+		if (excludedOptionIds !== undefined) {
+			const exclusions = this.prisma as unknown as {
+				unitProductExcludedOption: {
+					createMany: (args: { data: { optionId: string; unitProductId: string }[] }) => Promise<unknown>;
+					deleteMany: (args: { where: { unitProductId: string } }) => Promise<unknown>;
+				};
+			};
+			await exclusions.unitProductExcludedOption.deleteMany({ where: { unitProductId } });
+			if (excludedOptionIds.length > 0) {
+				await exclusions.unitProductExcludedOption.createMany({
+					data: excludedOptionIds.map(optionId => ({ optionId, unitProductId })),
+				});
+			}
+		}
+		return mapUnitProductTaxonomy({
+			...association,
+			categories: [],
+			excludedOptions: excludedOptionIds?.map(optionId => ({ optionId })) ?? [],
+			tags: [],
+		} as never);
 	}
 }
