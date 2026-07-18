@@ -43,6 +43,7 @@ interface Assoc {
 		title: string;
 	};
 	unitId: string;
+	excludedOptionIds?: string[];
 }
 
 function prismaWith(unit: { id: string; slug: string } | null, associations: Assoc[] = []) {
@@ -60,6 +61,12 @@ function prismaWith(unit: { id: string; slug: string } | null, associations: Ass
 		unitProduct: {
 			findMany: async ({ where }: { where: { available: boolean; unitId: string } }) =>
 				associations.filter(a => a.unitId === where.unitId && a.available === where.available),
+		},
+		unitProductExcludedOption: {
+			findMany: async ({ where }: { where: { unitProductId: { in: string[] } } }) =>
+				associations.flatMap(association =>
+					(association.excludedOptionIds ?? []).map(optionId => ({ optionId, unitProductId: association.id })),
+				).filter(exclusion => where.unitProductId.in.includes(exclusion.unitProductId)),
 		},
 	} as unknown as PrismaInstance;
 }
@@ -227,5 +234,30 @@ describe("ListPublicMenu", () => {
 		expect(items.find(i => i.id === "up2")).toMatchObject({ featuredRank: 1, fromPriceCents: 1000 });
 		// optionGroups are mapped correctly
 		expect(items.find(i => i.id === "up1")?.optionGroups).toHaveLength(1);
+	});
+
+	it("hides excluded options and omits products with impossible required groups", async () => {
+		const group = (id: string, minSelect: number, options: { id: string; priceDeltaCents: number }[]) => ({
+			id,
+			maxSelect: 1,
+			minSelect,
+			name: id,
+			options: options.map(option => ({
+				description: "", imageUrl: null, maxPerItem: 1, name: option.id, popularity: 0, ...option,
+			})),
+			priceRule: "sum", selectionType: "single", sortOrder: 0,
+		});
+		const prisma = prismaWith({ id: "u1", slug: "ipês" }, [
+			{ available: true, cashbackPercentOverride: null, categories: [], categoriesOverridden: true,
+				excludedOptionIds: ["hidden"], featuredRank: null, id: "up-visible", priceCentsOverride: null,
+				product: product("visible", { optionGroups: [group("g", 1, [{ id: "shown", priceDeltaCents: 100 }, { id: "hidden", priceDeltaCents: 200 }])] }), tags: [], tagsOverridden: true, unitId: "u1" },
+			{ available: true, cashbackPercentOverride: null, categories: [], categoriesOverridden: true,
+				excludedOptionIds: ["only"], featuredRank: null, id: "up-hidden", priceCentsOverride: null,
+				product: product("hidden", { optionGroups: [group("g2", 1, [{ id: "only", priceDeltaCents: 100 }])] }), tags: [], tagsOverridden: true, unitId: "u1" },
+		]);
+		const items = (await new ListPublicMenu(prisma).execute("demo", "ipês")).flatMap(section => section.items);
+		expect(items.map(item => item.id)).toEqual(["up-visible"]);
+		expect(items[0]?.optionGroups[0]?.options.map(option => option.id)).toEqual(["shown"]);
+		expect(items[0]?.fromPriceCents).toBe(1100);
 	});
 });

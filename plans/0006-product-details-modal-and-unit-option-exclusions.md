@@ -78,10 +78,11 @@ verdade para validação, preço e snapshot das escolhas.
   transação. Testar herança vazia, exclusão regional, ID alheio e opção de outro produto.
   **Concluído:** contrato aceita e retorna exclusões, valida vínculo produto/tenant e substitui
   conjunto salvo; `check-types` e teste de use-case passaram.
-- [ ] 5. Fazer `ListPublicMenu` carregar exclusões e produzir catálogo efetivo, omitindo opções
+- [x] 5. Fazer `ListPublicMenu` carregar exclusões e produzir catálogo efetivo, omitindo opções
   globais indisponíveis ou excluídas pela unidade. Recalcular `fromPriceCents` com opções efetivas
   e não expor produto cuja configuração obrigatória ficou impossível. Ampliar testes do menu com
-  duas unidades que compartilham produto, mas veem sabores diferentes.
+  duas unidades que compartilham produto, mas veem sabores diferentes. **Concluído:** catálogo
+  filtra exclusões, recalcula preço mínimo e omite grupos obrigatórios inviáveis; testes passaram.
 - [ ] 6. Completar contrato do pedido: adicionar seleções por item ao DTO, validar no
   `CreateOrder` grupos obrigatórios/opcionais, min/max, tipo, `maxPerItem`, disponibilidade global,
   exclusão da unidade e IDs duplicados; recalcular preço efetivo com `priceRule`. Criar itens e
@@ -100,12 +101,12 @@ verdade para validação, preço e snapshot das escolhas.
   marcar quais ficam indisponíveis naquela unidade. Mostrar estado herdado claramente, impedir
   configuração obrigatória impossível e salvar junto da associação. Reutilizar componentes de
   seleção; não copiar markup do editor global.
-- [ ] 10. Extrair lógica compartilhada de seleção/cálculo/validação da página atual para hook e
+- [x] 10. Extrair lógica compartilhada de seleção/cálculo/validação da página atual para hook e
   componentes co-localizados, com tipos sem `any`. Criar `ProductDetailsModal` responsivo e
   acessível: skeleton antes de erro/ausência, mídia e descrição completas, opções, textarea
   debounced, stepper de quantidade e CTA "Adicionar ao carrinho · R$ total". Resetar estado ao
   fechar/trocar item e preservar estado ao editar linha existente.
-- [ ] 11. Simplificar `MenuItemCard` para card inteiro clicável; remover botão Adicionar, stepper e
+- [x] 11. Simplificar `MenuItemCard` para card inteiro clicável; remover botão Adicionar, stepper e
   mutação direta. Elevar item selecionado/modal ao nível que possui dados do menu para renderizar
   um único modal por browser, evitando um modal por card. Aplicar mesmo comportamento ao carrossel
   de destaques. Garantir foco, teclado, hover e ausência de controles aninhados.

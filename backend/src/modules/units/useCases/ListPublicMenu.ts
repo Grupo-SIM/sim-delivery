@@ -47,6 +47,21 @@ export class ListPublicMenu {
 			orderBy: { product: { title: "asc" } },
 			where: { available: true, unitId: unit.id },
 		});
+		const exclusions = this.prisma as unknown as {
+			unitProductExcludedOption: {
+				findMany: (args: { where: { unitProductId: { in: string[] } } }) => Promise<
+					{ optionId: string; unitProductId: string }[]
+				>;
+			};
+		};
+		const excludedByAssociation = new Map<string, Set<string>>();
+		for (const exclusion of await exclusions.unitProductExcludedOption.findMany({
+			where: { unitProductId: { in: associations.map(association => association.id) } },
+		})) {
+			const ids = excludedByAssociation.get(exclusion.unitProductId) ?? new Set<string>();
+			ids.add(exclusion.optionId);
+			excludedByAssociation.set(exclusion.unitProductId, ids);
+		}
 
 		// Preserve category order (position asc) with the loose group last.
 		const sections = new Map<string, PublicMenuSectionReturn>();
@@ -54,6 +69,20 @@ export class ListPublicMenu {
 
 		for (const association of associations) {
 			const { product } = association;
+			const excludedOptionIds = excludedByAssociation.get(association.id) ?? new Set<string>();
+			const optionGroups = product.optionGroups.map(group => ({
+				...group,
+				options: group.options.filter(option => !excludedOptionIds.has(option.id)),
+			}));
+			const isOrderable = optionGroups.every(group => {
+				if (group.minSelect < 1) return true;
+				const capacity = group.options.reduce(
+					(sum, option) => sum + (option.maxPerItem ?? group.maxSelect),
+					0,
+				);
+				return capacity >= group.minSelect;
+			});
+			if (!isOrderable) continue;
 			const categories = association.categoriesOverridden
 				? association.categories.map(item => item.category)
 				: product.categories.map(item => item.category);
@@ -78,7 +107,7 @@ export class ListPublicMenu {
 				// "A partir de": base + sum of cheapest available option per required group.
 				const fromPriceCents =
 					basePriceCents +
-					product.optionGroups
+					optionGroups
 						.filter(g => g.minSelect >= 1 && g.options.length > 0)
 						.reduce((sum, g) => {
 							const cheapest = Math.min(...g.options.map(o => o.priceDeltaCents));
@@ -92,7 +121,7 @@ export class ListPublicMenu {
 					fromPriceCents,
 					id: association.id,
 					imageUrl: product.imageUrl,
-					optionGroups: product.optionGroups.map(g => ({
+					optionGroups: optionGroups.map(g => ({
 						id: g.id,
 						maxSelect: g.maxSelect,
 						minSelect: g.minSelect,
