@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { LuPencil, LuStore, LuTags, LuTrash2 } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { getProductsQueryKey, useDeleteProductsByProductId } from "@/lib/api";
 import { showAlert, showConfirm } from "@/stores";
 import { ProductEditModal } from "./ProductEditModal";
@@ -92,22 +93,51 @@ export function ProductRow({ product }: ProductRowProps) {
 				</td>
 				<td className="px-4 py-3 text-right">
 					<div className="flex justify-end gap-2">
-						<Button onClick={() => setManagingUnits(true)} size="sm" type="button" variant="outline">
-							<LuStore className="h-4 w-4" />
-							{t("admin.products.units.action")}
-						</Button>
-						<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
-							<LuPencil className="h-4 w-4" />
-							{t("admin.products.edit.action")}
-						</Button>
-						<Button onClick={() => setManagingTaxonomy(true)} size="sm" type="button" variant="outline">
-							<LuTags className="h-4 w-4" />
-							{t("admin.products.taxonomy.action")}
-						</Button>
-						<Button disabled={remove.isPending} onClick={del} size="sm" type="button" variant="outline">
-							<LuTrash2 className="h-4 w-4" />
-							{t("admin.products.row.delete")}
-						</Button>
+						<Tooltip content={t("admin.products.units.action")}>
+							<Button
+								aria-label={t("admin.products.units.action")}
+								onClick={() => setManagingUnits(true)}
+								size="icon"
+								type="button"
+								variant="outline"
+							>
+								<LuStore className="h-4 w-4" />
+							</Button>
+						</Tooltip>
+						<Tooltip content={t("admin.products.edit.action")}>
+							<Button
+								aria-label={t("admin.products.edit.action")}
+								onClick={() => setEditing(true)}
+								size="icon"
+								type="button"
+								variant="outline"
+							>
+								<LuPencil className="h-4 w-4" />
+							</Button>
+						</Tooltip>
+						<Tooltip content={t("admin.products.taxonomy.action")}>
+							<Button
+								aria-label={t("admin.products.taxonomy.action")}
+								onClick={() => setManagingTaxonomy(true)}
+								size="icon"
+								type="button"
+								variant="outline"
+							>
+								<LuTags className="h-4 w-4" />
+							</Button>
+						</Tooltip>
+						<Tooltip content={t("admin.products.row.delete")}>
+							<Button
+								aria-label={t("admin.products.row.delete")}
+								disabled={remove.isPending}
+								onClick={del}
+								size="icon"
+								type="button"
+								variant="outline"
+							>
+								<LuTrash2 className="h-4 w-4" />
+							</Button>
+						</Tooltip>
 					</div>
 				</td>
 			</tr>
