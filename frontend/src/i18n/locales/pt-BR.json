@@ -17,7 +17,6 @@
 					"support": "Superfícies de apoio",
 					"surfaces": "Superfícies e conteúdo"
 				},
-				"colorHint": "Cor hexadecimal, ex: #FF5733",
 				"colorReset": "Cor restaurada para o padrão.",
 				"colors": {
 					"accent": "Destaque",
@@ -47,13 +46,9 @@
 				"copyFromTheme": "Copiar do {{mode}}",
 				"darkTheme": "Tema escuro",
 				"fontDisplay": "Fonte de destaque",
-				"fontDisplayPlaceholder": "Ex: Luckiest Guy",
 				"fontDisplayPreview": "Prévia da fonte de destaque",
 				"fontFamily": "Fonte do texto",
-				"fontFamilyPlaceholder": "Ex: Outfit",
 				"fontFamilyPreview": "Prévia da fonte do texto",
-				"fontFileUrl": "URL do arquivo da fonte",
-				"fontFileUrlPlaceholder": "https://example.com/fonte.woff2",
 				"fontUpload": "Enviar arquivo da fonte",
 				"footerText": "Texto do rodapé",
 				"footerTextPlaceholder": "© 2025 Meu Restaurante",
@@ -64,7 +59,6 @@
 				"logoPreview": "Prévia do logotipo",
 				"logoUpload": "Enviar logotipo",
 				"logoUrl": "URL do logotipo",
-				"logoUrlPlaceholder": "https://example.com/logo.png",
 				"metaPixelId": "ID do Meta Pixel",
 				"resetAllColors": "Restaurar cores",
 				"resetColor": "Restaurar {{color}} para a cor padrão",
@@ -90,8 +84,7 @@
 					"name": "Nome",
 					"namePlaceholder": "Ex: Bebidas",
 					"submit": "Adicionar categoria",
-					"submitting": "Adicionando...",
-					"title": "Nova categoria"
+					"submitting": "Adicionando..."
 				},
 				"edit": {
 					"action": "Editar",
@@ -133,9 +126,7 @@
 					"slugPlaceholder": "ex: bliss-cookie",
 					"slugTaken": "Este slug já está em uso.",
 					"submit": "Criar empresa",
-					"submitting": "Criando...",
-					"success": "Empresa criada.",
-					"title": "Nova empresa"
+					"submitting": "Criando..."
 				},
 				"edit": {
 					"action": "Editar",
@@ -175,17 +166,13 @@
 					"assigned": "Entregador atribuído",
 					"cancel": "Cancelar",
 					"courier": "Entregador",
-					"courierPlaceholder": "Selecione um entregador",
 					"error": "Não foi possível atribuir a entrega.",
 					"needsCourier": "Precisa de entregador",
 					"noAvailableCouriers": "Nenhum entregador disponível no momento.",
-					"noCouriers": "Nenhum entregador cadastrado.",
 					"save": "Atribuir",
 					"saving": "Atribuindo...",
 					"title": "Atribuir entrega"
 				},
-				"empty": "Nenhuma entrega ainda.",
-				"loadError": "Não foi possível carregar as entregas.",
 				"status": {
 					"a_caminho": "A caminho",
 					"aceita": "Aceita",
@@ -193,9 +180,7 @@
 					"entregue": "Entregue",
 					"falhou": "Falhou",
 					"recusada": "Recusada"
-				},
-				"subtitle": "Atribuições de entrega para esta empresa.",
-				"title": "Entregas"
+				}
 			},
 			"kitchen": {
 				"columns": {
@@ -230,11 +215,8 @@
 				"empty": "Nenhum pedido ainda.",
 				"filter": {
 					"all": "Todos",
-					"date": "Data",
-					"from": "De",
 					"search": "Buscar",
 					"searchPlaceholder": "Buscar por nome, telefone ou pedido",
-					"to": "Até",
 					"unit": "Unidade",
 					"unitAll": "Todas as unidades"
 				},
@@ -291,7 +273,6 @@
 					"descriptionPlaceholder": "Ex: Fresquinho do forno, servido quentinho.",
 					"error": "Não foi possível criar o produto.",
 					"image": "Imagem",
-					"imagePlaceholder": "Cole o link ou escolha um arquivo",
 					"imageUpload": "Escolher imagem",
 					"price": "Preço base",
 					"submit": "Adicionar produto",
@@ -318,7 +299,6 @@
 					"none": "Nenhuma",
 					"unitDefault": "Padrão da unidade"
 				},
-				"subtitle": "Catálogo base desta empresa.",
 				"tabs": {
 					"categories": "Categorias",
 					"products": "Produtos",
@@ -395,7 +375,6 @@
 						"quantity": "Qtd vendida",
 						"revenue": "Receita"
 					},
-					"empty": "Nenhum dado de vendas ainda.",
 					"title": "Mais vendidos"
 				},
 				"empty": "Nenhum pedido concluído neste período.",
@@ -444,8 +423,7 @@
 					"password": "Senha temporária",
 					"role": "Cargo",
 					"submit": "Convidar funcionário",
-					"submitting": "Convidando...",
-					"title": "Convidar funcionário"
+					"submitting": "Convidando..."
 				},
 				"loadError": "Não foi possível carregar a equipe.",
 				"roles": {
@@ -503,7 +481,6 @@
 				"columns": {
 					"availability": "Disponibilidade",
 					"categories": "Categorias",
-					"category": "Categoria",
 					"price": "Preço",
 					"product": "Produto",
 					"tags": "Etiquetas"
@@ -520,10 +497,8 @@
 					"available": "Disponível",
 					"categories": "Categorias",
 					"categoriesOverride": "Substituir categorias deste produto",
-					"category": "Categoria",
 					"error": "Não foi possível associar o produto.",
 					"inherited": "Herdado do produto",
-					"loose": "Sem categoria",
 					"priceOverride": "Substituir preço",
 					"product": "Produto",
 					"productPlaceholder": "Selecione um produto",
@@ -582,11 +557,9 @@
 					"title": "Banner da unidade",
 					"upload": "Enviar banner",
 					"uploadError": "Não foi possível enviar o banner.",
-					"url": "URL do banner",
-					"urlPlaceholder": "https://exemplo.com/banner.png"
+					"url": "URL do banner"
 				},
 				"columns": {
-					"actions": "",
 					"city": "Cidade",
 					"name": "Nome",
 					"phone": "Telefone",
@@ -623,8 +596,7 @@
 					"sectionAddress": "Endereço",
 					"sectionBasic": "Dados básicos",
 					"submit": "Adicionar unidade",
-					"submitting": "Adicionando...",
-					"title": "Nova unidade"
+					"submitting": "Adicionando..."
 				},
 				"deliveryZones": {
 					"action": "Entrega",
@@ -671,8 +643,7 @@
 					"title": "Imagem da unidade",
 					"upload": "Enviar imagem",
 					"uploadError": "Não foi possível enviar a imagem da unidade.",
-					"url": "URL da imagem",
-					"urlPlaceholder": "https://exemplo.com/unidade.png"
+					"url": "URL da imagem"
 				},
 				"loadError": "Não foi possível carregar as unidades.",
 				"menu": {
@@ -700,7 +671,6 @@
 			"name": "Template App"
 		},
 		"auth": {
-			"defaultUserName": "Usuário demo",
 			"errors": {
 				"invalidCredentials": "E-mail ou senha inválidos."
 			},
@@ -727,37 +697,11 @@
 			"history": "Histórico de entregas",
 			"loadError": "Não foi possível carregar suas entregas.",
 			"order": {
-				"customer": "Cliente",
 				"items": "{{count}} item",
-				"items_other": "{{count}} itens",
-				"total": "Total",
-				"unit": "Unidade"
+				"items_other": "{{count}} itens"
 			},
 			"subtitle": "Suas entregas ativas.",
 			"title": "Entregas"
-		},
-		"home": {
-			"auth": {
-				"description": "Baseado em um store Zustand persistido.",
-				"emailLabel": "E-mail",
-				"passwordLabel": "Senha",
-				"signedInAs": "Conectado como {{name}}",
-				"signIn": "Entrar localmente",
-				"signingIn": "Entrando...",
-				"signOut": "Sair",
-				"title": "Exemplo de autenticação"
-			},
-			"hero": {
-				"badge": "Template de frontend",
-				"description": "Este starter mantém o frontend intencionalmente pequeno. Aplicações reais podem chamar hooks gerados diretamente das rotas ou componentes focados, sem um wrapper de API escrito à mão.",
-				"title": "Rota simples, estado de autenticação local e espaço para hooks de API gerados."
-			},
-			"pattern": {
-				"description": "Mantenha os exemplos do template simples, diretos e fáceis de substituir.",
-				"firstParagraph": "Coloque o estado do nível de aplicação em <storePath>src/stores</storePath>, a UI de rotas em <routesPath>src/routes</routesPath> e a configuração de providers em <providersPath>src/providers.tsx</providersPath>.",
-				"secondParagraph": "Quando uma API real existir, mantenha <apiPath>src/lib/api</apiPath> para hooks de backend gerados e chame esses hooks da rota ou componente que é dono da tela.",
-				"title": "Use este padrão"
-			}
 		},
 		"store": {
 			"account": {
@@ -791,9 +735,6 @@
 				"signIn": "Entrar",
 				"signOut": "Sair"
 			},
-			"branding": {
-				"poweredBy": "Desenvolvido por"
-			},
 			"cart": {
 				"add": "Adicionar",
 				"checkout": "Finalizar pedido",
@@ -826,7 +767,6 @@
 					"number": "Número",
 					"reference": "Ponto de referência",
 					"referencePlaceholder": "Ex: próximo à padaria",
-					"saved": "Endereço salvo. O pagamento vem a seguir.",
 					"searching": "Buscando endereço…",
 					"state": "Estado",
 					"street": "Rua",
@@ -887,7 +827,6 @@
 					"place": "Fazer pedido",
 					"placing": "Realizando pedido…",
 					"subtitle": "Revise seu pedido antes de confirmar.",
-					"success": "Pedido realizado! Já vamos começar.",
 					"title": "Resumo do pedido",
 					"total": "Total"
 				},
@@ -913,7 +852,6 @@
 						"copy": "Copiar código PIX",
 						"error": "Não foi possível gerar o PIX. Tente novamente.",
 						"failedRetry": "Não foi possível gerar o PIX. Verifique seu CPF e tente novamente.",
-						"generate": "Gerar QR Code",
 						"generating": "Gerando QR Code…",
 						"qrAlt": "QR Code PIX",
 						"retry": "Tentar novamente",
@@ -930,7 +868,6 @@
 					"name": "Nome completo",
 					"namePlaceholder": "Ex: Maria Silva",
 					"submit": "Continuar",
-					"submitting": "Salvando…",
 					"subtitle": "Informe seu nome para personalizarmos seu pedido.",
 					"title": "Seu perfil"
 				},
