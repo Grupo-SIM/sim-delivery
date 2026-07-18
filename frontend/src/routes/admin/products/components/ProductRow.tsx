@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuPencil, LuStore, LuTags, LuTrash2 } from "react-icons/lu";
+import { LuListPlus, LuPencil, LuStore, LuTags, LuTrash2 } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
@@ -11,6 +11,7 @@ import { showAlert, showToast } from "@/stores";
 import { ProductEditModal } from "./ProductEditModal";
 import { ProductTaxonomyModal } from "./ProductTaxonomyModal";
 import { ProductUnitsModal } from "./ProductUnitsModal";
+import { ProductOptionsModal } from "./ProductOptionsModal";
 import type { Product } from "./types";
 
 interface ProductRowProps {
@@ -25,6 +26,7 @@ export function ProductRow({ product }: ProductRowProps) {
 	const [editing, setEditing] = useState(false);
 	const [managingUnits, setManagingUnits] = useState(false);
 	const [managingTaxonomy, setManagingTaxonomy] = useState(false);
+	const [managingOptions, setManagingOptions] = useState(false);
 	const remove = useDeleteProductsByProductId();
 
 	function del() {
@@ -105,6 +107,9 @@ export function ProductRow({ product }: ProductRowProps) {
 								<LuStore className="h-4 w-4" />
 							</Button>
 						</Tooltip>
+						<Tooltip content="Customizações">
+							<Button aria-label="Customizações" onClick={() => setManagingOptions(true)} size="icon" type="button" variant="outline"><LuListPlus className="h-4 w-4" /></Button>
+						</Tooltip>
 						<Tooltip content={t("admin.products.edit.action")}>
 							<Button
 								aria-label={t("admin.products.edit.action")}
@@ -149,6 +154,7 @@ export function ProductRow({ product }: ProductRowProps) {
 				onClose={() => setManagingTaxonomy(false)}
 				product={managingTaxonomy ? product : null}
 			/>
+			<ProductOptionsModal onClose={() => setManagingOptions(false)} product={managingOptions ? product : null} />
 		</>
 	);
 }
