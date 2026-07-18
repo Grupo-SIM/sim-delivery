@@ -129,7 +129,7 @@ export function ProductRow({ product }: ProductRowProps) {
 						</Tooltip>
 						<ConfirmActionButton
 								aria-label={t("admin.products.row.delete")}
-								confirmation={t("admin.products.row.deleteConfirm", { title: product.title })}
+								confirmation={t("admin.products.row.deleteConfirm")}
 								confirmLabel={t("admin.products.row.delete")}
 								disabled={remove.isPending}
 								idleIcon={<LuTrash2 className="h-4 w-4" />}

@@ -44,7 +44,7 @@ export function ConfirmActionButton({
 	}
 
 	return (
-		<Tooltip content={confirming ? confirmation : (tooltip ?? String(children))} open={confirming || undefined}>
+		<Tooltip content={confirming ? confirmation : tooltip ?? buttonProps["aria-label"] ?? ""} open={confirming || undefined}>
 			<Button {...buttonProps} aria-label={confirming ? confirmLabel : buttonProps["aria-label"]} onClick={handleClick}>
 				{confirming ? (confirmIcon ?? <LuCheck className="size-4" />) : idleIcon}
 				{confirming ? (buttonProps.size === "icon" ? null : confirmLabel) : children}

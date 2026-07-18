@@ -296,7 +296,7 @@
 				"row": {
 					"cashbackPercent": "{{value}}%",
 					"delete": "Excluir",
-					"deleteConfirm": "Excluir produto {{title}}?",
+					"deleteConfirm": "Excluir produto?",
 					"deleteError": "Não foi possível excluir o produto.",
 					"deleteSuccess": "Produto excluído.",
 					"none": "Nenhuma",
