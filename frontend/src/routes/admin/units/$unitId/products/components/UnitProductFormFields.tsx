@@ -74,7 +74,7 @@ export function UnitProductFormFields(props: UnitProductFormFieldsProps) {
 			)}
 			<div className="space-y-2">
 				<label
-					className="flex items-center gap-2 font-medium text-sm"
+					className="flex cursor-pointer items-center gap-2 font-medium text-sm"
 					htmlFor={`${fieldId}-categories-override`}
 				>
 					<Checkbox
@@ -88,7 +88,7 @@ export function UnitProductFormFields(props: UnitProductFormFieldsProps) {
 					<div className="max-h-32 space-y-1 overflow-auto rounded-md border border-border p-2">
 						{categories.map(category => (
 							<label
-								className="flex items-center gap-2 text-sm"
+								className="flex cursor-pointer items-center gap-2 text-sm"
 								htmlFor={`${fieldId}-category-${category.id}`}
 								key={category.id}
 							>
@@ -113,7 +113,10 @@ export function UnitProductFormFields(props: UnitProductFormFieldsProps) {
 				)}
 			</div>
 			<div className="space-y-2">
-				<label className="flex items-center gap-2 font-medium text-sm" htmlFor={`${fieldId}-tags-override`}>
+				<label
+					className="flex cursor-pointer items-center gap-2 font-medium text-sm"
+					htmlFor={`${fieldId}-tags-override`}
+				>
 					<Checkbox
 						checked={tagsOverridden}
 						id={`${fieldId}-tags-override`}
@@ -125,7 +128,7 @@ export function UnitProductFormFields(props: UnitProductFormFieldsProps) {
 					<div className="max-h-32 space-y-1 overflow-auto rounded-md border border-border p-2">
 						{tags.map(tag => (
 							<label
-								className="flex items-center gap-2 text-sm"
+								className="flex cursor-pointer items-center gap-2 text-sm"
 								htmlFor={`${fieldId}-tag-${tag.id}`}
 								key={tag.id}
 							>
@@ -151,11 +154,14 @@ export function UnitProductFormFields(props: UnitProductFormFieldsProps) {
 				)}
 			</div>
 			<div className="space-y-2">
-				<label className="flex items-center gap-2 font-medium text-sm">
-					<input
+				<label
+					className="flex cursor-pointer items-center gap-2 font-medium text-sm"
+					htmlFor={`${fieldId}-price-override`}
+				>
+					<Checkbox
 						checked={priceEnabled}
+						id={`${fieldId}-price-override`}
 						onChange={event => onPriceEnabledChange(event.currentTarget.checked)}
-						type="checkbox"
 					/>
 					{t("admin.unitProducts.form.priceOverride")}
 				</label>
@@ -171,11 +177,14 @@ export function UnitProductFormFields(props: UnitProductFormFieldsProps) {
 				/>
 			</div>
 			<div className="flex flex-col space-y-2">
-				<label className="flex items-center gap-2 font-medium text-sm">
-					<input
+				<label
+					className="flex cursor-pointer items-center gap-2 font-medium text-sm"
+					htmlFor={`${fieldId}-stock-enabled`}
+				>
+					<Checkbox
 						checked={stockEnabled}
+						id={`${fieldId}-stock-enabled`}
 						onChange={event => onStockEnabledChange(event.currentTarget.checked)}
-						type="checkbox"
 					/>
 					{t("admin.unitProducts.form.stock")}
 				</label>

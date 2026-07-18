@@ -72,14 +72,18 @@ export function ProductUnitsModal({ onClose, product }: ProductUnitsModalProps) 
 				) : (
 					<div className="max-h-72 space-y-2 overflow-y-auto">
 						{units?.map(unit => (
-							<div className="flex items-center gap-2 text-sm" key={unit.id}>
+							<label
+								className="flex cursor-pointer items-center gap-2 rounded-md border border-transparent p-2 text-sm hover:border-border hover:bg-muted/40"
+								htmlFor={`unit-${unit.id}`}
+								key={unit.id}
+							>
 								<Checkbox
 									checked={selectedUnitIds.includes(unit.id)}
 									id={`unit-${unit.id}`}
 									onChange={() => toggle(unit.id)}
 								/>
-								<label htmlFor={`unit-${unit.id}`}>{unit.name}</label>
-							</div>
+								<span>{unit.name}</span>
+							</label>
 						))}
 					</div>
 				)}
