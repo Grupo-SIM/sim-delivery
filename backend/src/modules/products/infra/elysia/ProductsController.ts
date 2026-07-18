@@ -3,8 +3,8 @@ import { ProductUnitsReturn, SetProductUnitsBody } from "@/modules/unitProducts/
 import { ListProductUnits, SetProductUnits } from "@/modules/unitProducts/useCases";
 import { CompanyScopeGuard } from "@/modules/users/guards";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
-import { CreateProductBody, ProductListReturn, ProductReturn, UpdateProductBody } from "../../dtos";
-import { CreateProduct, DeleteProduct, ListProducts, UpdateProduct } from "../../useCases";
+import { CreateOptionBody, CreateOptionGroupBody, CreateProductBody, ProductListReturn, ProductOptionGroupsReturn, ProductReturn, UpdateOptionBody, UpdateOptionGroupBody, UpdateProductBody } from "../../dtos";
+import { CreateProduct, DeleteProduct, ListProducts, ProductOptions, UpdateProduct } from "../../useCases";
 
 export const ProductsController = new Elysia({
 	detail: {
@@ -20,10 +20,60 @@ export const ProductsController = new Elysia({
 				deleteProduct: new DeleteProduct(prisma),
 				listProducts: new ListProducts(prisma),
 				listProductUnits: new ListProductUnits(prisma),
+				productOptions: new ProductOptions(prisma),
 				prisma,
 				setProductUnits: new SetProductUnits(prisma),
 				updateProduct: new UpdateProduct(prisma),
 			}))
+			.get(
+				"/:productId/option-groups",
+				async ({ params, productOptions, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers); CompanyScopeGuard.authorize(scope, "menu", "read");
+					return productOptions.list(scope.companyId, params.productId);
+				}, { response: ProductOptionGroupsReturn },
+			)
+			.post(
+				"/:productId/option-groups",
+				async ({ body, params, productOptions, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers); CompanyScopeGuard.authorize(scope, "menu", "update");
+					return productOptions.createGroup(scope.companyId, params.productId, body);
+				}, { body: CreateOptionGroupBody, response: t.Any() },
+			)
+			.patch(
+				"/:productId/option-groups/:groupId",
+				async ({ body, params, productOptions, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers); CompanyScopeGuard.authorize(scope, "menu", "update");
+					return productOptions.updateGroup(scope.companyId, params.productId, params.groupId, body);
+				}, { body: UpdateOptionGroupBody, response: t.Any() },
+			)
+			.delete(
+				"/:productId/option-groups/:groupId",
+				async ({ params, productOptions, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers); CompanyScopeGuard.authorize(scope, "menu", "delete");
+					await productOptions.deleteGroup(scope.companyId, params.productId, params.groupId); return { ok: true };
+				}, { response: t.Object({ ok: t.Boolean() }) },
+			)
+			.post(
+				"/:productId/option-groups/:groupId/options",
+				async ({ body, params, productOptions, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers); CompanyScopeGuard.authorize(scope, "menu", "update");
+					return productOptions.createOption(scope.companyId, params.productId, params.groupId, body);
+				}, { body: CreateOptionBody, response: t.Any() },
+			)
+			.patch(
+				"/:productId/option-groups/:groupId/options/:optionId",
+				async ({ body, params, productOptions, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers); CompanyScopeGuard.authorize(scope, "menu", "update");
+					return productOptions.updateOption(scope.companyId, params.productId, params.groupId, params.optionId, body);
+				}, { body: UpdateOptionBody, response: t.Any() },
+			)
+			.delete(
+				"/:productId/option-groups/:groupId/options/:optionId",
+				async ({ params, productOptions, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers); CompanyScopeGuard.authorize(scope, "menu", "delete");
+					await productOptions.deleteOption(scope.companyId, params.productId, params.groupId, params.optionId); return { ok: true };
+				}, { response: t.Object({ ok: t.Boolean() }) },
+			)
 			.get(
 				"/",
 				async ({ listProducts, request }) => {
