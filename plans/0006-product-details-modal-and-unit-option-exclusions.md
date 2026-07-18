@@ -58,9 +58,10 @@ verdade para validação, preço e snapshot das escolhas.
 
 ## Implementation Plan
 
-- [ ] 1. Atualizar este plano e `plans/0003-app-cliente-paridade-anota.md` para registrar que
+- [x] 1. Atualizar este plano e `plans/0003-app-cliente-paridade-anota.md` para registrar que
   Plan 0006 substitui UX de 22.5/22.6 e assume pendências 22.3/22.7/22.8, evitando duas fontes
-  concorrentes. Commit documental isolado mantém histórico rastreável.
+  concorrentes. Commit documental isolado mantém histórico rastreável. **Concluído:** Plan 0006
+  é fonte de verdade para UX de modal e pendências de backend/admin/carrinho de É22.
 - [ ] 2. Adicionar schema de exclusão de opção por associação unidade-produto, relações Prisma e
   migração SQL local em `packages/sql/src/models/`; regenerar Prisma/TypeBox. Cobrir unicidade,
   cascades e índices para leitura do menu. Commit deve conter somente schema, migração e artefatos
