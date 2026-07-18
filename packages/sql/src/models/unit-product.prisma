@@ -26,12 +26,27 @@ model UnitProduct {
     unit       Unit                  @relation(fields: [unitId], references: [id], onDelete: Cascade)
     product    Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
     categories UnitProductCategory[]
+    excludedOptions UnitProductExcludedOption[]
     tags       UnitProductTag[]
 
     @@unique([unitId, productId])
     @@index([unitId])
     @@index([productId])
     @@map("unit_product")
+}
+
+/// Hides a globally-defined option from one unit's effective product catalog.
+model UnitProductExcludedOption {
+    unitProductId String
+    optionId      String
+    createdAt     DateTime @default(now())
+
+    option      Option      @relation(fields: [optionId], references: [id], onDelete: Cascade)
+    unitProduct UnitProduct @relation(fields: [unitProductId], references: [id], onDelete: Cascade)
+
+    @@id([unitProductId, optionId])
+    @@index([optionId])
+    @@map("unit_product_excluded_option")
 }
 
 model UnitProductCategory {

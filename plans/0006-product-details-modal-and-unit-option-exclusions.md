@@ -62,10 +62,12 @@ verdade para validação, preço e snapshot das escolhas.
   Plan 0006 substitui UX de 22.5/22.6 e assume pendências 22.3/22.7/22.8, evitando duas fontes
   concorrentes. Commit documental isolado mantém histórico rastreável. **Concluído:** Plan 0006
   é fonte de verdade para UX de modal e pendências de backend/admin/carrinho de É22.
-- [ ] 2. Adicionar schema de exclusão de opção por associação unidade-produto, relações Prisma e
+- [x] 2. Adicionar schema de exclusão de opção por associação unidade-produto, relações Prisma e
   migração SQL local em `packages/sql/src/models/`; regenerar Prisma/TypeBox. Cobrir unicidade,
   cascades e índices para leitura do menu. Commit deve conter somente schema, migração e artefatos
-  gerados necessários.
+  gerados necessários. **Concluído:** relação explícita com chave composta, cascades, índice por
+  opção, migração local e clientes Prisma/TypeBox regenerados; `bun run check-types` em `sql`
+  passou.
 - [ ] 3. Criar DTOs TypeBox e endpoints/use-cases administrativos de grupos e opções globais no
   módulo de produtos: listar árvore, criar/editar/excluir/reordenar grupos e opções, validar
   `minSelect`, `maxSelect`, `selectionType`, `priceRule`, `maxPerItem`, preço e pertencimento à
