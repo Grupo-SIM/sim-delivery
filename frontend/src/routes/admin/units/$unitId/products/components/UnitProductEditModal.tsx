@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
-import { getUnitsByUnitIdProductsQueryKey, usePatchUnitsByUnitIdProductsByUnitProductId } from "@/lib/api";
+import { getUnitsByUnitIdProductsQueryKey, useGetProductsByProductIdOptionGroups, usePatchUnitsByUnitIdProductsByUnitProductId } from "@/lib/api";
 import type { Category, Product, Tag, UnitProduct } from "./types";
 import { UnitProductFormFields } from "./UnitProductFormFields";
+import { UnitOptionExclusionsFields } from "./UnitOptionExclusionsFields";
 
 interface UnitProductEditModalProps {
 	association: UnitProduct | null;
@@ -36,8 +37,10 @@ export function UnitProductEditModal({
 	const [stockEnabled, setStockEnabled] = useState(false);
 	const [stock, setStock] = useState(0);
 	const [error, setError] = useState<string | null>(null);
+	const [excludedOptionIds, setExcludedOptionIds] = useState<string[]>([]);
 
 	const { isPending, mutate } = usePatchUnitsByUnitIdProductsByUnitProductId();
+	const optionGroups = useGetProductsByProductIdOptionGroups(product?.id);
 
 	useEffect(() => {
 		if (!association) {
@@ -52,6 +55,7 @@ export function UnitProductEditModal({
 		setPriceReais(Number(association.priceCentsOverride ?? 0) / 100);
 		setStockEnabled(association.stock !== null);
 		setStock(Number(association.stock ?? 0));
+		setExcludedOptionIds(association.excludedOptionIds);
 		setError(null);
 	}, [association]);
 
@@ -65,6 +69,7 @@ export function UnitProductEditModal({
 				data: {
 					available: stockEnabled ? stock > 0 : available,
 					categoryIds: categoriesOverridden ? categoryIds : null,
+					excludedOptionIds,
 					priceCentsOverride: priceEnabled ? Math.round(priceReais * 100) : null,
 					stock: stockEnabled ? Math.round(stock) : null,
 					tagIds: tagsOverridden ? tagIds : null,
@@ -112,6 +117,7 @@ export function UnitProductEditModal({
 						tagsOverridden={tagsOverridden}
 					/>
 				</div>
+				{optionGroups.data && <UnitOptionExclusionsFields excludedOptionIds={excludedOptionIds} groups={optionGroups.data} onChange={setExcludedOptionIds} />}
 
 				{error && <p className="text-destructive text-xs">{error}</p>}
 				<div className="flex justify-end gap-2">
