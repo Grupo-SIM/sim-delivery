@@ -112,11 +112,12 @@ verdade para validação, preço e snapshot das escolhas.
   mutação direta. Elevar item selecionado/modal ao nível que possui dados do menu para renderizar
   um único modal por browser, evitando um modal por card. Aplicar mesmo comportamento ao carrossel
   de destaques. Garantir foco, teclado, hover e ausência de controles aninhados.
-- [ ] 12. Integrar modal ao carrinho: add cria/mescla linha pela combinação produto+opções;
+- [x] 12. Integrar modal ao carrinho: add cria/mescla linha pela combinação produto+opções;
   edição substitui atomicamente linha, inclusive quando nova combinação colide com outra linha.
   Listar opções e observação no `CartItemRow` e `OrderReview`; ação lápis reabre mesmo modal com
   seleção, nota e quantidade. Remover `AddToCartModal` e código de página duplicado quando não
-  houver mais referências.
+  houver mais referências. **Concluído:** edição e merge atômico no modal, carrinho/review exibem
+  escolhas e observação; rota e componentes antigos foram removidos. Type-check/build passaram.
 - [ ] 13. Adicionar testes frontend focados no cálculo e store: identidade determinística da
   linha, regras de preço, limites, reset do modal, merge, edição/colisão e exclusões já filtradas.
   Fazer verificação manual responsiva e por teclado dos cards/modal, incluindo produto sem imagem,
