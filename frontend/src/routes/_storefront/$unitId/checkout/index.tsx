@@ -147,6 +147,10 @@ function CheckoutPage() {
 					deliveryMethod,
 					items: cartItems.map(item => ({
 						note: item.note || undefined,
+						options: item.options.map(option => ({
+							optionId: option.optionId,
+							quantity: option.quantity,
+						})),
 						quantity: item.quantity,
 						unitProductId: item.id,
 					})),
