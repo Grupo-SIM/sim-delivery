@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +15,6 @@ import {
 	MenuBrowser,
 	PromotionalCarousel,
 	StoreHoursModal,
-	StoreInfoModal,
 	StoreToolbar,
 	UnitBanner,
 	UnitStoreSkeleton,
@@ -30,7 +29,6 @@ function UnitStorePage() {
 	const menu = useGetPublicUnitsByUnitSlugMenu(unitSlug, { slug });
 	const units = unitsQuery.data;
 	const unit = units?.find(item => item.slug === unitSlug);
-	const [profileOpen, setProfileOpen] = useState(false);
 	const [hoursOpen, setHoursOpen] = useState(false);
 	const [search, setSearch] = useState("");
 	const setSelectedUnit = useSelectedUnitStore(state => state.setUnit);
@@ -45,9 +43,6 @@ function UnitStorePage() {
 		return (
 			<Container className="space-y-4 py-8">
 				<ErrorState title={t("store.unit.notFound")} />
-				<Link className="text-primary text-sm" to="/">
-					← {t("store.unit.change")}
-				</Link>
 			</Container>
 		);
 
@@ -96,20 +91,11 @@ function UnitStorePage() {
 									search={search}
 									unitId={unit.id}
 								/>
-								<div className="flex flex-wrap items-center gap-2">
-									{minOrder > 0 && (
-										<InfoPill>
-											{t("store.unit.minOrder")} {money.format(minOrder / 100)}
-										</InfoPill>
-									)}
-									<button
-										className="text-primary text-xs underline-offset-2 hover:underline"
-										onClick={() => setProfileOpen(true)}
-										type="button"
-									>
-										{t("store.unit.storeProfile")}
-									</button>
-								</div>
+								{minOrder > 0 && (
+									<InfoPill>
+										{t("store.unit.minOrder")} {money.format(minOrder / 100)}
+									</InfoPill>
+								)}
 								<PromotionalCarousel images={unit.promotionalImages} />
 							</div>
 						}
@@ -127,7 +113,6 @@ function UnitStorePage() {
 					unitId={unit.id}
 					unitSlug={unitSlug}
 				/>
-				<StoreInfoModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} unit={unit} />
 				<StoreHoursModal hours={unit.hours} isOpen={hoursOpen} onClose={() => setHoursOpen(false)} />
 			</Container>
 		</>

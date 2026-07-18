@@ -1025,19 +1025,14 @@
 				"open": "Aberto"
 			},
 			"unit": {
-				"address": "Endereço",
 				"change": "Trocar unidade",
 				"deliveryMethods": "Formas de entrega",
-				"eta": "Tempo estimado",
 				"etaRange": "{{min}}–{{max}} min",
 				"freeDelivery": "Grátis",
 				"hoursTitle": "Horários de funcionamento",
 				"minOrder": "Pedido mín.",
-				"noMinOrder": "Sem pedido mínimo",
 				"notFound": "Esta unidade não está disponível.",
 				"operation": "Funcionamento",
-				"phone": "Telefone",
-				"storeProfile": "Perfil da loja",
 				"switch": "Trocar unidade",
 				"weekdays": {
 					"fri": "Sexta-feira",
