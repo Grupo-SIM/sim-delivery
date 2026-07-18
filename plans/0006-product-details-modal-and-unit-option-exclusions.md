@@ -90,9 +90,10 @@ verdade para validação, preço e snapshot das escolhas.
   de pedido. Adicionar erro `INVALID_OPTIONS` 422 e testes de sum/highest/average, manipulação de
   preço, exclusão regional e rollback. **Concluído:** pedido recebe IDs/quantidades, recalcula
   preço, valida catálogo efetivo e snapshots e retorna opções; testes alvo e check-types passaram.
-- [ ] 7. Exportar OpenAPI e regenerar SDK frontend após endpoints e contratos estabilizarem.
+- [x] 7. Exportar OpenAPI e regenerar SDK frontend após endpoints e contratos estabilizarem.
   Confirmar que respostas deixam de gerar `any`, que arquivos gerados são somente produto do
-  gerador e que checkout envia `optionId`/`quantity` de cada seleção.
+  gerador e que checkout envia `optionId`/`quantity` de cada seleção. **Concluído:** export e
+  geração rodaram nos workdirs corretos; ambos type-checks passaram e checkout envia seleções.
 - [ ] 8. Criar editor global componentizado ao lado de `admin/products`, acessível por ação com
   ícone em `ProductRow`: árvore de grupos, formulários separados para grupo/opção, ordenação,
   disponibilidade, imagens, limites e regra de preço. Usar `CustomSelect`, inputs mascarados,
