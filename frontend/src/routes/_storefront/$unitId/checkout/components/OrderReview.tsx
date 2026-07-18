@@ -119,7 +119,9 @@ export function OrderReview({
 				{items.map(item => (
 					<div className="flex justify-between gap-3 text-sm" key={item.lineKey}>
 						<div>
-							<span>{item.quantity}× {item.title}</span>
+							<span>
+								{item.quantity}× {item.title}
+							</span>
 							{item.options.length > 0 && (
 								<ul className="mt-1 text-muted-foreground text-xs">
 									{item.options.map(option => (

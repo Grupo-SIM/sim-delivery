@@ -107,8 +107,8 @@
 				"row": {
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir categoria {{name}}?",
-					"deleteError": "Não foi possível excluir a categoria."
-					,"deleteSuccess": "Categoria excluída."
+					"deleteError": "Não foi possível excluir a categoria.",
+					"deleteSuccess": "Categoria excluída."
 				},
 				"subtitle": "Grupos do cardápio para esta empresa.",
 				"title": "Categorias"
@@ -143,8 +143,8 @@
 				"row": {
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir empresa {{name}}?",
-					"deleteError": "Não foi possível excluir a empresa."
-					,"deleteSuccess": "Empresa excluída."
+					"deleteError": "Não foi possível excluir a empresa.",
+					"deleteSuccess": "Empresa excluída."
 				},
 				"subtitle": "Clientes atendidos pela plataforma.",
 				"title": "Empresas"
@@ -497,8 +497,8 @@
 				"row": {
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir etiqueta {{name}}?",
-					"deleteError": "Não foi possível excluir a etiqueta."
-					,"deleteSuccess": "Etiqueta excluída."
+					"deleteError": "Não foi possível excluir a etiqueta.",
+					"deleteSuccess": "Etiqueta excluída."
 				},
 				"subtitle": "Rótulos para produtos desta empresa.",
 				"title": "Etiquetas"
@@ -967,8 +967,8 @@
 				"from": "A partir de",
 				"goToCart": "Avançar para o carrinho",
 				"notePlaceholder": "Ex: sem cebola, ovo…",
-			"notFound": "Produto não encontrado.",
-			"optional": "Opcional",
+				"notFound": "Produto não encontrado.",
+				"optional": "Opcional",
 				"popularOptions": "Itens mais pedidos",
 				"quantity": "Quantidade",
 				"required": "Obrigatório",

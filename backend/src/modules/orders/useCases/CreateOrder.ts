@@ -37,10 +37,10 @@ export class CreateOrder {
 		if (!customer) throw new DomainError(OrderErrors.CUSTOMER_NOT_FOUND);
 
 		// Resolve prices from unit product associations
-		const unitProducts = await this.prisma.unitProduct.findMany({
+		const unitProducts = (await this.prisma.unitProduct.findMany({
 			include: { product: { include: { optionGroups: { include: { options: true } } } } },
 			where: { id: { in: items.map(i => i.unitProductId) }, unitId },
-		} as never) as Array<{
+		} as never)) as Array<{
 			id: string;
 			priceCentsOverride: number | null;
 			product: {
@@ -54,12 +54,22 @@ export class CreateOrder {
 					priceRule: string;
 					selectionType: string;
 					name: string;
-					options: Array<{ available: boolean; id: string; maxPerItem: number | null; name: string; priceDeltaCents: number }>;
+					options: Array<{
+						available: boolean;
+						id: string;
+						maxPerItem: number | null;
+						name: string;
+						priceDeltaCents: number;
+					}>;
 				}>;
 			};
 		}>;
 		const exclusionStore = this.prisma as unknown as {
-			unitProductExcludedOption: { findMany: (args: { where: { unitProductId: { in: string[] } } }) => Promise<{ optionId: string; unitProductId: string }[]> };
+			unitProductExcludedOption: {
+				findMany: (args: {
+					where: { unitProductId: { in: string[] } };
+				}) => Promise<{ optionId: string; unitProductId: string }[]>;
+			};
 		};
 		const exclusions = exclusionStore.unitProductExcludedOption
 			? await exclusionStore.unitProductExcludedOption.findMany({
@@ -82,28 +92,67 @@ export class CreateOrder {
 			}
 			const excludedOptionIds = excludedByAssociation.get(assoc.id) ?? new Set<string>();
 			let optionDelta = 0;
-			const snapshots: { groupName: string; optionId: string; optionName: string; priceDeltaCents: number; quantity: number }[] = [];
+			const snapshots: {
+				groupName: string;
+				optionId: string;
+				optionName: string;
+				priceDeltaCents: number;
+				quantity: number;
+			}[] = [];
 			const optionGroups = assoc.product.optionGroups ?? [];
 			for (const group of optionGroups) {
-				const selected = selections.map(selection => ({ ...selection, option: group.options.find(option => option.id === selection.optionId) })).filter(selection => selection.option);
+				const selected = selections
+					.map(selection => ({
+						...selection,
+						option: group.options.find(option => option.id === selection.optionId),
+					}))
+					.filter(selection => selection.option);
 				const selectedQuantity = selected.reduce((sum, selection) => sum + selection.quantity, 0);
-				if (selectedQuantity < group.minSelect || selectedQuantity > group.maxSelect) throw new DomainError(OrderErrors.INVALID_OPTIONS);
-				if (group.selectionType === "single" && selectedQuantity > 1) throw new DomainError(OrderErrors.INVALID_OPTIONS);
+				if (selectedQuantity < group.minSelect || selectedQuantity > group.maxSelect)
+					throw new DomainError(OrderErrors.INVALID_OPTIONS);
+				if (group.selectionType === "single" && selectedQuantity > 1)
+					throw new DomainError(OrderErrors.INVALID_OPTIONS);
 				for (const selection of selected) {
 					const option = selection.option!;
-					if (!option.available || excludedOptionIds.has(option.id) || (option.maxPerItem !== null && selection.quantity > option.maxPerItem)) throw new DomainError(OrderErrors.INVALID_OPTIONS);
-					snapshots.push({ groupName: group.name, optionId: option.id, optionName: option.name, priceDeltaCents: option.priceDeltaCents, quantity: selection.quantity });
+					if (
+						!option.available ||
+						excludedOptionIds.has(option.id) ||
+						(option.maxPerItem !== null && selection.quantity > option.maxPerItem)
+					)
+						throw new DomainError(OrderErrors.INVALID_OPTIONS);
+					snapshots.push({
+						groupName: group.name,
+						optionId: option.id,
+						optionName: option.name,
+						priceDeltaCents: option.priceDeltaCents,
+						quantity: selection.quantity,
+					});
 				}
 				const validIds = new Set(group.options.map(option => option.id));
-				if (selections.some(selection => !optionGroups.some(candidate => candidate.options.some(option => option.id === selection.optionId))) || selected.some(selection => !validIds.has(selection.optionId))) throw new DomainError(OrderErrors.INVALID_OPTIONS);
-				const deltas = selected.flatMap(selection => Array.from({ length: selection.quantity }, () => selection.option!.priceDeltaCents));
+				if (
+					selections.some(
+						selection =>
+							!optionGroups.some(candidate =>
+								candidate.options.some(option => option.id === selection.optionId),
+							),
+					) ||
+					selected.some(selection => !validIds.has(selection.optionId))
+				)
+					throw new DomainError(OrderErrors.INVALID_OPTIONS);
+				const deltas = selected.flatMap(selection =>
+					Array.from({ length: selection.quantity }, () => selection.option!.priceDeltaCents),
+				);
 				if (group.priceRule === "highest") optionDelta += deltas.length ? Math.max(...deltas) : 0;
-				else if (group.priceRule === "average") optionDelta += deltas.length ? Math.round(deltas.reduce((sum, delta) => sum + delta, 0) / deltas.length) : 0;
+				else if (group.priceRule === "average")
+					optionDelta += deltas.length
+						? Math.round(deltas.reduce((sum, delta) => sum + delta, 0) / deltas.length)
+						: 0;
 				else optionDelta += deltas.reduce((sum, delta) => sum + delta, 0);
 			}
 			if (
-				selections.some(selection =>
-					!optionGroups.some(group => group.options.some(option => option.id === selection.optionId)),
+				selections.some(
+					selection =>
+						!optionGroups.some(group => group.options.some(option => option.id === selection.optionId)),
 				)
 			) {
 				throw new DomainError(OrderErrors.INVALID_OPTIONS);
@@ -111,12 +160,12 @@ export class CreateOrder {
 			const unitPrice = (assoc.priceCentsOverride ?? assoc.product.basePriceCents) + optionDelta;
 			return {
 				note: item.note ?? null,
+				options: snapshots,
 				productId: assoc.product.id,
 				productName: assoc.product.title,
 				quantity: item.quantity,
 				total: unitPrice * item.quantity,
 				unitPrice,
-				options: snapshots,
 			};
 		});
 

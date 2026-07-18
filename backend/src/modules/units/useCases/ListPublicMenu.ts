@@ -49,9 +49,9 @@ export class ListPublicMenu {
 		});
 		const exclusions = this.prisma as unknown as {
 			unitProductExcludedOption: {
-				findMany: (args: { where: { unitProductId: { in: string[] } } }) => Promise<
-					{ optionId: string; unitProductId: string }[]
-				>;
+				findMany: (args: {
+					where: { unitProductId: { in: string[] } };
+				}) => Promise<{ optionId: string; unitProductId: string }[]>;
 			};
 		};
 		const excludedByAssociation = new Map<string, Set<string>>();

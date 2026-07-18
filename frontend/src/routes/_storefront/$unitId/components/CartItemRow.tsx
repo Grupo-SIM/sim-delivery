@@ -60,12 +60,7 @@ export function CartItemRow({ item, onEdit }: CartItemRowProps) {
 				/>
 
 				<div className="flex items-center gap-2">
-					<Button
-						onClick={onEdit}
-						size="sm"
-						type="button"
-						variant="outline"
-					>
+					<Button onClick={onEdit} size="sm" type="button" variant="outline">
 						Editar
 					</Button>
 					<Button

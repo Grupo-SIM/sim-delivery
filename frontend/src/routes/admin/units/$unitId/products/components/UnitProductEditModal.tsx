@@ -3,10 +3,14 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
-import { getUnitsByUnitIdProductsQueryKey, useGetProductsByProductIdOptionGroups, usePatchUnitsByUnitIdProductsByUnitProductId } from "@/lib/api";
+import {
+	getUnitsByUnitIdProductsQueryKey,
+	useGetProductsByProductIdOptionGroups,
+	usePatchUnitsByUnitIdProductsByUnitProductId,
+} from "@/lib/api";
 import type { Category, Product, Tag, UnitProduct } from "./types";
-import { UnitProductFormFields } from "./UnitProductFormFields";
 import { UnitOptionExclusionsFields } from "./UnitOptionExclusionsFields";
+import { UnitProductFormFields } from "./UnitProductFormFields";
 
 interface UnitProductEditModalProps {
 	association: UnitProduct | null;
@@ -117,7 +121,13 @@ export function UnitProductEditModal({
 						tagsOverridden={tagsOverridden}
 					/>
 				</div>
-				{optionGroups.data && <UnitOptionExclusionsFields excludedOptionIds={excludedOptionIds} groups={optionGroups.data} onChange={setExcludedOptionIds} />}
+				{optionGroups.data && (
+					<UnitOptionExclusionsFields
+						excludedOptionIds={excludedOptionIds}
+						groups={optionGroups.data}
+						onChange={setExcludedOptionIds}
+					/>
+				)}
 
 				{error && <p className="text-destructive text-xs">{error}</p>}
 				<div className="flex justify-end gap-2">

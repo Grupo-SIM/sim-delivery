@@ -44,12 +44,6 @@ export type AdminOrderListReturn = typeof AdminOrderListReturn.static;
 export const OrderItemReturn = t.Object({
 	id: t.String(),
 	note: __nullable__(t.String()),
-	orderId: t.String(),
-	productId: t.String(),
-	productName: t.String(),
-	quantity: t.Integer(),
-	total: t.Integer(),
-	unitPrice: t.Integer(),
 	options: t.Array(
 		t.Object({
 			groupName: t.String(),
@@ -60,6 +54,12 @@ export const OrderItemReturn = t.Object({
 			quantity: t.Integer(),
 		}),
 	),
+	orderId: t.String(),
+	productId: t.String(),
+	productName: t.String(),
+	quantity: t.Integer(),
+	total: t.Integer(),
+	unitPrice: t.Integer(),
 });
 export type OrderItemReturn = typeof OrderItemReturn.static;
 

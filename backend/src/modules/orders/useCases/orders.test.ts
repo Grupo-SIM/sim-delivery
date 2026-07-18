@@ -62,7 +62,12 @@ function makeOrderPrisma(
 						return { count: data.length };
 					},
 				},
-				orderItemOption: { createMany: async ({ data }: { data: object[] }) => { orderItemOptions.push(...data); return { count: data.length }; } },
+				orderItemOption: {
+					createMany: async ({ data }: { data: object[] }) => {
+						orderItemOptions.push(...data);
+						return { count: data.length };
+					},
+				},
 			};
 			return fn(tx);
 		},
@@ -233,7 +238,11 @@ describe("UpdateOrderStatus", () => {
 	});
 
 	it("allows reopening a cancelled order for correction", async () => {
-		const { stored, prisma } = makeUpdateStatusPrisma({ companyId: "cmp_1", id: "ord_1", status: "cancelado" });
+		const { stored, prisma } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			id: "ord_1",
+			status: "cancelado",
+		});
 		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "em_preparo" });
 		expect(stored.status).toBe("em_preparo");
 		expect(stored.cancelReason).toBeNull();
@@ -346,8 +355,8 @@ describe("GetCustomerOrder", () => {
 	});
 
 	it("hides orders that do not belong to the authenticated customer", async () => {
-		await expect(new GetCustomerOrder(makeCustomerOrderPrisma(null)).execute("user_2", "ord_1", "demo")).rejects.toThrow(
-			"ORDER_NOT_FOUND",
-		);
+		await expect(
+			new GetCustomerOrder(makeCustomerOrderPrisma(null)).execute("user_2", "ord_1", "demo"),
+		).rejects.toThrow("ORDER_NOT_FOUND");
 	});
 });

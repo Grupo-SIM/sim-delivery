@@ -45,7 +45,8 @@ export class UpdateOrderStatus {
 		});
 		if (!order) throw new DomainError(OrderErrors.ORDER_NOT_FOUND);
 
-		if (!canTransition(order.status, status, order.deliveryMethod)) throw new DomainError(OrderErrors.INVALID_TRANSITION);
+		if (!canTransition(order.status, status, order.deliveryMethod))
+			throw new DomainError(OrderErrors.INVALID_TRANSITION);
 		if (status === "cancelado" && !cancelReason) throw new DomainError(OrderErrors.CANCEL_REASON_REQUIRED);
 
 		const updated = await this.prisma.order.update({

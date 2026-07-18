@@ -9,9 +9,9 @@ import { Tooltip } from "@/components/ui/Tooltip";
 import { getProductsQueryKey, useDeleteProductsByProductId } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 import { ProductEditModal } from "./ProductEditModal";
+import { ProductOptionsModal } from "./ProductOptionsModal";
 import { ProductTaxonomyModal } from "./ProductTaxonomyModal";
 import { ProductUnitsModal } from "./ProductUnitsModal";
-import { ProductOptionsModal } from "./ProductOptionsModal";
 import type { Product } from "./types";
 
 interface ProductRowProps {
@@ -108,7 +108,15 @@ export function ProductRow({ product }: ProductRowProps) {
 							</Button>
 						</Tooltip>
 						<Tooltip content="Customizações">
-							<Button aria-label="Customizações" onClick={() => setManagingOptions(true)} size="icon" type="button" variant="outline"><LuListPlus className="h-4 w-4" /></Button>
+							<Button
+								aria-label="Customizações"
+								onClick={() => setManagingOptions(true)}
+								size="icon"
+								type="button"
+								variant="outline"
+							>
+								<LuListPlus className="h-4 w-4" />
+							</Button>
 						</Tooltip>
 						<Tooltip content={t("admin.products.edit.action")}>
 							<Button
@@ -133,18 +141,18 @@ export function ProductRow({ product }: ProductRowProps) {
 							</Button>
 						</Tooltip>
 						<ConfirmActionButton
-								aria-label={t("admin.products.row.delete")}
-								confirmation={t("admin.products.row.deleteConfirm")}
-								confirmLabel={t("admin.products.row.delete")}
-								disabled={remove.isPending}
-								idleIcon={<LuTrash2 className="h-4 w-4" />}
-								onConfirm={del}
-								size="icon"
-								type="button"
-								variant="outline"
-							>
-								{null}
-							</ConfirmActionButton>
+							aria-label={t("admin.products.row.delete")}
+							confirmation={t("admin.products.row.deleteConfirm")}
+							confirmLabel={t("admin.products.row.delete")}
+							disabled={remove.isPending}
+							idleIcon={<LuTrash2 className="h-4 w-4" />}
+							onConfirm={del}
+							size="icon"
+							type="button"
+							variant="outline"
+						>
+							{null}
+						</ConfirmActionButton>
 					</div>
 				</td>
 			</tr>
@@ -154,7 +162,10 @@ export function ProductRow({ product }: ProductRowProps) {
 				onClose={() => setManagingTaxonomy(false)}
 				product={managingTaxonomy ? product : null}
 			/>
-			<ProductOptionsModal onClose={() => setManagingOptions(false)} product={managingOptions ? product : null} />
+			<ProductOptionsModal
+				onClose={() => setManagingOptions(false)}
+				product={managingOptions ? product : null}
+			/>
 		</>
 	);
 }

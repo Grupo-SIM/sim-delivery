@@ -16,7 +16,18 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 	const displayPrice = money.format(Number(hasGroups ? item.fromPriceCents : item.priceCents) / 100);
 
 	return (
-		<Card className="group flex h-full cursor-pointer flex-col overflow-hidden p-0 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg" onClick={() => onSelect(item)} onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onSelect(item); } }} role="button" tabIndex={0}>
+		<Card
+			className="group flex h-full cursor-pointer flex-col overflow-hidden p-0 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+			onClick={() => onSelect(item)}
+			onKeyDown={event => {
+				if (event.key === "Enter" || event.key === " ") {
+					event.preventDefault();
+					onSelect(item);
+				}
+			}}
+			role="button"
+			tabIndex={0}
+		>
 			<div className="aspect-[4/3] w-full overflow-hidden bg-muted">
 				{item.imageUrl ? (
 					<img

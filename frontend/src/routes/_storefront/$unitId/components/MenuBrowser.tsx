@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CategoryNav } from "./CategoryNav";
@@ -35,31 +35,31 @@ export function MenuBrowser({ header, search, sections, unitId, unitSlug }: Menu
 
 	return (
 		<>
-		<div className={hasCategories ? "lg:grid lg:grid-cols-[12rem_1fr] lg:gap-6" : undefined}>
-			{hasCategories && <CategorySummary sections={filtered} />}
-			<div className="min-w-0 space-y-6">
-				{header}
-				{!query && <TopPicksCarousel onSelect={setSelectedItem} sections={sections} />}
+			<div className={hasCategories ? "lg:grid lg:grid-cols-[12rem_1fr] lg:gap-6" : undefined}>
+				{hasCategories && <CategorySummary sections={filtered} />}
+				<div className="min-w-0 space-y-6">
+					{header}
+					{!query && <TopPicksCarousel onSelect={setSelectedItem} sections={sections} />}
 
-				{filtered.length === 0 ? (
-					<EmptyState title={query ? t("store.menu.noResults") : t("store.menu.empty")} />
-				) : (
-					<>
-						<div className="lg:hidden">
-							<CategoryNav sections={filtered} />
-						</div>
-						{filtered.map(section => (
-							<MenuSectionBlock
-								key={section.categoryId ?? "loose"}
-								section={section}
-								onSelect={setSelectedItem}
-							/>
-						))}
-					</>
-				)}
+					{filtered.length === 0 ? (
+						<EmptyState title={query ? t("store.menu.noResults") : t("store.menu.empty")} />
+					) : (
+						<>
+							<div className="lg:hidden">
+								<CategoryNav sections={filtered} />
+							</div>
+							{filtered.map(section => (
+								<MenuSectionBlock
+									key={section.categoryId ?? "loose"}
+									onSelect={setSelectedItem}
+									section={section}
+								/>
+							))}
+						</>
+					)}
+				</div>
 			</div>
-		</div>
-		<ProductDetailsModal item={selectedItem} onClose={() => setSelectedItem(null)} unitId={unitId} />
+			<ProductDetailsModal item={selectedItem} onClose={() => setSelectedItem(null)} unitId={unitId} />
 		</>
 	);
 }
