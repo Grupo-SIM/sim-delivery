@@ -28,10 +28,27 @@ export const UpdateOptionBody = t.Partial(CreateOptionBody);
 export type UpdateOptionBody = typeof UpdateOptionBody.static;
 
 const OptionReturn = t.Object({
-	available: t.Boolean(), description: t.String(), groupId: t.String(), id: t.String(), imageUrl: t.Nullable(t.String()), maxPerItem: t.Nullable(t.Integer()), name: t.String(), popularity: t.Integer(), priceDeltaCents: t.Integer(), sortOrder: t.Integer(),
+	available: t.Boolean(),
+	description: t.String(),
+	groupId: t.String(),
+	id: t.String(),
+	imageUrl: t.Nullable(t.String()),
+	maxPerItem: t.Nullable(t.Integer()),
+	name: t.String(),
+	popularity: t.Integer(),
+	priceDeltaCents: t.Integer(),
+	sortOrder: t.Integer(),
 });
 const OptionGroupReturn = t.Object({
-	id: t.String(), maxSelect: t.Integer(), minSelect: t.Integer(), name: t.String(), options: t.Array(OptionReturn), priceRule: t.String(), productId: t.String(), selectionType: t.String(), sortOrder: t.Integer(),
+	id: t.String(),
+	maxSelect: t.Integer(),
+	minSelect: t.Integer(),
+	name: t.String(),
+	options: t.Array(OptionReturn),
+	priceRule: t.String(),
+	productId: t.String(),
+	selectionType: t.String(),
+	sortOrder: t.Integer(),
 });
 export const ProductOptionGroupsReturn = t.Array(OptionGroupReturn);
 export type ProductOptionGroupsReturn = typeof ProductOptionGroupsReturn.static;
