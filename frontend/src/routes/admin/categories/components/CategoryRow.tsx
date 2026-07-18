@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { LuArrowDown, LuArrowUp, LuPencil, LuTrash2 } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Input } from "@/components/ui/input";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
@@ -13,7 +14,7 @@ import {
 	useDeleteCategoriesByCategoryId,
 	usePatchCategoriesByCategoryId,
 } from "@/lib/api";
-import { showAlert, showConfirm, showToast } from "@/stores";
+import { showAlert, showToast } from "@/stores";
 
 interface CategoryRowProps {
 	category: GetCategories200[number];
@@ -52,13 +53,15 @@ export function CategoryRow({ category, isFirst, isLast, onMove, reordering }: C
 		);
 	}
 
-	async function del() {
-		if (!(await showConfirm(t("admin.categories.row.deleteConfirm", { name: category.name })))) return;
+	function del() {
 		remove.mutate(
 			{ categoryId: category.id },
 			{
 				onError: () => void showAlert(t("admin.categories.row.deleteError")),
-				onSuccess: () => invalidate(),
+				onSuccess: () => {
+					void invalidate();
+					showToast(t("admin.categories.row.deleteSuccess"), "positive");
+				},
 			},
 		);
 	}
@@ -142,10 +145,18 @@ export function CategoryRow({ category, isFirst, isLast, onMove, reordering }: C
 								<LuPencil className="size-4" />
 								{t("admin.categories.edit.action")}
 							</Button>
-							<Button disabled={remove.isPending} onClick={del} size="sm" type="button" variant="outline">
-								<LuTrash2 className="size-4" />
+							<ConfirmActionButton
+								confirmation={t("admin.categories.row.deleteConfirm", { name: category.name })}
+								confirmLabel={t("admin.categories.row.delete")}
+								disabled={remove.isPending}
+								idleIcon={<LuTrash2 className="size-4" />}
+								onConfirm={del}
+								size="sm"
+								type="button"
+								variant="outline"
+							>
 								{t("admin.categories.row.delete")}
-							</Button>
+							</ConfirmActionButton>
 						</>
 					)}
 				</div>

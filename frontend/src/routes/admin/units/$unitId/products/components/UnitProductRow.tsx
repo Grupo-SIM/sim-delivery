@@ -3,8 +3,9 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { getUnitsByUnitIdProductsQueryKey, useDeleteUnitsByUnitIdProductsByUnitProductId } from "@/lib/api";
-import { showAlert, showConfirm } from "@/stores";
+import { showAlert, showToast } from "@/stores";
 import { type Category, money, type Product, type Tag, type UnitProduct } from "./types";
 import { UnitProductEditModal } from "./UnitProductEditModal";
 
@@ -31,16 +32,15 @@ export function UnitProductRow({ association, categories, products, tags, unitId
 		: (product?.tags ?? []);
 	const priceCents = Number(association.priceCentsOverride ?? product?.basePriceCents ?? 0);
 
-	async function del() {
-		if (!(await showConfirm(t("admin.unitProducts.row.removeConfirm", { title: product?.title ?? "" })))) {
-			return;
-		}
+	function del() {
 		remove.mutate(
 			{ unitId, unitProductId: association.id },
 			{
 				onError: () => void showAlert(t("admin.unitProducts.row.removeError")),
-				onSuccess: () =>
-					queryClient.invalidateQueries({ queryKey: getUnitsByUnitIdProductsQueryKey(unitId) }),
+				onSuccess: () => {
+					void queryClient.invalidateQueries({ queryKey: getUnitsByUnitIdProductsQueryKey(unitId) });
+					showToast(t("admin.unitProducts.row.removeSuccess"), "positive");
+				},
 			},
 		);
 	}
@@ -99,9 +99,17 @@ export function UnitProductRow({ association, categories, products, tags, unitId
 						<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
 							{t("admin.unitProducts.row.edit")}
 						</Button>
-						<Button disabled={remove.isPending} onClick={del} size="sm" type="button" variant="outline">
+						<ConfirmActionButton
+							confirmation={t("admin.unitProducts.row.removeConfirm", { title: product?.title ?? "" })}
+							confirmLabel={t("admin.unitProducts.row.remove")}
+							disabled={remove.isPending}
+							onConfirm={del}
+							size="sm"
+							type="button"
+							variant="outline"
+						>
 							{t("admin.unitProducts.row.remove")}
-						</Button>
+						</ConfirmActionButton>
 					</div>
 				</td>
 			</tr>

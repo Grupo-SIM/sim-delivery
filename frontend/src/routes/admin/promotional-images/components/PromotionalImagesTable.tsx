@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuPencil, LuStore, LuTrash2 } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
 import {
@@ -10,7 +11,7 @@ import {
 	getPromotionalImagesQueryKey,
 	useDeletePromotionalImagesByPromotionalImageId,
 } from "@/lib/api";
-import { showAlert, showConfirm } from "@/stores";
+import { showAlert, showToast } from "@/stores";
 import { PromotionalImageEditModal } from "./PromotionalImageEditModal";
 import { PromotionalImageUnitsModal } from "./PromotionalImageUnitsModal";
 
@@ -27,13 +28,15 @@ export function PromotionalImagesTable({ images }: PromotionalImagesTableProps) 
 
 	if (images.length === 0) return <EmptyState title={t("admin.promotionalImages.empty")} />;
 
-	async function del(id: string, title: string) {
-		if (!(await showConfirm(t("admin.promotionalImages.delete.confirm", { title })))) return;
+	function del(id: string) {
 		remove.mutate(
 			{ promotionalImageId: id },
 			{
 				onError: () => void showAlert(t("admin.promotionalImages.delete.error")),
-				onSuccess: () => queryClient.invalidateQueries({ queryKey: getPromotionalImagesQueryKey() }),
+				onSuccess: () => {
+					void queryClient.invalidateQueries({ queryKey: getPromotionalImagesQueryKey() });
+					showToast(t("admin.promotionalImages.delete.success"), "positive");
+				},
 			},
 		);
 	}
@@ -72,15 +75,17 @@ export function PromotionalImagesTable({ images }: PromotionalImagesTableProps) 
 										<LuPencil />
 										{t("admin.promotionalImages.edit.action")}
 									</Button>
-									<Button
-										onClick={() => void del(image.id, image.title)}
+									<ConfirmActionButton
+										confirmation={t("admin.promotionalImages.delete.confirm", { title: image.title })}
+										confirmLabel={t("admin.promotionalImages.delete.action")}
+										idleIcon={<LuTrash2 />}
+										onConfirm={() => del(image.id)}
 										size="sm"
 										type="button"
 										variant="outline"
 									>
-										<LuTrash2 />
 										{t("admin.promotionalImages.delete.action")}
-									</Button>
+									</ConfirmActionButton>
 								</div>
 							</td>
 						</tr>

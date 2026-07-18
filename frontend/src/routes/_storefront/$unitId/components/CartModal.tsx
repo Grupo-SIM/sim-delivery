@@ -1,8 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Modal } from "@/components/ui/Modal";
-import { cartTotalCents, showConfirm, useCartStore } from "@/stores";
+import { cartTotalCents, showToast, useCartStore } from "@/stores";
 import { CartItemRow } from "./CartItemRow";
 import { CartSuggestions } from "./CartSuggestions";
 import { type MenuSection, money } from "./types";
@@ -31,11 +32,10 @@ export function CartModal({
 	const items = useCartStore(state => state.items);
 	const clear = useCartStore(state => state.clear);
 
-	async function handleClear() {
-		if (await showConfirm(t("store.cart.clearConfirm"))) {
-			clear();
-			onClose();
-		}
+	function handleClear() {
+		clear();
+		onClose();
+		showToast(t("store.cart.clear"), "info");
 	}
 
 	const total = cartTotalCents(items);
@@ -86,9 +86,16 @@ export function CartModal({
 						{t("store.cart.checkout")}
 					</Button>
 
-					<Button className="w-full" onClick={handleClear} type="button" variant="outline">
+					<ConfirmActionButton
+						className="w-full"
+						confirmation={t("store.cart.clearConfirm")}
+						confirmLabel={t("store.cart.clear")}
+						onConfirm={handleClear}
+						type="button"
+						variant="outline"
+					>
 						{t("store.cart.clear")}
-					</Button>
+					</ConfirmActionButton>
 				</div>
 			)}
 		</Modal>

@@ -4,9 +4,10 @@ import { useTranslation } from "react-i18next";
 import { LuPencil, LuStore, LuTags, LuTrash2 } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { getProductsQueryKey, useDeleteProductsByProductId } from "@/lib/api";
-import { showAlert, showConfirm } from "@/stores";
+import { showAlert, showToast } from "@/stores";
 import { ProductEditModal } from "./ProductEditModal";
 import { ProductTaxonomyModal } from "./ProductTaxonomyModal";
 import { ProductUnitsModal } from "./ProductUnitsModal";
@@ -26,15 +27,15 @@ export function ProductRow({ product }: ProductRowProps) {
 	const [managingTaxonomy, setManagingTaxonomy] = useState(false);
 	const remove = useDeleteProductsByProductId();
 
-	async function del() {
-		if (!(await showConfirm(t("admin.products.row.deleteConfirm", { title: product.title })))) {
-			return;
-		}
+	function del() {
 		remove.mutate(
 			{ productId: product.id },
 			{
 				onError: () => void showAlert(t("admin.products.row.deleteError")),
-				onSuccess: () => queryClient.invalidateQueries({ queryKey: getProductsQueryKey() }),
+				onSuccess: () => {
+					void queryClient.invalidateQueries({ queryKey: getProductsQueryKey() });
+					showToast(t("admin.products.row.deleteSuccess"), "positive");
+				},
 			},
 		);
 	}
@@ -126,18 +127,19 @@ export function ProductRow({ product }: ProductRowProps) {
 								<LuTags className="h-4 w-4" />
 							</Button>
 						</Tooltip>
-						<Tooltip content={t("admin.products.row.delete")}>
-							<Button
+						<ConfirmActionButton
 								aria-label={t("admin.products.row.delete")}
+								confirmation={t("admin.products.row.deleteConfirm", { title: product.title })}
+								confirmLabel={t("admin.products.row.delete")}
 								disabled={remove.isPending}
-								onClick={del}
+								idleIcon={<LuTrash2 className="h-4 w-4" />}
+								onConfirm={del}
 								size="icon"
 								type="button"
 								variant="outline"
 							>
-								<LuTrash2 className="h-4 w-4" />
-							</Button>
-						</Tooltip>
+								{null}
+							</ConfirmActionButton>
 					</div>
 				</td>
 			</tr>

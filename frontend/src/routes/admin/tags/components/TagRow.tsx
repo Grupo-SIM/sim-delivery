@@ -4,11 +4,12 @@ import { useTranslation } from "react-i18next";
 import { LuPencil, LuTrash2 } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { ColorField } from "@/components/ui/ColorField";
 import { Input } from "@/components/ui/input";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { type GetTags200, getTagsQueryKey, useDeleteTagsByTagId, usePatchTagsByTagId } from "@/lib/api";
-import { showAlert, showConfirm, showToast } from "@/stores";
+import { showAlert, showToast } from "@/stores";
 
 interface TagRowProps {
 	tag: GetTags200[number];
@@ -45,13 +46,15 @@ export function TagRow({ tag }: TagRowProps) {
 		);
 	}
 
-	async function del() {
-		if (!(await showConfirm(t("admin.tags.row.deleteConfirm", { name: tag.name })))) return;
+	function del() {
 		remove.mutate(
 			{ tagId: tag.id },
 			{
 				onError: () => void showAlert(t("admin.tags.row.deleteError")),
-				onSuccess: () => invalidate(),
+				onSuccess: () => {
+					void invalidate();
+					showToast(t("admin.tags.row.deleteSuccess"), "positive");
+				},
 			},
 		);
 	}
@@ -120,10 +123,18 @@ export function TagRow({ tag }: TagRowProps) {
 								<LuPencil className="size-4" />
 								{t("admin.tags.edit.action")}
 							</Button>
-							<Button disabled={remove.isPending} onClick={del} size="sm" type="button" variant="outline">
-								<LuTrash2 className="size-4" />
+							<ConfirmActionButton
+								confirmation={t("admin.tags.row.deleteConfirm", { name: tag.name })}
+								confirmLabel={t("admin.tags.row.delete")}
+								disabled={remove.isPending}
+								idleIcon={<LuTrash2 className="size-4" />}
+								onConfirm={del}
+								size="sm"
+								type="button"
+								variant="outline"
+							>
 								{t("admin.tags.row.delete")}
-							</Button>
+							</ConfirmActionButton>
 						</>
 					)}
 				</div>

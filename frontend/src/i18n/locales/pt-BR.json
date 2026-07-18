@@ -108,6 +108,7 @@
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir categoria {{name}}?",
 					"deleteError": "Não foi possível excluir a categoria."
+					,"deleteSuccess": "Categoria excluída."
 				},
 				"subtitle": "Grupos do cardápio para esta empresa.",
 				"title": "Categorias"
@@ -143,6 +144,7 @@
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir empresa {{name}}?",
 					"deleteError": "Não foi possível excluir a empresa."
+					,"deleteSuccess": "Empresa excluída."
 				},
 				"subtitle": "Clientes atendidos pela plataforma.",
 				"title": "Empresas"
@@ -296,6 +298,7 @@
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir produto {{title}}?",
 					"deleteError": "Não foi possível excluir o produto.",
+					"deleteSuccess": "Produto excluído.",
 					"none": "Nenhuma",
 					"unitDefault": "Padrão da unidade"
 				},
@@ -344,7 +347,8 @@
 				"delete": {
 					"action": "Excluir",
 					"confirm": "Excluir a imagem {{title}}?",
-					"error": "Não foi possível excluir a imagem promocional."
+					"error": "Não foi possível excluir a imagem promocional.",
+					"success": "Imagem promocional excluída."
 				},
 				"edit": {
 					"action": "Editar",
@@ -437,6 +441,7 @@
 					"remove": "Remover",
 					"removeConfirm": "Remover {{name}} da equipe?",
 					"removeError": "Não foi possível remover o funcionário.",
+					"removeSuccess": "Funcionário removido.",
 					"updateError": "Não foi possível atualizar o cargo."
 				},
 				"subtitle": "Pessoas que gerenciam esta empresa.",
@@ -472,6 +477,7 @@
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir etiqueta {{name}}?",
 					"deleteError": "Não foi possível excluir a etiqueta."
+					,"deleteSuccess": "Etiqueta excluída."
 				},
 				"subtitle": "Rótulos para produtos desta empresa.",
 				"title": "Etiquetas"
@@ -515,7 +521,8 @@
 					"overridden": "(substituído)",
 					"remove": "Remover",
 					"removeConfirm": "Remover {{title}} do cardápio desta unidade?",
-					"removeError": "Não foi possível remover a associação."
+					"removeError": "Não foi possível remover a associação.",
+					"removeSuccess": "Produto removido do cardápio."
 				},
 				"status": {
 					"available": "Disponível",
@@ -657,7 +664,8 @@
 				"row": {
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir unidade {{name}}?",
-					"deleteError": "Não foi possível excluir a unidade."
+					"deleteError": "Não foi possível excluir a unidade.",
+					"deleteSuccess": "Unidade excluída."
 				},
 				"status": {
 					"closed": "Fechado",

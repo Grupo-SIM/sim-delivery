@@ -15,11 +15,12 @@ import {
 } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { type GetUnits200, getUnitsQueryKey, useDeleteUnitsByUnitId } from "@/lib/api";
-import { showAlert, showConfirm } from "@/stores";
+import { showAlert, showToast } from "@/stores";
 import { UnitAddressEditor } from "./UnitAddressEditor";
 import { UnitBannerEditor } from "./UnitBannerEditor";
 import { UnitConfigEditor } from "./UnitConfigEditor";
@@ -48,15 +49,15 @@ export function UnitsTable({ units }: UnitsTableProps) {
 		return <EmptyState title={t("admin.units.empty")} />;
 	}
 
-	async function deleteUnit(id: string, name: string) {
-		if (!(await showConfirm(t("admin.units.row.deleteConfirm", { name })))) {
-			return;
-		}
+	function deleteUnit(id: string) {
 		remove.mutate(
 			{ unitId: id },
 			{
 				onError: () => void showAlert(t("admin.units.row.deleteError")),
-				onSuccess: () => queryClient.invalidateQueries({ queryKey: getUnitsQueryKey() }),
+				onSuccess: () => {
+					void queryClient.invalidateQueries({ queryKey: getUnitsQueryKey() });
+					showToast(t("admin.units.row.deleteSuccess"), "positive");
+				},
 			},
 		);
 	}
@@ -179,18 +180,19 @@ export function UnitsTable({ units }: UnitsTableProps) {
 											<LuTruck className="h-4 w-4" />
 										</Button>
 									</Tooltip>
-									<Tooltip content={t("admin.units.row.delete")}>
-										<Button
+									<ConfirmActionButton
 											aria-label={t("admin.units.row.delete")}
+											confirmation={t("admin.units.row.deleteConfirm", { name: unit.name })}
+											confirmLabel={t("admin.units.row.delete")}
 											disabled={remove.isPending}
-											onClick={() => deleteUnit(unit.id, unit.name)}
+											idleIcon={<LuTrash2 className="h-4 w-4" />}
+											onConfirm={() => deleteUnit(unit.id)}
 											size="icon"
 											type="button"
 											variant="outline"
 										>
-											<LuTrash2 className="h-4 w-4" />
-										</Button>
-									</Tooltip>
+											{null}
+										</ConfirmActionButton>
 								</div>
 							</td>
 						</tr>

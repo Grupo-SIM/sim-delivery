@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import {
 	type GetStaff200,
@@ -8,7 +9,7 @@ import {
 	useDeleteStaffByStaffId,
 	usePatchStaffByStaffId,
 } from "@/lib/api";
-import { showAlert, showConfirm } from "@/stores";
+import { showAlert, showToast } from "@/stores";
 
 type EditableRole = "manager" | "attendant" | "kitchen";
 
@@ -38,15 +39,15 @@ export function StaffRow({ member }: StaffRowProps) {
 			{ data: { role: role as EditableRole }, staffId: member.id },
 			{
 				onError: () => void showAlert(t("admin.staff.row.updateError")),
-				onSuccess: () => invalidate(),
+				onSuccess: () => {
+					void invalidate();
+					showToast(t("admin.staff.row.removeSuccess"), "positive");
+				},
 			},
 		);
 	}
 
-	async function removeMember() {
-		if (!(await showConfirm(t("admin.staff.row.removeConfirm", { name: member.name })))) {
-			return;
-		}
+	function removeMember() {
 		remove.mutate(
 			{ staffId: member.id },
 			{
@@ -71,15 +72,17 @@ export function StaffRow({ member }: StaffRowProps) {
 			</td>
 			<td className="px-4 py-3 text-right">
 				{isEditableRole && (
-					<Button
+					<ConfirmActionButton
+						confirmation={t("admin.staff.row.removeConfirm", { name: member.name })}
+						confirmLabel={t("admin.staff.row.remove")}
 						disabled={remove.isPending}
-						onClick={removeMember}
+						onConfirm={removeMember}
 						size="sm"
 						type="button"
 						variant="outline"
 					>
 						{t("admin.staff.row.remove")}
-					</Button>
+					</ConfirmActionButton>
 				)}
 			</td>
 		</tr>
