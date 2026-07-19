@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { CustomSelect } from "@/components/ui/CustomSelect";
@@ -28,6 +29,7 @@ interface OptionGroupEditorProps {
 
 export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEditorProps) {
 	const { t } = useTranslation();
+	const [isExpanded, setIsExpanded] = useState(true);
 	const [name, setName] = useState(group.name);
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
 	const [optionName, setOptionName, flushOptionName] = useDebouncedInput("", () => undefined);
@@ -55,114 +57,137 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 	}
 
 	return (
-		<section className="space-y-3 rounded border border-border p-3">
-			<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-				<Label>
-					<span>{t("admin.products.options.groupName")}</span>
-					<Input
-						onBlur={() => {
-							flushName();
-							onChange({ ...group, name: localName });
-						}}
-						onChange={event => setLocalName(event.currentTarget.value)}
-						placeholder={t("admin.products.options.groupPlaceholder")}
-						value={localName}
-					/>
-				</Label>
-				<Label>
-					<span>{t("admin.products.options.minSelect")}</span>
-					<NumericInput
-						decimalScale={0}
-						onValueChange={({ floatValue }) => onChange({ ...group, minSelect: floatValue ?? 0 })}
-						placeholder="0"
-						value={group.minSelect}
-					/>
-				</Label>
-				<Label>
-					<span>{t("admin.products.options.maxSelect")}</span>
-					<NumericInput
-						decimalScale={0}
-						onValueChange={({ floatValue }) => onChange({ ...group, maxSelect: floatValue ?? 1 })}
-						placeholder="1"
-						value={group.maxSelect}
-					/>
-				</Label>
-				<Label>
-					<span>{t("admin.products.options.selectionType")}</span>
-					<CustomSelect
-						onChange={selectionType =>
-							onChange({
-								...group,
-								maxSelect: selectionType === "single" ? 1 : group.maxSelect,
-								selectionType: selectionType as OptionGroup["selectionType"],
-							})
-						}
-						options={[
-							{ label: t("admin.products.options.single"), value: "single" },
-							{ label: t("admin.products.options.multi"), value: "multi" },
-						]}
-						value={group.selectionType}
-					/>
-				</Label>
-				<Label>
-					<span>{t("admin.products.options.priceRule")}</span>
-					<CustomSelect
-						onChange={priceRule => onChange({ ...group, priceRule: priceRule as OptionGroup["priceRule"] })}
-						options={[
-							{ label: t("admin.products.options.sum"), value: "sum" },
-							{ label: t("admin.products.options.highest"), value: "highest" },
-							{ label: t("admin.products.options.average"), value: "average" },
-						]}
-						value={group.priceRule}
-					/>
-				</Label>
-				<Label>
-					<span>{t("admin.products.options.sortOrder")}</span>
-					<NumericInput
-						decimalScale={0}
-						onValueChange={({ floatValue }) => onChange({ ...group, sortOrder: floatValue ?? 0 })}
-						placeholder="0"
-						value={group.sortOrder}
-					/>
-				</Label>
-			</div>
-			<ConfirmActionButton
-				confirmation={t("admin.products.options.deleteGroupConfirm")}
-				confirmLabel={t("admin.products.options.delete")}
-				onConfirm={onDelete}
-				type="button"
-				variant="outline"
-			>
-				{t("admin.products.options.delete")}
-			</ConfirmActionButton>
-			<div className="space-y-2">
-				{group.options.map(option => (
-					<OptionEditor
-						key={option.id}
-						onChange={value =>
-							onChange({
-								...group,
-								options: group.options.map(item => (item.id === option.id ? value : item)),
-							})
-						}
-						onDelete={() =>
-							onChange({ ...group, options: group.options.filter(item => item.id !== option.id) })
-						}
-						option={option}
-					/>
-				))}
-			</div>
-			<div className="flex gap-2">
-				<Input
-					onBlur={flushOptionName}
-					onChange={event => setOptionName(event.currentTarget.value)}
-					placeholder={t("admin.products.options.optionPlaceholder")}
-					value={optionName}
-				/>
-				<Button disabled={!optionName.trim()} onClick={addOption} type="button" variant="outline">
-					{t("admin.products.options.addOption")}
+		<section className="overflow-hidden rounded-lg border border-border bg-surface">
+			<div className="flex items-center justify-between gap-3 border-border border-b bg-muted/30 px-4 py-3">
+				<div className="min-w-0">
+					<p className="truncate font-semibold">{group.name}</p>
+					<p className="text-muted-foreground text-sm">
+						{t("admin.products.options.optionCount", { count: group.options.length })}
+					</p>
+				</div>
+				<Button
+					aria-expanded={isExpanded}
+					onClick={() => setIsExpanded(current => !current)}
+					type="button"
+					variant="outline"
+				>
+					{isExpanded ? <LuChevronUp className="h-4 w-4" /> : <LuChevronDown className="h-4 w-4" />}
+					{isExpanded ? t("admin.products.options.collapse") : t("admin.products.options.expand")}
 				</Button>
 			</div>
+			{isExpanded && (
+				<div className="space-y-4 p-4">
+					<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+						<Label>
+							<span>{t("admin.products.options.groupName")}</span>
+							<Input
+								onBlur={() => {
+									flushName();
+									onChange({ ...group, name: localName });
+								}}
+								onChange={event => setLocalName(event.currentTarget.value)}
+								placeholder={t("admin.products.options.groupPlaceholder")}
+								value={localName}
+							/>
+						</Label>
+						<Label>
+							<span>{t("admin.products.options.minSelect")}</span>
+							<NumericInput
+								decimalScale={0}
+								onValueChange={({ floatValue }) => onChange({ ...group, minSelect: floatValue ?? 0 })}
+								placeholder="0"
+								value={group.minSelect}
+							/>
+						</Label>
+						<Label>
+							<span>{t("admin.products.options.maxSelect")}</span>
+							<NumericInput
+								decimalScale={0}
+								onValueChange={({ floatValue }) => onChange({ ...group, maxSelect: floatValue ?? 1 })}
+								placeholder="1"
+								value={group.maxSelect}
+							/>
+						</Label>
+						<Label>
+							<span>{t("admin.products.options.selectionType")}</span>
+							<CustomSelect
+								onChange={selectionType =>
+									onChange({
+										...group,
+										maxSelect: selectionType === "single" ? 1 : group.maxSelect,
+										selectionType: selectionType as OptionGroup["selectionType"],
+									})
+								}
+								options={[
+									{ label: t("admin.products.options.single"), value: "single" },
+									{ label: t("admin.products.options.multi"), value: "multi" },
+								]}
+								value={group.selectionType}
+							/>
+						</Label>
+						<Label>
+							<span>{t("admin.products.options.priceRule")}</span>
+							<CustomSelect
+								onChange={priceRule =>
+									onChange({ ...group, priceRule: priceRule as OptionGroup["priceRule"] })
+								}
+								options={[
+									{ label: t("admin.products.options.sum"), value: "sum" },
+									{ label: t("admin.products.options.highest"), value: "highest" },
+									{ label: t("admin.products.options.average"), value: "average" },
+								]}
+								value={group.priceRule}
+							/>
+						</Label>
+						<Label>
+							<span>{t("admin.products.options.sortOrder")}</span>
+							<NumericInput
+								decimalScale={0}
+								onValueChange={({ floatValue }) => onChange({ ...group, sortOrder: floatValue ?? 0 })}
+								placeholder="0"
+								value={group.sortOrder}
+							/>
+						</Label>
+					</div>
+					<ConfirmActionButton
+						confirmation={t("admin.products.options.deleteGroupConfirm")}
+						confirmLabel={t("admin.products.options.delete")}
+						onConfirm={onDelete}
+						type="button"
+						variant="outline"
+					>
+						{t("admin.products.options.delete")}
+					</ConfirmActionButton>
+					<div className="max-h-[30rem] space-y-2 overflow-y-auto pr-1">
+						{group.options.map(option => (
+							<OptionEditor
+								key={option.id}
+								onChange={value =>
+									onChange({
+										...group,
+										options: group.options.map(item => (item.id === option.id ? value : item)),
+									})
+								}
+								onDelete={() =>
+									onChange({ ...group, options: group.options.filter(item => item.id !== option.id) })
+								}
+								option={option}
+							/>
+						))}
+					</div>
+					<div className="flex gap-2 border-border border-t pt-4">
+						<Input
+							onBlur={flushOptionName}
+							onChange={event => setOptionName(event.currentTarget.value)}
+							placeholder={t("admin.products.options.optionPlaceholder")}
+							value={optionName}
+						/>
+						<Button disabled={!optionName.trim()} onClick={addOption} type="button" variant="outline">
+							{t("admin.products.options.addOption")}
+						</Button>
+					</div>
+				</div>
+			)}
 		</section>
 	);
 }
