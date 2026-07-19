@@ -203,7 +203,12 @@ function ProductOptionsEditor({ product }, ref) {
 					placeholder={t("admin.products.options.groupPlaceholder")}
 					value={localName}
 				/>
-				<Button disabled={createGroup.isPending || !localName.trim()} onClick={addGroup} type="button">
+				<Button
+					className="shrink-0 px-4"
+					disabled={createGroup.isPending || !localName.trim()}
+					onClick={addGroup}
+					type="button"
+				>
 					{t("admin.products.options.addGroup")}
 				</Button>
 			</div>

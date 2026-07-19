@@ -401,7 +401,7 @@
 				"empty": "Nenhum produto ainda.",
 				"loadError": "Não foi possível carregar os produtos.",
 				"options": {
-					"addGroup": "Adicionar grupo",
+					"addGroup": "Adicionar",
 					"addOption": "Adicionar opção",
 					"available": "Disponível",
 					"average": "Média",
