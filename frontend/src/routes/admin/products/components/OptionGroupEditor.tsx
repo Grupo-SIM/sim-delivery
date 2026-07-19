@@ -6,63 +6,36 @@ import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
-import {
-	useDeleteProductsByProductIdOptionGroupsByGroupId,
-	usePatchProductsByProductIdOptionGroupsByGroupId,
-	usePostProductsByProductIdOptionGroupsByGroupIdOptions,
-} from "@/lib/api";
-import { showToast } from "@/stores";
 import { type EditableOption, OptionEditor } from "./OptionEditor";
 
-interface OptionGroup {
+export interface OptionGroup {
 	id: string;
 	maxSelect: number;
 	minSelect: number;
 	name: string;
 	options: EditableOption[];
-	priceRule: string;
-	selectionType: string;
+	priceRule: "sum" | "highest" | "average";
+	selectionType: "single" | "multi";
 	sortOrder: number;
 }
 
 interface OptionGroupEditorProps {
 	group: OptionGroup;
-	onChange: () => void;
-	productId: string;
+	onChange: (group: OptionGroup) => void;
+	onDelete: () => void;
 }
 
-export function OptionGroupEditor({ group, onChange, productId }: OptionGroupEditorProps) {
+export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEditorProps) {
 	const { t } = useTranslation();
 	const [name, setName] = useState(group.name);
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
 	const [optionName, setOptionName] = useState("");
 	const [localOptionName, setLocalOptionName, flushOptionName] = useDebouncedInput(optionName, setOptionName);
-	const update = usePatchProductsByProductIdOptionGroupsByGroupId();
-	const remove = useDeleteProductsByProductIdOptionGroupsByGroupId();
-	const createOption = usePostProductsByProductIdOptionGroupsByGroupIdOptions();
-	const save = (data: Record<string, unknown>) =>
-		update.mutate(
-			{ data, groupId: group.id, productId },
-			{
-				onSuccess: () => {
-					onChange();
-					showToast(t("admin.products.options.saved"), "positive");
-				},
-			},
-		);
 	function addOption() {
 		flushOptionName();
 		if (!optionName.trim()) return;
-		createOption.mutate(
-			{ data: { name: optionName.trim(), priceDeltaCents: 0 }, groupId: group.id, productId },
-			{
-				onSuccess: () => {
-					setLocalOptionName("");
-					onChange();
-					showToast(t("admin.products.options.optionCreated"), "positive");
-				},
-			},
-		);
+		onChange({ ...group, options: [...group.options, { available: true, description: "", id: crypto.randomUUID(), imageUrl: null, maxPerItem: null, name: optionName.trim(), priceDeltaCents: 0, sortOrder: group.options.length }] });
+		setLocalOptionName("");
 	}
 	return (
 		<section className="space-y-3 rounded border border-border p-3">
@@ -70,7 +43,7 @@ export function OptionGroupEditor({ group, onChange, productId }: OptionGroupEdi
 				<Input
 					onBlur={() => {
 						flushName();
-						save({ name: localName });
+						onChange({ ...group, name: localName });
 					}}
 					onChange={event => setLocalName(event.currentTarget.value)}
 					placeholder={t("admin.products.options.groupPlaceholder")}
@@ -78,19 +51,19 @@ export function OptionGroupEditor({ group, onChange, productId }: OptionGroupEdi
 				/>
 				<NumericInput
 					decimalScale={0}
-					onValueChange={({ floatValue }) => save({ minSelect: floatValue ?? 0 })}
+			onValueChange={({ floatValue }) => onChange({ ...group, minSelect: floatValue ?? 0 })}
 					placeholder="0"
 					value={group.minSelect}
 				/>
 				<NumericInput
 					decimalScale={0}
-					onValueChange={({ floatValue }) => save({ maxSelect: floatValue ?? 1 })}
+			onValueChange={({ floatValue }) => onChange({ ...group, maxSelect: floatValue ?? 1 })}
 					placeholder="1"
 					value={group.maxSelect}
 				/>
 				<CustomSelect
 					onChange={selectionType =>
-						save({ maxSelect: selectionType === "single" ? 1 : group.maxSelect, selectionType })
+				onChange({ ...group, maxSelect: selectionType === "single" ? 1 : group.maxSelect, selectionType: selectionType as OptionGroup["selectionType"] })
 					}
 					options={[
 						{ label: t("admin.products.options.single"), value: "single" },
@@ -99,7 +72,7 @@ export function OptionGroupEditor({ group, onChange, productId }: OptionGroupEdi
 					value={group.selectionType}
 				/>
 				<CustomSelect
-					onChange={priceRule => save({ priceRule })}
+			onChange={priceRule => onChange({ ...group, priceRule: priceRule as OptionGroup["priceRule"] })}
 					options={[
 						{ label: t("admin.products.options.sum"), value: "sum" },
 						{ label: t("admin.products.options.highest"), value: "highest" },
@@ -109,14 +82,14 @@ export function OptionGroupEditor({ group, onChange, productId }: OptionGroupEdi
 				/>
 				<NumericInput
 					decimalScale={0}
-					onValueChange={({ floatValue }) => save({ sortOrder: floatValue ?? 0 })}
+			onValueChange={({ floatValue }) => onChange({ ...group, sortOrder: floatValue ?? 0 })}
 					placeholder="0"
 					value={group.sortOrder}
 				/>
 				<ConfirmActionButton
 					confirmation={t("admin.products.options.deleteGroupConfirm")}
 					confirmLabel={t("admin.products.options.delete")}
-					onConfirm={() => remove.mutate({ groupId: group.id, productId }, { onSuccess: onChange })}
+			onConfirm={onDelete}
 					type="button"
 					variant="outline"
 				>
@@ -126,11 +99,10 @@ export function OptionGroupEditor({ group, onChange, productId }: OptionGroupEdi
 			<div className="space-y-2">
 				{group.options.map(option => (
 					<OptionEditor
-						groupId={group.id}
-						key={option.id}
-						onChange={onChange}
-						option={option}
-						productId={productId}
+					key={option.id}
+					onChange={value => onChange({ ...group, options: group.options.map(item => item.id === option.id ? value : item) })}
+					onDelete={() => onChange({ ...group, options: group.options.filter(item => item.id !== option.id) })}
+					option={option}
 					/>
 				))}
 			</div>
