@@ -147,7 +147,7 @@ export function OptionGroupEditor({
 				title={t("admin.products.options.editGroup")}
 			>
 				<div className="space-y-4">
-					<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+					<div className="grid gap-3 md:grid-cols-2">
 						<Label>
 							<span>{t("admin.products.options.groupName")}</span>
 							<Input
@@ -159,20 +159,6 @@ export function OptionGroupEditor({
 								className="text-foreground"
 								placeholder={t("admin.products.options.groupPlaceholder")}
 								value={localName}
-							/>
-						</Label>
-						<Label>
-							<span>{t("admin.products.options.priceRule")}</span>
-							<CustomSelect
-								onChange={priceRule =>
-									onChange({ ...group, priceRule: priceRule as OptionGroup["priceRule"] })
-								}
-								options={[
-									{ label: t("admin.products.options.sum"), value: "sum" },
-									{ label: t("admin.products.options.highest"), value: "highest" },
-									{ label: t("admin.products.options.average"), value: "average" },
-								]}
-								value={group.priceRule}
 							/>
 						</Label>
 						<Label>
@@ -193,26 +179,47 @@ export function OptionGroupEditor({
 							/>
 						</Label>
 						{group.selectionType === "multi" && (
-							<>
-								<Label>
-									<span>{t("admin.products.options.minSelect")}</span>
-									<NumericInput
-										decimalScale={0}
-										onValueChange={({ floatValue }) => onChange({ ...group, minSelect: floatValue ?? 0 })}
-										placeholder="0"
-										value={group.minSelect}
+							<div className="flex flex-wrap items-end gap-3 md:col-span-2">
+								<div className="space-y-1">
+									<p className="font-medium text-sm">{t("admin.products.options.choices")}</p>
+									<div className="flex gap-2">
+										<Label>
+											<span className="text-muted-foreground">{t("admin.products.options.min")}</span>
+											<NumericInput
+												className="w-20"
+												decimalScale={0}
+												onValueChange={({ floatValue }) => onChange({ ...group, minSelect: floatValue ?? 0 })}
+												placeholder="0"
+												value={group.minSelect}
+											/>
+										</Label>
+										<Label>
+											<span className="text-muted-foreground">{t("admin.products.options.max")}</span>
+											<NumericInput
+												className="w-20"
+												decimalScale={0}
+												onValueChange={({ floatValue }) => onChange({ ...group, maxSelect: floatValue ?? 1 })}
+												placeholder="1"
+												value={group.maxSelect}
+											/>
+										</Label>
+									</div>
+								</div>
+								<Label className="w-52">
+									<span>{t("admin.products.options.priceRule")}</span>
+									<CustomSelect
+										onChange={priceRule =>
+											onChange({ ...group, priceRule: priceRule as OptionGroup["priceRule"] })
+										}
+										options={[
+											{ label: t("admin.products.options.sum"), value: "sum" },
+											{ label: t("admin.products.options.highest"), value: "highest" },
+											{ label: t("admin.products.options.average"), value: "average" },
+										]}
+										value={group.priceRule}
 									/>
 								</Label>
-								<Label>
-									<span>{t("admin.products.options.maxSelect")}</span>
-									<NumericInput
-										decimalScale={0}
-										onValueChange={({ floatValue }) => onChange({ ...group, maxSelect: floatValue ?? 1 })}
-										placeholder="1"
-										value={group.maxSelect}
-									/>
-								</Label>
-							</>
+							</div>
 						)}
 					</div>
 					<ConfirmActionButton
