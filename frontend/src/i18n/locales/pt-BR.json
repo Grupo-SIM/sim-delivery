@@ -525,7 +525,8 @@
 				"columns": {
 					"email": "E-mail",
 					"name": "Nome",
-					"role": "Cargo"
+					"role": "Cargo",
+					"units": "Unidades"
 				},
 				"empty": "Nenhum funcionário ainda.",
 				"invite": {
@@ -538,7 +539,8 @@
 					"password": "Senha temporária",
 					"role": "Cargo",
 					"submit": "Convidar funcionário",
-					"submitting": "Convidando..."
+					"submitting": "Convidando...",
+					"units": "Unidades atendidas"
 				},
 				"loadError": "Não foi possível carregar a equipe.",
 				"roles": {
@@ -553,7 +555,8 @@
 					"removeConfirm": "Remover {{name}} da equipe?",
 					"removeError": "Não foi possível remover o funcionário.",
 					"removeSuccess": "Funcionário removido.",
-					"updateError": "Não foi possível atualizar o cargo."
+					"updateError": "Não foi possível atualizar o funcionário.",
+					"updateSuccess": "Funcionário atualizado."
 				},
 				"subtitle": "Pessoas que gerenciam esta empresa.",
 				"title": "Equipe"

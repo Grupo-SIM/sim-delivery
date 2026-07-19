@@ -13,8 +13,18 @@ const baseDelivery = {
 	unitId: "unit_1",
 };
 
-function makeAssignPrisma(opts: { order?: typeof baseOrder | null; existing?: typeof baseDelivery | null }) {
-	const { order = baseOrder, existing = null } = opts;
+function makeAssignPrisma(opts: {
+	courier?: { companyId: string; id: string; role: string } | null;
+	courierUnit?: { courierId: string; unitId: string } | null;
+	existing?: typeof baseDelivery | null;
+	order?: typeof baseOrder | null;
+}) {
+	const {
+		courier = { companyId: "cmp_1", id: "courier_1", role: "courier" },
+		courierUnit = { courierId: "courier_1", unitId: "unit_1" },
+		order = baseOrder,
+		existing = null,
+	} = opts;
 	const created: object[] = [];
 
 	const prisma = {
@@ -36,6 +46,12 @@ function makeAssignPrisma(opts: { order?: typeof baseOrder | null; existing?: ty
 		order: {
 			findFirst: async ({ where }: { where: { companyId: string; id: string } }) =>
 				order?.companyId === where.companyId && order?.id === where.id ? order : null,
+		},
+		courierUnit: {
+			findUnique: async () => courierUnit,
+		},
+		user: {
+			findFirst: async () => courier,
 		},
 	} as unknown as PrismaInstance;
 
@@ -63,6 +79,13 @@ describe("AssignDelivery", () => {
 		await expect(
 			new AssignDelivery(prisma).execute("cmp_1", { courierId: "courier_1", orderId: "ord_1" }),
 		).rejects.toThrow("ORDER_NOT_DELIVERY");
+	});
+
+	it("throws COURIER_NOT_AVAILABLE when courier is outside order unit", async () => {
+		const { prisma } = makeAssignPrisma({ courierUnit: null });
+		await expect(
+			new AssignDelivery(prisma).execute("cmp_1", { courierId: "courier_1", orderId: "ord_1" }),
+		).rejects.toThrow("COURIER_NOT_AVAILABLE");
 	});
 
 	it("throws ORDER_ALREADY_ASSIGNED when delivery exists", async () => {

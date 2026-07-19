@@ -7,13 +7,23 @@ export class ListStaff {
 	async execute(companyId: string | null): Promise<StaffListReturn> {
 		const staff = await this.prisma.user.findMany({
 			orderBy: { createdAt: "asc" },
-			select: { createdAt: true, email: true, id: true, name: true, role: true },
+			select: {
+				courierUnits: { select: { unitId: true } },
+				createdAt: true,
+				email: true,
+				id: true,
+				name: true,
+				role: true,
+			},
 			where: {
 				...(companyId ? { companyId } : {}),
 				role: { in: ["owner", "manager", "attendant", "kitchen", "courier"] },
 			},
 		});
 
-		return staff as StaffListReturn;
+		return staff.map(({ courierUnits, ...member }) => ({
+			...member,
+			unitIds: courierUnits.map(({ unitId }) => unitId),
+		})) as StaffListReturn;
 	}
 }

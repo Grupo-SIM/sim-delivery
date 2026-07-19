@@ -5,5 +5,6 @@ export const InviteStaffBody = t.Object({
 	name: t.String({ minLength: 1 }),
 	password: t.String({ minLength: 6 }),
 	role: t.Union([t.Literal("manager"), t.Literal("attendant"), t.Literal("kitchen"), t.Literal("courier")]),
+	unitIds: t.Optional(t.Array(t.String({ minLength: 1 }))),
 });
 export type InviteStaffBody = typeof InviteStaffBody.static;

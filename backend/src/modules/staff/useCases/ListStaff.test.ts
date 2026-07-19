@@ -7,7 +7,7 @@ function fakePrisma(capture: { where?: unknown } = {}) {
 		user: {
 			findMany: async ({ where }: { where: unknown }) => {
 				capture.where = where;
-				return [{ createdAt: new Date(), email: "a@b.c", id: "u1", name: "Owner", role: "owner" }];
+				return [{ courierUnits: [], createdAt: new Date(), email: "a@b.c", id: "u1", name: "Owner", role: "owner" }];
 			},
 		},
 	} as unknown as PrismaInstance;

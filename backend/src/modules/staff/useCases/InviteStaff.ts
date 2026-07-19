@@ -14,10 +14,12 @@ export class InviteStaff {
 		private readonly signUp: SignUpFn,
 	) {}
 
-	async execute({ companyId, email, name, password, role }: InviteStaffDTO): Promise<StaffReturn> {
+	async execute({ companyId, email, name, password, role, unitIds = [] }: InviteStaffDTO): Promise<StaffReturn> {
 		if (!companyId) {
 			throw new DomainError(StaffErrors.NO_COMPANY);
 		}
+		if (role === "courier" && unitIds.length === 0) throw new DomainError(StaffErrors.COURIER_UNIT_REQUIRED);
+		if (role === "courier") await this.ensureCompanyUnits(companyId, unitIds);
 
 		const existing = await this.prisma.user.findUnique({ where: { email } });
 		if (existing) {
@@ -31,7 +33,23 @@ export class InviteStaff {
 			select: { createdAt: true, email: true, id: true, name: true, role: true },
 			where: { id: user.id },
 		});
+		if (role === "courier" && unitIds.length > 0) {
+			await this.prisma.courierUnit.createMany({
+				data: unitIds.map(unitId => ({ courierId: staff.id, unitId })),
+			});
+		}
 
-		return staff as StaffReturn;
+		return { ...staff, unitIds: role === "courier" ? unitIds : [] } as StaffReturn;
+	}
+
+	private async ensureCompanyUnits(companyId: string, unitIds: string[]) {
+		const uniqueUnitIds = [...new Set(unitIds)];
+		if (uniqueUnitIds.length === 0) return;
+
+		const units = await this.prisma.unit.findMany({
+			select: { id: true },
+			where: { companyId, id: { in: uniqueUnitIds } },
+		});
+		if (units.length !== uniqueUnitIds.length) throw new DomainError(StaffErrors.UNIT_NOT_FOUND);
 	}
 }

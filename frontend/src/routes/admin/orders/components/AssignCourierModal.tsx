@@ -9,7 +9,7 @@ import {
 	getDeliveriesQueryKey,
 	getOrdersQueryKey,
 	useGetDeliveries,
-	useGetStaff,
+	useGetStaffCouriers,
 	usePostDeliveries,
 } from "@/lib/api";
 import { showAlert } from "@/stores";
@@ -29,7 +29,9 @@ export function AssignCourierModal({ isOpen, onClose, orderId }: AssignCourierMo
 	const { data: deliveries, isPending: deliveriesPending } = useGetDeliveries(undefined, {
 		query: { enabled: isOpen },
 	});
-	const { data: staff, isPending: staffPending } = useGetStaff();
+	const { data: couriers, isPending: couriersPending } = useGetStaffCouriers({
+		query: { enabled: isOpen },
+	});
 
 	const [courierId, setCourierId] = useState("");
 
@@ -38,8 +40,8 @@ export function AssignCourierModal({ isOpen, onClose, orderId }: AssignCourierMo
 			.filter(delivery => BUSY_DELIVERY_STATUSES.has(delivery.status))
 			.map(delivery => delivery.courierId),
 	);
-	const couriers = (staff ?? []).filter(s => s.role === "courier" && !busyCourierIds.has(s.id));
-	const courierOptions = couriers.map(c => ({ label: c.name, value: c.id }));
+	const availableCouriers = (couriers ?? []).filter(courier => !busyCourierIds.has(courier.id));
+	const courierOptions = availableCouriers.map(courier => ({ label: courier.name, value: courier.id }));
 
 	function handleClose() {
 		setCourierId("");
@@ -65,9 +67,9 @@ export function AssignCourierModal({ isOpen, onClose, orderId }: AssignCourierMo
 	return (
 		<Modal isOpen={isOpen} maxWidth="420px" onClose={handleClose} title={t("admin.deliveries.assign.title")}>
 			<div className="space-y-4">
-				{deliveriesPending || staffPending ? (
+				{deliveriesPending || couriersPending ? (
 					<Skeleton className="h-10 w-full" />
-				) : couriers.length === 0 ? (
+				) : availableCouriers.length === 0 ? (
 					<p className="text-muted-foreground text-sm">{t("admin.deliveries.assign.noAvailableCouriers")}</p>
 				) : (
 					<>
@@ -87,7 +89,11 @@ export function AssignCourierModal({ isOpen, onClose, orderId }: AssignCourierMo
 					</Button>
 					<Button
 						disabled={
-							!courierId || assign.isPending || deliveriesPending || staffPending || couriers.length === 0
+							!courierId ||
+							assign.isPending ||
+							deliveriesPending ||
+							couriersPending ||
+							availableCouriers.length === 0
 						}
 						onClick={submit}
 						type="button"

@@ -15,6 +15,14 @@ export class AssignDelivery {
 		if (!order) throw new DomainError(DeliveryErrors.ORDER_NOT_FOUND);
 		if (order.deliveryMethod !== "delivery") throw new DomainError(DeliveryErrors.ORDER_NOT_DELIVERY);
 
+		const courier = await this.prisma.user.findFirst({
+			where: { companyId: order.companyId, id: courierId, role: "courier" },
+		});
+		const courierUnit = courier
+			? await this.prisma.courierUnit.findUnique({ where: { courierId_unitId: { courierId, unitId: order.unitId } } })
+			: null;
+		if (!courierUnit) throw new DomainError(DeliveryErrors.COURIER_NOT_AVAILABLE);
+
 		const existing = await this.prisma.delivery.findUnique({ where: { orderId } });
 		if (existing) throw new DomainError(DeliveryErrors.ORDER_ALREADY_ASSIGNED);
 

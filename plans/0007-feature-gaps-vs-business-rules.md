@@ -69,7 +69,7 @@ contra o código atual (caminhos citados são a evidência do estado real).
   protegidos por `customers:read`, SDK regenerado, páginas `/admin/customers` e
   `/admin/customers/$customerId`, navegação e traduções.
 
-### Gap 3 — Gestão de motoboys (couriers) no painel — **MVP**
+### Gap 3 — Gestão de motoboys (couriers) no painel — **MVP** ✅ Concluído
 
 - **Regra:** `docs/11` + `docs/03` — `courier` é vinculado à empresa/unidade e recebe
   atribuições; `docs/10` cita gestão de staff. Atribuição depende de existir courier.
@@ -77,10 +77,11 @@ contra o código atual (caminhos citados são a evidência do estado real).
   (`frontend/src/routes/admin/orders/components/AssignCourierModal.tsx:9-12`) e
   `AssignDelivery` recebe `courierId` pronto (`backend/src/modules/deliveries/useCases/AssignDelivery.ts:10`).
   `InviteStaff` não trata o papel `courier` como fluxo dedicado.
-- **Falta:** confirmar/definir criação de courier (via staff com role `courier` ou módulo
-  próprio), `ListCouriers` para popular a atribuição de forma explícita, e superfície de
-  gestão no painel (lista de motoboys + vínculo a unidades). Decidir autenticação do courier
-  (ponto em aberto em `docs/11`) antes de expandir.
+- **Entregue:** courier definido como staff Better Auth com role `courier`; convite exige
+  vínculo a pelo menos uma unidade. Gestão de equipe permite editar papéis, vínculos de
+  unidade e remoção de couriers. `GET /staff/couriers` alimenta atribuição explicitamente,
+  e `AssignDelivery` valida company, role e vínculo do courier à unidade do pedido. Testes
+  cobrem listagem, isolamento de unidade e rejeição de courier indisponível.
 
 ### Gap 4 — Notificações de status configuráveis por WhatsApp — **MVP (parcial)**
 

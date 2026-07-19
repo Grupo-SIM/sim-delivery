@@ -55,6 +55,18 @@ describe("InviteStaff", () => {
 		);
 	});
 
+	it("requires at least one unit for a courier", async () => {
+		const { prisma } = fakePrisma();
+		await expect(
+			new InviteStaff(prisma, signUp).execute({
+				...baseInput,
+				companyId: "cmp_1",
+				role: "courier",
+				unitIds: [],
+			}),
+		).rejects.toThrow("COURIER_UNIT_REQUIRED");
+	});
+
 	it("throws EMAIL_TAKEN when the email already exists", async () => {
 		const { prisma } = fakePrisma(["new@staff.com"]);
 		await expect(
