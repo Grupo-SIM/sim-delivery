@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuListPlus, LuPencil, LuStore, LuTags, LuTrash2 } from "react-icons/lu";
+import { LuPencil, LuStore, LuTags, LuTrash2 } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
@@ -9,7 +9,6 @@ import { Tooltip } from "@/components/ui/Tooltip";
 import { getProductsQueryKey, useDeleteProductsByProductId } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 import { ProductEditModal } from "./ProductEditModal";
-import { ProductOptionsModal } from "./ProductOptionsModal";
 import { ProductTaxonomyModal } from "./ProductTaxonomyModal";
 import { ProductUnitsModal } from "./ProductUnitsModal";
 import type { Product } from "./types";
@@ -26,7 +25,6 @@ export function ProductRow({ product }: ProductRowProps) {
 	const [editing, setEditing] = useState(false);
 	const [managingUnits, setManagingUnits] = useState(false);
 	const [managingTaxonomy, setManagingTaxonomy] = useState(false);
-	const [managingOptions, setManagingOptions] = useState(false);
 	const remove = useDeleteProductsByProductId();
 
 	function del() {
@@ -107,17 +105,6 @@ export function ProductRow({ product }: ProductRowProps) {
 								<LuStore className="h-4 w-4" />
 							</Button>
 						</Tooltip>
-						<Tooltip content="Customizações">
-							<Button
-								aria-label="Customizações"
-								onClick={() => setManagingOptions(true)}
-								size="icon"
-								type="button"
-								variant="outline"
-							>
-								<LuListPlus className="h-4 w-4" />
-							</Button>
-						</Tooltip>
 						<Tooltip content={t("admin.products.edit.action")}>
 							<Button
 								aria-label={t("admin.products.edit.action")}
@@ -161,10 +148,6 @@ export function ProductRow({ product }: ProductRowProps) {
 			<ProductTaxonomyModal
 				onClose={() => setManagingTaxonomy(false)}
 				product={managingTaxonomy ? product : null}
-			/>
-			<ProductOptionsModal
-				onClose={() => setManagingOptions(false)}
-				product={managingOptions ? product : null}
 			/>
 		</>
 	);

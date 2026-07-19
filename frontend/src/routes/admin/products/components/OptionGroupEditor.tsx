@@ -61,7 +61,6 @@ export function OptionGroupEditor({
 					description: "",
 					id: crypto.randomUUID(),
 					imageUrl: null,
-					maxPerItem: null,
 					name: optionName.trim(),
 					priceDeltaCents: 0,
 					sortOrder: group.options.length,

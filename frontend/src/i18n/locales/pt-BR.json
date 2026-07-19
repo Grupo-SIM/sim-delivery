@@ -414,7 +414,6 @@
 					"groupName": "Nome do grupo",
 					"groupPlaceholder": "Ex: Escolha o sabor",
 					"highest": "Maior preço",
-					"maxPerItem": "Máx. por item",
 					"maxSelect": "Máximo de escolhas",
 					"minimize": "Minimizar",
 					"minSelect": "Mínimo de escolhas",
@@ -427,14 +426,14 @@
 					"optionList": "Opções",
 					"optionName": "Nome",
 					"optionPlaceholder": "Ex: Calabresa",
-					"priceDelta": "Acréscimo",
+					"priceDelta": "Valor",
 					"priceRule": "Regra de preço",
 					"reorder": "Arraste para ordenar",
 					"saved": "Customização salva",
 					"selectionType": "Tipo de escolha",
 					"single": "Escolha única",
 					"sum": "Somar preços",
-					"title": "Customizações · {{title}}"
+					"title": "Customizações"
 				},
 				"row": {
 					"cashbackPercent": "{{value}}%",

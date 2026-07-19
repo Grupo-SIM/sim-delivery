@@ -14,7 +14,6 @@ export interface EditableOption {
 	description: string;
 	id: string;
 	imageUrl: string | null;
-	maxPerItem: number | null;
 	name: string;
 	priceDeltaCents: number;
 	sortOrder: number;
@@ -49,13 +48,13 @@ export function OptionEditor({
 	const [imageUrl, setImageUrl] = useState(option.imageUrl ?? "");
 	return (
 		<div
-			className="grid grid-cols-[auto_minmax(0,1fr)] items-end gap-x-3 gap-y-4 rounded border border-border bg-muted/20 p-4 md:grid-cols-[auto_repeat(3,minmax(0,1fr))]"
+			className="grid grid-cols-[auto_minmax(0,1fr)] items-end gap-x-3 gap-y-4 rounded border border-border bg-muted/20 p-4"
 			onDragOver={onDragOver}
 			onDrop={onDrop}
 		>
 			<button
 				aria-label={t("admin.products.options.reorder")}
-				className="row-span-3 cursor-grab self-center justify-self-start rounded p-1 text-muted-foreground active:cursor-grabbing"
+				className="row-span-2 cursor-grab self-center justify-self-start rounded p-1 text-muted-foreground active:cursor-grabbing"
 				draggable
 				onDragEnd={onDragEnd}
 				onDragStart={event => {
@@ -67,7 +66,8 @@ export function OptionEditor({
 			>
 				<LuGripVertical className="h-5 w-5" />
 			</button>
-			<Label>
+			<div className="grid min-w-0 grid-cols-2 gap-x-3 gap-y-4">
+			<Label className="min-w-0">
 				<span>{t("admin.products.options.optionName")}</span>
 				<Input
 					onBlur={() => {
@@ -79,7 +79,33 @@ export function OptionEditor({
 					value={localName}
 				/>
 			</Label>
-			<Label>
+			<Label className="min-w-0">
+				<span>{t("admin.products.options.optionDescription")}</span>
+				<Input
+					onBlur={() => {
+						flushDescription();
+						onChange({ ...option, description: localDescription });
+					}}
+					onChange={event => setLocalDescription(event.currentTarget.value)}
+					placeholder={t("admin.products.options.descriptionPlaceholder")}
+					value={localDescription}
+				/>
+			</Label>
+			<div className="col-span-2 grid grid-cols-[minmax(0,1fr)_6.5rem_auto] items-end gap-3">
+			<Label className="min-w-0">
+				<span>{t("admin.products.options.optionImage")}</span>
+				<MediaUrlInput
+					asset="product"
+					onUploadError={() => undefined}
+					onValueChange={value => {
+						setImageUrl(value);
+						onChange({ ...option, imageUrl: value || null });
+					}}
+					uploadLabel={t("admin.products.options.optionImage")}
+					value={imageUrl}
+				/>
+			</Label>
+			<Label className="w-[6.5rem]">
 				<span>{t("admin.products.options.priceDelta")}</span>
 				<NumericInput
 					decimalScale={2}
@@ -93,63 +119,32 @@ export function OptionEditor({
 					value={option.priceDeltaCents / 100}
 				/>
 			</Label>
-			<Label>
-				<span>{t("admin.products.options.maxPerItem")}</span>
-				<NumericInput
-					decimalScale={0}
-					onValueChange={({ floatValue }) => onChange({ ...option, maxPerItem: floatValue ?? null })}
-					placeholder={t("admin.products.options.maxPerItem")}
-					value={Number(option.maxPerItem ?? 0)}
-				/>
-			</Label>
-			<Label>
-				<span>{t("admin.products.options.optionDescription")}</span>
-				<Input
-					onBlur={() => {
-						flushDescription();
-						onChange({ ...option, description: localDescription });
-					}}
-					onChange={event => setLocalDescription(event.currentTarget.value)}
-					placeholder={t("admin.products.options.descriptionPlaceholder")}
-					value={localDescription}
-				/>
-			</Label>
-			<Label>
-				<span>{t("admin.products.options.optionImage")}</span>
-				<MediaUrlInput
-					asset="product"
-					onUploadError={() => undefined}
-					onValueChange={value => {
-						setImageUrl(value);
-						onChange({ ...option, imageUrl: value || null });
-					}}
-					uploadLabel={t("admin.products.options.optionImage")}
-					value={imageUrl}
-				/>
-			</Label>
-			<div className="flex h-10 items-center gap-2 text-sm">
-				<Checkbox
-					checked={option.available}
-					id={`option-${option.id}-available`}
-					onChange={event => onChange({ ...option, available: event.currentTarget.checked })}
-				/>
-				<label className="cursor-pointer" htmlFor={`option-${option.id}-available`}>
-					{t("admin.products.options.available")}
-				</label>
+			<div className="flex flex-col gap-2">
+				<div className="flex items-center gap-2 text-sm">
+					<Checkbox
+						checked={option.available}
+						id={`option-${option.id}-available`}
+						onChange={event => onChange({ ...option, available: event.currentTarget.checked })}
+					/>
+					<label className="cursor-pointer" htmlFor={`option-${option.id}-available`}>
+						{t("admin.products.options.available")}
+					</label>
+				</div>
+				<ConfirmActionButton
+					aria-label={t("admin.products.options.delete")}
+					confirmation={t("admin.products.options.deleteOptionConfirm")}
+					confirmLabel={t("admin.products.options.delete")}
+					idleIcon={<LuTrash2 className="size-4" />}
+					onConfirm={onDelete}
+					size="icon"
+					type="button"
+					variant="outline"
+				>
+					{null}
+				</ConfirmActionButton>
 			</div>
-			<ConfirmActionButton
-				aria-label={t("admin.products.options.delete")}
-				className="justify-self-start"
-				confirmation={t("admin.products.options.deleteOptionConfirm")}
-				confirmLabel={t("admin.products.options.delete")}
-				idleIcon={<LuTrash2 className="size-4" />}
-				onConfirm={onDelete}
-				size="icon"
-				type="button"
-				variant="outline"
-			>
-				{t("admin.products.options.delete")}
-			</ConfirmActionButton>
+			</div>
+			</div>
 		</div>
 	);
 }

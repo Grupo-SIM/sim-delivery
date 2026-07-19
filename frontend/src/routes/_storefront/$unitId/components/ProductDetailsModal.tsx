@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { Modal } from "@/components/ui/Modal";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import type { CartItem, SelectedOption } from "@/stores";
@@ -150,14 +151,14 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 								>
 									<span>{option.name}</span>
 									{group.selectionType === "single" ? (
-										<Button
-											onClick={() => setOptionQuantity(group.id, group.name, option, selected ? 0 : 1)}
-											size="sm"
-											type="button"
-											variant={selected ? "default" : "outline"}
-										>
-											{selected ? "✓" : money.format(Number(option.priceDeltaCents) / 100)}
-										</Button>
+										<label className="flex cursor-pointer items-center gap-2">
+											<Checkbox
+												checked={Boolean(selected)}
+												id={`option-${option.id}`}
+												onChange={() => setOptionQuantity(group.id, group.name, option, selected ? 0 : 1)}
+											/>
+											<span className="text-sm">{money.format(Number(option.priceDeltaCents) / 100)}</span>
+										</label>
 									) : (
 										<div className="flex items-center gap-2">
 											<Button

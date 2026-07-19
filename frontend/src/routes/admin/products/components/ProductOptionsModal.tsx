@@ -1,9 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Modal } from "@/components/ui/Modal";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import {
 	getProductsByProductIdOptionGroupsQueryKey,
@@ -19,12 +18,16 @@ import { showToast } from "@/stores";
 import { type OptionGroup, OptionGroupEditor } from "./OptionGroupEditor";
 import type { Product } from "./types";
 
-interface ProductOptionsModalProps {
-	onClose: () => void;
+interface ProductOptionsEditorProps {
 	product: Product | null;
 }
 
-export function ProductOptionsModal({ onClose, product }: ProductOptionsModalProps) {
+export interface ProductOptionsEditorHandle {
+	save: () => Promise<void>;
+}
+
+export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, ProductOptionsEditorProps>(
+function ProductOptionsEditor({ product }, ref) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [name, setName] = useState("");
@@ -49,7 +52,6 @@ export function ProductOptionsModal({ onClose, product }: ProductOptionsModalPro
 			minSelect: Number(group.minSelect),
 			options: group.options.map(option => ({
 				...option,
-				maxPerItem: option.maxPerItem === null ? null : Number(option.maxPerItem),
 				priceDeltaCents: Number(option.priceDeltaCents),
 				sortOrder: Number(option.sortOrder),
 			})),
@@ -65,7 +67,6 @@ export function ProductOptionsModal({ onClose, product }: ProductOptionsModalPro
 				minSelect: Number(group.minSelect),
 				options: group.options.map(option => ({
 					...option,
-					maxPerItem: option.maxPerItem === null ? null : Number(option.maxPerItem),
 					priceDeltaCents: Number(option.priceDeltaCents),
 					sortOrder: Number(option.sortOrder),
 				})),
@@ -75,8 +76,6 @@ export function ProductOptionsModal({ onClose, product }: ProductOptionsModalPro
 			})),
 		);
 	}, [groups.data]);
-
-	if (!product) return null;
 
 	function addGroup() {
 		flushName();
@@ -142,7 +141,6 @@ export function ProductOptionsModal({ onClose, product }: ProductOptionsModalPro
 								available: option.available,
 								description: option.description,
 								imageUrl: option.imageUrl,
-								maxPerItem: option.maxPerItem,
 								name: option.name,
 								priceDeltaCents: option.priceDeltaCents,
 								sortOrder: option.sortOrder,
@@ -178,7 +176,6 @@ export function ProductOptionsModal({ onClose, product }: ProductOptionsModalPro
 					available: option.available,
 					description: option.description,
 					imageUrl: option.imageUrl,
-					maxPerItem: option.maxPerItem,
 					name: option.name,
 					priceDeltaCents: option.priceDeltaCents,
 					sortOrder: option.sortOrder,
@@ -190,46 +187,41 @@ export function ProductOptionsModal({ onClose, product }: ProductOptionsModalPro
 		}
 		await refresh();
 		showToast(t("admin.products.options.saved"), "positive");
-		onClose();
 	}
 
+	useImperativeHandle(ref, () => ({ save }));
+
+	if (!product) return null;
+
 	return (
-		<Modal isOpen onClose={onClose} title={t("admin.products.options.title", { title: product.title })}>
-			<div className="space-y-4">
-				<div className="flex gap-2">
-					<Input
-						onBlur={flushName}
-						onChange={event => setLocalName(event.currentTarget.value)}
-						placeholder={t("admin.products.options.groupPlaceholder")}
-						value={localName}
-					/>
-					<Button disabled={createGroup.isPending || !localName.trim()} onClick={addGroup} type="button">
-						{t("admin.products.options.addGroup")}
-					</Button>
-				</div>
-				{draftGroups.map(group => (
-					<OptionGroupEditor
-						group={group}
-						key={group.id}
-						onChange={value =>
-							setDraftGroups(current => current.map(item => (item.id === value.id ? value : item)))
-						}
-						onDelete={() => setDraftGroups(current => current.filter(item => item.id !== group.id))}
-						onDragEnd={() => setDraggedGroupId(null)}
-						onDragOver={event => event.preventDefault()}
-						onDragStart={() => setDraggedGroupId(group.id)}
-						onDrop={() => moveGroup(group.id)}
-					/>
-				))}
-				<div className="flex justify-end gap-2">
-					<Button onClick={onClose} type="button" variant="outline">
-						Cancelar
-					</Button>
-					<Button onClick={() => void save()} type="button">
-						Salvar
-					</Button>
-				</div>
+		<div className="space-y-4 border-border border-t pt-4">
+			<h3 className="font-semibold">{t("admin.products.options.title")}</h3>
+			<div className="flex gap-2">
+				<Input
+					onBlur={flushName}
+					onChange={event => setLocalName(event.currentTarget.value)}
+					placeholder={t("admin.products.options.groupPlaceholder")}
+					value={localName}
+				/>
+				<Button disabled={createGroup.isPending || !localName.trim()} onClick={addGroup} type="button">
+					{t("admin.products.options.addGroup")}
+				</Button>
 			</div>
-		</Modal>
+			{draftGroups.map(group => (
+				<OptionGroupEditor
+					group={group}
+					key={group.id}
+					onChange={value =>
+						setDraftGroups(current => current.map(item => (item.id === value.id ? value : item)))
+					}
+					onDelete={() => setDraftGroups(current => current.filter(item => item.id !== group.id))}
+					onDragEnd={() => setDraggedGroupId(null)}
+					onDragOver={event => event.preventDefault()}
+					onDragStart={() => setDraggedGroupId(group.id)}
+					onDrop={() => moveGroup(group.id)}
+				/>
+			))}
+		</div>
 	);
-}
+},
+);
