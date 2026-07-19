@@ -36,7 +36,12 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 	const allOptions: SelectOption[] = groups ? groups.flatMap(g => g.options) : (options ?? []);
 	const selected = allOptions.find(o => o.value === value);
 
-	function openDropdown() {
+	function toggleDropdown() {
+		if (open) {
+			setOpen(false);
+			return;
+		}
+
 		if (!triggerRef.current) return;
 		const rect = triggerRef.current.getBoundingClientRect();
 		setPos({ left: rect.left, top: rect.bottom + 4, width: rect.width });
@@ -82,7 +87,7 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 					"hover:border-foreground/40 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
 					className,
 				)}
-				onClick={openDropdown}
+				onClick={toggleDropdown}
 				ref={triggerRef}
 				type="button"
 			>
