@@ -92,6 +92,30 @@ Ordenar por complexidade de lógica:
 3. Frontend lógica de domínio: opções de produto (0006) + checkout.
 4. Média prioridade conforme capacidade.
 
+## Progress
+
+- [x] **Bloco 1 — backend.** `payments.test.ts` (50 testes: resolvePayingCustomer, PIX, cartão,
+  ConfirmPayment, GetPaymentStatus, ListSavedCards), `reports.test.ts` (17), `reviews.test.ts`
+  (17), `GetBranding.test.ts` + casos de escopo em `UpdateBranding.test.ts` (11). Backend:
+  272 testes passando, `check-types` limpo. Branding seguiu o padrão por arquivo já existente
+  no módulo, em vez de um `branding.test.ts` único.
+- [x] **Bloco 2 — frontend alto ROI.** `stores/auth`, `stores/dialog`, `stores/selected-unit`,
+  `stores/delivery-method`, `lib/formatMoney`, `lib/staff-guard`, `lib/super-admin-guard`
+  (incluindo o caso 429 ≠ não autenticado). Helper `stores/tests/local-storage-stub.ts` para
+  stores persistidos; `cart.test.ts` passou a usá-lo. `lib/variant.ts` não testado (apenas
+  lê `import.meta.env`); `lib/requestLocation.ts` ainda pendente.
+- [x] **Bloco 3 (parcial) — opções de produto.** Lógica pura extraída de
+  `ProductDetailsModal.tsx` para `components/product-options.ts` e coberta por 37 testes
+  (regras `sum`/`highest`/`average`, min/max por grupo, `maxPerItem`). **A extração corrigiu
+  um bug**: a checagem de limite em grupos multi-escolha somava a quantidade escolhida em
+  *outros* grupos, permitindo estourar o máximo do próprio grupo e bloqueando escolhas
+  válidas quando outro grupo estava cheio.
+- [ ] **Bloco 3 (restante) — checkout.** `checkout/index.tsx` e componentes
+  (`AddressForm`, `IdentifyForm`, `ProfileForm`, `OrderReview`, `PaymentStep/*`).
+- [ ] **Bloco 4 — média prioridade.** Hooks, formulários do painel, fluxos de operação.
+
+Frontend: 121 testes passando, `check-types` e `build` limpos.
+
 ## Verification Criteria
 
 - Cada novo teste roda em `bun test` e passa: `cd backend && bun run test:unit`,
