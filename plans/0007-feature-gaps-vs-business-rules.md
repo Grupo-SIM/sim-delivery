@@ -83,15 +83,16 @@ contra o código atual (caminhos citados são a evidência do estado real).
   e `AssignDelivery` valida company, role e vínculo do courier à unidade do pedido. Testes
   cobrem listagem, isolamento de unidade e rejeição de courier indisponível.
 
-### Gap 4 — Notificações de status configuráveis por WhatsApp — **MVP (parcial)**
+### Gap 4 — Notificações de status configuráveis por WhatsApp — **MVP** ✅ Concluído
 
 - **Regra:** `docs/10` › Notificações e `docs/06` — mensagens de status por WhatsApp
   configuráveis pelo dono.
 - **Hoje existe:** envio automático fixo em
   `backend/src/modules/orders/useCases/UpdateOrderStatus.ts:67-68` via `whatsApp.sendOrderStatus`.
   Não há edição das mensagens/gatilhos pelo painel.
-- **Falta:** persistência de templates por empresa/unidade + tela de configuração; usar os
-  templates no envio. (Se decidido roadmap, rebaixar e remover do escopo.)
+- **Entregue:** templates por empresa persistidos em `Company`, edição em
+  `/admin/branding`, placeholder `{{orderId}}`, fallback seguro para mensagens padrão e
+  aplicação no disparo de WhatsApp. Teste cobre template configurado.
 
 ### Gap 5 — Footer/branding runtime por loja — **verificar / MVP**
 

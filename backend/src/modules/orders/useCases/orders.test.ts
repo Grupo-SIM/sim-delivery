@@ -58,7 +58,9 @@ function makeOrderPrisma(
 						return item;
 					},
 					createMany: async ({ data }: { data: object[] }) => {
-						data.forEach(item => orderItems.push({ id: `oi_${orderItems.length + 1}`, ...item }));
+						data.forEach(item => {
+							orderItems.push({ id: `oi_${orderItems.length + 1}`, ...item });
+						});
 						return { count: data.length };
 					},
 				},
@@ -171,18 +173,29 @@ describe("CreateOrder", () => {
 	});
 });
 
-function makeUpdateStatusPrisma(order: { id: string; companyId: string; status: string }) {
+function makeUpdateStatusPrisma(order: {
+	companyId: string;
+	deliveryMethod?: string;
+	id: string;
+	phone?: string | null;
+	status: string;
+	templates?: Record<string, string> | null;
+}) {
 	const stored: {
 		id: string;
 		companyId: string;
 		status: string;
 		cancelReason: string | null;
 		items: unknown[];
+		deliveryMethod: string;
+		company: { orderStatusWhatsAppTemplates: Record<string, string> | null };
 		customer: { phone: string | null };
 	} = {
 		...order,
 		cancelReason: null,
-		customer: { phone: null },
+		company: { orderStatusWhatsAppTemplates: order.templates ?? null },
+		customer: { phone: order.phone ?? null },
+		deliveryMethod: order.deliveryMethod ?? "delivery",
 		items: [],
 	};
 
@@ -190,7 +203,7 @@ function makeUpdateStatusPrisma(order: { id: string; companyId: string; status: 
 		order: {
 			findFirst: async ({ where }: { where: { companyId?: string; id: string } }) =>
 				(where.companyId ? stored.companyId === where.companyId : true) && stored.id === where.id
-					? stored
+					? { ...stored, company: { ...stored.company }, customer: { ...stored.customer } }
 					: null,
 			update: async ({ data }: { data: object }) => {
 				Object.assign(stored, data);
@@ -211,6 +224,27 @@ describe("UpdateOrderStatus", () => {
 		});
 		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "em_preparo" });
 		expect(stored.status).toBe("em_preparo");
+	});
+
+	it("sends configured WhatsApp template for a status", async () => {
+		const { prisma } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			deliveryMethod: "delivery",
+			id: "ord_1",
+			phone: "+5511999999999",
+			status: "recebido",
+			templates: { em_preparo: "Pedido {{orderId}} em produção." },
+		});
+		const messages: string[] = [];
+		const whatsApp = {
+			sendOrderStatus: async (_phone: string, _status: string, _orderId: string, message?: string) => {
+				messages.push(message ?? "");
+			},
+		};
+
+		await new UpdateOrderStatus(prisma, whatsApp).execute("cmp_1", "ord_1", { status: "em_preparo" });
+
+		expect(messages).toEqual(["Pedido ord_1 em produção."]);
 	});
 
 	it("throws ORDER_NOT_FOUND for wrong companyId", async () => {

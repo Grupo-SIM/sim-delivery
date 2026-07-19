@@ -60,6 +60,14 @@
 				"logoUpload": "Enviar logotipo",
 				"logoUrl": "URL do logotipo",
 				"metaPixelId": "ID do Meta Pixel",
+				"notificationPlaceholder": "Ex: Seu pedido {{orderId}} está em preparo.",
+				"notificationsHelp": "Use {{orderId}} para inserir o código do pedido. Deixe um campo vazio para usar mensagem padrão.",
+				"orderStatus": {
+					"em_preparo": "Pedido em preparo",
+					"entregue": "Pedido entregue",
+					"retirado": "Pedido retirado",
+					"saiu_para_entrega": "Saiu para entrega"
+				},
 				"resetAllColors": "Restaurar cores",
 				"resetColor": "Restaurar {{color}} para a cor padrão",
 				"save": "Salvar identidade visual",
@@ -67,6 +75,7 @@
 				"saveSuccess": "Identidade visual atualizada.",
 				"saving": "Salvando...",
 				"sectionAppearance": "Aparência",
+				"sectionNotifications": "Notificações por WhatsApp",
 				"sectionTracking": "Rastreamento de marketing",
 				"subtitle": "Personalize a aparência da sua loja e as análises.",
 				"themeColors": "Cores do tema",

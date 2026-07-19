@@ -35,6 +35,7 @@ export class GetBranding {
 				gtmId: null,
 				logoUrl: null,
 				metaPixelId: null,
+				orderStatusWhatsAppTemplates: null,
 				themeColors: null,
 			};
 		}
@@ -51,6 +52,7 @@ export class GetBranding {
 				logoUrl: true,
 				metaPixelId: true,
 				name: true,
+				orderStatusWhatsAppTemplates: true,
 				themeColors: true,
 			},
 			where: { id: resolvedCompanyId },
@@ -67,6 +69,8 @@ export class GetBranding {
 			gtmId: company?.gtmId ?? null,
 			logoUrl: company?.logoUrl ?? null,
 			metaPixelId: company?.metaPixelId ?? null,
+			orderStatusWhatsAppTemplates:
+				(company?.orderStatusWhatsAppTemplates as BrandingReturn["orderStatusWhatsAppTemplates"]) ?? null,
 			themeColors: (company?.themeColors as BrandingReturn["themeColors"]) ?? null,
 		};
 	}

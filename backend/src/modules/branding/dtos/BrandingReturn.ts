@@ -1,6 +1,6 @@
 import { t } from "elysia";
 import { __nullable__ } from "sql/typebox";
-import { ThemeColors } from "./BrandingInput";
+import { OrderStatusWhatsAppTemplates, ThemeColors } from "./BrandingInput";
 
 export const BrandingReturn = t.Object({
 	companyName: __nullable__(t.String()),
@@ -13,6 +13,7 @@ export const BrandingReturn = t.Object({
 	gtmId: __nullable__(t.String()),
 	logoUrl: __nullable__(t.String()),
 	metaPixelId: __nullable__(t.String()),
+	orderStatusWhatsAppTemplates: __nullable__(OrderStatusWhatsAppTemplates),
 	themeColors: __nullable__(ThemeColors),
 });
 export type BrandingReturn = typeof BrandingReturn.static;

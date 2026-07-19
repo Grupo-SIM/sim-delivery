@@ -35,6 +35,14 @@ const ThemeColorSet = t.Object({
 export const ThemeColors = t.Object({ dark: ThemeColorSet, light: ThemeColorSet });
 export type ThemeColors = typeof ThemeColors.static;
 
+export const OrderStatusWhatsAppTemplates = t.Object({
+	em_preparo: t.Optional(t.String({ maxLength: 1000 })),
+	entregue: t.Optional(t.String({ maxLength: 1000 })),
+	retirado: t.Optional(t.String({ maxLength: 1000 })),
+	saiu_para_entrega: t.Optional(t.String({ maxLength: 1000 })),
+});
+export type OrderStatusWhatsAppTemplates = typeof OrderStatusWhatsAppTemplates.static;
+
 export const UpdateBrandingBody = t.Object({
 	fontDisplay: t.Optional(t.String({ maxLength: 100 })),
 	fontDisplayUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
@@ -45,6 +53,7 @@ export const UpdateBrandingBody = t.Object({
 	gtmId: t.Optional(t.String({ maxLength: 50 })),
 	logoUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
 	metaPixelId: t.Optional(t.String({ maxLength: 50 })),
+	orderStatusWhatsAppTemplates: t.Optional(OrderStatusWhatsAppTemplates),
 	themeColors: t.Optional(ThemeColors),
 });
 export type UpdateBrandingBody = typeof UpdateBrandingBody.static;
