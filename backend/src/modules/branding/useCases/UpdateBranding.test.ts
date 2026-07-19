@@ -44,4 +44,37 @@ describe("UpdateBranding", () => {
 			footerWhatsApp: "5581999999999",
 		});
 	});
+
+	it("rejects an unscoped update", async () => {
+		const prisma = {
+			company: {
+				update: async () => {
+					throw new Error("should not reach the database");
+				},
+			},
+		} as unknown as PrismaInstance;
+
+		// The controller passes `scope.companyId!`, so a super admin without a company
+		// really does reach the use case with null despite what the DTO type says.
+		await expect(
+			new UpdateBranding(prisma).execute({ companyId: null as unknown as string }),
+		).rejects.toThrow("FORBIDDEN");
+	});
+
+	it("updates only the caller's own company", async () => {
+		const wheres: { id: string }[] = [];
+		const prisma = {
+			company: {
+				update: async ({ where }: { data: Record<string, unknown>; where: { id: string } }) => {
+					wheres.push(where);
+
+					return { footerPaymentMethods: [], name: "Zero Grau" };
+				},
+			},
+		} as unknown as PrismaInstance;
+
+		await new UpdateBranding(prisma).execute({ companyId: "cmp_1", footerText: "Rodapé" });
+
+		expect(wheres).toEqual([{ id: "cmp_1" }]);
+	});
 });
