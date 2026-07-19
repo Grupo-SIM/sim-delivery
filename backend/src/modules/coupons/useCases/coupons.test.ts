@@ -1,5 +1,9 @@
 import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
+import { CreateCoupon } from "./CreateCoupon";
+import { DeleteCoupon } from "./DeleteCoupon";
+import { ListCoupons } from "./ListCoupons";
+import { UpdateCoupon } from "./UpdateCoupon";
 import { ValidateCoupon } from "./ValidateCoupon";
 
 const baseCompany = { id: "cmp_1", slug: "demo" };
@@ -97,5 +101,32 @@ describe("ValidateCoupon", () => {
 		const { prisma } = makePrisma({ coupon: baseCoupon });
 		const result = await new ValidateCoupon(prisma).execute({ ...baseBody, code: "save10" });
 		expect(result.discountCents).toBe(500);
+	});
+});
+
+describe("coupon administration", () => {
+	it("requires a company scope to create, list, update, or delete", async () => {
+		const { prisma } = makePrisma();
+		const data = { code: "SAVE10", type: "percent" as const, value: 10 };
+
+		await expect(new CreateCoupon(prisma).execute(null, data)).rejects.toThrow("NO_COMPANY");
+		await expect(new ListCoupons(prisma).execute(null)).rejects.toThrow("NO_COMPANY");
+		await expect(new UpdateCoupon(prisma).execute(null, "coupon_1", data)).rejects.toThrow("NO_COMPANY");
+		await expect(new DeleteCoupon(prisma).execute(null, "coupon_1")).rejects.toThrow("NO_COMPANY");
+	});
+
+	it("lists coupons only inside current company", async () => {
+		let companyId: string | undefined;
+		const prisma = {
+			coupon: {
+				findMany: async ({ where }: { where: { companyId: string } }) => {
+					companyId = where.companyId;
+					return [];
+				},
+			},
+		} as unknown as PrismaInstance;
+
+		await new ListCoupons(prisma).execute("cmp_1");
+		expect(companyId).toBe("cmp_1");
 	});
 });

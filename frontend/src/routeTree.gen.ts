@@ -25,6 +25,7 @@ import { Route as AdminPromotionalImagesIndexRouteImport } from './routes/admin/
 import { Route as AdminProductsIndexRouteImport } from './routes/admin/products/index'
 import { Route as AdminOrdersIndexRouteImport } from './routes/admin/orders/index'
 import { Route as AdminKitchenIndexRouteImport } from './routes/admin/kitchen/index'
+import { Route as AdminCouponsIndexRouteImport } from './routes/admin/coupons/index'
 import { Route as AdminCompaniesIndexRouteImport } from './routes/admin/companies/index'
 import { Route as AdminCategoriesIndexRouteImport } from './routes/admin/categories/index'
 import { Route as AdminBrandingIndexRouteImport } from './routes/admin/branding/index'
@@ -119,6 +120,11 @@ const AdminKitchenIndexRoute = AdminKitchenIndexRouteImport.update({
   path: '/kitchen/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCouponsIndexRoute = AdminCouponsIndexRouteImport.update({
+  id: '/coupons/',
+  path: '/coupons/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCompaniesIndexRoute = AdminCompaniesIndexRouteImport.update({
   id: '/companies/',
   path: '/companies/',
@@ -205,6 +211,7 @@ export interface FileRoutesByFullPath {
   '/admin/branding/': typeof AdminBrandingIndexRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
   '/admin/companies/': typeof AdminCompaniesIndexRoute
+  '/admin/coupons/': typeof AdminCouponsIndexRoute
   '/admin/kitchen/': typeof AdminKitchenIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
@@ -234,6 +241,7 @@ export interface FileRoutesByTo {
   '/admin/branding': typeof AdminBrandingIndexRoute
   '/admin/categories': typeof AdminCategoriesIndexRoute
   '/admin/companies': typeof AdminCompaniesIndexRoute
+  '/admin/coupons': typeof AdminCouponsIndexRoute
   '/admin/kitchen': typeof AdminKitchenIndexRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
   '/admin/products': typeof AdminProductsIndexRoute
@@ -266,6 +274,7 @@ export interface FileRoutesById {
   '/admin/branding/': typeof AdminBrandingIndexRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
   '/admin/companies/': typeof AdminCompaniesIndexRoute
+  '/admin/coupons/': typeof AdminCouponsIndexRoute
   '/admin/kitchen/': typeof AdminKitchenIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
@@ -298,6 +307,7 @@ export interface FileRouteTypes {
     | '/admin/branding/'
     | '/admin/categories/'
     | '/admin/companies/'
+    | '/admin/coupons/'
     | '/admin/kitchen/'
     | '/admin/orders/'
     | '/admin/products/'
@@ -327,6 +337,7 @@ export interface FileRouteTypes {
     | '/admin/branding'
     | '/admin/categories'
     | '/admin/companies'
+    | '/admin/coupons'
     | '/admin/kitchen'
     | '/admin/orders'
     | '/admin/products'
@@ -358,6 +369,7 @@ export interface FileRouteTypes {
     | '/admin/branding/'
     | '/admin/categories/'
     | '/admin/companies/'
+    | '/admin/coupons/'
     | '/admin/kitchen/'
     | '/admin/orders/'
     | '/admin/products/'
@@ -497,6 +509,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminKitchenIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/coupons/': {
+      id: '/admin/coupons/'
+      path: '/coupons'
+      fullPath: '/admin/coupons/'
+      preLoaderRoute: typeof AdminCouponsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/companies/': {
       id: '/admin/companies/'
       path: '/companies'
@@ -628,6 +647,7 @@ interface AdminRouteChildren {
   AdminBrandingIndexRoute: typeof AdminBrandingIndexRoute
   AdminCategoriesIndexRoute: typeof AdminCategoriesIndexRoute
   AdminCompaniesIndexRoute: typeof AdminCompaniesIndexRoute
+  AdminCouponsIndexRoute: typeof AdminCouponsIndexRoute
   AdminKitchenIndexRoute: typeof AdminKitchenIndexRoute
   AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
   AdminProductsIndexRoute: typeof AdminProductsIndexRoute
@@ -645,6 +665,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminBrandingIndexRoute: AdminBrandingIndexRoute,
   AdminCategoriesIndexRoute: AdminCategoriesIndexRoute,
   AdminCompaniesIndexRoute: AdminCompaniesIndexRoute,
+  AdminCouponsIndexRoute: AdminCouponsIndexRoute,
   AdminKitchenIndexRoute: AdminKitchenIndexRoute,
   AdminOrdersIndexRoute: AdminOrdersIndexRoute,
   AdminProductsIndexRoute: AdminProductsIndexRoute,

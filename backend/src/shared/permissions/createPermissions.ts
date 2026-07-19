@@ -38,7 +38,9 @@ export function createPermissions(role: Role) {
 		coupons: {
 			apply: mgmt || isAttendant,
 			create: mgmt,
+			delete: mgmt,
 			read: mgmt,
+			update: mgmt,
 		},
 		customers: {
 			read: mgmt || isAttendant,

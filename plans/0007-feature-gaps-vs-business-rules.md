@@ -38,7 +38,7 @@ contra o código atual (caminhos citados são a evidência do estado real).
 
 ## Implementation Plan
 
-### Gap 1 — Cupons: administração (CRUD) — **MVP**
+### Gap 1 — Cupons: administração (CRUD) — **MVP** ✅ Concluído
 
 - **Regra:** `docs/09` e `docs/10` preveem `coupons: { create, apply }`; o dono cria/gerencia
   cupons no painel.
@@ -50,6 +50,9 @@ contra o código atual (caminhos citados são a evidência do estado real).
   `companyId`, guard `coupons:create`); controller com CRUD; regenerar SDK; página
   `frontend/src/routes/admin/coupons/index.tsx` (tabela + form de criação: código, tipo de
   desconto, valor, validade, limites); item no `AdminSidebar`.
+- **Entregue:** CRUD protegido pelos guards `coupons:{read,create,update,delete}`, isolado por
+  `companyId`, DTOs TypeBox, OpenAPI/SDK regenerados, testes de escopo, página `/admin/coupons`
+  com criação, edição e exclusão confirmada, navegação e traduções.
 
 ### Gap 2 — Clientes: listagem e histórico no painel — **MVP**
 

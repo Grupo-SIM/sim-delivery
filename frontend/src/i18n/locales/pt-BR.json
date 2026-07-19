@@ -260,6 +260,59 @@
 					"title": "Atualizar status do pedido"
 				}
 			},
+			"coupons": {
+				"columns": {
+					"code": "Código",
+					"expiresAt": "Validade",
+					"type": "Tipo",
+					"unit": "Loja",
+					"value": "Desconto"
+				},
+				"create": {
+					"dateError": "Informe uma data e hora de validade válida.",
+					"error": "Não foi possível criar o cupom.",
+					"heading": "Novo cupom",
+					"hint": "Defina limites de uso e validade para restringir o desconto.",
+					"submit": "Criar cupom",
+					"submitting": "Criando..."
+				},
+				"edit": {
+					"action": "Editar",
+					"cancel": "Cancelar",
+					"error": "Não foi possível salvar o cupom.",
+					"save": "Salvar",
+					"saving": "Salvando...",
+					"success": "Cupom atualizado."
+				},
+				"empty": "Nenhum cupom ainda.",
+				"form": {
+					"allUnits": "Todas as lojas",
+					"code": "Código",
+					"codePlaceholder": "Ex: BEMVINDO10",
+					"expiresAt": "Validade",
+					"maxUses": "Limite de usos",
+					"maxUsesPlaceholder": "Sem limite",
+					"minOrder": "Pedido mínimo",
+					"type": "Tipo de desconto",
+					"unit": "Loja",
+					"value": "Valor do desconto"
+				},
+				"loadError": "Não foi possível carregar os cupons.",
+				"row": {
+					"allUnits": "Todas",
+					"delete": "Excluir",
+					"deleteConfirm": "Excluir cupom {{code}}?",
+					"deleteError": "Não foi possível excluir o cupom.",
+					"deleteSuccess": "Cupom excluído.",
+					"never": "Sem validade"
+				},
+				"subtitle": "Crie e gerencie descontos para suas lojas.",
+				"title": "Cupons",
+				"types": {
+					"fixed": "Valor fixo",
+					"percent": "Percentual"
+				}
+			},
 			"products": {
 				"catalogSubtitle": "Produtos, categorias e etiquetas desta empresa.",
 				"columns": {
