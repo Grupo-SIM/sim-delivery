@@ -42,6 +42,7 @@ export function OptionEditor({
 }: OptionEditorProps) {
 	const { t } = useTranslation();
 	const [isEditing, setIsEditing] = useState(false);
+	const [originalOption, setOriginalOption] = useState<EditableOption | null>(null);
 	const [name, setName] = useState(option.name);
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
 	const [description, setDescription] = useState(option.description);
@@ -99,7 +100,10 @@ export function OptionEditor({
 					<Tooltip content={t("admin.products.options.edit")}>
 						<Button
 							aria-label={t("admin.products.options.edit")}
-							onClick={() => setIsEditing(current => !current)}
+							onClick={() => {
+								setOriginalOption({ ...option });
+								setIsEditing(true);
+							}}
 							size="icon"
 							type="button"
 							variant="outline"
@@ -121,7 +125,15 @@ export function OptionEditor({
 					</ConfirmActionButton>
 				</div>
 			</div>
-			<Modal isOpen={isEditing} maxWidth="640px" onClose={() => setIsEditing(false)} title={option.name}>
+			<Modal
+				isOpen={isEditing}
+				maxWidth="640px"
+				onClose={() => {
+					if (originalOption) onChange(originalOption);
+					setIsEditing(false);
+				}}
+				title={option.name}
+			>
 				<div className="grid gap-3 md:grid-cols-2">
 					<Label className="min-w-0">
 						<span>{t("admin.products.options.optionName")}</span>
@@ -183,6 +195,21 @@ export function OptionEditor({
 						<label className="cursor-pointer" htmlFor={`option-${option.id}-available`}>
 							{t("admin.products.options.available")}
 						</label>
+					</div>
+					<div className="flex justify-end gap-2 md:col-span-2">
+						<Button
+							onClick={() => {
+								if (originalOption) onChange(originalOption);
+								setIsEditing(false);
+							}}
+							type="button"
+							variant="outline"
+						>
+							Descartar
+						</Button>
+						<Button onClick={() => setIsEditing(false)} type="button">
+							Salvar
+						</Button>
 					</div>
 				</div>
 			</Modal>

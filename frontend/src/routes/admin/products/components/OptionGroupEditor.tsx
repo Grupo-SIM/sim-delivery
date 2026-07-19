@@ -1,12 +1,14 @@
 import { type DragEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuChevronDown, LuChevronUp, LuGripVertical } from "react-icons/lu";
+import { LuChevronDown, LuChevronUp, LuGripVertical, LuPencil } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Modal } from "@/components/ui/Modal";
 import { NumericInput } from "@/components/ui/NumericInput";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { type EditableOption, OptionEditor } from "./OptionEditor";
 
@@ -42,6 +44,7 @@ export function OptionGroupEditor({
 }: OptionGroupEditorProps) {
 	const { t } = useTranslation();
 	const [isExpanded, setIsExpanded] = useState(false);
+	const [originalGroup, setOriginalGroup] = useState<OptionGroup | null>(null);
 	const [isOptionsExpanded, setIsOptionsExpanded] = useState(true);
 	const [draggedOptionId, setDraggedOptionId] = useState<string | null>(null);
 	const [wasExpandedBeforeDrag, setWasExpandedBeforeDrag] = useState(false);
@@ -119,18 +122,31 @@ export function OptionGroupEditor({
 						</p>
 					</div>
 				</div>
-				<Button
-					aria-expanded={isExpanded}
-					onClick={() => setIsExpanded(current => !current)}
-					type="button"
-					variant="outline"
-				>
-					{isExpanded ? <LuChevronUp className="h-4 w-4" /> : <LuChevronDown className="h-4 w-4" />}
-					{isExpanded ? t("admin.products.options.minimize") : t("admin.products.options.expand")}
-				</Button>
+				<Tooltip content={t("admin.products.options.edit")}>
+					<Button
+						aria-label={t("admin.products.options.edit")}
+						onClick={() => {
+							setOriginalGroup(structuredClone(group));
+							setIsExpanded(true);
+						}}
+						size="icon"
+						type="button"
+						variant="outline"
+					>
+						<LuPencil className="size-4" />
+					</Button>
+				</Tooltip>
 			</div>
-			{isExpanded && (
-				<div className="space-y-4 p-4">
+			<Modal
+				isOpen={isExpanded}
+				maxWidth="900px"
+				onClose={() => {
+					if (originalGroup) onChange(originalGroup);
+					setIsExpanded(false);
+				}}
+				title={group.name}
+			>
+				<div className="space-y-4">
 					<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
 						<Label>
 							<span>{t("admin.products.options.groupName")}</span>
@@ -248,8 +264,23 @@ export function OptionGroupEditor({
 							{t("admin.products.options.addOption")}
 						</Button>
 					</div>
+					<div className="flex justify-end gap-2 border-border border-t pt-4">
+						<Button
+							onClick={() => {
+								if (originalGroup) onChange(originalGroup);
+								setIsExpanded(false);
+							}}
+							type="button"
+							variant="outline"
+						>
+							Descartar
+						</Button>
+						<Button onClick={() => setIsExpanded(false)} type="button">
+							Salvar
+						</Button>
+					</div>
 				</div>
-			)}
+			</Modal>
 		</div>
 	);
 }
