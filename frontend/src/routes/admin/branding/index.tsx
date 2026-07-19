@@ -40,6 +40,11 @@ function BrandingPage() {
 	const [fontDisplayUrl, setFontDisplayUrl] = useState("");
 	const [themeColors, setThemeColors] = useState<ThemeColors>(defaultThemeColors);
 	const [footerText, setFooterText] = useState("");
+	const [footerPaymentMethods, setFooterPaymentMethods] = useState("");
+	const [footerInstagramUrl, setFooterInstagramUrl] = useState("");
+	const [footerFacebookUrl, setFooterFacebookUrl] = useState("");
+	const [footerWhatsApp, setFooterWhatsApp] = useState("");
+	const [footerSupportEmail, setFooterSupportEmail] = useState("");
 	const [metaPixelId, setMetaPixelId] = useState("");
 	const [ga4Id, setGa4Id] = useState("");
 	const [gtmId, setGtmId] = useState("");
@@ -55,6 +60,11 @@ function BrandingPage() {
 			setFontDisplayUrl(branding.fontDisplayUrl ?? "");
 			setThemeColors(resolveThemeColors(branding.themeColors));
 			setFooterText(branding.footerText ?? "");
+			setFooterPaymentMethods(branding.footerPaymentMethods.join(", "));
+			setFooterInstagramUrl(branding.footerInstagramUrl ?? "");
+			setFooterFacebookUrl(branding.footerFacebookUrl ?? "");
+			setFooterWhatsApp(branding.footerWhatsApp ?? "");
+			setFooterSupportEmail(branding.footerSupportEmail ?? "");
 			setMetaPixelId(branding.metaPixelId ?? "");
 			setGa4Id(branding.ga4Id ?? "");
 			setGtmId(branding.gtmId ?? "");
@@ -101,6 +111,11 @@ function BrandingPage() {
 					fontFamily: fontFamily.trim() || undefined,
 					fontFamilyUrl: fontFamilyUrl.trim() || undefined,
 					footerText: footerText.trim() || undefined,
+					footerPaymentMethods: footerPaymentMethods.split(",").map(method => method.trim()).filter(Boolean),
+					footerInstagramUrl: footerInstagramUrl.trim() || undefined,
+					footerFacebookUrl: footerFacebookUrl.trim() || undefined,
+					footerWhatsApp: footerWhatsApp.trim() || undefined,
+					footerSupportEmail: footerSupportEmail.trim() || undefined,
 					ga4Id: ga4Id.trim() || undefined,
 					gtmId: gtmId.trim() || undefined,
 					logoUrl: logoUrl.trim() || undefined,
@@ -150,6 +165,12 @@ function BrandingPage() {
 							placeholder={t("admin.branding.footerTextPlaceholder")}
 							value={footerText}
 						/>
+						<FormSectionHeading>{t("admin.branding.sectionFooter")}</FormSectionHeading>
+						<TextField label={t("admin.branding.footerPaymentMethods")} onValueChange={setFooterPaymentMethods} placeholder={t("admin.branding.footerPaymentMethodsPlaceholder")} value={footerPaymentMethods} />
+						<TextField label={t("admin.branding.footerWhatsApp")} onValueChange={setFooterWhatsApp} placeholder={t("admin.branding.footerWhatsAppPlaceholder")} value={footerWhatsApp} />
+						<TextField label={t("admin.branding.footerSupportEmail")} onValueChange={setFooterSupportEmail} placeholder="contato@minhaloja.com" value={footerSupportEmail} />
+						<TextField label={t("admin.branding.footerInstagramUrl")} onValueChange={setFooterInstagramUrl} placeholder="https://instagram.com/minhaloja" value={footerInstagramUrl} />
+						<TextField label={t("admin.branding.footerFacebookUrl")} onValueChange={setFooterFacebookUrl} placeholder="https://facebook.com/minhaloja" value={footerFacebookUrl} />
 						<Label>
 							{t("admin.branding.logoUrl")}
 							<MediaUrlInput

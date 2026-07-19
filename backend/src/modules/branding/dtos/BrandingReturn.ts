@@ -4,11 +4,16 @@ import { OrderStatusWhatsAppTemplates, ThemeColors } from "./BrandingInput";
 
 export const BrandingReturn = t.Object({
 	companyName: __nullable__(t.String()),
+	footerFacebookUrl: __nullable__(t.String()),
+	footerInstagramUrl: __nullable__(t.String()),
+	footerPaymentMethods: t.Array(t.String()),
+	footerSupportEmail: __nullable__(t.String()),
 	fontDisplay: __nullable__(t.String()),
 	fontDisplayUrl: __nullable__(t.String()),
 	fontFamily: __nullable__(t.String()),
 	fontFamilyUrl: __nullable__(t.String()),
 	footerText: __nullable__(t.String()),
+	footerWhatsApp: __nullable__(t.String()),
 	ga4Id: __nullable__(t.String()),
 	gtmId: __nullable__(t.String()),
 	logoUrl: __nullable__(t.String()),

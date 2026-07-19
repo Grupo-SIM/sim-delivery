@@ -94,15 +94,16 @@ contra o código atual (caminhos citados são a evidência do estado real).
   `/admin/branding`, placeholder `{{orderId}}`, fallback seguro para mensagens padrão e
   aplicação no disparo de WhatsApp. Teste cobre template configurado.
 
-### Gap 5 — Footer/branding runtime por loja — **verificar / MVP**
+### Gap 5 — Footer/branding runtime por loja — **MVP** ✅ Concluído
 
 - **Regra:** `docs/10` › Branding/footer — editar por loja formas de pagamento, redes
   sociais, atendimento, localização, horário, sem rebuild.
 - **Hoje existe:** `admin/branding` cobre tema (`frontend/src/routes/admin/branding/index.tsx`,
   `GetBranding`/`UpdateBranding`). Conferir se footer runtime (redes/atendimento/localização)
   está no schema de branding e no editor.
-- **Falta (se ausente):** campos de footer no DTO de branding + seção no editor. Confirmar
-  antes de implementar para não duplicar o que já existe.
+- **Entregue:** campos runtime por empresa para formas de pagamento, Instagram, Facebook,
+  WhatsApp e e-mail de atendimento. Editor em `/admin/branding`; storefront lê e renderiza
+  dados via branding público sem rebuild. Localização e horário seguem dados runtime da unidade.
 
 ### Roadmap (registrado, fora de escopo)
 

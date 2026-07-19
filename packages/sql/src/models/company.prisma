@@ -10,6 +10,11 @@ model Company {
     /// Branding fields rendered in the store footer and app shell.
     logoUrl     String?
     footerText  String?
+    footerPaymentMethods String[] @default([])
+    footerInstagramUrl String?
+    footerFacebookUrl String?
+    footerWhatsApp String?
+    footerSupportEmail String?
     fontFamily  String?
     fontDisplay String?
     fontFamilyUrl String?
