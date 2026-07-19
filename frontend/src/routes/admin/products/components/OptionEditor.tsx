@@ -74,9 +74,9 @@ export function OptionEditor({
 				)}
 				<div className="min-w-0 flex-1">
 					<p className="truncate font-medium">{option.name}</p>
-					<p className="truncate text-muted-foreground text-sm">
-						{option.description || t("admin.products.options.descriptionPlaceholder")}
-					</p>
+					{option.description && (
+						<p className="truncate text-muted-foreground text-sm">{option.description}</p>
+					)}
 				</div>
 				<div className="hidden shrink-0 flex-col gap-1 text-right text-xs sm:flex">
 					<p>
