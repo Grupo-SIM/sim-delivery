@@ -41,23 +41,58 @@ export function ProductOptionsModal({ onClose, product }: ProductOptionsModalPro
 		product &&
 		queryClient.invalidateQueries({ queryKey: getProductsByProductIdOptionGroupsQueryKey(product.id) });
 
-	if (!product) return null;
 	const normalizeGroups = (): OptionGroup[] =>
 		(groups.data ?? []).map(group => ({
 			...group,
 			maxSelect: Number(group.maxSelect),
 			minSelect: Number(group.minSelect),
-			options: group.options.map(option => ({ ...option, maxPerItem: option.maxPerItem === null ? null : Number(option.maxPerItem), priceDeltaCents: Number(option.priceDeltaCents), sortOrder: Number(option.sortOrder) })),
+			options: group.options.map(option => ({
+				...option,
+				maxPerItem: option.maxPerItem === null ? null : Number(option.maxPerItem),
+				priceDeltaCents: Number(option.priceDeltaCents),
+				sortOrder: Number(option.sortOrder),
+			})),
 			priceRule: group.priceRule as OptionGroup["priceRule"],
 			selectionType: group.selectionType as OptionGroup["selectionType"],
 			sortOrder: Number(group.sortOrder),
 		}));
-	useEffect(() => setDraftGroups(normalizeGroups()), [groups.data]);
+	useEffect(() => {
+		setDraftGroups(
+			(groups.data ?? []).map(group => ({
+				...group,
+				maxSelect: Number(group.maxSelect),
+				minSelect: Number(group.minSelect),
+				options: group.options.map(option => ({
+					...option,
+					maxPerItem: option.maxPerItem === null ? null : Number(option.maxPerItem),
+					priceDeltaCents: Number(option.priceDeltaCents),
+					sortOrder: Number(option.sortOrder),
+				})),
+				priceRule: group.priceRule as OptionGroup["priceRule"],
+				selectionType: group.selectionType as OptionGroup["selectionType"],
+				sortOrder: Number(group.sortOrder),
+			})),
+		);
+	}, [groups.data]);
+
+	if (!product) return null;
 
 	function addGroup() {
 		flushName();
 		if (!name.trim() || !product) return;
-		setDraftGroups(current => [...current, { id: crypto.randomUUID(), maxSelect: 1, minSelect: 0, name: name.trim(), options: [], priceRule: "sum", selectionType: "single", sortOrder: current.length }]);
+		setDraftGroups(current => [
+			...current,
+			{
+				id: crypto.randomUUID(),
+				maxSelect: 1,
+				minSelect: 0,
+				name: name.trim(),
+				options: [],
+				priceRule: "sum",
+				selectionType: "single",
+				sortOrder: current.length,
+			},
+		]);
 		setLocalName("");
 	}
 
@@ -66,22 +101,76 @@ export function ProductOptionsModal({ onClose, product }: ProductOptionsModalPro
 		const productId = product.id;
 		const originals = normalizeGroups();
 		const draftIds = new Set(draftGroups.map(group => group.id));
-		await Promise.all(originals.filter(group => !draftIds.has(group.id)).map(group => deleteGroup.mutateAsync({ groupId: group.id, productId })));
+		await Promise.all(
+			originals
+				.filter(group => !draftIds.has(group.id))
+				.map(group => deleteGroup.mutateAsync({ groupId: group.id, productId })),
+		);
 		for (const group of draftGroups) {
 			const original = originals.find(item => item.id === group.id);
 			if (!original) {
-			const created = await createGroup.mutateAsync({ data: { maxSelect: group.maxSelect, minSelect: group.minSelect, name: group.name, priceRule: group.priceRule, selectionType: group.selectionType, sortOrder: group.sortOrder }, productId });
-			await Promise.all(group.options.map(option => createOption.mutateAsync({ data: { available: option.available, description: option.description, imageUrl: option.imageUrl, maxPerItem: option.maxPerItem, name: option.name, priceDeltaCents: option.priceDeltaCents, sortOrder: option.sortOrder }, groupId: created.id, productId })));
+				const created = await createGroup.mutateAsync({
+					data: {
+						maxSelect: group.maxSelect,
+						minSelect: group.minSelect,
+						name: group.name,
+						priceRule: group.priceRule,
+						selectionType: group.selectionType,
+						sortOrder: group.sortOrder,
+					},
+					productId,
+				});
+				await Promise.all(
+					group.options.map(option =>
+						createOption.mutateAsync({
+							data: {
+								available: option.available,
+								description: option.description,
+								imageUrl: option.imageUrl,
+								maxPerItem: option.maxPerItem,
+								name: option.name,
+								priceDeltaCents: option.priceDeltaCents,
+								sortOrder: option.sortOrder,
+							},
+							groupId: created.id,
+							productId,
+						}),
+					),
+				);
 				continue;
 			}
-		await updateGroup.mutateAsync({ data: { maxSelect: group.maxSelect, minSelect: group.minSelect, name: group.name, priceRule: group.priceRule, selectionType: group.selectionType, sortOrder: group.sortOrder }, groupId: group.id, productId });
+			await updateGroup.mutateAsync({
+				data: {
+					maxSelect: group.maxSelect,
+					minSelect: group.minSelect,
+					name: group.name,
+					priceRule: group.priceRule,
+					selectionType: group.selectionType,
+					sortOrder: group.sortOrder,
+				},
+				groupId: group.id,
+				productId,
+			});
 			const optionIds = new Set(group.options.map(option => option.id));
-		await Promise.all(original.options.filter(option => !optionIds.has(option.id)).map(option => deleteOption.mutateAsync({ groupId: group.id, optionId: option.id, productId })));
+			await Promise.all(
+				original.options
+					.filter(option => !optionIds.has(option.id))
+					.map(option => deleteOption.mutateAsync({ groupId: group.id, optionId: option.id, productId })),
+			);
 			for (const option of group.options) {
 				const existing = original.options.some(item => item.id === option.id);
-				const data = { available: option.available, description: option.description, imageUrl: option.imageUrl, maxPerItem: option.maxPerItem, name: option.name, priceDeltaCents: option.priceDeltaCents, sortOrder: option.sortOrder };
-			if (existing) await updateOption.mutateAsync({ data, groupId: group.id, optionId: option.id, productId });
-			else await createOption.mutateAsync({ data, groupId: group.id, productId });
+				const data = {
+					available: option.available,
+					description: option.description,
+					imageUrl: option.imageUrl,
+					maxPerItem: option.maxPerItem,
+					name: option.name,
+					priceDeltaCents: option.priceDeltaCents,
+					sortOrder: option.sortOrder,
+				};
+				if (existing)
+					await updateOption.mutateAsync({ data, groupId: group.id, optionId: option.id, productId });
+				else await createOption.mutateAsync({ data, groupId: group.id, productId });
 			}
 		}
 		await refresh();
@@ -107,11 +196,20 @@ export function ProductOptionsModal({ onClose, product }: ProductOptionsModalPro
 					<OptionGroupEditor
 						group={group}
 						key={group.id}
-						onChange={value => setDraftGroups(current => current.map(item => item.id === value.id ? value : item))}
+						onChange={value =>
+							setDraftGroups(current => current.map(item => (item.id === value.id ? value : item)))
+						}
 						onDelete={() => setDraftGroups(current => current.filter(item => item.id !== group.id))}
 					/>
 				))}
-				<div className="flex justify-end gap-2"><Button onClick={onClose} type="button" variant="outline">Cancelar</Button><Button onClick={() => void save()} type="button">Salvar</Button></div>
+				<div className="flex justify-end gap-2">
+					<Button onClick={onClose} type="button" variant="outline">
+						Cancelar
+					</Button>
+					<Button onClick={() => void save()} type="button">
+						Salvar
+					</Button>
+				</div>
 			</div>
 		</Modal>
 	);
