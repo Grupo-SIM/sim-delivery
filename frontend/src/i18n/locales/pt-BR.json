@@ -378,6 +378,7 @@
 				},
 				"create": {
 					"cashbackOverride": "Substituir cashback da unidade",
+					"configuration": "Configuração",
 					"description": "Descrição",
 					"descriptionPlaceholder": "Ex: Fresquinho do forno, servido quentinho.",
 					"error": "Não foi possível criar o produto.",

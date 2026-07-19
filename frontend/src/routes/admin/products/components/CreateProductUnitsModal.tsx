@@ -24,23 +24,16 @@ export function CreateProductUnitsModal({
 	const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
 	useEffect(() => {
-		setSelectedIds(selectedUnitIds ?? units?.map((unit) => unit.id) ?? []);
+		setSelectedIds(selectedUnitIds ?? units?.map(unit => unit.id) ?? []);
 	}, [selectedUnitIds, units]);
 
 	function toggle(unitId: string) {
-		setSelectedIds((ids) =>
-			ids.includes(unitId)
-				? ids.filter((id) => id !== unitId)
-				: [...ids, unitId],
-		);
+		setSelectedIds(ids => (ids.includes(unitId) ? ids.filter(id => id !== unitId) : [...ids, unitId]));
 	}
 
 	return (
 		<Modal isOpen={isOpen} onClose={onClose} title="Selecionar lojas">
 			<div className="space-y-4">
-				<p className="text-muted-foreground text-sm">
-					Sem seleção, produto será adicionado a todas lojas.
-				</p>
 				{isPending ? (
 					<div className="space-y-2">
 						<Skeleton className="h-8 w-full" />
@@ -48,7 +41,7 @@ export function CreateProductUnitsModal({
 					</div>
 				) : (
 					<div className="max-h-72 space-y-2 overflow-y-auto">
-						{units?.map((unit) => (
+						{units?.map(unit => (
 							<label
 								className="flex cursor-pointer items-center gap-2 rounded-md border border-transparent p-2 text-sm hover:border-border hover:bg-muted/40"
 								htmlFor={`create-unit-${unit.id}`}
@@ -68,11 +61,7 @@ export function CreateProductUnitsModal({
 					<Button onClick={onClose} type="button" variant="outline">
 						{t("admin.products.units.cancel")}
 					</Button>
-					<Button
-						disabled={isPending}
-						onClick={() => onSave(selectedIds)}
-						type="button"
-					>
+					<Button disabled={isPending} onClick={() => onSave(selectedIds)} type="button">
 						{t("admin.products.units.save")}
 					</Button>
 				</div>
