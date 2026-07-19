@@ -1,9 +1,11 @@
 import { type DragEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuGripVertical } from "react-icons/lu";
+import { LuGripVertical, LuTrash2 } from "react-icons/lu";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 
@@ -45,7 +47,6 @@ export function OptionEditor({
 		setDescription,
 	);
 	const [imageUrl, setImageUrl] = useState(option.imageUrl ?? "");
-	const [localImageUrl, setLocalImageUrl, flushImageUrl] = useDebouncedInput(imageUrl, setImageUrl);
 	return (
 		<div
 			className="grid grid-cols-[auto_minmax(0,1fr)] items-end gap-x-3 gap-y-4 rounded border border-border bg-muted/20 p-4 md:grid-cols-[auto_repeat(3,minmax(0,1fr))]"
@@ -115,29 +116,35 @@ export function OptionEditor({
 			</Label>
 			<Label>
 				<span>{t("admin.products.options.optionImage")}</span>
-				<Input
-					onBlur={() => {
-						flushImageUrl();
-						onChange({ ...option, imageUrl: localImageUrl || null });
+				<MediaUrlInput
+					asset="product"
+					onUploadError={() => undefined}
+					onValueChange={value => {
+						setImageUrl(value);
+						onChange({ ...option, imageUrl: value || null });
 					}}
-					onChange={event => setLocalImageUrl(event.currentTarget.value)}
-					placeholder="https://exemplo.com/opcao.jpg"
-					value={localImageUrl}
+					uploadLabel={t("admin.products.options.optionImage")}
+					value={imageUrl}
 				/>
 			</Label>
-			<label className="flex h-10 cursor-pointer items-center gap-2 text-sm">
-				<input
+			<div className="flex h-10 items-center gap-2 text-sm">
+				<Checkbox
 					checked={option.available}
+					id={`option-${option.id}-available`}
 					onChange={event => onChange({ ...option, available: event.currentTarget.checked })}
-					type="checkbox"
 				/>
-				{t("admin.products.options.available")}
-			</label>
+				<label className="cursor-pointer" htmlFor={`option-${option.id}-available`}>
+					{t("admin.products.options.available")}
+				</label>
+			</div>
 			<ConfirmActionButton
-				className="h-10 justify-self-start"
+				aria-label={t("admin.products.options.delete")}
+				className="justify-self-start"
 				confirmation={t("admin.products.options.deleteOptionConfirm")}
 				confirmLabel={t("admin.products.options.delete")}
+				idleIcon={<LuTrash2 className="size-4" />}
 				onConfirm={onDelete}
+				size="icon"
 				type="button"
 				variant="outline"
 			>
