@@ -7,6 +7,7 @@ import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
+import { Modal } from "@/components/ui/Modal";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
@@ -120,8 +121,8 @@ export function OptionEditor({
 					</ConfirmActionButton>
 				</div>
 			</div>
-			{isEditing && (
-				<div className="grid gap-3 border-border border-t p-4 md:grid-cols-2">
+			<Modal isOpen={isEditing} maxWidth="640px" onClose={() => setIsEditing(false)} title={option.name}>
+				<div className="grid gap-3 md:grid-cols-2">
 					<Label className="min-w-0">
 						<span>{t("admin.products.options.optionName")}</span>
 						<Input
@@ -184,7 +185,7 @@ export function OptionEditor({
 						</label>
 					</div>
 				</div>
-			)}
+			</Modal>
 		</div>
 	);
 }
