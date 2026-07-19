@@ -17,6 +17,7 @@ function prismaWith(products: Array<{ id: string; companyId: string }>) {
 		deleteMany: async () => ({ count: 0 }),
 	};
 	const updatedData = new Map<string, object>();
+	const units = [{ companyId: "cmp_1", id: "unit_1" }];
 	const product = {
 		create: async ({ data }: { data: unknown }) => {
 			created.push(data);
@@ -53,6 +54,12 @@ function prismaWith(products: Array<{ id: string; companyId: string }>) {
 			product,
 			productCategory,
 			productTag,
+			unit: {
+				count: async ({ where }: { where: { companyId: string; id: { in: string[] } } }) =>
+					units.filter(unit => unit.companyId === where.companyId && where.id.in.includes(unit.id)).length,
+				findMany: async ({ where }: { where: { companyId: string } }) =>
+					units.filter(unit => unit.companyId === where.companyId).map(({ id }) => ({ id })),
+			},
 		} as unknown as PrismaInstance,
 	};
 }
@@ -83,6 +90,7 @@ describe("products use-cases", () => {
 			companyId: "cmp_1",
 			slug: "cheese-bread",
 			title: "Cheese bread",
+			unitProducts: { create: [{ unitId: "unit_1" }] },
 		});
 	});
 

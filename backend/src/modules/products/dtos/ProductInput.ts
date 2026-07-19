@@ -7,6 +7,7 @@ const fields = {
 	description: t.Optional(t.String()),
 	imageUrl: t.Optional(t.String()),
 	tagIds: t.Optional(t.Array(t.String(), { uniqueItems: true })),
+	unitIds: t.Optional(t.Array(t.String(), { uniqueItems: true })),
 };
 
 export const CreateProductBody = t.Object({
@@ -16,5 +17,8 @@ export const CreateProductBody = t.Object({
 });
 export type CreateProductBody = typeof CreateProductBody.static;
 
-export const UpdateProductBody = t.Object({ ...fields, title: t.Optional(t.String({ minLength: 1 })) });
+export const UpdateProductBody = t.Object({
+	...fields,
+	title: t.Optional(t.String({ minLength: 1 })),
+});
 export type UpdateProductBody = typeof UpdateProductBody.static;

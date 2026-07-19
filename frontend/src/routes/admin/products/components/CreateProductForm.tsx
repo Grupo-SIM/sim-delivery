@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { CollapsibleFormSection } from "@/components/ui/CollapsibleFormSection";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
@@ -9,22 +10,29 @@ import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { getProductsQueryKey, usePostProducts } from "@/lib/api";
+import { CreateProductUnitsModal } from "./CreateProductUnitsModal";
 
 export function CreateProductForm() {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [title, setTitle] = useState("");
-	const [localTitle, setLocalTitle, flushTitle] = useDebouncedInput(title, setTitle);
-	const [imageUrl, setImageUrl] = useState("");
-	const [localImageUrl, setLocalImageUrl, flushImageUrl] = useDebouncedInput(imageUrl, setImageUrl);
-	const [description, setDescription] = useState("");
-	const [localDescription, setLocalDescription, flushDescription] = useDebouncedInput(
-		description,
-		setDescription,
+	const [localTitle, setLocalTitle, flushTitle] = useDebouncedInput(
+		title,
+		setTitle,
 	);
+	const [imageUrl, setImageUrl] = useState("");
+	const [localImageUrl, setLocalImageUrl, flushImageUrl] = useDebouncedInput(
+		imageUrl,
+		setImageUrl,
+	);
+	const [description, setDescription] = useState("");
+	const [localDescription, setLocalDescription, flushDescription] =
+		useDebouncedInput(description, setDescription);
 	const [priceReais, setPriceReais] = useState(0);
 	const [cashbackEnabled, setCashbackEnabled] = useState(false);
 	const [cashback, setCashback] = useState(0);
+	const [unitIds, setUnitIds] = useState<string[] | null>(null);
+	const [isUnitsModalOpen, setIsUnitsModalOpen] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [isUploadingImage, setIsUploadingImage] = useState(false);
 
@@ -37,8 +45,17 @@ export function CreateProductForm() {
 			localDescription.trim() !== "" ||
 			priceReais > 0 ||
 			cashbackEnabled ||
-			cashback > 0,
-		[localTitle, localImageUrl, localDescription, priceReais, cashbackEnabled, cashback],
+			cashback > 0 ||
+			unitIds !== null,
+		[
+			localTitle,
+			localImageUrl,
+			localDescription,
+			priceReais,
+			cashbackEnabled,
+			cashback,
+			unitIds,
+		],
 	);
 
 	function flushText() {
@@ -50,7 +67,7 @@ export function CreateProductForm() {
 	return (
 		<form
 			className="group space-y-4 rounded-lg border border-border bg-card p-4"
-			onSubmit={event => {
+			onSubmit={(event) => {
 				event.preventDefault();
 				flushText();
 				setError(null);
@@ -58,14 +75,18 @@ export function CreateProductForm() {
 					{
 						data: {
 							basePriceCents: Math.round(priceReais * 100),
-							cashbackPercentOverride: cashbackEnabled ? cashback : null,
+							cashbackPercentOverride: cashbackEnabled
+								? cashback
+								: null,
 							description: localDescription,
 							imageUrl: localImageUrl,
 							title: localTitle,
+							...(unitIds === null ? {} : { unitIds }),
 						},
 					},
 					{
-						onError: () => setError(t("admin.products.create.error")),
+						onError: () =>
+							setError(t("admin.products.create.error")),
 						onSuccess: async () => {
 							setTitle("");
 							setImageUrl("");
@@ -73,7 +94,10 @@ export function CreateProductForm() {
 							setPriceReais(0);
 							setCashbackEnabled(false);
 							setCashback(0);
-							await queryClient.invalidateQueries({ queryKey: getProductsQueryKey() });
+							setUnitIds(null);
+							await queryClient.invalidateQueries({
+								queryKey: getProductsQueryKey(),
+							});
 						},
 					},
 				);
@@ -86,8 +110,12 @@ export function CreateProductForm() {
 					</span>
 					<Input
 						onBlur={flushTitle}
-						onChange={event => setLocalTitle(event.currentTarget.value)}
-						placeholder={t("admin.products.create.titlePlaceholder")}
+						onChange={(event) =>
+							setLocalTitle(event.currentTarget.value)
+						}
+						placeholder={t(
+							"admin.products.create.titlePlaceholder",
+						)}
 						required
 						value={localTitle}
 					/>
@@ -97,7 +125,9 @@ export function CreateProductForm() {
 					<span>{t("admin.products.create.image")}</span>
 					<MediaUrlInput
 						asset="product"
-						onUploadError={() => setError(t("admin.products.create.uploadError"))}
+						onUploadError={() =>
+							setError(t("admin.products.create.uploadError"))
+						}
 						onUploadingChange={setIsUploadingImage}
 						onValueChange={setImageUrl}
 						uploadLabel={t("admin.products.create.imageUpload")}
@@ -115,20 +145,26 @@ export function CreateProductForm() {
 						<NumericInput
 							decimalScale={2}
 							decimalSeparator=","
-							onValueChange={({ floatValue }) => setPriceReais(floatValue ?? 0)}
+							onValueChange={({ floatValue }) =>
+								setPriceReais(floatValue ?? 0)
+							}
 							placeholder="R$ 18,90"
 							prefix="R$ "
 							thousandSeparator="."
 							value={priceReais}
 						/>
 					</div>
-
 					<div className="space-y-2">
-						<label className="flex items-center gap-2 font-medium text-sm">
-							<input
+						<label
+							className="flex cursor-pointer items-center gap-2 font-medium text-sm"
+							htmlFor="cashback-enabled"
+						>
+							<Checkbox
 								checked={cashbackEnabled}
-								onChange={event => setCashbackEnabled(event.currentTarget.checked)}
-								type="checkbox"
+								id="cashback-enabled"
+								onChange={() =>
+									setCashbackEnabled((value) => !value)
+								}
 							/>
 							{t("admin.products.create.cashbackOverride")}
 						</label>
@@ -136,32 +172,65 @@ export function CreateProductForm() {
 							decimalScale={2}
 							decimalSeparator=","
 							disabled={!cashbackEnabled}
-							onValueChange={({ floatValue }) => setCashback(floatValue ?? 0)}
+							onValueChange={({ floatValue }) =>
+								setCashback(floatValue ?? 0)
+							}
 							placeholder="5 %"
 							suffix=" %"
 							value={cashback}
 						/>
 					</div>
 				</div>
-
 				<Label>
 					{t("admin.products.create.description")}
 					<textarea
 						className="flex min-h-24 w-full rounded border border-input bg-surface px-3 py-2 text-sm transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
 						onBlur={flushDescription}
-						onChange={event => setLocalDescription(event.currentTarget.value)}
-						placeholder={t("admin.products.create.descriptionPlaceholder")}
+						onChange={(event) =>
+							setLocalDescription(event.currentTarget.value)
+						}
+						placeholder={t(
+							"admin.products.create.descriptionPlaceholder",
+						)}
 						value={localDescription}
 					/>
 				</Label>
 			</CollapsibleFormSection>
 
 			<div className="flex items-center gap-3">
-				<Button disabled={isPending || isUploadingImage || !localTitle || priceReais <= 0} type="submit">
-					{isPending ? t("admin.products.create.submitting") : t("admin.products.create.submit")}
+				<Button
+					disabled={
+						isPending ||
+						isUploadingImage ||
+						!localTitle ||
+						priceReais <= 0
+					}
+					type="submit"
+				>
+					{isPending
+						? t("admin.products.create.submitting")
+						: t("admin.products.create.submit")}
+				</Button>
+				<Button
+					onClick={() => setIsUnitsModalOpen(true)}
+					type="button"
+					variant="outline"
+				>
+					{unitIds === null
+						? "Lojas"
+						: `${unitIds.length} lojas selecionadas`}
 				</Button>
 				{error && <p className="text-destructive text-xs">{error}</p>}
 			</div>
+			<CreateProductUnitsModal
+				isOpen={isUnitsModalOpen}
+				onClose={() => setIsUnitsModalOpen(false)}
+				onSave={(ids) => {
+					setUnitIds(ids);
+					setIsUnitsModalOpen(false);
+				}}
+				selectedUnitIds={unitIds}
+			/>
 		</form>
 	);
 }
