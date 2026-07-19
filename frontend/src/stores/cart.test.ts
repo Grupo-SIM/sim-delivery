@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import { type CartItemInput, makeLineKey, useCartStore } from "./cart";
+import { installLocalStorageStub } from "./tests/local-storage-stub";
+
+installLocalStorageStub();
+const { makeLineKey, useCartStore } = await import("./cart");
+type CartItemInput = import("./cart").CartItemInput;
 
 const base: CartItemInput = {
 	id: "up_1",
