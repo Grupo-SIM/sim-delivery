@@ -67,10 +67,8 @@ export function OptionEditor({
 				>
 					<LuGripVertical className="h-5 w-5" />
 				</button>
-				{option.imageUrl ? (
+				{option.imageUrl && (
 					<img alt="" className="size-12 shrink-0 rounded object-cover" src={option.imageUrl} />
-				) : (
-					<div aria-hidden className="size-12 shrink-0 rounded bg-muted" />
 				)}
 				<div className="min-w-0 flex-1">
 					<p className="truncate font-medium">{option.name}</p>
@@ -78,18 +76,24 @@ export function OptionEditor({
 						{option.description || t("admin.products.options.descriptionPlaceholder")}
 					</p>
 				</div>
-				<p className="shrink-0 text-sm">
-					{(option.priceDeltaCents / 100).toLocaleString("pt-BR", { currency: "BRL", style: "currency" })}
-				</p>
-				<span className="hidden shrink-0 items-center gap-2 text-sm sm:flex">
-					<span
-						aria-hidden
-						className={
-							option.available ? "size-2 rounded-full bg-primary" : "size-2 rounded-full bg-muted-foreground"
-						}
-					/>
-					{option.available ? t("admin.products.options.available") : t("admin.products.options.unavailable")}
-				</span>
+				<div className="hidden shrink-0 flex-col gap-1 text-right text-xs sm:flex">
+					<p>
+						{(option.priceDeltaCents / 100).toLocaleString("pt-BR", { currency: "BRL", style: "currency" })}
+					</p>
+					<span className="flex items-center justify-end gap-2">
+						<span
+							aria-hidden
+							className={
+								option.available
+									? "size-2 rounded-full bg-primary"
+									: "size-2 rounded-full bg-muted-foreground"
+							}
+						/>
+						{option.available
+							? t("admin.products.options.available")
+							: t("admin.products.options.unavailable")}
+					</span>
+				</div>
 				<div className="flex shrink-0 gap-1">
 					<Tooltip content={t("admin.products.options.edit")}>
 						<Button
