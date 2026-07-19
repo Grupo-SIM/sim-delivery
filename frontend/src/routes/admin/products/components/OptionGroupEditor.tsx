@@ -127,7 +127,7 @@ export function OptionGroupEditor({
 					variant="outline"
 				>
 					{isExpanded ? <LuChevronUp className="h-4 w-4" /> : <LuChevronDown className="h-4 w-4" />}
-					{isExpanded ? t("admin.products.options.collapse") : t("admin.products.options.expand")}
+					{isExpanded ? t("admin.products.options.minimize") : t("admin.products.options.expand")}
 				</Button>
 			</div>
 			{isExpanded && (
@@ -212,9 +212,7 @@ export function OptionGroupEditor({
 							) : (
 								<LuChevronDown className="h-4 w-4" />
 							)}
-							{isOptionsExpanded
-								? t("admin.products.options.collapseOptions")
-								: t("admin.products.options.expandOptions")}
+							{isOptionsExpanded ? t("admin.products.options.minimize") : t("admin.products.options.expand")}
 						</Button>
 					</div>
 					{isOptionsExpanded && (

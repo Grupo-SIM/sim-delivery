@@ -48,13 +48,13 @@ export function OptionEditor({
 	const [localImageUrl, setLocalImageUrl, flushImageUrl] = useDebouncedInput(imageUrl, setImageUrl);
 	return (
 		<div
-			className="grid gap-3 rounded border border-border bg-muted/20 p-3 md:grid-cols-2 xl:grid-cols-4"
+			className="grid grid-cols-[auto_minmax(0,1fr)] items-end gap-x-3 gap-y-4 rounded border border-border bg-muted/20 p-4 md:grid-cols-[auto_repeat(3,minmax(0,1fr))]"
 			onDragOver={onDragOver}
 			onDrop={onDrop}
 		>
 			<button
 				aria-label={t("admin.products.options.reorder")}
-				className="cursor-grab self-center text-muted-foreground active:cursor-grabbing"
+				className="row-span-3 cursor-grab self-center justify-self-start rounded p-1 text-muted-foreground active:cursor-grabbing"
 				draggable
 				onDragEnd={onDragEnd}
 				onDragStart={event => {
@@ -125,7 +125,7 @@ export function OptionEditor({
 					value={localImageUrl}
 				/>
 			</Label>
-			<label className="flex cursor-pointer items-center gap-2 text-sm">
+			<label className="flex h-10 cursor-pointer items-center gap-2 text-sm">
 				<input
 					checked={option.available}
 					onChange={event => onChange({ ...option, available: event.currentTarget.checked })}
@@ -134,6 +134,7 @@ export function OptionEditor({
 				{t("admin.products.options.available")}
 			</label>
 			<ConfirmActionButton
+				className="h-10 justify-self-start"
 				confirmation={t("admin.products.options.deleteOptionConfirm")}
 				confirmLabel={t("admin.products.options.delete")}
 				onConfirm={onDelete}
