@@ -32,7 +32,7 @@ export function CreateProductUnitsModal({
 	}
 
 	return (
-		<Modal isOpen={isOpen} onClose={onClose} title="Selecionar lojas">
+		<Modal isOpen={isOpen} onClose={onClose} title={t("admin.products.create.unitsModalTitle")}>
 			<div className="space-y-4">
 				{isPending ? (
 					<div className="space-y-2">
@@ -59,10 +59,10 @@ export function CreateProductUnitsModal({
 				)}
 				<div className="flex justify-end gap-2">
 					<Button onClick={onClose} type="button" variant="outline">
-						{t("admin.products.units.cancel")}
+						{t("admin.products.create.modalCancel")}
 					</Button>
 					<Button disabled={isPending} onClick={() => onSave(selectedIds)} type="button">
-						{t("admin.products.units.save")}
+						{t("admin.products.create.modalSave")}
 					</Button>
 				</div>
 			</div>

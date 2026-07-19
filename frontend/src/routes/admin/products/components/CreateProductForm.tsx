@@ -10,8 +10,9 @@ import { Label, RequiredMark } from "@/components/ui/label";
 import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
-import { getProductsQueryKey, usePostProducts } from "@/lib/api";
-import { CreateProductConfiguration } from "./CreateProductConfiguration";
+import { getProductsQueryKey, useGetCategories, useGetTags, useGetUnits, usePostProducts } from "@/lib/api";
+import { CreateProductCategoriesModal } from "./CreateProductCategoriesModal";
+import { CreateProductTagsModal } from "./CreateProductTagsModal";
 import { CreateProductUnitsModal } from "./CreateProductUnitsModal";
 
 export function CreateProductForm() {
@@ -32,11 +33,22 @@ export function CreateProductForm() {
 	const [categoryIds, setCategoryIds] = useState<string[]>([]);
 	const [tagIds, setTagIds] = useState<string[]>([]);
 	const [unitIds, setUnitIds] = useState<string[] | null>(null);
+	const [isCategoriesModalOpen, setIsCategoriesModalOpen] = useState(false);
+	const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
 	const [isUnitsModalOpen, setIsUnitsModalOpen] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [isUploadingImage, setIsUploadingImage] = useState(false);
 
 	const { isPending, mutate } = usePostProducts();
+	const categoriesQuery = useGetCategories();
+	const tagsQuery = useGetTags();
+	const unitsQuery = useGetUnits();
+
+	const categoryNames = categoriesQuery.data
+		?.filter(category => categoryIds.includes(category.id))
+		.map(category => category.name);
+	const tagNames = tagsQuery.data?.filter(tag => tagIds.includes(tag.id)).map(tag => tag.name);
+	const unitNames = unitsQuery.data?.filter(unit => unitIds?.includes(unit.id)).map(unit => unit.name);
 
 	const hasData = useMemo(
 		() =>
@@ -188,19 +200,29 @@ export function CreateProductForm() {
 
 			<CollapsibleFormSection expanded={hasData}>
 				<FormSectionHeading>{t("admin.products.create.configuration")}</FormSectionHeading>
-				<CreateProductConfiguration
-					categoryIds={categoryIds}
-					onCategoryIdsChange={setCategoryIds}
-					onTagIdsChange={setTagIds}
-					tagIds={tagIds}
-				/>
-				<div className="space-y-2">
-					<Button onClick={() => setIsUnitsModalOpen(true)} type="button" variant="outline">
-						{unitIds === null ? "Lojas" : `${unitIds.length} lojas selecionadas`}
-					</Button>
-					{unitIds === null && (
-						<p className="text-muted-foreground text-sm">Sem seleção, produto será adicionado todas lojas.</p>
-					)}
+				<div className="flex flex-wrap justify-start gap-6 pt-2">
+					<div className="flex flex-col items-start gap-2">
+						<span className="font-medium text-sm">{t("admin.products.create.categories")}</span>
+						<Button onClick={() => setIsCategoriesModalOpen(true)} type="button" variant="outline">
+							{categoryNames && categoryNames.length > 0
+								? categoryNames.join(", ")
+								: t("admin.products.create.categoriesPlaceholder")}
+						</Button>
+					</div>
+					<div className="flex flex-col items-start gap-2">
+						<span className="font-medium text-sm">{t("admin.products.create.tags")}</span>
+						<Button onClick={() => setIsTagsModalOpen(true)} type="button" variant="outline">
+							{tagNames && tagNames.length > 0 ? tagNames.join(", ") : t("admin.products.create.tagsPlaceholder")}
+						</Button>
+					</div>
+					<div className="flex flex-col items-start gap-2">
+						<span className="font-medium text-sm">{t("admin.products.create.units")}</span>
+						<Button onClick={() => setIsUnitsModalOpen(true)} type="button" variant="outline">
+							{unitIds === null
+								? t("admin.products.create.unitsAll")
+								: (unitNames?.join(", ") ?? t("admin.products.create.unitsAll"))}
+						</Button>
+					</div>
 				</div>
 			</CollapsibleFormSection>
 
@@ -210,6 +232,24 @@ export function CreateProductForm() {
 				</Button>
 				{error && <p className="text-destructive text-xs">{error}</p>}
 			</div>
+			<CreateProductCategoriesModal
+				isOpen={isCategoriesModalOpen}
+				onClose={() => setIsCategoriesModalOpen(false)}
+				onSave={ids => {
+					setCategoryIds(ids);
+					setIsCategoriesModalOpen(false);
+				}}
+				selectedCategoryIds={categoryIds}
+			/>
+			<CreateProductTagsModal
+				isOpen={isTagsModalOpen}
+				onClose={() => setIsTagsModalOpen(false)}
+				onSave={ids => {
+					setTagIds(ids);
+					setIsTagsModalOpen(false);
+				}}
+				selectedTagIds={tagIds}
+			/>
 			<CreateProductUnitsModal
 				isOpen={isUnitsModalOpen}
 				onClose={() => setIsUnitsModalOpen(false)}
