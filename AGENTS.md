@@ -19,15 +19,18 @@ Project-specific product rules live in [`docs/business-rules.md`](docs/business-
 
 ## Git Commits — Required After Every Completed Task
 
-After finishing any task (feature, fix, refactor, or guideline addition), always create a git commit using **the machine's global Git identity** (`git config --global user.name` / `user.email`) as both author and committer:
+After finishing any task (feature, fix, refactor, or guideline addition), always create a git commit with **the local user as both author and committer** and attribute the agent with a `Co-authored-by:` trailer:
 
 ```
-git -c commit.gpgsign=false commit -m "..."
+git -c commit.gpgsign=false commit -m "..." -m "Co-authored-by: <Agent> <agent-email>"
 ```
 
-**Never override the author or committer.** Do not pass `--author`, and do not set per-commit `user.name`/`user.email`. Never sign commits under an agent identity (Claude, Codex, etc.) or any other third-party identity — the commit must always reflect the local machine's configured Git user.
+**Never set the agent as author or committer.** Do not pass `--author` with an agent identity and do not override `user.name` or `user.email` with agent details. Use the identity of whichever agent actually contributed the change in the trailer:
 
-On this machine the global identity currently resolves to `Breno-Lima <breno.souza@academico.ufpb.br>`. If it ever changes, follow whatever `git config --global` reports; don't rely on the name hardcoded here.
+- Claude → `Co-authored-by: Claude <noreply@anthropic.com>`
+- Codex → `Co-authored-by: Codex <noreply@openai.com>`
+
+Author and committer must always reflect the local machine's configured Git user. If unsure, follow whatever `git config --global` reports.
 
 If the user requests an adjustment to something just delivered, amend or rebase rather than creating a separate noisy commit — keep history clean. Use Conventional Commits (`feat`, `fix`, `refactor`, `docs`, `style`, `chore`) with the monorepo package as scope (e.g. `feat(frontend)`, `fix(backend)`).
 
