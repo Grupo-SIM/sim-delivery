@@ -435,6 +435,7 @@
 					"priceDelta": "Valor",
 					"priceRule": "Regra de preço",
 					"reorder": "Arraste para ordenar",
+					"required": "Obrigatório",
 					"saved": "Customização salva",
 					"selectionType": "Tipo",
 					"single": "Escolha única",

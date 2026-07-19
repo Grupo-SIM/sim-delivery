@@ -56,6 +56,11 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 		const count = groupQuantity(group.id);
 		return count < Number(group.minSelect) || count > Number(group.maxSelect);
 	});
+	const chooseLabel = (minSelect: number, maxSelect: number) => {
+		if (minSelect === maxSelect) return t("store.product.chooseExact", { count: maxSelect });
+		if (minSelect === 0) return t("store.product.chooseUpTo", { count: maxSelect });
+		return t("store.product.chooseRange", { max: maxSelect, min: minSelect });
+	};
 
 	function setOptionQuantity(
 		groupId: string,
@@ -139,7 +144,7 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 							<h3 className="font-semibold">{group.name}</h3>
 							<p className="text-muted-foreground text-xs">
 								{Number(group.minSelect) > 0 ? t("store.product.required") : t("store.product.optional")} ·{" "}
-								{t("store.product.chooseRange", { max: group.maxSelect, min: group.minSelect })}
+								{chooseLabel(Number(group.minSelect), Number(group.maxSelect))}
 							</p>
 						</div>
 						{group.options.map(option => {
@@ -198,7 +203,7 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 				/>
 				{invalidGroup && (
 					<p className="text-destructive text-sm">
-						{t("store.product.chooseRange", { max: invalidGroup.maxSelect, min: invalidGroup.minSelect })}
+						{chooseLabel(Number(invalidGroup.minSelect), Number(invalidGroup.maxSelect))}
 					</p>
 				)}
 				<div className="flex items-center justify-between">

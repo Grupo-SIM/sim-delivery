@@ -2,6 +2,7 @@ import { type DragEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown, LuChevronUp, LuGripVertical, LuPencil } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
@@ -178,6 +179,13 @@ export function OptionGroupEditor({
 								value={group.selectionType}
 							/>
 						</Label>
+						<label className="flex cursor-pointer items-center gap-2 md:col-span-2">
+							<Checkbox
+								checked={group.minSelect > 0}
+								onChange={() => onChange({ ...group, minSelect: group.minSelect > 0 ? 0 : 1 })}
+							/>
+							<span>{t("admin.products.options.required")}</span>
+						</label>
 						{group.selectionType === "multi" && (
 							<div className="flex flex-wrap items-end gap-3 md:col-span-2">
 								<div className="space-y-1">
