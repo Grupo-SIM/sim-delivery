@@ -144,7 +144,7 @@ export function OptionGroupEditor({
 					if (originalGroup) onChange(originalGroup);
 					setIsExpanded(false);
 				}}
-				title={group.name}
+				title={t("admin.products.options.editGroup")}
 			>
 				<div className="space-y-4">
 					<div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -156,26 +156,23 @@ export function OptionGroupEditor({
 									onChange({ ...group, name: localName });
 								}}
 								onChange={event => setLocalName(event.currentTarget.value)}
+								className="text-foreground"
 								placeholder={t("admin.products.options.groupPlaceholder")}
 								value={localName}
 							/>
 						</Label>
 						<Label>
-							<span>{t("admin.products.options.minSelect")}</span>
-							<NumericInput
-								decimalScale={0}
-								onValueChange={({ floatValue }) => onChange({ ...group, minSelect: floatValue ?? 0 })}
-								placeholder="0"
-								value={group.minSelect}
-							/>
-						</Label>
-						<Label>
-							<span>{t("admin.products.options.maxSelect")}</span>
-							<NumericInput
-								decimalScale={0}
-								onValueChange={({ floatValue }) => onChange({ ...group, maxSelect: floatValue ?? 1 })}
-								placeholder="1"
-								value={group.maxSelect}
+							<span>{t("admin.products.options.priceRule")}</span>
+							<CustomSelect
+								onChange={priceRule =>
+									onChange({ ...group, priceRule: priceRule as OptionGroup["priceRule"] })
+								}
+								options={[
+									{ label: t("admin.products.options.sum"), value: "sum" },
+									{ label: t("admin.products.options.highest"), value: "highest" },
+									{ label: t("admin.products.options.average"), value: "average" },
+								]}
+								value={group.priceRule}
 							/>
 						</Label>
 						<Label>
@@ -195,20 +192,28 @@ export function OptionGroupEditor({
 								value={group.selectionType}
 							/>
 						</Label>
-						<Label>
-							<span>{t("admin.products.options.priceRule")}</span>
-							<CustomSelect
-								onChange={priceRule =>
-									onChange({ ...group, priceRule: priceRule as OptionGroup["priceRule"] })
-								}
-								options={[
-									{ label: t("admin.products.options.sum"), value: "sum" },
-									{ label: t("admin.products.options.highest"), value: "highest" },
-									{ label: t("admin.products.options.average"), value: "average" },
-								]}
-								value={group.priceRule}
-							/>
-						</Label>
+						{group.selectionType === "multi" && (
+							<>
+								<Label>
+									<span>{t("admin.products.options.minSelect")}</span>
+									<NumericInput
+										decimalScale={0}
+										onValueChange={({ floatValue }) => onChange({ ...group, minSelect: floatValue ?? 0 })}
+										placeholder="0"
+										value={group.minSelect}
+									/>
+								</Label>
+								<Label>
+									<span>{t("admin.products.options.maxSelect")}</span>
+									<NumericInput
+										decimalScale={0}
+										onValueChange={({ floatValue }) => onChange({ ...group, maxSelect: floatValue ?? 1 })}
+										placeholder="1"
+										value={group.maxSelect}
+									/>
+								</Label>
+							</>
+						)}
 					</div>
 					<ConfirmActionButton
 						confirmation={t("admin.products.options.deleteGroupConfirm")}
