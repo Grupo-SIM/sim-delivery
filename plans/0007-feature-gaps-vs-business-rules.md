@@ -54,7 +54,7 @@ contra o código atual (caminhos citados são a evidência do estado real).
   `companyId`, DTOs TypeBox, OpenAPI/SDK regenerados, testes de escopo, página `/admin/coupons`
   com criação, edição e exclusão confirmada, navegação e traduções.
 
-### Gap 2 — Clientes: listagem e histórico no painel — **MVP**
+### Gap 2 — Clientes: listagem e histórico no painel — **MVP** ✅ Concluído
 
 - **Regra:** `docs/07` e `docs/10` — o dono lista clientes e vê histórico de pedidos.
 - **Hoje existe:** controller do cliente expõe só `GET`/`POST` para self-service
@@ -64,6 +64,10 @@ contra o código atual (caminhos citados são a evidência do estado real).
 - **Falta:** `ListCustomers` (paginado/buscável, escopo `companyId`) e detalhe com histórico
   reaproveitando `ListOrders`; controller admin; SDK; página
   `frontend/src/routes/admin/customers/index.tsx` (tabela) + detalhe; item no `AdminSidebar`.
+- **Entregue:** `ListCustomers` paginado e buscável por nome/e-mail/CPF/telefone, métricas de
+  pedidos e cashback, detalhe por cliente, filtro `customerId` em `ListOrders`, endpoints
+  protegidos por `customers:read`, SDK regenerado, páginas `/admin/customers` e
+  `/admin/customers/$customerId`, navegação e traduções.
 
 ### Gap 3 — Gestão de motoboys (couriers) no painel — **MVP**
 

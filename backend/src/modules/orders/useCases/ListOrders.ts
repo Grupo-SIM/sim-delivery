@@ -5,7 +5,7 @@ export class ListOrders {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(companyId: string | null, query: ListOrdersQuery): Promise<AdminOrderListReturn> {
-		const { deliveryMethod, from, hasCoupon, search, status, to, unitId } = query;
+		const { customerId, deliveryMethod, from, hasCoupon, search, status, to, unitId } = query;
 
 		const orders = await this.prisma.order.findMany({
 			include: {
@@ -17,6 +17,7 @@ export class ListOrders {
 			orderBy: { createdAt: "desc" },
 			where: {
 				...(companyId ? { companyId } : {}),
+				...(customerId ? { customerId } : {}),
 				...(deliveryMethod ? { deliveryMethod } : {}),
 				...(status ? { status } : {}),
 				...(unitId ? { unitId } : {}),

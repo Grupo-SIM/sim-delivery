@@ -313,6 +313,43 @@
 					"percent": "Percentual"
 				}
 			},
+			"customers": {
+				"columns": {
+					"contact": "Contato",
+					"customer": "Cliente",
+					"lastOrder": "Último pedido",
+					"orders": "Pedidos",
+					"totalSpent": "Total gasto"
+				},
+				"detail": {
+					"action": "Ver histórico",
+					"back": "Voltar para clientes",
+					"emptyOrders": "Este cliente ainda não fez pedidos.",
+					"loadError": "Não foi possível carregar os dados do cliente.",
+					"orders": "Histórico de pedidos"
+				},
+				"empty": "Nenhum cliente encontrado.",
+				"loadError": "Não foi possível carregar os clientes.",
+				"metrics": {
+					"averageTicket": "Ticket médio",
+					"cashback": "Saldo de cashback",
+					"orders": "Pedidos",
+					"totalSpent": "Total gasto"
+				},
+				"none": "—",
+				"orders": {
+					"date": "Data",
+					"status": "Status",
+					"total": "Total",
+					"unit": "Loja"
+				},
+				"search": {
+					"label": "Buscar clientes",
+					"placeholder": "Nome, e-mail, CPF ou telefone"
+				},
+				"subtitle": "Consulte clientes, métricas e histórico de pedidos.",
+				"title": "Clientes"
+			},
 			"products": {
 				"catalogSubtitle": "Produtos, categorias e etiquetas desta empresa.",
 				"columns": {

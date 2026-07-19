@@ -83,6 +83,7 @@ export function AdminSidebar() {
 
 			<NavGroup label={t("admin.dashboard.nav.operations")}>
 				<NavItem icon={LuClipboardList} label={t("admin.orders.title")} to="/admin/orders" />
+				<NavItem icon={LuUsers} label={t("admin.customers.title")} to="/admin/customers" />
 				<NavItem icon={LuTicket} label={t("admin.coupons.title")} to="/admin/coupons" />
 				<NavItem icon={LuUtensilsCrossed} label={t("admin.kitchen.title")} to="/admin/kitchen" />
 				<NavItem icon={LuStar} label={t("admin.reviews.title")} to="/admin/reviews" />
