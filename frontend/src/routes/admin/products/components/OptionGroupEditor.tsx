@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { type DragEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuChevronDown, LuChevronUp } from "react-icons/lu";
+import { LuChevronDown, LuChevronUp, LuGripVertical } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { CustomSelect } from "@/components/ui/CustomSelect";
@@ -25,11 +25,24 @@ interface OptionGroupEditorProps {
 	group: OptionGroup;
 	onChange: (group: OptionGroup) => void;
 	onDelete: () => void;
+	onDragEnd: () => void;
+	onDragOver: (event: DragEvent<HTMLElement>) => void;
+	onDragStart: () => void;
+	onDrop: () => void;
 }
 
-export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEditorProps) {
+export function OptionGroupEditor({
+	group,
+	onChange,
+	onDelete,
+	onDragEnd,
+	onDragOver,
+	onDragStart,
+	onDrop,
+}: OptionGroupEditorProps) {
 	const { t } = useTranslation();
 	const [isExpanded, setIsExpanded] = useState(true);
+	const [wasExpandedBeforeDrag, setWasExpandedBeforeDrag] = useState(false);
 	const [name, setName] = useState(group.name);
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
 	const [optionName, setOptionName, flushOptionName] = useDebouncedInput("", () => undefined);
@@ -57,13 +70,39 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 	}
 
 	return (
-		<section className="overflow-hidden rounded-lg border border-border bg-surface">
+		<div
+			className="overflow-hidden rounded-lg border border-border bg-surface"
+			onDragOver={onDragOver}
+			onDrop={onDrop}
+		>
 			<div className="flex items-center justify-between gap-3 border-border border-b bg-muted/30 px-4 py-3">
-				<div className="min-w-0">
-					<p className="truncate font-semibold">{group.name}</p>
-					<p className="text-muted-foreground text-sm">
-						{t("admin.products.options.optionCount", { count: group.options.length })}
-					</p>
+				<div className="flex min-w-0 items-center gap-2">
+					<button
+						aria-label={t("admin.products.options.reorder")}
+						className="cursor-grab text-muted-foreground active:cursor-grabbing"
+						draggable
+						onDragEnd={() => {
+							if (wasExpandedBeforeDrag) setIsExpanded(true);
+							setWasExpandedBeforeDrag(false);
+							onDragEnd();
+						}}
+						onDragStart={event => {
+							event.dataTransfer.effectAllowed = "move";
+							event.dataTransfer.setData("text/plain", group.id);
+							setWasExpandedBeforeDrag(isExpanded);
+							setIsExpanded(false);
+							onDragStart();
+						}}
+						type="button"
+					>
+						<LuGripVertical className="h-5 w-5" />
+					</button>
+					<div className="min-w-0">
+						<p className="truncate font-semibold">{group.name}</p>
+						<p className="text-muted-foreground text-sm">
+							{t("admin.products.options.optionCount", { count: group.options.length })}
+						</p>
+					</div>
 				</div>
 				<Button
 					aria-expanded={isExpanded}
@@ -139,15 +178,6 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 								value={group.priceRule}
 							/>
 						</Label>
-						<Label>
-							<span>{t("admin.products.options.sortOrder")}</span>
-							<NumericInput
-								decimalScale={0}
-								onValueChange={({ floatValue }) => onChange({ ...group, sortOrder: floatValue ?? 0 })}
-								placeholder="0"
-								value={group.sortOrder}
-							/>
-						</Label>
 					</div>
 					<ConfirmActionButton
 						confirmation={t("admin.products.options.deleteGroupConfirm")}
@@ -188,6 +218,6 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 					</div>
 				</div>
 			)}
-		</section>
+		</div>
 	);
 }

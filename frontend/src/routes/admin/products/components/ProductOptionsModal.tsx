@@ -30,6 +30,7 @@ export function ProductOptionsModal({ onClose, product }: ProductOptionsModalPro
 	const [name, setName] = useState("");
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
 	const [draftGroups, setDraftGroups] = useState<OptionGroup[]>([]);
+	const [draggedGroupId, setDraggedGroupId] = useState<string | null>(null);
 	const groups = useGetProductsByProductIdOptionGroups(product?.id);
 	const createGroup = usePostProductsByProductIdOptionGroups();
 	const createOption = usePostProductsByProductIdOptionGroupsByGroupIdOptions();
@@ -94,6 +95,20 @@ export function ProductOptionsModal({ onClose, product }: ProductOptionsModalPro
 			},
 		]);
 		setLocalName("");
+	}
+
+	function moveGroup(targetId: string) {
+		if (!draggedGroupId || draggedGroupId === targetId) return;
+		setDraftGroups(current => {
+			const sourceIndex = current.findIndex(group => group.id === draggedGroupId);
+			const targetIndex = current.findIndex(group => group.id === targetId);
+			if (sourceIndex < 0 || targetIndex < 0) return current;
+			const next = [...current];
+			const [moved] = next.splice(sourceIndex, 1);
+			next.splice(targetIndex, 0, moved);
+			return next.map((group, index) => ({ ...group, sortOrder: index }));
+		});
+		setDraggedGroupId(null);
 	}
 
 	async function save() {
@@ -200,6 +215,10 @@ export function ProductOptionsModal({ onClose, product }: ProductOptionsModalPro
 							setDraftGroups(current => current.map(item => (item.id === value.id ? value : item)))
 						}
 						onDelete={() => setDraftGroups(current => current.filter(item => item.id !== group.id))}
+						onDragEnd={() => setDraggedGroupId(null)}
+						onDragOver={event => event.preventDefault()}
+						onDragStart={() => setDraggedGroupId(group.id)}
+						onDrop={() => moveGroup(group.id)}
 					/>
 				))}
 				<div className="flex justify-end gap-2">
