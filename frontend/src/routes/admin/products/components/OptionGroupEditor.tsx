@@ -41,7 +41,9 @@ export function OptionGroupEditor({
 	onDrop,
 }: OptionGroupEditorProps) {
 	const { t } = useTranslation();
-	const [isExpanded, setIsExpanded] = useState(true);
+	const [isExpanded, setIsExpanded] = useState(false);
+	const [isOptionsExpanded, setIsOptionsExpanded] = useState(true);
+	const [draggedOptionId, setDraggedOptionId] = useState<string | null>(null);
 	const [wasExpandedBeforeDrag, setWasExpandedBeforeDrag] = useState(false);
 	const [name, setName] = useState(group.name);
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
@@ -67,6 +69,18 @@ export function OptionGroupEditor({
 			],
 		});
 		setOptionName("");
+	}
+
+	function moveOption(targetId: string) {
+		if (!draggedOptionId || draggedOptionId === targetId) return;
+		const sourceIndex = group.options.findIndex(option => option.id === draggedOptionId);
+		const targetIndex = group.options.findIndex(option => option.id === targetId);
+		if (sourceIndex < 0 || targetIndex < 0) return;
+		const options = [...group.options];
+		const [moved] = options.splice(sourceIndex, 1);
+		options.splice(targetIndex, 0, moved);
+		onChange({ ...group, options: options.map((option, index) => ({ ...option, sortOrder: index })) });
+		setDraggedOptionId(null);
 	}
 
 	return (
@@ -100,7 +114,9 @@ export function OptionGroupEditor({
 					<div className="min-w-0">
 						<p className="truncate font-semibold">{group.name}</p>
 						<p className="text-muted-foreground text-sm">
-							{t("admin.products.options.optionCount", { count: group.options.length })}
+							{group.options.length === 1
+								? t("admin.products.options.optionCount_one", { count: group.options.length })
+								: t("admin.products.options.optionCount_other", { count: group.options.length })}
 						</p>
 					</div>
 				</div>
@@ -188,23 +204,42 @@ export function OptionGroupEditor({
 					>
 						{t("admin.products.options.delete")}
 					</ConfirmActionButton>
-					<div className="max-h-[30rem] space-y-2 overflow-y-auto pr-1">
-						{group.options.map(option => (
-							<OptionEditor
-								key={option.id}
-								onChange={value =>
-									onChange({
-										...group,
-										options: group.options.map(item => (item.id === option.id ? value : item)),
-									})
-								}
-								onDelete={() =>
-									onChange({ ...group, options: group.options.filter(item => item.id !== option.id) })
-								}
-								option={option}
-							/>
-						))}
+					<div className="flex items-center justify-between border-border border-t pt-4">
+						<p className="font-medium text-sm">{t("admin.products.options.optionList")}</p>
+						<Button onClick={() => setIsOptionsExpanded(current => !current)} type="button" variant="outline">
+							{isOptionsExpanded ? (
+								<LuChevronUp className="h-4 w-4" />
+							) : (
+								<LuChevronDown className="h-4 w-4" />
+							)}
+							{isOptionsExpanded
+								? t("admin.products.options.collapseOptions")
+								: t("admin.products.options.expandOptions")}
+						</Button>
 					</div>
+					{isOptionsExpanded && (
+						<div className="max-h-[30rem] space-y-2 overflow-y-auto pr-1">
+							{group.options.map(option => (
+								<OptionEditor
+									key={option.id}
+									onChange={value =>
+										onChange({
+											...group,
+											options: group.options.map(item => (item.id === option.id ? value : item)),
+										})
+									}
+									onDelete={() =>
+										onChange({ ...group, options: group.options.filter(item => item.id !== option.id) })
+									}
+									onDragEnd={() => setDraggedOptionId(null)}
+									onDragOver={event => event.preventDefault()}
+									onDragStart={() => setDraggedOptionId(option.id)}
+									onDrop={() => moveOption(option.id)}
+									option={option}
+								/>
+							))}
+						</div>
+					)}
 					<div className="flex gap-2 border-border border-t pt-4">
 						<Input
 							onBlur={flushOptionName}
