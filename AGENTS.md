@@ -34,7 +34,9 @@ Author and committer must always reflect the local machine's configured Git user
 
 If the user requests an adjustment to something just delivered, amend or rebase rather than creating a separate noisy commit — keep history clean. Use Conventional Commits (`feat`, `fix`, `refactor`, `docs`, `style`, `chore`) with the monorepo package as scope (e.g. `feat(frontend)`, `fix(backend)`).
 
-**Atomic commits.** One commit = one coherent, complete change (compiles, passes tests, revertible on its own). Never bundle unrelated features/refactors/formatting into the same commit — if an automated formatter touches files outside your change, revert those before committing. Prefer several small, presentable commits over one large one. Every commit must leave the tree green (type-check + build + the affected package's tests).
+**Atomic commits.** One commit = one coherent, complete change (revertible on its own). Never bundle unrelated features/refactors/formatting into the same commit — if an automated formatter touches files outside your change, revert those before committing. Prefer several small, presentable commits over one large one.
+
+**Commit validation is hook-driven.** Do not run formatting, linting, or type-checking as manual pre-commit steps. Stage intended files, then use normal `git commit`; Lefthook runs those checks and stages hook fixes. If a hook fails, fix root cause, stage affected files, and commit again. Never bypass hooks with `--no-verify` or `LEFTHOOK=0`.
 
 ## Plans — Versioned in the Repo
 
@@ -50,8 +52,8 @@ Before opening a PR or merging to `staging` or `main`, run a **type-check** and 
 - Type-check: `bun run check-types` (Turbo runs each package's `check-types` = `tsc --noEmit`).
 - Build: `bun run build` (Turbo's graph only rebuilds affected packages); scope with `turbo run build -F  when useful.
 
-Enforced automatically in two places, so this is normally hands-off:
-- **lefthook `pre-push`** runs `turbo check-types` + `turbo test:unit` locally.
+Enforced automatically in two places, so commit validation is normally hands-off:
+- **lefthook `pre-commit`** runs type-checking plus staged formatting/linting, and runs backend unit coverage when backend source is staged.
 - **CI** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs [`scripts/affected-packages.ts`](scripts/affected-packages.ts) once through the `hyoretsu/gh-actions/detect-affected` composite action and emits a JSON object keyed by task. It asks Turbo's dependency graph (`turbo run <task> --affected`, base = PR base commit) for packages that (a) are affected by the diff (changed **or** transitively depend on a changed package) and (b) define that task as a script. So a change to a shared lib also schedules downstream package jobs. Each downstream job (`check-types`, `build`, `unit`, `e2e`) is a **matrix over its own key**, so an unaffected package spawns no job; an empty list skips the check. `e2e` additionally gates on PRs targeting `staging`/`main` and the presence of `DATABASE_TEST_URL`.
 
 This is a local gate; running it never implies pushing or triggering CI — see the absolute local-boundary rule above.

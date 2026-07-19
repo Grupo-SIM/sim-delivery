@@ -21,6 +21,9 @@ post-merge:
 pre-commit:
   parallel: true
   jobs:
+    - name: "Check types"
+      run: bunx turbo check-types --only
+
     - name: "Format and lint"
       group:
         piped: true
