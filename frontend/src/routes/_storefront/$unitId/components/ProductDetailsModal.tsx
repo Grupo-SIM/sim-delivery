@@ -6,6 +6,7 @@ import { Modal } from "@/components/ui/Modal";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import type { CartItem, SelectedOption } from "@/stores";
 import { useCartStore } from "@/stores";
+import { applyOptionQuantity, findInvalidGroup, lineTotal, optionsPriceDelta } from "./product-options";
 import { type MenuItem, money } from "./types";
 
 interface ProductDetailsModalProps {
@@ -34,28 +35,9 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 
 	if (!item) return null;
 	const selectedItem = item;
-	const selectedForGroup = (groupId: string) => options.filter(option => option.groupId === groupId);
-	const groupQuantity = (groupId: string) =>
-		selectedForGroup(groupId).reduce((sum, option) => sum + option.quantity, 0);
-	const delta = selectedItem.optionGroups.reduce((sum, group) => {
-		const selected = selectedForGroup(group.id);
-		const prices = selected.flatMap(option =>
-			Array.from({ length: option.quantity }, () => option.priceDeltaCents),
-		);
-		if (group.priceRule === "highest") return sum + (prices.length ? Math.max(...prices) : 0);
-		if (group.priceRule === "average") {
-			return (
-				sum +
-				(prices.length ? Math.round(prices.reduce((total, price) => total + price, 0) / prices.length) : 0)
-			);
-		}
-		return sum + prices.reduce((total, price) => total + price, 0);
-	}, 0);
-	const total = (Number(selectedItem.priceCents) + delta) * quantity;
-	const invalidGroup = selectedItem.optionGroups.find(group => {
-		const count = groupQuantity(group.id);
-		return count < Number(group.minSelect) || count > Number(group.maxSelect);
-	});
+	const delta = optionsPriceDelta(selectedItem.optionGroups, options);
+	const total = lineTotal(selectedItem, options, quantity);
+	const invalidGroup = findInvalidGroup(selectedItem.optionGroups, options);
 	const chooseLabel = (minSelect: number, maxSelect: number) => {
 		if (minSelect === maxSelect) return t("store.product.chooseExact", { count: maxSelect });
 		if (minSelect === 0) return t("store.product.chooseUpTo", { count: maxSelect });
@@ -64,51 +46,12 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 
 	function setOptionQuantity(
 		groupId: string,
-		groupName: string,
 		option: MenuItem["optionGroups"][number]["options"][number],
 		nextQuantity: number,
 	) {
 		const group = selectedItem.optionGroups.find(value => value.id === groupId);
 		if (!group) return;
-		setOptions(current => {
-			if (group.selectionType === "single") {
-				return nextQuantity === 0
-					? current.filter(value => value.groupId !== groupId)
-					: [
-							...current.filter(value => value.groupId !== groupId),
-							{
-								groupId,
-								groupName,
-								optionId: option.id,
-								optionName: option.name,
-								priceDeltaCents: Number(option.priceDeltaCents),
-								quantity: 1,
-							},
-						];
-			}
-			if (nextQuantity < 0 || nextQuantity > Number(option.maxPerItem ?? group.maxSelect)) return current;
-			const totalWithout = current
-				.filter(value => value.groupId !== groupId || value.optionId === option.id)
-				.reduce((sum, value) => sum + (value.optionId === option.id ? 0 : value.quantity), 0);
-			if (totalWithout + nextQuantity > Number(group.maxSelect)) return current;
-			return nextQuantity === 0
-				? current.filter(value => value.optionId !== option.id)
-				: current.some(value => value.optionId === option.id)
-					? current.map(value =>
-							value.optionId === option.id ? { ...value, quantity: nextQuantity } : value,
-						)
-					: [
-							...current,
-							{
-								groupId,
-								groupName,
-								optionId: option.id,
-								optionName: option.name,
-								priceDeltaCents: Number(option.priceDeltaCents),
-								quantity: nextQuantity,
-							},
-						];
-		});
+		setOptions(current => applyOptionQuantity(group, option, nextQuantity, current));
 	}
 
 	function add() {
@@ -160,7 +103,7 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 											<Checkbox
 												checked={Boolean(selected)}
 												id={`option-${option.id}`}
-												onChange={() => setOptionQuantity(group.id, group.name, option, selected ? 0 : 1)}
+												onChange={() => setOptionQuantity(group.id, option, selected ? 0 : 1)}
 											/>
 											<span className="text-sm">{money.format(Number(option.priceDeltaCents) / 100)}</span>
 										</label>
@@ -169,7 +112,7 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 											<Button
 												disabled={!selected}
 												onClick={() =>
-													setOptionQuantity(group.id, group.name, option, (selected?.quantity ?? 0) - 1)
+													setOptionQuantity(group.id, option, (selected?.quantity ?? 0) - 1)
 												}
 												size="sm"
 												type="button"
@@ -180,7 +123,7 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 											<span>{selected?.quantity ?? 0}</span>
 											<Button
 												onClick={() =>
-													setOptionQuantity(group.id, group.name, option, (selected?.quantity ?? 0) + 1)
+													setOptionQuantity(group.id, option, (selected?.quantity ?? 0) + 1)
 												}
 												size="sm"
 												type="button"
