@@ -23,8 +23,13 @@ function CourierPage() {
 		isPending,
 	} = useGetDeliveries({ courierId: userId }, { query: { refetchInterval: 30_000 } });
 
-	const active = (deliveries ?? []).filter(d => ACTIVE_STATUSES.has(d.status));
-	const history = (deliveries ?? []).filter(d => TERMINAL_STATUSES.has(d.status)).slice(0, 10);
+	const active = (deliveries ?? [])
+		.filter(d => ACTIVE_STATUSES.has(d.status))
+		.sort((a, b) => (a.order.address?.zipCode ?? "").localeCompare(b.order.address?.zipCode ?? ""));
+	const history = (deliveries ?? [])
+		.filter(d => TERMINAL_STATUSES.has(d.status))
+		.sort((a, b) => (a.order.address?.zipCode ?? "").localeCompare(b.order.address?.zipCode ?? ""))
+		.slice(0, 10);
 
 	return (
 		<Container className="space-y-6 py-8">
@@ -32,8 +37,8 @@ function CourierPage() {
 
 			{isPending ? (
 				<div className="space-y-3">
-					<Skeleton className="h-32 w-full" />
-					<Skeleton className="h-32 w-full" />
+					<Skeleton className="h-52 w-full" />
+					<Skeleton className="h-52 w-full" />
 				</div>
 			) : isError ? (
 				<ErrorState title={t("courier.loadError")} />

@@ -30,6 +30,7 @@ export const DeliveryListReturn = t.Array(
 					neighborhood: __nullable__(t.String()),
 					number: t.String(),
 					state: __nullable__(t.String()),
+					zipCode: t.String(),
 				}),
 			),
 			customerName: t.String(),
