@@ -42,6 +42,6 @@ export const GlobalPlugin = new Elysia({
 			}
 		}
 
-		return responseValue ?? {};
+		return responseValue === undefined ? {} : responseValue;
 	})
 	.as("global");
