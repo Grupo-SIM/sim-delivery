@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PatternFormat } from "react-number-format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/MaskedInput";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 
@@ -100,8 +100,7 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 				>
 					<Label>
 						{t("store.checkout.identify.phone")}
-						<PatternFormat
-							customInput={Input}
+						<MaskedInput
 							format="(##) #####-####"
 							inputMode="numeric"
 							mask="_"

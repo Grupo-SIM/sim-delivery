@@ -1,7 +1,7 @@
-import { PatternFormat } from "react-number-format";
 import { useTranslation } from "react-i18next";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/MaskedInput";
 import { RequiredMark } from "@/components/ui/label";
 import { NumericInput } from "@/components/ui/NumericInput";
 import type { GetUnits200 } from "@/lib/api";
@@ -113,8 +113,7 @@ export function CouponFormFields({
 
 				<div className="grid gap-2 font-medium text-sm">
 					<span>{t("admin.coupons.form.expiresAt")}</span>
-					<PatternFormat
-						customInput={Input}
+					<MaskedInput
 						format="####-##-## ##:##"
 						mask="_"
 						onValueChange={({ value: expiresAt }) => onChange({ expiresAt })}

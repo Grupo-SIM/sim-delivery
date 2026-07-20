@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PatternFormat } from "react-number-format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/MaskedInput";
 import { Label } from "@/components/ui/label";
 
 export interface ProfileValue {
@@ -43,8 +43,7 @@ export function ProfileForm({ initialName = "", onSubmit }: ProfileFormProps) {
 
 			<Label>
 				{t("store.checkout.profile.cpf")}
-				<PatternFormat
-					customInput={Input}
+				<MaskedInput
 					format="###.###.###-##"
 					inputMode="numeric"
 					mask="_"

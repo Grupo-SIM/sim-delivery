@@ -1,9 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PatternFormat } from "react-number-format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/MaskedInput";
 import { Label } from "@/components/ui/label";
 import { Modal } from "@/components/ui/Modal";
 import { type GetUnits200, getCepByCep, getUnitsQueryKey, usePatchUnitsByUnitId } from "@/lib/api";
@@ -121,8 +121,7 @@ export function UnitAddressEditor({ onClose, unit }: UnitAddressEditorProps) {
 			<div className="space-y-4">
 				<Label>
 					{t("admin.units.address.cep")}
-					<PatternFormat
-						customInput={Input}
+					<MaskedInput
 						format="#####-###"
 						inputMode="numeric"
 						mask="_"

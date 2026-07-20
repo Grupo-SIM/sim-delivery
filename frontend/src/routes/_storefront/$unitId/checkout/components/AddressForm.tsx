@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PatternFormat } from "react-number-format";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/MaskedInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { getCepByCep } from "@/lib/api";
@@ -124,8 +124,7 @@ export function AddressForm({ disabled, onSubmit }: AddressFormProps) {
 				<span>
 					{t("store.checkout.address.cpf")} <RequiredMark />
 				</span>
-				<PatternFormat
-					customInput={Input}
+				<MaskedInput
 					format="###.###.###-##"
 					inputMode="numeric"
 					mask="_"
@@ -139,8 +138,7 @@ export function AddressForm({ disabled, onSubmit }: AddressFormProps) {
 				<span>
 					{t("store.checkout.address.cep")} {requiredField}
 				</span>
-				<PatternFormat
-					customInput={Input}
+				<MaskedInput
 					format="#####-###"
 					inputMode="numeric"
 					mask="_"
