@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { Modal } from "@/components/ui/Modal";
+import { StarRating } from "@/components/ui/StarRating";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { useGetPublicProductReviews } from "@/lib/api";
+import { slug } from "@/lib/variant";
 import type { CartItem, SelectedOption } from "@/stores";
 import { useCartStore } from "@/stores";
 import { applyOptionQuantity, findInvalidGroup, lineTotal, optionsPriceDelta } from "./product-options";
@@ -24,6 +28,10 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 	const [localNote, setLocalNote] = useDebouncedInput(note, setNote);
 	const [quantity, setQuantity] = useState(1);
 	const [options, setOptions] = useState<SelectedOption[]>([]);
+	const reviewsQuery = useGetPublicProductReviews(
+		{ productId: item?.productId ?? "", slug },
+		{ query: { enabled: item !== null } },
+	);
 
 	useEffect(() => {
 		if (!item) return;
@@ -77,6 +85,9 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 						className="h-44 w-full rounded-brand object-cover"
 						src={selectedItem.imageUrl}
 					/>
+				)}
+				{Number(selectedItem.ratingCount) > 0 && (
+					<StarRating average={selectedItem.ratingAverage} count={Number(selectedItem.ratingCount)} />
 				)}
 				{selectedItem.description && (
 					<p className="text-muted-foreground text-sm">{selectedItem.description}</p>
@@ -168,6 +179,30 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 						{t("store.cart.add")} · {money.format(total / 100)}
 					</Button>
 				</div>
+
+				<section className="space-y-2 border-border border-t pt-4">
+					<h3 className="font-semibold">{t("store.product.reviews.title")}</h3>
+					{reviewsQuery.isError ? (
+						<ErrorState title={t("store.product.reviews.loadError")} />
+					) : reviewsQuery.data && reviewsQuery.data.length === 0 ? (
+						<p className="text-muted-foreground text-sm">{t("store.product.reviews.empty")}</p>
+					) : (
+						<div className="max-h-48 space-y-3 overflow-auto">
+							{reviewsQuery.data?.map(review => (
+								<div className="space-y-1 rounded border border-border p-3" key={review.id}>
+									<div className="flex items-center justify-between gap-2">
+										<span className="font-medium text-sm">{review.customerName}</span>
+										<span aria-hidden className="text-sm">
+											{"⭐".repeat(Number(review.rating))}
+											{"☆".repeat(5 - Number(review.rating))}
+										</span>
+									</div>
+									{review.comment && <p className="text-muted-foreground text-sm">{review.comment}</p>}
+								</div>
+							))}
+						</div>
+					)}
+				</section>
 			</div>
 		</Modal>
 	);

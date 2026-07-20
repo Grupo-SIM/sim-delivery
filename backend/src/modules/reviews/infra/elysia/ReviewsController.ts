@@ -1,7 +1,9 @@
 import Elysia from "elysia";
-import { CompanyScopeGuard } from "@/modules/users/guards";
+import { AuthGuard, CompanyScopeGuard } from "@/modules/users/guards";
 import { prisma } from "@/shared/infra/sql";
+import { DomainError } from "@/shared/errors";
 import { CreateReviewBody, ListReviewsQuery, ReviewListReturn, ReviewReturn } from "../../dtos";
+import { ReviewErrors } from "../../errors";
 import { CreateReview, ListReviews } from "../../useCases";
 
 const createReview = new CreateReview(prisma);
@@ -20,15 +22,17 @@ export const ReviewsController = new Elysia({ prefix: "/reviews" })
 	.post(
 		"/",
 		async ({ body, request }) => {
-			const scope = await CompanyScopeGuard.execute(request.headers);
-			CompanyScopeGuard.authorize(scope, "reviews", "create");
+			const { userId } = await AuthGuard.execute(request.headers);
+
+			const company = await prisma.company.findUnique({ where: { slug: body.slug } });
+			if (!company) throw new DomainError(ReviewErrors.ORDER_NOT_FOUND);
 
 			const customer = await prisma.customer.findFirst({
-				where: { companyId: scope.companyId ?? undefined, userId: scope.userId },
+				where: { companyId: company.id, userId },
 			});
-			if (!customer) throw new Error("CUSTOMER_NOT_FOUND");
+			if (!customer) throw new DomainError(ReviewErrors.ORDER_NOT_FOUND);
 
-			return createReview.execute({ ...body, companyId: scope.companyId, customerId: customer.id });
+			return createReview.execute({ ...body, companyId: company.id, customerId: customer.id });
 		},
 		{ body: CreateReviewBody, response: ReviewReturn },
 	);

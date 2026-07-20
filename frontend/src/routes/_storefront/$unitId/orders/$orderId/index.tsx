@@ -148,6 +148,17 @@ function OrderTrackingPage() {
 				</>
 			)}
 
+			{(order.status === "entregue" || order.status === "retirado") && (
+				<Link
+					className="block rounded-lg border border-primary/30 bg-primary/5 p-4 text-center font-medium text-primary text-sm"
+					params={{ unitId }}
+					search={{ orderId }}
+					to="/$unitId/rate"
+				>
+					{t("store.checkout.tracking.rate")}
+				</Link>
+			)}
+
 			<section className="space-y-3 rounded-lg border border-border bg-card p-5">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2 font-semibold"><LuShoppingBag className="size-4" /> {order.unitName}</div>

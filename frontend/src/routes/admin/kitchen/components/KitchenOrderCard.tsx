@@ -71,7 +71,10 @@ export function KitchenOrderCard({ order }: KitchenOrderCardProps) {
 						</span>
 						<span className="pt-0.5">
 							{item.productName}
-							{item.note && <span className="text-muted-foreground italic"> — {item.note}</span>}
+							<span className="text-muted-foreground italic">
+								{" "}
+								— {item.note || t("admin.kitchen.order.noNote")}
+							</span>
 						</span>
 					</li>
 				))}

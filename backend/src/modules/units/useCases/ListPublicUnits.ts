@@ -31,24 +31,41 @@ export class ListPublicUnits {
 			where: { companyId: company.id },
 		});
 
-		return units.map(({ hours, promotionalImages, ...unit }) => ({
-			addressLine: unit.addressLine,
-			bannerUrl: unit.bannerUrl,
-			city: unit.city,
-			deliveryFee: unit.deliveryFee,
-			deliveryMethods: unit.deliveryMethods,
-			hours: hours.map(({ closed, closesAt, opensAt, weekday }) => ({ closed, closesAt, opensAt, weekday })),
-			id: unit.id,
-			imageUrl: unit.imageUrl,
-			isOpenNow: isUnitOpen(hours, unit.isOpenManual),
-			minOrderCents: unit.minOrderCents,
-			name: unit.name,
-			neighborhood: unit.neighborhood,
-			phone: unit.phone,
-			prepTimeMaxMinutes: unit.prepTimeMaxMinutes,
-			prepTimeMinMinutes: unit.prepTimeMinMinutes,
-			promotionalImages: promotionalImages.map(row => row.promotionalImage),
-			slug: unit.slug,
-		}));
+		const reviews = await this.prisma.review.findMany({
+			select: { order: { select: { unitId: true } }, rating: true },
+			where: { companyId: company.id },
+		});
+		const ratingsByUnit = new Map<string, { count: number; sum: number }>();
+		for (const { order, rating } of reviews) {
+			const entry = ratingsByUnit.get(order.unitId) ?? { count: 0, sum: 0 };
+			entry.count += 1;
+			entry.sum += rating;
+			ratingsByUnit.set(order.unitId, entry);
+		}
+
+		return units.map(({ hours, promotionalImages, ...unit }) => {
+			const rating = ratingsByUnit.get(unit.id);
+			return {
+				addressLine: unit.addressLine,
+				bannerUrl: unit.bannerUrl,
+				city: unit.city,
+				deliveryFee: unit.deliveryFee,
+				deliveryMethods: unit.deliveryMethods,
+				hours: hours.map(({ closed, closesAt, opensAt, weekday }) => ({ closed, closesAt, opensAt, weekday })),
+				id: unit.id,
+				imageUrl: unit.imageUrl,
+				isOpenNow: isUnitOpen(hours, unit.isOpenManual),
+				minOrderCents: unit.minOrderCents,
+				name: unit.name,
+				neighborhood: unit.neighborhood,
+				phone: unit.phone,
+				prepTimeMaxMinutes: unit.prepTimeMaxMinutes,
+				prepTimeMinMinutes: unit.prepTimeMinMinutes,
+				promotionalImages: promotionalImages.map(row => row.promotionalImage),
+				ratingAverage: rating ? rating.sum / rating.count : null,
+				ratingCount: rating?.count ?? 0,
+				slug: unit.slug,
+			};
+		});
 	}
 }

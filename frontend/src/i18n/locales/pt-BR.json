@@ -315,6 +315,7 @@
 					"itemsCount_one": "{{count}} item",
 					"itemsCount_other": "{{count}} itens",
 					"justNow": "agora",
+					"noNote": "Sem observações",
 					"ready": "Marcar como pronto",
 					"start": "Iniciar preparo"
 				},
@@ -581,7 +582,16 @@
 				},
 				"empty": "Nenhuma avaliação ainda.",
 				"loadError": "Não foi possível carregar as avaliações.",
+				"productColumns": {
+					"product": "Produto"
+				},
+				"productEmpty": "Nenhuma avaliação de produto ainda.",
+				"productLoadError": "Não foi possível carregar as avaliações de produtos.",
 				"subtitle": "Avaliações de clientes desta empresa.",
+				"tabs": {
+					"products": "Produtos",
+					"units": "Lojas"
+				},
 				"title": "Avaliações"
 			},
 			"staff": {
@@ -892,6 +902,11 @@
 			"subtitle": "Suas entregas ativas.",
 			"title": "Entregas"
 		},
+		"rating": {
+			"count": "{{count}} avaliação",
+			"count_other": "{{count}} avaliações",
+			"none": "Sem avaliações ainda"
+		},
 		"store": {
 			"account": {
 				"identify": {
@@ -905,6 +920,7 @@
 					"itemsCount_one": "{{count}} item",
 					"itemsCount_other": "{{count}} itens",
 					"loadError": "Não foi possível carregar seus pedidos.",
+					"rate": "Avaliar pedido",
 					"signInPrompt": "Entre para ver seus pedidos.",
 					"subtitle": "Acompanhe o status de todos os seus pedidos.",
 					"title": "Meus pedidos"
@@ -1074,6 +1090,7 @@
 					"cancelledDescription": "Este pedido não seguirá para preparo.",
 					"empty": "Não encontramos este pedido.",
 					"items": "Itens do pedido",
+					"rate": "Avaliar este pedido",
 					"refreshing": "Atualização automática ativa",
 					"status": {
 						"awaiting_payment": "Aguardando pagamento",
@@ -1133,6 +1150,11 @@
 				"popularOptions": "Itens mais pedidos",
 				"quantity": "Quantidade",
 				"required": "Obrigatório",
+				"reviews": {
+					"empty": "Nenhuma avaliação ainda.",
+					"loadError": "Não foi possível carregar as avaliações.",
+					"title": "Avaliações"
+				},
 				"searchOptions": "Pesquise pelas opções..."
 			},
 			"rate": {
@@ -1141,6 +1163,16 @@
 				"commentPlaceholder": "Como foi sua experiência?",
 				"error": "Não foi possível enviar sua avaliação.",
 				"notEligible": "Este pedido ainda não está pronto para avaliação.",
+				"products": {
+					"alreadyReviewed": "Avaliado",
+					"comment": "Comentário (opcional)",
+					"error": "Não foi possível enviar a avaliação.",
+					"subtitle": "Avalie os produtos que você comprou neste pedido.",
+					"submit": "Enviar",
+					"submitting": "Enviando...",
+					"submitted": "Obrigado pela avaliação!",
+					"title": "Avaliar produtos"
+				},
 				"rating": "Avaliação",
 				"submit": "Enviar avaliação",
 				"submitting": "Enviando...",
@@ -1161,6 +1193,11 @@
 				"minOrder": "Pedido mín.",
 				"notFound": "Esta unidade não está disponível.",
 				"operation": "Funcionamento",
+				"reviews": {
+					"empty": "Nenhuma avaliação ainda.",
+					"loadError": "Não foi possível carregar as avaliações.",
+					"title": "Avaliações"
+				},
 				"switch": "Trocar unidade",
 				"weekdays": {
 					"fri": "Sexta-feira",

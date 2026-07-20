@@ -9,4 +9,5 @@ export { StoreHoursModal } from "./StoreHoursModal";
 export { StoreToolbar } from "./StoreToolbar";
 export { UnitBanner } from "./UnitBanner";
 export { UnitStoreSkeleton } from "./UnitStoreSkeleton";
+export { UnitReviews } from "./UnitReviews";
 export { UnitSwitcher } from "./UnitSwitcher";

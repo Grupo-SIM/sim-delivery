@@ -111,6 +111,7 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 							left: pos.left,
 							maxHeight: 260,
 							overflowY: "auto",
+							pointerEvents: "auto",
 							position: "fixed",
 							top: pos.top,
 							width: pos.width,

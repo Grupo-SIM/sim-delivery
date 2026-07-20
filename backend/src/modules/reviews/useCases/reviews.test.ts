@@ -23,6 +23,7 @@ const baseBody = {
 	customerId: "cust_1",
 	orderId: "order_1",
 	rating: 5,
+	slug: "demo",
 };
 
 function makeCreatePrisma(opts: { existingReview?: boolean; orders?: OrderRow[] } = {}) {

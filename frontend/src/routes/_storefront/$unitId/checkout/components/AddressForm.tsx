@@ -36,12 +36,14 @@ const emptyAddress: AddressValue = {
 
 interface AddressFormProps {
 	disabled?: boolean;
+	initialCpf?: string;
 	onSubmit?: (value: AddressValue) => void;
 }
 
-export function AddressForm({ disabled, onSubmit }: AddressFormProps) {
+export function AddressForm({ disabled, initialCpf, onSubmit }: AddressFormProps) {
 	const { t } = useTranslation();
-	const [value, setValue] = useState<AddressValue>(emptyAddress);
+	const hasCpf = initialCpf?.length === 11;
+	const [value, setValue] = useState<AddressValue>({ ...emptyAddress, cpf: initialCpf ?? "" });
 	const [noNumber, setNoNumber] = useState(false);
 	const [lookingUp, setLookingUp] = useState(false);
 	const [cepError, setCepError] = useState<string | null>(null);
@@ -86,20 +88,22 @@ export function AddressForm({ disabled, onSubmit }: AddressFormProps) {
 				onSubmit?.({ ...value, number });
 			}}
 		>
-			<Label>
-				<span>
-					{t("store.checkout.address.cpf")} <RequiredMark />
-				</span>
-				<PatternFormat
-					customInput={Input}
-					format="###.###.###-##"
-					inputMode="numeric"
-					mask="_"
-					onValueChange={({ value: digits }) => set("cpf", digits)}
-					placeholder={t("store.checkout.address.cpfPlaceholder")}
-					value={value.cpf}
-				/>
-			</Label>
+			{!hasCpf && (
+				<Label>
+					<span>
+						{t("store.checkout.address.cpf")} <RequiredMark />
+					</span>
+					<PatternFormat
+						customInput={Input}
+						format="###.###.###-##"
+						inputMode="numeric"
+						mask="_"
+						onValueChange={({ value: digits }) => set("cpf", digits)}
+						placeholder={t("store.checkout.address.cpfPlaceholder")}
+						value={value.cpf}
+					/>
+				</Label>
+			)}
 
 			<Label>
 				{t("store.checkout.address.cep")}

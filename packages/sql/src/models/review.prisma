@@ -16,3 +16,27 @@ model Review {
     @@index([companyId])
     @@map("review")
 }
+
+/// A post-delivery customer rating for a single product within a completed order.
+/// Rating is company-wide for the product (not scoped per unit).
+model ProductReview {
+    id         String   @id @default(cuid())
+    companyId  String
+    orderId    String
+    productId  String
+    customerId String
+    rating     Int
+    comment    String?
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    customer Customer @relation(fields: [customerId], references: [id])
+    order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+    product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+    @@unique([orderId, productId])
+    @@index([companyId])
+    @@index([productId])
+    @@map("product_review")
+}

@@ -140,9 +140,19 @@ function OrdersPage() {
 													<LuChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
 												</div>
 											</Link>
-										</li>
-									);
-								})}
+										{(order.status === "entregue" || order.status === "retirado") && (
+											<Link
+												className="mt-1.5 inline-block text-primary text-xs underline"
+												params={{ unitId: order.unitSlug }}
+												search={{ orderId: order.id }}
+												to="/$unitId/rate"
+											>
+												{t("store.account.orders.rate")}
+											</Link>
+										)}
+									</li>
+								);
+							})}
 							</ul>
 						</section>
 					))}

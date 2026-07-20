@@ -233,7 +233,11 @@ function CheckoutPage() {
 						subtitle={t("store.checkout.address.subtitle")}
 						title={t("store.checkout.address.title")}
 					/>
-					<AddressForm disabled={isSavingCustomer} onSubmit={handleAddressSubmit} />
+					<AddressForm
+						disabled={isSavingCustomer}
+						initialCpf={profileValue?.cpf || existingCustomer?.cpf || undefined}
+						onSubmit={handleAddressSubmit}
+					/>
 				</>
 			)}
 

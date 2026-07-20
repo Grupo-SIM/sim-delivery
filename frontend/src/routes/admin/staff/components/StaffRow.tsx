@@ -13,7 +13,7 @@ import {
 } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 
-type EditableRole = "manager" | "attendant" | "kitchen";
+type EditableRole = "manager" | "attendant" | "kitchen" | "courier";
 
 const editableRoles = new Set<string>(["manager", "attendant", "kitchen", "courier"]);
 
@@ -37,6 +37,7 @@ export function StaffRow({ member }: StaffRowProps) {
 		{ label: t("admin.staff.roles.manager"), value: "manager" },
 		{ label: t("admin.staff.roles.attendant"), value: "attendant" },
 		{ label: t("admin.staff.roles.kitchen"), value: "kitchen" },
+		{ label: t("admin.staff.roles.courier"), value: "courier" },
 	];
 
 	function changeRole(role: string) {

@@ -128,13 +128,12 @@ export function InviteStaffForm() {
 								<label className="flex cursor-pointer items-center gap-2 text-sm" key={unit.id}>
 									<input
 										checked={unitIds.includes(unit.id)}
-										onChange={event =>
+										onChange={event => {
+											const checked = event.currentTarget.checked;
 											setUnitIds(current =>
-												event.currentTarget.checked
-													? [...current, unit.id]
-													: current.filter(unitId => unitId !== unit.id),
-											)
-										}
+												checked ? [...current, unit.id] : current.filter(unitId => unitId !== unit.id),
+											);
+										}}
 										type="checkbox"
 									/>
 									{unit.name}

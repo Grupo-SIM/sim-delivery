@@ -36,6 +36,7 @@ model Company {
     deliveries Delivery[]
     orders     Order[]
     products   Product[]
+    productReviews ProductReview[]
     promotionalImages PromotionalImage[]
     reviews    Review[]
     tags       Tag[]

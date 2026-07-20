@@ -19,6 +19,7 @@ model Product {
     company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
     categories   ProductCategory[]
     optionGroups OptionGroup[]
+    reviews      ProductReview[]
     tags         ProductTag[]
     unitProducts UnitProduct[]
 

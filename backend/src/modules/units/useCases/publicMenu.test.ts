@@ -58,6 +58,9 @@ function prismaWith(unit: { id: string; slug: string } | null, associations: Ass
 					? unit
 					: null,
 		},
+		productReview: {
+			groupBy: async () => [],
+		},
 		unitProduct: {
 			findMany: async ({ where }: { where: { available: boolean; unitId: string } }) =>
 				associations.filter(a => a.unitId === where.unitId && a.available === where.available),

@@ -9,6 +9,7 @@ export interface CustomerOrderTracking {
 	items: {
 		id: string;
 		note: string | null;
+		productId: string;
 		productName: string;
 		quantity: number;
 	}[];
