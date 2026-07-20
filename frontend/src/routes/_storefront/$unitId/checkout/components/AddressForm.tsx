@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
@@ -45,6 +45,7 @@ export function AddressForm({ disabled, onSubmit }: AddressFormProps) {
 	const [noNumber, setNoNumber] = useState(false);
 	const [lookingUp, setLookingUp] = useState(false);
 	const [cepError, setCepError] = useState<string | null>(null);
+	const numberInputRef = useRef<HTMLInputElement>(null);
 
 	function set<K extends keyof AddressValue>(key: K, next: AddressValue[K]) {
 		setValue(prev => ({ ...prev, [key]: next }));
@@ -78,6 +79,7 @@ export function AddressForm({ disabled, onSubmit }: AddressFormProps) {
 				state: address.state,
 				zipCode: digits,
 			}));
+			numberInputRef.current?.focus();
 		} catch {
 			setCepError(t("store.checkout.address.cepNotFound"));
 		} finally {
@@ -154,6 +156,7 @@ export function AddressForm({ disabled, onSubmit }: AddressFormProps) {
 						inputMode="numeric"
 						onChange={event => setAddressNumber(event.currentTarget.value)}
 						placeholder="123"
+						ref={numberInputRef}
 						value={number}
 					/>
 				</Label>
