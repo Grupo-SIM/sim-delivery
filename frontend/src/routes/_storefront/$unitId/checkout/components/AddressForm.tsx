@@ -9,7 +9,6 @@ import { Label, RequiredMark } from "@/components/ui/label";
 import { getCepByCep } from "@/lib/api";
 
 export interface AddressValue {
-	cpf: string;
 	zipCode: string;
 	addressLine: string;
 	number: string;
@@ -26,7 +25,6 @@ const emptyAddress: AddressValue = {
 	addressLine: "",
 	city: "",
 	complement: "",
-	cpf: "",
 	latitude: null,
 	longitude: null,
 	neighborhood: "",
@@ -52,7 +50,6 @@ export function AddressForm({ disabled, onSubmit }: AddressFormProps) {
 		setValue(prev => ({ ...prev, [key]: next }));
 	}
 
-	const [cpf, setCpf] = useDebouncedInput(value.cpf, digits => set("cpf", digits));
 	const [zipCode, setZipCode] = useDebouncedInput(value.zipCode, digits => {
 		set("zipCode", digits);
 		if (digits.length === 8) void lookupCep(digits);
@@ -94,7 +91,6 @@ export function AddressForm({ disabled, onSubmit }: AddressFormProps) {
 		addressLine,
 		city,
 		complement,
-		cpf,
 		neighborhood,
 		number,
 		reference,
@@ -102,7 +98,6 @@ export function AddressForm({ disabled, onSubmit }: AddressFormProps) {
 		zipCode,
 	};
 	const canSubmit =
-		currentValue.cpf.length === 11 &&
 		currentValue.zipCode.length === 8 &&
 		currentValue.addressLine.trim() !== "" &&
 		currentValue.number.trim() !== "" &&
@@ -120,20 +115,6 @@ export function AddressForm({ disabled, onSubmit }: AddressFormProps) {
 				onSubmit?.(currentValue);
 			}}
 		>
-			<Label>
-				<span>
-					{t("store.checkout.address.cpf")} <RequiredMark />
-				</span>
-				<MaskedInput
-					format="###.###.###-##"
-					inputMode="numeric"
-					mask="_"
-					onValueChange={({ value: digits }) => setCpf(digits)}
-					placeholder={t("store.checkout.address.cpfPlaceholder")}
-					value={cpf}
-				/>
-			</Label>
-
 			<Label>
 				<span>
 					{t("store.checkout.address.cep")} {requiredField}

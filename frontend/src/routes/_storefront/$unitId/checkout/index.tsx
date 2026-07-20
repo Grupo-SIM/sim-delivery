@@ -125,7 +125,7 @@ function CheckoutPage() {
 						state: address.state || undefined,
 						zipCode: address.zipCode,
 					},
-					cpf: address.cpf,
+					cpf: profile.cpf || undefined,
 					name: profile.name,
 					slug: slug ?? "",
 				},
