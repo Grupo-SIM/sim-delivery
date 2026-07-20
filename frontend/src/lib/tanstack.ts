@@ -10,3 +10,12 @@ reactQueryClient.setQueryDefaults(["/branding/"], {
 	refetchOnWindowFocus: false,
 	staleTime: Number.POSITIVE_INFINITY,
 });
+
+for (const queryKey of [["Customers", "/customers/me"], ["Cashback", "/cashback/me"], ["Loyalty", "/loyalty/me"]]) {
+	reactQueryClient.setQueryDefaults(queryKey, {
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		refetchOnWindowFocus: false,
+		staleTime: 60_000,
+	});
+}
