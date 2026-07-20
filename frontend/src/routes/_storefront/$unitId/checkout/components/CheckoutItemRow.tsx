@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { LuMinus, LuPencil, LuPlus, LuTrash2 } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,8 @@ export function CheckoutItemRow({ item, onEdit }: CheckoutItemRowProps) {
 	const setQuantity = useCartStore(state => state.setQuantity);
 	const saveNote = useCartStore(state => state.setNote);
 	const [note, setNoteState] = useState(item.note);
+	const noteRef = useRef<HTMLTextAreaElement>(null);
+	const manuallyResized = useRef(false);
 	const [localNote, setLocalNote, flushNote] = useDebouncedInput(note, value => {
 		setNoteState(value);
 		saveNote(item.lineKey, value);
@@ -25,6 +27,16 @@ export function CheckoutItemRow({ item, onEdit }: CheckoutItemRowProps) {
 		setNoteState(item.note);
 		setLocalNote(item.note);
 	}, [item.note, setLocalNote]);
+
+	useLayoutEffect(() => {
+		const textarea = noteRef.current;
+		if (!textarea || manuallyResized.current) return;
+		const style = getComputedStyle(textarea);
+		const lineHeight = Number.parseFloat(style.lineHeight) || 20;
+		const maxHeight = lineHeight * 4 + Number.parseFloat(style.paddingTop) + Number.parseFloat(style.paddingBottom);
+		textarea.style.height = "auto";
+		textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
+	}, [localNote]);
 
 	return (
 		<article className="border-border/70 border-b py-4 last:border-b-0">
@@ -82,11 +94,16 @@ export function CheckoutItemRow({ item, onEdit }: CheckoutItemRowProps) {
 				</div>
 			</div>
 			<textarea
-				className="mt-3 min-h-24 w-full resize-y rounded-md border border-input bg-surface px-3 py-2 text-sm placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+				className="mt-3 min-h-0 w-full resize-y rounded-md border border-input bg-surface px-3 py-2 text-sm placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+				onPointerDown={event => {
+					const { bottom, right } = event.currentTarget.getBoundingClientRect();
+					manuallyResized.current = event.clientX >= right - 20 && event.clientY >= bottom - 20;
+				}}
 				onBlur={flushNote}
 				onChange={event => setLocalNote(event.currentTarget.value)}
 				placeholder={t("store.checkout.order.itemNotePlaceholder")}
-				rows={3}
+				ref={noteRef}
+				rows={2}
 				value={localNote}
 			/>
 		</article>
