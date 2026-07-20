@@ -18,6 +18,7 @@ export function CheckoutItemRow({ item, onEdit }: CheckoutItemRowProps) {
 	const [note, setNoteState] = useState(item.note);
 	const noteRef = useRef<HTMLTextAreaElement>(null);
 	const manuallyResized = useRef(false);
+	const automaticHeight = useRef<number | null>(null);
 	const [localNote, setLocalNote, flushNote] = useDebouncedInput(note, value => {
 		setNoteState(value);
 		saveNote(item.lineKey, value);
@@ -36,7 +37,19 @@ export function CheckoutItemRow({ item, onEdit }: CheckoutItemRowProps) {
 		const maxHeight = lineHeight * 4 + Number.parseFloat(style.paddingTop) + Number.parseFloat(style.paddingBottom);
 		textarea.style.height = "auto";
 		textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
+		automaticHeight.current = textarea.offsetHeight;
 	}, [localNote]);
+
+	useEffect(() => {
+		const textarea = noteRef.current;
+		if (!textarea) return;
+		automaticHeight.current = textarea.offsetHeight;
+		const observer = new ResizeObserver(() => {
+			if (automaticHeight.current !== textarea.offsetHeight) manuallyResized.current = true;
+		});
+		observer.observe(textarea);
+		return () => observer.disconnect();
+	}, []);
 
 	return (
 		<article className="border-border/70 border-b py-4 last:border-b-0">
@@ -95,10 +108,6 @@ export function CheckoutItemRow({ item, onEdit }: CheckoutItemRowProps) {
 			</div>
 			<textarea
 				className="mt-3 min-h-0 w-full resize-y rounded-md border border-input bg-surface px-3 py-2 text-sm placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
-				onPointerDown={event => {
-					const { bottom, right } = event.currentTarget.getBoundingClientRect();
-					manuallyResized.current = event.clientX >= right - 20 && event.clientY >= bottom - 20;
-				}}
 				onBlur={flushNote}
 				onChange={event => setLocalNote(event.currentTarget.value)}
 				placeholder={t("store.checkout.order.itemNotePlaceholder")}
