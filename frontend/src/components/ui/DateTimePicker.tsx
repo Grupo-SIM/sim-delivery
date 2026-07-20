@@ -64,6 +64,7 @@ function monthLabel(date: Date) {
 
 export function DateTimePicker({ className, onChange, placeholder = "dd/mm/aaaa hh:mm", value }: DateTimePickerProps) {
 	const inputId = useId();
+	const fieldRef = useRef<HTMLDivElement>(null);
 	const triggerRef = useRef<HTMLButtonElement>(null);
 	const popupRef = useRef<HTMLDivElement>(null);
 	const parsedValue = parseDateTime(value);
@@ -82,13 +83,13 @@ export function DateTimePicker({ className, onChange, placeholder = "dd/mm/aaaa 
 	}, [calendarMonth]);
 
 	function openPicker() {
-		const rect = triggerRef.current?.getBoundingClientRect();
+		const rect = fieldRef.current?.getBoundingClientRect();
 		if (!rect) return;
 
 		const selected = parsedValue ?? new Date();
 		setCalendarMonth(new Date(selected.getFullYear(), selected.getMonth(), 1));
 		setTime(parsedValue ? `${value.slice(8, 10)}:${value.slice(10, 12)}` : "23:59");
-		setPopupPosition({ left: rect.left - (rect.width - 44), top: rect.bottom + 4 });
+		setPopupPosition({ left: rect.left, top: rect.bottom + 4 });
 		setOpen(true);
 	}
 
@@ -130,7 +131,7 @@ export function DateTimePicker({ className, onChange, placeholder = "dd/mm/aaaa 
 
 	return (
 		<div className={cn("relative", className)}>
-			<div className="relative">
+			<div className="relative" ref={fieldRef}>
 				<MaskedInput
 					aria-describedby={isInvalid ? `${inputId}-error` : undefined}
 					aria-invalid={isInvalid}
