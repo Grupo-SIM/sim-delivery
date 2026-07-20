@@ -9,10 +9,21 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
 import { useGetOrders, useGetUnits } from "@/lib/api";
-import { KANBAN_STATUSES, OrdersKanban } from "./components";
+import { OrdersKanban } from "./components";
 
 const STATUS_FILTERS = [
 	"all",
+	"awaiting_payment",
+	"recebido",
+	"em_preparo",
+	"pronto",
+	"saiu_para_entrega",
+	"entregue",
+	"retirado",
+	"cancelado",
+] as const;
+
+const KANBAN_STATUSES = [
 	"awaiting_payment",
 	"recebido",
 	"em_preparo",
