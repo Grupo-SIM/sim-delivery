@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import {
 	getCustomersMeQueryOptions,
 	getPublicUnitsQueryOptions,
+	getPublicUnitsByUnitSlugMenuQueryOptions,
 	type PostCustomersMe200,
 	useGetCashbackMe,
 	useGetLoyaltyMe,
@@ -28,6 +29,7 @@ import {
 	ProfileForm,
 	type ProfileValue,
 } from "./components";
+import { ProductDetailsModal } from "../components";
 
 type Step = "identify" | "profile" | "review" | "payment";
 
@@ -44,11 +46,13 @@ function CheckoutPage() {
 	const [savedCustomer, setSavedCustomer] = useState<PostCustomersMe200 | null>(null);
 	const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
 	const [addressModalOpen, setAddressModalOpen] = useState(false);
+	const [editingLineKey, setEditingLineKey] = useState<string | null>(null);
 	const getMethod = useDeliveryMethodStore(state => state.getMethod);
 	const setStoredMethod = useDeliveryMethodStore(state => state.setMethod);
 	const { data: units, isPending: loadingUnits } = useQuery(getPublicUnitsQueryOptions({ slug: slug ?? "" }));
 	const unit = units?.find(u => u.slug === unitSlug);
 	const unitId = unit?.id ?? "";
+	const { data: menu } = useQuery(getPublicUnitsByUnitSlugMenuQueryOptions(unitSlug, { slug: slug ?? "" }));
 	const availableMethods = unit?.deliveryMethods ?? ["delivery"];
 	const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>(() =>
 		getMethod(unitId, availableMethods),
@@ -57,6 +61,10 @@ function CheckoutPage() {
 	const [cashbackRedeemCents, setCashbackRedeemCents] = useState(0);
 	const [loyaltyRedeemPoints, setLoyaltyRedeemPoints] = useState(0);
 	const [placedOrder, setPlacedOrder] = useState<{ id: string; totalCents: number } | null>(null);
+	const editingItem = cartItems.find(item => item.lineKey === editingLineKey) ?? null;
+	const editingMenuItem = editingItem
+		? (menu?.flatMap(section => section.items).find(item => item.id === editingItem.id) ?? null)
+		: null;
 
 	const { mutate: saveCustomer, isPending: isSavingCustomer } = usePostCustomersMe({
 		// Customer response is stored locally after submit. Avoid Kubb's broad
@@ -257,6 +265,7 @@ function CheckoutPage() {
 						onChangeCashbackRedeem={setCashbackRedeemCents}
 						onChangeDeliveryMethod={handleChangeDeliveryMethod}
 						onChangeLoyaltyRedeem={setLoyaltyRedeemPoints}
+						onEditItem={item => setEditingLineKey(item.lineKey)}
 						onOpenAddressSelector={() => setAddressModalOpen(true)}
 						onSetCoupon={setAppliedCoupon}
 						onSubmit={handlePlaceOrder}
@@ -294,6 +303,12 @@ function CheckoutPage() {
 					setSelectedAddressId(address.id);
 					setAddressModalOpen(false);
 				}}
+			/>
+			<ProductDetailsModal
+				editingItem={editingItem}
+				item={editingMenuItem}
+				onClose={() => setEditingLineKey(null)}
+				unitId={unitId}
 			/>
 		</Container>
 	);

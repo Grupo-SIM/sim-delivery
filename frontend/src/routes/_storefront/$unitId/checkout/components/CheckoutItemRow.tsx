@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LuMinus, LuPlus, LuTrash2 } from "react-icons/lu";
+import { LuMinus, LuPencil, LuPlus, LuTrash2 } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
@@ -8,9 +8,10 @@ import { type CartItem, useCartStore } from "@/stores";
 
 interface CheckoutItemRowProps {
 	item: CartItem;
+	onEdit: (item: CartItem) => void;
 }
 
-export function CheckoutItemRow({ item }: CheckoutItemRowProps) {
+export function CheckoutItemRow({ item, onEdit }: CheckoutItemRowProps) {
 	const { t } = useTranslation();
 	const setQuantity = useCartStore(state => state.setQuantity);
 	const saveNote = useCartStore(state => state.setNote);
@@ -28,11 +29,23 @@ export function CheckoutItemRow({ item }: CheckoutItemRowProps) {
 	return (
 		<article className="border-border/70 border-b py-4 last:border-b-0">
 			<div className="grid grid-cols-[5rem_minmax(0,1fr)_auto] gap-x-3">
-				{item.imageUrl ? (
-					<img alt={item.title} className="size-20 rounded-lg object-cover" loading="lazy" src={item.imageUrl} />
-				) : (
-					<div aria-hidden className="size-20 rounded-lg bg-muted" />
-				)}
+				<div className="relative size-20">
+					{item.imageUrl ? (
+						<img alt={item.title} className="size-20 rounded-lg object-cover" loading="lazy" src={item.imageUrl} />
+					) : (
+						<div aria-hidden className="size-20 rounded-lg bg-muted" />
+					)}
+					<Button
+						aria-label={t("store.checkout.order.editItem")}
+						className="absolute -right-2 -bottom-2 rounded-full border-primary/30 bg-primary text-primary-foreground shadow-md hover:bg-primary/90"
+						onClick={() => onEdit(item)}
+						size="icon"
+						type="button"
+						variant="outline"
+					>
+						<LuPencil />
+					</Button>
+				</div>
 				<div className="min-w-0">
 					<p className="font-semibold text-sm leading-5">{item.title}</p>
 					{item.options.length > 0 && (

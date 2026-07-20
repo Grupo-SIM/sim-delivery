@@ -31,6 +31,7 @@ interface OrderReviewProps {
 	onChangeCashbackRedeem: (cents: number) => void;
 	onChangeDeliveryMethod: (method: DeliveryMethod) => void;
 	onChangeLoyaltyRedeem: (points: number) => void;
+	onEditItem: (item: CartItem) => void;
 	onOpenAddressSelector: () => void;
 	onSetCoupon: (coupon: AppliedCoupon | null) => void;
 	onSubmit: () => void;
@@ -54,6 +55,7 @@ export function OrderReview({
 	onChangeCashbackRedeem,
 	onChangeDeliveryMethod,
 	onChangeLoyaltyRedeem,
+	onEditItem,
 	onOpenAddressSelector,
 	onSetCoupon,
 	onSubmit,
@@ -102,7 +104,7 @@ export function OrderReview({
 	return (
 		<div className="space-y-5">
 			<section className="divide-y divide-border/70">
-				{items.map(item => <CheckoutItemRow item={item} key={item.lineKey} />)}
+				{items.map(item => <CheckoutItemRow item={item} key={item.lineKey} onEdit={onEditItem} />)}
 			</section>
 
 			{availableMethods.length > 1 && (

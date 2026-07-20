@@ -1005,6 +1005,7 @@
 					"deliveryAddress": "Endereço de entrega",
 					"deliveryMethod": "Método de entrega",
 					"discount": "Desconto",
+					"editItem": "Editar produto",
 					"error": "Não foi possível realizar o pedido. Tente novamente.",
 					"freightCalculating": "Calculando frete…",
 					"freightError": "Não foi possível calcular o frete para este endereço.",
