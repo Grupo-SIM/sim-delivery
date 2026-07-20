@@ -3,8 +3,8 @@ import { LuMinus, LuPlus, LuTrash2 } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
-import { type CartItem, useCartStore } from "@/stores";
 import { formatMoney } from "@/lib/formatMoney";
+import { type CartItem, useCartStore } from "@/stores";
 
 interface CheckoutItemRowProps {
 	item: CartItem;
@@ -26,35 +26,25 @@ export function CheckoutItemRow({ item }: CheckoutItemRowProps) {
 	}, [item.note, setLocalNote]);
 
 	return (
-		<article className="flex gap-3 border-border/70 border-b py-4 last:border-b-0">
-			{item.imageUrl ? (
-				<img alt={item.title} className="size-20 shrink-0 rounded-lg object-cover" loading="lazy" src={item.imageUrl} />
-			) : (
-				<div aria-hidden className="size-20 shrink-0 rounded-lg bg-muted" />
-			)}
-			<div className="min-w-0 flex-1 space-y-2">
-				<div className="flex items-start justify-between gap-3">
-					<div className="min-w-0">
-						<p className="font-semibold text-sm leading-5">{item.title}</p>
-						{item.options.length > 0 && (
-							<p className="mt-1 text-muted-foreground text-xs leading-4">
-								{item.options
-									.map(option => `${option.groupName}: ${option.quantity > 1 ? `${option.quantity}× ` : ""}${option.optionName}`)
-									.join(" · ")}
-							</p>
-						)}
-					</div>
-					<span className="shrink-0 font-semibold text-sm">{formatMoney((item.priceCents * item.quantity) / 100)}</span>
+		<article className="border-border/70 border-b py-4 last:border-b-0">
+			<div className="grid grid-cols-[5rem_minmax(0,1fr)_auto] gap-x-3">
+				{item.imageUrl ? (
+					<img alt={item.title} className="size-20 rounded-lg object-cover" loading="lazy" src={item.imageUrl} />
+				) : (
+					<div aria-hidden className="size-20 rounded-lg bg-muted" />
+				)}
+				<div className="min-w-0">
+					<p className="font-semibold text-sm leading-5">{item.title}</p>
+					{item.options.length > 0 && (
+						<p className="mt-1 text-muted-foreground text-xs leading-4">
+							{item.options
+								.map(option => `${option.groupName}: ${option.quantity > 1 ? `${option.quantity}× ` : ""}${option.optionName}`)
+								.join(" · ")}
+						</p>
+					)}
 				</div>
-				<textarea
-					className="min-h-9 w-full resize-none rounded-md border border-input bg-surface px-2 py-1.5 text-sm placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
-					onBlur={flushNote}
-					onChange={event => setLocalNote(event.currentTarget.value)}
-					placeholder={t("store.checkout.order.itemNotePlaceholder")}
-					rows={1}
-					value={localNote}
-				/>
-				<div className="flex items-center justify-end">
+				<div className="flex min-w-18 flex-col items-end gap-2">
+					<span className="whitespace-nowrap font-semibold text-sm">{formatMoney((item.priceCents * item.quantity) / 100)}</span>
 					<div className="flex items-center overflow-hidden rounded-md border border-border bg-muted/30">
 						<Button
 							aria-label={item.quantity === 1 ? "Excluir item" : "Diminuir quantidade"}
@@ -78,6 +68,14 @@ export function CheckoutItemRow({ item }: CheckoutItemRowProps) {
 					</div>
 				</div>
 			</div>
+			<textarea
+				className="mt-3 min-h-24 w-full resize-y rounded-md border border-input bg-surface px-3 py-2 text-sm placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+				onBlur={flushNote}
+				onChange={event => setLocalNote(event.currentTarget.value)}
+				placeholder={t("store.checkout.order.itemNotePlaceholder")}
+				rows={3}
+				value={localNote}
+			/>
 		</article>
 	);
 }

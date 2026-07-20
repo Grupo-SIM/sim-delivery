@@ -189,7 +189,12 @@ export function OrderReview({
 
 			<section className="space-y-2 border-border border-t pt-4 text-sm">
 				<div className="flex justify-between"><span className="text-muted-foreground">{t("store.checkout.order.itemsSubtotal")}</span><span>{formatMoney(subtotal / 100)}</span></div>
-				{deliveryFee > 0 && <div className="flex justify-between"><span className="text-muted-foreground">{t("store.cart.deliveryFee")}</span><span>{formatMoney(deliveryFee / 100)}</span></div>}
+				{deliveryMethod === "delivery" && (
+					<div className="flex justify-between">
+						<span className="text-muted-foreground">{t("store.cart.deliveryFee")}</span>
+						<span>{isSimulatingFreight ? t("store.checkout.order.freightCalculating") : formatMoney(deliveryFee / 100)}</span>
+					</div>
+				)}
 				{discountCents > 0 && <div className="flex justify-between text-green-700"><span>{t("store.checkout.order.discount")}</span><span>−{formatMoney(discountCents / 100)}</span></div>}
 				{cashbackRedeemCents > 0 && <div className="flex justify-between text-green-700"><span>{t("store.checkout.order.cashbackRedeemed")}</span><span>−{formatMoney(cashbackRedeemCents / 100)}</span></div>}
 				{loyaltyRedeemPoints > 0 && <div className="flex justify-between text-green-700"><span>{t("store.checkout.order.loyaltyRedeemed")}</span><span>−{formatMoney(loyaltyRedeemPoints / 100)}</span></div>}
