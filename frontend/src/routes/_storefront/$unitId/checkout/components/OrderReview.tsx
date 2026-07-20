@@ -30,6 +30,7 @@ interface OrderReviewProps {
 	onChangeDeliveryMethod: (method: DeliveryMethod) => void;
 	onChangeCashbackRedeem: (cents: number) => void;
 	onChangeLoyaltyRedeem: (points: number) => void;
+	onOpenAddressSelector: () => void;
 	onSetCoupon: (coupon: AppliedCoupon | null) => void;
 	onSubmit: () => void;
 	subtotal: number;
@@ -52,6 +53,7 @@ export function OrderReview({
 	onChangeDeliveryMethod,
 	onChangeCashbackRedeem,
 	onChangeLoyaltyRedeem,
+	onOpenAddressSelector,
 	onSetCoupon,
 	onSubmit,
 	subtotal,
@@ -160,31 +162,41 @@ export function OrderReview({
 				</div>
 			)}
 
-			{address && (
-				<div className="rounded-md border border-border bg-muted/30 p-3 text-sm">
-					<p className="font-medium">
-						{address.addressLine}, {address.number}
-					</p>
-					{address.complement && <p className="text-muted-foreground">{address.complement}</p>}
-					<p className="text-muted-foreground">
-						{[address.neighborhood, address.city, address.state].filter(Boolean).join(", ")}
-					</p>
-					{deliveryMethod === "delivery" && hasCoordinates && (
-						<p className="mt-1 text-muted-foreground">
-							{isSimulatingFreight && t("store.checkout.order.freightCalculating")}
-							{!isSimulatingFreight && freightError && t("store.checkout.order.freightError")}
-							{!isSimulatingFreight &&
-								!freightError &&
-								freight?.etaMinMinutes != null &&
-								freight.etaMaxMinutes != null &&
-								t("store.checkout.order.freightEta", {
-									max: Number(freight.etaMaxMinutes),
-									min: Number(freight.etaMinMinutes),
-								})}
-						</p>
-					)}
+			<div className="space-y-2">
+				<div className="flex items-center justify-between gap-3">
+					<span className="font-medium text-sm">{t("store.checkout.order.deliveryAddress")}</span>
+					<Button onClick={onOpenAddressSelector} size="sm" type="button" variant="outline">
+						{t(address ? "store.checkout.address.change" : "store.checkout.address.add")}
+					</Button>
 				</div>
-			)}
+				{address ? (
+					<div className="rounded-md border border-border bg-muted/30 p-3 text-sm">
+						<p className="font-medium">
+							{address.addressLine}, {address.number}
+						</p>
+						{address.complement && <p className="text-muted-foreground">{address.complement}</p>}
+						<p className="text-muted-foreground">
+							{[address.neighborhood, address.city, address.state].filter(Boolean).join(", ")}
+						</p>
+						{deliveryMethod === "delivery" && hasCoordinates && (
+							<p className="mt-1 text-muted-foreground">
+								{isSimulatingFreight && t("store.checkout.order.freightCalculating")}
+								{!isSimulatingFreight && freightError && t("store.checkout.order.freightError")}
+								{!isSimulatingFreight &&
+									!freightError &&
+									freight?.etaMinMinutes != null &&
+									freight.etaMaxMinutes != null &&
+									t("store.checkout.order.freightEta", {
+										max: Number(freight.etaMaxMinutes),
+										min: Number(freight.etaMinMinutes),
+									})}
+							</p>
+						)}
+					</div>
+				) : (
+					<p className="text-muted-foreground text-sm">{t("store.checkout.address.none")}</p>
+				)}
+			</div>
 
 			<div className="space-y-2">
 				<span className="font-medium text-sm">{t("store.checkout.order.coupon")}</span>
@@ -301,7 +313,12 @@ export function OrderReview({
 				</div>
 			</div>
 
-			<Button className="w-full" disabled={isPending || blockedByFreight} onClick={onSubmit} type="button">
+			<Button
+				className="w-full"
+				disabled={isPending || blockedByFreight || (deliveryMethod === "delivery" && !address)}
+				onClick={onSubmit}
+				type="button"
+			>
 				{isPending ? t("store.checkout.order.placing") : t("store.checkout.order.place")}
 			</Button>
 		</div>

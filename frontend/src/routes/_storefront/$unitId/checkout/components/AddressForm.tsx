@@ -37,9 +37,10 @@ const emptyAddress: AddressValue = {
 interface AddressFormProps {
 	disabled?: boolean;
 	onSubmit?: (value: AddressValue) => void;
+	submitLabel?: string;
 }
 
-export function AddressForm({ disabled, onSubmit }: AddressFormProps) {
+export function AddressForm({ disabled, onSubmit, submitLabel }: AddressFormProps) {
 	const { t } = useTranslation();
 	const [value, setValue] = useState<AddressValue>(emptyAddress);
 	const [noNumber, setNoNumber] = useState(false);
@@ -220,7 +221,7 @@ export function AddressForm({ disabled, onSubmit }: AddressFormProps) {
 			</Label>
 
 			<Button className="w-full" disabled={!canSubmit || disabled} type="submit">
-				{t("store.checkout.address.continue")}
+				{submitLabel ?? t("store.checkout.address.continue")}
 			</Button>
 		</form>
 	);

@@ -18,6 +18,7 @@ import { slug } from "@/lib/variant";
 import { cartTotalCents, showAlert, useAuthStore, useCartStore, useDeliveryMethodStore } from "@/stores";
 import {
 	AddressForm,
+	AddressSelectorModal,
 	type AddressValue,
 	type AppliedCoupon,
 	type DeliveryMethod,
@@ -28,7 +29,7 @@ import {
 	type ProfileValue,
 } from "./components";
 
-type Step = "identify" | "profile" | "address" | "review" | "payment";
+type Step = "identify" | "profile" | "review" | "payment";
 
 function CheckoutPage() {
 	const { t } = useTranslation();
@@ -41,6 +42,8 @@ function CheckoutPage() {
 
 	const [profileValue, setProfileValue] = useState<ProfileValue | null>(null);
 	const [savedCustomer, setSavedCustomer] = useState<PostCustomersMe200 | null>(null);
+	const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+	const [addressModalOpen, setAddressModalOpen] = useState(false);
 	const getMethod = useDeliveryMethodStore(state => state.getMethod);
 	const setStoredMethod = useDeliveryMethodStore(state => state.setMethod);
 	const { data: units, isPending: loadingUnits } = useQuery(getPublicUnitsQueryOptions({ slug: slug ?? "" }));
@@ -87,8 +90,11 @@ function CheckoutPage() {
 	);
 	const loyaltyBalancePoints = Number(loyaltyData?.balancePoints ?? 0);
 
-	const isPickup = deliveryMethod === "pickup";
-	const hasCustomer = savedCustomer !== null || existingCustomer !== null;
+	const activeCustomer = savedCustomer ?? existingCustomer ?? null;
+	const addresses: PostCustomersMe200["addresses"] = activeCustomer?.addresses ?? [];
+	const savedAddress =
+		addresses.find(address => address.id === selectedAddressId) ?? addresses.find(address => address.isDefault) ?? null;
+	const hasCustomer = activeCustomer !== null;
 	// Magic-link/OTP accounts can end up with a blank name; without one we can't skip
 	// straight to address (the save would submit an empty name and fail server-side).
 	const hasUsableName = !!user?.name?.trim();
@@ -97,23 +103,11 @@ function CheckoutPage() {
 			? "identify"
 			: !hasCustomer && profileValue === null
 				? "profile"
-				: !hasCustomer
-					? "address"
-					: existingCustomer !== null &&
-							savedCustomer === null &&
-							!isPickup &&
-							!hasUsableName &&
-							profileValue === null
-						? "profile"
-						: // Existing customer + pickup: skip address entirely
-							existingCustomer !== null && savedCustomer === null && !isPickup
-							? "address"
-							: "review";
+				: existingCustomer !== null && savedCustomer === null && !hasUsableName && profileValue === null
+					? "profile"
+					: "review";
 
 	const step: Step = placedOrder ? "payment" : reviewStep;
-
-	const activeCustomer = savedCustomer ?? existingCustomer ?? null;
-	const savedAddress = activeCustomer?.addresses[0] ?? null;
 
 	function handleChangeDeliveryMethod(method: DeliveryMethod) {
 		setDeliveryMethod(method);
@@ -144,7 +138,11 @@ function CheckoutPage() {
 			},
 			{
 				onError: () => void showAlert(t("store.checkout.profile.error")),
-				onSuccess: data => setSavedCustomer(data),
+				onSuccess: data => {
+					setSavedCustomer(data);
+					setSelectedAddressId(data.addresses.find(address => address.isDefault)?.id ?? null);
+					setAddressModalOpen(false);
+				},
 			},
 		);
 	}
@@ -239,16 +237,6 @@ function CheckoutPage() {
 				</>
 			)}
 
-			{step === "address" && (
-				<>
-					<SectionHeading
-						subtitle={t("store.checkout.address.subtitle")}
-						title={t("store.checkout.address.title")}
-					/>
-					<AddressForm disabled={isSavingCustomer} onSubmit={handleAddressSubmit} />
-				</>
-			)}
-
 			{step === "review" && (
 				<>
 					<SectionHeading
@@ -269,6 +257,7 @@ function CheckoutPage() {
 						onChangeCashbackRedeem={setCashbackRedeemCents}
 						onChangeDeliveryMethod={handleChangeDeliveryMethod}
 						onChangeLoyaltyRedeem={setLoyaltyRedeemPoints}
+						onOpenAddressSelector={() => setAddressModalOpen(true)}
 						onSetCoupon={setAppliedCoupon}
 						onSubmit={handlePlaceOrder}
 						slug={slug ?? ""}
@@ -294,6 +283,18 @@ function CheckoutPage() {
 					/>
 				</>
 			)}
+
+			<AddressSelectorModal
+				addresses={addresses}
+				isOpen={addressModalOpen}
+				isSaving={isSavingCustomer}
+				onClose={() => setAddressModalOpen(false)}
+				onCreate={handleAddressSubmit}
+				onSelect={address => {
+					setSelectedAddressId(address.id);
+					setAddressModalOpen(false);
+				}}
+			/>
 		</Container>
 	);
 }
