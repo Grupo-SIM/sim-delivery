@@ -4,6 +4,11 @@ export function useDebouncedInput(externalValue: string, onChange: (value: strin
 	const [local, setLocal] = useState(externalValue);
 	const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 	const lastSent = useRef(externalValue);
+	const onChangeRef = useRef(onChange);
+
+	useEffect(() => {
+		onChangeRef.current = onChange;
+	}, [onChange]);
 
 	useEffect(() => {
 		if (externalValue !== lastSent.current) {
@@ -18,17 +23,17 @@ export function useDebouncedInput(externalValue: string, onChange: (value: strin
 			clearTimeout(timer.current);
 			timer.current = setTimeout(() => {
 				lastSent.current = next;
-				onChange(next);
+				onChangeRef.current(next);
 			}, delay);
 		},
-		[delay, onChange],
+		[delay],
 	);
 
 	const flush = useCallback(() => {
 		clearTimeout(timer.current);
 		lastSent.current = local;
-		onChange(local);
-	}, [local, onChange]);
+		onChangeRef.current(local);
+	}, [local]);
 
 	return [local, handleChange, flush] as const;
 }
