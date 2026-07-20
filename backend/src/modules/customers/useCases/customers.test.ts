@@ -43,6 +43,12 @@ function makePrisma(
 					addresses.push(a);
 					return a;
 				},
+				updateMany: async ({ data, where }: { data: { isDefault: boolean }; where: { customerId: string } }) => {
+					for (const address of addresses as Array<{ customerId?: string; isDefault?: boolean }>) {
+						if (address.customerId === where.customerId) address.isDefault = data.isDefault;
+					}
+					return { count: addresses.length };
+				},
 			},
 			company: {
 				findUnique: async ({ where }: { where: { slug?: string } }) =>
@@ -125,17 +131,19 @@ describe("customers use-cases", () => {
 			expect(users.user_1).toMatchObject({ name: "Maria Silva" });
 		});
 
-		it("adds a new address on repeat call", async () => {
+		it("keeps prior addresses and makes newest address default", async () => {
 			const { addresses, prisma } = makePrisma({
 				customer: { companyId: "cmp_1", cpf: null, id: "cust_1", phone: null, userId: "user_1" },
 			});
+			addresses.push({ ...baseAddress, customerId: "cust_1", id: "addr_1", isDefault: true });
 			await new UpsertCustomer(prisma).execute("user_1", {
 				address: { ...baseAddress, number: "2000" },
 				name: "Maria Silva",
 				slug: "demo",
 			});
-			expect(addresses).toHaveLength(1);
-			expect(addresses[0]).toMatchObject({ number: "2000" });
+			expect(addresses).toHaveLength(2);
+			expect(addresses[0]).toMatchObject({ isDefault: false, number: "1000" });
+			expect(addresses[1]).toMatchObject({ isDefault: true, number: "2000" });
 		});
 	});
 

@@ -20,6 +20,10 @@ export class UpsertCustomer {
 			where: { userId },
 		});
 
+		await this.prisma.address.updateMany({
+			data: { isDefault: false },
+			where: { customerId: customer.id, isDefault: true },
+		});
 		await this.prisma.address.create({
 			data: { ...this.mapAddress(address), customerId: customer.id, isDefault: true },
 		});
