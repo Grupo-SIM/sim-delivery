@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { CollapsibleFormSection } from "@/components/ui/CollapsibleFormSection";
 import { CustomSelect } from "@/components/ui/CustomSelect";
-import { FormSectionHeading } from "@/components/ui/FormSectionHeading";
 import { Input } from "@/components/ui/input";
 import { RequiredMark } from "@/components/ui/label";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
@@ -74,7 +73,6 @@ export function CreateCouponForm() {
 				submit();
 			}}
 		>
-			<FormSectionHeading>{t("admin.coupons.create.heading")}</FormSectionHeading>
 			<div className="grid gap-4 md:grid-cols-2">
 				<label className="grid gap-2 font-medium text-sm">
 					<span>
