@@ -88,7 +88,7 @@ export function DateTimePicker({ className, onChange, placeholder = "dd/mm/aaaa 
 		const selected = parsedValue ?? new Date();
 		setCalendarMonth(new Date(selected.getFullYear(), selected.getMonth(), 1));
 		setTime(parsedValue ? `${value.slice(8, 10)}:${value.slice(10, 12)}` : "23:59");
-		setPopupPosition({ left: rect.left, top: rect.bottom + 4 });
+		setPopupPosition({ left: rect.left - (rect.width - 44), top: rect.bottom + 4 });
 		setOpen(true);
 	}
 

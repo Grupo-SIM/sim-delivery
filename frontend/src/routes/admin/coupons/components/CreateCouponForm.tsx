@@ -20,7 +20,15 @@ export function CreateCouponForm() {
 	const { data: units, isPending: unitsPending } = useGetUnits();
 	const [error, setError] = useState<string | null>(null);
 	const { isPending, mutate } = usePostCoupons();
-	const hasData = useMemo(() => Object.values(form).some(value => value !== "" && value !== 0 && value !== null), [form]);
+	const hasData = useMemo(
+		() =>
+			form.value > 0 ||
+			form.unitId !== null ||
+			form.minOrderCents > 0 ||
+			form.maxUses !== null ||
+			form.expiresAt !== "",
+		[form],
+	);
 
 	function update(next: Partial<CouponFormState>) {
 		setForm(prev => ({ ...prev, ...next }));
