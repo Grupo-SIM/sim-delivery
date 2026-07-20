@@ -55,12 +55,24 @@ function CheckoutPage() {
 	const [loyaltyRedeemPoints, setLoyaltyRedeemPoints] = useState(0);
 	const [placedOrder, setPlacedOrder] = useState<{ id: string; totalCents: number } | null>(null);
 
-	const { mutate: saveCustomer, isPending: isSavingCustomer } = usePostCustomersMe();
+	const { mutate: saveCustomer, isPending: isSavingCustomer } = usePostCustomersMe({
+		// Customer response is stored locally after submit. Avoid Kubb's broad
+		// "Customers" mutation invalidation causing an unnecessary GET during checkout.
+		mutation: { mutationKey: ["checkout-customer"] },
+	});
 	const { mutate: placeOrder, isPending: isPlacingOrder } = usePostOrders();
 
 	const { data: existingCustomer, isLoading: loadingCustomer } = useQuery({
 		...getCustomersMeQueryOptions({ slug: slug ?? "" }),
+		// Profile cannot change while this screen is open. Fetch once, then keep its
+		// result through component remounts; POST /customers/me returns saved profile.
+		gcTime: Number.POSITIVE_INFINITY,
 		enabled: identified && !!slug,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		refetchOnWindowFocus: false,
+		retry: false,
+		staleTime: Number.POSITIVE_INFINITY,
 	});
 
 	const { data: cashbackData } = useGetCashbackMe(

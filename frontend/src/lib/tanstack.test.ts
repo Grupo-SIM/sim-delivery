@@ -1,4 +1,5 @@
 import { describe, expect, it } from "bun:test";
+import { getCustomersMeQueryOptions } from "@/lib/api";
 import { reactQueryClient } from "./tanstack";
 
 describe("branding query cache", () => {
@@ -31,4 +32,28 @@ describe("checkout identity queries", () => {
 			});
 		});
 	}
+});
+
+describe("checkout customer query", () => {
+	it("does not refetch or retry while checkout remounts", () => {
+		const options = {
+			...getCustomersMeQueryOptions({ slug: "zero-grau" }),
+			enabled: true,
+			gcTime: Number.POSITIVE_INFINITY,
+			refetchOnMount: false,
+			refetchOnReconnect: false,
+			refetchOnWindowFocus: false,
+			retry: false,
+			staleTime: Number.POSITIVE_INFINITY,
+		};
+
+		expect(reactQueryClient.defaultQueryOptions(options)).toMatchObject({
+			gcTime: Number.POSITIVE_INFINITY,
+			refetchOnMount: false,
+			refetchOnReconnect: false,
+			refetchOnWindowFocus: false,
+			retry: false,
+			staleTime: Number.POSITIVE_INFINITY,
+		});
+	});
 });
