@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Container } from "@/components/ui/Container";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -48,7 +49,12 @@ function OrdersPage() {
 		...(unitId !== "all" ? { unitId } : {}),
 		...(deliveryMethod !== "all" ? { deliveryMethod: deliveryMethod as "delivery" | "pickup" } : {}),
 		...(search.trim() ? { search: search.trim() } : {}),
-		...(date ? { from: `${date}T00:00:00.000`, to: `${date}T23:59:59.999` } : {}),
+		...(date
+			? {
+					from: new Date(`${date}T00:00:00`).toISOString(),
+					to: new Date(`${date}T23:59:59.999`).toISOString(),
+				}
+			: {}),
 	});
 	const unitOptions = [
 		{ label: t("admin.orders.filter.unitAll"), value: "all" },
@@ -62,12 +68,6 @@ function OrdersPage() {
 	const visibleStatuses = statusFilter === "all" ? KANBAN_STATUSES : [statusFilter];
 
 	function closeCurrentDay() {
-		if (
-			!window.confirm(
-				"Encerrar dia? Pedidos atuais sairão do kanban, mas continuarão disponíveis no histórico.",
-			)
-		)
-			return;
 		closeDay.mutate(undefined, {
 			onError: () => showToast("Não foi possível encerrar o dia.", "negative"),
 			onSuccess: () => {
@@ -81,14 +81,17 @@ function OrdersPage() {
 		<Container className="space-y-6 py-8">
 			<div className="flex flex-wrap items-start justify-between gap-4">
 				<SectionHeading subtitle={t("admin.orders.subtitle")} title={t("admin.orders.title")} />
-				<Button
+				<ConfirmActionButton
+					confirmation="Pedidos atuais sairão do kanban, mas continuarão disponíveis no histórico."
+					confirmLabel="Confirmar"
 					disabled={closeDay.isPending || Boolean(date)}
-					onClick={closeCurrentDay}
+					onConfirm={closeCurrentDay}
+					tooltip="Encerrar dia"
 					type="button"
 					variant="outline"
 				>
 					{closeDay.isPending ? "Encerrando..." : "Encerrar dia"}
-				</Button>
+				</ConfirmActionButton>
 			</div>
 
 			<div className="flex flex-wrap gap-2">
@@ -127,9 +130,15 @@ function OrdersPage() {
 						value={deliveryMethod}
 					/>
 				</div>
-				<label className="flex flex-col gap-1">
+				<label className="flex flex-col gap-1" htmlFor="orders-date-filter">
 					<span className="font-medium text-sm">{t("admin.orders.filter.date")}</span>
-					<Input className="w-44" onChange={event => setDate(event.currentTarget.value)} type="date" value={date} />
+					<Input
+						className="w-44"
+						id="orders-date-filter"
+						onChange={event => setDate(event.currentTarget.value)}
+						type="date"
+						value={date}
+					/>
 				</label>
 			</div>
 

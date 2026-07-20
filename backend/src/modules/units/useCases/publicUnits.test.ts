@@ -24,8 +24,11 @@ function prismaWith(
 			findUnique: async ({ where }: { where: { slug: string } }) =>
 				company && company.slug === where.slug ? company : null,
 		},
-		review: {
+		order: {
 			findMany: async () => [],
+		},
+		review: {
+			groupBy: async () => [],
 		},
 		unit: {
 			findMany: async ({ where }: { where: { companyId: string } }) =>

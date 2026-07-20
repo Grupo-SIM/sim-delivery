@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { TextField } from "@/components/ui/TextField";
-import { useGetCustomerOrder } from "@/lib/api/get-customer-order";
 import { usePostProductReviews, usePostReviews } from "@/lib/api";
+import { useGetCustomerOrder } from "@/lib/api/get-customer-order";
 import { slug } from "@/lib/variant";
 
 const searchSchema = z.object({
@@ -37,7 +37,7 @@ function ProductRatingRow({ orderId, productId, productName }: ProductRatingRowP
 			{ data: { comment: comment.trim() || undefined, orderId, productId, rating, slug: slug ?? "" } },
 			{
 				onError: (err: { status?: number }) => {
-					if (err.status === 409) setErrorKey("store.rate.alreadyReviewed");
+					if (err.status === 409) setErrorKey("store.rate.products.alreadyReviewed");
 					else if (err.status === 422) setErrorKey("store.rate.notEligible");
 					else setErrorKey("store.rate.products.error");
 				},
@@ -60,7 +60,7 @@ function ProductRatingRow({ orderId, productId, productName }: ProductRatingRowP
 			<div className="flex gap-1">
 				{[1, 2, 3, 4, 5].map(star => (
 					<button
-						className="text-2xl transition-transform hover:scale-110"
+						className="cursor-pointer text-2xl transition-transform hover:scale-110"
 						key={star}
 						onClick={() => setRating(star)}
 						onMouseEnter={() => setHovered(star)}
@@ -167,9 +167,17 @@ function RatePage() {
 
 			{uniqueProducts.length > 0 && (
 				<div className="space-y-3">
-					<SectionHeading subtitle={t("store.rate.products.subtitle")} title={t("store.rate.products.title")} />
+					<SectionHeading
+						subtitle={t("store.rate.products.subtitle")}
+						title={t("store.rate.products.title")}
+					/>
 					{uniqueProducts.map(([productId, productName]) => (
-						<ProductRatingRow key={productId} orderId={orderId} productId={productId} productName={productName} />
+						<ProductRatingRow
+							key={productId}
+							orderId={orderId}
+							productId={productId}
+							productName={productName}
+						/>
 					))}
 				</div>
 			)}

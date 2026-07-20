@@ -1,8 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
 import { LuEye, LuEyeOff } from "react-icons/lu";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
@@ -90,13 +91,14 @@ export function InviteStaffForm() {
 					<Input
 						className="pr-11"
 						onChange={event => setPassword(event.currentTarget.value)}
+						placeholder="Ex: Senha temporária"
 						required
 						type={showPassword ? "text" : "password"}
 						value={password}
 					/>
 					<button
 						aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-						className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+						className="absolute inset-y-0 right-0 flex w-11 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 						onClick={() => setShowPassword(current => !current)}
 						title={showPassword ? "Ocultar senha" : "Mostrar senha"}
 						type="button"
@@ -125,16 +127,20 @@ export function InviteStaffForm() {
 					) : (
 						<div className="mt-2 flex flex-wrap gap-3">
 							{unitsQuery.data?.map(unit => (
-								<label className="flex cursor-pointer items-center gap-2 text-sm" key={unit.id}>
-									<input
+								<label
+									className="flex cursor-pointer items-center gap-2 text-sm"
+									htmlFor={`unit-${unit.id}`}
+									key={unit.id}
+								>
+									<Checkbox
 										checked={unitIds.includes(unit.id)}
+										id={`unit-${unit.id}`}
 										onChange={event => {
 											const checked = event.currentTarget.checked;
 											setUnitIds(current =>
 												checked ? [...current, unit.id] : current.filter(unitId => unitId !== unit.id),
 											);
 										}}
-										type="checkbox"
 									/>
 									{unit.name}
 								</label>

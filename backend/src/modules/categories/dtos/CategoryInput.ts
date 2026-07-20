@@ -3,6 +3,7 @@ import { t } from "elysia";
 /** Editable category fields shared by create (required name) and update (all optional). */
 const fields = {
 	imageUrl: t.Optional(t.String()),
+	position: t.Optional(t.Integer({ minimum: 0 })),
 };
 
 export const CreateCategoryBody = t.Object({ ...fields, name: t.String({ minLength: 1 }) });
