@@ -34,13 +34,14 @@ export interface CartState {
 	clear: () => void;
 	items: CartItem[];
 	removeItem: (lineKey: string) => void;
+	replaceItem: (unitId: string, lineKey: string, item: CartItemInput, quantity: number, note: string) => void;
 	setNote: (lineKey: string, note: string) => void;
 	setQuantity: (lineKey: string, quantity: number) => void;
 	/** The unit this cart belongs to; a cart holds items from a single unit at a time. */
 	unitId: string | null;
 }
 
-function makeLineKey(id: string, options: SelectedOption[]): string {
+export function makeLineKey(id: string, options: SelectedOption[]): string {
 	const sorted = [...options]
 		.sort((a, b) => a.optionId.localeCompare(b.optionId))
 		.map(o => `${o.optionId}:${o.quantity}`)
@@ -70,6 +71,18 @@ export const useCartStore = create<CartState>()(
 				set(state => {
 					const items = state.items.filter(line => line.lineKey !== lineKey);
 					return { items, unitId: items.length === 0 ? null : state.unitId };
+				}),
+			replaceItem: (unitId, lineKey, item, quantity, note) =>
+				set(state => {
+					const base = state.unitId === unitId ? state.items.filter(line => line.lineKey !== lineKey) : [];
+					const nextLineKey = makeLineKey(item.id, item.options);
+					const existing = base.find(line => line.lineKey === nextLineKey);
+					const items = existing
+						? base.map(line =>
+								line.lineKey === nextLineKey ? { ...line, quantity: line.quantity + quantity } : line,
+							)
+						: [...base, { ...item, lineKey: nextLineKey, note, quantity }];
+					return { items, unitId };
 				}),
 			setNote: (lineKey, note) =>
 				set(state => ({

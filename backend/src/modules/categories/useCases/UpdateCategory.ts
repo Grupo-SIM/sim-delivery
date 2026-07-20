@@ -18,6 +18,6 @@ export class UpdateCategory {
 			throw new DomainError(CategoryErrors.CATEGORY_NOT_FOUND);
 		}
 
-		return this.prisma.category.update({ data, where: { id: categoryId } });
+		return { ...(await this.prisma.category.update({ data, where: { id: categoryId } })), products: [] };
 	}
 }

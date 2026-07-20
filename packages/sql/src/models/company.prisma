@@ -10,11 +10,18 @@ model Company {
     /// Branding fields rendered in the store footer and app shell.
     logoUrl     String?
     footerText  String?
+    footerPaymentMethods String[] @default([])
+    footerInstagramUrl String?
+    footerFacebookUrl String?
+    footerWhatsApp String?
+    footerSupportEmail String?
     fontFamily  String?
     fontDisplay String?
     fontFamilyUrl String?
     fontDisplayUrl String?
     themeColors Json?
+    /// Per-company WhatsApp messages keyed by order status.
+    orderStatusWhatsAppTemplates Json?
     /// Marketing tracking IDs injected into the store at runtime.
     metaPixelId String?
     ga4Id       String?
@@ -28,6 +35,7 @@ model Company {
     deliveries Delivery[]
     orders     Order[]
     products   Product[]
+    promotionalImages PromotionalImage[]
     reviews    Review[]
     tags       Tag[]
     units      Unit[]

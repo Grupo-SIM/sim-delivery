@@ -2,13 +2,18 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { CollapsibleFormSection } from "@/components/ui/CollapsibleFormSection";
+import { FormSectionHeading } from "@/components/ui/FormSectionHeading";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
-import { getProductsQueryKey, usePostProducts } from "@/lib/api";
+import { getProductsQueryKey, useGetCategories, useGetTags, useGetUnits, usePostProducts } from "@/lib/api";
+import { CreateProductCategoriesModal } from "./CreateProductCategoriesModal";
+import { CreateProductTagsModal } from "./CreateProductTagsModal";
+import { CreateProductUnitsModal } from "./CreateProductUnitsModal";
 
 export function CreateProductForm() {
 	const { t } = useTranslation();
@@ -25,10 +30,25 @@ export function CreateProductForm() {
 	const [priceReais, setPriceReais] = useState(0);
 	const [cashbackEnabled, setCashbackEnabled] = useState(false);
 	const [cashback, setCashback] = useState(0);
+	const [categoryIds, setCategoryIds] = useState<string[]>([]);
+	const [tagIds, setTagIds] = useState<string[]>([]);
+	const [unitIds, setUnitIds] = useState<string[] | null>(null);
+	const [isCategoriesModalOpen, setIsCategoriesModalOpen] = useState(false);
+	const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
+	const [isUnitsModalOpen, setIsUnitsModalOpen] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [isUploadingImage, setIsUploadingImage] = useState(false);
 
 	const { isPending, mutate } = usePostProducts();
+	const categoriesQuery = useGetCategories();
+	const tagsQuery = useGetTags();
+	const unitsQuery = useGetUnits();
+
+	const categoryNames = categoriesQuery.data
+		?.filter(category => categoryIds.includes(category.id))
+		.map(category => category.name);
+	const tagNames = tagsQuery.data?.filter(tag => tagIds.includes(tag.id)).map(tag => tag.name);
+	const unitNames = unitsQuery.data?.filter(unit => unitIds?.includes(unit.id)).map(unit => unit.name);
 
 	const hasData = useMemo(
 		() =>
@@ -37,8 +57,21 @@ export function CreateProductForm() {
 			localDescription.trim() !== "" ||
 			priceReais > 0 ||
 			cashbackEnabled ||
-			cashback > 0,
-		[localTitle, localImageUrl, localDescription, priceReais, cashbackEnabled, cashback],
+			cashback > 0 ||
+			categoryIds.length > 0 ||
+			tagIds.length > 0 ||
+			unitIds !== null,
+		[
+			localTitle,
+			localImageUrl,
+			localDescription,
+			priceReais,
+			cashbackEnabled,
+			cashback,
+			categoryIds,
+			tagIds,
+			unitIds,
+		],
 	);
 
 	function flushText() {
@@ -59,9 +92,12 @@ export function CreateProductForm() {
 						data: {
 							basePriceCents: Math.round(priceReais * 100),
 							cashbackPercentOverride: cashbackEnabled ? cashback : null,
+							categoryIds,
 							description: localDescription,
 							imageUrl: localImageUrl,
+							tagIds,
 							title: localTitle,
+							...(unitIds === null ? {} : { unitIds }),
 						},
 					},
 					{
@@ -73,7 +109,12 @@ export function CreateProductForm() {
 							setPriceReais(0);
 							setCashbackEnabled(false);
 							setCashback(0);
-							await queryClient.invalidateQueries({ queryKey: getProductsQueryKey() });
+							setCategoryIds([]);
+							setTagIds([]);
+							setUnitIds(null);
+							await queryClient.invalidateQueries({
+								queryKey: getProductsQueryKey(),
+							});
 						},
 					},
 				);
@@ -100,7 +141,6 @@ export function CreateProductForm() {
 						onUploadError={() => setError(t("admin.products.create.uploadError"))}
 						onUploadingChange={setIsUploadingImage}
 						onValueChange={setImageUrl}
-						placeholder={t("admin.products.create.imagePlaceholder")}
 						uploadLabel={t("admin.products.create.imageUpload")}
 						value={imageUrl}
 					/>
@@ -123,13 +163,15 @@ export function CreateProductForm() {
 							value={priceReais}
 						/>
 					</div>
-
 					<div className="space-y-2">
-						<label className="flex items-center gap-2 font-medium text-sm">
-							<input
+						<label
+							className="flex cursor-pointer items-center gap-2 font-medium text-sm"
+							htmlFor="cashback-enabled"
+						>
+							<Checkbox
 								checked={cashbackEnabled}
-								onChange={event => setCashbackEnabled(event.currentTarget.checked)}
-								type="checkbox"
+								id="cashback-enabled"
+								onChange={() => setCashbackEnabled(value => !value)}
 							/>
 							{t("admin.products.create.cashbackOverride")}
 						</label>
@@ -144,7 +186,6 @@ export function CreateProductForm() {
 						/>
 					</div>
 				</div>
-
 				<Label>
 					{t("admin.products.create.description")}
 					<textarea
@@ -157,12 +198,67 @@ export function CreateProductForm() {
 				</Label>
 			</CollapsibleFormSection>
 
+			<CollapsibleFormSection expanded={hasData}>
+				<FormSectionHeading>{t("admin.products.create.configuration")}</FormSectionHeading>
+				<div className="flex flex-wrap justify-start gap-6 pt-2">
+					<div className="flex flex-col items-start gap-2">
+						<span className="font-medium text-sm">{t("admin.products.create.categories")}</span>
+						<Button onClick={() => setIsCategoriesModalOpen(true)} type="button" variant="outline">
+							{categoryNames && categoryNames.length > 0
+								? categoryNames.join(", ")
+								: t("admin.products.create.categoriesPlaceholder")}
+						</Button>
+					</div>
+					<div className="flex flex-col items-start gap-2">
+						<span className="font-medium text-sm">{t("admin.products.create.tags")}</span>
+						<Button onClick={() => setIsTagsModalOpen(true)} type="button" variant="outline">
+							{tagNames && tagNames.length > 0 ? tagNames.join(", ") : t("admin.products.create.tagsPlaceholder")}
+						</Button>
+					</div>
+					<div className="flex flex-col items-start gap-2">
+						<span className="font-medium text-sm">{t("admin.products.create.units")}</span>
+						<Button onClick={() => setIsUnitsModalOpen(true)} type="button" variant="outline">
+							{unitIds === null
+								? t("admin.products.create.unitsAll")
+								: (unitNames?.join(", ") ?? t("admin.products.create.unitsAll"))}
+						</Button>
+					</div>
+				</div>
+			</CollapsibleFormSection>
+
 			<div className="flex items-center gap-3">
 				<Button disabled={isPending || isUploadingImage || !localTitle || priceReais <= 0} type="submit">
 					{isPending ? t("admin.products.create.submitting") : t("admin.products.create.submit")}
 				</Button>
 				{error && <p className="text-destructive text-xs">{error}</p>}
 			</div>
+			<CreateProductCategoriesModal
+				isOpen={isCategoriesModalOpen}
+				onClose={() => setIsCategoriesModalOpen(false)}
+				onSave={ids => {
+					setCategoryIds(ids);
+					setIsCategoriesModalOpen(false);
+				}}
+				selectedCategoryIds={categoryIds}
+			/>
+			<CreateProductTagsModal
+				isOpen={isTagsModalOpen}
+				onClose={() => setIsTagsModalOpen(false)}
+				onSave={ids => {
+					setTagIds(ids);
+					setIsTagsModalOpen(false);
+				}}
+				selectedTagIds={tagIds}
+			/>
+			<CreateProductUnitsModal
+				isOpen={isUnitsModalOpen}
+				onClose={() => setIsUnitsModalOpen(false)}
+				onSave={ids => {
+					setUnitIds(ids);
+					setIsUnitsModalOpen(false);
+				}}
+				selectedUnitIds={unitIds}
+			/>
 		</form>
 	);
 }

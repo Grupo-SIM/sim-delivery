@@ -26,15 +26,21 @@ export class GetBranding {
 		if (!resolvedCompanyId) {
 			return {
 				companyName: null,
+				footerFacebookUrl: null,
+				footerInstagramUrl: null,
+				footerPaymentMethods: [],
+				footerSupportEmail: null,
 				fontDisplay: null,
 				fontDisplayUrl: null,
 				fontFamily: null,
 				fontFamilyUrl: null,
 				footerText: null,
+				footerWhatsApp: null,
 				ga4Id: null,
 				gtmId: null,
 				logoUrl: null,
 				metaPixelId: null,
+				orderStatusWhatsAppTemplates: null,
 				themeColors: null,
 			};
 		}
@@ -46,11 +52,17 @@ export class GetBranding {
 				fontFamily: true,
 				fontFamilyUrl: true,
 				footerText: true,
+				footerFacebookUrl: true,
+				footerInstagramUrl: true,
+				footerPaymentMethods: true,
+				footerSupportEmail: true,
+				footerWhatsApp: true,
 				ga4Id: true,
 				gtmId: true,
 				logoUrl: true,
 				metaPixelId: true,
 				name: true,
+				orderStatusWhatsAppTemplates: true,
 				themeColors: true,
 			},
 			where: { id: resolvedCompanyId },
@@ -58,15 +70,22 @@ export class GetBranding {
 
 		return {
 			companyName: company?.name ?? null,
+			footerFacebookUrl: company?.footerFacebookUrl ?? null,
+			footerInstagramUrl: company?.footerInstagramUrl ?? null,
+			footerPaymentMethods: company?.footerPaymentMethods ?? [],
+			footerSupportEmail: company?.footerSupportEmail ?? null,
 			fontDisplay: company?.fontDisplay ?? null,
 			fontDisplayUrl: company?.fontDisplayUrl ?? null,
 			fontFamily: company?.fontFamily ?? null,
 			fontFamilyUrl: company?.fontFamilyUrl ?? null,
 			footerText: company?.footerText ?? null,
+			footerWhatsApp: company?.footerWhatsApp ?? null,
 			ga4Id: company?.ga4Id ?? null,
 			gtmId: company?.gtmId ?? null,
 			logoUrl: company?.logoUrl ?? null,
 			metaPixelId: company?.metaPixelId ?? null,
+			orderStatusWhatsAppTemplates:
+				(company?.orderStatusWhatsAppTemplates as BrandingReturn["orderStatusWhatsAppTemplates"]) ?? null,
 			themeColors: (company?.themeColors as BrandingReturn["themeColors"]) ?? null,
 		};
 	}

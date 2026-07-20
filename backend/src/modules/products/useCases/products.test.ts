@@ -8,30 +8,57 @@ import { UpdateProduct } from "./UpdateProduct";
 function prismaWith(products: Array<{ id: string; companyId: string }>) {
 	const created: unknown[] = [];
 	const deleted: string[] = [];
+	const productCategory = {
+		createMany: async () => ({ count: 0 }),
+		deleteMany: async () => ({ count: 0 }),
+	};
+	const productTag = {
+		createMany: async () => ({ count: 0 }),
+		deleteMany: async () => ({ count: 0 }),
+	};
+	const updatedData = new Map<string, object>();
+	const units = [{ companyId: "cmp_1", id: "unit_1" }];
+	const product = {
+		create: async ({ data }: { data: unknown }) => {
+			created.push(data);
+			return { id: "new", ...(data as object) };
+		},
+		delete: async ({ where }: { where: { id: string } }) => {
+			deleted.push(where.id);
+			return {};
+		},
+		findFirst: async ({ where }: { where: { companyId?: string; id: string } }) =>
+			products.find(
+				item => (where.companyId ? item.companyId === where.companyId : true) && item.id === where.id,
+			) ?? null,
+		findMany: async ({ where }: { where: { companyId?: string } }) =>
+			where.companyId ? products.filter(item => item.companyId === where.companyId) : products,
+		findUniqueOrThrow: async ({ where }: { where: { id: string } }) => ({
+			...(products.find(item => item.id === where.id) ?? { companyId: "cmp_1" }),
+			...(updatedData.get(where.id) ?? {}),
+			categories: [],
+			id: where.id,
+			tags: [],
+		}),
+		update: async ({ data, where }: { data: object; where: { id: string } }) => {
+			updatedData.set(where.id, data);
+			return { id: where.id, ...data };
+		},
+	};
 	return {
 		created,
 		deleted,
 		prisma: {
-			product: {
-				create: async ({ data }: { data: unknown }) => {
-					created.push(data);
-					return { id: "new", ...(data as object) };
-				},
-				delete: async ({ where }: { where: { id: string } }) => {
-					deleted.push(where.id);
-					return {};
-				},
-				findFirst: async ({ where }: { where: { companyId?: string; id: string } }) =>
-					products.find(
-						product =>
-							(where.companyId ? product.companyId === where.companyId : true) && product.id === where.id,
-					) ?? null,
-				findMany: async ({ where }: { where: { companyId?: string } }) =>
-					where.companyId ? products.filter(product => product.companyId === where.companyId) : products,
-				update: async ({ data, where }: { data: object; where: { id: string } }) => ({
-					id: where.id,
-					...data,
-				}),
+			$transaction: async (callback: (transaction: object) => unknown) =>
+				callback({ product, productCategory, productTag }),
+			product,
+			productCategory,
+			productTag,
+			unit: {
+				count: async ({ where }: { where: { companyId: string; id: { in: string[] } } }) =>
+					units.filter(unit => unit.companyId === where.companyId && where.id.in.includes(unit.id)).length,
+				findMany: async ({ where }: { where: { companyId: string } }) =>
+					units.filter(unit => unit.companyId === where.companyId).map(({ id }) => ({ id })),
 			},
 		} as unknown as PrismaInstance,
 	};
@@ -63,6 +90,7 @@ describe("products use-cases", () => {
 			companyId: "cmp_1",
 			slug: "cheese-bread",
 			title: "Cheese bread",
+			unitProducts: { create: [{ unitId: "unit_1" }] },
 		});
 	});
 

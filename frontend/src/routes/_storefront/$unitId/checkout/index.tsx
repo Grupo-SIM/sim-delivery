@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { Skeleton } from "@/components/ui/Skeleton";
 import {
 	getCustomersMeQueryOptions,
 	getPublicUnitsQueryOptions,
@@ -42,7 +43,7 @@ function CheckoutPage() {
 	const [savedCustomer, setSavedCustomer] = useState<PostCustomersMe200 | null>(null);
 	const getMethod = useDeliveryMethodStore(state => state.getMethod);
 	const setStoredMethod = useDeliveryMethodStore(state => state.setMethod);
-	const { data: units } = useQuery(getPublicUnitsQueryOptions({ slug: slug ?? "" }));
+	const { data: units, isPending: loadingUnits } = useQuery(getPublicUnitsQueryOptions({ slug: slug ?? "" }));
 	const unit = units?.find(u => u.slug === unitSlug);
 	const unitId = unit?.id ?? "";
 	const availableMethods = unit?.deliveryMethods ?? ["delivery"];
@@ -146,6 +147,10 @@ function CheckoutPage() {
 					deliveryMethod,
 					items: cartItems.map(item => ({
 						note: item.note || undefined,
+						options: item.options.map(option => ({
+							optionId: option.optionId,
+							quantity: option.quantity,
+						})),
 						quantity: item.quantity,
 						unitProductId: item.id,
 					})),
@@ -172,6 +177,24 @@ function CheckoutPage() {
 	}
 
 	const isPendingOrder = isPlacingOrder;
+
+	if (loadingUnits || (identified && loadingCustomer)) {
+		return (
+			<Container className="max-w-lg space-y-6 py-8">
+				<Skeleton className="h-5 w-28" />
+				<div className="space-y-3">
+					<Skeleton className="h-8 w-64 max-w-full" />
+					<Skeleton className="h-4 w-full" />
+				</div>
+				<div className="space-y-4 rounded-xl border border-border p-5">
+					<Skeleton className="h-12 w-full" />
+					<Skeleton className="h-12 w-full" />
+					<Skeleton className="h-12 w-full" />
+					<Skeleton className="h-10 w-full" />
+				</div>
+			</Container>
+		);
+	}
 
 	return (
 		<Container className="max-w-lg space-y-6 py-8">

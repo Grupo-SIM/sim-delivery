@@ -15,6 +15,7 @@ export const UpdateOrderStatusBody = t.Object({
 export type UpdateOrderStatusBody = typeof UpdateOrderStatusBody.static;
 
 export const ListOrdersQuery = t.Object({
+	customerId: t.Optional(t.String()),
 	deliveryMethod: t.Optional(t.Union([t.Literal("delivery"), t.Literal("pickup")])),
 	from: t.Optional(t.String()),
 	hasCoupon: t.Optional(t.Boolean()),
@@ -32,6 +33,9 @@ export type GetCustomerOrderQuery = typeof GetCustomerOrderQuery.static;
 
 export const CreateOrderItemBody = t.Object({
 	note: t.Optional(t.String()),
+	options: t.Optional(
+		t.Array(t.Object({ optionId: t.String({ minLength: 1 }), quantity: t.Integer({ minimum: 1 }) })),
+	),
 	quantity: t.Integer({ minimum: 1 }),
 	unitProductId: t.String({ minLength: 1 }),
 });

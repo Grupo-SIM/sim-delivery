@@ -47,7 +47,6 @@ export function UnitBannerEditor({ onClose, unit }: UnitBannerEditorProps) {
 						asset="banner"
 						onUploadError={() => void showAlert(t("admin.units.banner.uploadError"))}
 						onValueChange={setBannerUrl}
-						placeholder={t("admin.units.banner.urlPlaceholder")}
 						uploadLabel={t("admin.units.banner.upload")}
 						value={bannerUrl}
 					/>

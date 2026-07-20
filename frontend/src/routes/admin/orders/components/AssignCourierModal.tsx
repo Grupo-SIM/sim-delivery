@@ -4,7 +4,14 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Modal } from "@/components/ui/Modal";
-import { getDeliveriesQueryKey, getOrdersQueryKey, useGetDeliveries, useGetStaff, usePostDeliveries } from "@/lib/api";
+import { Skeleton } from "@/components/ui/Skeleton";
+import {
+	getDeliveriesQueryKey,
+	getOrdersQueryKey,
+	useGetDeliveries,
+	useGetStaffCouriers,
+	usePostDeliveries,
+} from "@/lib/api";
 import { showAlert } from "@/stores";
 
 const BUSY_DELIVERY_STATUSES = new Set(["atribuida", "pendente", "aceita", "a_caminho"]);
@@ -19,16 +26,22 @@ export function AssignCourierModal({ isOpen, onClose, orderId }: AssignCourierMo
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const assign = usePostDeliveries();
-	const { data: deliveries } = useGetDeliveries(undefined, { query: { enabled: isOpen } });
-	const { data: staff } = useGetStaff();
+	const { data: deliveries, isPending: deliveriesPending } = useGetDeliveries(undefined, {
+		query: { enabled: isOpen },
+	});
+	const { data: couriers, isPending: couriersPending } = useGetStaffCouriers({
+		query: { enabled: isOpen },
+	});
 
 	const [courierId, setCourierId] = useState("");
 
 	const busyCourierIds = new Set(
-		(deliveries ?? []).filter(delivery => BUSY_DELIVERY_STATUSES.has(delivery.status)).map(delivery => delivery.courierId),
+		(deliveries ?? [])
+			.filter(delivery => BUSY_DELIVERY_STATUSES.has(delivery.status))
+			.map(delivery => delivery.courierId),
 	);
-	const couriers = (staff ?? []).filter(s => s.role === "courier" && !busyCourierIds.has(s.id));
-	const courierOptions = couriers.map(c => ({ label: c.name, value: c.id }));
+	const availableCouriers = (couriers ?? []).filter(courier => !busyCourierIds.has(courier.id));
+	const courierOptions = availableCouriers.map(courier => ({ label: courier.name, value: courier.id }));
 
 	function handleClose() {
 		setCourierId("");
@@ -54,7 +67,9 @@ export function AssignCourierModal({ isOpen, onClose, orderId }: AssignCourierMo
 	return (
 		<Modal isOpen={isOpen} maxWidth="420px" onClose={handleClose} title={t("admin.deliveries.assign.title")}>
 			<div className="space-y-4">
-				{couriers.length === 0 ? (
+				{deliveriesPending || couriersPending ? (
+					<Skeleton className="h-10 w-full" />
+				) : availableCouriers.length === 0 ? (
 					<p className="text-muted-foreground text-sm">{t("admin.deliveries.assign.noAvailableCouriers")}</p>
 				) : (
 					<>
@@ -73,7 +88,13 @@ export function AssignCourierModal({ isOpen, onClose, orderId }: AssignCourierMo
 						{t("admin.deliveries.assign.cancel")}
 					</Button>
 					<Button
-						disabled={!courierId || assign.isPending || couriers.length === 0}
+						disabled={
+							!courierId ||
+							assign.isPending ||
+							deliveriesPending ||
+							couriersPending ||
+							availableCouriers.length === 0
+						}
 						onClick={submit}
 						type="button"
 					>

@@ -1,6 +1,9 @@
-# Task Completion
-- For code changes, run the narrowest relevant validation first, then broader checks if the touched surface is shared.
-- Common final checks: `bun build` for full repo validation and `bun format` when formatting/lint fixes are relevant.
-- For frontend-only changes, prefer `cd frontend && bun build` when full repo build is unnecessary.
-- For backend-only changes, prefer `cd backend && bun build`; if endpoint contracts changed, follow the export/generate SDK flow from `AGENTS.md`.
-- Before reporting done, check `git status --short` and mention any tests or validations that could not be run.
+# Completion
+- Scope checks to changed packages when possible.
+- Run type-check: `bun run check-types`.
+- Run build: `bun run build`; route file changes require build to regenerate `routeTree.gen.ts`.
+- Run affected package unit tests: `bun run test:unit` or package-local equivalent.
+- Run formatter/linter relevant to changed files and revert unrelated formatter changes.
+- Create atomic Conventional Commit with package scope using global Git identity: `git -c commit.gpgsign=false commit -m "type(scope): summary"`.
+- User adjustments amend/rebase prior delivery instead of noisy follow-up commit.
+- Never push.

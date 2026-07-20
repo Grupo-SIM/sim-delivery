@@ -4,6 +4,7 @@ import { StatusCodes } from "http-status-codes";
 export const DeliveryErrors = createEnumFromArray([
 	"DELIVERY_NOT_FOUND",
 	"FORBIDDEN_COURIER",
+	"COURIER_NOT_AVAILABLE",
 	"INVALID_TRANSITION",
 	"ORDER_NOT_DELIVERY",
 	"ORDER_NOT_FOUND",
@@ -12,6 +13,7 @@ export const DeliveryErrors = createEnumFromArray([
 
 export const DeliveryErrorsStatusCodes: Record<keyof typeof DeliveryErrors, StatusCodes> = {
 	DELIVERY_NOT_FOUND: StatusCodes.NOT_FOUND,
+	COURIER_NOT_AVAILABLE: StatusCodes.UNPROCESSABLE_ENTITY,
 	FORBIDDEN_COURIER: StatusCodes.FORBIDDEN,
 	INVALID_TRANSITION: StatusCodes.UNPROCESSABLE_ENTITY,
 	ORDER_ALREADY_ASSIGNED: StatusCodes.CONFLICT,

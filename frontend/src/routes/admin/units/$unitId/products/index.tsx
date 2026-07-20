@@ -4,16 +4,27 @@ import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { useGetCategories, useGetProducts, useGetUnits, useGetUnitsByUnitIdProducts } from "@/lib/api";
+import {
+	useGetCategories,
+	useGetProducts,
+	useGetTags,
+	useGetUnits,
+	useGetUnitsByUnitIdProducts,
+} from "@/lib/api";
 import { AssociateProductForm, UnitProductsTable } from "./components";
 
 function UnitProductsPage() {
 	const { t } = useTranslation();
 	const { unitId } = Route.useParams();
 	const associationsQuery = useGetUnitsByUnitIdProducts(unitId);
-	const { data: products } = useGetProducts();
-	const { data: categories } = useGetCategories();
-	const { data: units } = useGetUnits();
+	const productsQuery = useGetProducts();
+	const categoriesQuery = useGetCategories();
+	const tagsQuery = useGetTags();
+	const unitsQuery = useGetUnits();
+	const products = productsQuery.data;
+	const categories = categoriesQuery.data;
+	const tags = tagsQuery.data;
+	const units = unitsQuery.data;
 
 	const unit = units?.find(u => u.id === unitId);
 
@@ -28,7 +39,11 @@ function UnitProductsPage() {
 				title={t("admin.unitProducts.title")}
 			/>
 
-			{associationsQuery.isPending ? (
+			{associationsQuery.isPending ||
+			productsQuery.isPending ||
+			categoriesQuery.isPending ||
+			tagsQuery.isPending ||
+			unitsQuery.isPending ? (
 				<Skeleton className="h-40 w-full" />
 			) : associationsQuery.isError ? (
 				<ErrorState title={t("admin.unitProducts.loadError")} />
@@ -38,6 +53,7 @@ function UnitProductsPage() {
 						associations={associationsQuery.data}
 						categories={categories ?? []}
 						products={products ?? []}
+						tags={tags ?? []}
 						unitId={unitId}
 					/>
 
@@ -45,6 +61,7 @@ function UnitProductsPage() {
 						associations={associationsQuery.data}
 						categories={categories ?? []}
 						products={products ?? []}
+						tags={tags ?? []}
 						unitId={unitId}
 					/>
 				</>

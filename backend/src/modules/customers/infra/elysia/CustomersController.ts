@@ -1,8 +1,16 @@
-import Elysia from "elysia";
-import { AuthGuard } from "@/modules/users/guards";
+import Elysia, { t } from "elysia";
+import { AuthGuard, CompanyScopeGuard } from "@/modules/users/guards";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
-import { CreateCustomerBody, CustomerReturn, GetMyCustomerQuery, MaybeCustomerReturn } from "../../dtos";
-import { GetMyCustomer, UpsertCustomer } from "../../useCases";
+import {
+	CreateCustomerBody,
+	CustomerAdminReturn,
+	CustomerListReturn,
+	CustomerReturn,
+	GetMyCustomerQuery,
+	ListCustomersQuery,
+	MaybeCustomerReturn,
+} from "../../dtos";
+import { GetCustomer, GetMyCustomer, ListCustomers, UpsertCustomer } from "../../useCases";
 
 export const CustomersController = new Elysia({
 	detail: { tags: ["Customers"] },
@@ -12,10 +20,30 @@ export const CustomersController = new Elysia({
 		app
 			.decorate(({ prisma, ...injected }) => ({
 				...injected,
+				getCustomer: new GetCustomer(prisma),
 				getMyCustomer: new GetMyCustomer(prisma),
+				listCustomers: new ListCustomers(prisma),
 				prisma,
 				upsertCustomer: new UpsertCustomer(prisma),
 			}))
+			.get(
+				"/",
+				async ({ listCustomers, query, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "customers", "read");
+					return listCustomers.execute(scope.companyId, query);
+				},
+				{ query: ListCustomersQuery, response: CustomerListReturn },
+			)
+			.get(
+				"/:customerId",
+				async ({ getCustomer, params, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "customers", "read");
+					return getCustomer.execute(scope.companyId, params.customerId);
+				},
+				{ params: t.Object({ customerId: t.String({ minLength: 1 }) }), response: CustomerAdminReturn },
+			)
 			.get(
 				"/me",
 				async ({ getMyCustomer, query, request }) => {

@@ -117,10 +117,23 @@ export function OrderReview({
 		<div className="space-y-4">
 			<div className="space-y-2">
 				{items.map(item => (
-					<div className="flex justify-between text-sm" key={item.id}>
-						<span>
-							{item.quantity}× {item.title}
-						</span>
+					<div className="flex justify-between gap-3 text-sm" key={item.lineKey}>
+						<div>
+							<span>
+								{item.quantity}× {item.title}
+							</span>
+							{item.options.length > 0 && (
+								<ul className="mt-1 text-muted-foreground text-xs">
+									{item.options.map(option => (
+										<li key={option.optionId}>
+											{option.groupName}: {option.quantity > 1 ? `${option.quantity}× ` : ""}
+											{option.optionName}
+										</li>
+									))}
+								</ul>
+							)}
+							{item.note && <p className="mt-1 text-muted-foreground text-xs">{item.note}</p>}
+						</div>
 						<span>{formatMoney((item.priceCents * item.quantity) / 100)}</span>
 					</div>
 				))}

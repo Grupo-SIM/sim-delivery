@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
@@ -8,15 +8,16 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetPublicUnits, useGetPublicUnitsByUnitSlugMenu } from "@/lib/api";
 import { slug } from "@/lib/variant";
-import { useDeliveryMethodStore, useSelectedUnitStore } from "@/stores";
+import { useSelectedUnitStore } from "@/stores";
 import {
 	CartBar,
-	DesktopCart,
-	DeliveryMethodSelector,
 	InfoPill,
 	MenuBrowser,
-	StoreInfoModal,
+	PromotionalCarousel,
+	StoreHoursModal,
+	StoreToolbar,
 	UnitBanner,
+	UnitStoreSkeleton,
 	UnitSwitcher,
 } from "./components";
 import { money } from "./components/types";
@@ -24,41 +25,37 @@ import { money } from "./components/types";
 function UnitStorePage() {
 	const { t } = useTranslation();
 	const { unitId: unitSlug } = Route.useParams();
-	const { data: units } = useGetPublicUnits({ slug });
+	const unitsQuery = useGetPublicUnits({ slug });
 	const menu = useGetPublicUnitsByUnitSlugMenu(unitSlug, { slug });
+	const units = unitsQuery.data;
 	const unit = units?.find(item => item.slug === unitSlug);
-	const [profileOpen, setProfileOpen] = useState(false);
-	const getMethod = useDeliveryMethodStore(state => state.getMethod);
+	const [hoursOpen, setHoursOpen] = useState(false);
+	const [search, setSearch] = useState("");
 	const setSelectedUnit = useSelectedUnitStore(state => state.setUnit);
 
-	// Remember the unit the customer is browsing so it persists into checkout and later visits.
 	useEffect(() => {
 		if (unit) setSelectedUnit({ id: unit.id, name: unit.name, slug: unit.slug });
 	}, [unit, setSelectedUnit]);
 
-	if (!unit) {
+	if (unitsQuery.isPending) return <UnitStoreSkeleton />;
+
+	if (unitsQuery.isError || !unit)
 		return (
 			<Container className="space-y-4 py-8">
 				<ErrorState title={t("store.unit.notFound")} />
-				<Link className="text-primary text-sm" to="/">
-					← {t("store.unit.change")}
-				</Link>
 			</Container>
 		);
-	}
 
 	const address = [unit.addressLine, unit.neighborhood, unit.city].filter(Boolean).join(", ");
 	const minOrder = Number(unit.minOrderCents);
 	const fee = Number(unit.deliveryFee);
 	const prepMin = unit.prepTimeMinMinutes != null ? Number(unit.prepTimeMinMinutes) : null;
 	const prepMax = unit.prepTimeMaxMinutes != null ? Number(unit.prepTimeMaxMinutes) : null;
-	const hasDelivery = unit.deliveryMethods.includes("delivery");
-	const deliveryMethod = getMethod(unit.id, unit.deliveryMethods);
 
 	return (
 		<>
 			<UnitBanner bannerUrl={unit.bannerUrl} />
-			<Container className="space-y-4 py-8">
+			<Container className="space-y-6 py-8">
 				<div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
 					<div className="flex items-center gap-3">
 						<SectionHeading subtitle={address || t("store.chooseUnit.noAddress")} title={unit.name} />
@@ -75,45 +72,39 @@ function UnitStorePage() {
 					{units && <UnitSwitcher unitId={unitSlug} units={units} />}
 				</div>
 
-				<div className="flex flex-wrap items-center gap-2">
-					<DeliveryMethodSelector deliveryMethods={unit.deliveryMethods} unitId={unit.id} />
-					{prepMin != null && prepMax != null && (
-						<InfoPill>
-							⏱ {prepMin}–{prepMax} min
-						</InfoPill>
-					)}
-					{minOrder > 0 && (
-						<InfoPill>
-							{t("store.unit.minOrder")} {money.format(minOrder / 100)}
-						</InfoPill>
-					)}
-					{hasDelivery && deliveryMethod === "delivery" && (
-						<InfoPill>
-							{t("store.cart.deliveryFee")}:{" "}
-							{fee > 0 ? money.format(fee / 100) : t("store.unit.freeDelivery")}
-						</InfoPill>
-					)}
-					<button
-						className="text-primary text-xs underline-offset-2 hover:underline"
-						onClick={() => setProfileOpen(true)}
-						type="button"
-					>
-						{t("store.unit.storeProfile")}
-					</button>
-				</div>
-
-				<div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start">
-					<div className="min-w-0">
-						{menu.isPending ? (
-							<Skeleton className="h-64 w-full" />
-						) : menu.isError ? (
-							<ErrorState title={t("store.menu.loadError")} />
-						) : (
-							<MenuBrowser sections={menu.data} unitId={unit.id} unitSlug={unitSlug} />
-						)}
-					</div>
-					<DesktopCart deliveryFee={fee} minOrderCents={minOrder} unitId={unit.id} unitSlug={unitSlug} />
-				</div>
+				{menu.isPending ? (
+					<Skeleton className="h-64 w-full" />
+				) : menu.isError ? (
+					<ErrorState title={t("store.menu.loadError")} />
+				) : (
+					<MenuBrowser
+						header={
+							<div className="space-y-3">
+								<StoreToolbar
+									deliveryFee={fee}
+									deliveryMethods={unit.deliveryMethods}
+									hours={unit.hours}
+									onHoursClick={() => setHoursOpen(true)}
+									onSearchChange={setSearch}
+									prepMax={prepMax}
+									prepMin={prepMin}
+									search={search}
+									unitId={unit.id}
+								/>
+								{minOrder > 0 && (
+									<InfoPill>
+										{t("store.unit.minOrder")} {money.format(minOrder / 100)}
+									</InfoPill>
+								)}
+								<PromotionalCarousel images={unit.promotionalImages} />
+							</div>
+						}
+						search={search}
+						sections={menu.data}
+						unitId={unit.id}
+						unitSlug={unitSlug}
+					/>
+				)}
 
 				<CartBar
 					deliveryFee={fee}
@@ -122,13 +113,10 @@ function UnitStorePage() {
 					unitId={unit.id}
 					unitSlug={unitSlug}
 				/>
-
-				<StoreInfoModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} unit={unit} />
+				<StoreHoursModal hours={unit.hours} isOpen={hoursOpen} onClose={() => setHoursOpen(false)} />
 			</Container>
 		</>
 	);
 }
 
-export const Route = createFileRoute("/_storefront/$unitId/")({
-	component: UnitStorePage,
-});
+export const Route = createFileRoute("/_storefront/$unitId/")({ component: UnitStorePage });

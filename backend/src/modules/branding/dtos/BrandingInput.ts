@@ -35,16 +35,30 @@ const ThemeColorSet = t.Object({
 export const ThemeColors = t.Object({ dark: ThemeColorSet, light: ThemeColorSet });
 export type ThemeColors = typeof ThemeColors.static;
 
+export const OrderStatusWhatsAppTemplates = t.Object({
+	em_preparo: t.Optional(t.String({ maxLength: 1000 })),
+	entregue: t.Optional(t.String({ maxLength: 1000 })),
+	retirado: t.Optional(t.String({ maxLength: 1000 })),
+	saiu_para_entrega: t.Optional(t.String({ maxLength: 1000 })),
+});
+export type OrderStatusWhatsAppTemplates = typeof OrderStatusWhatsAppTemplates.static;
+
 export const UpdateBrandingBody = t.Object({
+	footerFacebookUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
+	footerInstagramUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
+	footerPaymentMethods: t.Optional(t.Array(t.String({ maxLength: 100 }), { maxItems: 10 })),
+	footerSupportEmail: t.Optional(t.String({ format: "email", maxLength: 320 })),
 	fontDisplay: t.Optional(t.String({ maxLength: 100 })),
 	fontDisplayUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
 	fontFamily: t.Optional(t.String({ maxLength: 100 })),
 	fontFamilyUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
 	footerText: t.Optional(t.String({ maxLength: 500 })),
+	footerWhatsApp: t.Optional(t.String({ maxLength: 30 })),
 	ga4Id: t.Optional(t.String({ maxLength: 50 })),
 	gtmId: t.Optional(t.String({ maxLength: 50 })),
 	logoUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
 	metaPixelId: t.Optional(t.String({ maxLength: 50 })),
+	orderStatusWhatsAppTemplates: t.Optional(OrderStatusWhatsAppTemplates),
 	themeColors: t.Optional(ThemeColors),
 });
 export type UpdateBrandingBody = typeof UpdateBrandingBody.static;

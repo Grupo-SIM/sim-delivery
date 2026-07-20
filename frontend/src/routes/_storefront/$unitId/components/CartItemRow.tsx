@@ -7,9 +7,10 @@ import { money } from "./types";
 
 interface CartItemRowProps {
 	item: CartItem;
+	onEdit: () => void;
 }
 
-export function CartItemRow({ item }: CartItemRowProps) {
+export function CartItemRow({ item, onEdit }: CartItemRowProps) {
 	const { t } = useTranslation();
 	const setQuantity = useCartStore(state => state.setQuantity);
 	const setNote = useCartStore(state => state.setNote);
@@ -59,6 +60,9 @@ export function CartItemRow({ item }: CartItemRowProps) {
 				/>
 
 				<div className="flex items-center gap-2">
+					<Button onClick={onEdit} size="sm" type="button" variant="outline">
+						Editar
+					</Button>
 					<Button
 						onClick={() => setQuantity(item.lineKey, item.quantity - 1)}
 						size="sm"

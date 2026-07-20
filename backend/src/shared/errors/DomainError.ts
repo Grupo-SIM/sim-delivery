@@ -11,6 +11,10 @@ import { LoyaltyErrors, LoyaltyErrorsStatusCodes } from "@/modules/loyalty/error
 import { OrderErrors, OrderErrorsStatusCodes } from "@/modules/orders/errors";
 import { PaymentErrors, PaymentErrorsStatusCodes } from "@/modules/payments/errors";
 import { ProductErrors, ProductErrorsStatusCodes } from "@/modules/products/errors";
+import {
+	PromotionalImageErrors,
+	PromotionalImageErrorsStatusCodes,
+} from "@/modules/promotionalImages/errors";
 import { ReviewErrors, ReviewErrorsStatusCodes } from "@/modules/reviews/errors";
 import { StaffErrors, StaffErrorsStatusCodes } from "@/modules/staff/errors";
 import { TagErrors, TagErrorsStatusCodes } from "@/modules/tags/errors";
@@ -35,6 +39,7 @@ export const DomainErrors = {
 	...CategoryErrors,
 	...TagErrors,
 	...ProductErrors,
+	...PromotionalImageErrors,
 	...UnitProductErrors,
 	...CepErrors,
 } as const;
@@ -55,6 +60,7 @@ export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCo
 	...CategoryErrorsStatusCodes,
 	...TagErrorsStatusCodes,
 	...ProductErrorsStatusCodes,
+	...PromotionalImageErrorsStatusCodes,
 	...UnitProductErrorsStatusCodes,
 	...CepErrorsStatusCodes,
 };

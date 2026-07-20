@@ -5,8 +5,10 @@ model UnitProduct {
     id                      String   @id @default(cuid())
     unitId                  String
     productId               String
-    /// Category it appears under in this unit's menu; null = loose (no category).
-    categoryId              String?
+    /// True when category join rows override product defaults. Empty join set means explicit none.
+    categoriesOverridden    Boolean  @default(false)
+    /// True when tag join rows override product defaults. Empty join set means explicit none.
+    tagsOverridden          Boolean  @default(false)
     /// Per-unit price override in cents; null = use the product base price.
     priceCentsOverride      Int?
     /// Per-unit cashback percent override; null = use the product/unit default.
@@ -21,12 +23,54 @@ model UnitProduct {
     createdAt               DateTime @default(now())
     updatedAt               DateTime @updatedAt
 
-    unit     Unit      @relation(fields: [unitId], references: [id], onDelete: Cascade)
-    product  Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-    category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+    unit       Unit                  @relation(fields: [unitId], references: [id], onDelete: Cascade)
+    product    Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
+    categories UnitProductCategory[]
+    excludedOptions UnitProductExcludedOption[]
+    tags       UnitProductTag[]
 
     @@unique([unitId, productId])
     @@index([unitId])
     @@index([productId])
     @@map("unit_product")
+}
+
+/// Hides a globally-defined option from one unit's effective product catalog.
+model UnitProductExcludedOption {
+    unitProductId String
+    optionId      String
+    createdAt     DateTime @default(now())
+
+    option      Option      @relation(fields: [optionId], references: [id], onDelete: Cascade)
+    unitProduct UnitProduct @relation(fields: [unitProductId], references: [id], onDelete: Cascade)
+
+    @@id([unitProductId, optionId])
+    @@index([optionId])
+    @@map("unit_product_excluded_option")
+}
+
+model UnitProductCategory {
+    unitProductId String
+    categoryId    String
+    createdAt     DateTime @default(now())
+
+    unitProduct UnitProduct @relation(fields: [unitProductId], references: [id], onDelete: Cascade)
+    category    Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+    @@id([unitProductId, categoryId])
+    @@index([categoryId])
+    @@map("unit_product_category")
+}
+
+model UnitProductTag {
+    unitProductId String
+    tagId         String
+    createdAt     DateTime @default(now())
+
+    unitProduct UnitProduct @relation(fields: [unitProductId], references: [id], onDelete: Cascade)
+    tag         Tag         @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+    @@id([unitProductId, tagId])
+    @@index([tagId])
+    @@map("unit_product_tag")
 }

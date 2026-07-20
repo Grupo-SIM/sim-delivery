@@ -5,9 +5,11 @@ export class ListTags {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(companyId: string | null): Promise<TagListReturn> {
-		return this.prisma.tag.findMany({
+		const tags = await this.prisma.tag.findMany({
+			include: { products: { include: { product: true } } },
 			orderBy: [{ name: "asc" }],
 			where: { ...(companyId ? { companyId } : {}) },
 		});
+		return tags.map(tag => ({ ...tag, products: tag.products?.map(item => item.product) ?? [] }));
 	}
 }

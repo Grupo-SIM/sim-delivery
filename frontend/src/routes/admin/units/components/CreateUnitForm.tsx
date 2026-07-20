@@ -83,7 +83,12 @@ export function CreateUnitForm() {
 				mutate(
 					{ data: { name, phone: phone || null, ...address } },
 					{
-						onError: () => setError(t("admin.units.create.error")),
+						onError: error => {
+							const code = (error as { data?: { error?: string } } | undefined)?.data?.error;
+							setError(
+								code === "NO_COMPANY" ? t("admin.units.create.noCompany") : t("admin.units.create.error"),
+							);
+						},
 						onSuccess: async () => {
 							setName("");
 							setPhone("");

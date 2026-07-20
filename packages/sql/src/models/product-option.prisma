@@ -45,6 +45,7 @@ model Option {
 
     group            OptionGroup       @relation(fields: [groupId], references: [id], onDelete: Cascade)
     orderItemOptions OrderItemOption[]
+    unitProductExclusions UnitProductExcludedOption[]
 
     @@index([groupId])
     @@map("option")

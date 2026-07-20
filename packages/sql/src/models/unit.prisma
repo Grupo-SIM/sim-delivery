@@ -6,6 +6,8 @@ model Unit {
     name         String
     slug         String
     phone        String?
+    /// Image used to represent this unit in storefront unit listings.
+    imageUrl     String?
     /// Storefront banner rendered only on this unit's page.
     bannerUrl    String?
     // Address (deduced from CEP on the client app; see docs/08).
@@ -42,10 +44,12 @@ model Unit {
 
     company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
     coupons       Coupon[]
+    courierUnits  CourierUnit[]
     deliveries    Delivery[]
     deliveryZones DeliveryZone[]
     hours         UnitHours[]
     products      UnitProduct[]
+    promotionalImages UnitPromotionalImage[]
     orders        Order[]
 
     @@index([companyId])

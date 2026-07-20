@@ -10,6 +10,13 @@ const REOPENABLE_FROM_CANCELLED = new Set(["recebido", "em_preparo", "pronto"]);
 
 const NOTIFIABLE = new Set(["em_preparo", "saiu_para_entrega", "entregue", "retirado"]);
 
+const DEFAULT_ORDER_STATUS_MESSAGES: Record<string, string> = {
+	em_preparo: "Seu pedido {{orderId}} está em preparo.",
+	entregue: "Seu pedido {{orderId}} foi entregue. Bom apetite!",
+	retirado: "Seu pedido {{orderId}} está pronto para retirada.",
+	saiu_para_entrega: "Seu pedido {{orderId}} saiu para entrega.",
+};
+
 function canTransition(current: string, next: string, deliveryMethod: string): boolean {
 	if (current === next) return true;
 	if (next === "cancelado") return true;
@@ -26,6 +33,14 @@ function shouldNotify(current: string, next: string, deliveryMethod: string): bo
 	return NOTIFIABLE.has(next) && flow.indexOf(next) > flow.indexOf(current);
 }
 
+function formatOrderStatusMessage(template: string | undefined, status: string, orderId: string): string {
+	return (
+		template ??
+		DEFAULT_ORDER_STATUS_MESSAGES[status] ??
+		`Order ${orderId} status updated to "${status}"`
+	).replaceAll("{{orderId}}", orderId);
+}
+
 export class UpdateOrderStatus {
 	constructor(
 		private readonly prisma: PrismaInstance,
@@ -40,12 +55,13 @@ export class UpdateOrderStatus {
 		const { status, cancelReason } = data;
 
 		const order = await this.prisma.order.findFirst({
-			include: { customer: true },
+			include: { company: { select: { orderStatusWhatsAppTemplates: true } }, customer: true },
 			where: { ...(companyId ? { companyId } : {}), id: orderId },
 		});
 		if (!order) throw new DomainError(OrderErrors.ORDER_NOT_FOUND);
 
-		if (!canTransition(order.status, status, order.deliveryMethod)) throw new DomainError(OrderErrors.INVALID_TRANSITION);
+		if (!canTransition(order.status, status, order.deliveryMethod))
+			throw new DomainError(OrderErrors.INVALID_TRANSITION);
 		if (status === "cancelado" && !cancelReason) throw new DomainError(OrderErrors.CANCEL_REASON_REQUIRED);
 
 		const updated = await this.prisma.order.update({
@@ -53,7 +69,7 @@ export class UpdateOrderStatus {
 				cancelReason: status === "cancelado" ? cancelReason : null,
 				status,
 			},
-			include: { items: true },
+			include: { items: { include: { optionSnapshots: true } } },
 			where: { id: orderId },
 		});
 
@@ -64,9 +80,17 @@ export class UpdateOrderStatus {
 		}
 
 		if (shouldNotify(order.status, status, order.deliveryMethod) && order.customer.phone) {
-			await this.whatsApp.sendOrderStatus(order.customer.phone, status, orderId).catch(() => {});
+			const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
+			await this.whatsApp
+				.sendOrderStatus(
+					order.customer.phone,
+					status,
+					orderId,
+					formatOrderStatusMessage(templates?.[status]?.trim() || undefined, status, orderId),
+				)
+				.catch(() => {});
 		}
 
-		return updated;
+		return { ...updated, items: updated.items.map(item => ({ ...item, options: item.optionSnapshots })) };
 	}
 }

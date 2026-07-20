@@ -4,6 +4,9 @@ import { UpdateStaffRole } from "./UpdateStaffRole";
 
 function fakePrisma(target: { id: string; companyId: string } | null) {
 	return {
+		courierUnit: {
+			deleteMany: async () => ({ count: 0 }),
+		},
 		user: {
 			findFirst: async ({ where }: { where: { companyId: string | null; id: string; role: unknown } }) =>
 				target && where.companyId === target.companyId && where.id === target.id ? target : null,

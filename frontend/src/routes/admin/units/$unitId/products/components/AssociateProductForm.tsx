@@ -3,13 +3,14 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { getUnitsByUnitIdProductsQueryKey, usePostUnitsByUnitIdProducts } from "@/lib/api";
+import type { Category, Product, Tag, UnitProduct } from "./types";
 import { UnitProductFormFields } from "./UnitProductFormFields";
-import type { Category, Product, UnitProduct } from "./types";
 
 interface AssociateProductFormProps {
 	associations: UnitProduct[];
 	categories: Category[];
 	products: Product[];
+	tags: Tag[];
 	unitId: string;
 }
 
@@ -17,12 +18,16 @@ export function AssociateProductForm({
 	associations,
 	categories,
 	products,
+	tags,
 	unitId,
 }: AssociateProductFormProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [productId, setProductId] = useState("");
-	const [categoryId, setCategoryId] = useState("");
+	const [categoriesOverridden, setCategoriesOverridden] = useState(false);
+	const [categoryIds, setCategoryIds] = useState<string[]>([]);
+	const [tagsOverridden, setTagsOverridden] = useState(false);
+	const [tagIds, setTagIds] = useState<string[]>([]);
 	const [available, setAvailable] = useState(true);
 	const [priceEnabled, setPriceEnabled] = useState(false);
 	const [priceReais, setPriceReais] = useState(0);
@@ -41,7 +46,10 @@ export function AssociateProductForm({
 	];
 	function reset() {
 		setProductId("");
-		setCategoryId("");
+		setCategoriesOverridden(false);
+		setCategoryIds([]);
+		setTagsOverridden(false);
+		setTagIds([]);
 		setAvailable(true);
 		setPriceEnabled(false);
 		setPriceReais(0);
@@ -59,10 +67,11 @@ export function AssociateProductForm({
 					{
 						data: {
 							available: stockEnabled ? stock > 0 : available,
-							categoryId: categoryId || null,
+							categoryIds: categoriesOverridden ? categoryIds : null,
 							priceCentsOverride: priceEnabled ? Math.round(priceReais * 100) : null,
 							productId,
 							stock: stockEnabled ? Math.round(stock) : null,
+							tagIds: tagsOverridden ? tagIds : null,
 						},
 						unitId,
 					},
@@ -78,22 +87,30 @@ export function AssociateProductForm({
 				);
 			}}
 		>
-				<UnitProductFormFields
-					available={available}
-					categoryId={categoryId}
-					categories={categories}
-					onAvailableChange={setAvailable}
-					onCategoryIdChange={setCategoryId}
-					onPriceEnabledChange={setPriceEnabled}
-					onPriceReaisChange={setPriceReais}
-					onStockChange={setStock}
-					onStockEnabledChange={setStockEnabled}
-					priceEnabled={priceEnabled}
-					priceReais={priceReais}
-					product={{ onChange: setProductId, options: productOptions, value: productId }}
-					stock={stock}
-					stockEnabled={stockEnabled}
-				/>
+			<UnitProductFormFields
+				available={available}
+				categories={categories}
+				categoriesOverridden={categoriesOverridden}
+				categoryIds={categoryIds}
+				onAvailableChange={setAvailable}
+				onCategoriesOverriddenChange={setCategoriesOverridden}
+				onCategoryIdsChange={setCategoryIds}
+				onPriceEnabledChange={setPriceEnabled}
+				onPriceReaisChange={setPriceReais}
+				onStockChange={setStock}
+				onStockEnabledChange={setStockEnabled}
+				onTagIdsChange={setTagIds}
+				onTagsOverriddenChange={setTagsOverridden}
+				priceEnabled={priceEnabled}
+				priceReais={priceReais}
+				product={{ onChange: setProductId, options: productOptions, value: productId }}
+				selectedProduct={products.find(product => product.id === productId)}
+				stock={stock}
+				stockEnabled={stockEnabled}
+				tagIds={tagIds}
+				tags={tags}
+				tagsOverridden={tagsOverridden}
+			/>
 
 			<div className="flex items-center gap-3 md:col-span-2">
 				<Button disabled={isPending || !productId} type="submit">

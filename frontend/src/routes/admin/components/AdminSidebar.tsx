@@ -5,6 +5,8 @@ import {
 	LuBuilding2,
 	LuChartBar,
 	LuClipboardList,
+	LuTicket,
+	LuImages,
 	LuLogOut,
 	LuPackage,
 	LuPalette,
@@ -75,11 +77,14 @@ export function AdminSidebar() {
 
 			<NavGroup label={t("admin.dashboard.nav.catalog")}>
 				<NavItem icon={LuPackage} label={t("admin.products.title")} to="/admin/products" />
+				<NavItem icon={LuImages} label={t("admin.promotionalImages.title")} to="/admin/promotional-images" />
 				<NavItem icon={LuStore} label={t("admin.units.title")} to="/admin/units" />
 			</NavGroup>
 
 			<NavGroup label={t("admin.dashboard.nav.operations")}>
 				<NavItem icon={LuClipboardList} label={t("admin.orders.title")} to="/admin/orders" />
+				<NavItem icon={LuUsers} label={t("admin.customers.title")} to="/admin/customers" />
+				<NavItem icon={LuTicket} label={t("admin.coupons.title")} to="/admin/coupons" />
 				<NavItem icon={LuUtensilsCrossed} label={t("admin.kitchen.title")} to="/admin/kitchen" />
 				<NavItem icon={LuStar} label={t("admin.reviews.title")} to="/admin/reviews" />
 			</NavGroup>

@@ -11,6 +11,7 @@ export const StaffReturn = t.Object({
 	id: t.String(),
 	name: t.String(),
 	role: t.String(),
+	unitIds: t.Array(t.String()),
 });
 export type StaffReturn = typeof StaffReturn.static;
 

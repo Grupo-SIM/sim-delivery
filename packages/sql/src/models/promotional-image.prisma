@@ -1,0 +1,31 @@
+/// Reusable storefront promotional artwork. Images may be assigned to many units
+/// and may optionally navigate customers to an internal or external URL.
+model PromotionalImage {
+    id        String   @id @default(cuid())
+    companyId String
+    title     String
+    imageUrl  String
+    linkUrl   String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    units   UnitPromotionalImage[]
+
+    @@index([companyId])
+    @@map("promotional_image")
+}
+
+model UnitPromotionalImage {
+    unitId             String
+    promotionalImageId String
+    position           Int      @default(0)
+    createdAt          DateTime @default(now())
+
+    unit             Unit             @relation(fields: [unitId], references: [id], onDelete: Cascade)
+    promotionalImage PromotionalImage @relation(fields: [promotionalImageId], references: [id], onDelete: Cascade)
+
+    @@id([unitId, promotionalImageId])
+    @@index([promotionalImageId])
+    @@map("unit_promotional_image")
+}

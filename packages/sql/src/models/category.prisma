@@ -10,8 +10,9 @@ model Category {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-    unitProducts UnitProduct[]
+    company      Company               @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    products     ProductCategory[]
+    unitProducts UnitProductCategory[]
 
     @@index([companyId])
     @@map("category")

@@ -36,6 +36,7 @@ export const PublicMenuItemReturn = t.Object({
 	priceCents: t.Integer(),
 	productId: t.String(),
 	productSlug: t.String(),
+	tags: t.Array(t.Object({ color: t.String(), id: t.String(), name: t.String() })),
 	title: t.String(),
 });
 export type PublicMenuItemReturn = typeof PublicMenuItemReturn.static;

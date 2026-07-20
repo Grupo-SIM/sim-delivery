@@ -17,7 +17,6 @@
 					"support": "Superfícies de apoio",
 					"surfaces": "Superfícies e conteúdo"
 				},
-				"colorHint": "Cor hexadecimal, ex: #FF5733",
 				"colorReset": "Cor restaurada para o padrão.",
 				"colors": {
 					"accent": "Destaque",
@@ -47,16 +46,21 @@
 				"copyFromTheme": "Copiar do {{mode}}",
 				"darkTheme": "Tema escuro",
 				"fontDisplay": "Fonte de destaque",
-				"fontDisplayPlaceholder": "Ex: Luckiest Guy",
 				"fontDisplayPreview": "Prévia da fonte de destaque",
 				"fontFamily": "Fonte do texto",
-				"fontFamilyPlaceholder": "Ex: Outfit",
 				"fontFamilyPreview": "Prévia da fonte do texto",
 				"fontFileUrl": "URL do arquivo da fonte",
 				"fontFileUrlPlaceholder": "https://example.com/fonte.woff2",
 				"fontUpload": "Enviar arquivo da fonte",
+				"footerFacebookUrl": "URL do Facebook",
+				"footerInstagramUrl": "URL do Instagram",
+				"footerPaymentMethods": "Formas de pagamento",
+				"footerPaymentMethodsPlaceholder": "Ex: Pix, Crédito, Débito",
+				"footerSupportEmail": "E-mail de atendimento",
 				"footerText": "Texto do rodapé",
 				"footerTextPlaceholder": "© 2025 Meu Restaurante",
+				"footerWhatsApp": "WhatsApp de atendimento",
+				"footerWhatsAppPlaceholder": "Ex: 5599999999999",
 				"ga4Id": "ID do Google Analytics 4",
 				"gtmId": "ID do Google Tag Manager",
 				"lightTheme": "Tema claro",
@@ -64,8 +68,15 @@
 				"logoPreview": "Prévia do logotipo",
 				"logoUpload": "Enviar logotipo",
 				"logoUrl": "URL do logotipo",
-				"logoUrlPlaceholder": "https://example.com/logo.png",
 				"metaPixelId": "ID do Meta Pixel",
+				"notificationPlaceholder": "Ex: Seu pedido {{orderId}} está em preparo.",
+				"notificationsHelp": "Use {{orderId}} para inserir o código do pedido. Deixe um campo vazio para usar mensagem padrão.",
+				"orderStatus": {
+					"em_preparo": "Pedido em preparo",
+					"entregue": "Pedido entregue",
+					"retirado": "Pedido retirado",
+					"saiu_para_entrega": "Saiu para entrega"
+				},
 				"resetAllColors": "Restaurar cores",
 				"resetColor": "Restaurar {{color}} para a cor padrão",
 				"save": "Salvar identidade visual",
@@ -73,6 +84,8 @@
 				"saveSuccess": "Identidade visual atualizada.",
 				"saving": "Salvando...",
 				"sectionAppearance": "Aparência",
+				"sectionFooter": "Rodapé da loja",
+				"sectionNotifications": "Notificações por WhatsApp",
 				"sectionTracking": "Rastreamento de marketing",
 				"subtitle": "Personalize a aparência da sua loja e as análises.",
 				"themeColors": "Cores do tema",
@@ -82,15 +95,15 @@
 			"categories": {
 				"columns": {
 					"name": "Nome",
-					"position": "Ordem"
+					"position": "Ordem",
+					"products": "Produtos associados"
 				},
 				"create": {
 					"error": "Não foi possível criar a categoria.",
 					"name": "Nome",
 					"namePlaceholder": "Ex: Bebidas",
 					"submit": "Adicionar categoria",
-					"submitting": "Adicionando...",
-					"title": "Nova categoria"
+					"submitting": "Adicionando..."
 				},
 				"edit": {
 					"action": "Editar",
@@ -101,10 +114,20 @@
 				},
 				"empty": "Nenhuma categoria ainda.",
 				"loadError": "Não foi possível carregar as categorias.",
+				"order": {
+					"down": "Mover para baixo",
+					"error": "Não foi possível alterar a ordem das categorias.",
+					"success": "Ordem das categorias atualizada.",
+					"up": "Mover para cima"
+				},
+				"products": {
+					"empty": "Nenhum produto associado"
+				},
 				"row": {
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir categoria {{name}}?",
-					"deleteError": "Não foi possível excluir a categoria."
+					"deleteError": "Não foi possível excluir a categoria.",
+					"deleteSuccess": "Categoria excluída."
 				},
 				"subtitle": "Grupos do cardápio para esta empresa.",
 				"title": "Categorias"
@@ -123,9 +146,7 @@
 					"slugPlaceholder": "ex: bliss-cookie",
 					"slugTaken": "Este slug já está em uso.",
 					"submit": "Criar empresa",
-					"submitting": "Criando...",
-					"success": "Empresa criada.",
-					"title": "Nova empresa"
+					"submitting": "Criando..."
 				},
 				"edit": {
 					"action": "Editar",
@@ -141,10 +162,101 @@
 				"row": {
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir empresa {{name}}?",
-					"deleteError": "Não foi possível excluir a empresa."
+					"deleteError": "Não foi possível excluir a empresa.",
+					"deleteSuccess": "Empresa excluída."
 				},
 				"subtitle": "Clientes atendidos pela plataforma.",
 				"title": "Empresas"
+			},
+			"coupons": {
+				"columns": {
+					"code": "Código",
+					"expiresAt": "Validade",
+					"type": "Tipo",
+					"unit": "Loja",
+					"value": "Desconto"
+				},
+				"create": {
+					"dateError": "Informe uma data e hora de validade válida.",
+					"error": "Não foi possível criar o cupom.",
+					"heading": "Novo cupom",
+					"hint": "Defina limites de uso e validade para restringir o desconto.",
+					"submit": "Criar cupom",
+					"submitting": "Criando..."
+				},
+				"edit": {
+					"action": "Editar",
+					"cancel": "Cancelar",
+					"error": "Não foi possível salvar o cupom.",
+					"save": "Salvar",
+					"saving": "Salvando...",
+					"success": "Cupom atualizado."
+				},
+				"empty": "Nenhum cupom ainda.",
+				"form": {
+					"allUnits": "Todas as lojas",
+					"code": "Código",
+					"codePlaceholder": "Ex: BEMVINDO10",
+					"expiresAt": "Validade",
+					"maxUses": "Limite de usos",
+					"maxUsesPlaceholder": "Sem limite",
+					"minOrder": "Pedido mínimo",
+					"type": "Tipo de desconto",
+					"unit": "Loja",
+					"value": "Valor do desconto"
+				},
+				"loadError": "Não foi possível carregar os cupons.",
+				"row": {
+					"allUnits": "Todas",
+					"delete": "Excluir",
+					"deleteConfirm": "Excluir cupom {{code}}?",
+					"deleteError": "Não foi possível excluir o cupom.",
+					"deleteSuccess": "Cupom excluído.",
+					"never": "Sem validade"
+				},
+				"subtitle": "Crie e gerencie descontos para suas lojas.",
+				"title": "Cupons",
+				"types": {
+					"fixed": "Valor fixo",
+					"percent": "Percentual"
+				}
+			},
+			"customers": {
+				"columns": {
+					"contact": "Contato",
+					"customer": "Cliente",
+					"lastOrder": "Último pedido",
+					"orders": "Pedidos",
+					"totalSpent": "Total gasto"
+				},
+				"detail": {
+					"action": "Ver histórico",
+					"back": "Voltar para clientes",
+					"emptyOrders": "Este cliente ainda não fez pedidos.",
+					"loadError": "Não foi possível carregar os dados do cliente.",
+					"orders": "Histórico de pedidos"
+				},
+				"empty": "Nenhum cliente encontrado.",
+				"loadError": "Não foi possível carregar os clientes.",
+				"metrics": {
+					"averageTicket": "Ticket médio",
+					"cashback": "Saldo de cashback",
+					"orders": "Pedidos",
+					"totalSpent": "Total gasto"
+				},
+				"none": "—",
+				"orders": {
+					"date": "Data",
+					"status": "Status",
+					"total": "Total",
+					"unit": "Loja"
+				},
+				"search": {
+					"label": "Buscar clientes",
+					"placeholder": "Nome, e-mail, CPF ou telefone"
+				},
+				"subtitle": "Consulte clientes, métricas e histórico de pedidos.",
+				"title": "Clientes"
 			},
 			"dashboard": {
 				"nav": {
@@ -165,17 +277,13 @@
 					"assigned": "Entregador atribuído",
 					"cancel": "Cancelar",
 					"courier": "Entregador",
-					"courierPlaceholder": "Selecione um entregador",
 					"error": "Não foi possível atribuir a entrega.",
 					"needsCourier": "Precisa de entregador",
 					"noAvailableCouriers": "Nenhum entregador disponível no momento.",
-					"noCouriers": "Nenhum entregador cadastrado.",
 					"save": "Atribuir",
 					"saving": "Atribuindo...",
 					"title": "Atribuir entrega"
 				},
-				"empty": "Nenhuma entrega ainda.",
-				"loadError": "Não foi possível carregar as entregas.",
 				"status": {
 					"a_caminho": "A caminho",
 					"aceita": "Aceita",
@@ -183,9 +291,7 @@
 					"entregue": "Entregue",
 					"falhou": "Falhou",
 					"recusada": "Recusada"
-				},
-				"subtitle": "Atribuições de entrega para esta empresa.",
-				"title": "Entregas"
+				}
 			},
 			"kitchen": {
 				"columns": {
@@ -220,11 +326,8 @@
 				"empty": "Nenhum pedido ainda.",
 				"filter": {
 					"all": "Todos",
-					"date": "Data",
-					"from": "De",
 					"search": "Buscar",
 					"searchPlaceholder": "Buscar por nome, telefone ou pedido",
-					"to": "Até",
 					"unit": "Unidade",
 					"unitAll": "Todas as unidades"
 				},
@@ -270,22 +373,37 @@
 				"catalogSubtitle": "Produtos, categorias e etiquetas desta empresa.",
 				"columns": {
 					"cashback": "Cashback",
+					"categories": "Categorias",
 					"price": "Preço",
-					"product": "Produto"
+					"product": "Produto",
+					"tags": "Etiquetas"
 				},
 				"create": {
 					"cashbackOverride": "Substituir cashback da unidade",
+					"categories": "Categorias",
+					"categoriesEmpty": "Nenhuma categoria cadastrada.",
+					"categoriesModalTitle": "Selecionar categorias",
+					"categoriesPlaceholder": "Selecionar...",
+					"configuration": "Configuração",
 					"description": "Descrição",
 					"descriptionPlaceholder": "Ex: Fresquinho do forno, servido quentinho.",
 					"error": "Não foi possível criar o produto.",
 					"image": "Imagem",
-					"imagePlaceholder": "Cole o link ou escolha um arquivo",
 					"imageUpload": "Escolher imagem",
+					"modalCancel": "Cancelar",
+					"modalSave": "Salvar",
 					"price": "Preço base",
 					"submit": "Adicionar produto",
 					"submitting": "Adicionando...",
+					"tags": "Etiquetas",
+					"tagsEmpty": "Nenhuma etiqueta cadastrada.",
+					"tagsModalTitle": "Selecionar etiquetas",
+					"tagsPlaceholder": "Selecionar...",
 					"title": "Título",
 					"titlePlaceholder": "Ex: Pão de queijo tradicional",
+					"units": "Lojas",
+					"unitsAll": "Todas",
+					"unitsModalTitle": "Selecionar lojas",
 					"uploadError": "Não foi possível enviar a imagem."
 				},
 				"edit": {
@@ -298,18 +416,77 @@
 				},
 				"empty": "Nenhum produto ainda.",
 				"loadError": "Não foi possível carregar os produtos.",
+				"options": {
+					"addGroup": "Adicionar",
+					"addOption": "Adicionar opção",
+					"available": "Disponível",
+					"average": "Média",
+					"choices": "Escolhas",
+					"delete": "Excluir",
+					"deleteGroupConfirm": "Excluir grupo e suas opções?",
+					"deleteOptionConfirm": "Excluir opção?",
+					"descriptionPlaceholder": "Ex: Molho extra cremoso",
+					"edit": "Editar",
+					"editGroup": "Editar customização",
+					"expand": "Expandir",
+					"groupCreated": "Grupo criado",
+					"groupName": "Nome",
+					"groupPlaceholder": "Ex: Escolha o sabor",
+					"highest": "Maior preço",
+					"max": "Máximo",
+					"maxSelect": "Máximo de escolhas",
+					"min": "Mínimo",
+					"minimize": "Minimizar",
+					"minSelect": "Mínimo de escolhas",
+					"multi": "Múltipla escolha",
+					"optionCount_one": "{{count}} opção",
+					"optionCount_other": "{{count}} opções",
+					"optionCreated": "Opção criada",
+					"optionDescription": "Descrição",
+					"optionImage": "Imagem",
+					"optionList": "Opções",
+					"optionName": "Nome",
+					"optionPlaceholder": "Ex: Calabresa",
+					"priceDelta": "Valor",
+					"priceRule": "Regra de preço",
+					"reorder": "Arraste para ordenar",
+					"required": "Obrigatório",
+					"saved": "Customização salva",
+					"selectionType": "Tipo",
+					"single": "Escolha única",
+					"sum": "Somar preços",
+					"title": "Customizações",
+					"unavailable": "Indisponível"
+				},
 				"row": {
 					"cashbackPercent": "{{value}}%",
 					"delete": "Excluir",
-					"deleteConfirm": "Excluir produto {{title}}?",
+					"deleteConfirm": "Excluir produto?",
 					"deleteError": "Não foi possível excluir o produto.",
+					"deleteSuccess": "Produto excluído.",
+					"none": "Nenhuma",
 					"unitDefault": "Padrão da unidade"
 				},
-				"subtitle": "Catálogo base desta empresa.",
 				"tabs": {
 					"categories": "Categorias",
 					"products": "Produtos",
 					"tags": "Etiquetas"
+				},
+				"taxonomy": {
+					"action": "Categorias e etiquetas",
+					"cancel": "Cancelar",
+					"categories": "Categorias",
+					"categoriesHint": "Selecione categorias existentes ou crie uma nova.",
+					"create": "Criar",
+					"createCategoryError": "Não foi possível criar a categoria.",
+					"createTagError": "Não foi possível criar a etiqueta.",
+					"error": "Não foi possível salvar categorias e etiquetas.",
+					"loadError": "Não foi possível carregar categorias e etiquetas.",
+					"save": "Salvar",
+					"saving": "Salvando...",
+					"tags": "Etiquetas",
+					"tagsHint": "Selecione etiquetas existentes ou crie uma nova.",
+					"title": "Categorias e etiquetas de {{title}}"
 				},
 				"title": "Produtos",
 				"units": {
@@ -322,6 +499,44 @@
 					"title": "Lojas do produto"
 				}
 			},
+			"promotionalImages": {
+				"columns": {
+					"image": "Imagem",
+					"link": "Link"
+				},
+				"create": {
+					"error": "Não foi possível criar a imagem promocional.",
+					"saving": "Salvando...",
+					"submit": "Adicionar imagem promocional"
+				},
+				"delete": {
+					"action": "Excluir",
+					"confirm": "Excluir a imagem {{title}}?",
+					"error": "Não foi possível excluir a imagem promocional.",
+					"success": "Imagem promocional excluída."
+				},
+				"edit": {
+					"action": "Editar",
+					"error": "Não foi possível salvar a imagem promocional.",
+					"title": "Editar imagem promocional"
+				},
+				"empty": "Nenhuma imagem promocional ainda.",
+				"fields": {
+					"image": "Imagem",
+					"link": "Link",
+					"title": "Título",
+					"titlePlaceholder": "Ex: Promoção de fim de semana"
+				},
+				"loadError": "Não foi possível carregar as imagens promocionais.",
+				"subtitle": "Banners promocionais reutilizáveis entre unidades.",
+				"title": "Imagens promocionais",
+				"units": {
+					"action": "Unidades",
+					"title": "Associar imagem às unidades"
+				},
+				"upload": "Enviar imagem promocional",
+				"uploadError": "Não foi possível enviar a imagem."
+			},
 			"reports": {
 				"bestSellers": {
 					"columns": {
@@ -329,7 +544,6 @@
 						"quantity": "Qtd vendida",
 						"revenue": "Receita"
 					},
-					"empty": "Nenhum dado de vendas ainda.",
 					"title": "Mais vendidos"
 				},
 				"empty": "Nenhum pedido concluído neste período.",
@@ -365,7 +579,8 @@
 				"columns": {
 					"email": "E-mail",
 					"name": "Nome",
-					"role": "Cargo"
+					"role": "Cargo",
+					"units": "Unidades"
 				},
 				"empty": "Nenhum funcionário ainda.",
 				"invite": {
@@ -379,7 +594,7 @@
 					"role": "Cargo",
 					"submit": "Convidar funcionário",
 					"submitting": "Convidando...",
-					"title": "Convidar funcionário"
+					"units": "Unidades atendidas"
 				},
 				"loadError": "Não foi possível carregar a equipe.",
 				"roles": {
@@ -393,7 +608,9 @@
 					"remove": "Remover",
 					"removeConfirm": "Remover {{name}} da equipe?",
 					"removeError": "Não foi possível remover o funcionário.",
-					"updateError": "Não foi possível atualizar o cargo."
+					"removeSuccess": "Funcionário removido.",
+					"updateError": "Não foi possível atualizar o funcionário.",
+					"updateSuccess": "Funcionário atualizado."
 				},
 				"subtitle": "Pessoas que gerenciam esta empresa.",
 				"title": "Equipe"
@@ -401,7 +618,8 @@
 			"tags": {
 				"columns": {
 					"color": "Cor",
-					"name": "Nome"
+					"name": "Nome",
+					"products": "Produtos associados"
 				},
 				"create": {
 					"color": "Cor",
@@ -420,10 +638,14 @@
 				},
 				"empty": "Nenhuma etiqueta ainda.",
 				"loadError": "Não foi possível carregar as etiquetas.",
+				"products": {
+					"empty": "Nenhum produto associado"
+				},
 				"row": {
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir etiqueta {{name}}?",
-					"deleteError": "Não foi possível excluir a etiqueta."
+					"deleteError": "Não foi possível excluir a etiqueta.",
+					"deleteSuccess": "Etiqueta excluída."
 				},
 				"subtitle": "Rótulos para produtos desta empresa.",
 				"title": "Etiquetas"
@@ -432,9 +654,10 @@
 				"back": "Voltar para unidades",
 				"columns": {
 					"availability": "Disponibilidade",
-					"category": "Categoria",
+					"categories": "Categorias",
 					"price": "Preço",
-					"product": "Produto"
+					"product": "Produto",
+					"tags": "Etiquetas"
 				},
 				"edit": {
 					"cancel": "Cancelar",
@@ -446,23 +669,31 @@
 				"empty": "Nenhum produto no cardápio desta unidade ainda.",
 				"form": {
 					"available": "Disponível",
-					"category": "Categoria",
+					"categories": "Categorias",
+					"categoriesOverride": "Substituir categorias deste produto",
 					"error": "Não foi possível associar o produto.",
-					"loose": "Sem categoria",
+					"inherited": "Herdado do produto",
 					"priceOverride": "Substituir preço",
 					"product": "Produto",
 					"productPlaceholder": "Selecione um produto",
 					"stock": "Estoque",
 					"submit": "Adicionar ao cardápio",
-					"submitting": "Adicionando..."
+					"submitting": "Adicionando...",
+					"tags": "Etiquetas",
+					"tagsOverride": "Substituir etiquetas deste produto"
 				},
 				"loadError": "Não foi possível carregar o cardápio da unidade.",
+				"options": {
+					"unavailableTitle": "Opções indisponíveis nesta unidade"
+				},
 				"row": {
 					"edit": "Editar",
+					"none": "Nenhuma",
 					"overridden": "(substituído)",
 					"remove": "Remover",
 					"removeConfirm": "Remover {{title}} do cardápio desta unidade?",
-					"removeError": "Não foi possível remover a associação."
+					"removeError": "Não foi possível remover a associação.",
+					"removeSuccess": "Produto removido do cardápio."
 				},
 				"status": {
 					"available": "Disponível",
@@ -504,11 +735,9 @@
 					"title": "Banner da unidade",
 					"upload": "Enviar banner",
 					"uploadError": "Não foi possível enviar o banner.",
-					"url": "URL do banner",
-					"urlPlaceholder": "https://exemplo.com/banner.png"
+					"url": "URL do banner"
 				},
 				"columns": {
-					"actions": "",
 					"city": "Cidade",
 					"name": "Nome",
 					"phone": "Telefone",
@@ -530,12 +759,15 @@
 						"delivery": "Entrega",
 						"pickup": "Retirada"
 					},
+					"name": "Nome",
+					"namePlaceholder": "Ex: Unidade Centro",
 					"save": "Salvar configurações",
 					"saving": "Salvando...",
 					"title": "Configurações da unidade"
 				},
 				"create": {
 					"error": "Não foi possível criar a unidade.",
+					"noCompany": "Sua conta não está vinculada a uma empresa. Entre com uma conta de gestor da empresa ou peça a um administrador para vinculá-la antes de criar uma unidade.",
 					"name": "Nome",
 					"namePlaceholder": "Ex: Centro",
 					"phone": "Telefone",
@@ -543,8 +775,7 @@
 					"sectionAddress": "Endereço",
 					"sectionBasic": "Dados básicos",
 					"submit": "Adicionar unidade",
-					"submitting": "Adicionando...",
-					"title": "Nova unidade"
+					"submitting": "Adicionando..."
 				},
 				"deliveryZones": {
 					"action": "Entrega",
@@ -582,14 +813,31 @@
 						"wed": "Quarta-feira"
 					}
 				},
+				"image": {
+					"action": "Imagem",
+					"cancel": "Cancelar",
+					"error": "Não foi possível salvar a imagem da unidade.",
+					"save": "Salvar imagem",
+					"saving": "Salvando...",
+					"title": "Imagem da unidade",
+					"upload": "Enviar imagem",
+					"uploadError": "Não foi possível enviar a imagem da unidade.",
+					"url": "URL da imagem"
+				},
 				"loadError": "Não foi possível carregar as unidades.",
 				"menu": {
 					"action": "Cardápio"
 				},
+				"promotionalImages": {
+					"action": "Promoções",
+					"empty": "Cadastre imagens promocionais antes de associá-las.",
+					"title": "Imagens promocionais da unidade"
+				},
 				"row": {
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir unidade {{name}}?",
-					"deleteError": "Não foi possível excluir a unidade."
+					"deleteError": "Não foi possível excluir a unidade.",
+					"deleteSuccess": "Unidade excluída."
 				},
 				"status": {
 					"closed": "Fechado",
@@ -603,7 +851,6 @@
 			"name": "Template App"
 		},
 		"auth": {
-			"defaultUserName": "Usuário demo",
 			"errors": {
 				"invalidCredentials": "E-mail ou senha inválidos."
 			},
@@ -630,37 +877,11 @@
 			"history": "Histórico de entregas",
 			"loadError": "Não foi possível carregar suas entregas.",
 			"order": {
-				"customer": "Cliente",
 				"items": "{{count}} item",
-				"items_other": "{{count}} itens",
-				"total": "Total",
-				"unit": "Unidade"
+				"items_other": "{{count}} itens"
 			},
 			"subtitle": "Suas entregas ativas.",
 			"title": "Entregas"
-		},
-		"home": {
-			"auth": {
-				"description": "Baseado em um store Zustand persistido.",
-				"emailLabel": "E-mail",
-				"passwordLabel": "Senha",
-				"signedInAs": "Conectado como {{name}}",
-				"signIn": "Entrar localmente",
-				"signingIn": "Entrando...",
-				"signOut": "Sair",
-				"title": "Exemplo de autenticação"
-			},
-			"hero": {
-				"badge": "Template de frontend",
-				"description": "Este starter mantém o frontend intencionalmente pequeno. Aplicações reais podem chamar hooks gerados diretamente das rotas ou componentes focados, sem um wrapper de API escrito à mão.",
-				"title": "Rota simples, estado de autenticação local e espaço para hooks de API gerados."
-			},
-			"pattern": {
-				"description": "Mantenha os exemplos do template simples, diretos e fáceis de substituir.",
-				"firstParagraph": "Coloque o estado do nível de aplicação em <storePath>src/stores</storePath>, a UI de rotas em <routesPath>src/routes</routesPath> e a configuração de providers em <providersPath>src/providers.tsx</providersPath>.",
-				"secondParagraph": "Quando uma API real existir, mantenha <apiPath>src/lib/api</apiPath> para hooks de backend gerados e chame esses hooks da rota ou componente que é dono da tela.",
-				"title": "Use este padrão"
-			}
 		},
 		"store": {
 			"account": {
@@ -694,9 +915,6 @@
 				"signIn": "Entrar",
 				"signOut": "Sair"
 			},
-			"branding": {
-				"poweredBy": "Desenvolvido por"
-			},
 			"cart": {
 				"add": "Adicionar",
 				"checkout": "Finalizar pedido",
@@ -729,7 +947,6 @@
 					"number": "Número",
 					"reference": "Ponto de referência",
 					"referencePlaceholder": "Ex: próximo à padaria",
-					"saved": "Endereço salvo. O pagamento vem a seguir.",
 					"searching": "Buscando endereço…",
 					"state": "Estado",
 					"street": "Rua",
@@ -790,7 +1007,6 @@
 					"place": "Fazer pedido",
 					"placing": "Realizando pedido…",
 					"subtitle": "Revise seu pedido antes de confirmar.",
-					"success": "Pedido realizado! Já vamos começar.",
 					"title": "Resumo do pedido",
 					"total": "Total"
 				},
@@ -833,7 +1049,6 @@
 					"name": "Nome completo",
 					"namePlaceholder": "Ex: Maria Silva",
 					"submit": "Continuar",
-					"submitting": "Salvando…",
 					"subtitle": "Informe seu nome para personalizarmos seu pedido.",
 					"title": "Seu perfil"
 				},
@@ -883,23 +1098,14 @@
 				"subtitle": "Escolha uma unidade para iniciar seu pedido.",
 				"title": "Nossas unidades"
 			},
-			"home": {
-				"acai": "Açai",
-				"acaiDesc": "Geladinho, cremoso e do jeitinho que você ama.",
-				"club": "Clube de benefícios",
-				"clubDesc": "Vantagens exclusivas e descontos só para membros.",
-				"explore": "Explore também",
-				"other": "Outros",
-				"otherDesc": "Muito mais sabores esperando por você.",
-				"pizza": "Pizza",
-				"pizzaDesc": "Massa artesanal com recheios generosos."
-			},
 			"menu": {
 				"empty": "Esta unidade ainda não tem produtos.",
 				"highlights": "Destaques",
+				"imagePlaceholder": "Produto sem imagem",
 				"loadError": "Não foi possível carregar o cardápio.",
 				"loose": "Outros",
 				"noResults": "Nenhum produto corresponde à sua busca.",
+				"promotions": "Promoções",
 				"searchPlaceholder": "Buscar no cardápio",
 				"topPicks": "Os mais pedidos"
 			},
@@ -914,6 +1120,7 @@
 				"goToCart": "Avançar para o carrinho",
 				"notePlaceholder": "Ex: sem cebola, ovo…",
 				"notFound": "Produto não encontrado.",
+				"optional": "Opcional",
 				"popularOptions": "Itens mais pedidos",
 				"quantity": "Quantidade",
 				"required": "Obrigatório",
@@ -937,18 +1144,24 @@
 				"open": "Aberto"
 			},
 			"unit": {
-				"address": "Endereço",
 				"change": "Trocar unidade",
 				"deliveryMethods": "Formas de entrega",
-				"eta": "Tempo estimado",
 				"etaRange": "{{min}}–{{max}} min",
 				"freeDelivery": "Grátis",
+				"hoursTitle": "Horários de funcionamento",
 				"minOrder": "Pedido mín.",
-				"noMinOrder": "Sem pedido mínimo",
 				"notFound": "Esta unidade não está disponível.",
-				"phone": "Telefone",
-				"storeProfile": "Perfil da loja",
-				"switch": "Trocar unidade"
+				"operation": "Funcionamento",
+				"switch": "Trocar unidade",
+				"weekdays": {
+					"fri": "Sexta-feira",
+					"mon": "Segunda-feira",
+					"sat": "Sábado",
+					"sun": "Domingo",
+					"thu": "Quinta-feira",
+					"tue": "Terça-feira",
+					"wed": "Quarta-feira"
+				}
 			}
 		}
 	}

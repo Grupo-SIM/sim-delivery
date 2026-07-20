@@ -10,3 +10,8 @@ export type CreateCategoryBody = typeof CreateCategoryBody.static;
 
 export const UpdateCategoryBody = t.Object({ ...fields, name: t.Optional(t.String({ minLength: 1 })) });
 export type UpdateCategoryBody = typeof UpdateCategoryBody.static;
+
+export const ReorderCategoriesBody = t.Object({
+	categoryIds: t.Array(t.String(), { minItems: 1, uniqueItems: true }),
+});
+export type ReorderCategoriesBody = typeof ReorderCategoriesBody.static;

@@ -26,3 +26,10 @@ export const GetMyCustomerQuery = t.Object({
 	slug: t.String({ minLength: 1 }),
 });
 export type GetMyCustomerQuery = typeof GetMyCustomerQuery.static;
+
+export const ListCustomersQuery = t.Object({
+	page: t.Optional(t.Integer({ minimum: 1 })),
+	pageSize: t.Optional(t.Integer({ maximum: 100, minimum: 1 })),
+	search: t.Optional(t.String({ minLength: 1 })),
+});
+export type ListCustomersQuery = typeof ListCustomersQuery.static;

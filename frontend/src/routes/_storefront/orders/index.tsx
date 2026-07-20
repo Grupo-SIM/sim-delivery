@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { LuBike, LuChevronRight, LuReceiptText, LuShoppingBag } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
+import { LuBike, LuChevronRight, LuReceiptText, LuShoppingBag } from "react-icons/lu";
 import { Container } from "@/components/ui/Container";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -18,7 +18,8 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const CLOSED_STATUSES = new Set(["entregue", "retirado", "cancelado"]);
 
 function displayStatus(status: string, createdAt: string): string {
-	if (status === "awaiting_payment" && Date.now() - new Date(createdAt).getTime() > ONE_DAY_MS) return "cancelado";
+	if (status === "awaiting_payment" && Date.now() - new Date(createdAt).getTime() > ONE_DAY_MS)
+		return "cancelado";
 	return status;
 }
 
@@ -64,10 +65,16 @@ function OrdersPage() {
 	if (hydrated && !isAuthenticated) {
 		return (
 			<Container className="max-w-2xl space-y-6 py-10">
-				<SectionHeading subtitle={t("store.account.orders.subtitle")} title={t("store.account.orders.title")} />
+				<SectionHeading
+					subtitle={t("store.account.orders.subtitle")}
+					title={t("store.account.orders.title")}
+				/>
 				<EmptyState
 					action={
-						<Link className="inline-block rounded-full bg-primary px-5 py-2 font-semibold text-primary-foreground text-sm" to="/identify">
+						<Link
+							className="inline-block rounded-full bg-primary px-5 py-2 font-semibold text-primary-foreground text-sm"
+							to="/identify"
+						>
 							{t("store.account.signIn")}
 						</Link>
 					}
@@ -81,7 +88,7 @@ function OrdersPage() {
 		<Container className="max-w-6xl space-y-6 py-8">
 			<SectionHeading subtitle={t("store.account.orders.subtitle")} title={t("store.account.orders.title")} />
 
-			{isPending ? (
+			{!hydrated || isPending ? (
 				<div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
 					<Skeleton className="h-64 w-full" />
 					<Skeleton className="h-64 w-full" />
@@ -96,7 +103,9 @@ function OrdersPage() {
 					{orderColumns.map(column => (
 						<section className="rounded-xl border border-border bg-muted/25 p-3" key={column.status}>
 							<header className="mb-3 flex items-center justify-between gap-3 px-1">
-								<span className={`rounded-full px-2 py-0.5 font-semibold text-xs ${statusToneClass(column.status)}`}>
+								<span
+									className={`rounded-full px-2 py-0.5 font-semibold text-xs ${statusToneClass(column.status)}`}
+								>
 									{t(`store.checkout.tracking.status.${column.status}`, { defaultValue: column.status })}
 								</span>
 								<span className="rounded-md bg-background px-2 py-1 font-semibold text-foreground text-xs shadow-sm">
