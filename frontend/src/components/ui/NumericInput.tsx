@@ -73,6 +73,12 @@ export function NumericInput({
 		onValueChange({ floatValue: Number(nextDigits) / 10 ** decimalScale });
 	}
 
+	function handleNativeInput(event: React.FormEvent<HTMLInputElement>) {
+		const nextDigits = normalizeDigits(event.currentTarget.value.replace(/\D/g, ""));
+		if (nextDigits === digits) return;
+		commit(nextDigits);
+	}
+
 	useLayoutEffect(() => {
 		const input = inputRef.current;
 		if (!input || document.activeElement !== input) return;
@@ -81,10 +87,12 @@ export function NumericInput({
 	}, [suffix]);
 
 	function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+		if (event.ctrlKey || event.metaKey) return;
+
 		const input = event.currentTarget;
 		const hasSelection = input.selectionStart !== input.selectionEnd;
 
-		if (/^[0-9]$/.test(event.key) && !event.ctrlKey && !event.metaKey) {
+		if (/^[0-9]$/.test(event.key)) {
 			event.preventDefault();
 			commit(normalizeDigits(`${hasSelection ? "" : digits}${event.key}`));
 			return;
@@ -103,7 +111,7 @@ export function NumericInput({
 	return (
 		<Input
 			inputMode="decimal"
-			onChange={event => commit(normalizeDigits(event.currentTarget.value.replace(/\D/g, "")))}
+			onChange={handleNativeInput}
 			onKeyDown={handleKeyDown}
 			onPaste={event => {
 				const pasted = event.clipboardData.getData("text").replace(/\D/g, "");

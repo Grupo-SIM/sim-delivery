@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
 import { getOrdersQueryKey, useGetOrders, useGetUnits, usePostOrdersCloseDay } from "@/lib/api";
 import { showToast } from "@/stores";
-import { KANBAN_STATUSES, OrdersKanban } from "./components";
+import { OrdersKanban } from "./components";
 
 const STATUS_FILTERS = [
 	"all",
@@ -26,6 +26,8 @@ const STATUS_FILTERS = [
 	"retirado",
 	"cancelado",
 ] as const;
+
+const KANBAN_STATUSES = STATUS_FILTERS.filter(status => status !== "all");
 type StatusFilter = (typeof STATUS_FILTERS)[number];
 
 function OrdersPage() {

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaCcAmex, FaCcDiscover, FaCcMastercard, FaCcVisa, FaCreditCard } from "react-icons/fa";
-import { PatternFormat } from "react-number-format";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/MaskedInput";
 import { Label } from "@/components/ui/label";
 import type { GetPaymentsCards200 } from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
@@ -157,8 +157,7 @@ export function CardPaymentForm({
 					<Label>
 						{t("store.checkout.payment.card.number")}
 						<div className="relative">
-							<PatternFormat
-								customInput={Input}
+							<MaskedInput
 								format="#### #### #### ####"
 								inputMode="numeric"
 								onValueChange={({ value: digits }) => setNumber(digits)}
@@ -175,8 +174,7 @@ export function CardPaymentForm({
 					<div className="grid grid-cols-2 gap-4">
 						<Label>
 							{t("store.checkout.payment.card.cvc")}
-							<PatternFormat
-								customInput={Input}
+							<MaskedInput
 								format="####"
 								inputMode="numeric"
 								onValueChange={({ value: digits }) => setCvv(digits)}
@@ -186,8 +184,7 @@ export function CardPaymentForm({
 						</Label>
 						<Label>
 							{t("store.checkout.payment.card.expiry")}
-							<PatternFormat
-								customInput={Input}
+							<MaskedInput
 								format="##/##"
 								inputMode="numeric"
 								mask="_"
@@ -208,8 +205,7 @@ export function CardPaymentForm({
 			{cpfRequired && (
 				<Label>
 					{t("store.checkout.payment.cpf")}
-					<PatternFormat
-						customInput={Input}
+					<MaskedInput
 						format="###.###.###-##"
 						inputMode="numeric"
 						mask="_"

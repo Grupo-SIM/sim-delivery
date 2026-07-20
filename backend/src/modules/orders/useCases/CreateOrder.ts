@@ -50,7 +50,7 @@ export class CreateOrder {
 				optionGroups: Array<{
 					id: string;
 					maxSelect: number;
-					minSelect: number;
+					required: boolean;
 					priceRule: string;
 					selectionType: string;
 					name: string;
@@ -108,7 +108,7 @@ export class CreateOrder {
 					}))
 					.filter(selection => selection.option);
 				const selectedQuantity = selected.reduce((sum, selection) => sum + selection.quantity, 0);
-				if (selectedQuantity < group.minSelect || selectedQuantity > group.maxSelect)
+				if ((group.required && selectedQuantity < 1) || selectedQuantity > group.maxSelect)
 					throw new DomainError(OrderErrors.INVALID_OPTIONS);
 				if (group.selectionType === "single" && selectedQuantity > 1)
 					throw new DomainError(OrderErrors.INVALID_OPTIONS);

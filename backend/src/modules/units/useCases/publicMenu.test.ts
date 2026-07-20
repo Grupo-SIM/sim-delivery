@@ -23,7 +23,7 @@ interface Assoc {
 		optionGroups: {
 			id: string;
 			maxSelect: number;
-			minSelect: number;
+			required: boolean;
 			name: string;
 			options: {
 				description: string;
@@ -184,10 +184,9 @@ describe("ListPublicMenu", () => {
 	});
 
 	it("computes fromPriceCents as base + min required option deltas", async () => {
-		const optionGroup = (minSelect: number, options: { priceDeltaCents: number }[]) => ({
+		const optionGroup = (required: boolean, options: { priceDeltaCents: number }[]) => ({
 			id: "g1",
 			maxSelect: 1,
-			minSelect,
 			name: "Sabor",
 			options: options.map((o, i) => ({
 				description: "",
@@ -199,6 +198,7 @@ describe("ListPublicMenu", () => {
 				priceDeltaCents: o.priceDeltaCents,
 			})),
 			priceRule: "highest",
+			required,
 			selectionType: "single",
 			sortOrder: 0,
 		});
@@ -214,7 +214,7 @@ describe("ListPublicMenu", () => {
 				priceCentsOverride: null,
 				product: product("p1", {
 					basePriceCents: 4800,
-					optionGroups: [optionGroup(1, [{ priceDeltaCents: 200 }, { priceDeltaCents: 800 }])],
+					optionGroups: [optionGroup(true, [{ priceDeltaCents: 200 }, { priceDeltaCents: 800 }])],
 				}),
 				tags: [],
 				tagsOverridden: true,
@@ -245,10 +245,9 @@ describe("ListPublicMenu", () => {
 	});
 
 	it("hides excluded options and omits products with impossible required groups", async () => {
-		const group = (id: string, minSelect: number, options: { id: string; priceDeltaCents: number }[]) => ({
+		const group = (id: string, required: boolean, options: { id: string; priceDeltaCents: number }[]) => ({
 			id,
 			maxSelect: 1,
-			minSelect,
 			name: id,
 			options: options.map(option => ({
 				description: "",
@@ -259,6 +258,7 @@ describe("ListPublicMenu", () => {
 				...option,
 			})),
 			priceRule: "sum",
+			required,
 			selectionType: "single",
 			sortOrder: 0,
 		});
@@ -274,7 +274,7 @@ describe("ListPublicMenu", () => {
 				priceCentsOverride: null,
 				product: product("visible", {
 					optionGroups: [
-						group("g", 1, [
+						group("g", true, [
 							{ id: "shown", priceDeltaCents: 100 },
 							{ id: "hidden", priceDeltaCents: 200 },
 						]),
@@ -294,7 +294,7 @@ describe("ListPublicMenu", () => {
 				id: "up-hidden",
 				priceCentsOverride: null,
 				product: product("hidden", {
-					optionGroups: [group("g2", 1, [{ id: "only", priceDeltaCents: 100 }])],
+					optionGroups: [group("g2", true, [{ id: "only", priceDeltaCents: 100 }])],
 				}),
 				tags: [],
 				tagsOverridden: true,

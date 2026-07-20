@@ -1,9 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PatternFormat } from "react-number-format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/MaskedInput";
 import { Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { getUnitsByUnitIdHoursQueryKey, useGetUnitsByUnitIdHours, usePutUnitsByUnitIdHours } from "@/lib/api";
@@ -132,9 +132,8 @@ export function UnitHoursEditor({ onClose, unitId }: UnitHoursEditorProps) {
 								/>
 								{t("admin.units.hours.closed")}
 							</label>
-							<PatternFormat
+							<MaskedInput
 								className="w-28"
-								customInput={Input}
 								disabled={day.closed}
 								format="##:##"
 								isAllowed={isAllowedTime}
@@ -143,9 +142,8 @@ export function UnitHoursEditor({ onClose, unitId }: UnitHoursEditorProps) {
 								value={day.opensAt}
 							/>
 							<span className="text-center text-muted-foreground">—</span>
-							<PatternFormat
+							<MaskedInput
 								className="w-28"
-								customInput={Input}
 								disabled={day.closed}
 								format="##:##"
 								isAllowed={isAllowedTime}

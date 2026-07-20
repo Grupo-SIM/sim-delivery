@@ -20,6 +20,7 @@ export class ListDeliveries {
 								neighborhood: true,
 								number: true,
 								state: true,
+								zipCode: true,
 							},
 						},
 						customer: { include: { user: true } },

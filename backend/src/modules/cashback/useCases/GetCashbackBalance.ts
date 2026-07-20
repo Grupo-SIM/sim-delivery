@@ -13,7 +13,7 @@ export class GetCashbackBalance {
 		const customer = await this.prisma.customer.findFirst({
 			where: { companyId: company.id, userId },
 		});
-		if (!customer) throw new DomainError(CashbackErrors.CUSTOMER_NOT_FOUND);
+		if (!customer) return { balanceCents: 0 };
 
 		const ledger = await this.prisma.cashbackLedger.findMany({
 			select: { amount: true },

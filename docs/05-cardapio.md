@@ -7,7 +7,8 @@ O cardápio é o catálogo de produtos da empresa, exibido por unidade. Gestão 
 
 Cada produto tem:
 - **Título**, **imagem**, **descrição**.
-- **Preço** (base; pode variar por unidade via associação).
+- **Preço** (base; **opcional**, default 0 — pode variar por unidade via associação). Quando 0,
+  o preço do produto é composto pelo valor das opções obrigatórias.
 - **Cashback**: usa o default da unidade, com **override por produto**.
 - **Tags** (0..N) — selos universais (ver abaixo).
 - **Indicador de promoção** (derivado de tag/preço promocional).

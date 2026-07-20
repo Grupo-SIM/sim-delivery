@@ -83,12 +83,12 @@ export class ListPublicMenu {
 				options: group.options.filter(option => !excludedOptionIds.has(option.id)),
 			}));
 			const isOrderable = optionGroups.every(group => {
-				if (group.minSelect < 1) return true;
+				if (!group.required) return true;
 				const capacity = group.options.reduce(
 					(sum, option) => sum + (option.maxPerItem ?? group.maxSelect),
 					0,
 				);
-				return capacity >= group.minSelect;
+				return capacity >= 1;
 			});
 			if (!isOrderable) continue;
 			const categories = association.categoriesOverridden
@@ -117,7 +117,7 @@ export class ListPublicMenu {
 				const fromPriceCents =
 					basePriceCents +
 					optionGroups
-						.filter(g => g.minSelect >= 1 && g.options.length > 0)
+						.filter(g => g.required && g.options.length > 0)
 						.reduce((sum, g) => {
 							const cheapest = Math.min(...g.options.map(o => o.priceDeltaCents));
 							return sum + cheapest;
@@ -133,7 +133,6 @@ export class ListPublicMenu {
 					optionGroups: optionGroups.map(g => ({
 						id: g.id,
 						maxSelect: g.maxSelect,
-						minSelect: g.minSelect,
 						name: g.name,
 						options: g.options.map(o => ({
 							description: o.description,
@@ -145,6 +144,7 @@ export class ListPublicMenu {
 							priceDeltaCents: o.priceDeltaCents,
 						})),
 						priceRule: g.priceRule,
+						required: g.required,
 						selectionType: g.selectionType,
 						sortOrder: g.sortOrder,
 					})),

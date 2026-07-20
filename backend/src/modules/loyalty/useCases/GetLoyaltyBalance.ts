@@ -13,7 +13,7 @@ export class GetLoyaltyBalance {
 		const customer = await this.prisma.customer.findFirst({
 			where: { companyId: company.id, userId },
 		});
-		if (!customer) throw new DomainError(LoyaltyErrors.CUSTOMER_NOT_FOUND);
+		if (!customer) return { balancePoints: 0 };
 
 		const ledger = await this.prisma.loyaltyLedger.findMany({
 			select: { amount: true },

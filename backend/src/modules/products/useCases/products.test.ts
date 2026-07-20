@@ -104,6 +104,12 @@ describe("products use-cases", () => {
 		expect(created[0]).not.toHaveProperty("imageUrl");
 	});
 
+	it("CreateProduct defaults the base price to zero when omitted", async () => {
+		const { created, prisma } = prismaWith([]);
+		await new CreateProduct(prisma).execute("cmp_1", { title: "Composed" });
+		expect(created[0]).toMatchObject({ basePriceCents: 0, title: "Composed" });
+	});
+
 	it("ListProducts lists across companies without a company and scopes otherwise", async () => {
 		const { prisma } = prismaWith([{ companyId: "cmp_1", id: "prod1" }]);
 		expect(await new ListProducts(prisma).execute(null)).toHaveLength(1);

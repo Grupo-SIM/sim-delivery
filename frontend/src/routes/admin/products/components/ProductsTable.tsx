@@ -22,6 +22,7 @@ export function ProductsTable({ products }: ProductsTableProps) {
 					<th className="px-4 py-3 font-medium">{t("admin.products.columns.product")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.products.columns.price")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.products.columns.cashback")}</th>
+					<th className="px-4 py-3 text-center font-medium">{t("admin.products.columns.customizations")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.products.columns.categories")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.products.columns.tags")}</th>
 					<th className="px-4 py-3" />

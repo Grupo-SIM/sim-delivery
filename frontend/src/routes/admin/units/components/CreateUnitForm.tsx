@@ -1,11 +1,11 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PatternFormat } from "react-number-format";
 import { Button } from "@/components/ui/button";
 import { CollapsibleFormSection } from "@/components/ui/CollapsibleFormSection";
 import { FormSectionHeading } from "@/components/ui/FormSectionHeading";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/MaskedInput";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { getCepByCep, getUnitsQueryKey, usePostUnits } from "@/lib/api";
 
@@ -114,8 +114,7 @@ export function CreateUnitForm() {
 				</Label>
 				<Label>
 					{t("admin.units.create.phone")}
-					<PatternFormat
-						customInput={Input}
+					<MaskedInput
 						format="(##) #####-####"
 						inputMode="numeric"
 						mask="_"
@@ -131,8 +130,7 @@ export function CreateUnitForm() {
 				<div className="grid gap-4 sm:grid-cols-[10rem_1fr]">
 					<Label>
 						{t("admin.units.address.cep")}
-						<PatternFormat
-							customInput={Input}
+						<MaskedInput
 							format="#####-###"
 							inputMode="numeric"
 							mask="_"

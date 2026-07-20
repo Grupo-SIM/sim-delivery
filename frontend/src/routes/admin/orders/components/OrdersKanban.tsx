@@ -12,7 +12,7 @@ import { showAlert } from "@/stores";
 import { OrderKanbanCard } from "./OrderKanbanCard";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 
-export const KANBAN_STATUSES = [
+const KANBAN_STATUSES = [
 	"awaiting_payment",
 	"recebido",
 	"em_preparo",

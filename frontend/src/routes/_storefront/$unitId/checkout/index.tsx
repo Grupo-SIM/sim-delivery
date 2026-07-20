@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import {
 	getCustomersMeQueryOptions,
 	getPublicUnitsQueryOptions,
+	getPublicUnitsByUnitSlugMenuQueryOptions,
 	type PostCustomersMe200,
 	useGetCashbackMe,
 	useGetLoyaltyMe,
@@ -18,6 +19,7 @@ import { slug } from "@/lib/variant";
 import { cartTotalCents, showAlert, useAuthStore, useCartStore, useDeliveryMethodStore } from "@/stores";
 import {
 	AddressForm,
+	AddressSelectorModal,
 	type AddressValue,
 	type AppliedCoupon,
 	type DeliveryMethod,
@@ -27,8 +29,9 @@ import {
 	ProfileForm,
 	type ProfileValue,
 } from "./components";
+import { ProductDetailsModal } from "../components";
 
-type Step = "identify" | "profile" | "address" | "review" | "payment";
+type Step = "identify" | "profile" | "review" | "payment";
 
 function CheckoutPage() {
 	const { t } = useTranslation();
@@ -41,11 +44,15 @@ function CheckoutPage() {
 
 	const [profileValue, setProfileValue] = useState<ProfileValue | null>(null);
 	const [savedCustomer, setSavedCustomer] = useState<PostCustomersMe200 | null>(null);
+	const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+	const [addressModalOpen, setAddressModalOpen] = useState(false);
+	const [editingLineKey, setEditingLineKey] = useState<string | null>(null);
 	const getMethod = useDeliveryMethodStore(state => state.getMethod);
 	const setStoredMethod = useDeliveryMethodStore(state => state.setMethod);
 	const { data: units, isPending: loadingUnits } = useQuery(getPublicUnitsQueryOptions({ slug: slug ?? "" }));
 	const unit = units?.find(u => u.slug === unitSlug);
 	const unitId = unit?.id ?? "";
+	const { data: menu } = useQuery(getPublicUnitsByUnitSlugMenuQueryOptions(unitSlug, { slug: slug ?? "" }));
 	const availableMethods = unit?.deliveryMethods ?? ["delivery"];
 	const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>(() =>
 		getMethod(unitId, availableMethods),
@@ -54,13 +61,29 @@ function CheckoutPage() {
 	const [cashbackRedeemCents, setCashbackRedeemCents] = useState(0);
 	const [loyaltyRedeemPoints, setLoyaltyRedeemPoints] = useState(0);
 	const [placedOrder, setPlacedOrder] = useState<{ id: string; totalCents: number } | null>(null);
+	const editingItem = cartItems.find(item => item.lineKey === editingLineKey) ?? null;
+	const editingMenuItem = editingItem
+		? (menu?.flatMap(section => section.items).find(item => item.id === editingItem.id) ?? null)
+		: null;
 
-	const { mutate: saveCustomer, isPending: isSavingCustomer } = usePostCustomersMe();
+	const { mutate: saveCustomer, isPending: isSavingCustomer } = usePostCustomersMe({
+		// Customer response is stored locally after submit. Avoid Kubb's broad
+		// "Customers" mutation invalidation causing an unnecessary GET during checkout.
+		mutation: { mutationKey: ["checkout-customer"] },
+	});
 	const { mutate: placeOrder, isPending: isPlacingOrder } = usePostOrders();
 
 	const { data: existingCustomer, isLoading: loadingCustomer } = useQuery({
 		...getCustomersMeQueryOptions({ slug: slug ?? "" }),
+		// Profile cannot change while this screen is open. Fetch once, then keep its
+		// result through component remounts; POST /customers/me returns saved profile.
+		gcTime: Number.POSITIVE_INFINITY,
 		enabled: identified && !!slug,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		refetchOnWindowFocus: false,
+		retry: false,
+		staleTime: Number.POSITIVE_INFINITY,
 	});
 
 	const { data: cashbackData } = useGetCashbackMe(
@@ -75,8 +98,11 @@ function CheckoutPage() {
 	);
 	const loyaltyBalancePoints = Number(loyaltyData?.balancePoints ?? 0);
 
-	const isPickup = deliveryMethod === "pickup";
-	const hasCustomer = savedCustomer !== null || existingCustomer !== null;
+	const activeCustomer = savedCustomer ?? existingCustomer ?? null;
+	const addresses: PostCustomersMe200["addresses"] = activeCustomer?.addresses ?? [];
+	const savedAddress =
+		addresses.find(address => address.id === selectedAddressId) ?? addresses.find(address => address.isDefault) ?? null;
+	const hasCustomer = activeCustomer !== null;
 	// Magic-link/OTP accounts can end up with a blank name; without one we can't skip
 	// straight to address (the save would submit an empty name and fail server-side).
 	const hasUsableName = !!user?.name?.trim();
@@ -85,23 +111,11 @@ function CheckoutPage() {
 			? "identify"
 			: !hasCustomer && profileValue === null
 				? "profile"
-				: !hasCustomer
-					? "address"
-					: existingCustomer !== null &&
-							savedCustomer === null &&
-							!isPickup &&
-							!hasUsableName &&
-							profileValue === null
-						? "profile"
-						: // Existing customer + pickup: skip address entirely
-							existingCustomer !== null && savedCustomer === null && !isPickup
-							? "address"
-							: "review";
+				: existingCustomer !== null && savedCustomer === null && !hasUsableName && profileValue === null
+					? "profile"
+					: "review";
 
 	const step: Step = placedOrder ? "payment" : reviewStep;
-
-	const activeCustomer = savedCustomer ?? existingCustomer ?? null;
-	const savedAddress = activeCustomer?.addresses[0] ?? null;
 
 	function handleChangeDeliveryMethod(method: DeliveryMethod) {
 		setDeliveryMethod(method);
@@ -125,14 +139,18 @@ function CheckoutPage() {
 						state: address.state || undefined,
 						zipCode: address.zipCode,
 					},
-					cpf: address.cpf,
+					cpf: profile.cpf || undefined,
 					name: profile.name,
 					slug: slug ?? "",
 				},
 			},
 			{
 				onError: () => void showAlert(t("store.checkout.profile.error")),
-				onSuccess: data => setSavedCustomer(data),
+				onSuccess: data => {
+					setSavedCustomer(data);
+					setSelectedAddressId(data.addresses.find(address => address.isDefault)?.id ?? null);
+					setAddressModalOpen(false);
+				},
 			},
 		);
 	}
@@ -227,20 +245,6 @@ function CheckoutPage() {
 				</>
 			)}
 
-			{step === "address" && (
-				<>
-					<SectionHeading
-						subtitle={t("store.checkout.address.subtitle")}
-						title={t("store.checkout.address.title")}
-					/>
-					<AddressForm
-						disabled={isSavingCustomer}
-						initialCpf={profileValue?.cpf || existingCustomer?.cpf || undefined}
-						onSubmit={handleAddressSubmit}
-					/>
-				</>
-			)}
-
 			{step === "review" && (
 				<>
 					<SectionHeading
@@ -261,6 +265,8 @@ function CheckoutPage() {
 						onChangeCashbackRedeem={setCashbackRedeemCents}
 						onChangeDeliveryMethod={handleChangeDeliveryMethod}
 						onChangeLoyaltyRedeem={setLoyaltyRedeemPoints}
+						onEditItem={item => setEditingLineKey(item.lineKey)}
+						onOpenAddressSelector={() => setAddressModalOpen(true)}
 						onSetCoupon={setAppliedCoupon}
 						onSubmit={handlePlaceOrder}
 						slug={slug ?? ""}
@@ -286,6 +292,24 @@ function CheckoutPage() {
 					/>
 				</>
 			)}
+
+			<AddressSelectorModal
+				addresses={addresses}
+				isOpen={addressModalOpen}
+				isSaving={isSavingCustomer}
+				onClose={() => setAddressModalOpen(false)}
+				onCreate={handleAddressSubmit}
+				onSelect={address => {
+					setSelectedAddressId(address.id);
+					setAddressModalOpen(false);
+				}}
+			/>
+			<ProductDetailsModal
+				editingItem={editingItem}
+				item={editingMenuItem}
+				onClose={() => setEditingLineKey(null)}
+				unitId={unitId}
+			/>
 		</Container>
 	);
 }

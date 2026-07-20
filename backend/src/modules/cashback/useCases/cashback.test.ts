@@ -39,11 +39,9 @@ describe("GetCashbackBalance", () => {
 		);
 	});
 
-	it("throws CUSTOMER_NOT_FOUND when no customer record", async () => {
+	it("returns 0 when no customer record exists yet", async () => {
 		const { prisma } = makePrisma({ customer: null });
-		await expect(new GetCashbackBalance(prisma).execute("user_1", "demo")).rejects.toThrow(
-			"CUSTOMER_NOT_FOUND",
-		);
+		await expect(new GetCashbackBalance(prisma).execute("user_1", "demo")).resolves.toEqual({ balanceCents: 0 });
 	});
 
 	it("returns 0 when ledger is empty", async () => {

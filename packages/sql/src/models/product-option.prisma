@@ -4,8 +4,8 @@ model OptionGroup {
     id            String   @id @default(cuid())
     productId     String
     name          String
-    /// Minimum number of selections required (0 = optional group).
-    minSelect     Int      @default(0)
+    /// Whether the customer must pick at least one option (effective min = 1; false = optional, min = 0).
+    required      Boolean  @default(false)
     /// Maximum number of selections allowed.
     maxSelect     Int      @default(1)
     /// "single" = radio; "multi" = stepper (customer can pick multiple options).

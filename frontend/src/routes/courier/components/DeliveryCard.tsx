@@ -27,7 +27,7 @@ const NEXT_ACTIONS: Record<string, { status: string; labelKey: string; destructi
 };
 
 function buildMapsUrl(addr: NonNullable<Delivery["order"]["address"]>): string {
-	const parts = [addr.addressLine, addr.number, addr.neighborhood, addr.city, addr.state]
+	const parts = [addr.addressLine, addr.number, addr.neighborhood, addr.city, addr.state, addr.zipCode]
 		.filter(Boolean)
 		.join(", ");
 	return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(parts)}`;
@@ -47,7 +47,8 @@ export function DeliveryCard({ delivery }: DeliveryCardProps) {
 		currency: "BRL",
 		style: "currency",
 	});
-	const showNavigate = delivery.status === "a_caminho" && delivery.order.address != null;
+	const address = delivery.order.address;
+	const showNavigate = delivery.status === "a_caminho" && address != null;
 
 	function handleAction(status: string, labelKey: string) {
 		patch.mutate(
@@ -79,6 +80,25 @@ export function DeliveryCard({ delivery }: DeliveryCardProps) {
 			</div>
 
 			<div className="space-y-0.5 text-muted-foreground text-sm">
+				<p className="font-medium text-foreground">
+					{t("courier.order.identifier", { id: delivery.order.id })}
+				</p>
+				{address && (
+					<div>
+						<p>{t("courier.order.address")}</p>
+						<p>
+							{address.addressLine}, {address.number}
+							{address.complement ? ` — ${address.complement}` : ""}
+						</p>
+						<p>
+							{address.neighborhood ? `${address.neighborhood}, ` : ""}
+							{address.city}
+							{address.state ? ` - ${address.state}` : ""}
+							{" · "}
+							{t("courier.order.zipCode", { zipCode: address.zipCode })}
+						</p>
+					</div>
+				)}
 				<p>
 					{t("courier.order.items", { count: delivery.order.items.length })}
 					{" · "}
@@ -92,7 +112,7 @@ export function DeliveryCard({ delivery }: DeliveryCardProps) {
 					{showNavigate && (
 						<a
 							className={buttonClassName({ size: "sm", variant: "outline" })}
-							href={buildMapsUrl(delivery.order.address!)}
+							href={buildMapsUrl(address!)}
 							rel="noopener noreferrer"
 							target="_blank"
 						>

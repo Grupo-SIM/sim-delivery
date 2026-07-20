@@ -14,10 +14,10 @@ export type PublicOptionReturn = typeof PublicOptionReturn.static;
 export const PublicOptionGroupReturn = t.Object({
 	id: t.String(),
 	maxSelect: t.Integer(),
-	minSelect: t.Integer(),
 	name: t.String(),
 	options: t.Array(PublicOptionReturn),
 	priceRule: t.String(),
+	required: t.Boolean(),
 	selectionType: t.String(),
 	sortOrder: t.Integer(),
 });

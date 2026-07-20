@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { LuPencil, LuTrash2 } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
+import { Modal } from "@/components/ui/Modal";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import {
 	type GetCoupons200,
@@ -94,64 +95,59 @@ export function CouponRow({ coupon, units }: CouponRowProps) {
 		);
 	}
 
-	if (editing) {
-		return (
-			<tr className="border-border/60 border-b last:border-0">
-				<td className="px-4 py-3" colSpan={6}>
-					<div className="space-y-4">
-						<CouponFormFields
-							code={localCode}
-							onChange={next => setForm(prev => ({ ...prev, ...next }))}
-							onCodeBlur={flushCode}
-							onCodeChange={setLocalCode}
-							units={units}
-							value={form}
-						/>
-						<div className="flex justify-end gap-2">
-							<Button disabled={update.isPending} onClick={cancel} size="sm" type="button" variant="outline">
-								{t("admin.coupons.edit.cancel")}
-							</Button>
-							<Button disabled={update.isPending || !localCode.trim() || form.value <= 0} onClick={save} size="sm" type="button">
-								{update.isPending ? t("admin.coupons.edit.saving") : t("admin.coupons.edit.save")}
-							</Button>
-						</div>
-					</div>
-				</td>
-			</tr>
-		);
-	}
-
 	const unit = units?.find(item => item.id === coupon.unitId);
 	const expiresAt = coupon.expiresAt ? new Date(coupon.expiresAt).toLocaleString("pt-BR") : t("admin.coupons.row.never");
 	const value = coupon.type === "fixed" ? `R$ ${(Number(coupon.value) / 100).toFixed(2).replace(".", ",")}` : `${coupon.value}%`;
 
 	return (
-		<tr className="border-border/60 border-b last:border-0">
-			<td className="px-4 py-3 font-mono font-medium">{coupon.code}</td>
-			<td className="px-4 py-3">{coupon.type === "fixed" ? t("admin.coupons.types.fixed") : t("admin.coupons.types.percent")}</td>
-			<td className="px-4 py-3">{value}</td>
-			<td className="px-4 py-3">{unit?.name ?? t("admin.coupons.row.allUnits")}</td>
-			<td className="px-4 py-3">{expiresAt}</td>
-			<td className="w-52 px-4 py-3 text-right">
-				<div className="flex justify-end gap-2">
-					<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
-						<LuPencil className="size-4" />
-						{t("admin.coupons.edit.action")}
-					</Button>
-					<ConfirmActionButton
-						confirmation={t("admin.coupons.row.deleteConfirm", { code: coupon.code })}
-						confirmLabel={t("admin.coupons.row.delete")}
-						disabled={remove.isPending}
-						idleIcon={<LuTrash2 className="size-4" />}
-						onConfirm={del}
-						size="sm"
-						type="button"
-						variant="outline"
-					>
-						{t("admin.coupons.row.delete")}
-					</ConfirmActionButton>
+		<>
+			<tr className="border-border/60 border-b last:border-0">
+				<td className="px-4 py-3 font-mono font-medium">{coupon.code}</td>
+				<td className="px-4 py-3">{coupon.type === "fixed" ? t("admin.coupons.types.fixed") : t("admin.coupons.types.percent")}</td>
+				<td className="px-4 py-3">{value}</td>
+				<td className="px-4 py-3">{unit?.name ?? t("admin.coupons.row.allUnits")}</td>
+				<td className="px-4 py-3">{expiresAt}</td>
+				<td className="w-52 px-4 py-3 text-right">
+					<div className="flex justify-end gap-2">
+						<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
+							<LuPencil className="size-4" />
+							{t("admin.coupons.edit.action")}
+						</Button>
+						<ConfirmActionButton
+							confirmation={t("admin.coupons.row.deleteConfirm", { code: coupon.code })}
+							confirmLabel={t("admin.coupons.row.delete")}
+							disabled={remove.isPending}
+							idleIcon={<LuTrash2 className="size-4" />}
+							onConfirm={del}
+							size="sm"
+							type="button"
+							variant="outline"
+						>
+							{t("admin.coupons.row.delete")}
+						</ConfirmActionButton>
+					</div>
+				</td>
+			</tr>
+			<Modal isOpen={editing} maxWidth="760px" onClose={cancel} title={t("admin.coupons.edit.action")}>
+				<div className="space-y-4">
+					<CouponFormFields
+						code={localCode}
+						onChange={next => setForm(prev => ({ ...prev, ...next }))}
+						onCodeBlur={flushCode}
+						onCodeChange={setLocalCode}
+						units={units}
+						value={form}
+					/>
+					<div className="flex justify-end gap-2">
+						<Button disabled={update.isPending} onClick={cancel} type="button" variant="outline">
+							{t("admin.coupons.edit.cancel")}
+						</Button>
+						<Button disabled={update.isPending || !localCode.trim() || form.value <= 0} onClick={save} type="button">
+							{update.isPending ? t("admin.coupons.edit.saving") : t("admin.coupons.edit.save")}
+						</Button>
+					</div>
 				</div>
-			</td>
-		</tr>
+			</Modal>
+		</>
 	);
 }

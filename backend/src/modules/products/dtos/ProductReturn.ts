@@ -7,6 +7,7 @@ const ProductTagSummary = t.Object({ color: t.String(), id: t.String(), name: t.
 export const ProductReturn = t.Object({
 	...ProductPlain.properties,
 	categories: t.Array(ProductCategorySummary),
+	optionGroupCount: t.Integer(),
 	tags: t.Array(ProductTagSummary),
 });
 export type ProductReturn = typeof ProductReturn.static;

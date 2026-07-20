@@ -1,4 +1,5 @@
 import { describe, expect, it } from "bun:test";
+import { getCustomersMeQueryOptions } from "@/lib/api";
 import { reactQueryClient } from "./tanstack";
 
 describe("branding query cache", () => {
@@ -16,6 +17,43 @@ describe("branding query cache", () => {
 			refetchOnMount: false,
 			refetchOnReconnect: false,
 			refetchOnWindowFocus: false,
+		});
+	});
+});
+
+describe("checkout identity queries", () => {
+	for (const queryKey of [["Customers", "/customers/me"], ["Cashback", "/cashback/me"], ["Loyalty", "/loyalty/me"]]) {
+		it(`does not refetch ${queryKey[1]} during remounts or focus`, () => {
+			expect(reactQueryClient.getQueryDefaults(queryKey)).toMatchObject({
+				refetchOnMount: false,
+				refetchOnReconnect: false,
+				refetchOnWindowFocus: false,
+				staleTime: 60_000,
+			});
+		});
+	}
+});
+
+describe("checkout customer query", () => {
+	it("does not refetch or retry while checkout remounts", () => {
+		const options = {
+			...getCustomersMeQueryOptions({ slug: "zero-grau" }),
+			enabled: true,
+			gcTime: Number.POSITIVE_INFINITY,
+			refetchOnMount: false,
+			refetchOnReconnect: false,
+			refetchOnWindowFocus: false,
+			retry: false,
+			staleTime: Number.POSITIVE_INFINITY,
+		};
+
+		expect(reactQueryClient.defaultQueryOptions(options)).toMatchObject({
+			gcTime: Number.POSITIVE_INFINITY,
+			refetchOnMount: false,
+			refetchOnReconnect: false,
+			refetchOnWindowFocus: false,
+			retry: false,
+			staleTime: Number.POSITIVE_INFINITY,
 		});
 	});
 });

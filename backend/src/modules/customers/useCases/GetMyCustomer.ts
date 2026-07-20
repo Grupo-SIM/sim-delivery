@@ -8,9 +8,11 @@ export class GetMyCustomer {
 		const company = await this.prisma.company.findUnique({ where: { slug } });
 		if (!company) return null;
 
-		return this.prisma.customer.findFirst({
-			include: { addresses: { orderBy: { isDefault: "desc" } } },
-			where: { companyId: company.id, userId },
-		});
+		return (
+			(await this.prisma.customer.findFirst({
+				include: { addresses: { orderBy: { isDefault: "desc" } } },
+				where: { companyId: company.id, userId },
+			})) ?? null
+		);
 	}
 }

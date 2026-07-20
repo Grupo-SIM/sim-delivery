@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { PatternFormat } from "react-number-format";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/MaskedInput";
+import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { getCepByCep } from "@/lib/api";
 
 export interface AddressValue {
-	cpf: string;
 	zipCode: string;
 	addressLine: string;
 	number: string;
@@ -24,7 +25,6 @@ const emptyAddress: AddressValue = {
 	addressLine: "",
 	city: "",
 	complement: "",
-	cpf: "",
 	latitude: null,
 	longitude: null,
 	neighborhood: "",
@@ -36,21 +36,33 @@ const emptyAddress: AddressValue = {
 
 interface AddressFormProps {
 	disabled?: boolean;
-	initialCpf?: string;
 	onSubmit?: (value: AddressValue) => void;
+	submitLabel?: string;
 }
 
-export function AddressForm({ disabled, initialCpf, onSubmit }: AddressFormProps) {
+export function AddressForm({ disabled, onSubmit, submitLabel }: AddressFormProps) {
 	const { t } = useTranslation();
-	const hasCpf = initialCpf?.length === 11;
-	const [value, setValue] = useState<AddressValue>({ ...emptyAddress, cpf: initialCpf ?? "" });
+	const [value, setValue] = useState<AddressValue>(emptyAddress);
 	const [noNumber, setNoNumber] = useState(false);
 	const [lookingUp, setLookingUp] = useState(false);
 	const [cepError, setCepError] = useState<string | null>(null);
+	const numberInputRef = useRef<HTMLInputElement>(null);
 
 	function set<K extends keyof AddressValue>(key: K, next: AddressValue[K]) {
 		setValue(prev => ({ ...prev, [key]: next }));
 	}
+
+	const [zipCode, setZipCode] = useDebouncedInput(value.zipCode, digits => {
+		set("zipCode", digits);
+		if (digits.length === 8) void lookupCep(digits);
+	});
+	const [addressLine, setAddressLine] = useDebouncedInput(value.addressLine, next => set("addressLine", next));
+	const [addressNumber, setAddressNumber] = useDebouncedInput(value.number, next => set("number", next));
+	const [complement, setComplement] = useDebouncedInput(value.complement, next => set("complement", next));
+	const [neighborhood, setNeighborhood] = useDebouncedInput(value.neighborhood, next => set("neighborhood", next));
+	const [city, setCity] = useDebouncedInput(value.city, next => set("city", next));
+	const [state, setState] = useDebouncedInput(value.state, next => set("state", next.toUpperCase()));
+	const [reference, setReference] = useDebouncedInput(value.reference, next => set("reference", next));
 
 	async function lookupCep(digits: string) {
 		setCepError(null);
@@ -68,6 +80,7 @@ export function AddressForm({ disabled, initialCpf, onSubmit }: AddressFormProps
 				state: address.state,
 				zipCode: digits,
 			}));
+			numberInputRef.current?.focus();
 		} catch {
 			setCepError(t("store.checkout.address.cepNotFound"));
 		} finally {
@@ -75,9 +88,26 @@ export function AddressForm({ disabled, initialCpf, onSubmit }: AddressFormProps
 		}
 	}
 
-	const number = noNumber ? "S/N" : value.number;
+	const number = noNumber ? "S/N" : addressNumber;
+	const currentValue = {
+		...value,
+		addressLine,
+		city,
+		complement,
+		neighborhood,
+		number,
+		reference,
+		state,
+		zipCode,
+	};
 	const canSubmit =
-		value.cpf.length === 11 && value.zipCode.length === 8 && value.addressLine.trim() !== "" && number.trim() !== "";
+		currentValue.zipCode.length === 8 &&
+		currentValue.addressLine.trim() !== "" &&
+		currentValue.number.trim() !== "" &&
+		currentValue.neighborhood.trim() !== "" &&
+		currentValue.city.trim() !== "" &&
+		currentValue.state.trim().length === 2;
+	const requiredField = <RequiredMark />;
 
 	return (
 		<form
@@ -85,39 +115,20 @@ export function AddressForm({ disabled, initialCpf, onSubmit }: AddressFormProps
 			onSubmit={event => {
 				event.preventDefault();
 				if (!canSubmit) return;
-				onSubmit?.({ ...value, number });
+				onSubmit?.(currentValue);
 			}}
 		>
-			{!hasCpf && (
-				<Label>
-					<span>
-						{t("store.checkout.address.cpf")} <RequiredMark />
-					</span>
-					<PatternFormat
-						customInput={Input}
-						format="###.###.###-##"
-						inputMode="numeric"
-						mask="_"
-						onValueChange={({ value: digits }) => set("cpf", digits)}
-						placeholder={t("store.checkout.address.cpfPlaceholder")}
-						value={value.cpf}
-					/>
-				</Label>
-			)}
-
 			<Label>
-				{t("store.checkout.address.cep")}
-				<PatternFormat
-					customInput={Input}
+				<span>
+					{t("store.checkout.address.cep")} {requiredField}
+				</span>
+				<MaskedInput
 					format="#####-###"
 					inputMode="numeric"
 					mask="_"
-					onValueChange={({ value: digits }) => {
-						set("zipCode", digits);
-						if (digits.length === 8) void lookupCep(digits);
-					}}
+					onValueChange={({ value: digits }) => setZipCode(digits)}
 					placeholder="00000-000"
-					value={value.zipCode}
+					value={zipCode}
 				/>
 				{lookingUp && (
 					<span className="text-muted-foreground text-xs">{t("store.checkout.address.searching")}</span>
@@ -126,32 +137,32 @@ export function AddressForm({ disabled, initialCpf, onSubmit }: AddressFormProps
 			</Label>
 
 			<Label>
-				{t("store.checkout.address.street")}
+				<span>
+					{t("store.checkout.address.street")} {requiredField}
+				</span>
 				<Input
-					onChange={event => set("addressLine", event.currentTarget.value)}
+					onChange={event => setAddressLine(event.currentTarget.value)}
 					placeholder={t("store.checkout.address.streetPlaceholder")}
-					value={value.addressLine}
+					value={addressLine}
 				/>
 			</Label>
 
 			<div className="grid grid-cols-2 gap-4">
 				<Label>
-					{t("store.checkout.address.number")}
+					<span>
+						{t("store.checkout.address.number")} {requiredField}
+					</span>
 					<Input
 						disabled={noNumber}
 						inputMode="numeric"
-						onChange={event => set("number", event.currentTarget.value)}
+						onChange={event => setAddressNumber(event.currentTarget.value)}
 						placeholder="123"
+						ref={numberInputRef}
 						value={number}
 					/>
 				</Label>
-				<label className="flex items-end gap-2 pb-3 font-medium text-sm">
-					<input
-						checked={noNumber}
-						className="size-4"
-						onChange={event => setNoNumber(event.currentTarget.checked)}
-						type="checkbox"
-					/>
+				<label className="flex cursor-pointer items-end gap-2 pb-3 font-medium text-sm">
+					<Checkbox checked={noNumber} onChange={event => setNoNumber(event.currentTarget.checked)} />
 					{t("store.checkout.address.noNumber")}
 				</label>
 			</div>
@@ -159,37 +170,43 @@ export function AddressForm({ disabled, initialCpf, onSubmit }: AddressFormProps
 			<Label>
 				{t("store.checkout.address.complement")}
 				<Input
-					onChange={event => set("complement", event.currentTarget.value)}
+					onChange={event => setComplement(event.currentTarget.value)}
 					placeholder={t("store.checkout.address.complementPlaceholder")}
-					value={value.complement}
+					value={complement}
 				/>
 			</Label>
 
 			<Label>
-				{t("store.checkout.address.neighborhood")}
+				<span>
+					{t("store.checkout.address.neighborhood")} {requiredField}
+				</span>
 				<Input
-					onChange={event => set("neighborhood", event.currentTarget.value)}
+					onChange={event => setNeighborhood(event.currentTarget.value)}
 					placeholder={t("store.checkout.address.neighborhoodPlaceholder")}
-					value={value.neighborhood}
+					value={neighborhood}
 				/>
 			</Label>
 
 			<div className="grid grid-cols-[1fr_5rem] gap-4">
 				<Label>
-					{t("store.checkout.address.city")}
+					<span>
+						{t("store.checkout.address.city")} {requiredField}
+					</span>
 					<Input
-						onChange={event => set("city", event.currentTarget.value)}
+						onChange={event => setCity(event.currentTarget.value)}
 						placeholder={t("store.checkout.address.cityPlaceholder")}
-						value={value.city}
+						value={city}
 					/>
 				</Label>
 				<Label>
-					{t("store.checkout.address.state")}
+					<span>
+						{t("store.checkout.address.state")} {requiredField}
+					</span>
 					<Input
 						maxLength={2}
-						onChange={event => set("state", event.currentTarget.value.toUpperCase())}
+						onChange={event => setState(event.currentTarget.value)}
 						placeholder="SP"
-						value={value.state}
+						value={state}
 					/>
 				</Label>
 			</div>
@@ -197,14 +214,14 @@ export function AddressForm({ disabled, initialCpf, onSubmit }: AddressFormProps
 			<Label>
 				{t("store.checkout.address.reference")}
 				<Input
-					onChange={event => set("reference", event.currentTarget.value)}
+					onChange={event => setReference(event.currentTarget.value)}
 					placeholder={t("store.checkout.address.referencePlaceholder")}
-					value={value.reference}
+					value={reference}
 				/>
 			</Label>
 
 			<Button className="w-full" disabled={!canSubmit || disabled} type="submit">
-				{t("store.checkout.address.continue")}
+				{submitLabel ?? t("store.checkout.address.continue")}
 			</Button>
 		</form>
 	);

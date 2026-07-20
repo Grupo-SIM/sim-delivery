@@ -2,9 +2,9 @@ import { t } from "elysia";
 
 const groupFields = {
 	maxSelect: t.Integer({ minimum: 1 }),
-	minSelect: t.Integer({ minimum: 0 }),
 	name: t.String({ minLength: 1 }),
 	priceRule: t.Union([t.Literal("sum"), t.Literal("highest"), t.Literal("average")]),
+	required: t.Optional(t.Boolean()),
 	selectionType: t.Union([t.Literal("single"), t.Literal("multi")]),
 	sortOrder: t.Optional(t.Integer({ minimum: 0 })),
 };
@@ -42,11 +42,11 @@ const OptionReturn = t.Object({
 const OptionGroupReturn = t.Object({
 	id: t.String(),
 	maxSelect: t.Integer(),
-	minSelect: t.Integer(),
 	name: t.String(),
 	options: t.Array(OptionReturn),
 	priceRule: t.String(),
 	productId: t.String(),
+	required: t.Boolean(),
 	selectionType: t.String(),
 	sortOrder: t.Integer(),
 });

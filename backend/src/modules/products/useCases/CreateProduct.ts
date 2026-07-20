@@ -37,6 +37,7 @@ export class CreateProduct {
 		const product = await this.prisma.product.create({
 			data: {
 				...fields,
+				basePriceCents: fields.basePriceCents ?? 0,
 				categories: {
 					create: (categoryIds ?? []).map((categoryId) => ({
 						categoryId,
