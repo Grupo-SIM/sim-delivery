@@ -2,19 +2,32 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuBookOpen, LuClock, LuImage, LuMapPin, LuSettings, LuTrash2, LuTruck } from "react-icons/lu";
+import {
+	LuBookOpen,
+	LuClock,
+	LuImage,
+	LuImagePlus,
+	LuImages,
+	LuMapPin,
+	LuSettings,
+	LuTrash2,
+	LuTruck,
+} from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { type GetUnits200, getUnitsQueryKey, useDeleteUnitsByUnitId } from "@/lib/api";
-import { showAlert, showConfirm } from "@/stores";
+import { showAlert, showToast } from "@/stores";
 import { UnitAddressEditor } from "./UnitAddressEditor";
 import { UnitBannerEditor } from "./UnitBannerEditor";
 import { UnitConfigEditor } from "./UnitConfigEditor";
 import { UnitDeliveryZonesEditor } from "./UnitDeliveryZonesEditor";
 import { UnitHoursEditor } from "./UnitHoursEditor";
+import { UnitImageEditor } from "./UnitImageEditor";
+import { UnitPromotionalImagesEditor } from "./UnitPromotionalImagesEditor";
 
 interface UnitsTableProps {
 	units: GetUnits200;
@@ -28,21 +41,23 @@ export function UnitsTable({ units }: UnitsTableProps) {
 	const [configUnit, setConfigUnit] = useState<GetUnits200[number] | null>(null);
 	const [addressUnit, setAddressUnit] = useState<GetUnits200[number] | null>(null);
 	const [bannerUnit, setBannerUnit] = useState<GetUnits200[number] | null>(null);
+	const [imageUnit, setImageUnit] = useState<GetUnits200[number] | null>(null);
 	const [zonesUnit, setZonesUnit] = useState<GetUnits200[number] | null>(null);
+	const [promotionsUnit, setPromotionsUnit] = useState<GetUnits200[number] | null>(null);
 
 	if (units.length === 0) {
 		return <EmptyState title={t("admin.units.empty")} />;
 	}
 
-	async function deleteUnit(id: string, name: string) {
-		if (!(await showConfirm(t("admin.units.row.deleteConfirm", { name })))) {
-			return;
-		}
+	function deleteUnit(id: string) {
 		remove.mutate(
 			{ unitId: id },
 			{
 				onError: () => void showAlert(t("admin.units.row.deleteError")),
-				onSuccess: () => queryClient.invalidateQueries({ queryKey: getUnitsQueryKey() }),
+				onSuccess: () => {
+					void queryClient.invalidateQueries({ queryKey: getUnitsQueryKey() });
+					showToast(t("admin.units.row.deleteSuccess"), "positive");
+				},
 			},
 		);
 	}
@@ -121,6 +136,28 @@ export function UnitsTable({ units }: UnitsTableProps) {
 											<LuImage className="h-4 w-4" />
 										</Button>
 									</Tooltip>
+									<Tooltip content={t("admin.units.image.action")}>
+										<Button
+											aria-label={t("admin.units.image.action")}
+											onClick={() => setImageUnit(unit)}
+											size="icon"
+											type="button"
+											variant="outline"
+										>
+											<LuImagePlus className="h-4 w-4" />
+										</Button>
+									</Tooltip>
+									<Tooltip content={t("admin.units.promotionalImages.action")}>
+										<Button
+											aria-label={t("admin.units.promotionalImages.action")}
+											onClick={() => setPromotionsUnit(unit)}
+											size="icon"
+											type="button"
+											variant="outline"
+										>
+											<LuImages className="h-4 w-4" />
+										</Button>
+									</Tooltip>
 									<Tooltip content={t("admin.units.hours.action")}>
 										<Button
 											aria-label={t("admin.units.hours.action")}
@@ -143,18 +180,19 @@ export function UnitsTable({ units }: UnitsTableProps) {
 											<LuTruck className="h-4 w-4" />
 										</Button>
 									</Tooltip>
-									<Tooltip content={t("admin.units.row.delete")}>
-										<Button
+									<ConfirmActionButton
 											aria-label={t("admin.units.row.delete")}
+											confirmation={t("admin.units.row.deleteConfirm", { name: unit.name })}
+											confirmLabel={t("admin.units.row.delete")}
 											disabled={remove.isPending}
-											onClick={() => deleteUnit(unit.id, unit.name)}
+											idleIcon={<LuTrash2 className="h-4 w-4" />}
+											onConfirm={() => deleteUnit(unit.id)}
 											size="icon"
 											type="button"
 											variant="outline"
 										>
-											<LuTrash2 className="h-4 w-4" />
-										</Button>
-									</Tooltip>
+											{null}
+										</ConfirmActionButton>
 								</div>
 							</td>
 						</tr>
@@ -166,7 +204,9 @@ export function UnitsTable({ units }: UnitsTableProps) {
 			<UnitConfigEditor onClose={() => setConfigUnit(null)} unit={configUnit} />
 			<UnitAddressEditor onClose={() => setAddressUnit(null)} unit={addressUnit} />
 			<UnitBannerEditor onClose={() => setBannerUnit(null)} unit={bannerUnit} />
+			<UnitImageEditor onClose={() => setImageUnit(null)} unit={imageUnit} />
 			<UnitDeliveryZonesEditor onClose={() => setZonesUnit(null)} unit={zonesUnit} />
+			<UnitPromotionalImagesEditor onClose={() => setPromotionsUnit(null)} unit={promotionsUnit} />
 		</>
 	);
 }

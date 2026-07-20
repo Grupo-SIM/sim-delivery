@@ -77,6 +77,10 @@ variações (tamanho)" e destaques manuais como pendências.
 
 ## É22 — Customização de produto (grupos de opções) — **prioridade**
 
+> **Execução substituída:** `plans/0006-product-details-modal-and-unit-option-exclusions.md`
+> substitui UX de 22.5/22.6 (modal único aberto pelo card) e executa pendências 22.3, 22.7 e
+> 22.8. Este plano permanece como registro histórico; Plan 0006 é fonte de verdade operacional.
+
 > Maior diferença. Replica a página de produto do Anota.ai: grupos empilhados,
 > obrigatório/opcional com min/max, opções com imagem+descrição+preço, radio vs stepper,
 > busca interna e carrossel de "mais pedidos" por grupo.

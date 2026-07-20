@@ -36,7 +36,12 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 	const allOptions: SelectOption[] = groups ? groups.flatMap(g => g.options) : (options ?? []);
 	const selected = allOptions.find(o => o.value === value);
 
-	function openDropdown() {
+	function toggleDropdown() {
+		if (open) {
+			setOpen(false);
+			return;
+		}
+
 		if (!triggerRef.current) return;
 		const rect = triggerRef.current.getBoundingClientRect();
 		setPos({ left: rect.left, top: rect.bottom + 4, width: rect.width });
@@ -78,11 +83,11 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 				aria-expanded={open}
 				aria-haspopup="listbox"
 				className={cn(
-					"flex h-11 w-full items-center justify-between rounded-md border border-border bg-surface px-3 text-foreground text-sm transition-[border-color,box-shadow] duration-300",
+					"flex h-11 w-full cursor-pointer items-center justify-between rounded-md border border-border bg-surface px-3 text-foreground text-sm transition-[border-color,box-shadow] duration-300",
 					"hover:border-foreground/40 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
 					className,
 				)}
-				onClick={openDropdown}
+				onClick={toggleDropdown}
 				ref={triggerRef}
 				type="button"
 			>
@@ -119,8 +124,8 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 										{group.options.map(opt => (
 											<button
 												className={cn(
-													"w-full px-3 py-2 text-left text-sm transition-colors hover:bg-muted",
-													opt.value === value && "bg-muted font-semibold",
+												"w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-accent",
+												opt.value === value && "bg-accent/60 font-medium",
 												)}
 												key={opt.value}
 												onClick={() => select(opt.value)}
@@ -135,8 +140,8 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 							: options?.map(opt => (
 									<button
 										className={cn(
-											"w-full px-3 py-2 text-left text-sm transition-colors hover:bg-muted",
-											opt.value === value && "bg-muted font-semibold",
+										"w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-accent",
+										opt.value === value && "bg-accent/60 font-medium",
 										)}
 										key={opt.value}
 										onClick={() => select(opt.value)}

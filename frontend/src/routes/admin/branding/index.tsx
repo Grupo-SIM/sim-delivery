@@ -6,15 +6,26 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { FormSectionHeading } from "@/components/ui/FormSectionHeading";
+import { Label } from "@/components/ui/label";
+import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
-import { Label } from "@/components/ui/label";
-import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { getBrandingQueryKey, useGetBranding, usePutBranding } from "@/lib/api";
 import { defaultThemeColors, resolveThemeColors, type ThemeColors } from "@/lib/theme-colors";
 import { showToast } from "@/stores";
 import { FontField, ThemeEditor } from "./components";
+
+const ORDER_STATUS_TEMPLATE_KEYS = ["em_preparo", "saiu_para_entrega", "entregue", "retirado"] as const;
+type OrderStatusTemplateKey = (typeof ORDER_STATUS_TEMPLATE_KEYS)[number];
+type OrderStatusTemplates = Record<OrderStatusTemplateKey, string>;
+
+const defaultOrderStatusTemplates: OrderStatusTemplates = {
+	em_preparo: "Seu pedido {{orderId}} está em preparo.",
+	entregue: "Seu pedido {{orderId}} foi entregue. Bom apetite!",
+	retirado: "Seu pedido {{orderId}} está pronto para retirada.",
+	saiu_para_entrega: "Seu pedido {{orderId}} saiu para entrega.",
+};
 
 function BrandingPage() {
 	const { t } = useTranslation();
@@ -29,9 +40,16 @@ function BrandingPage() {
 	const [fontDisplayUrl, setFontDisplayUrl] = useState("");
 	const [themeColors, setThemeColors] = useState<ThemeColors>(defaultThemeColors);
 	const [footerText, setFooterText] = useState("");
+	const [footerPaymentMethods, setFooterPaymentMethods] = useState("");
+	const [footerInstagramUrl, setFooterInstagramUrl] = useState("");
+	const [footerFacebookUrl, setFooterFacebookUrl] = useState("");
+	const [footerWhatsApp, setFooterWhatsApp] = useState("");
+	const [footerSupportEmail, setFooterSupportEmail] = useState("");
 	const [metaPixelId, setMetaPixelId] = useState("");
 	const [ga4Id, setGa4Id] = useState("");
 	const [gtmId, setGtmId] = useState("");
+	const [orderStatusTemplates, setOrderStatusTemplates] =
+		useState<OrderStatusTemplates>(defaultOrderStatusTemplates);
 
 	useEffect(() => {
 		if (branding) {
@@ -42,9 +60,15 @@ function BrandingPage() {
 			setFontDisplayUrl(branding.fontDisplayUrl ?? "");
 			setThemeColors(resolveThemeColors(branding.themeColors));
 			setFooterText(branding.footerText ?? "");
+			setFooterPaymentMethods(branding.footerPaymentMethods.join(", "));
+			setFooterInstagramUrl(branding.footerInstagramUrl ?? "");
+			setFooterFacebookUrl(branding.footerFacebookUrl ?? "");
+			setFooterWhatsApp(branding.footerWhatsApp ?? "");
+			setFooterSupportEmail(branding.footerSupportEmail ?? "");
 			setMetaPixelId(branding.metaPixelId ?? "");
 			setGa4Id(branding.ga4Id ?? "");
 			setGtmId(branding.gtmId ?? "");
+			setOrderStatusTemplates({ ...defaultOrderStatusTemplates, ...branding.orderStatusWhatsAppTemplates });
 		}
 	}, [branding]);
 
@@ -74,6 +98,10 @@ function BrandingPage() {
 		showToast(t("admin.branding.allColorsReset"), "info");
 	}
 
+	function setOrderStatusTemplate(status: OrderStatusTemplateKey, value: string) {
+		setOrderStatusTemplates(current => ({ ...current, [status]: value }));
+	}
+
 	function save() {
 		put.mutate(
 			{
@@ -83,10 +111,21 @@ function BrandingPage() {
 					fontFamily: fontFamily.trim() || undefined,
 					fontFamilyUrl: fontFamilyUrl.trim() || undefined,
 					footerText: footerText.trim() || undefined,
+					footerPaymentMethods: footerPaymentMethods.split(",").map(method => method.trim()).filter(Boolean),
+					footerInstagramUrl: footerInstagramUrl.trim() || undefined,
+					footerFacebookUrl: footerFacebookUrl.trim() || undefined,
+					footerWhatsApp: footerWhatsApp.trim() || undefined,
+					footerSupportEmail: footerSupportEmail.trim() || undefined,
 					ga4Id: ga4Id.trim() || undefined,
 					gtmId: gtmId.trim() || undefined,
 					logoUrl: logoUrl.trim() || undefined,
 					metaPixelId: metaPixelId.trim() || undefined,
+					orderStatusWhatsAppTemplates: Object.fromEntries(
+						ORDER_STATUS_TEMPLATE_KEYS.flatMap(status => {
+							const template = orderStatusTemplates[status].trim();
+							return template ? [[status, template]] : [];
+						}),
+					),
 					themeColors,
 				},
 			},
@@ -126,13 +165,18 @@ function BrandingPage() {
 							placeholder={t("admin.branding.footerTextPlaceholder")}
 							value={footerText}
 						/>
+						<FormSectionHeading>{t("admin.branding.sectionFooter")}</FormSectionHeading>
+						<TextField label={t("admin.branding.footerPaymentMethods")} onValueChange={setFooterPaymentMethods} placeholder={t("admin.branding.footerPaymentMethodsPlaceholder")} value={footerPaymentMethods} />
+						<TextField label={t("admin.branding.footerWhatsApp")} onValueChange={setFooterWhatsApp} placeholder={t("admin.branding.footerWhatsAppPlaceholder")} value={footerWhatsApp} />
+						<TextField label={t("admin.branding.footerSupportEmail")} onValueChange={setFooterSupportEmail} placeholder="contato@minhaloja.com" value={footerSupportEmail} />
+						<TextField label={t("admin.branding.footerInstagramUrl")} onValueChange={setFooterInstagramUrl} placeholder="https://instagram.com/minhaloja" value={footerInstagramUrl} />
+						<TextField label={t("admin.branding.footerFacebookUrl")} onValueChange={setFooterFacebookUrl} placeholder="https://facebook.com/minhaloja" value={footerFacebookUrl} />
 						<Label>
 							{t("admin.branding.logoUrl")}
 							<MediaUrlInput
 								asset="logo"
 								onUploadError={() => showToast(t("admin.branding.uploadError"), "negative")}
 								onValueChange={setLogoUrl}
-								placeholder={t("admin.branding.logoUrlPlaceholder")}
 								uploadLabel={t("admin.branding.logoUpload")}
 								value={logoUrl}
 							/>
@@ -150,31 +194,31 @@ function BrandingPage() {
 						<FontField
 							family={fontFamily}
 							label={t("admin.branding.fontFamily")}
-							previewLabel={t("admin.branding.fontFamilyPreview")}
-							sampleClassName="text-lg"
-							sampleText="Aa Bb Cc 123"
-							url={fontFamilyUrl}
-							uploadAsset="font-family"
 							onUploadError={() => showToast(t("admin.branding.uploadError"), "negative")}
 							onUrlChange={url => {
 								setFontFamilyUrl(url);
 								if (url) setFontFamily("Brand Text");
 							}}
+							previewLabel={t("admin.branding.fontFamilyPreview")}
+							sampleClassName="text-lg"
+							sampleText="Aa Bb Cc 123"
+							uploadAsset="font-family"
+							url={fontFamilyUrl}
 						/>
 
 						<FontField
 							family={fontDisplay}
 							label={t("admin.branding.fontDisplay")}
-							previewLabel={t("admin.branding.fontDisplayPreview")}
-							sampleClassName="text-2xl"
-							sampleText="Aa Bb Cc 123"
-							url={fontDisplayUrl}
-							uploadAsset="font-display"
 							onUploadError={() => showToast(t("admin.branding.uploadError"), "negative")}
 							onUrlChange={url => {
 								setFontDisplayUrl(url);
 								if (url) setFontDisplay("Brand Display");
 							}}
+							previewLabel={t("admin.branding.fontDisplayPreview")}
+							sampleClassName="text-2xl"
+							sampleText="Aa Bb Cc 123"
+							uploadAsset="font-display"
+							url={fontDisplayUrl}
 						/>
 
 						<FormSectionHeading>{t("admin.branding.themeColors")}</FormSectionHeading>
@@ -186,6 +230,20 @@ function BrandingPage() {
 							onResetAll={resetAllThemeColors}
 							onResetColor={resetThemeColor}
 						/>
+					</div>
+
+					<div className="space-y-4">
+						<FormSectionHeading>{t("admin.branding.sectionNotifications")}</FormSectionHeading>
+						<p className="text-muted-foreground text-sm">{t("admin.branding.notificationsHelp")}</p>
+						{ORDER_STATUS_TEMPLATE_KEYS.map(status => (
+							<TextField
+								key={status}
+								label={t(`admin.branding.orderStatus.${status}`)}
+								onValueChange={value => setOrderStatusTemplate(status, value)}
+								placeholder={t("admin.branding.notificationPlaceholder")}
+								value={orderStatusTemplates[status]}
+							/>
+						))}
 					</div>
 
 					<div className="space-y-4">

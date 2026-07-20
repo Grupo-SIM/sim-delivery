@@ -6,7 +6,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetCategories, useGetProducts, useGetTags } from "@/lib/api";
-import { CategoriesBoard, CreateCategoryForm } from "../categories/components";
+import { CategoriesTable, CreateCategoryForm } from "../categories/components";
 import { CreateTagForm, TagsTable } from "../tags/components";
 import { CreateProductForm, ProductsTable } from "./components";
 
@@ -69,7 +69,7 @@ function ProductsPage() {
 					) : catError ? (
 						<ErrorState title={t("admin.categories.loadError")} />
 					) : (
-						<CategoriesBoard categories={categories} />
+						<CategoriesTable categories={categories} />
 					)}
 				</>
 			)}

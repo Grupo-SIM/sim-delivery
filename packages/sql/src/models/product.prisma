@@ -17,10 +17,38 @@ model Product {
     updatedAt               DateTime @updatedAt
 
     company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    categories   ProductCategory[]
     optionGroups OptionGroup[]
+    tags         ProductTag[]
     unitProducts UnitProduct[]
 
     @@index([companyId])
     @@unique([companyId, slug])
     @@map("product")
+}
+
+model ProductCategory {
+    productId  String
+    categoryId String
+    createdAt  DateTime @default(now())
+
+    product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+    category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+    @@id([productId, categoryId])
+    @@index([categoryId])
+    @@map("product_category")
+}
+
+model ProductTag {
+    productId String
+    tagId     String
+    createdAt DateTime @default(now())
+
+    product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+    tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+    @@id([productId, tagId])
+    @@index([tagId])
+    @@map("product_tag")
 }

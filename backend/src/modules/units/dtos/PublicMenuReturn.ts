@@ -36,6 +36,7 @@ export const PublicMenuItemReturn = t.Object({
 	priceCents: t.Integer(),
 	productId: t.String(),
 	productSlug: t.String(),
+	tags: t.Array(t.Object({ color: t.String(), id: t.String(), name: t.String() })),
 	title: t.String(),
 });
 export type PublicMenuItemReturn = typeof PublicMenuItemReturn.static;
@@ -43,7 +44,6 @@ export type PublicMenuItemReturn = typeof PublicMenuItemReturn.static;
 /** A menu section: a category (or the loose group when `categoryId` is null) plus its items. */
 export const PublicMenuSectionReturn = t.Object({
 	categoryId: t.Nullable(t.String()),
-	categoryImageUrl: t.Nullable(t.String()),
 	categoryName: t.Nullable(t.String()),
 	items: t.Array(PublicMenuItemReturn),
 });

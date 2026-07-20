@@ -8,30 +8,42 @@ export class UpdateBranding {
 
 	async execute({
 		companyId,
+		footerFacebookUrl,
+		footerInstagramUrl,
+		footerPaymentMethods,
+		footerSupportEmail,
 		fontDisplay,
 		fontDisplayUrl,
 		fontFamily,
 		fontFamilyUrl,
 		footerText,
+		footerWhatsApp,
 		ga4Id,
 		gtmId,
 		logoUrl,
 		metaPixelId,
+		orderStatusWhatsAppTemplates,
 		themeColors,
 	}: UpdateBrandingDTO): Promise<BrandingReturn> {
 		if (!companyId) throw new DomainError(UserErrors.FORBIDDEN);
 
 		const company = await this.prisma.company.update({
 			data: {
+				footerFacebookUrl,
+				footerInstagramUrl,
+				footerPaymentMethods,
+				footerSupportEmail,
 				fontDisplay,
 				fontDisplayUrl,
 				fontFamily,
 				fontFamilyUrl,
 				footerText,
+				footerWhatsApp,
 				ga4Id,
 				gtmId,
 				logoUrl,
 				metaPixelId,
+				orderStatusWhatsAppTemplates,
 				themeColors,
 			},
 			select: {
@@ -40,11 +52,17 @@ export class UpdateBranding {
 				fontFamily: true,
 				fontFamilyUrl: true,
 				footerText: true,
+				footerFacebookUrl: true,
+				footerInstagramUrl: true,
+				footerPaymentMethods: true,
+				footerSupportEmail: true,
+				footerWhatsApp: true,
 				ga4Id: true,
 				gtmId: true,
 				logoUrl: true,
 				metaPixelId: true,
 				name: true,
+				orderStatusWhatsAppTemplates: true,
 				themeColors: true,
 			},
 			where: { id: companyId },
@@ -52,15 +70,22 @@ export class UpdateBranding {
 
 		return {
 			companyName: company.name,
+			footerFacebookUrl: company.footerFacebookUrl ?? null,
+			footerInstagramUrl: company.footerInstagramUrl ?? null,
+			footerPaymentMethods: company.footerPaymentMethods,
+			footerSupportEmail: company.footerSupportEmail ?? null,
 			fontDisplay: company.fontDisplay ?? null,
 			fontDisplayUrl: company.fontDisplayUrl ?? null,
 			fontFamily: company.fontFamily ?? null,
 			fontFamilyUrl: company.fontFamilyUrl ?? null,
 			footerText: company.footerText ?? null,
+			footerWhatsApp: company.footerWhatsApp ?? null,
 			ga4Id: company.ga4Id ?? null,
 			gtmId: company.gtmId ?? null,
 			logoUrl: company.logoUrl ?? null,
 			metaPixelId: company.metaPixelId ?? null,
+			orderStatusWhatsAppTemplates:
+				(company.orderStatusWhatsAppTemplates as BrandingReturn["orderStatusWhatsAppTemplates"]) ?? null,
 			themeColors: (company.themeColors as BrandingReturn["themeColors"]) ?? null,
 		};
 	}

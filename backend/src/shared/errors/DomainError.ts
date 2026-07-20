@@ -11,10 +11,13 @@ import { LoyaltyErrors, LoyaltyErrorsStatusCodes } from "@/modules/loyalty/error
 import { OrderErrors, OrderErrorsStatusCodes } from "@/modules/orders/errors";
 import { PaymentErrors, PaymentErrorsStatusCodes } from "@/modules/payments/errors";
 import { ProductErrors, ProductErrorsStatusCodes } from "@/modules/products/errors";
+import {
+	PromotionalImageErrors,
+	PromotionalImageErrorsStatusCodes,
+} from "@/modules/promotionalImages/errors";
 import { ReviewErrors, ReviewErrorsStatusCodes } from "@/modules/reviews/errors";
 import { StaffErrors, StaffErrorsStatusCodes } from "@/modules/staff/errors";
 import { TagErrors, TagErrorsStatusCodes } from "@/modules/tags/errors";
-import { UnitCategoryErrors, UnitCategoryErrorsStatusCodes } from "@/modules/unitCategories/errors";
 import { UnitProductErrors, UnitProductErrorsStatusCodes } from "@/modules/unitProducts/errors";
 import { UnitErrors, UnitErrorsStatusCodes } from "@/modules/units/errors";
 import { UserErrors, UserErrorsStatusCodes } from "@/modules/users/errors";
@@ -36,8 +39,8 @@ export const DomainErrors = {
 	...CategoryErrors,
 	...TagErrors,
 	...ProductErrors,
+	...PromotionalImageErrors,
 	...UnitProductErrors,
-	...UnitCategoryErrors,
 	...CepErrors,
 } as const;
 export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCodes> = {
@@ -57,8 +60,8 @@ export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCo
 	...CategoryErrorsStatusCodes,
 	...TagErrorsStatusCodes,
 	...ProductErrorsStatusCodes,
+	...PromotionalImageErrorsStatusCodes,
 	...UnitProductErrorsStatusCodes,
-	...UnitCategoryErrorsStatusCodes,
 	...CepErrorsStatusCodes,
 };
 

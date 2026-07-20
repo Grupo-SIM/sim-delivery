@@ -28,6 +28,8 @@ function prismaWith(opts: {
 	const created: unknown[] = [];
 	const deleted: string[] = [];
 	const scoped = (rows: Scoped[]) => ({
+		count: async ({ where }: { where: { companyId: string; id: { in: string[] } } }) =>
+			rows.filter(row => row.companyId === where.companyId && where.id.in.includes(row.id)).length,
 		findFirst: async ({ where }: { where: { companyId: string | null; id: string } }) =>
 			rows.find(row => row.companyId === where.companyId && row.id === where.id) ?? null,
 	});
@@ -42,7 +44,7 @@ function prismaWith(opts: {
 			unitProduct: {
 				create: async ({ data }: { data: unknown }) => {
 					created.push(data);
-					return { id: "new", ...(data as object) };
+					return { id: "new", ...(data as object), categories: [], tags: [] };
 				},
 				delete: async ({ where }: { where: { id: string } }) => {
 					deleted.push(where.id);
@@ -51,7 +53,7 @@ function prismaWith(opts: {
 				findFirst: async ({ where }: { where: { id: string; unitId: string } }) =>
 					associations.find(a => a.id === where.id && a.unitId === where.unitId) ?? null,
 				findMany: async ({ where }: { where: { unitId: string } }) =>
-					associations.filter(a => a.unitId === where.unitId),
+					associations.filter(a => a.unitId === where.unitId).map(a => ({ ...a, categories: [], tags: [] })),
 				findUnique: async ({
 					where,
 				}: {
@@ -91,7 +93,7 @@ describe("unit-products use-cases", () => {
 			units: [{ companyId: "cmp_1", id: "unit1" }],
 		});
 		await expect(
-			new AssociateProduct(prisma).execute("cmp_1", "unit1", { categoryId: "cat_x", productId: "prod1" }),
+			new AssociateProduct(prisma).execute("cmp_1", "unit1", { categoryIds: ["cat_x"], productId: "prod1" }),
 		).rejects.toThrow("CATEGORY_NOT_FOUND");
 	});
 
@@ -114,13 +116,14 @@ describe("unit-products use-cases", () => {
 		});
 		await new AssociateProduct(prisma).execute("cmp_1", "unit1", {
 			available: false,
-			categoryId: "cat1",
+			categoryIds: ["cat1"],
 			priceCentsOverride: 990,
 			productId: "prod1",
 		});
 		expect(created[0]).toMatchObject({
 			available: false,
-			categoryId: "cat1",
+			categories: { create: [{ categoryId: "cat1" }] },
+			categoriesOverridden: true,
 			priceCentsOverride: 990,
 			productId: "prod1",
 			unitId: "unit1",

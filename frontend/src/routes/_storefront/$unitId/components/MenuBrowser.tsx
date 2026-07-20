@@ -1,23 +1,24 @@
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Input } from "@/components/ui/input";
-import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { CategoryNav } from "./CategoryNav";
+import { CategorySummary } from "./CategorySummary";
 import { MenuSectionBlock } from "./MenuSectionBlock";
+import { ProductDetailsModal } from "./ProductDetailsModal";
 import { TopPicksCarousel } from "./TopPicksCarousel";
-import type { MenuSection } from "./types";
+import type { MenuItem, MenuSection } from "./types";
 
 interface MenuBrowserProps {
+	header: ReactNode;
 	sections: MenuSection[];
 	unitId: string;
 	unitSlug: string;
+	search: string;
 }
 
-export function MenuBrowser({ sections, unitId, unitSlug }: MenuBrowserProps) {
+export function MenuBrowser({ header, search, sections, unitId, unitSlug }: MenuBrowserProps) {
 	const { t } = useTranslation();
-	const [search, setSearch] = useState("");
-	const [localSearch, setLocalSearch] = useDebouncedInput(search, setSearch);
+	const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
 
 	const query = search.trim().toLowerCase();
 	const filtered = query
@@ -30,32 +31,35 @@ export function MenuBrowser({ sections, unitId, unitSlug }: MenuBrowserProps) {
 				}))
 				.filter(section => section.items.length > 0)
 		: sections;
+	const hasCategories = filtered.some(section => section.categoryId !== null);
 
 	return (
-		<div className="space-y-4">
-			<Input
-				onChange={event => setLocalSearch(event.currentTarget.value)}
-				placeholder={t("store.menu.searchPlaceholder")}
-				value={localSearch}
-			/>
-
-			{!query && <TopPicksCarousel sections={sections} unitId={unitId} unitSlug={unitSlug} />}
-
-			{filtered.length === 0 ? (
-				<EmptyState title={query ? t("store.menu.noResults") : t("store.menu.empty")} />
-			) : (
+		<>
+			<div className={hasCategories ? "lg:grid lg:grid-cols-[12rem_1fr] lg:gap-6" : undefined}>
+				{hasCategories && <CategorySummary sections={filtered} />}
 				<div className="min-w-0 space-y-6">
-					<CategoryNav sections={filtered} />
-					{filtered.map(section => (
-						<MenuSectionBlock
-							key={section.categoryId ?? "loose"}
-							section={section}
-							unitId={unitId}
-							unitSlug={unitSlug}
-						/>
-					))}
+					{header}
+					{!query && <TopPicksCarousel onSelect={setSelectedItem} sections={sections} />}
+
+					{filtered.length === 0 ? (
+						<EmptyState title={query ? t("store.menu.noResults") : t("store.menu.empty")} />
+					) : (
+						<>
+							<div className="lg:hidden">
+								<CategoryNav sections={filtered} />
+							</div>
+							{filtered.map(section => (
+								<MenuSectionBlock
+									key={section.categoryId ?? "loose"}
+									onSelect={setSelectedItem}
+									section={section}
+								/>
+							))}
+						</>
+					)}
 				</div>
-			)}
-		</div>
+			</div>
+			<ProductDetailsModal item={selectedItem} onClose={() => setSelectedItem(null)} unitId={unitId} />
+		</>
 	);
 }

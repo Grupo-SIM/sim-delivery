@@ -1,0 +1,12 @@
+/// Units where a courier may receive delivery assignments.
+model CourierUnit {
+    courierId String
+    unitId    String
+
+    courier User @relation(fields: [courierId], references: [id], onDelete: Cascade)
+    unit    Unit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+    @@id([courierId, unitId])
+    @@index([unitId])
+    @@map("courier_unit")
+}

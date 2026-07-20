@@ -1,6 +1,8 @@
 import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
+import { GetCustomer } from "./GetCustomer";
 import { GetMyCustomer } from "./GetMyCustomer";
+import { ListCustomers } from "./ListCustomers";
 import { UpsertCustomer } from "./UpsertCustomer";
 
 const baseAddress = {
@@ -134,6 +136,36 @@ describe("customers use-cases", () => {
 			});
 			expect(addresses).toHaveLength(1);
 			expect(addresses[0]).toMatchObject({ number: "2000" });
+		});
+	});
+
+	describe("customer administration", () => {
+		it("scopes customer list by company and search", async () => {
+			let where: unknown;
+			const prisma = {
+				customer: {
+					count: async ({ where: nextWhere }: { where: unknown }) => {
+						where = nextWhere;
+						return 0;
+					},
+					findMany: async ({ where: nextWhere }: { where: unknown }) => {
+						where = nextWhere;
+						return [];
+					},
+				},
+			} as unknown as PrismaInstance;
+
+			const result = await new ListCustomers(prisma).execute("cmp_1", { search: "maria" });
+			expect(result).toMatchObject({ items: [], page: 1, pageSize: 20, total: 0 });
+			expect(where).toMatchObject({ companyId: "cmp_1" });
+		});
+
+		it("does not return a customer outside current company", async () => {
+			const prisma = {
+				customer: { findFirst: async () => null },
+			} as unknown as PrismaInstance;
+
+			await expect(new GetCustomer(prisma).execute("cmp_1", "cust_other")).rejects.toThrow("CUSTOMER_NOT_FOUND");
 		});
 	});
 });

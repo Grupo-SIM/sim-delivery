@@ -13,11 +13,11 @@ import { MediaController } from "./modules/media/infra/elysia";
 import { OrdersController } from "./modules/orders/infra";
 import { PaymentsController } from "./modules/payments/infra";
 import { ProductsController } from "./modules/products/infra";
+import { PromotionalImagesController } from "./modules/promotionalImages/infra";
 import { ReportsController } from "./modules/reports/infra";
 import { ReviewsController } from "./modules/reviews/infra/elysia";
 import { StaffController } from "./modules/staff/infra";
 import { TagsController } from "./modules/tags/infra";
-import { UnitCategoriesController } from "./modules/unitCategories/infra";
 import { UnitProductsController } from "./modules/unitProducts/infra";
 import { PublicUnitsController, UnitsController } from "./modules/units/infra";
 import { UsersController } from "./modules/users/infra";
@@ -37,8 +37,8 @@ export const server = app.use([
 	CategoriesController,
 	TagsController,
 	ProductsController,
+	PromotionalImagesController,
 	UnitProductsController,
-	UnitCategoriesController,
 	CashbackController,
 	LoyaltyController,
 	CepController,

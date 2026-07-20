@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { CustomSelect } from "@/components/ui/CustomSelect";
+import { Input } from "@/components/ui/input";
+import { Label, RequiredMark } from "@/components/ui/label";
 import { Modal } from "@/components/ui/Modal";
 import { NumericInput } from "@/components/ui/NumericInput";
+import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { type GetUnits200, getUnitsQueryKey, usePatchUnitsByUnitId } from "@/lib/api";
 import { showAlert } from "@/stores";
 
@@ -27,6 +30,8 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 	const { isPending: isSaving, mutate } = usePatchUnitsByUnitId();
 	const [cashback, setCashback] = useState(0);
 	const [availability, setAvailability] = useState<Availability>("auto");
+	const [name, setName] = useState("");
+	const [localName, setLocalName] = useDebouncedInput(name, setName);
 
 	useEffect(() => {
 		if (!unit) {
@@ -34,6 +39,7 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 		}
 		setCashback(unit.cashbackPercent);
 		setAvailability(toAvailability(unit.isOpenManual));
+		setName(unit.name);
 	}, [unit]);
 
 	function save() {
@@ -45,6 +51,7 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 				data: {
 					cashbackPercent: cashback,
 					isOpenManual: toIsOpenManual(availability),
+					name: localName.trim(),
 				},
 				unitId: unit.id,
 			},
@@ -61,6 +68,18 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 	return (
 		<Modal isOpen={unit !== null} onClose={onClose} title={t("admin.units.config.title")}>
 			<div className="space-y-4">
+				<Label>
+					<span>
+						{t("admin.units.config.name")} <RequiredMark />
+					</span>
+					<Input
+						onChange={event => setLocalName(event.currentTarget.value)}
+						placeholder={t("admin.units.config.namePlaceholder")}
+						required
+						value={localName}
+					/>
+				</Label>
+
 				<div className="space-y-2">
 					<span className="font-medium text-sm">{t("admin.units.config.cashback")}</span>
 					<NumericInput
@@ -90,7 +109,7 @@ export function UnitConfigEditor({ onClose, unit }: UnitConfigEditorProps) {
 					<Button onClick={onClose} type="button" variant="outline">
 						{t("admin.units.config.cancel")}
 					</Button>
-					<Button disabled={isSaving} onClick={save} type="button">
+					<Button disabled={isSaving || !localName.trim()} onClick={save} type="button">
 						{isSaving ? t("admin.units.config.saving") : t("admin.units.config.save")}
 					</Button>
 				</div>

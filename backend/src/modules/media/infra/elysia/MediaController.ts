@@ -7,11 +7,12 @@ const imageTypes = ["image/avif", "image/jpeg", "image/png", "image/webp"];
 const fontTypes = ["font/otf", "font/ttf", "font/woff", "font/woff2"];
 const assetTypes = {
 	banner: imageTypes,
-	category: imageTypes,
 	"font-display": fontTypes,
 	"font-family": fontTypes,
 	logo: imageTypes,
 	product: imageTypes,
+	promotion: imageTypes,
+	unit: imageTypes,
 } as const;
 
 const extensionByType: Record<string, string> = {
@@ -32,11 +33,12 @@ const Filename = t.String({
 });
 const Asset = t.Union([
 	t.Literal("banner"),
-	t.Literal("category"),
 	t.Literal("font-display"),
 	t.Literal("font-family"),
 	t.Literal("logo"),
 	t.Literal("product"),
+	t.Literal("promotion"),
+	t.Literal("unit"),
 ]);
 
 export const MediaController = new Elysia({ prefix: "/media" })
@@ -52,7 +54,7 @@ export const MediaController = new Elysia({ prefix: "/media" })
 			const scope = await CompanyScopeGuard.execute(request.headers);
 			CompanyScopeGuard.authorize(
 				scope,
-				params.asset === "product" || params.asset === "category" ? "menu" : "branding",
+				["product", "promotion"].includes(params.asset) ? "menu" : "branding",
 				"update",
 			);
 

@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Input } from "@/components/ui/input";
 import {
 	type GetCompanies200,
@@ -9,7 +10,7 @@ import {
 	useDeleteCompaniesByCompanyId,
 	usePatchCompaniesByCompanyId,
 } from "@/lib/api";
-import { showAlert, showConfirm } from "@/stores";
+import { showAlert, showToast } from "@/stores";
 
 interface CompanyRowProps {
 	company: GetCompanies200[number];
@@ -50,16 +51,15 @@ export function CompanyRow({ company }: CompanyRowProps) {
 		);
 	}
 
-	async function del() {
-		if (!(await showConfirm(t("admin.companies.row.deleteConfirm", { name: company.name })))) {
-			return;
-		}
-
+	function del() {
 		remove.mutate(
 			{ companyId: company.id },
 			{
 				onError: () => void showAlert(t("admin.companies.row.deleteError")),
-				onSuccess: () => queryClient.invalidateQueries({ queryKey: getCompaniesQueryKey() }),
+				onSuccess: () => {
+					void queryClient.invalidateQueries({ queryKey: getCompaniesQueryKey() });
+					showToast(t("admin.companies.row.deleteSuccess"), "positive");
+				},
 			},
 		);
 	}
@@ -77,9 +77,17 @@ export function CompanyRow({ company }: CompanyRowProps) {
 						<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
 							{t("admin.companies.edit.action")}
 						</Button>
-						<Button disabled={remove.isPending} onClick={del} size="sm" type="button" variant="outline">
+						<ConfirmActionButton
+							confirmation={t("admin.companies.row.deleteConfirm", { name: company.name })}
+							confirmLabel={t("admin.companies.row.delete")}
+							disabled={remove.isPending}
+							onConfirm={del}
+							size="sm"
+							type="button"
+							variant="outline"
+						>
 							{t("admin.companies.row.delete")}
-						</Button>
+						</ConfirmActionButton>
 					</div>
 				</td>
 			</tr>

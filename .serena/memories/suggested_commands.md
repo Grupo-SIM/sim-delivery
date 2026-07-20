@@ -1,11 +1,10 @@
-# Suggested Commands
-- `bun install`: install dependencies.
-- `bun dev`: run all dev entrypoints through Turborepo.
-- `bun build`: build all workspaces through Turborepo.
-- `bun start`: run start tasks through Turborepo.
-- `bun format`: run Biome and ESLint formatting/fixes across the repo.
-- `bun format:biome .`: run Biome checks/fixes.
-- `bun format:eslint .`: run ESLint fixes.
-- Backend: `cd backend && bun dev`, `cd backend && bun build`.
-- Frontend: `cd frontend && bun dev`, `cd frontend && bun build`.
-- Useful Linux commands: `rg`, `rg --files`, `sed -n`, `find`, `git status --short`, `git diff --stat`.
+# Commands
+- Install: `bun install`.
+- Develop all: `bun run dev`; frontend/backend equivalents from package directory.
+- Type-check affected graph: `bun run check-types`.
+- Build affected graph: `bun run build`.
+- Unit tests: `bun run test:unit`; all tests: `bun run test`; E2E: `bun run test:e2e`.
+- Format/fix: `bun run format`.
+- Backend OpenAPI export: `cd backend && bun run export`.
+- Frontend SDK generate: `cd frontend && bun run generate`.
+- Validate memory references: `serena memories check`.

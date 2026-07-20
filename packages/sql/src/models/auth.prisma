@@ -61,6 +61,7 @@ model User {
     company    Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
     customer   Customer?
     deliveries Delivery[]
+    courierUnits CourierUnit[]
     sessions   Session[]
 
     @@index([companyId])

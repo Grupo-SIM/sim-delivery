@@ -1,23 +1,18 @@
-import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { useCartStore } from "@/stores";
 import { type MenuItem, type MenuSection, money } from "./types";
 
 interface TopPicksCarouselProps {
 	sections: MenuSection[];
-	unitId: string;
-	unitSlug: string;
+	onSelect: (item: MenuItem) => void;
 }
 
 const MAX_PICKS = 10;
 
 /** "Os mais pedidos" strip: featuredRank items first (asc), then by popularity (desc). */
-export function TopPicksCarousel({ sections, unitId, unitSlug }: TopPicksCarouselProps) {
+export function TopPicksCarousel({ onSelect, sections }: TopPicksCarouselProps) {
 	const { t } = useTranslation();
-	const navigate = useNavigate();
-	const addItem = useCartStore(s => s.addItem);
 
 	const allItems: MenuItem[] = [];
 	const seen = new Set<string>();
@@ -43,24 +38,6 @@ export function TopPicksCarousel({ sections, unitId, unitSlug }: TopPicksCarouse
 
 	if (picks.length === 0) return null;
 
-	function handleClick(item: MenuItem) {
-		if (item.optionGroups.length > 0) {
-			void navigate({
-				params: { productId: item.productSlug, unitId: unitSlug },
-				to: "/$unitId/product/$productId",
-			});
-		} else {
-			addItem(unitId, {
-				id: item.id,
-				imageUrl: item.imageUrl,
-				options: [],
-				priceCents: Number(item.priceCents),
-				productId: item.productId,
-				title: item.title,
-			});
-		}
-	}
-
 	return (
 		<section className="space-y-3">
 			<h2 className="font-semibold text-lg">{t("store.menu.topPicks")}</h2>
@@ -69,7 +46,7 @@ export function TopPicksCarousel({ sections, unitId, unitSlug }: TopPicksCarouse
 					<button
 						className="w-40 shrink-0 text-left"
 						key={item.id}
-						onClick={() => handleClick(item)}
+						onClick={() => onSelect(item)}
 						type="button"
 					>
 						<Card className="flex h-full flex-col overflow-hidden">

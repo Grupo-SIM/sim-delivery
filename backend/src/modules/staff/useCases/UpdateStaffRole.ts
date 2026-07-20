@@ -7,9 +7,9 @@ export class UpdateStaffRole {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute({ companyId, role, staffId }: UpdateStaffRoleDTO): Promise<StaffReturn> {
-		// Only a manager/attendant/kitchen staff member within the caller's own company may be changed.
+		// Only a manager/attendant/kitchen/courier staff member in caller's company may be changed.
 		const target = await this.prisma.user.findFirst({
-			where: { companyId, id: staffId, role: { in: ["manager", "attendant", "kitchen"] } },
+			where: { companyId, id: staffId, role: { in: ["manager", "attendant", "kitchen", "courier"] } },
 		});
 		if (!companyId || !target) {
 			throw new DomainError(StaffErrors.STAFF_NOT_FOUND);
@@ -20,7 +20,8 @@ export class UpdateStaffRole {
 			select: { createdAt: true, email: true, id: true, name: true, role: true },
 			where: { id: staffId },
 		});
+		await this.prisma.courierUnit.deleteMany({ where: { courierId: staffId } });
 
-		return staff as StaffReturn;
+		return { ...staff, unitIds: [] } as StaffReturn;
 	}
 }

@@ -1,2 +1,2 @@
-export { CategoriesBoard } from "./CategoriesBoard";
+export { CategoriesTable } from "./CategoriesTable";
 export { CreateCategoryForm } from "./CreateCategoryForm";

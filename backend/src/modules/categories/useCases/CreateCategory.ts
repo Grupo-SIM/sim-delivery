@@ -11,6 +11,6 @@ export class CreateCategory {
 			throw new DomainError(CategoryErrors.NO_COMPANY);
 		}
 
-		return this.prisma.category.create({ data: { ...data, companyId } });
+		return { ...(await this.prisma.category.create({ data: { ...data, companyId } })), products: [] };
 	}
 }

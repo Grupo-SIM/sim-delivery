@@ -7,6 +7,7 @@ export const UpdateOrderStatusBody = t.Object({
 export type UpdateOrderStatusBody = typeof UpdateOrderStatusBody.static;
 
 export const ListOrdersQuery = t.Object({
+	customerId: t.Optional(t.String()),
 	deliveryMethod: t.Optional(t.Union([t.Literal("delivery"), t.Literal("pickup")])),
 	from: t.Optional(t.String()), hasCoupon: t.Optional(t.Boolean()), search: t.Optional(t.String()), status: t.Optional(t.String()), to: t.Optional(t.String()), unitId: t.Optional(t.String()),
 });
@@ -16,7 +17,14 @@ export type CloseOrdersDayReturn = typeof CloseOrdersDayReturn.static;
 
 export const GetCustomerOrderQuery = t.Object({ slug: t.String({ minLength: 1 }) });
 export type GetCustomerOrderQuery = typeof GetCustomerOrderQuery.static;
-export const CreateOrderItemBody = t.Object({ note: t.Optional(t.String()), quantity: t.Integer({ minimum: 1 }), unitProductId: t.String({ minLength: 1 }) });
+export const CreateOrderItemBody = t.Object({
+	note: t.Optional(t.String()),
+	options: t.Optional(
+		t.Array(t.Object({ optionId: t.String({ minLength: 1 }), quantity: t.Integer({ minimum: 1 }) })),
+	),
+	quantity: t.Integer({ minimum: 1 }),
+	unitProductId: t.String({ minLength: 1 }),
+});
 export type CreateOrderItemBody = typeof CreateOrderItemBody.static;
 export const CreateOrderBody = t.Object({ addressId: t.Optional(t.String()), couponCode: t.Optional(t.String()), deliveryMethod: t.Union([t.Literal("delivery"), t.Literal("pickup")]), items: t.Array(CreateOrderItemBody, { minItems: 1 }), redeemCashbackCents: t.Optional(t.Integer({ minimum: 0 })), redeemLoyaltyPoints: t.Optional(t.Integer({ minimum: 0 })), slug: t.String({ minLength: 1 }), unitId: t.String({ minLength: 1 }) });
 export type CreateOrderBody = typeof CreateOrderBody.static;

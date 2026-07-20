@@ -20,18 +20,26 @@ export class ListPublicUnits {
 		}
 
 		const units = await this.prisma.unit.findMany({
-			include: { hours: true },
+			include: {
+				hours: true,
+				promotionalImages: {
+					include: { promotionalImage: true },
+					orderBy: [{ position: "asc" }, { createdAt: "asc" }],
+				},
+			},
 			orderBy: { createdAt: "asc" },
 			where: { companyId: company.id },
 		});
 
-		return units.map(({ hours, ...unit }) => ({
+		return units.map(({ hours, promotionalImages, ...unit }) => ({
 			addressLine: unit.addressLine,
 			bannerUrl: unit.bannerUrl,
 			city: unit.city,
 			deliveryFee: unit.deliveryFee,
 			deliveryMethods: unit.deliveryMethods,
+			hours: hours.map(({ closed, closesAt, opensAt, weekday }) => ({ closed, closesAt, opensAt, weekday })),
 			id: unit.id,
+			imageUrl: unit.imageUrl,
 			isOpenNow: isUnitOpen(hours, unit.isOpenManual),
 			minOrderCents: unit.minOrderCents,
 			name: unit.name,
@@ -39,6 +47,7 @@ export class ListPublicUnits {
 			phone: unit.phone,
 			prepTimeMaxMinutes: unit.prepTimeMaxMinutes,
 			prepTimeMinMinutes: unit.prepTimeMinMinutes,
+			promotionalImages: promotionalImages.map(row => row.promotionalImage),
 			slug: unit.slug,
 		}));
 	}

@@ -1,12 +1,13 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Button, buttonClassName } from "@/components/ui/button";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import {
 	type GetDeliveries200,
 	getDeliveriesQueryKey,
 	usePatchDeliveriesByDeliveryIdStatus,
 } from "@/lib/api";
-import { showAlert, showConfirm } from "@/stores";
+import { showAlert, showToast } from "@/stores";
 
 type Delivery = GetDeliveries200[number];
 
@@ -48,14 +49,7 @@ export function DeliveryCard({ delivery }: DeliveryCardProps) {
 	});
 	const showNavigate = delivery.status === "a_caminho" && delivery.order.address != null;
 
-	async function handleAction(status: string, destructive?: boolean) {
-		if (destructive) {
-			const confirmed = await showConfirm(
-				t(status === "recusada" ? "courier.actions.refuse" : "courier.actions.markFailed"),
-			);
-			if (!confirmed) return;
-		}
-
+	function handleAction(status: string, labelKey: string) {
 		patch.mutate(
 			{
 				data: { status: status as "aceita" | "a_caminho" | "entregue" | "recusada" | "falhou" },
@@ -63,7 +57,11 @@ export function DeliveryCard({ delivery }: DeliveryCardProps) {
 			},
 			{
 				onError: () => void showAlert(t("courier.loadError")),
-				onSuccess: () => queryClient.invalidateQueries({ queryKey: getDeliveriesQueryKey() }),
+				onSuccess: () => {
+					void queryClient.invalidateQueries({ queryKey: getDeliveriesQueryKey() });
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					showToast(t(labelKey as any), "positive");
+				},
 			},
 		);
 	}
@@ -101,19 +99,34 @@ export function DeliveryCard({ delivery }: DeliveryCardProps) {
 							{t("courier.actions.navigate")}
 						</a>
 					)}
-					{actions.map(action => (
-						<Button
-							disabled={patch.isPending}
-							key={action.status}
-							onClick={() => handleAction(action.status, action.destructive)}
-							size="sm"
-							type="button"
-							variant={action.destructive ? "outline" : "default"}
-						>
-							{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-							{t(action.labelKey as any)}
-						</Button>
-					))}
+					{actions.map(action => {
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
+						const label = t(action.labelKey as any);
+						return action.destructive ? (
+							<ConfirmActionButton
+								confirmation={label}
+								confirmLabel={label}
+								disabled={patch.isPending}
+								key={action.status}
+								onConfirm={() => handleAction(action.status, action.labelKey)}
+								size="sm"
+								type="button"
+								variant="outline"
+							>
+								{label}
+							</ConfirmActionButton>
+						) : (
+							<Button
+								disabled={patch.isPending}
+								key={action.status}
+								onClick={() => handleAction(action.status, action.labelKey)}
+								size="sm"
+								type="button"
+							>
+								{label}
+							</Button>
+						);
+					})}
 				</div>
 			)}
 		</div>

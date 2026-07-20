@@ -1,10 +1,20 @@
 import Elysia, { t } from "elysia";
-import { CategoryUnitsReturn, SetCategoryUnitsBody } from "@/modules/unitCategories/dtos";
-import { ListCategoryUnits, SetCategoryUnits } from "@/modules/unitCategories/useCases";
 import { CompanyScopeGuard } from "@/modules/users/guards";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
-import { CategoryListReturn, CategoryReturn, CreateCategoryBody, UpdateCategoryBody } from "../../dtos";
-import { CreateCategory, DeleteCategory, ListCategories, UpdateCategory } from "../../useCases";
+import {
+	CategoryListReturn,
+	CategoryReturn,
+	CreateCategoryBody,
+	ReorderCategoriesBody,
+	UpdateCategoryBody,
+} from "../../dtos";
+import {
+	CreateCategory,
+	DeleteCategory,
+	ListCategories,
+	ReorderCategories,
+	UpdateCategory,
+} from "../../useCases";
 
 export const CategoriesController = new Elysia({
 	detail: {
@@ -19,9 +29,8 @@ export const CategoriesController = new Elysia({
 				createCategory: new CreateCategory(prisma),
 				deleteCategory: new DeleteCategory(prisma),
 				listCategories: new ListCategories(prisma),
-				listCategoryUnits: new ListCategoryUnits(prisma),
 				prisma,
-				setCategoryUnits: new SetCategoryUnits(prisma),
+				reorderCategories: new ReorderCategories(prisma),
 				updateCategory: new UpdateCategory(prisma),
 			}))
 			.get(
@@ -44,6 +53,15 @@ export const CategoriesController = new Elysia({
 				},
 				{ body: CreateCategoryBody, response: CategoryReturn },
 			)
+			.put(
+				"/order",
+				async ({ body, reorderCategories, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "menu", "update");
+					return reorderCategories.execute(scope.companyId, body.categoryIds);
+				},
+				{ body: ReorderCategoriesBody, response: CategoryListReturn },
+			)
 			.patch(
 				"/:categoryId",
 				async ({ body, params, request, updateCategory }) => {
@@ -65,25 +83,5 @@ export const CategoriesController = new Elysia({
 					return { ok: true };
 				},
 				{ response: t.Object({ ok: t.Boolean() }) },
-			)
-			.get(
-				"/:categoryId/units",
-				async ({ listCategoryUnits, params, request }) => {
-					const scope = await CompanyScopeGuard.execute(request.headers);
-					CompanyScopeGuard.authorize(scope, "menu", "read");
-
-					return listCategoryUnits.execute(scope.companyId, params.categoryId);
-				},
-				{ response: CategoryUnitsReturn },
-			)
-			.put(
-				"/:categoryId/units",
-				async ({ body, params, request, setCategoryUnits }) => {
-					const scope = await CompanyScopeGuard.execute(request.headers);
-					CompanyScopeGuard.authorize(scope, "menu", "update");
-
-					return setCategoryUnits.execute(scope.companyId, params.categoryId, body.unitIds);
-				},
-				{ body: SetCategoryUnitsBody, response: CategoryUnitsReturn },
 			),
 	);

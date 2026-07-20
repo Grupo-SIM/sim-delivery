@@ -17,12 +17,17 @@ function IdentifyPage() {
 	}, [hydrated, isAuthenticated, navigate]);
 
 	return (
-		<Container className="max-w-md space-y-6 py-10" size="sm">
-			<SectionHeading subtitle={t("store.account.identify.subtitle")} title={t("store.account.identify.title")} />
-			<div className="rounded-xl border border-border bg-card p-5">
-				<IdentifyForm />
-			</div>
-		</Container>
+		<div className="flex min-h-full flex-1 items-center py-6 sm:py-10">
+			<Container className="max-w-md space-y-5 sm:max-w-lg sm:space-y-6 lg:max-w-xl" size="sm">
+				<SectionHeading
+					subtitle={t("store.account.identify.subtitle")}
+					title={t("store.account.identify.title")}
+				/>
+				<div className="rounded-brand border border-border bg-card p-4 shadow-soft sm:p-7">
+					<IdentifyForm />
+				</div>
+			</Container>
+		</div>
 	);
 }
 

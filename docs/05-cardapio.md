@@ -18,7 +18,9 @@ Roadmap: adicionais/opcionais (grupos de complementos), variações (tamanho), e
 ## Categorias
 
 - Agrupam produtos (ex.: "Pão de queijo", "Promoções", "Bebidas").
-- Um produto pode estar em uma categoria ou ser **avulso** (sem categoria — lista comum).
+- Um produto pode estar em várias categorias ou ser **avulso** (sem categoria — lista comum).
+- Categorias e tags são conceitos do catálogo da empresa e ficam associadas ao produto por padrão.
+- Cada unidade pode herdar essas associações ou sobrescrever categorias e tags para seu cardápio, inclusive com conjunto vazio.
 - Ordenáveis; usadas no **sumário lateral** do cardápio (ver [08](08-app-cliente.md)).
 
 ## Tags / promoções (universais)
@@ -30,10 +32,9 @@ Roadmap: adicionais/opcionais (grupos de complementos), variações (tamanho), e
 
 ## Associação produto ↔ unidade (regra objetiva)
 
-- A associação é feita **por categoria** (ou pela ausência dela). Ex.: "lista de produtos
-  comum", categoria "Pão de queijo", categoria "Promoções".
-- Um produto/categoria pode ser associado a **múltiplas unidades**, possivelmente **várias
-  vezes** com configurações distintas.
+- A associação produto ↔ unidade controla presença no cardápio. Categorias e tags são herdadas do produto, salvo sobrescrita explícita daquela unidade.
+- Um produto pode ser associado a **múltiplas unidades**, uma vez em cada unidade, com
+  configurações distintas por associação.
 - Por associação (unidade), pode variar: **preço**, **disponibilidade**, cashback.
 - Um produto só aparece no cardápio de uma unidade se estiver associado a ela.
 

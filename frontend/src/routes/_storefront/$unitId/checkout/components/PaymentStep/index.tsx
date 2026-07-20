@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaCreditCard } from "react-icons/fa";
 import { FaPix } from "react-icons/fa6";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { getPaymentsCardsQueryOptions, usePostPaymentsCard } from "@/lib/api";
 import { showAlert } from "@/stores";
 import { CardPaymentForm, type CardPaymentValue } from "./CardPaymentForm";
@@ -25,7 +26,7 @@ export function PaymentStep({ amountCents, customerCpf, onConfirmed, orderId, sl
 
 	const cpfRequired = !customerCpf;
 
-	const { data: savedCards } = useQuery(getPaymentsCardsQueryOptions({ slug }));
+	const { data: savedCards, isPending: savedCardsPending } = useQuery(getPaymentsCardsQueryOptions({ slug }));
 	const { isPending: isPayingCard, mutate: payWithCard } = usePostPaymentsCard();
 
 	function handleCardSubmit(value: CardPaymentValue) {
@@ -63,19 +64,25 @@ export function PaymentStep({ amountCents, customerCpf, onConfirmed, orderId, sl
 				))}
 			</div>
 
-			{method === "card" && (
-				<CardPaymentForm
-					amountCents={amountCents}
-					cpfRequired={cpfRequired}
-					isPending={isPayingCard}
-					onSubmit={handleCardSubmit}
-					savedCards={savedCards ?? []}
-				/>
+			{method === "card" && savedCardsPending ? (
+				<div className="space-y-3">
+					<Skeleton className="h-12 w-full" />
+					<Skeleton className="h-12 w-full" />
+					<Skeleton className="h-12 w-full" />
+				</div>
+			) : (
+				method === "card" && (
+					<CardPaymentForm
+						amountCents={amountCents}
+						cpfRequired={cpfRequired}
+						isPending={isPayingCard}
+						onSubmit={handleCardSubmit}
+						savedCards={savedCards ?? []}
+					/>
+				)
 			)}
 
-			{method === "pix" && (
-				<PixPanel onConfirmed={onConfirmed} orderId={orderId} slug={slug} />
-			)}
+			{method === "pix" && <PixPanel onConfirmed={onConfirmed} orderId={orderId} slug={slug} />}
 		</div>
 	);
 }
