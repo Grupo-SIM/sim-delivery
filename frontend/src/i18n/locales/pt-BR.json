@@ -171,7 +171,7 @@
 					"code": "Código",
 					"expiresAt": "Validade",
 					"type": "Tipo",
-					"unit": "Loja",
+					"unit": "Unidade",
 					"value": "Desconto"
 				},
 				"create": {
@@ -192,7 +192,7 @@
 				},
 				"empty": "Nenhum cupom ainda.",
 				"form": {
-					"allUnits": "Todas as lojas",
+				"allUnits": "Todas as unidades",
 					"code": "Código",
 					"codePlaceholder": "Ex: BEMVINDO10",
 					"expiresAt": "Validade",
@@ -200,19 +200,19 @@
 					"maxUsesPlaceholder": "Sem limite",
 					"minOrder": "Pedido mínimo",
 					"type": "Tipo de desconto",
-					"unit": "Loja",
+					"unit": "Unidade",
 					"value": "Valor do desconto"
 				},
 				"loadError": "Não foi possível carregar os cupons.",
 				"row": {
-					"allUnits": "Todas",
+					"allUnits": "Todas as unidades",
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir cupom {{code}}?",
 					"deleteError": "Não foi possível excluir o cupom.",
 					"deleteSuccess": "Cupom excluído.",
 					"never": "Sem validade"
 				},
-				"subtitle": "Crie e gerencie descontos para suas lojas.",
+				"subtitle": "Crie e gerencie descontos para suas unidades.",
 				"title": "Cupons",
 				"types": {
 					"fixed": "Valor fixo",
@@ -873,10 +873,13 @@
 			"empty": "Nenhuma entrega atribuída a você.",
 			"history": "Histórico de entregas",
 			"loadError": "Não foi possível carregar suas entregas.",
-			"order": {
-				"items": "{{count}} item",
-				"items_other": "{{count}} itens"
-			},
+		"order": {
+			"address": "Endereço de entrega",
+			"identifier": "Pedido #{{id}}",
+			"items": "{{count}} item",
+			"items_other": "{{count}} itens",
+			"zipCode": "CEP {{zipCode}}"
+		},
 			"subtitle": "Suas entregas ativas.",
 			"title": "Entregas"
 		},
@@ -1006,6 +1009,8 @@
 					"freightCalculating": "Calculando frete…",
 					"freightError": "Não foi possível calcular o frete para este endereço.",
 					"freightEta": "Previsão de entrega: {{min}}–{{max}} min",
+					"itemNotePlaceholder": "Ex: sem cebola, molho à parte",
+					"itemsSubtotal": "Subtotal dos itens",
 					"loyalty": "Pontos de fidelidade",
 					"loyaltyBalance": "{{points}} pts ({{amount}})",
 					"loyaltyRedeemed": "Pontos resgatados",
