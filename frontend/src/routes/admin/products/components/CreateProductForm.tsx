@@ -226,11 +226,11 @@ export function CreateProductForm() {
 				</div>
 			</CollapsibleFormSection>
 
-			<div className="flex items-center gap-3">
-				<Button disabled={isPending || isUploadingImage || !localTitle} type="submit">
+			<div className="flex items-center justify-between gap-3">
+				{error && <p className="text-destructive text-xs">{error}</p>}
+				<Button className="ml-auto" disabled={isPending || isUploadingImage || !localTitle} type="submit">
 					{isPending ? t("admin.products.create.submitting") : t("admin.products.create.submit")}
 				</Button>
-				{error && <p className="text-destructive text-xs">{error}</p>}
 			</div>
 			<CreateProductCategoriesModal
 				isOpen={isCategoriesModalOpen}

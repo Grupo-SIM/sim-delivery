@@ -78,11 +78,13 @@ export function PromotionalImageForm() {
 					</Label>
 				</div>
 			</CollapsibleFormSection>
-			<Button disabled={!title.trim() || !imageUrl.trim() || create.isPending} type="submit">
-				{create.isPending
-					? t("admin.promotionalImages.create.saving")
-					: t("admin.promotionalImages.create.submit")}
-			</Button>
+			<div className="flex justify-end">
+				<Button disabled={!title.trim() || !imageUrl.trim() || create.isPending} type="submit">
+					{create.isPending
+						? t("admin.promotionalImages.create.saving")
+						: t("admin.promotionalImages.create.submit")}
+				</Button>
+			</div>
 		</form>
 	);
 }
