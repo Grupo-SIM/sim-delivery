@@ -372,7 +372,8 @@
 				"columns": {
 					"cashback": "Cashback",
 					"categories": "Categorias",
-					"price": "Preço",
+					"customizations": "Customizações",
+					"price": "Preço base",
 					"product": "Produto",
 					"tags": "Etiquetas"
 				},
@@ -433,7 +434,6 @@
 					"highest": "Maior preço",
 					"max": "Máximo",
 					"maxSelect": "Máximo de escolhas",
-					"min": "Mínimo",
 					"minimize": "Minimizar",
 					"minSelect": "Mínimo de escolhas",
 					"multi": "Múltipla escolha",
@@ -1114,10 +1114,12 @@
 				"continueShopping": "Continuar comprando",
 				"from": "A partir de",
 				"goToCart": "Avançar para o carrinho",
+				"included": "Incluso",
 				"notePlaceholder": "Ex: sem cebola, ovo…",
 				"notFound": "Produto não encontrado.",
 				"optional": "Opcional",
 				"popularOptions": "Itens mais pedidos",
+				"priceFromOptions": "Preço definido pelas opções",
 				"quantity": "Quantidade",
 				"required": "Obrigatório",
 				"searchOptions": "Pesquise pelas opções..."

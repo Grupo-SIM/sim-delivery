@@ -19,7 +19,7 @@ function makeOption(overrides: Partial<Option> & { id: string }): Option {
 function makeGroup(overrides: Partial<OptionGroup> & { id: string }): OptionGroup {
 	return {
 		maxSelect: 1,
-		minSelect: 0,
+		required: false,
 		name: `Grupo ${overrides.id}`,
 		options: [],
 		priceRule: "sum",
@@ -171,40 +171,40 @@ describe("lineTotal", () => {
 
 describe("findInvalidGroup", () => {
 	it("accepts a selection inside the limits", () => {
-		const groups = [makeGroup({ id: "g1", maxSelect: 2, minSelect: 1, selectionType: "multiple" })];
+		const groups = [makeGroup({ id: "g1", maxSelect: 2, required: true, selectionType: "multiple" })];
 
 		expect(findInvalidGroup(groups, [makeSelection({ optionId: "o1" })])).toBeUndefined();
 	});
 
 	it("flags a required group left empty", () => {
-		const groups = [makeGroup({ id: "g1", maxSelect: 1, minSelect: 1 })];
+		const groups = [makeGroup({ id: "g1", maxSelect: 1, required: true })];
 
 		expect(findInvalidGroup(groups, [])?.id).toBe("g1");
 	});
 
 	it("accepts an optional group left empty", () => {
-		const groups = [makeGroup({ id: "g1", maxSelect: 1, minSelect: 0 })];
+		const groups = [makeGroup({ id: "g1", maxSelect: 1, required: false })];
 
 		expect(findInvalidGroup(groups, [])).toBeUndefined();
 	});
 
 	it("flags a group with more picks than allowed", () => {
-		const groups = [makeGroup({ id: "g1", maxSelect: 1, minSelect: 0, selectionType: "multiple" })];
+		const groups = [makeGroup({ id: "g1", maxSelect: 1, required: false, selectionType: "multiple" })];
 
 		expect(findInvalidGroup(groups, [makeSelection({ optionId: "o1", quantity: 2 })])?.id).toBe("g1");
 	});
 
 	it("counts repeats of one option against the group maximum", () => {
-		const groups = [makeGroup({ id: "g1", maxSelect: 2, minSelect: 0, selectionType: "multiple" })];
+		const groups = [makeGroup({ id: "g1", maxSelect: 2, required: false, selectionType: "multiple" })];
 
 		expect(findInvalidGroup(groups, [makeSelection({ optionId: "o1", quantity: 3 })])?.id).toBe("g1");
 	});
 
 	it("returns the first offending group when several are invalid", () => {
 		const groups = [
-			makeGroup({ id: "g1", maxSelect: 1, minSelect: 0 }),
-			makeGroup({ id: "g2", maxSelect: 1, minSelect: 1 }),
-			makeGroup({ id: "g3", maxSelect: 1, minSelect: 1 }),
+			makeGroup({ id: "g1", maxSelect: 1, required: false }),
+			makeGroup({ id: "g2", maxSelect: 1, required: true }),
+			makeGroup({ id: "g3", maxSelect: 1, required: true }),
 		];
 
 		expect(findInvalidGroup(groups, [])?.id).toBe("g2");
@@ -284,10 +284,7 @@ describe("applyOptionQuantity", () => {
 		});
 
 		it("removes the option at quantity zero", () => {
-			const current = [
-				makeSelection({ optionId: "o1" }),
-				makeSelection({ optionId: "o2" }),
-			];
+			const current = [makeSelection({ optionId: "o1" }), makeSelection({ optionId: "o2" })];
 			const result = applyOptionQuantity(group, makeOption({ id: "o1" }), 0, current);
 
 			expect(result.map(option => option.optionId)).toEqual(["o2"]);

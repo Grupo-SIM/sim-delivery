@@ -3,9 +3,7 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import { ProductOptions } from "./ProductOptions";
 
 function prismaWith(companyId = "cmp_1") {
-	const groups = [
-		{ id: "group_1", maxSelect: 1, minSelect: 0, productId: "product_1", selectionType: "single" },
-	];
+	const groups = [{ id: "group_1", maxSelect: 1, productId: "product_1", selectionType: "single" }];
 	const deleted: string[] = [];
 	return {
 		deleted,
@@ -51,7 +49,6 @@ describe("ProductOptions", () => {
 		await expect(
 			new ProductOptions(prisma).createGroup("cmp_2", "product_1", {
 				maxSelect: 1,
-				minSelect: 0,
 				name: "Sabor",
 				priceRule: "sum",
 				selectionType: "single",
@@ -59,12 +56,11 @@ describe("ProductOptions", () => {
 		).rejects.toThrow("PRODUCT_NOT_FOUND");
 	});
 
-	it("rejects impossible selection limits", async () => {
+	it("rejects multi-value max on single selection groups at creation", async () => {
 		const { prisma } = prismaWith();
 		await expect(
 			new ProductOptions(prisma).createGroup("cmp_1", "product_1", {
-				maxSelect: 1,
-				minSelect: 2,
+				maxSelect: 2,
 				name: "Sabor",
 				priceRule: "sum",
 				selectionType: "single",

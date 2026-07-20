@@ -5,19 +5,23 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import type { ProductReturn } from "../dtos";
 
 export const productTaxonomyInclude = {
+	_count: { select: { optionGroups: true } },
 	categories: { include: { category: true } },
 	tags: { include: { tag: true } },
 } as const;
 
-type ProductTaxonomySource = Omit<ProductReturn, "categories" | "tags"> & {
+type ProductTaxonomySource = Omit<ProductReturn, "categories" | "optionGroupCount" | "tags"> & {
+	_count?: { optionGroups: number };
 	categories?: { category: ProductReturn["categories"][number] }[];
 	tags?: { tag: ProductReturn["tags"][number] }[];
 };
 
 export function mapProductTaxonomy(product: ProductTaxonomySource): ProductReturn {
+	const { _count, ...rest } = product;
 	return {
-		...product,
+		...rest,
 		categories: Array.isArray(product.categories) ? product.categories.map(item => item.category) : [],
+		optionGroupCount: _count?.optionGroups ?? 0,
 		tags: Array.isArray(product.tags) ? product.tags.map(item => item.tag) : [],
 	};
 }

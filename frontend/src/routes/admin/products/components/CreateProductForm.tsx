@@ -151,7 +151,7 @@ export function CreateProductForm() {
 				<div className="grid gap-4 md:grid-cols-2">
 					<div>
 						<span className="font-medium text-sm">
-							{t("admin.products.create.price")} <RequiredMark />
+						{t("admin.products.create.price")}
 						</span>
 						<NumericInput
 							decimalScale={2}
@@ -227,7 +227,7 @@ export function CreateProductForm() {
 			</CollapsibleFormSection>
 
 			<div className="flex items-center gap-3">
-				<Button disabled={isPending || isUploadingImage || !localTitle || priceReais <= 0} type="submit">
+				<Button disabled={isPending || isUploadingImage || !localTitle} type="submit">
 					{isPending ? t("admin.products.create.submitting") : t("admin.products.create.submit")}
 				</Button>
 				{error && <p className="text-destructive text-xs">{error}</p>}

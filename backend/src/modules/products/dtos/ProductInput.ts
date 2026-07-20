@@ -12,7 +12,6 @@ const fields = {
 
 export const CreateProductBody = t.Object({
 	...fields,
-	basePriceCents: t.Integer({ minimum: 0 }),
 	title: t.String({ minLength: 1 }),
 });
 export type CreateProductBody = typeof CreateProductBody.static;

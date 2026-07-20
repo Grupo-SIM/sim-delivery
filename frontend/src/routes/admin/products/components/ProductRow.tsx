@@ -66,6 +66,7 @@ export function ProductRow({ product }: ProductRowProps) {
 						? t("admin.products.row.unitDefault")
 						: t("admin.products.row.cashbackPercent", { value: product.cashbackPercentOverride })}
 				</td>
+				<td className="px-4 py-3 text-center text-muted-foreground">{Number(product.optionGroupCount)}</td>
 				<td className="px-4 py-3">
 					<div className="flex max-w-56 flex-wrap gap-1">
 						{product.categories.length === 0 ? (

@@ -16,10 +16,10 @@ import { type EditableOption, OptionEditor } from "./OptionEditor";
 export interface OptionGroup {
 	id: string;
 	maxSelect: number;
-	minSelect: number;
 	name: string;
 	options: EditableOption[];
 	priceRule: "sum" | "highest" | "average";
+	required: boolean;
 	selectionType: "single" | "multi";
 	sortOrder: number;
 }
@@ -152,12 +152,12 @@ export function OptionGroupEditor({
 						<Label>
 							<span>{t("admin.products.options.groupName")}</span>
 							<Input
+								className="text-foreground"
 								onBlur={() => {
 									flushName();
 									onChange({ ...group, name: localName });
 								}}
 								onChange={event => setLocalName(event.currentTarget.value)}
-								className="text-foreground"
 								placeholder={t("admin.products.options.groupPlaceholder")}
 								value={localName}
 							/>
@@ -179,28 +179,19 @@ export function OptionGroupEditor({
 								value={group.selectionType}
 							/>
 						</Label>
-						<label className="flex cursor-pointer items-center gap-2 md:col-span-2">
+						<div className="flex items-center gap-2 md:col-span-2">
 							<Checkbox
-								checked={group.minSelect > 0}
-								onChange={() => onChange({ ...group, minSelect: group.minSelect > 0 ? 0 : 1 })}
+								aria-label={t("admin.products.options.required")}
+								checked={group.required}
+								onChange={() => onChange({ ...group, required: !group.required })}
 							/>
 							<span>{t("admin.products.options.required")}</span>
-						</label>
+						</div>
 						{group.selectionType === "multi" && (
 							<div className="flex flex-wrap items-end gap-3 md:col-span-2">
 								<div className="space-y-1">
 									<p className="font-medium text-sm">{t("admin.products.options.choices")}</p>
 									<div className="flex gap-2">
-										<Label>
-											<span className="text-muted-foreground">{t("admin.products.options.min")}</span>
-											<NumericInput
-												className="w-20"
-												decimalScale={0}
-												onValueChange={({ floatValue }) => onChange({ ...group, minSelect: floatValue ?? 0 })}
-												placeholder="0"
-												value={group.minSelect}
-											/>
-										</Label>
 										<Label>
 											<span className="text-muted-foreground">{t("admin.products.options.max")}</span>
 											<NumericInput

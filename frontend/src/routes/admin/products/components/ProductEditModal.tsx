@@ -112,7 +112,7 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 				<div className="grid gap-4 md:grid-cols-2">
 					<div>
 						<span className="font-medium text-sm">
-							{t("admin.products.create.price")} <RequiredMark />
+						{t("admin.products.create.price")}
 						</span>
 						<NumericInput
 							decimalScale={2}
@@ -164,7 +164,7 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 						{t("admin.products.edit.cancel")}
 					</Button>
 					<Button
-						disabled={isPending || isUploadingImage || !localTitle || priceReais <= 0}
+						disabled={isPending || isUploadingImage || !localTitle}
 						onClick={() => void save()}
 						type="button"
 					>

@@ -27,206 +27,206 @@ export interface ProductOptionsEditorHandle {
 }
 
 export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, ProductOptionsEditorProps>(
-function ProductOptionsEditor({ product }, ref) {
-	const { t } = useTranslation();
-	const queryClient = useQueryClient();
-	const [name, setName] = useState("");
-	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
-	const [draftGroups, setDraftGroups] = useState<OptionGroup[]>([]);
-	const [draggedGroupId, setDraggedGroupId] = useState<string | null>(null);
-	const groups = useGetProductsByProductIdOptionGroups(product?.id);
-	const createGroup = usePostProductsByProductIdOptionGroups();
-	const createOption = usePostProductsByProductIdOptionGroupsByGroupIdOptions();
-	const updateGroup = usePatchProductsByProductIdOptionGroupsByGroupId();
-	const updateOption = usePatchProductsByProductIdOptionGroupsByGroupIdOptionsByOptionId();
-	const deleteGroup = useDeleteProductsByProductIdOptionGroupsByGroupId();
-	const deleteOption = useDeleteProductsByProductIdOptionGroupsByGroupIdOptionsByOptionId();
-	const refresh = () =>
-		product &&
-		queryClient.invalidateQueries({ queryKey: getProductsByProductIdOptionGroupsQueryKey(product.id) });
+	function ProductOptionsEditor({ product }, ref) {
+		const { t } = useTranslation();
+		const queryClient = useQueryClient();
+		const [name, setName] = useState("");
+		const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
+		const [draftGroups, setDraftGroups] = useState<OptionGroup[]>([]);
+		const [draggedGroupId, setDraggedGroupId] = useState<string | null>(null);
+		const groups = useGetProductsByProductIdOptionGroups(product?.id);
+		const createGroup = usePostProductsByProductIdOptionGroups();
+		const createOption = usePostProductsByProductIdOptionGroupsByGroupIdOptions();
+		const updateGroup = usePatchProductsByProductIdOptionGroupsByGroupId();
+		const updateOption = usePatchProductsByProductIdOptionGroupsByGroupIdOptionsByOptionId();
+		const deleteGroup = useDeleteProductsByProductIdOptionGroupsByGroupId();
+		const deleteOption = useDeleteProductsByProductIdOptionGroupsByGroupIdOptionsByOptionId();
+		const refresh = () =>
+			product &&
+			queryClient.invalidateQueries({ queryKey: getProductsByProductIdOptionGroupsQueryKey(product.id) });
 
-	const normalizeGroups = (): OptionGroup[] =>
-		(groups.data ?? []).map(group => ({
-			...group,
-			maxSelect: Number(group.maxSelect),
-			minSelect: Number(group.minSelect),
-			options: group.options.map(option => ({
-				...option,
-				priceDeltaCents: Number(option.priceDeltaCents),
-				sortOrder: Number(option.sortOrder),
-			})),
-			priceRule: group.priceRule as OptionGroup["priceRule"],
-			selectionType: group.selectionType as OptionGroup["selectionType"],
-			sortOrder: Number(group.sortOrder),
-		}));
-	useEffect(() => {
-		setDraftGroups(
+		const normalizeGroups = (): OptionGroup[] =>
 			(groups.data ?? []).map(group => ({
 				...group,
 				maxSelect: Number(group.maxSelect),
-				minSelect: Number(group.minSelect),
 				options: group.options.map(option => ({
 					...option,
 					priceDeltaCents: Number(option.priceDeltaCents),
 					sortOrder: Number(option.sortOrder),
 				})),
 				priceRule: group.priceRule as OptionGroup["priceRule"],
+				required: group.required,
 				selectionType: group.selectionType as OptionGroup["selectionType"],
 				sortOrder: Number(group.sortOrder),
-			})),
-		);
-	}, [groups.data]);
+			}));
+		useEffect(() => {
+			setDraftGroups(
+				(groups.data ?? []).map(group => ({
+					...group,
+					maxSelect: Number(group.maxSelect),
+					options: group.options.map(option => ({
+						...option,
+						priceDeltaCents: Number(option.priceDeltaCents),
+						sortOrder: Number(option.sortOrder),
+					})),
+					priceRule: group.priceRule as OptionGroup["priceRule"],
+					required: group.required,
+					selectionType: group.selectionType as OptionGroup["selectionType"],
+					sortOrder: Number(group.sortOrder),
+				})),
+			);
+		}, [groups.data]);
 
-	function addGroup() {
-		flushName();
-		if (!name.trim() || !product) return;
-		setDraftGroups(current => [
-			...current,
-			{
-				id: crypto.randomUUID(),
-				maxSelect: 1,
-				minSelect: 0,
-				name: name.trim(),
-				options: [],
-				priceRule: "sum",
-				selectionType: "single",
-				sortOrder: current.length,
-			},
-		]);
-		setLocalName("");
-	}
+		function addGroup() {
+			flushName();
+			if (!name.trim() || !product) return;
+			setDraftGroups(current => [
+				...current,
+				{
+					id: crypto.randomUUID(),
+					maxSelect: 1,
+					name: name.trim(),
+					options: [],
+					priceRule: "sum",
+					required: false,
+					selectionType: "single",
+					sortOrder: current.length,
+				},
+			]);
+			setLocalName("");
+		}
 
-	function moveGroup(targetId: string) {
-		if (!draggedGroupId || draggedGroupId === targetId) return;
-		setDraftGroups(current => {
-			const sourceIndex = current.findIndex(group => group.id === draggedGroupId);
-			const targetIndex = current.findIndex(group => group.id === targetId);
-			if (sourceIndex < 0 || targetIndex < 0) return current;
-			const next = [...current];
-			const [moved] = next.splice(sourceIndex, 1);
-			next.splice(targetIndex, 0, moved);
-			return next.map((group, index) => ({ ...group, sortOrder: index }));
-		});
-		setDraggedGroupId(null);
-	}
+		function moveGroup(targetId: string) {
+			if (!draggedGroupId || draggedGroupId === targetId) return;
+			setDraftGroups(current => {
+				const sourceIndex = current.findIndex(group => group.id === draggedGroupId);
+				const targetIndex = current.findIndex(group => group.id === targetId);
+				if (sourceIndex < 0 || targetIndex < 0) return current;
+				const next = [...current];
+				const [moved] = next.splice(sourceIndex, 1);
+				next.splice(targetIndex, 0, moved);
+				return next.map((group, index) => ({ ...group, sortOrder: index }));
+			});
+			setDraggedGroupId(null);
+		}
 
-	async function save() {
-		if (!product) return;
-		const productId = product.id;
-		const originals = normalizeGroups();
-		const draftIds = new Set(draftGroups.map(group => group.id));
-		await Promise.all(
-			originals
-				.filter(group => !draftIds.has(group.id))
-				.map(group => deleteGroup.mutateAsync({ groupId: group.id, productId })),
-		);
-		for (const group of draftGroups) {
-			const original = originals.find(item => item.id === group.id);
-			if (!original) {
-				const created = await createGroup.mutateAsync({
+		async function save() {
+			if (!product) return;
+			const productId = product.id;
+			const originals = normalizeGroups();
+			const draftIds = new Set(draftGroups.map(group => group.id));
+			await Promise.all(
+				originals
+					.filter(group => !draftIds.has(group.id))
+					.map(group => deleteGroup.mutateAsync({ groupId: group.id, productId })),
+			);
+			for (const group of draftGroups) {
+				const original = originals.find(item => item.id === group.id);
+				if (!original) {
+					const created = await createGroup.mutateAsync({
+						data: {
+							maxSelect: group.maxSelect,
+							name: group.name,
+							priceRule: group.priceRule,
+							required: group.required,
+							selectionType: group.selectionType,
+							sortOrder: group.sortOrder,
+						},
+						productId,
+					});
+					await Promise.all(
+						group.options.map(option =>
+							createOption.mutateAsync({
+								data: {
+									available: option.available,
+									description: option.description,
+									imageUrl: option.imageUrl,
+									name: option.name,
+									priceDeltaCents: option.priceDeltaCents,
+									sortOrder: option.sortOrder,
+								},
+								groupId: created.id,
+								productId,
+							}),
+						),
+					);
+					continue;
+				}
+				await updateGroup.mutateAsync({
 					data: {
 						maxSelect: group.maxSelect,
-						minSelect: group.minSelect,
 						name: group.name,
 						priceRule: group.priceRule,
+						required: group.required,
 						selectionType: group.selectionType,
 						sortOrder: group.sortOrder,
 					},
+					groupId: group.id,
 					productId,
 				});
+				const optionIds = new Set(group.options.map(option => option.id));
 				await Promise.all(
-					group.options.map(option =>
-						createOption.mutateAsync({
-							data: {
-								available: option.available,
-								description: option.description,
-								imageUrl: option.imageUrl,
-								name: option.name,
-								priceDeltaCents: option.priceDeltaCents,
-								sortOrder: option.sortOrder,
-							},
-							groupId: created.id,
-							productId,
-						}),
-					),
+					original.options
+						.filter(option => !optionIds.has(option.id))
+						.map(option => deleteOption.mutateAsync({ groupId: group.id, optionId: option.id, productId })),
 				);
-				continue;
+				for (const option of group.options) {
+					const existing = original.options.some(item => item.id === option.id);
+					const data = {
+						available: option.available,
+						description: option.description,
+						imageUrl: option.imageUrl,
+						name: option.name,
+						priceDeltaCents: option.priceDeltaCents,
+						sortOrder: option.sortOrder,
+					};
+					if (existing)
+						await updateOption.mutateAsync({ data, groupId: group.id, optionId: option.id, productId });
+					else await createOption.mutateAsync({ data, groupId: group.id, productId });
+				}
 			}
-			await updateGroup.mutateAsync({
-				data: {
-					maxSelect: group.maxSelect,
-					minSelect: group.minSelect,
-					name: group.name,
-					priceRule: group.priceRule,
-					selectionType: group.selectionType,
-					sortOrder: group.sortOrder,
-				},
-				groupId: group.id,
-				productId,
-			});
-			const optionIds = new Set(group.options.map(option => option.id));
-			await Promise.all(
-				original.options
-					.filter(option => !optionIds.has(option.id))
-					.map(option => deleteOption.mutateAsync({ groupId: group.id, optionId: option.id, productId })),
-			);
-			for (const option of group.options) {
-				const existing = original.options.some(item => item.id === option.id);
-				const data = {
-					available: option.available,
-					description: option.description,
-					imageUrl: option.imageUrl,
-					name: option.name,
-					priceDeltaCents: option.priceDeltaCents,
-					sortOrder: option.sortOrder,
-				};
-				if (existing)
-					await updateOption.mutateAsync({ data, groupId: group.id, optionId: option.id, productId });
-				else await createOption.mutateAsync({ data, groupId: group.id, productId });
-			}
+			await refresh();
+			showToast(t("admin.products.options.saved"), "positive");
 		}
-		await refresh();
-		showToast(t("admin.products.options.saved"), "positive");
-	}
 
-	useImperativeHandle(ref, () => ({ save }));
+		useImperativeHandle(ref, () => ({ save }));
 
-	if (!product) return null;
+		if (!product) return null;
 
-	return (
-		<div className="space-y-4 border-border border-t pt-4">
-			<h3 className="font-semibold">{t("admin.products.options.title")}</h3>
-			<div className="flex gap-2">
-				<Input
-					onBlur={flushName}
-					onChange={event => setLocalName(event.currentTarget.value)}
-					placeholder={t("admin.products.options.groupPlaceholder")}
-					value={localName}
-				/>
-				<Button
-					className="shrink-0 px-4"
-					disabled={createGroup.isPending || !localName.trim()}
-					onClick={addGroup}
-					type="button"
-				>
-					{t("admin.products.options.addGroup")}
-				</Button>
+		return (
+			<div className="space-y-4 border-border border-t pt-4">
+				<h3 className="font-semibold">{t("admin.products.options.title")}</h3>
+				<div className="flex gap-2">
+					<Input
+						onBlur={flushName}
+						onChange={event => setLocalName(event.currentTarget.value)}
+						placeholder={t("admin.products.options.groupPlaceholder")}
+						value={localName}
+					/>
+					<Button
+						className="shrink-0 px-4"
+						disabled={createGroup.isPending || !localName.trim()}
+						onClick={addGroup}
+						type="button"
+					>
+						{t("admin.products.options.addGroup")}
+					</Button>
+				</div>
+				{draftGroups.map(group => (
+					<OptionGroupEditor
+						group={group}
+						key={group.id}
+						onChange={value =>
+							setDraftGroups(current => current.map(item => (item.id === value.id ? value : item)))
+						}
+						onDelete={() => setDraftGroups(current => current.filter(item => item.id !== group.id))}
+						onDragEnd={() => setDraggedGroupId(null)}
+						onDragOver={event => event.preventDefault()}
+						onDragStart={() => setDraggedGroupId(group.id)}
+						onDrop={() => moveGroup(group.id)}
+					/>
+				))}
 			</div>
-			{draftGroups.map(group => (
-				<OptionGroupEditor
-					group={group}
-					key={group.id}
-					onChange={value =>
-						setDraftGroups(current => current.map(item => (item.id === value.id ? value : item)))
-					}
-					onDelete={() => setDraftGroups(current => current.filter(item => item.id !== group.id))}
-					onDragEnd={() => setDraggedGroupId(null)}
-					onDragOver={event => event.preventDefault()}
-					onDragStart={() => setDraggedGroupId(group.id)}
-					onDrop={() => moveGroup(group.id)}
-				/>
-			))}
-		</div>
-	);
-},
+		);
+	},
 );

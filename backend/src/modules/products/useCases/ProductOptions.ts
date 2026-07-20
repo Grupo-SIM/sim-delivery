@@ -9,9 +9,7 @@ import type {
 } from "../dtos";
 import { ProductErrors } from "../errors";
 
-function validateGroup(data: { minSelect?: number; maxSelect?: number; selectionType?: string }) {
-	if (data.minSelect !== undefined && data.maxSelect !== undefined && data.minSelect > data.maxSelect)
-		throw new DomainError(ProductErrors.INVALID_OPTION_RULES);
+function validateGroup(data: { maxSelect?: number; selectionType?: string }) {
 	if (data.selectionType === "single" && data.maxSelect !== undefined && data.maxSelect !== 1)
 		throw new DomainError(ProductErrors.INVALID_OPTION_RULES);
 }

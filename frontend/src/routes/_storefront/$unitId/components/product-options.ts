@@ -45,7 +45,7 @@ export function findInvalidGroup(
 	return optionGroups.find(group => {
 		const count = groupQuantity(options, group.id);
 
-		return count < Number(group.minSelect) || count > Number(group.maxSelect);
+		return count < (group.required ? 1 : 0) || count > Number(group.maxSelect);
 	});
 }
 
