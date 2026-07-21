@@ -42,6 +42,7 @@
 			"outputs": ["src/lib/api/generated/**"]
 		},
 		"frontend#inject": {
+			"dependsOn": ["sql#export"],
 			"env": ["VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
 			"inputs": ["scripts/inject.ts", ".env*"],
 			"outputLogs": "new-only",
