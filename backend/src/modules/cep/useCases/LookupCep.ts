@@ -2,12 +2,16 @@ import { DomainError } from "@/shared/errors";
 import type { CepReturn } from "../dtos";
 import { CepErrors } from "../errors";
 
-interface BrasilApiCepResponse {
+interface ViaCepResponse {
 	cep?: string;
-	street?: string;
-	neighborhood?: string;
-	city?: string;
-	state?: string;
+	logradouro?: string;
+	bairro?: string;
+	localidade?: string;
+	uf?: string;
+	erro?: boolean;
+}
+
+interface BrasilApiCepResponse {
 	location?: {
 		coordinates?: {
 			longitude?: string;
@@ -16,8 +20,7 @@ interface BrasilApiCepResponse {
 	};
 }
 
-/** Resolves a Brazilian CEP into an address (and, when available, coordinates) through
- * the free Brasil API CEP V2 service (docs/07). */
+/** Resolves address fields through ViaCEP and supplements delivery coordinates with Brasil API. */
 export class LookupCep {
 	async execute(rawCep: string): Promise<CepReturn> {
 		const cep = rawCep.replace(/\D/g, "");
@@ -26,30 +29,44 @@ export class LookupCep {
 		}
 
 		let response: Response;
-		let payload: BrasilApiCepResponse;
+		let payload: ViaCepResponse;
 		try {
-			response = await fetch(`https://brasilapi.com.br/api/cep/v2/${cep}`);
-			payload = (await response.json()) as BrasilApiCepResponse;
+			response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+			payload = (await response.json()) as ViaCepResponse;
 		} catch {
 			throw new DomainError(CepErrors.CEP_NOT_FOUND);
 		}
 
-		if (!response.ok || !payload.cep) {
+		if (!response.ok || payload.erro || !payload.cep) {
 			throw new DomainError(CepErrors.CEP_NOT_FOUND);
 		}
 
-		const coordinates = payload.location?.coordinates;
-		const latitude = coordinates?.latitude !== undefined ? Number(coordinates.latitude) : null;
-		const longitude = coordinates?.longitude !== undefined ? Number(coordinates.longitude) : null;
+		let latitude: number | null = null;
+		let longitude: number | null = null;
+		try {
+			const coordinatesResponse = await fetch(`https://brasilapi.com.br/api/cep/v2/${cep}`);
+			if (coordinatesResponse.ok) {
+				const coordinatesPayload = (await coordinatesResponse.json()) as BrasilApiCepResponse;
+				const coordinates = coordinatesPayload.location?.coordinates;
+				if (coordinates?.latitude !== undefined && coordinates?.longitude !== undefined) {
+					const nextLatitude = Number(coordinates.latitude);
+					const nextLongitude = Number(coordinates.longitude);
+					latitude = Number.isFinite(nextLatitude) ? nextLatitude : null;
+					longitude = Number.isFinite(nextLongitude) ? nextLongitude : null;
+				}
+			}
+		} catch {
+			// A coordinate lookup must not prevent address lookup through ViaCEP.
+		}
 
 		return {
-			addressLine: payload.street ?? "",
-			city: payload.city ?? "",
+			addressLine: payload.logradouro ?? "",
+			city: payload.localidade ?? "",
 			complement: "",
 			latitude,
 			longitude,
-			neighborhood: payload.neighborhood ?? "",
-			state: payload.state ?? "",
+			neighborhood: payload.bairro ?? "",
+			state: payload.uf ?? "",
 			zipCode: payload.cep.replace(/\D/g, ""),
 		};
 	}

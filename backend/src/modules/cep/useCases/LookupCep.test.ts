@@ -4,8 +4,12 @@ import { LookupCep } from "./LookupCep";
 
 const originalFetch = globalThis.fetch;
 
-function mockFetch(payload: unknown, ok = true) {
-	globalThis.fetch = mock(async () => ({ json: async () => payload, ok })) as unknown as typeof fetch;
+function mockFetch(...responses: Array<{ ok?: boolean; payload: unknown }>) {
+	globalThis.fetch = mock(async () => {
+		const response = responses.shift();
+		if (!response) throw new Error("unexpected request");
+		return { json: async () => response.payload, ok: response.ok ?? true };
+	}) as unknown as typeof fetch;
 }
 
 afterEach(() => {
@@ -13,15 +17,19 @@ afterEach(() => {
 });
 
 describe("LookupCep", () => {
-	it("normalizes a Brasil API response with coordinates into address fields", async () => {
-		mockFetch({
-			cep: "04038001",
-			city: "São Paulo",
-			location: { coordinates: { latitude: "-23.5970665", longitude: "-46.6432640" } },
-			neighborhood: "Vila Clementino",
-			state: "SP",
-			street: "Rua Borges Lagoa",
-		});
+	it("normalizes a ViaCEP response into address fields", async () => {
+		mockFetch(
+			{
+				payload: {
+					cep: "04038001",
+					bairro: "Vila Clementino",
+					localidade: "São Paulo",
+					logradouro: "Rua Borges Lagoa",
+					uf: "SP",
+				},
+			},
+			{ payload: { location: { coordinates: { latitude: "-23.5970665", longitude: "-46.6432640" } } } },
+		);
 
 		const result = await new LookupCep().execute("04038-001");
 
@@ -38,14 +46,18 @@ describe("LookupCep", () => {
 	});
 
 	it("returns null coordinates when Brasil API has no geolocation for the CEP", async () => {
-		mockFetch({
-			cep: "01001000",
-			city: "São Paulo",
-			location: { coordinates: {} },
-			neighborhood: "Sé",
-			state: "SP",
-			street: "Praça da Sé",
-		});
+		mockFetch(
+			{
+				payload: {
+					cep: "01001000",
+					bairro: "Sé",
+					localidade: "São Paulo",
+					logradouro: "Praça da Sé",
+					uf: "SP",
+				},
+			},
+			{ payload: { location: { coordinates: {} } } },
+		);
 
 		const result = await new LookupCep().execute("01001000");
 
@@ -53,8 +65,26 @@ describe("LookupCep", () => {
 		expect(result.longitude).toBeNull();
 	});
 
+	it("returns ViaCEP address when Brasil API coordinate lookup fails", async () => {
+		mockFetch({
+			payload: {
+				cep: "01001000",
+				bairro: "Sé",
+				localidade: "São Paulo",
+				logradouro: "Praça da Sé",
+				uf: "SP",
+			},
+		});
+
+		const result = await new LookupCep().execute("01001000");
+
+		expect(result.addressLine).toBe("Praça da Sé");
+		expect(result.latitude).toBeNull();
+		expect(result.longitude).toBeNull();
+	});
+
 	it("defaults missing optional fields to empty strings", async () => {
-		mockFetch({ cep: "12345678", city: "Testville", state: "TS" });
+		mockFetch({ payload: { cep: "12345678", localidade: "Testville", uf: "TS" } }, { payload: {} });
 
 		const result = await new LookupCep().execute("12345678");
 
@@ -67,8 +97,8 @@ describe("LookupCep", () => {
 		await expect(new LookupCep().execute("123")).rejects.toThrow(DomainError);
 	});
 
-	it("rejects an unknown CEP (Brasil API 404)", async () => {
-		mockFetch({ message: "not found" }, false);
+	it("rejects an unknown CEP reported by ViaCEP", async () => {
+		mockFetch({ payload: { erro: true } });
 
 		await expect(new LookupCep().execute("00000000")).rejects.toThrow("CEP_NOT_FOUND");
 	});
