@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { type ReactNode, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
@@ -35,12 +35,13 @@ const emptyAddress: AddressValue = {
 };
 
 interface AddressFormProps {
+	footer?: (props: { canSubmit: boolean; isSubmitting: boolean }) => ReactNode;
 	disabled?: boolean;
 	onSubmit?: (value: AddressValue) => void;
 	submitLabel?: string;
 }
 
-export function AddressForm({ disabled, onSubmit, submitLabel }: AddressFormProps) {
+export function AddressForm({ disabled, footer, onSubmit, submitLabel }: AddressFormProps) {
 	const { t } = useTranslation();
 	const [value, setValue] = useState<AddressValue>(emptyAddress);
 	const [noNumber, setNoNumber] = useState(false);
@@ -220,9 +221,13 @@ export function AddressForm({ disabled, onSubmit, submitLabel }: AddressFormProp
 				/>
 			</Label>
 
-			<Button className="w-full" disabled={!canSubmit || disabled} type="submit">
-				{submitLabel ?? t("store.checkout.address.continue")}
-			</Button>
+			{footer ? (
+				footer({ canSubmit, isSubmitting: Boolean(disabled) })
+			) : (
+				<Button className="w-full" disabled={!canSubmit || disabled} type="submit">
+					{submitLabel ?? t("store.checkout.address.continue")}
+				</Button>
+			)}
 		</form>
 	);
 }

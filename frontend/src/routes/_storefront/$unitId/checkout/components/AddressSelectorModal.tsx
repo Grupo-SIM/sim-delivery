@@ -32,12 +32,12 @@ export function AddressSelectorModal({
 	onSelect,
 }: AddressSelectorModalProps) {
 	const { t } = useTranslation();
-	const [view, setView] = useState<View>(() => (addresses.length === 0 ? "create" : "list"));
+	const [view, setView] = useState<View>("list");
 	const [search, setSearch] = useDebouncedInput("", () => undefined);
 
 	useEffect(() => {
-		if (isOpen) setView(addresses.length === 0 ? "create" : "list");
-	}, [addresses.length, isOpen]);
+		if (isOpen) setView("list");
+	}, [isOpen]);
 
 	const visibleAddresses = useMemo(() => {
 		const term = search.trim().toLocaleLowerCase();
@@ -52,7 +52,7 @@ export function AddressSelectorModal({
 	}, [addresses, search]);
 
 	function handleClose() {
-		setView(addresses.length === 0 ? "create" : "list");
+		setView("list");
 		setSearch("");
 		onClose();
 	}
@@ -62,57 +62,65 @@ export function AddressSelectorModal({
 			isOpen={isOpen}
 			maxWidth="640px"
 			onClose={handleClose}
-			title={t(view === "create" ? "store.checkout.address.addTitle" : "store.checkout.address.selectTitle")}
+			title={t("store.checkout.address.selectTitle")}
 		>
-			{view === "create" ? (
-				<div className="space-y-4">
-					{addresses.length > 0 && (
-						<Button onClick={() => setView("list")} type="button" variant="outline">
-							{t("store.checkout.address.backToList")}
-						</Button>
+			<div className="space-y-4">
+				<Input
+					onChange={event => setSearch(event.currentTarget.value)}
+					placeholder={t("store.checkout.address.searchPlaceholder")}
+					value={search}
+				/>
+				<div className="space-y-2">
+					{visibleAddresses.map(address => (
+						<button
+							className="w-full cursor-pointer rounded-md border border-border p-3 text-left transition-colors hover:bg-muted"
+							key={address.id}
+							onClick={() => onSelect(address)}
+							type="button"
+						>
+							<div className="flex items-center gap-2">
+								<p className="font-medium text-sm">{formatAddress(address)}</p>
+								{address.isDefault && (
+									<span className="rounded bg-primary/10 px-2 py-0.5 font-medium text-primary text-xs">
+										{t("store.checkout.address.default")}
+									</span>
+								)}
+							</div>
+							<p className="text-muted-foreground text-sm">
+								{[address.neighborhood, address.city, address.state].filter(Boolean).join(", ")}
+							</p>
+						</button>
+					))}
+					{visibleAddresses.length === 0 && (
+						<p className="text-muted-foreground text-sm">{t("store.checkout.address.noResults")}</p>
 					)}
+				</div>
+				<Button onClick={() => setView("create")} type="button" variant="outline">
+					{t("store.checkout.address.add")}
+				</Button>
+			</div>
+			{view === "create" && (
+				<Modal
+					isOpen
+					maxWidth="640px"
+					onClose={() => setView("list")}
+					title={t("store.checkout.address.addTitle")}
+				>
 					<AddressForm
 						disabled={isSaving}
-						onSubmit={onCreate}
-						submitLabel={t("store.checkout.address.save")}
-					/>
-				</div>
-			) : (
-				<div className="space-y-4">
-					<Input
-						onChange={event => setSearch(event.currentTarget.value)}
-						placeholder={t("store.checkout.address.searchPlaceholder")}
-						value={search}
-					/>
-					<div className="space-y-2">
-						{visibleAddresses.map(address => (
-							<button
-								className="w-full cursor-pointer rounded-md border border-border p-3 text-left transition-colors hover:bg-muted"
-								key={address.id}
-								onClick={() => onSelect(address)}
-								type="button"
-							>
-								<div className="flex items-center gap-2">
-									<p className="font-medium text-sm">{formatAddress(address)}</p>
-									{address.isDefault && (
-										<span className="rounded bg-primary/10 px-2 py-0.5 font-medium text-primary text-xs">
-											{t("store.checkout.address.default")}
-										</span>
-									)}
-								</div>
-								<p className="text-muted-foreground text-sm">
-									{[address.neighborhood, address.city, address.state].filter(Boolean).join(", ")}
-								</p>
-							</button>
-						))}
-						{visibleAddresses.length === 0 && (
-							<p className="text-muted-foreground text-sm">{t("store.checkout.address.noResults")}</p>
+						footer={({ canSubmit, isSubmitting }) => (
+							<div className="flex items-center justify-between gap-3 border-border border-t pt-4">
+								<Button disabled={isSubmitting} onClick={() => setView(addresses.length === 0 ? "create" : "list")} type="button" variant="outline">
+									{t("common.cancel", { defaultValue: "Cancelar" })}
+								</Button>
+								<Button disabled={!canSubmit || isSubmitting} type="submit">
+									{t("store.checkout.address.save")}
+								</Button>
+							</div>
 						)}
-					</div>
-					<Button onClick={() => setView("create")} type="button" variant="outline">
-						{t("store.checkout.address.add")}
-					</Button>
-				</div>
+						onSubmit={onCreate}
+					/>
+				</Modal>
 			)}
 		</Modal>
 	);
