@@ -35,7 +35,7 @@ jobs:
       - name: Parse company slugs
         id: slugs
         env:
-          VITE_COMPANY_SLUG: ${{ vars.VITE_COMPANY_SLUG }}
+          VITE_COMPANY_SLUG: ${{ vars.VARIANTS }}
         run: |
           slugs=$(jq -cn --arg value "$VITE_COMPANY_SLUG" '$value | split(",") | map(gsub("^\\s+|\\s+$"; "")) | map(select(length > 0)) | unique')
           if [ "$slugs" = "[]" ]; then
