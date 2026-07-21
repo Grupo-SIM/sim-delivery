@@ -16,8 +16,8 @@ jobs:
       # "frontend" is in it. A push that touches neither builds nothing.
       # An empty base-sha (workflow_dispatch / first push) plans every service.
       tasks: ${{ steps.affected.outputs.tasks }}
-      # JSON array of company slugs from the comma-separated GitHub VARIANTS variable.
-      variants: ${{ steps.variants.outputs.slugs }}
+      # JSON array parsed from comma-separated GitHub VITE_COMPANY_SLUG variable.
+      slugs: ${{ steps.slugs.outputs.values }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -32,13 +32,17 @@ jobs:
           tasks: build
           base-sha: ${{ github.event.before }}
 
-      - name: Parse variant keys
-        id: variants
+      - name: Parse company slugs
+        id: slugs
         env:
-          VARIANTS: ${{ vars.VARIANTS }}
+          VITE_COMPANY_SLUG: ${{ vars.VITE_COMPANY_SLUG }}
         run: |
-          slugs=$(jq -cn --arg variants "$VARIANTS" '$variants | split(",") | map(gsub("^\\s+|\\s+$"; "")) | map(select(length > 0))')
-          echo "slugs=$slugs" >> "$GITHUB_OUTPUT"
+          slugs=$(jq -cn --arg value "$VITE_COMPANY_SLUG" '$value | split(",") | map(gsub("^\\s+|\\s+$"; "")) | map(select(length > 0)) | unique')
+          if [ "$slugs" = "[]" ]; then
+            echo "::error title=Missing frontend companies::Set VITE_COMPANY_SLUG to one or more comma-separated company slugs."
+            exit 1
+          fi
+          echo "values=$slugs" >> "$GITHUB_OUTPUT"
 
   ghcr-backend:
     name: Build and publish backend image
@@ -64,7 +68,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
   ghcr-frontend:
-    name: Build and publish frontend image (${{ matrix.variant }})
+    name: Build and publish frontend image (${{ matrix.slug }})
     needs: detect
     if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'frontend') }}
     runs-on: ubuntu-latest
@@ -74,7 +78,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: ${{ fromJSON(needs.detect.outputs.variants) }}
+        slug: ${{ fromJSON(needs.detect.outputs.slugs) }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -82,24 +86,22 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
 
-      - name: Inject variant
-        run: bun scripts/inject-variant.ts --slug=${{ matrix.variant }}
-
       - name: Build and publish image
         uses: hyoretsu/gh-actions/ghcr@main
         with:
-          # Each variant gets its own tagged image: frontend-default, frontend-demo-acai, …
-          image: ghcr.io/${{ github.repository }}_frontend-${{ matrix.variant }}
+          # Each company gets its own tagged image: frontend-zero-grau, frontend-acai-top, …
+          image: ghcr.io/${{ github.repository }}_frontend-${{ matrix.slug }}
           dockerfile: frontend/Dockerfile
           build-args: |
             NODE_ENV=production
             VITE_API_URL=${{ vars.VITE_API_URL }}
             VITE_APP_URL=${{ vars.VITE_APP_URL }}
-          cache-scope: frontend-${{ matrix.variant }}
+            VITE_COMPANY_SLUG=${{ matrix.slug }}
+          cache-scope: frontend-${{ matrix.slug }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
   desktop:
-    name: Build & release ${{ matrix.label }} app
+    name: Build & release ${{ matrix.slug }} / ${{ matrix.platform }} app
     needs: detect
     # Only the Tauri frontend produces these apps; skip when it isn't affected.
     if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'frontend') }}
@@ -109,14 +111,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - platform: windows-latest
-            label: Windows
-          - platform: ubuntu-latest
-            label: Linux
-          - platform: macos-latest
-            label: macOS
+        slug: ${{ fromJSON(needs.detect.outputs.slugs) }}
+        platform: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.platform }}
+    env:
+      VITE_COMPANY_SLUG: ${{ matrix.slug }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -128,10 +127,16 @@ jobs:
           release-name: Template App v__VERSION__
 
   android:
-    name: Build & release Android app
+    name: Build & release Android app (${{ matrix.slug }})
     needs: detect
     if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'frontend') }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        slug: ${{ fromJSON(needs.detect.outputs.slugs) }}
+    env:
+      VITE_COMPANY_SLUG: ${{ matrix.slug }}
     permissions:
       # softprops/action-gh-release creates the GitHub release / uploads the APK.
       contents: write
