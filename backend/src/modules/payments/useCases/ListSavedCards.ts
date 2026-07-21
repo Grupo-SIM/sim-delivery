@@ -26,6 +26,7 @@ export class ListSavedCards {
 			id: card.id,
 			isDefault: card.isDefault,
 			last4: card.last4,
+			nickname: card.nickname,
 		}));
 	}
 }

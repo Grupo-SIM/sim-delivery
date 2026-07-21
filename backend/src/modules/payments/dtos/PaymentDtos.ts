@@ -27,6 +27,7 @@ export type NewCardInput = typeof NewCardInput.static;
 
 export const CreateCardPaymentBody = t.Object({
 	card: t.Optional(NewCardInput),
+	cardNickname: t.Optional(t.String({ maxLength: 60, minLength: 1 })),
 	/** CPF digits; required when the customer profile has none yet. */
 	cpf: t.Optional(t.String({ maxLength: 14, minLength: 11 })),
 	orderId: t.String({ minLength: 1 }),
@@ -56,6 +57,7 @@ export const SavedCardReturn = t.Object({
 	id: t.String(),
 	isDefault: t.Boolean(),
 	last4: t.String(),
+	nickname: t.Nullable(t.String()),
 });
 export type SavedCardReturn = typeof SavedCardReturn.static;
 

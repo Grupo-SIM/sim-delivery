@@ -57,6 +57,7 @@ interface SavedCardRow {
 	id: string;
 	isDefault: boolean;
 	last4: string;
+	nickname?: string | null;
 }
 
 const baseCompany: CompanyRow = { id: "cmp_1", slug: "zero-grau" };
@@ -694,6 +695,7 @@ describe("ListSavedCards", () => {
 			id: "card_1",
 			isDefault: false,
 			last4: "4242",
+			nickname: null,
 			...overrides,
 		};
 	}
@@ -712,6 +714,7 @@ describe("ListSavedCards", () => {
 				id: "card_1",
 				isDefault: false,
 				last4: "4242",
+				nickname: null,
 			},
 		]);
 	});
@@ -803,10 +806,14 @@ describe("CreateCardPayment", () => {
 		const { simpay } = makeSimpay();
 		const { dom } = makeDom();
 
-		await new CreateCardPayment(prisma, simpay, dom).execute("user_1", { ...body, saveCard: true });
+		await new CreateCardPayment(prisma, simpay, dom).execute("user_1", {
+			...body,
+			cardNickname: "Cartão pessoal",
+			saveCard: true,
+		});
 
 		expect(savedCards).toHaveLength(1);
-		expect(savedCards[0]).toMatchObject({ isDefault: true, last4: "4242" });
+		expect(savedCards[0]).toMatchObject({ isDefault: true, last4: "4242", nickname: "Cartão pessoal" });
 	});
 
 	it("does not mark a later saved card as default", async () => {

@@ -62,6 +62,7 @@ export class CreateCardPayment {
 						holderName: tokenized.holderName,
 						isDefault: existingCards === 0,
 						last4: tokenized.last4,
+						nickname: data.cardNickname?.trim() || null,
 					},
 				});
 			}

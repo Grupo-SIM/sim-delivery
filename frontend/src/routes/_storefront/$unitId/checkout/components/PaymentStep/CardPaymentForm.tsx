@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import { Input } from "@/components/ui/input";
 import { MaskedInput } from "@/components/ui/MaskedInput";
 import { Label } from "@/components/ui/label";
+import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import type { GetPaymentsCards200 } from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
 
@@ -17,6 +18,7 @@ export interface CardPaymentValue {
 		holderName: string;
 		number: string;
 	};
+	cardNickname?: string;
 	cpf?: string;
 	saveCard?: boolean;
 	savedCardId?: string;
@@ -61,6 +63,7 @@ export function CardPaymentForm({
 	const [cvv, setCvv] = useState("");
 	const [cpf, setCpf] = useState("");
 	const [saveCard, setSaveCard] = useState(true);
+	const [cardNickname, setCardNickname] = useDebouncedInput("", () => undefined);
 
 	const usingSavedCard = selected !== "new";
 
@@ -83,6 +86,7 @@ export function CardPaymentForm({
 				? { cpf: cpf || undefined, savedCardId: selected }
 				: {
 						card: { cvv, expMonth, expYear, holderName: holderName.trim(), number },
+						cardNickname: saveCard ? cardNickname.trim() || undefined : undefined,
 						cpf: cpf || undefined,
 						saveCard,
 					},
@@ -117,7 +121,7 @@ export function CardPaymentForm({
 								/>
 								<Icon className="size-6 text-muted-foreground" />
 								<span className="flex-1 text-sm">
-									•••• {card.last4}
+									{card.nickname ?? `•••• ${card.last4}`}
 									<span className="ml-2 text-muted-foreground text-xs">
 										{card.expiryMonth}/{card.expiryYear.slice(-2)}
 									</span>
@@ -199,6 +203,16 @@ export function CardPaymentForm({
 						<Checkbox checked={saveCard} onChange={event => setSaveCard(event.currentTarget.checked)} />
 						{t("store.checkout.payment.card.save")}
 					</label>
+					{saveCard && (
+						<Label>
+							{t("store.checkout.payment.card.nickname")}
+							<Input
+								onChange={event => setCardNickname(event.currentTarget.value)}
+								placeholder={t("store.checkout.payment.card.nicknamePlaceholder")}
+								value={cardNickname}
+							/>
+						</Label>
+					)}
 				</>
 			)}
 

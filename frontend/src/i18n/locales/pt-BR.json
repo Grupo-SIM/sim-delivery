@@ -1060,6 +1060,8 @@
 						"holder": "Nome no cartão",
 						"holderPlaceholder": "Como impresso no cartão",
 						"newCard": "Usar outro cartão",
+						"nickname": "Apelido do cartão",
+						"nicknamePlaceholder": "Ex: Cartão pessoal",
 						"number": "Número do cartão",
 						"pay": "Pagar {{amount}}",
 						"paying": "Processando…",
