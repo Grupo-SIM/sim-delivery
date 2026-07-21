@@ -103,7 +103,7 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 			{open &&
 				createPortal(
 					<div
-						className="overflow-hidden rounded-md border border-border bg-popover shadow-medium"
+						className="overflow-hidden rounded-md border border-border bg-card text-card-foreground shadow-medium"
 						onMouseDown={e => e.preventDefault()}
 						ref={dropdownRef}
 						role="listbox"
@@ -111,6 +111,7 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 							left: pos.left,
 							maxHeight: 260,
 							overflowY: "auto",
+							pointerEvents: "auto",
 							position: "fixed",
 							top: pos.top,
 							width: pos.width,
@@ -124,8 +125,8 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 										{group.options.map(opt => (
 											<button
 												className={cn(
-													"w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-accent",
-													opt.value === value && "bg-accent/60 font-medium",
+												"w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-accent",
+												opt.value === value && "bg-accent/60 font-medium",
 												)}
 												key={opt.value}
 												onClick={() => select(opt.value)}
@@ -140,8 +141,8 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 							: options?.map(opt => (
 									<button
 										className={cn(
-											"w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-accent",
-											opt.value === value && "bg-accent/60 font-medium",
+										"w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-accent",
+										opt.value === value && "bg-accent/60 font-medium",
 										)}
 										key={opt.value}
 										onClick={() => select(opt.value)}

@@ -1,14 +1,18 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Container } from "@/components/ui/Container";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { Input } from "@/components/ui/input";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
-import { useGetOrders, useGetUnits } from "@/lib/api";
+import { getOrdersQueryKey, useGetOrders, useGetUnits, usePostOrdersCloseDay } from "@/lib/api";
+import { showToast } from "@/stores";
 import { OrdersKanban } from "./components";
 
 const STATUS_FILTERS = [
@@ -23,26 +27,19 @@ const STATUS_FILTERS = [
 	"cancelado",
 ] as const;
 
-const KANBAN_STATUSES = [
-	"awaiting_payment",
-	"recebido",
-	"em_preparo",
-	"pronto",
-	"saiu_para_entrega",
-	"entregue",
-	"retirado",
-	"cancelado",
-] as const;
-
+const KANBAN_STATUSES = STATUS_FILTERS.filter(status => status !== "all");
 type StatusFilter = (typeof STATUS_FILTERS)[number];
 
 function OrdersPage() {
 	const { t } = useTranslation();
+	const queryClient = useQueryClient();
 	const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
-	const [unitId, setUnitId] = useState<string>("all");
-	const [deliveryMethod, setDeliveryMethod] = useState<string>("all");
+	const [unitId, setUnitId] = useState("all");
+	const [deliveryMethod, setDeliveryMethod] = useState("all");
 	const [search, setSearch] = useState("");
+	const [date, setDate] = useState("");
 
+	const closeDay = usePostOrdersCloseDay();
 	const { data: units, isPending: unitsPending } = useGetUnits();
 
 	const {
@@ -54,13 +51,17 @@ function OrdersPage() {
 		...(unitId !== "all" ? { unitId } : {}),
 		...(deliveryMethod !== "all" ? { deliveryMethod: deliveryMethod as "delivery" | "pickup" } : {}),
 		...(search.trim() ? { search: search.trim() } : {}),
+		...(date
+			? {
+					from: new Date(`${date}T00:00:00`).toISOString(),
+					to: new Date(`${date}T23:59:59.999`).toISOString(),
+				}
+			: {}),
 	});
-
 	const unitOptions = [
 		{ label: t("admin.orders.filter.unitAll"), value: "all" },
-		...(units ?? []).map(u => ({ label: u.name, value: u.id })),
+		...(units ?? []).map(unit => ({ label: unit.name, value: unit.id })),
 	];
-
 	const methodOptions = [
 		{ label: t("admin.orders.filter.all"), value: "all" },
 		{ label: t("store.checkout.order.delivery"), value: "delivery" },
@@ -68,20 +69,43 @@ function OrdersPage() {
 	];
 	const visibleStatuses = statusFilter === "all" ? KANBAN_STATUSES : [statusFilter];
 
+	function closeCurrentDay() {
+		closeDay.mutate(undefined, {
+			onError: () => showToast("Não foi possível encerrar o dia.", "negative"),
+			onSuccess: () => {
+				queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() });
+				showToast("Dia encerrado. O kanban está pronto para novos pedidos.", "positive");
+			},
+		});
+	}
+
 	return (
 		<Container className="space-y-6 py-8">
-			<SectionHeading subtitle={t("admin.orders.subtitle")} title={t("admin.orders.title")} />
+			<div className="flex flex-wrap items-start justify-between gap-4">
+				<SectionHeading subtitle={t("admin.orders.subtitle")} title={t("admin.orders.title")} />
+				<ConfirmActionButton
+					confirmation="Pedidos atuais sairão do kanban, mas continuarão disponíveis no histórico."
+					confirmLabel="Confirmar"
+					disabled={closeDay.isPending || Boolean(date)}
+					onConfirm={closeCurrentDay}
+					tooltip="Encerrar dia"
+					type="button"
+					variant="outline"
+				>
+					{closeDay.isPending ? "Encerrando..." : "Encerrar dia"}
+				</ConfirmActionButton>
+			</div>
 
 			<div className="flex flex-wrap gap-2">
-				{STATUS_FILTERS.map(s => (
+				{STATUS_FILTERS.map(status => (
 					<Button
-						key={s}
-						onClick={() => setStatusFilter(s)}
+						key={status}
+						onClick={() => setStatusFilter(status)}
 						size="sm"
 						type="button"
-						variant={statusFilter === s ? "default" : "outline"}
+						variant={statusFilter === status ? "default" : "outline"}
 					>
-						{t(`admin.orders.status.${s}`, { defaultValue: s })}
+						{t(`admin.orders.status.${status}`, { defaultValue: status })}
 					</Button>
 				))}
 			</div>
@@ -108,6 +132,16 @@ function OrdersPage() {
 						value={deliveryMethod}
 					/>
 				</div>
+				<label className="flex flex-col gap-1" htmlFor="orders-date-filter">
+					<span className="font-medium text-sm">{t("admin.orders.filter.date")}</span>
+					<Input
+						className="w-44"
+						id="orders-date-filter"
+						onChange={event => setDate(event.currentTarget.value)}
+						type="date"
+						value={date}
+					/>
+				</label>
 			</div>
 
 			{isPending || unitsPending ? (
@@ -120,7 +154,4 @@ function OrdersPage() {
 		</Container>
 	);
 }
-
-export const Route = createFileRoute("/admin/orders/")({
-	component: OrdersPage,
-});
+export const Route = createFileRoute("/admin/orders/")({ component: OrdersPage });

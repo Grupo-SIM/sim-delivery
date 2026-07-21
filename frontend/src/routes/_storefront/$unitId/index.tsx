@@ -6,6 +6,7 @@ import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { StarRating } from "@/components/ui/StarRating";
 import { useGetPublicUnits, useGetPublicUnitsByUnitSlugMenu } from "@/lib/api";
 import { slug } from "@/lib/variant";
 import { useSelectedUnitStore } from "@/stores";
@@ -17,6 +18,7 @@ import {
 	StoreHoursModal,
 	StoreToolbar,
 	UnitBanner,
+	UnitReviews,
 	UnitStoreSkeleton,
 	UnitSwitcher,
 } from "./components";
@@ -68,6 +70,9 @@ function UnitStorePage() {
 						>
 							{unit.isOpenNow ? t("store.status.open") : t("store.status.closed")}
 						</Badge>
+						{Number(unit.ratingCount) > 0 && (
+							<StarRating average={unit.ratingAverage} count={Number(unit.ratingCount)} />
+						)}
 					</div>
 					{units && <UnitSwitcher unitId={unitSlug} units={units} />}
 				</div>
@@ -105,6 +110,8 @@ function UnitStorePage() {
 						unitSlug={unitSlug}
 					/>
 				)}
+
+				<UnitReviews unitId={unit.id} />
 
 				<CartBar
 					deliveryFee={fee}

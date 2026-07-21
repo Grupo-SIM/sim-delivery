@@ -1,71 +1,8 @@
-import { Modal as BaseModal, ModalBody, ModalHeader, ROLE, SIZE } from "baseui/modal";
+import * as Dialog from "@radix-ui/react-dialog";
+import { LuX } from "react-icons/lu";
 import type { ReactNode } from "react";
 
-interface ModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	title?: ReactNode;
-	children: ReactNode;
-	maxWidth?: string;
-}
-
+interface ModalProps { isOpen: boolean; onClose: () => void; title?: ReactNode; children: ReactNode; maxWidth?: string; }
 export function Modal({ children, isOpen, maxWidth = "640px", onClose, title }: ModalProps) {
-	return (
-		<BaseModal
-			animate
-			autoFocus
-			isOpen={isOpen}
-			onClose={onClose}
-			overrides={{
-				Close: {
-					style: {
-						borderRadius: "10px",
-						height: "36px",
-						right: "14px",
-						top: "14px",
-						width: "36px",
-					},
-				},
-				Dialog: {
-					style: {
-						borderRadius: "24px",
-						maxWidth,
-						transform: "none",
-						transitionDuration: "150ms",
-						transitionProperty: "opacity",
-						width: "92vw",
-					},
-				},
-				DialogContainer: {
-					style: {
-						backdropFilter: "blur(4px)",
-						backgroundColor: "rgba(0,0,0,0.55)",
-						transitionDuration: "150ms",
-					},
-				},
-				Root: {
-					style: { zIndex: 9999 },
-				},
-			}}
-			role={ROLE.dialog}
-			size={SIZE.auto}
-		>
-			{title && (
-				<ModalHeader
-					$style={{
-						fontSize: "20px",
-						fontWeight: 700,
-						lineHeight: "28px",
-						margin: 0,
-						padding: "28px 64px 0 28px",
-					}}
-				>
-					{title}
-				</ModalHeader>
-			)}
-				<ModalBody $style={{ fontSize: "16px", lineHeight: "24px", padding: "16px 64px 28px 28px" }}>
-				{children}
-			</ModalBody>
-		</BaseModal>
-	);
+	return <Dialog.Root open={isOpen} onOpenChange={open => { if (!open) onClose(); }}><Dialog.Portal><Dialog.Overlay className="fixed inset-0 z-50 bg-black/55 backdrop-blur-sm" /><Dialog.Content className="fixed top-1/2 left-1/2 z-50 w-[92vw] -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-card p-7 text-card-foreground shadow-2xl" style={{ maxWidth }}><Dialog.Close aria-label="Fechar" className="absolute top-4 right-4 grid size-9 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"><LuX className="size-5" /></Dialog.Close>{title && <Dialog.Title className="pr-10 font-bold text-xl">{title}</Dialog.Title>}<div className={title ? "pt-4" : "pr-10"}>{children}</div></Dialog.Content></Dialog.Portal></Dialog.Root>;
 }

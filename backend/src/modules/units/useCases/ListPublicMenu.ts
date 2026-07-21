@@ -63,6 +63,14 @@ export class ListPublicMenu {
 			excludedByAssociation.set(exclusion.unitProductId, ids);
 		}
 
+		const ratings = await this.prisma.productReview.groupBy({
+			_avg: { rating: true },
+			_count: { rating: true },
+			by: ["productId"],
+			where: { productId: { in: associations.map(association => association.product.id) } },
+		});
+		const ratingByProduct = new Map(ratings.map(r => [r.productId, r]));
+
 		// Preserve category order (position asc) with the loose group last.
 		const sections = new Map<string, PublicMenuSectionReturn>();
 		const positionOf = new Map<string, number>();
@@ -103,6 +111,7 @@ export class ListPublicMenu {
 				}
 
 				const basePriceCents = association.priceCentsOverride ?? product.basePriceCents;
+				const rating = ratingByProduct.get(product.id);
 
 				// "A partir de": base + sum of cheapest available option per required group.
 				const fromPriceCents =
@@ -143,6 +152,8 @@ export class ListPublicMenu {
 					priceCents: basePriceCents,
 					productId: product.id,
 					productSlug: product.slug,
+					ratingAverage: rating?._avg.rating ?? null,
+					ratingCount: rating?._count.rating ?? 0,
 					tags,
 					title: product.title,
 				});

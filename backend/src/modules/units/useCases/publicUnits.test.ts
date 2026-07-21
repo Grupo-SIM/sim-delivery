@@ -24,6 +24,12 @@ function prismaWith(
 			findUnique: async ({ where }: { where: { slug: string } }) =>
 				company && company.slug === where.slug ? company : null,
 		},
+		order: {
+			findMany: async () => [],
+		},
+		review: {
+			groupBy: async () => [],
+		},
 		unit: {
 			findMany: async ({ where }: { where: { companyId: string } }) =>
 				units
@@ -66,6 +72,8 @@ describe("ListPublicUnits", () => {
 			imageUrl: "https://example.com/ipes-unit.png",
 			isOpenNow: true,
 			promotionalImages: [],
+			ratingAverage: null,
+			ratingCount: 0,
 			slug: "ipes",
 		});
 	});

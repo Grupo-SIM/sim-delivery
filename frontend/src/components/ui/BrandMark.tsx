@@ -17,7 +17,7 @@ export function BrandMark({ className, showWordmark = true, variant = "default" 
 				aria-hidden
 				className={cn(
 					"inline-flex h-8 w-8 items-center justify-center rounded-full font-display text-sm",
-					inverse ? "bg-white text-brand-blue" : "bg-brand-blue text-white",
+					inverse ? "bg-white text-black" : "bg-black text-white",
 				)}
 			>
 				ZG

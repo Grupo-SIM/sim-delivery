@@ -4,6 +4,7 @@ export const CreateReviewBody = t.Object({
 	comment: t.Optional(t.String({ maxLength: 500 })),
 	orderId: t.String(),
 	rating: t.Integer({ maximum: 5, minimum: 1 }),
+	slug: t.String(),
 });
 export type CreateReviewBody = typeof CreateReviewBody.static;
 

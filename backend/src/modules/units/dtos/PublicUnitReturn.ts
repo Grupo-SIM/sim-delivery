@@ -26,6 +26,8 @@ export const PublicUnitReturn = t.Object({
 	prepTimeMaxMinutes: t.Nullable(t.Integer()),
 	prepTimeMinMinutes: t.Nullable(t.Integer()),
 	promotionalImages: t.Array(PromotionalImageReturn),
+	ratingAverage: t.Nullable(t.Number()),
+	ratingCount: t.Integer(),
 	slug: t.String(),
 });
 export type PublicUnitReturn = typeof PublicUnitReturn.static;

@@ -14,7 +14,7 @@ export function useLiveBranding(): Branding {
 	const { data } = useGetBranding({ slug }, { query: { staleTime: 5 * 60 * 1000 } });
 
 	return useMemo<Branding>(() => {
-		if (!data) return staticBranding;
+		if (!data) return { ...staticBranding, themeColors: resolveThemeColors(staticBranding.themeColors) };
 
 		return {
 			...staticBranding,
@@ -33,7 +33,7 @@ export function useLiveBranding(): Branding {
 			gtmId: data.gtmId,
 			logoUrl: data.logoUrl ?? staticBranding.logoUrl,
 			metaPixelId: data.metaPixelId,
-			themeColors: data.themeColors ? resolveThemeColors(data.themeColors) : staticBranding.themeColors,
+			themeColors: resolveThemeColors(data.themeColors ?? staticBranding.themeColors),
 		};
 	}, [data]);
 }

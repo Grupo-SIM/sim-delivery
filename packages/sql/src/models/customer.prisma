@@ -18,6 +18,7 @@ model Customer {
     cashbackLedger   CashbackLedger[]
     loyaltyLedger    LoyaltyLedger[]
     orders           Order[]
+    productReviews   ProductReview[]
     reviews          Review[]
     savedCards       SavedCard[]
 

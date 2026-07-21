@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { LuImageOff } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { StarRating } from "@/components/ui/StarRating";
 import { type MenuItem, money } from "./types";
 
 interface MenuItemCardProps {
@@ -44,6 +45,9 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 			</div>
 			<div className="flex min-w-0 flex-1 flex-col gap-2 p-4">
 				<p className="font-semibold leading-tight">{item.title}</p>
+				{Number(item.ratingCount) > 0 && (
+					<StarRating average={item.ratingAverage} count={Number(item.ratingCount)} />
+				)}
 				{item.tags.length > 0 && (
 					<div className="flex flex-wrap gap-1">
 						{item.tags.map(tag => (

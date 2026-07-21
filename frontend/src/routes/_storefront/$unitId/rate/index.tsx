@@ -6,11 +6,85 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { TextField } from "@/components/ui/TextField";
-import { usePostReviews } from "@/lib/api";
+import { usePostProductReviews, usePostReviews } from "@/lib/api";
+import { useGetCustomerOrder } from "@/lib/api/get-customer-order";
+import { slug } from "@/lib/variant";
 
 const searchSchema = z.object({
 	orderId: z.string(),
 });
+
+interface ProductRatingRowProps {
+	orderId: string;
+	productId: string;
+	productName: string;
+}
+
+function ProductRatingRow({ orderId, productId, productName }: ProductRatingRowProps) {
+	const { t } = useTranslation();
+	const [rating, setRating] = useState(0);
+	const [hovered, setHovered] = useState(0);
+	const [comment, setComment] = useState("");
+	const [submitted, setSubmitted] = useState(false);
+	const [errorKey, setErrorKey] = useState<string | null>(null);
+
+	const { isPending, mutate } = usePostProductReviews();
+
+	function submit() {
+		if (rating === 0) return;
+		setErrorKey(null);
+		mutate(
+			{ data: { comment: comment.trim() || undefined, orderId, productId, rating, slug: slug ?? "" } },
+			{
+				onError: (err: { status?: number }) => {
+					if (err.status === 409) setErrorKey("store.rate.products.alreadyReviewed");
+					else if (err.status === 422) setErrorKey("store.rate.notEligible");
+					else setErrorKey("store.rate.products.error");
+				},
+				onSuccess: () => setSubmitted(true),
+			},
+		);
+	}
+
+	if (submitted) {
+		return (
+			<div className="rounded-brand border border-border bg-card p-4 text-muted-foreground text-sm">
+				{productName} — {t("store.rate.products.submitted")}
+			</div>
+		);
+	}
+
+	return (
+		<div className="space-y-3 rounded-brand border border-border bg-card p-4">
+			<p className="font-medium text-sm">{productName}</p>
+			<div className="flex gap-1">
+				{[1, 2, 3, 4, 5].map(star => (
+					<button
+						className="cursor-pointer text-2xl transition-transform hover:scale-110"
+						key={star}
+						onClick={() => setRating(star)}
+						onMouseEnter={() => setHovered(star)}
+						onMouseLeave={() => setHovered(0)}
+						type="button"
+					>
+						{(hovered || rating) >= star ? "⭐" : "☆"}
+					</button>
+				))}
+			</div>
+			<TextField
+				label={t("store.rate.products.comment")}
+				onValueChange={setComment}
+				placeholder={t("store.rate.commentPlaceholder")}
+				value={comment}
+			/>
+			{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+			{errorKey && <p className="text-destructive text-sm">{(t as any)(errorKey)}</p>}
+			<Button disabled={rating === 0 || isPending} onClick={submit} size="sm" type="button">
+				{isPending ? t("store.rate.products.submitting") : t("store.rate.products.submit")}
+			</Button>
+		</div>
+	);
+}
 
 function RatePage() {
 	const { t } = useTranslation();
@@ -24,12 +98,17 @@ function RatePage() {
 	const [errorKey, setErrorKey] = useState<string | null>(null);
 
 	const { isPending, mutate } = usePostReviews();
+	const orderQuery = useGetCustomerOrder(orderId, slug ?? "");
+
+	const uniqueProducts = orderQuery.data
+		? [...new Map(orderQuery.data.items.map(item => [item.productId, item.productName])).entries()]
+		: [];
 
 	function submit() {
 		if (rating === 0) return;
 		setErrorKey(null);
 		mutate(
-			{ data: { comment: comment.trim() || undefined, orderId, rating } },
+			{ data: { comment: comment.trim() || undefined, orderId, rating, slug: slug ?? "" } },
 			{
 				onError: (err: { status?: number }) => {
 					if (err.status === 409) setErrorKey("store.rate.alreadyReviewed");
@@ -41,53 +120,73 @@ function RatePage() {
 		);
 	}
 
-	if (submitted) {
-		return (
-			<Container className="max-w-lg space-y-6 py-16 text-center">
-				<p className="text-5xl">⭐</p>
-				<SectionHeading title={t("store.rate.success")} />
-				<Link className="text-primary text-sm underline" params={{ unitId }} to="/$unitId">
-					{t("store.checkout.thankYou.continue")}
-				</Link>
-			</Container>
-		);
-	}
-
 	return (
-		<Container className="max-w-lg space-y-6 py-8">
-			<SectionHeading subtitle={t("store.rate.subtitle")} title={t("store.rate.title")} />
+		<Container className="max-w-lg space-y-8 py-8">
+			{submitted ? (
+				<div className="space-y-6 text-center">
+					<p className="text-5xl">⭐</p>
+					<SectionHeading title={t("store.rate.success")} />
+				</div>
+			) : (
+				<div className="space-y-6">
+					<SectionHeading subtitle={t("store.rate.subtitle")} title={t("store.rate.title")} />
 
-			<div className="space-y-2">
-				<p className="font-medium text-sm">{t("store.rate.rating")}</p>
-				<div className="flex gap-1">
-					{[1, 2, 3, 4, 5].map(star => (
-						<button
-							className="text-3xl transition-transform hover:scale-110"
-							key={star}
-							onClick={() => setRating(star)}
-							onMouseEnter={() => setHovered(star)}
-							onMouseLeave={() => setHovered(0)}
-							type="button"
-						>
-							{(hovered || rating) >= star ? "⭐" : "☆"}
-						</button>
+					<div className="space-y-2">
+						<p className="font-medium text-sm">{t("store.rate.rating")}</p>
+						<div className="flex gap-1">
+							{[1, 2, 3, 4, 5].map(star => (
+								<button
+									className="text-3xl transition-transform hover:scale-110"
+									key={star}
+									onClick={() => setRating(star)}
+									onMouseEnter={() => setHovered(star)}
+									onMouseLeave={() => setHovered(0)}
+									type="button"
+								>
+									{(hovered || rating) >= star ? "⭐" : "☆"}
+								</button>
+							))}
+						</div>
+					</div>
+
+					<TextField
+						label={t("store.rate.comment")}
+						onValueChange={setComment}
+						placeholder={t("store.rate.commentPlaceholder")}
+						value={comment}
+					/>
+
+					{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+					{errorKey && <p className="text-destructive text-sm">{(t as any)(errorKey)}</p>}
+
+					<Button disabled={rating === 0 || isPending} onClick={submit} type="button">
+						{isPending ? t("store.rate.submitting") : t("store.rate.submit")}
+					</Button>
+				</div>
+			)}
+
+			{uniqueProducts.length > 0 && (
+				<div className="space-y-3">
+					<SectionHeading
+						subtitle={t("store.rate.products.subtitle")}
+						title={t("store.rate.products.title")}
+					/>
+					{uniqueProducts.map(([productId, productName]) => (
+						<ProductRatingRow
+							key={productId}
+							orderId={orderId}
+							productId={productId}
+							productName={productName}
+						/>
 					))}
 				</div>
-			</div>
+			)}
 
-			<TextField
-				label={t("store.rate.comment")}
-				onValueChange={setComment}
-				placeholder={t("store.rate.commentPlaceholder")}
-				value={comment}
-			/>
-
-			{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-			{errorKey && <p className="text-destructive text-sm">{(t as any)(errorKey)}</p>}
-
-			<Button disabled={rating === 0 || isPending} onClick={submit} type="button">
-				{isPending ? t("store.rate.submitting") : t("store.rate.submit")}
-			</Button>
+			{submitted && (
+				<Link className="block text-center text-primary text-sm underline" params={{ unitId }} to="/$unitId">
+					{t("store.checkout.thankYou.continue")}
+				</Link>
+			)}
 		</Container>
 	);
 }

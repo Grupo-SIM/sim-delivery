@@ -10,6 +10,7 @@ import { ExampleErrors, ExampleErrorsStatusCodes } from "@/modules/example/error
 import { LoyaltyErrors, LoyaltyErrorsStatusCodes } from "@/modules/loyalty/errors";
 import { OrderErrors, OrderErrorsStatusCodes } from "@/modules/orders/errors";
 import { PaymentErrors, PaymentErrorsStatusCodes } from "@/modules/payments/errors";
+import { ProductReviewErrors, ProductReviewErrorsStatusCodes } from "@/modules/productReviews/errors";
 import { ProductErrors, ProductErrorsStatusCodes } from "@/modules/products/errors";
 import {
 	PromotionalImageErrors,
@@ -41,6 +42,7 @@ export const DomainErrors = {
 	...ProductErrors,
 	...PromotionalImageErrors,
 	...UnitProductErrors,
+	...ProductReviewErrors,
 	...CepErrors,
 } as const;
 export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCodes> = {
@@ -62,6 +64,7 @@ export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCo
 	...ProductErrorsStatusCodes,
 	...PromotionalImageErrorsStatusCodes,
 	...UnitProductErrorsStatusCodes,
+	...ProductReviewErrorsStatusCodes,
 	...CepErrorsStatusCodes,
 };
 
