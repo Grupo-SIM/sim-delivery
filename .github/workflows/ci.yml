@@ -41,6 +41,8 @@ jobs:
     name: "${{ matrix.package }} / Build"
     needs: detect
     runs-on: ubuntu-latest
+    env:
+      VITE_COMPANY_SLUG: zero-grau
     strategy:
       fail-fast: false
       matrix:
@@ -59,6 +61,8 @@ jobs:
     needs: detect
     if: contains(fromJSON(needs.detect.outputs.tasks)['build'], 'frontend')
     runs-on: ubuntu-latest
+    env:
+      VITE_COMPANY_SLUG: zero-grau
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
