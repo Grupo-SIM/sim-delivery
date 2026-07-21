@@ -68,7 +68,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
   ghcr-frontend:
-    name: Build and publish frontend image (${{ matrix.slug }})
+    name: ${{ matrix.slug }} / Build and publish frontend image
     needs: detect
     if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'frontend') }}
     runs-on: ubuntu-latest
@@ -101,7 +101,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
   desktop:
-    name: Build & release ${{ matrix.slug }} / ${{ matrix.platform }} app
+    name: ${{ matrix.slug }} / Build & release ${{ matrix.platform }} app
     needs: detect
     # Only the Tauri frontend produces these apps; skip when it isn't affected.
     if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'frontend') }}
@@ -127,7 +127,7 @@ jobs:
           release-name: Template App v__VERSION__
 
   android:
-    name: Build & release Android app (${{ matrix.slug }})
+    name: ${{ matrix.slug }} / Build & release Android app
     needs: detect
     if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'frontend') }}
     runs-on: ubuntu-latest
