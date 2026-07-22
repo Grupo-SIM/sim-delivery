@@ -261,6 +261,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 								) : (
 									column.orders.map(order => (
 										<OrderKanbanCard
+											canManageAssignments={role !== "kitchen" && role !== "courier"}
 											canDrag={
 												role !== "kitchen" && role !== "courier"
 													? true

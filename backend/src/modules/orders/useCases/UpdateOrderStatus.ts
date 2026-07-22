@@ -65,7 +65,7 @@ export class UpdateOrderStatus {
 		data: UpdateOrderStatusBody,
 		role?: Role,
 	): Promise<OrderReturn> {
-		const { status, cancelReason } = data;
+		const { status, cancelReason, preparedById } = data;
 
 		const order = await this.prisma.order.findFirst({
 			include: { company: { select: { orderStatusWhatsAppTemplates: true } }, customer: true },
@@ -73,14 +73,25 @@ export class UpdateOrderStatus {
 		});
 		if (!order) throw new DomainError(OrderErrors.ORDER_NOT_FOUND);
 		if (!canRoleTransition(role, order.status, status)) throw new DomainError(UserErrors.FORBIDDEN);
+		if (preparedById !== undefined && (role === "kitchen" || role === "courier")) {
+			throw new DomainError(UserErrors.FORBIDDEN);
+		}
 
 		if (!canTransition(order.status, status, order.deliveryMethod))
 			throw new DomainError(OrderErrors.INVALID_TRANSITION);
 		if (status === "cancelado" && !cancelReason) throw new DomainError(OrderErrors.CANCEL_REASON_REQUIRED);
 
+		if (preparedById) {
+			const kitchenMember = await this.prisma.user.findFirst({
+				where: { companyId: order.companyId, id: preparedById, role: "kitchen" },
+			});
+			if (!kitchenMember) throw new DomainError(UserErrors.FORBIDDEN);
+		}
+
 		const updated = await this.prisma.order.update({
 			data: {
 				cancelReason: status === "cancelado" ? cancelReason : null,
+				...(preparedById !== undefined ? { preparedById } : {}),
 				status,
 			},
 			include: { items: { include: { optionSnapshots: true } } },

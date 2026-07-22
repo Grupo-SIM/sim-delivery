@@ -338,6 +338,18 @@
 				"title": "Cozinha"
 			},
 			"orders": {
+				"assignment": {
+					"assignKitchen": "Definir cozinha",
+					"courier": "Entregador",
+					"deadline": "Prazo estimado",
+					"estimatedTime": "{{min}}–{{max}} min",
+					"error": "Não foi possível atualizar a pessoa responsável.",
+					"kitchenTitle": "Definir responsável pela cozinha",
+					"noKitchen": "Nenhuma pessoa da cozinha disponível.",
+					"preparedBy": "Preparado por",
+					"save": "Salvar",
+					"saving": "Salvando..."
+				},
 				"columns": {
 					"customer": "Cliente",
 					"date": "Data",

@@ -61,6 +61,7 @@ model User {
     company    Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
     customer   Customer?
     deliveries Delivery[]
+    preparedOrders Order[] @relation("PreparedOrders")
     courierUnits CourierUnit[]
     sessions   Session[]
 

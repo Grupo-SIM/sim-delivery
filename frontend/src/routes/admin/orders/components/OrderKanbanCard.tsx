@@ -4,23 +4,31 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import type { GetOrders200 } from "@/lib/api";
 import { AssignCourierModal } from "./AssignCourierModal";
-import { OrderStatusBadge } from "./OrderStatusBadge";
+import { AssignKitchenModal } from "./AssignKitchenModal";
+import { OrderDetailsModal } from "./OrderDetailsModal";
 
 interface OrderKanbanCardProps {
+	canManageAssignments: boolean;
 	canDrag: boolean;
 	onDragEnd: () => void;
 	onDragStart: (orderId: string) => void;
 	order: GetOrders200[number];
 }
 
-export function OrderKanbanCard({ canDrag, onDragEnd, onDragStart, order }: OrderKanbanCardProps) {
+export function OrderKanbanCard({ canDrag, canManageAssignments, onDragEnd, onDragStart, order }: OrderKanbanCardProps) {
 	const { t } = useTranslation();
 	const [assignOpen, setAssignOpen] = useState(false);
+	const [assignKitchenOpen, setAssignKitchenOpen] = useState(false);
+	const [detailsOpen, setDetailsOpen] = useState(false);
 
 	const DeliveryIcon = order.deliveryMethod === "delivery" ? LuBike : LuShoppingBag;
 	const isDeliveryOrder = order.deliveryMethod === "delivery";
 	const hasDeliveryAssigned = !!order.delivery;
 	const canAssign = order.status === "pronto" && isDeliveryOrder && !hasDeliveryAssigned;
+	const kitchenStatuses = new Set(["recebido", "em_preparo", "pronto", "retirado", "cancelado"]);
+	const showsKitchenAssignee = kitchenStatuses.has(order.status) && !(order.status === "pronto" && isDeliveryOrder);
+	const showsCourierAssignee = ["pronto", "saiu_para_entrega", "entregue"].includes(order.status) && isDeliveryOrder;
+	const canAssignKitchen = kitchenStatuses.has(order.status);
 
 	const date = new Date(order.createdAt).toLocaleString("pt-BR", {
 		day: "2-digit",
@@ -32,6 +40,16 @@ export function OrderKanbanCard({ canDrag, onDragEnd, onDragStart, order }: Orde
 		currency: "BRL",
 		style: "currency",
 	});
+	const visibleItems = order.items.slice(0, 2);
+	const remainingItems = order.items.length - visibleItems.length;
+	const prepTime = order.unitPrepTimeMinMinutes != null && order.unitPrepTimeMaxMinutes != null
+		? `${order.unitPrepTimeMinMinutes}-${order.unitPrepTimeMaxMinutes} min`
+		: order.unitPrepTimeMinMinutes != null
+			? `${order.unitPrepTimeMinMinutes} min`
+			: null;
+	const etaLabel = order.unitPrepTimeMinMinutes != null && order.unitPrepTimeMaxMinutes != null
+		? t("admin.orders.assignment.estimatedTime", { max: order.unitPrepTimeMaxMinutes, min: order.unitPrepTimeMinMinutes })
+		: prepTime;
 
 	return (
 		<article
@@ -46,18 +64,18 @@ export function OrderKanbanCard({ canDrag, onDragEnd, onDragStart, order }: Orde
 				onDragStart(order.id);
 			}}
 		>
+			<button aria-label={t("admin.customers.orders.view")} className="block w-full cursor-pointer text-left" onClick={() => setDetailsOpen(true)} type="button">
 			<div className="flex items-start justify-between gap-3">
 				<div className="min-w-0">
 					<p className="truncate font-semibold text-base">{order.customerName}</p>
 					<p className="mt-1 truncate text-muted-foreground text-sm">{order.unitName}</p>
 				</div>
-				<OrderStatusBadge status={order.status} />
 			</div>
 
 			<div className="mt-4 grid gap-2 text-sm">
 				<div className="flex items-center gap-2 text-muted-foreground">
 					<DeliveryIcon className="size-4 shrink-0" />
-					<span>{order.deliveryMethod}</span>
+					<span>{t(`store.checkout.order.${order.deliveryMethod}`, { defaultValue: order.deliveryMethod })}</span>
 					<span>·</span>
 					<span>{t("admin.orders.items", { count: order.items.length })}</span>
 				</div>
@@ -65,30 +83,44 @@ export function OrderKanbanCard({ canDrag, onDragEnd, onDragStart, order }: Orde
 					<LuCircleDollarSign className="size-4 shrink-0" />
 					<span className="font-medium text-foreground">{totalBRL}</span>
 					<span>·</span>
-					<span>{date}</span>
+					<span>{etaLabel ?? date}</span>
 				</div>
-				{isDeliveryOrder && (
+				<ul className="space-y-1 text-foreground text-sm">
+					{visibleItems.map(item => <li className="flex justify-between gap-3" key={item.id}><span className="truncate">{item.productName}</span><span className="shrink-0 text-muted-foreground">{Number(item.quantity)}×</span></li>)}
+					{remainingItems > 0 && <li className="text-muted-foreground text-xs">+{remainingItems} {t("admin.orders.items", { count: remainingItems })}</li>}
+				</ul>
+				{showsKitchenAssignee && (
+					<div className="flex items-center gap-2 text-muted-foreground"><LuUserRound className="size-4 shrink-0" /><span>{order.preparedBy?.name ?? "-"}</span></div>
+				)}
+				{showsCourierAssignee && (
 					<div className="flex items-center gap-2 text-muted-foreground">
 						<LuUserRound className="size-4 shrink-0" />
-						<span>
-							{hasDeliveryAssigned
-								? t("admin.deliveries.assign.assigned")
-								: t("admin.deliveries.assign.needsCourier")}
-						</span>
+						<span>{order.delivery?.courierName ?? "-"}</span>
 					</div>
 				)}
 			</div>
+			</button>
 
-			{canAssign && (
+			{canManageAssignments && (canAssign || canAssignKitchen) && (
 				<div className="mt-4 flex flex-wrap gap-2 border-border border-t pt-3">
-					<Button onClick={() => setAssignOpen(true)} size="sm" type="button" variant="outline">
-						<LuUserRound aria-hidden className="size-4" />
-						{t("admin.deliveries.assign.action")}
-					</Button>
+					{canAssignKitchen && (
+						<Button onClick={() => setAssignKitchenOpen(true)} size="sm" type="button" variant="outline">
+							<LuUserRound aria-hidden className="size-4" />
+							{t("admin.orders.assignment.assignKitchen")}
+						</Button>
+					)}
+					{canAssign && (
+						<Button onClick={() => setAssignOpen(true)} size="sm" type="button" variant="outline">
+							<LuUserRound aria-hidden className="size-4" />
+							{t("admin.deliveries.assign.action")}
+						</Button>
+					)}
 				</div>
 			)}
 
 			<AssignCourierModal isOpen={assignOpen} onClose={() => setAssignOpen(false)} orderId={order.id} />
+			<AssignKitchenModal currentAssigneeId={order.preparedBy?.id ?? null} isOpen={assignKitchenOpen} onClose={() => setAssignKitchenOpen(false)} orderId={order.id} status={order.status as "recebido" | "em_preparo" | "pronto" | "retirado" | "cancelado"} />
+			<OrderDetailsModal onClose={() => setDetailsOpen(false)} order={detailsOpen ? order : null} />
 		</article>
 	);
 }
