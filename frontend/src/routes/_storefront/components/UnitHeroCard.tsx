@@ -16,7 +16,7 @@ export function UnitHeroCard({ openLabel, unit }: UnitHeroCardProps) {
 
 	return (
 		<Link
-			className="group relative min-h-80 overflow-hidden rounded-lg bg-brand-blue text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+			className="group relative min-h-80 overflow-hidden rounded-lg bg-[#2f3559] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 			params={{ unitId: unit.slug }}
 			to="/$unitId"
 		>
@@ -27,7 +27,7 @@ export function UnitHeroCard({ openLabel, unit }: UnitHeroCardProps) {
 					src={unit.imageUrl}
 				/>
 			)}
-			<div className="absolute inset-0 bg-black/50" />
+			{unit.imageUrl && <div className="absolute inset-0 bg-black/50" />}
 			<div className="relative flex min-h-80 flex-col justify-between p-6">
 				<div className="flex items-start justify-between gap-4">
 					<span className="rounded-full bg-white/90 px-3 py-1.5 font-semibold text-brand-ink text-xs">
