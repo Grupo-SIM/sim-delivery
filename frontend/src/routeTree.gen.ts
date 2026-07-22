@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as StorefrontRouteImport } from './routes/_storefront'
+import { Route as ResetPasswordIndexRouteImport } from './routes/reset-password/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as DesignKitIndexRouteImport } from './routes/design-kit/index'
 import { Route as CourierIndexRouteImport } from './routes/courier/index'
@@ -49,6 +50,11 @@ const AdminRoute = AdminRouteImport.update({
 } as any)
 const StorefrontRoute = StorefrontRouteImport.update({
   id: '/_storefront',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordIndexRoute = ResetPasswordIndexRouteImport.update({
+  id: '/reset-password/',
+  path: '/reset-password/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginIndexRoute = LoginIndexRouteImport.update({
@@ -217,6 +223,7 @@ export interface FileRoutesByFullPath {
   '/courier/': typeof CourierIndexRoute
   '/design-kit/': typeof DesignKitIndexRoute
   '/login/': typeof LoginIndexRoute
+  '/reset-password/': typeof ResetPasswordIndexRoute
   '/$unitId/': typeof StorefrontUnitIdIndexRoute
   '/identify/': typeof StorefrontIdentifyIndexRoute
   '/orders/': typeof StorefrontOrdersIndexRoute
@@ -249,6 +256,7 @@ export interface FileRoutesByTo {
   '/courier': typeof CourierIndexRoute
   '/design-kit': typeof DesignKitIndexRoute
   '/login': typeof LoginIndexRoute
+  '/reset-password': typeof ResetPasswordIndexRoute
   '/$unitId': typeof StorefrontUnitIdIndexRoute
   '/identify': typeof StorefrontIdentifyIndexRoute
   '/orders': typeof StorefrontOrdersIndexRoute
@@ -284,6 +292,7 @@ export interface FileRoutesById {
   '/courier/': typeof CourierIndexRoute
   '/design-kit/': typeof DesignKitIndexRoute
   '/login/': typeof LoginIndexRoute
+  '/reset-password/': typeof ResetPasswordIndexRoute
   '/_storefront/$unitId/': typeof StorefrontUnitIdIndexRoute
   '/_storefront/identify/': typeof StorefrontIdentifyIndexRoute
   '/_storefront/orders/': typeof StorefrontOrdersIndexRoute
@@ -319,6 +328,7 @@ export interface FileRouteTypes {
     | '/courier/'
     | '/design-kit/'
     | '/login/'
+    | '/reset-password/'
     | '/$unitId/'
     | '/identify/'
     | '/orders/'
@@ -351,6 +361,7 @@ export interface FileRouteTypes {
     | '/courier'
     | '/design-kit'
     | '/login'
+    | '/reset-password'
     | '/$unitId'
     | '/identify'
     | '/orders'
@@ -385,6 +396,7 @@ export interface FileRouteTypes {
     | '/courier/'
     | '/design-kit/'
     | '/login/'
+    | '/reset-password/'
     | '/_storefront/$unitId/'
     | '/_storefront/identify/'
     | '/_storefront/orders/'
@@ -418,6 +430,7 @@ export interface RootRouteChildren {
   CourierIndexRoute: typeof CourierIndexRoute
   DesignKitIndexRoute: typeof DesignKitIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
+  ResetPasswordIndexRoute: typeof ResetPasswordIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -434,6 +447,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof StorefrontRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password/': {
+      id: '/reset-password/'
+      path: '/reset-password'
+      fullPath: '/reset-password/'
+      preLoaderRoute: typeof ResetPasswordIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login/': {
@@ -729,6 +749,7 @@ const rootRouteChildren: RootRouteChildren = {
   CourierIndexRoute: CourierIndexRoute,
   DesignKitIndexRoute: DesignKitIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
+  ResetPasswordIndexRoute: ResetPasswordIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

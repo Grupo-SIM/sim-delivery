@@ -21,7 +21,11 @@ export const StaffController = new Elysia({
 		app
 			.decorate(({ prisma, ...injected }) => ({
 				...injected,
-				inviteStaff: new InviteStaff(prisma, input => auth.api.signUpEmail(input)),
+				inviteStaff: new InviteStaff(
+					prisma,
+					input => auth.api.signUpEmail(input),
+					input => auth.api.requestPasswordReset(input),
+				),
 				listCouriers: new ListCouriers(prisma),
 				listStaff: new ListStaff(prisma),
 				prisma,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import { InviteStaff, type SignUpFn } from "./InviteStaff";
+import { InviteStaff, type RequestPasswordResetFn, type SignUpFn } from "./InviteStaff";
 
 interface UserRow {
 	id: string;
@@ -31,18 +31,18 @@ function fakePrisma(existingEmails: string[] = []) {
 }
 
 const signUp: SignUpFn = async () => ({ user: { id: "u_new" } });
+const requestPasswordReset: RequestPasswordResetFn = async () => undefined;
 
 const baseInput = {
 	email: "new@staff.com",
 	name: "New Staff",
-	password: "secret1",
 	role: "manager" as const,
 };
 
 describe("InviteStaff", () => {
 	it("creates a staff member scoped to the company", async () => {
 		const { prisma, updates } = fakePrisma();
-		const staff = await new InviteStaff(prisma, signUp).execute({ ...baseInput, companyId: "cmp_1" });
+		const staff = await new InviteStaff(prisma, signUp, requestPasswordReset).execute({ ...baseInput, companyId: "cmp_1" });
 
 		expect(staff.role).toBe("manager");
 		expect(updates[0]).toEqual({ data: { companyId: "cmp_1", role: "manager" }, id: "u_new" });
@@ -50,7 +50,7 @@ describe("InviteStaff", () => {
 
 	it("throws NO_COMPANY when the inviter has no tenant", async () => {
 		const { prisma } = fakePrisma();
-		await expect(new InviteStaff(prisma, signUp).execute({ ...baseInput, companyId: null })).rejects.toThrow(
+		await expect(new InviteStaff(prisma, signUp, requestPasswordReset).execute({ ...baseInput, companyId: null })).rejects.toThrow(
 			"NO_COMPANY",
 		);
 	});
@@ -58,7 +58,7 @@ describe("InviteStaff", () => {
 	it("requires at least one unit for a courier", async () => {
 		const { prisma } = fakePrisma();
 		await expect(
-			new InviteStaff(prisma, signUp).execute({
+			new InviteStaff(prisma, signUp, requestPasswordReset).execute({
 				...baseInput,
 				companyId: "cmp_1",
 				role: "courier",
@@ -70,7 +70,21 @@ describe("InviteStaff", () => {
 	it("throws EMAIL_TAKEN when the email already exists", async () => {
 		const { prisma } = fakePrisma(["new@staff.com"]);
 		await expect(
-			new InviteStaff(prisma, signUp).execute({ ...baseInput, companyId: "cmp_1" }),
+			new InviteStaff(prisma, signUp, requestPasswordReset).execute({ ...baseInput, companyId: "cmp_1" }),
 		).rejects.toThrow("EMAIL_TAKEN");
+	});
+
+	it("sends a password-definition email after creating the staff member", async () => {
+		const { prisma } = fakePrisma();
+		const calls: Array<{ body: { email: string; redirectTo: string } }> = [];
+		const sendReset: RequestPasswordResetFn = async input => {
+			calls.push(input);
+		};
+
+		await new InviteStaff(prisma, signUp, sendReset).execute({ ...baseInput, companyId: "cmp_1" });
+
+		expect(calls).toEqual([
+			{ body: { email: "new@staff.com", redirectTo: `${process.env.APP_URL}/reset-password` } },
+		]);
 	});
 });

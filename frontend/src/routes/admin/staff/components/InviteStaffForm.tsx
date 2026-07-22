@@ -1,7 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuEye, LuEyeOff } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { CustomSelect } from "@/components/ui/CustomSelect";
@@ -9,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { getStaffQueryKey, useGetUnits, usePostStaff } from "@/lib/api";
+import { showToast } from "@/stores";
 
 type Role = "manager" | "attendant" | "kitchen" | "courier";
 
@@ -17,8 +17,6 @@ export function InviteStaffForm() {
 	const queryClient = useQueryClient();
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [showPassword, setShowPassword] = useState(false);
 	const [role, setRole] = useState<Role>("attendant");
 	const [unitIds, setUnitIds] = useState<string[]>([]);
 	const [error, setError] = useState<string | null>(null);
@@ -42,7 +40,7 @@ export function InviteStaffForm() {
 				event.preventDefault();
 				setError(null);
 				mutate(
-					{ data: { email, name, password, role, ...(role === "courier" ? { unitIds } : {}) } },
+					{ data: { email, name, role, ...(role === "courier" ? { unitIds } : {}) } },
 					{
 						onError: caught =>
 							setError(
@@ -51,10 +49,10 @@ export function InviteStaffForm() {
 						onSuccess: async () => {
 							setName("");
 							setEmail("");
-							setPassword("");
 							setRole("attendant");
 							setUnitIds([]);
 							await queryClient.invalidateQueries({ queryKey: getStaffQueryKey() });
+							showToast(t("admin.staff.invite.emailSent"), "positive");
 						},
 					},
 				);
@@ -82,30 +80,6 @@ export function InviteStaffForm() {
 					type="email"
 					value={localEmail}
 				/>
-			</Label>
-			<Label>
-				<span>
-					{t("admin.staff.invite.password")} <RequiredMark />
-				</span>
-				<div className="relative">
-					<Input
-						className="pr-11"
-						onChange={event => setPassword(event.currentTarget.value)}
-						placeholder="Ex: Senha temporária"
-						required
-						type={showPassword ? "text" : "password"}
-						value={password}
-					/>
-					<button
-						aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-						className="absolute inset-y-0 right-0 flex w-11 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-						onClick={() => setShowPassword(current => !current)}
-						title={showPassword ? "Ocultar senha" : "Mostrar senha"}
-						type="button"
-					>
-						{showPassword ? <LuEyeOff className="size-4" /> : <LuEye className="size-4" />}
-					</button>
-				</div>
 			</Label>
 			<div className="flex flex-col gap-1.5">
 				<span className="font-medium text-sm">{t("admin.staff.invite.role")}</span>
@@ -157,7 +131,6 @@ export function InviteStaffForm() {
 						unitsQuery.isPending ||
 						!name ||
 						!email ||
-						password.length < 6 ||
 						(role === "courier" && unitIds.length === 0)
 					}
 					type="submit"

@@ -631,11 +631,11 @@
 				"invite": {
 					"email": "E-mail",
 					"emailPlaceholder": "pessoa@empresa.com",
+					"emailSent": "E-mail para definição de senha enviado.",
 					"emailTaken": "Este e-mail já está em uso.",
 					"error": "Não foi possível convidar o funcionário.",
 					"name": "Nome",
 					"namePlaceholder": "Nome completo",
-					"password": "Senha temporária",
 					"role": "Cargo",
 					"submit": "Convidar funcionário",
 					"submitting": "Convidando...",
@@ -907,6 +907,20 @@
 				"submitting": "Entrando...",
 				"subtitle": "Acesse o painel de gerenciamento.",
 				"title": "Entrar como funcionário"
+			},
+			"resetPassword": {
+				"goToLogin": "Ir para o login",
+				"invalidToken": "Este link é inválido, expirou ou já foi utilizado.",
+				"password": "Nova senha",
+				"passwordConfirmation": "Confirme a nova senha",
+				"passwordMismatch": "As senhas não coincidem.",
+				"passwordPlaceholder": "Digite uma senha com pelo menos 6 caracteres",
+				"passwordTooShort": "A senha deve ter pelo menos 6 caracteres.",
+				"submit": "Definir senha",
+				"submitting": "Definindo senha...",
+				"subtitle": "Defina a senha para acessar sua conta.",
+				"success": "Senha definida. Agora você pode entrar na sua conta.",
+				"title": "Defina sua senha"
 			}
 		},
 		"courier": {

@@ -8,13 +8,18 @@ export type SignUpFn = (input: {
 	body: { email: string; name: string; password: string };
 }) => Promise<{ user: { id: string } }>;
 
+export type RequestPasswordResetFn = (input: {
+	body: { email: string; redirectTo: string };
+}) => Promise<unknown>;
+
 export class InviteStaff {
 	constructor(
 		private readonly prisma: PrismaInstance,
 		private readonly signUp: SignUpFn,
+		private readonly requestPasswordReset: RequestPasswordResetFn,
 	) {}
 
-	async execute({ companyId, email, name, password, role, unitIds = [] }: InviteStaffDTO): Promise<StaffReturn> {
+	async execute({ companyId, email, name, role, unitIds = [] }: InviteStaffDTO): Promise<StaffReturn> {
 		if (!companyId) {
 			throw new DomainError(StaffErrors.NO_COMPANY);
 		}
@@ -26,7 +31,7 @@ export class InviteStaff {
 			throw new DomainError(StaffErrors.EMAIL_TAKEN);
 		}
 
-		const { user } = await this.signUp({ body: { email, name, password } });
+		const { user } = await this.signUp({ body: { email, name, password: crypto.randomUUID() } });
 
 		const staff = await this.prisma.user.update({
 			data: { companyId, role },
@@ -38,6 +43,10 @@ export class InviteStaff {
 				data: unitIds.map(unitId => ({ courierId: staff.id, unitId })),
 			});
 		}
+
+		await this.requestPasswordReset({
+			body: { email, redirectTo: `${process.env.APP_URL}/reset-password` },
+		});
 
 		return { ...staff, unitIds: role === "courier" ? unitIds : [] } as StaffReturn;
 	}

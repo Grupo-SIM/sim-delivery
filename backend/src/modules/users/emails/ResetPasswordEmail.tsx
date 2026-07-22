@@ -8,7 +8,7 @@ interface ResetPasswordEmailProps {
 
 export function ResetPasswordEmail({ name, url }: ResetPasswordEmailProps) {
 	return (
-		<EmailLayout preview="Redefina sua senha do Template App">
+		<EmailLayout preview="Defina sua senha do Template App">
 			<Heading
 				style={{
 					color: emailColors.foreground,
@@ -17,7 +17,7 @@ export function ResetPasswordEmail({ name, url }: ResetPasswordEmailProps) {
 					margin: "0 0 8px",
 				}}
 			>
-				Redefinição de senha
+				Definição de senha
 			</Heading>
 
 			<Text
@@ -28,10 +28,10 @@ export function ResetPasswordEmail({ name, url }: ResetPasswordEmailProps) {
 					margin: "0 0 24px",
 				}}
 			>
-				Olá, {name}! Recebemos uma solicitação para redefinir a senha da sua conta.
+				Olá, {name}! Use o link abaixo para definir a senha da sua conta.
 			</Text>
 
-			<EmailButton href={url}>Redefinir senha</EmailButton>
+			<EmailButton href={url}>Definir senha</EmailButton>
 
 			<Text
 				style={{
@@ -41,8 +41,7 @@ export function ResetPasswordEmail({ name, url }: ResetPasswordEmailProps) {
 					margin: "24px 0 0",
 				}}
 			>
-				O link expira em 1 hora. Se você não solicitou a redefinição, ignore este e-mail — sua senha não será
-				alterada.
+				O link expira em 7 dias e pode ser usado uma única vez. Se você não solicitou esta ação, ignore este e-mail.
 			</Text>
 
 			<Hr style={{ borderColor: emailColors.border, margin: "32px 0 24px" }} />

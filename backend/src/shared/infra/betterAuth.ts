@@ -52,7 +52,8 @@ export const auth = betterAuth({
 	},
 	emailAndPassword: {
 		enabled: true,
-		minPasswordLength: 0,
+		minPasswordLength: 6,
+		resetPasswordTokenExpiresIn: 60 * 60 * 24 * 7,
 		password: {
 			hash: password => Bun.password.hash(password, { algorithm }),
 			verify: ({ hash, password }) => Bun.password.verify(password, hash, algorithm),
@@ -61,8 +62,8 @@ export const auth = betterAuth({
 			await mailer.sendMail({
 				from: `"Template App" <${process.env.MAIL_USER}>`,
 				html: await render(ResetPasswordEmail({ name: user.name, url })),
-				subject: "Redefinição de senha",
-				text: `Olá, ${user.name}! Acesse o link para redefinir sua senha: ${url}. O link expira em 1 hora.`,
+			subject: "Defina sua senha",
+			text: `Olá, ${user.name}! Acesse o link para definir sua senha: ${url}. O link expira em 7 dias e pode ser usado uma única vez.`,
 				to: user.email,
 			});
 		},
