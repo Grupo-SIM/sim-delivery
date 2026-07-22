@@ -11,9 +11,9 @@ function AdminLayout() {
 
 	if (isOperationalStaff(role)) {
 		return (
-			<div className="flex min-h-screen flex-col">
+			<div className="flex h-dvh flex-col overflow-hidden">
 				<OperationalNavbar />
-				<main className="flex-1">
+				<main className="min-h-0 flex-1 overflow-y-auto">
 					<Outlet />
 				</main>
 			</div>

@@ -4,6 +4,11 @@ import { LuLogOut, LuReceiptText, LuUser } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/stores/auth";
 
+interface ProfileMenuProps {
+	logoutTo?: "/" | "/login";
+	onlyLogout?: boolean;
+}
+
 function initials(name: string): string {
 	const parts = name.trim().split(/\s+/).filter(Boolean);
 	if (parts.length === 0) return "?";
@@ -11,7 +16,7 @@ function initials(name: string): string {
 	return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-export function ProfileMenu() {
+export function ProfileMenu({ logoutTo = "/", onlyLogout = false }: ProfileMenuProps) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const hydrated = useAuthStore(state => state.hydrated);
@@ -46,7 +51,7 @@ export function ProfileMenu() {
 	async function handleLogout() {
 		setOpen(false);
 		await logout();
-		void navigate({ to: "/" });
+		void navigate({ to: logoutTo });
 	}
 
 	return (
@@ -54,7 +59,7 @@ export function ProfileMenu() {
 			<button
 				aria-expanded={open}
 				aria-haspopup="menu"
-				className="flex items-center gap-2 rounded-full p-0.5 transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+				className="flex cursor-pointer items-center gap-2 rounded-full p-0.5 transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 				onClick={() => setOpen(value => !value)}
 				type="button"
 			>
@@ -76,26 +81,26 @@ export function ProfileMenu() {
 						<p className="truncate font-semibold text-sm">{user.name}</p>
 						<p className="truncate text-muted-foreground text-xs">{user.email}</p>
 					</div>
-					<Link
-						className="flex items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-muted"
+					{!onlyLogout && <Link
+						className="flex cursor-pointer items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-muted"
 						onClick={() => setOpen(false)}
 						role="menuitem"
 						to="/orders"
 					>
 						<LuReceiptText aria-hidden className="size-4 text-muted-foreground" />
 						{t("store.account.myOrders")}
-					</Link>
-					<Link
-						className="flex items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-muted"
+					</Link>}
+					{!onlyLogout && <Link
+						className="flex cursor-pointer items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-muted"
 						onClick={() => setOpen(false)}
 						role="menuitem"
 						to="/profile"
 					>
 						<LuUser aria-hidden className="size-4 text-muted-foreground" />
 						{t("store.account.myProfile")}
-					</Link>
+					</Link>}
 					<button
-						className="flex w-full items-center gap-2.5 border-border border-t px-4 py-2.5 text-destructive text-sm transition hover:bg-muted"
+						className="flex w-full cursor-pointer items-center gap-2.5 border-border border-t px-4 py-2.5 text-destructive text-sm transition hover:bg-muted"
 						onClick={handleLogout}
 						role="menuitem"
 						type="button"

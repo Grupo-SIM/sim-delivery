@@ -6,10 +6,19 @@ import type { StorefrontBranding } from "./types";
 
 interface StorefrontHeaderProps {
 	branding?: StorefrontBranding;
+	hideUnitChange?: boolean;
+	profileMenuOnlyLogout?: boolean;
+	profileMenuLogoutTo?: "/" | "/login";
 	unitName?: string;
 }
 
-export function StorefrontHeader({ branding, unitName }: StorefrontHeaderProps) {
+export function StorefrontHeader({
+	branding,
+	hideUnitChange = false,
+	profileMenuLogoutTo,
+	profileMenuOnlyLogout = false,
+	unitName,
+}: StorefrontHeaderProps) {
 	const { t } = useTranslation();
 	const companyName = branding?.companyName ?? "JB Delivery";
 
@@ -31,11 +40,11 @@ export function StorefrontHeader({ branding, unitName }: StorefrontHeaderProps) 
 				</Link>
 
 				<div className="flex items-center gap-4">
-					<Link className="hidden items-center gap-2 text-muted-foreground text-sm sm:flex" hash="unidades" to="/">
+					{!hideUnitChange && <Link className="hidden items-center gap-2 text-muted-foreground text-sm sm:flex" hash="unidades" to="/">
 						<LuMapPin aria-hidden className="h-4 w-4 text-primary" />
 						{t("store.unit.change")}
-					</Link>
-					<ProfileMenu />
+					</Link>}
+					<ProfileMenu logoutTo={profileMenuLogoutTo} onlyLogout={profileMenuOnlyLogout} />
 				</div>
 			</div>
 		</header>
