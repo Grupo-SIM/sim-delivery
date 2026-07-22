@@ -44,9 +44,29 @@ export function CustomerOrderDetailsModal({ onClose, order }: CustomerOrderDetai
 						<ul className="mt-3 divide-y divide-border/70">
 							{order.items.map(item => (
 								<li className="min-w-0 py-4 first:pt-0 last:pb-0" key={item.id}>
-									<div className="flex min-w-0 items-start justify-between gap-4">
-										<p className="break-words font-medium text-sm">{Number(item.quantity)}× {item.productName}</p>
-										<span className="shrink-0 whitespace-nowrap font-semibold text-sm">{formatMoney(Number(item.total) / 100)}</span>
+									<div className="grid min-w-0 grid-cols-[5rem_minmax(0,1fr)_auto] gap-x-3">
+										{item.imageUrl ? (
+											<img alt={item.productName} className="size-20 rounded-lg object-cover" src={item.imageUrl} />
+										) : (
+											<div aria-hidden className="size-20 rounded-lg bg-muted" />
+										)}
+										<div className="min-w-0">
+											<p className="break-words font-semibold text-sm leading-5">{item.productName}</p>
+											{item.options.length > 0 && (
+												<ul className="mt-1 space-y-1 text-muted-foreground text-xs leading-4">
+													{item.options.map(option => (
+														<li className="flex min-w-0 justify-between gap-2" key={option.id}>
+															<span className="min-w-0 break-words">{option.groupName}: {Number(option.quantity) > 1 ? `${Number(option.quantity)}× ` : ""}{option.optionName}</span>
+															<span className="shrink-0 whitespace-nowrap">{Number(option.priceDeltaCents) > 0 ? `+${formatMoney(Number(option.priceDeltaCents) * Number(option.quantity) / 100)}` : formatMoney(0)}</span>
+														</li>
+													))}
+												</ul>
+											)}
+										</div>
+										<div className="flex min-w-18 flex-col items-end gap-2">
+											<span className="whitespace-nowrap font-semibold text-sm">{formatMoney(Number(item.total) / 100)}</span>
+											<span className="w-9 text-center font-semibold text-sm">{Number(item.quantity)}</span>
+										</div>
 									</div>
 									{item.note && <p className="mt-3 break-words rounded-md border border-input bg-surface px-3 py-2 text-sm leading-5">{item.note}</p>}
 								</li>

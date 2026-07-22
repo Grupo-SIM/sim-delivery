@@ -31,6 +31,12 @@ export class ListOrders {
 				...(search ? { OR: [{ id: { contains: search } }, { customer: { user: { name: { contains: search, mode: "insensitive" } } } }, { customer: { phone: { contains: search } } }] } : {}),
 			},
 		});
+		const productIds = [...new Set(orders.flatMap(order => order.items.map(item => item.productId)))];
+		const products = await this.prisma.product.findMany({
+			select: { id: true, imageUrl: true },
+			where: { id: { in: productIds } },
+		});
+		const imageUrlByProductId = new Map(products.map(product => [product.id, product.imageUrl || null]));
 		return orders.map(o => ({
 			addressId: o.addressId,
 			cancelReason: o.cancelReason,
@@ -46,7 +52,11 @@ export class ListOrders {
 			deliveryMethod: o.deliveryMethod,
 			discountCents: o.discountCents,
 			id: o.id,
-			items: o.items.map(item => ({ ...item, options: item.optionSnapshots })),
+			items: o.items.map(item => ({
+				...item,
+				imageUrl: imageUrlByProductId.get(item.productId) ?? null,
+				options: item.optionSnapshots,
+			})),
 			loyaltyPointsRedeemed: o.loyaltyPointsRedeemed,
 			preparedBy: o.preparedBy,
 			status: o.status,

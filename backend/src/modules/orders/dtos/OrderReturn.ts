@@ -18,6 +18,7 @@ export const AdminOrderReturn = t.Object({
 	id: t.String(),
 	items: t.Array(
 		t.Object({
+			imageUrl: __nullable__(t.String()),
 			id: t.String(),
 			note: __nullable__(t.String()),
 			options: t.Array(
