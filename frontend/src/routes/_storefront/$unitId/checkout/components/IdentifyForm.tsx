@@ -91,12 +91,15 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 	const [channel, setChannel] = useState<Channel>("email");
 	const [step, setStep] = useState<Step>("form");
 	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [usePassword, setUsePassword] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [cooldown, setCooldown] = useState(0);
 	const [resent, setResent] = useState(false);
 
 	const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+	const passwordIsValid = password.length > 0;
 
 	useEffect(() => {
 		if (cooldown <= 0) return;
@@ -119,6 +122,19 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 		setCooldown(RESEND_COOLDOWN_SECONDS);
 		setResent(isResend);
 		setStep("email-sent");
+	}
+
+	async function signInWithPassword() {
+		setError(null);
+		setLoading(true);
+		const { error: caught } = await authClient.signIn.email({
+			email,
+			password,
+		});
+		setLoading(false);
+		if (caught) {
+			setError(t("store.checkout.identify.errors.invalidCredentials"));
+		}
 	}
 
 	const channels: { key: Channel; label: string; icon: typeof MailIcon; disabled?: boolean }[] = [
@@ -172,6 +188,10 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 					className="animate-slide-in-3d space-y-4"
 					onSubmit={event => {
 						event.preventDefault();
+						if (usePassword) {
+							void signInWithPassword();
+							return;
+						}
 						void requestMagicLink();
 					}}
 				>
@@ -196,6 +216,22 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 						</div>
 					</Label>
 					<p className="text-muted-foreground text-xs">{t("store.checkout.identify.emailHint")}</p>
+					{usePassword && (
+						<Label className="animate-slide-in-3d">
+							{t("store.checkout.identify.password")}
+							<Input
+								autoComplete="current-password"
+								className="h-12 rounded-pill"
+								onChange={event => {
+									setPassword(event.currentTarget.value);
+									setError(null);
+								}}
+								placeholder={t("store.checkout.identify.passwordPlaceholder")}
+								type="password"
+								value={password}
+							/>
+						</Label>
+					)}
 
 					{error && (
 						<div
@@ -209,12 +245,26 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 
 					<Button
 						className="h-12 w-full rounded-pill font-bold text-base shadow-glow-blue transition-shadow disabled:shadow-none"
-						disabled={loading || !emailIsValid}
+						disabled={loading || !emailIsValid || (usePassword && !passwordIsValid)}
 						type="submit"
 					>
 						{loading && <Spinner className="size-4" />}
-						{loading ? t("store.checkout.identify.sending") : t("store.checkout.identify.sendLink")}
+						{loading
+							? t(usePassword ? "store.checkout.identify.signingIn" : "store.checkout.identify.sending")
+							: t(usePassword ? "store.checkout.identify.signInWithPassword" : "store.checkout.identify.sendLink")}
 					</Button>
+					<button
+						className="w-full cursor-pointer text-muted-foreground text-sm underline underline-offset-4"
+						onClick={() => {
+							setUsePassword(current => !current);
+							setError(null);
+						}}
+						type="button"
+					>
+						{usePassword
+							? t("store.checkout.identify.signInWithLink")
+							: t("store.checkout.identify.signInWithPassword")}
+					</button>
 				</form>
 			)}
 
@@ -269,7 +319,7 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 								setResent(false);
 							}}
 							type="button"
-							variant="ghost"
+							variant="outline"
 						>
 							{t("store.checkout.identify.changeEmail")}
 						</Button>

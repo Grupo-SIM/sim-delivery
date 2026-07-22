@@ -36,6 +36,23 @@ export const app = new Elysia({ normalize: "typebox" })
 		}),
 		GlobalPlugin,
 	])
+	.post("/auth/set-password", async ({ request, set }) => {
+		const body = await request.json().catch(() => null);
+		if (
+			typeof body !== "object" ||
+			body === null ||
+			!("newPassword" in body) ||
+			typeof body.newPassword !== "string"
+		) {
+			set.status = 400;
+			return { error: "INVALID_PASSWORD" };
+		}
+
+		return auth.api.setPassword({
+			body: { newPassword: body.newPassword },
+			headers: request.headers,
+		});
+	})
 	.all("/auth/*", ({ request, set }) => {
 		const outcome = consume(request, {
 			keyPrefix: "auth",

@@ -938,7 +938,14 @@
 					"saveError": "Não foi possível salvar. Tente novamente.",
 					"saving": "Salvando...",
 					"subtitle": "Gerencie seus dados.",
-					"title": "Meu perfil"
+					"title": "Meu perfil",
+					"password": "Senha de acesso",
+					"passwordHint": "Defina uma senha para entrar sem precisar solicitar um link.",
+					"passwordPlaceholder": "Crie uma senha",
+					"passwordSave": "Salvar senha",
+					"passwordSaved": "Senha definida!",
+					"passwordSaveError": "Não foi possível definir a senha. Tente novamente.",
+					"passwordSaving": "Salvando senha…"
 				},
 				"signIn": "Entrar",
 				"signOut": "Sair"
@@ -1004,7 +1011,8 @@
 					"emailHint": "Enviaremos um link de acesso. Sem senha, sem complicação.",
 					"errors": {
 						"magicLink": "Este link é inválido ou expirou.",
-						"send": "Não foi possível enviar o link. Tente novamente."
+						"send": "Não foi possível enviar o link. Tente novamente.",
+						"invalidCredentials": "E-mail ou senha inválidos."
 					},
 					"linkResent": "Link reenviado!",
 					"linkSent": "Enviamos um link de acesso para <strong>{{email}}</strong>. Verifique sua caixa de entrada.",
@@ -1015,7 +1023,12 @@
 					"sendLink": "Enviar link de acesso",
 					"subtitle": "Informe seu e-mail para entrar sem senha.",
 					"title": "Identificação",
-					"verifying": "Verificando…"
+					"verifying": "Verificando…",
+					"password": "Senha",
+					"passwordPlaceholder": "Digite sua senha",
+					"signInWithPassword": "Entrar com senha",
+					"signingIn": "Entrando…",
+					"signInWithLink": "Entrar com link de acesso"
 				},
 				"order": {
 					"cashback": "Saldo de cashback",
@@ -1109,6 +1122,7 @@
 					"cancelledDescription": "Este pedido não seguirá para preparo.",
 					"empty": "Não encontramos este pedido.",
 					"items": "Itens do pedido",
+					"note": "Observação",
 					"rate": "Avaliar este pedido",
 					"refreshing": "Atualização automática ativa",
 					"status": {

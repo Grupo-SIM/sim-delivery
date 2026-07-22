@@ -9,6 +9,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { authClient } from "@/lib/auth-client";
+import { branding } from "@/lib/branding";
 import { mapSessionUser, useAuthStore } from "@/stores/auth";
 
 function initials(name: string): string {
@@ -31,6 +32,10 @@ function ProfilePage() {
 	const [saving, setSaving] = useState(false);
 	const [saved, setSaved] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [password, setPassword] = useState("");
+	const [savingPassword, setSavingPassword] = useState(false);
+	const [passwordSaved, setPasswordSaved] = useState(false);
+	const [passwordError, setPasswordError] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (user) setName(user.name);
@@ -75,6 +80,25 @@ function ProfilePage() {
 		setSaved(true);
 	}
 
+	async function handleSetPassword() {
+		setPasswordError(null);
+		setPasswordSaved(false);
+		setSavingPassword(true);
+		const response = await fetch(`${branding.apiUrl}/auth/set-password`, {
+			body: JSON.stringify({ newPassword: password }),
+			credentials: "include",
+			headers: { "Content-Type": "application/json" },
+			method: "POST",
+		});
+		setSavingPassword(false);
+		if (!response.ok) {
+			setPasswordError(t("store.account.profile.passwordSaveError"));
+			return;
+		}
+		setPassword("");
+		setPasswordSaved(true);
+	}
+
 	return (
 		<Container className="max-w-xl space-y-6 py-8">
 			<SectionHeading
@@ -112,6 +136,30 @@ function ProfilePage() {
 					<Input disabled placeholder="cliente@email.com" readOnly value={user.email} />
 				</Label>
 				<p className="text-muted-foreground text-xs">{t("store.account.profile.emailHint")}</p>
+
+				<div className="space-y-3 border-border border-t pt-4">
+					<Label>
+						{t("store.account.profile.password")}
+						<Input
+							autoComplete="new-password"
+							onChange={event => {
+								setPassword(event.currentTarget.value);
+								setPasswordError(null);
+							}}
+							placeholder={t("store.account.profile.passwordPlaceholder")}
+							type="password"
+							value={password}
+						/>
+					</Label>
+					<p className="text-muted-foreground text-xs">{t("store.account.profile.passwordHint")}</p>
+					{passwordError && <p className="text-destructive text-sm">{passwordError}</p>}
+					{passwordSaved && <p className="text-primary text-sm">{t("store.account.profile.passwordSaved")}</p>}
+					<Button disabled={!password || savingPassword} onClick={() => void handleSetPassword()} type="button" variant="outline">
+						{savingPassword
+							? t("store.account.profile.passwordSaving")
+							: t("store.account.profile.passwordSave")}
+					</Button>
+				</div>
 
 				{error && <p className="text-destructive text-sm">{error}</p>}
 				{saved && <p className="text-primary text-sm">{t("store.account.profile.saved")}</p>}
