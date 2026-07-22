@@ -226,6 +226,32 @@ describe("UpdateOrderStatus", () => {
 		expect(stored.status).toBe("em_preparo");
 	});
 
+	it("lets kitchen advance only its preparation stages", async () => {
+		const { stored, prisma } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			id: "ord_1",
+			status: "recebido",
+		});
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "em_preparo" }, "kitchen");
+		expect(stored.status).toBe("em_preparo");
+		await expect(
+			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "saiu_para_entrega" }, "kitchen"),
+		).rejects.toThrow("FORBIDDEN");
+	});
+
+	it("lets courier advance only its delivery stages", async () => {
+		const { stored, prisma } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			id: "ord_1",
+			status: "pronto",
+		});
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "saiu_para_entrega" }, "courier");
+		expect(stored.status).toBe("saiu_para_entrega");
+		await expect(
+			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "em_preparo" }, "courier"),
+		).rejects.toThrow("FORBIDDEN");
+	});
+
 	it("sends configured WhatsApp template for a status", async () => {
 		const { prisma } = makeUpdateStatusPrisma({
 			companyId: "cmp_1",

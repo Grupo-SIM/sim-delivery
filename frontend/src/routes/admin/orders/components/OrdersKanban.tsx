@@ -50,10 +50,11 @@ function getFlow(deliveryMethod: string) {
 
 interface OrdersKanbanProps {
 	orders: GetOrders200;
+	role: string | null;
 	statuses: readonly KanbanStatus[];
 }
 
-export function OrdersKanban({ orders, statuses }: OrdersKanbanProps) {
+export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const patchStatus = usePatchOrdersByOrderIdStatus();
@@ -130,6 +131,18 @@ export function OrdersKanban({ orders, statuses }: OrdersKanbanProps) {
 
 	function getMoveBlockReason(order: GetOrders200[number], status: KanbanStatus) {
 		if (order.status === status) return null;
+		if (
+			role === "kitchen" &&
+			!((order.status === "recebido" && status === "em_preparo") || (order.status === "em_preparo" && status === "pronto"))
+		) {
+			return "Você só pode avançar pedidos de Recebido para Em preparo ou de Em preparo para Pronto.";
+		}
+		if (
+			role === "courier" &&
+			!((order.status === "pronto" && status === "saiu_para_entrega") || (order.status === "saiu_para_entrega" && status === "entregue"))
+		) {
+			return "Você só pode avançar pedidos de Pronto para Saiu para entrega ou de Saiu para entrega para Entregue.";
+		}
 		if (order.status === "awaiting_payment") {
 			return t("admin.orders.updateStatus.errors.awaitingPayment", {
 				defaultValue: "Este pedido ainda está aguardando pagamento. Ele só pode ir para preparo depois que o pagamento for confirmado e o status virar Recebido.",
@@ -145,7 +158,7 @@ export function OrdersKanban({ orders, statuses }: OrdersKanbanProps) {
 				defaultValue: "Somente pedidos de entrega podem sair para entrega. Pedidos de retirada devem ir para Retirado.",
 			});
 		}
-		if (status === "saiu_para_entrega" && !order.delivery) {
+		if (status === "saiu_para_entrega" && !order.delivery && role !== "courier") {
 			return t("admin.orders.updateStatus.errors.needsCourier", {
 				defaultValue: "Antes de sair para entrega, atribua um entregador disponível ao pedido.",
 			});
@@ -247,7 +260,19 @@ export function OrdersKanban({ orders, statuses }: OrdersKanbanProps) {
 									</p>
 								) : (
 									column.orders.map(order => (
-										<OrderKanbanCard key={order.id} onDragEnd={finishDrag} onDragStart={setDraggedOrderId} order={order} />
+										<OrderKanbanCard
+											canDrag={
+												role !== "kitchen" && role !== "courier"
+													? true
+													: role === "kitchen"
+														? order.status === "recebido" || order.status === "em_preparo"
+														: order.status === "pronto" || order.status === "saiu_para_entrega"
+											}
+											key={order.id}
+											onDragEnd={finishDrag}
+											onDragStart={setDraggedOrderId}
+											order={order}
+										/>
 									))
 								)}
 							</div>

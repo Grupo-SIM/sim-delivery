@@ -24,13 +24,12 @@ const { isStaff, requireStaffBeforeLoad } = await import("./staff-guard");
 
 describe("isStaff", () => {
 	it("accepts every back-office role", () => {
-		for (const role of ["superAdmin", "owner", "manager", "attendant", "kitchen"]) {
+		for (const role of ["superAdmin", "owner", "manager", "attendant", "kitchen", "courier"]) {
 			expect(isStaff(role)).toBe(true);
 		}
 	});
 
-	it("rejects roles without back-office access", () => {
-		expect(isStaff("courier")).toBe(false);
+	it("rejects roles without administrative access", () => {
 		expect(isStaff("customer")).toBe(false);
 	});
 
@@ -64,10 +63,16 @@ describe("requireStaffBeforeLoad", () => {
 		await expect(requireStaffBeforeLoad()).rejects.toMatchObject({ to: "/login" });
 	});
 
-	it("redirects a courier to login", async () => {
+	it("lets a courier through", async () => {
 		session = { data: { user: { role: "courier" } } };
 
-		await expect(requireStaffBeforeLoad()).rejects.toMatchObject({ to: "/login" });
+		expect(await requireStaffBeforeLoad()).toBeUndefined();
+	});
+
+	it("redirects operational roles to the orders board", async () => {
+		session = { data: { user: { role: "kitchen" } } };
+
+		await expect(requireStaffBeforeLoad("/admin/products/")).rejects.toMatchObject({ to: "/admin/orders" });
 	});
 
 	it("redirects a user with no role at all to login", async () => {

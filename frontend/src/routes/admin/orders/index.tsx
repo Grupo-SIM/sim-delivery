@@ -12,7 +12,8 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
 import { getOrdersQueryKey, useGetOrders, useGetUnits, usePostOrdersCloseDay } from "@/lib/api";
-import { showToast } from "@/stores";
+import { isOperationalStaff } from "@/lib/staff-guard";
+import { showToast, useAuthStore } from "@/stores";
 import { OrdersKanban } from "./components";
 
 const STATUS_FILTERS = [
@@ -33,6 +34,8 @@ type StatusFilter = (typeof STATUS_FILTERS)[number];
 function OrdersPage() {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
+	const role = useAuthStore(state => state.role);
+	const hasOperationalAccess = isOperationalStaff(role);
 	const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 	const [unitId, setUnitId] = useState("all");
 	const [deliveryMethod, setDeliveryMethod] = useState("all");
@@ -83,7 +86,7 @@ function OrdersPage() {
 		<Container className="space-y-6 py-8">
 			<div className="flex flex-wrap items-start justify-between gap-4">
 				<SectionHeading subtitle={t("admin.orders.subtitle")} title={t("admin.orders.title")} />
-				<ConfirmActionButton
+				{!hasOperationalAccess && <ConfirmActionButton
 					confirmation="Pedidos atuais sairão do kanban, mas continuarão disponíveis no histórico."
 					confirmLabel="Confirmar"
 					disabled={closeDay.isPending || Boolean(date)}
@@ -93,7 +96,7 @@ function OrdersPage() {
 					variant="outline"
 				>
 					{closeDay.isPending ? "Encerrando..." : "Encerrar dia"}
-				</ConfirmActionButton>
+				</ConfirmActionButton>}
 			</div>
 
 			<div className="flex flex-wrap gap-2">
@@ -149,7 +152,7 @@ function OrdersPage() {
 			) : isError ? (
 				<ErrorState title={t("admin.orders.loadError")} />
 			) : (
-				<OrdersKanban orders={orders} statuses={visibleStatuses} />
+				<OrdersKanban orders={orders} role={role} statuses={visibleStatuses} />
 			)}
 		</Container>
 	);

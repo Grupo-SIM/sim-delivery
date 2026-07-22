@@ -1,11 +1,21 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useState } from "react";
 import { LuMenu, LuX } from "react-icons/lu";
-import { requireStaffBeforeLoad } from "@/lib/staff-guard";
+import { isOperationalStaff, requireStaffBeforeLoad } from "@/lib/staff-guard";
+import { useAuthStore } from "@/stores";
 import { AdminSidebar } from "./admin/components";
 
 function AdminLayout() {
 	const [mobileOpen, setMobileOpen] = useState(false);
+	const role = useAuthStore(state => state.role);
+
+	if (isOperationalStaff(role)) {
+		return (
+			<main className="min-h-screen">
+				<Outlet />
+			</main>
+		);
+	}
 
 	return (
 		<div className="flex min-h-screen">
@@ -60,6 +70,6 @@ function AdminLayout() {
 }
 
 export const Route = createFileRoute("/admin")({
-	beforeLoad: requireStaffBeforeLoad,
+	beforeLoad: ({ location }) => requireStaffBeforeLoad(location.pathname),
 	component: AdminLayout,
 });

@@ -1,6 +1,8 @@
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { WhatsAppProvider } from "@/shared/infra/whatsapp";
+import { UserErrors } from "@/modules/users/errors";
+import type { Role } from "@/shared/permissions";
 import type { OrderReturn, UpdateOrderStatusBody } from "../dtos";
 import { OrderErrors } from "../errors";
 
@@ -28,6 +30,16 @@ function canTransition(current: string, next: string, deliveryMethod: string): b
 	return currentIndex >= 0 && nextIndex >= 0 && Math.abs(nextIndex - currentIndex) === 1;
 }
 
+function canRoleTransition(role: Role | undefined, current: string, next: string): boolean {
+	if (role === "kitchen") {
+		return (current === "recebido" && next === "em_preparo") || (current === "em_preparo" && next === "pronto");
+	}
+	if (role === "courier") {
+		return (current === "pronto" && next === "saiu_para_entrega") || (current === "saiu_para_entrega" && next === "entregue");
+	}
+	return true;
+}
+
 function shouldNotify(current: string, next: string, deliveryMethod: string): boolean {
 	const flow = deliveryMethod === "pickup" ? PICKUP_FLOW : DELIVERY_FLOW;
 	return NOTIFIABLE.has(next) && flow.indexOf(next) > flow.indexOf(current);
@@ -51,6 +63,7 @@ export class UpdateOrderStatus {
 		companyId: string | null,
 		orderId: string,
 		data: UpdateOrderStatusBody,
+		role?: Role,
 	): Promise<OrderReturn> {
 		const { status, cancelReason } = data;
 
@@ -59,6 +72,7 @@ export class UpdateOrderStatus {
 			where: { ...(companyId ? { companyId } : {}), id: orderId },
 		});
 		if (!order) throw new DomainError(OrderErrors.ORDER_NOT_FOUND);
+		if (!canRoleTransition(role, order.status, status)) throw new DomainError(UserErrors.FORBIDDEN);
 
 		if (!canTransition(order.status, status, order.deliveryMethod))
 			throw new DomainError(OrderErrors.INVALID_TRANSITION);

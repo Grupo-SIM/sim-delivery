@@ -7,7 +7,7 @@ import { Container } from "@/components/ui/Container";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
-import { isStaff } from "@/lib/staff-guard";
+import { isOperationalStaff, isStaff } from "@/lib/staff-guard";
 import { useAuthStore } from "@/stores";
 
 function LoginPage() {
@@ -37,7 +37,7 @@ function LoginPage() {
 							});
 							const { isAuthenticated, role } = useAuthStore.getState();
 							if (isAuthenticated) {
-								await navigate({ to: isStaff(role) ? "/admin" : "/" });
+								await navigate({ to: isOperationalStaff(role) ? "/admin/orders" : isStaff(role) ? "/admin" : "/" });
 							}
 						}}
 					>

@@ -7,12 +7,13 @@ import { AssignCourierModal } from "./AssignCourierModal";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 
 interface OrderKanbanCardProps {
+	canDrag: boolean;
 	onDragEnd: () => void;
 	onDragStart: (orderId: string) => void;
 	order: GetOrders200[number];
 }
 
-export function OrderKanbanCard({ onDragEnd, onDragStart, order }: OrderKanbanCardProps) {
+export function OrderKanbanCard({ canDrag, onDragEnd, onDragStart, order }: OrderKanbanCardProps) {
 	const { t } = useTranslation();
 	const [assignOpen, setAssignOpen] = useState(false);
 
@@ -34,8 +35,10 @@ export function OrderKanbanCard({ onDragEnd, onDragStart, order }: OrderKanbanCa
 
 	return (
 		<article
-			className="cursor-grab rounded-md border border-border bg-card p-4 shadow-sm transition active:cursor-grabbing hover:border-primary/40 hover:shadow-md"
-			draggable
+			className={`rounded-md border border-border bg-card p-4 shadow-sm transition hover:border-primary/40 hover:shadow-md ${
+				canDrag ? "cursor-grab active:cursor-grabbing" : "cursor-default"
+			}`}
+			draggable={canDrag}
 			onDragEnd={onDragEnd}
 			onDragStart={event => {
 				event.dataTransfer.effectAllowed = "move";
