@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { LuBike, LuChevronRight, LuReceiptText, LuShoppingBag } from "react-icons/lu";
 import { Container } from "@/components/ui/Container";
@@ -31,36 +30,11 @@ function statusToneClass(status: string): string {
 	return "bg-primary/10 text-primary";
 }
 
-const STATUS_ORDER = [
-	"awaiting_payment",
-	"recebido",
-	"em_preparo",
-	"pronto",
-	"saiu_para_entrega",
-	"entregue",
-	"retirado",
-	"cancelado",
-];
-
 function OrdersPage() {
 	const { t } = useTranslation();
 	const isAuthenticated = useAuthStore(state => state.isAuthenticated);
 	const hydrated = useAuthStore(state => state.hydrated);
 	const { data: orders, isError, isPending } = useGetCustomerOrders(slug ?? "", isAuthenticated);
-	const orderColumns = useMemo(() => {
-		if (!orders) return [];
-		const grouped = new Map<string, typeof orders>();
-
-		for (const order of orders) {
-			const visibleStatus = displayStatus(order.status, order.createdAt);
-			grouped.set(visibleStatus, [...(grouped.get(visibleStatus) ?? []), order]);
-		}
-
-		return STATUS_ORDER.filter(status => grouped.has(status)).map(status => ({
-			orders: grouped.get(status) ?? [],
-			status,
-		}));
-	}, [orders]);
 
 	if (hydrated && !isAuthenticated) {
 		return (
@@ -89,74 +63,68 @@ function OrdersPage() {
 			<SectionHeading subtitle={t("store.account.orders.subtitle")} title={t("store.account.orders.title")} />
 
 			{!hydrated || isPending ? (
-				<div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-					<Skeleton className="h-64 w-full" />
-					<Skeleton className="h-64 w-full" />
-					<Skeleton className="h-64 w-full" />
+				<div className="space-y-3">
+					<Skeleton className="h-20 w-full" />
+					<Skeleton className="h-20 w-full" />
+					<Skeleton className="h-20 w-full" />
 				</div>
 			) : isError ? (
 				<ErrorState title={t("store.account.orders.loadError")} />
 			) : orders.length === 0 ? (
 				<EmptyState title={t("store.account.orders.empty")} />
 			) : (
-				<div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
-					{orderColumns.map(column => (
-						<section className="rounded-xl border border-border bg-muted/25 p-3" key={column.status}>
-							<header className="mb-3 flex items-center justify-between gap-3 px-1">
-								<span
-									className={`rounded-full px-2 py-0.5 font-semibold text-xs ${statusToneClass(column.status)}`}
+				<ul className="space-y-3">
+					{orders.map(order => {
+						const DeliveryIcon = order.deliveryMethod === "delivery" ? LuBike : LuShoppingBag;
+						const visibleStatus = displayStatus(order.status, order.createdAt);
+
+						return (
+							<li key={order.id}>
+								<Link
+									className="group flex items-center gap-3 rounded-lg border border-border bg-card p-3 transition hover:border-primary/40 hover:shadow-sm"
+									params={{ orderId: order.id, unitId: order.unitSlug }}
+									to="/$unitId/orders/$orderId"
 								>
-									{t(`store.checkout.tracking.status.${column.status}`, { defaultValue: column.status })}
-								</span>
-								<span className="rounded-md bg-background px-2 py-1 font-semibold text-foreground text-xs shadow-sm">
-									{column.orders.length}
-								</span>
-							</header>
-							<ul className="space-y-3">
-								{column.orders.map(order => {
-									const DeliveryIcon = order.deliveryMethod === "delivery" ? LuBike : LuShoppingBag;
-									const visibleStatus = displayStatus(order.status, order.createdAt);
-									return (
-										<li key={order.id}>
-											<Link
-												className="group flex items-center gap-3 rounded-lg border border-border bg-card p-3 transition hover:border-primary/40 hover:shadow-sm"
-												params={{ orderId: order.id, unitId: order.unitSlug }}
-												to="/$unitId/orders/$orderId"
+									<span className="grid size-10 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground">
+										<LuReceiptText className="size-5" />
+									</span>
+									<div className="min-w-0 flex-1">
+										<div className="flex items-center gap-2">
+											<p className="truncate font-semibold text-sm">{order.unitName}</p>
+											<span
+												className={`shrink-0 rounded-full px-2 py-0.5 font-semibold text-xs ${statusToneClass(visibleStatus)}`}
 											>
-												<span className="grid size-10 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground">
-													<LuReceiptText className="size-5" />
-												</span>
-												<div className="min-w-0 flex-1">
-													<p className="truncate font-semibold text-sm">{order.unitName}</p>
-													<p className="mt-1 flex items-center gap-1.5 text-muted-foreground text-xs">
-														<DeliveryIcon className="size-3.5" />
-														{t("store.account.orders.itemsCount", { count: order.itemsCount })}
-														{" · "}
-														{new Date(order.createdAt).toLocaleDateString()}
-													</p>
-												</div>
-												<div className="flex shrink-0 items-center gap-1 text-right">
-													<span className="font-semibold text-sm">{formatMoney(order.total / 100)}</span>
-													<LuChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-												</div>
-											</Link>
-										{(order.status === "entregue" || order.status === "retirado") && (
-											<Link
-												className="mt-1.5 inline-block text-primary text-xs underline"
-												params={{ unitId: order.unitSlug }}
-												search={{ orderId: order.id }}
-												to="/$unitId/rate"
-											>
-												{t("store.account.orders.rate")}
-											</Link>
-										)}
-									</li>
-								);
-							})}
-							</ul>
-						</section>
-					))}
-				</div>
+												{t(`store.checkout.tracking.status.${visibleStatus}`, {
+													defaultValue: visibleStatus,
+												})}
+											</span>
+										</div>
+										<p className="mt-1 flex items-center gap-1.5 text-muted-foreground text-xs">
+											<DeliveryIcon className="size-3.5" />
+											{t("store.account.orders.itemsCount", { count: order.itemsCount })}
+											{" · "}
+											{new Date(order.createdAt).toLocaleDateString()}
+										</p>
+									</div>
+									<div className="flex shrink-0 items-center gap-1 text-right">
+										<span className="font-semibold text-sm">{formatMoney(order.total / 100)}</span>
+										<LuChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+									</div>
+								</Link>
+								{(order.status === "entregue" || order.status === "retirado") && (
+									<Link
+										className="mt-1.5 inline-block text-primary text-xs underline"
+										params={{ unitId: order.unitSlug }}
+										search={{ orderId: order.id }}
+										to="/$unitId/rate"
+									>
+										{t("store.account.orders.rate")}
+									</Link>
+								)}
+							</li>
+						);
+					})}
+				</ul>
 			)}
 		</Container>
 	);
