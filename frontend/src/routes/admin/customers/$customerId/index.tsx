@@ -7,7 +7,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetCustomersByCustomerId, useGetOrders } from "@/lib/api";
-import { CustomerMetrics, CustomerOrdersTable } from "../components";
+import { CustomerMetrics, CustomerOrdersTable, CustomerTopProducts } from "../components";
 
 function CustomerDetailPage() {
 	const { t } = useTranslation();
@@ -32,6 +32,7 @@ function CustomerDetailPage() {
 			</Link>
 			<SectionHeading subtitle={customer.email} title={customer.name} />
 			<CustomerMetrics customer={customer} />
+			<CustomerTopProducts orders={ordersQuery.data} />
 			<section className="space-y-3">
 				<h2 className="font-semibold text-lg">{t("admin.customers.detail.orders")}</h2>
 				<CustomerOrdersTable orders={ordersQuery.data} />

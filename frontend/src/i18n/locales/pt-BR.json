@@ -241,8 +241,12 @@
 					"action": "Ver histórico",
 					"back": "Voltar para clientes",
 					"emptyOrders": "Este cliente ainda não fez pedidos.",
+					"emptyTopProducts": "Ainda não há produtos pedidos por este cliente.",
 					"loadError": "Não foi possível carregar os dados do cliente.",
-					"orders": "Histórico de pedidos"
+					"orders": "Histórico de pedidos",
+					"productQuantity_one": "{{count}} unidade",
+					"productQuantity_other": "{{count}} unidades",
+					"topProducts": "Produtos mais pedidos"
 				},
 				"empty": "Nenhum cliente encontrado.",
 				"loadError": "Não foi possível carregar os clientes.",
@@ -256,6 +260,16 @@
 				"orders": {
 					"date": "Data",
 					"status": "Status",
+					"total": "Total",
+					"unit": "Loja",
+					"view": "Ver detalhes"
+				},
+				"orderDetails": {
+					"date": "Data",
+					"deliveryMethod": "Método de entrega",
+					"items": "Itens do pedido",
+					"status": "Status",
+					"title": "Resumo do pedido",
 					"total": "Total",
 					"unit": "Loja"
 				},
