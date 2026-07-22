@@ -5,13 +5,13 @@ import {
 	LuBuilding2,
 	LuChartBar,
 	LuClipboardList,
-	LuTicket,
 	LuImages,
 	LuLogOut,
 	LuPackage,
 	LuPalette,
 	LuStar,
 	LuStore,
+	LuTicket,
 	LuUsers,
 	LuUtensilsCrossed,
 } from "react-icons/lu";
@@ -22,10 +22,11 @@ interface NavItemProps {
 	exact?: boolean;
 	icon: IconType;
 	label: string;
+	onNavigate?: () => void;
 	to: string;
 }
 
-function NavItem({ exact = false, icon: Icon, label, to }: NavItemProps) {
+function NavItem({ exact = false, icon: Icon, label, onNavigate, to }: NavItemProps) {
 	return (
 		<Link
 			activeOptions={{ exact }}
@@ -33,6 +34,7 @@ function NavItem({ exact = false, icon: Icon, label, to }: NavItemProps) {
 			className={cn(
 				"flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground text-sm transition-colors hover:bg-primary hover:text-primary-foreground",
 			)}
+			onClick={onNavigate}
 			to={to}
 		>
 			<Icon className="size-4 shrink-0" />
@@ -57,7 +59,7 @@ function NavGroup({ children, label }: NavGroupProps) {
 	);
 }
 
-export function AdminSidebar() {
+export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 	const { t } = useTranslation();
 	const { logout, role } = useAuthStore();
 	const navigate = useNavigate();
@@ -73,30 +75,70 @@ export function AdminSidebar() {
 				<span className="font-bold text-foreground text-lg">Admin</span>
 			</div>
 
-			<NavItem exact icon={LuChartBar} label="Dashboard" to="/admin/" />
+			<NavItem exact icon={LuChartBar} label="Dashboard" onNavigate={onNavigate} to="/admin/" />
 
 			<NavGroup label={t("admin.dashboard.nav.catalog")}>
-				<NavItem icon={LuPackage} label={t("admin.products.title")} to="/admin/products" />
-				<NavItem icon={LuImages} label={t("admin.promotionalImages.title")} to="/admin/promotional-images" />
-				<NavItem icon={LuStore} label={t("admin.units.title")} to="/admin/units" />
+				<NavItem
+					icon={LuPackage}
+					label={t("admin.products.title")}
+					onNavigate={onNavigate}
+					to="/admin/products"
+				/>
+				<NavItem
+					icon={LuImages}
+					label={t("admin.promotionalImages.title")}
+					onNavigate={onNavigate}
+					to="/admin/promotional-images"
+				/>
+				<NavItem icon={LuStore} label={t("admin.units.title")} onNavigate={onNavigate} to="/admin/units" />
 			</NavGroup>
 
 			<NavGroup label={t("admin.dashboard.nav.operations")}>
-				<NavItem icon={LuClipboardList} label={t("admin.orders.title")} to="/admin/orders" />
-				<NavItem icon={LuUsers} label={t("admin.customers.title")} to="/admin/customers" />
-				<NavItem icon={LuTicket} label={t("admin.coupons.title")} to="/admin/coupons" />
-				<NavItem icon={LuUtensilsCrossed} label={t("admin.kitchen.title")} to="/admin/kitchen" />
-				<NavItem icon={LuStar} label={t("admin.reviews.title")} to="/admin/reviews" />
+				<NavItem
+					icon={LuClipboardList}
+					label={t("admin.orders.title")}
+					onNavigate={onNavigate}
+					to="/admin/orders"
+				/>
+				<NavItem
+					icon={LuUsers}
+					label={t("admin.customers.title")}
+					onNavigate={onNavigate}
+					to="/admin/customers"
+				/>
+				<NavItem
+					icon={LuTicket}
+					label={t("admin.coupons.title")}
+					onNavigate={onNavigate}
+					to="/admin/coupons"
+				/>
+				<NavItem
+					icon={LuUtensilsCrossed}
+					label={t("admin.kitchen.title")}
+					onNavigate={onNavigate}
+					to="/admin/kitchen"
+				/>
+				<NavItem icon={LuStar} label={t("admin.reviews.title")} onNavigate={onNavigate} to="/admin/reviews" />
 			</NavGroup>
 
 			<NavGroup label={t("admin.dashboard.nav.settings")}>
-				<NavItem icon={LuUsers} label={t("admin.staff.title")} to="/admin/staff" />
-				<NavItem icon={LuPalette} label={t("admin.branding.title")} to="/admin/branding" />
+				<NavItem icon={LuUsers} label={t("admin.staff.title")} onNavigate={onNavigate} to="/admin/staff" />
+				<NavItem
+					icon={LuPalette}
+					label={t("admin.branding.title")}
+					onNavigate={onNavigate}
+					to="/admin/branding"
+				/>
 			</NavGroup>
 
 			{isSuperAdmin(role) && (
 				<NavGroup label={t("admin.dashboard.nav.platform")}>
-					<NavItem icon={LuBuilding2} label={t("admin.companies.title")} to="/admin/companies" />
+					<NavItem
+						icon={LuBuilding2}
+						label={t("admin.companies.title")}
+						onNavigate={onNavigate}
+						to="/admin/companies"
+					/>
 				</NavGroup>
 			)}
 

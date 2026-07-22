@@ -50,7 +50,7 @@ function AdminLayout() {
 						<LuX className="size-5" />
 					</button>
 				</div>
-				<AdminSidebar />
+				<AdminSidebar onNavigate={() => setMobileOpen(false)} />
 			</aside>
 
 			<div className="flex min-w-0 flex-1 flex-col md:pl-60">
