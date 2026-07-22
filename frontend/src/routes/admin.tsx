@@ -3,7 +3,7 @@ import { useState } from "react";
 import { LuMenu, LuX } from "react-icons/lu";
 import { isOperationalStaff, requireStaffBeforeLoad } from "@/lib/staff-guard";
 import { useAuthStore } from "@/stores";
-import { AdminSidebar } from "./admin/components";
+import { AdminSidebar, OperationalNavbar } from "./admin/components";
 
 function AdminLayout() {
 	const [mobileOpen, setMobileOpen] = useState(false);
@@ -11,9 +11,12 @@ function AdminLayout() {
 
 	if (isOperationalStaff(role)) {
 		return (
-			<main className="min-h-screen">
-				<Outlet />
-			</main>
+			<div className="flex min-h-screen flex-col">
+				<OperationalNavbar />
+				<main className="flex-1">
+					<Outlet />
+				</main>
+			</div>
 		);
 	}
 
