@@ -69,8 +69,8 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 
 	return (
 		<Modal isOpen maxWidth="1100px" onClose={onClose}>
-			<div className="space-y-6">
-				<div className="grid gap-6 lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)]">
+			<div className="min-w-0 space-y-6">
+				<div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)]">
 					<div className="overflow-hidden rounded-brand bg-muted lg:row-span-2">
 						{selectedItem.imageUrl ? (
 							<img
@@ -89,22 +89,22 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 						)}
 					</div>
 
-					<div className="space-y-5">
+					<div className="min-w-0 space-y-5">
 						{selectedItem.optionGroups.map(group => {
 							const groupSelected = options.filter(value => value.groupId === group.id);
 							const groupQuantity = groupSelected.reduce((sum, value) => sum + value.quantity, 0);
 							const groupIsValid = !group.required || groupQuantity >= 1;
 							return (
-								<section className="overflow-hidden rounded-brand border border-border" key={group.id}>
-									<div className="flex items-center justify-between gap-4 bg-muted px-4 py-3">
-										<div>
+								<section className="min-w-0 overflow-hidden rounded-brand border border-border" key={group.id}>
+									<div className="flex min-w-0 items-center justify-between gap-3 bg-muted px-4 py-3">
+										<div className="min-w-0">
 											<h3 className="font-semibold text-foreground">{group.name}</h3>
 											<p className="text-muted-foreground text-sm">
 												{chooseLabel(group.required, Number(group.maxSelect))}
 											</p>
 										</div>
 										{group.required ? (
-											<span className="rounded bg-foreground px-2 py-1 font-semibold text-[10px] text-background uppercase">
+											<span className="shrink-0 rounded bg-foreground px-2 py-1 font-semibold text-[10px] text-background uppercase">
 												{t("store.product.required")}
 											</span>
 										) : groupIsValid ? (
@@ -120,7 +120,7 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 											const atLimit =
 												(selected?.quantity ?? 0) >= optionLimit || groupQuantity >= Number(group.maxSelect);
 											return (
-												<div className="flex items-center gap-3 px-4 py-3" key={option.id}>
+										<div className="flex min-w-0 items-center gap-3 px-4 py-3" key={option.id}>
 													{option.imageUrl ? (
 														<img
 															alt=""
