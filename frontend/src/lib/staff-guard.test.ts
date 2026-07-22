@@ -75,6 +75,12 @@ describe("requireStaffBeforeLoad", () => {
 		await expect(requireStaffBeforeLoad("/admin/products/")).rejects.toMatchObject({ to: "/admin/orders" });
 	});
 
+	it("lets operational roles access the orders board without redirecting again", async () => {
+		session = { data: { user: { role: "kitchen" } } };
+
+		expect(await requireStaffBeforeLoad("/admin/orders")).toBeUndefined();
+	});
+
 	it("redirects a user with no role at all to login", async () => {
 		session = { data: { user: {} } };
 

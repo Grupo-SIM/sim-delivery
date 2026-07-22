@@ -26,7 +26,7 @@ export async function requireStaffBeforeLoad(pathname?: string) {
 	if (!session.data?.user || !isStaff(role)) {
 		throw redirect({ to: "/login" });
 	}
-	if (isOperationalStaff(role) && pathname && pathname !== "/admin/orders/") {
+	if (isOperationalStaff(role) && pathname && pathname !== "/admin/orders" && pathname !== "/admin/orders/") {
 		throw redirect({ to: "/admin/orders" });
 	}
 }
