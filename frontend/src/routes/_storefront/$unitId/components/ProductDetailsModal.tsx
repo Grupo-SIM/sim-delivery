@@ -75,14 +75,14 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 						{selectedItem.imageUrl ? (
 							<img
 								alt={selectedItem.title}
-								className="aspect-square size-full object-cover"
+								className="aspect-[4/3] size-full object-cover lg:aspect-square"
 								src={selectedItem.imageUrl}
 							/>
 						) : (
-							<div className="aspect-square" />
+							<div className="aspect-[4/3] lg:aspect-square" />
 						)}
 					</div>
-					<div className="flex min-w-0 flex-col justify-center gap-2 pr-8">
+					<div className="flex min-w-0 flex-col justify-center gap-2 sm:pr-8">
 						<h2 className="font-bold text-2xl text-foreground">{selectedItem.title}</h2>
 						{selectedItem.description && (
 							<p className="whitespace-pre-line text-muted-foreground text-sm">{selectedItem.description}</p>
