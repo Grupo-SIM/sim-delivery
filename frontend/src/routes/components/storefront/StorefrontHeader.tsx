@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { LuMapPin } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
+import { isStaff } from "@/lib/staff-guard";
+import { useAuthStore } from "@/stores/auth";
 import { ProfileMenu } from "./ProfileMenu";
 import type { StorefrontBranding } from "./types";
 
@@ -20,6 +22,7 @@ export function StorefrontHeader({
 	unitName,
 }: StorefrontHeaderProps) {
 	const { t } = useTranslation();
+	const role = useAuthStore(state => state.role);
 	const companyName = branding?.companyName ?? "JB Delivery";
 
 	return (
@@ -44,6 +47,11 @@ export function StorefrontHeader({
 						<LuMapPin aria-hidden className="h-4 w-4 text-primary" />
 						{t("store.unit.change")}
 					</Link>}
+					{isStaff(role) && (
+						<Link className="hidden cursor-pointer rounded-md border border-border px-3 py-2 font-semibold text-sm transition-colors hover:bg-muted sm:flex" to="/admin/orders">
+							{t("store.account.staffOrders")}
+						</Link>
+					)}
 					<ProfileMenu logoutTo={profileMenuLogoutTo} onlyLogout={profileMenuOnlyLogout} />
 				</div>
 			</div>
