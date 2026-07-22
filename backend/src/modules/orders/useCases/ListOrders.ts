@@ -10,6 +10,7 @@ export class ListOrders {
 		const defaultFrom = !from && !to ? company?.orderBoardStartedAt : null;
 		const orders = await this.prisma.order.findMany({
 			include: {
+				coupon: { select: { code: true, type: true, value: true } },
 				customer: { include: { user: true } },
 				delivery: { select: { courierId: true, courier: { select: { name: true } }, id: true } },
 				items: { include: { optionSnapshots: true } },
@@ -42,7 +43,10 @@ export class ListOrders {
 			cancelReason: o.cancelReason,
 			cashbackCentsRedeemed: o.cashbackCentsRedeemed,
 			companyId: o.companyId,
+			couponCode: o.coupon?.code ?? null,
 			couponId: o.couponId,
+			couponType: o.coupon?.type ?? null,
+			couponValue: o.coupon?.value ?? null,
 			createdAt: o.createdAt,
 			customerId: o.customerId,
 			customerName: o.customer.user.name ?? "",

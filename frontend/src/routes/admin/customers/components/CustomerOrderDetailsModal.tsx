@@ -15,6 +15,11 @@ export function CustomerOrderDetailsModal({ onClose, order }: CustomerOrderDetai
 	const discount = order ? Number(order.discountCents) : 0;
 	const cashbackRedeemed = order ? Number(order.cashbackCentsRedeemed) : 0;
 	const loyaltyRedeemed = order ? Number(order.loyaltyPointsRedeemed) : 0;
+	const couponDetail = order?.couponCode
+		? order.couponType === "percent"
+			? `${order.couponCode} · ${Number(order.couponValue)}%`
+			: order.couponCode
+		: null;
 
 	return (
 		<Modal isOpen={order !== null} maxWidth="600px" onClose={onClose} title={t("admin.customers.orderDetails.title")}>
@@ -76,7 +81,7 @@ export function CustomerOrderDetailsModal({ onClose, order }: CustomerOrderDetai
 					<section className="space-y-2 border-border border-t pt-4 text-sm">
 						<div className="flex justify-between"><span className="text-muted-foreground">{t("store.checkout.order.itemsSubtotal")}</span><span>{formatMoney(subtotal / 100)}</span></div>
 						{order.deliveryMethod === "delivery" && <div className="flex justify-between"><span className="text-muted-foreground">{t("store.cart.deliveryFee")}</span><span>{formatMoney(deliveryFee / 100)}</span></div>}
-						{discount > 0 && <div className="flex justify-between text-green-700"><span>{t("store.checkout.order.discount")}</span><span>−{formatMoney(discount / 100)}</span></div>}
+						{discount > 0 && <div className="flex justify-between text-green-700"><span>{couponDetail ? `${t("store.checkout.order.discount")} (${couponDetail})` : t("store.checkout.order.discount")}</span><span>−{formatMoney(discount / 100)}</span></div>}
 						{cashbackRedeemed > 0 && <div className="flex justify-between text-green-700"><span>{t("store.checkout.order.cashbackRedeemed")}</span><span>−{formatMoney(cashbackRedeemed / 100)}</span></div>}
 						{loyaltyRedeemed > 0 && <div className="flex justify-between text-green-700"><span>{t("store.checkout.order.loyaltyRedeemed")}</span><span>−{formatMoney(loyaltyRedeemed / 100)}</span></div>}
 						<div className="flex justify-between border-border border-t pt-3 font-bold text-base"><span>{t("admin.customers.orderDetails.total")}</span><span>{formatMoney(Number(order.total) / 100)}</span></div>
