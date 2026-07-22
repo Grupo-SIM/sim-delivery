@@ -25,28 +25,28 @@ function ProductsPage() {
 	] as const;
 
 	return (
-		<Container className="space-y-6 py-8">
+		<Container className="space-y-6 py-6 sm:py-8">
 			<SectionHeading subtitle={t("admin.products.catalogSubtitle")} title={t("admin.products.title")} />
 
-			{/* Tab bar */}
-			<div className="flex gap-1 border-border border-b">
-				{tabs.map(({ key, label }) => (
-					<Link
-						className={`-mb-px border-b-2 px-4 py-2 font-medium text-sm transition-colors ${
-							tab === key
-								? "border-primary text-primary"
-								: "border-transparent text-muted-foreground hover:text-foreground"
-						}`}
-						key={key}
-						search={{ tab: key }}
-						to="/admin/products"
-					>
-						{label}
-					</Link>
-				))}
+			<div className="-mx-4 overflow-x-auto border-border border-b px-4 sm:mx-0 sm:px-0">
+				<div className="flex min-w-max gap-1">
+					{tabs.map(({ key, label }) => (
+						<Link
+							className={`-mb-px border-b-2 px-4 py-2 font-medium text-sm transition-colors ${
+								tab === key
+									? "border-primary text-primary"
+									: "border-transparent text-muted-foreground hover:text-foreground"
+							}`}
+							key={key}
+							search={{ tab: key }}
+							to="/admin/products"
+						>
+							{label}
+						</Link>
+					))}
+				</div>
 			</div>
 
-			{/* Products tab */}
 			{tab === "products" && (
 				<>
 					<CreateProductForm />
@@ -60,7 +60,6 @@ function ProductsPage() {
 				</>
 			)}
 
-			{/* Categories tab */}
 			{tab === "categories" && (
 				<>
 					<CreateCategoryForm />
@@ -74,7 +73,6 @@ function ProductsPage() {
 				</>
 			)}
 
-			{/* Tags tab */}
 			{tab === "tags" && (
 				<>
 					<CreateTagForm />

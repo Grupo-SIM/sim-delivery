@@ -10,7 +10,12 @@ interface SectionHeadingProps {
 
 export function SectionHeading({ title, subtitle, action, className }: SectionHeadingProps) {
 	return (
-		<div className={cn("mb-4 flex items-end justify-between gap-4", className)}>
+		<div
+			className={cn(
+				"mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4",
+				className,
+			)}
+		>
 			<div>
 				<h2 className="font-bold text-xl leading-tight tracking-tight">{title}</h2>
 				{subtitle && <p className="mt-1 text-muted-foreground text-sm">{subtitle}</p>}

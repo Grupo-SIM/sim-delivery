@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { MaskedInput } from "@/components/ui/MaskedInput";
 import { Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -111,56 +111,66 @@ export function UnitHoursEditor({ onClose, unitId }: UnitHoursEditorProps) {
 			{isPending ? (
 				<Skeleton className="h-64 w-full" />
 			) : (
-				<div className="space-y-3">
-					<div className="grid grid-cols-[6rem_1fr_7rem_1rem_7rem] items-center gap-3">
-						<span />
-						<span />
-						<span className="text-center text-muted-foreground text-xs">{t("admin.units.hours.opensAt")}</span>
-						<span />
-						<span className="text-center text-muted-foreground text-xs">
-							{t("admin.units.hours.closesAt")}
-						</span>
-					</div>
-					{days.map((day, index) => (
-						<div className="grid grid-cols-[6rem_1fr_7rem_1rem_7rem] items-center gap-3" key={WEEKDAYS[index]}>
-							<span className="text-sm">{weekdayLabels[index]}</span>
-							<label className="flex items-center gap-1 text-muted-foreground text-xs">
-								<input
-									checked={day.closed}
-									onChange={event => update(index, { closed: event.currentTarget.checked })}
-									type="checkbox"
-								/>
-								{t("admin.units.hours.closed")}
-							</label>
-							<MaskedInput
-								className="w-28"
-								disabled={day.closed}
-								format="##:##"
-								isAllowed={isAllowedTime}
-								mask="_"
-								onValueChange={({ value }) => update(index, { opensAt: value })}
-								value={day.opensAt}
-							/>
-							<span className="text-center text-muted-foreground">—</span>
-							<MaskedInput
-								className="w-28"
-								disabled={day.closed}
-								format="##:##"
-								isAllowed={isAllowedTime}
-								mask="_"
-								onValueChange={({ value }) => update(index, { closesAt: value })}
-								value={day.closesAt}
-							/>
+				<div className="space-y-3 overflow-x-auto pb-1">
+					<div className="min-w-[31rem] space-y-3">
+						<div className="grid grid-cols-[6rem_1fr_7rem_1rem_7rem] items-center gap-3">
+							<span />
+							<span />
+							<span className="text-center text-muted-foreground text-xs">
+								{t("admin.units.hours.opensAt")}
+							</span>
+							<span />
+							<span className="text-center text-muted-foreground text-xs">
+								{t("admin.units.hours.closesAt")}
+							</span>
 						</div>
-					))}
+						{days.map((day, index) => (
+							<div
+								className="grid grid-cols-[6rem_1fr_7rem_1rem_7rem] items-center gap-3"
+								key={WEEKDAYS[index]}
+							>
+								<span className="text-sm">{weekdayLabels[index]}</span>
+								<label
+									className="flex items-center gap-1 text-muted-foreground text-xs"
+									htmlFor={`unit-hours-closed-${WEEKDAYS[index]}`}
+								>
+									<Checkbox
+										checked={day.closed}
+										id={`unit-hours-closed-${WEEKDAYS[index]}`}
+										onChange={event => update(index, { closed: event.currentTarget.checked })}
+									/>
+									{t("admin.units.hours.closed")}
+								</label>
+								<MaskedInput
+									className="w-28"
+									disabled={day.closed}
+									format="##:##"
+									isAllowed={isAllowedTime}
+									mask="_"
+									onValueChange={({ value }) => update(index, { opensAt: value })}
+									value={day.opensAt}
+								/>
+								<span className="text-center text-muted-foreground">—</span>
+								<MaskedInput
+									className="w-28"
+									disabled={day.closed}
+									format="##:##"
+									isAllowed={isAllowedTime}
+									mask="_"
+									onValueChange={({ value }) => update(index, { closesAt: value })}
+									value={day.closesAt}
+								/>
+							</div>
+						))}
 
-					<div className="flex justify-end gap-2 pt-2">
-						<Button onClick={onClose} type="button" variant="outline">
-							{t("admin.units.hours.cancel")}
-						</Button>
-						<Button disabled={isSaving} onClick={save} type="button">
-							{isSaving ? t("admin.units.hours.saving") : t("admin.units.hours.save")}
-						</Button>
+						<div className="flex justify-end gap-2 pt-2">
+							<Button onClick={onClose} type="button" variant="outline">
+								{t("admin.units.hours.cancel")}
+							</Button>
+							<Button disabled={isSaving} onClick={save} type="button">
+								{isSaving ? t("admin.units.hours.saving") : t("admin.units.hours.save")}
+							</Button>
+						</div>
 					</div>
 				</div>
 			)}

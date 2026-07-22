@@ -2,7 +2,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -70,35 +69,34 @@ function OrdersPage() {
 	}
 
 	return (
-		<Container className="space-y-6 py-8">
-			<div className="flex flex-wrap items-start justify-between gap-4">
+		<Container className="space-y-6 py-6 sm:py-8">
+			<div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 				<SectionHeading subtitle={t("admin.orders.subtitle")} title={t("admin.orders.title")} />
-				{!hasOperationalAccess && <ConfirmActionButton
-					confirmation="Pedidos atuais sairão do kanban, mas continuarão disponíveis no histórico."
-					confirmLabel="Confirmar"
-					disabled={closeDay.isPending || Boolean(date)}
-					onConfirm={closeCurrentDay}
-					tooltip="Encerrar dia"
-					type="button"
-					variant="outline"
-				>
-					{closeDay.isPending ? "Encerrando..." : "Encerrar dia"}
-				</ConfirmActionButton>}
+				{!hasOperationalAccess && (
+					<ConfirmActionButton
+						confirmation="Pedidos atuais sairão do kanban, mas continuarão disponíveis no histórico."
+						confirmLabel="Confirmar"
+						disabled={closeDay.isPending || Boolean(date)}
+						onConfirm={closeCurrentDay}
+						tooltip="Encerrar dia"
+						type="button"
+						variant="outline"
+					>
+						{closeDay.isPending ? "Encerrando..." : "Encerrar dia"}
+					</ConfirmActionButton>
+				)}
 			</div>
 
-			<div className="flex flex-wrap items-end gap-4">
-				<div className="w-60">
-					<TextField
-						label={t("admin.orders.filter.search")}
-						onValueChange={setSearch}
-						placeholder={t("admin.orders.filter.searchPlaceholder")}
-						value={search}
-					/>
-				</div>
+			<div className="grid gap-4 sm:grid-cols-[minmax(0,15rem)_11rem] sm:items-end">
+				<TextField
+					label={t("admin.orders.filter.search")}
+					onValueChange={setSearch}
+					placeholder={t("admin.orders.filter.searchPlaceholder")}
+					value={search}
+				/>
 				<label className="flex flex-col gap-1" htmlFor="orders-date-filter">
 					<span className="font-medium text-sm">{t("admin.orders.filter.date")}</span>
 					<Input
-						className="w-44"
 						id="orders-date-filter"
 						onChange={event => setDate(event.currentTarget.value)}
 						type="date"

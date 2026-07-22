@@ -18,9 +18,9 @@ export function AdminSectionCard({ description, icon: Icon, title, to }: AdminSe
 					<IconBadge className="size-10 shrink-0 rounded-md" tone="primary">
 						<Icon className="size-5" />
 					</IconBadge>
-					<CardTitle className="text-base">{title}</CardTitle>
+					<CardTitle className="min-w-0 break-words text-base">{title}</CardTitle>
 				</CardHeader>
-				<CardContent className="text-body-sm text-muted-foreground">{description}</CardContent>
+				<CardContent className="break-words text-body-sm text-muted-foreground">{description}</CardContent>
 			</Card>
 		</Link>
 	);
