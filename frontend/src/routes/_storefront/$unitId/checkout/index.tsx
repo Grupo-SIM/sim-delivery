@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -16,7 +16,7 @@ import {
 	usePostOrders,
 } from "@/lib/api";
 import { slug } from "@/lib/variant";
-import { cartTotalCents, showAlert, useAuthStore, useCartStore, useDeliveryMethodStore } from "@/stores";
+import { cartTotalCents, showAlert, useAuthStore, useCartStore, useCouponStore, useDeliveryMethodStore } from "@/stores";
 import {
 	AddressForm,
 	AddressSelectorModal,
@@ -49,6 +49,8 @@ function CheckoutPage() {
 	const [editingLineKey, setEditingLineKey] = useState<string | null>(null);
 	const getMethod = useDeliveryMethodStore(state => state.getMethod);
 	const setStoredMethod = useDeliveryMethodStore(state => state.setMethod);
+	const getStoredCoupon = useCouponStore(state => state.getCoupon);
+	const setStoredCoupon = useCouponStore(state => state.setCoupon);
 	const { data: units, isPending: loadingUnits } = useQuery(getPublicUnitsQueryOptions({ slug: slug ?? "" }));
 	const unit = units?.find(u => u.slug === unitSlug);
 	const unitId = unit?.id ?? "";
@@ -57,7 +59,7 @@ function CheckoutPage() {
 	const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>(() =>
 		getMethod(unitId, availableMethods),
 	);
-	const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+	const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(() => getStoredCoupon(unitId));
 	const [cashbackRedeemCents, setCashbackRedeemCents] = useState(0);
 	const [loyaltyRedeemPoints, setLoyaltyRedeemPoints] = useState(0);
 	const [placedOrder, setPlacedOrder] = useState<{ id: string; totalCents: number } | null>(null);
@@ -65,6 +67,10 @@ function CheckoutPage() {
 	const editingMenuItem = editingItem
 		? (menu?.flatMap(section => section.items).find(item => item.id === editingItem.id) ?? null)
 		: null;
+
+	useEffect(() => {
+		setAppliedCoupon(getStoredCoupon(unitId));
+	}, [getStoredCoupon, unitId]);
 
 	const { mutate: saveCustomer, isPending: isSavingCustomer } = usePostCustomersMe({
 		// Customer response is stored locally after submit. Avoid Kubb's broad
@@ -120,6 +126,11 @@ function CheckoutPage() {
 	function handleChangeDeliveryMethod(method: DeliveryMethod) {
 		setDeliveryMethod(method);
 		setStoredMethod(unitId, method);
+	}
+
+	function handleSetCoupon(coupon: AppliedCoupon | null) {
+		setAppliedCoupon(coupon);
+		setStoredCoupon(unitId, coupon);
 	}
 
 	function handleAddressSubmit(address: AddressValue) {
@@ -267,7 +278,7 @@ function CheckoutPage() {
 						onChangeLoyaltyRedeem={setLoyaltyRedeemPoints}
 						onEditItem={item => setEditingLineKey(item.lineKey)}
 						onOpenAddressSelector={() => setAddressModalOpen(true)}
-						onSetCoupon={setAppliedCoupon}
+						onSetCoupon={handleSetCoupon}
 						onSubmit={handlePlaceOrder}
 						slug={slug ?? ""}
 						subtotal={cartTotalCents(cartItems)}

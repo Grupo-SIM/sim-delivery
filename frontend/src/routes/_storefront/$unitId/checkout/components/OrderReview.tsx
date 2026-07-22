@@ -4,18 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
 	type PostCustomersMe200,
-	type PostPublicCouponsValidate200,
 	postPublicCouponsValidate,
 	usePostPublicFreightSimulate,
 } from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
-import type { CartItem } from "@/stores";
+import type { AppliedCoupon, CartItem } from "@/stores";
 import { CheckoutItemRow } from "./CheckoutItemRow";
 
 export type DeliveryMethod = "delivery" | "pickup";
 type Address = PostCustomersMe200["addresses"][number];
 
-export type AppliedCoupon = PostPublicCouponsValidate200 & { code: string };
+export type { AppliedCoupon } from "@/stores";
 
 interface OrderReviewProps {
 	address: Address | null;
