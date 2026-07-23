@@ -2,8 +2,9 @@ import { t } from "elysia";
 
 export const UpdateOrderStatusBody = t.Object({
 	cancelReason: t.Optional(t.String({ minLength: 1 })),
+	problemReason: t.Optional(t.String({ minLength: 1 })),
 	preparedById: t.Optional(t.Nullable(t.String({ minLength: 1 }))),
-	status: t.Union([t.Literal("recebido"), t.Literal("em_preparo"), t.Literal("pronto"), t.Literal("saiu_para_entrega"), t.Literal("entregue"), t.Literal("retirado"), t.Literal("cancelado")]),
+	status: t.Union([t.Literal("recebido"), t.Literal("em_preparo"), t.Literal("pronto"), t.Literal("saiu_para_entrega"), t.Literal("problema"), t.Literal("entregue"), t.Literal("retirado"), t.Literal("cancelado")]),
 });
 export type UpdateOrderStatusBody = typeof UpdateOrderStatusBody.static;
 

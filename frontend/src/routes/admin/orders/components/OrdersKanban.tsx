@@ -2,6 +2,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/Modal";
+import { Input } from "@/components/ui/input";
+import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import {
 	getOrdersQueryKey,
 	type GetOrders200,
@@ -18,6 +22,7 @@ const KANBAN_STATUSES = [
 	"em_preparo",
 	"pronto",
 	"saiu_para_entrega",
+	"problema",
 	"entregue",
 	"retirado",
 	"cancelado",
@@ -30,6 +35,7 @@ const MOVABLE_STATUSES: readonly PatchOrdersByOrderIdStatusMutationRequestStatus
 	"em_preparo",
 	"pronto",
 	"saiu_para_entrega",
+	"problema",
 	"entregue",
 	"retirado",
 	"cancelado",
@@ -63,6 +69,8 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 	const scrollSpeedRef = useRef(0);
 	const [draggedOrderId, setDraggedOrderId] = useState<string | null>(null);
 	const [dragOverStatus, setDragOverStatus] = useState<string | null>(null);
+	const [problemOrderId, setProblemOrderId] = useState<string | null>(null);
+	const [problemReason, setProblemReason] = useDebouncedInput("", () => undefined);
 	const ordersByStatus = useMemo(
 		() =>
 			statuses.map(status => ({
@@ -195,6 +203,10 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 			return;
 		}
 		if (!isMovableStatus(status)) return;
+		if (status === "problema") {
+			setProblemOrderId(orderId);
+			return;
+		}
 
 		const nextStatus = status as PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey;
 		patchStatus.mutate(
@@ -212,7 +224,16 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 		);
 	}
 
+	function confirmProblem() {
+		if (!problemOrderId || !problemReason.trim()) return;
+		patchStatus.mutate(
+			{ data: { problemReason: problemReason.trim(), status: "problema" }, orderId: problemOrderId },
+			{ onSuccess: () => { void queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() }); setProblemOrderId(null); setProblemReason(""); } },
+		);
+	}
+
 	return (
+		<>
 		<div
 			className="-mx-5 overflow-x-auto px-5 pb-3"
 			onDragLeave={event => {
@@ -282,5 +303,18 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 				})}
 			</div>
 		</div>
+		<Modal isOpen={problemOrderId !== null} maxWidth="520px" onClose={() => setProblemOrderId(null)} title="Registrar pendência">
+			<div className="space-y-4">
+				<label className="space-y-1">
+					<span className="font-medium text-sm">Explique o que aconteceu *</span>
+					<Input onChange={event => setProblemReason(event.currentTarget.value)} placeholder="Ex: Item faltante será enviado novamente." type="text" value={problemReason} />
+				</label>
+				<div className="flex justify-end gap-2">
+					<Button onClick={() => setProblemOrderId(null)} type="button" variant="outline">Descartar</Button>
+					<Button disabled={!problemReason.trim() || patchStatus.isPending} onClick={confirmProblem} type="button">Salvar pendência</Button>
+				</div>
+			</div>
+		</Modal>
+		</>
 	);
 }

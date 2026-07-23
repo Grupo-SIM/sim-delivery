@@ -8,7 +8,7 @@ model Order {
     preparedById   String?
     addressId      String?
     couponId              String?
-    /// One of: awaiting_payment | recebido | em_preparo | pronto | saiu_para_entrega | entregue | retirado | cancelado
+    /// One of: awaiting_payment | recebido | em_preparo | pronto | saiu_para_entrega | problema | entregue | retirado | cancelado
     status                String   @default("awaiting_payment")
     subtotal              Int
     deliveryFee           Int      @default(0)
@@ -19,6 +19,7 @@ model Order {
     /// "delivery" or "pickup"
     deliveryMethod String
     cancelReason   String?
+    problemReason  String?
     createdAt      DateTime @default(now())
     updatedAt      DateTime @updatedAt
 

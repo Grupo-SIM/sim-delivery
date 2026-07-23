@@ -44,6 +44,7 @@ export const AdminOrderReturn = t.Object({
 	),
 	loyaltyPointsRedeemed: t.Integer(),
 	preparedBy: __nullable__(t.Object({ id: t.String(), name: t.String() })),
+	problemReason: __nullable__(t.String()),
 	status: t.String(),
 	subtotal: t.Integer(),
 	total: t.Integer(),
@@ -95,6 +96,7 @@ export const OrderReturn = t.Object({
 	items: t.Array(OrderItemReturn),
 	loyaltyPointsRedeemed: t.Integer(),
 	preparedById: __nullable__(t.String()),
+	problemReason: __nullable__(t.String()),
 	status: t.String(),
 	subtotal: t.Integer(),
 	total: t.Integer(),
@@ -112,6 +114,7 @@ export type OrderStatusEventReturn = typeof OrderStatusEventReturn.static;
 
 export const CustomerOrderTrackingReturn = t.Object({
 	cancelReason: __nullable__(t.String()),
+	problemReason: __nullable__(t.String()),
 	createdAt: t.Date(),
 	deliveryMethod: t.String(),
 	id: t.String(),

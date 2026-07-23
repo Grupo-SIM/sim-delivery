@@ -21,6 +21,8 @@ const DEFAULT_ORDER_STATUS_MESSAGES: Record<string, string> = {
 
 function canTransition(current: string, next: string, deliveryMethod: string): boolean {
 	if (current === next) return true;
+	if (next === "problema") return current !== "cancelado";
+	if (current === "problema") return next !== "awaiting_payment";
 	if (next === "cancelado") return true;
 	if (current === "cancelado") return REOPENABLE_FROM_CANCELLED.has(next);
 
@@ -65,7 +67,7 @@ export class UpdateOrderStatus {
 		data: UpdateOrderStatusBody,
 		role?: Role,
 	): Promise<OrderReturn> {
-		const { status, cancelReason, preparedById } = data;
+		const { status, cancelReason, preparedById, problemReason } = data;
 
 		const order = await this.prisma.order.findFirst({
 			include: { company: { select: { orderStatusWhatsAppTemplates: true } }, customer: true },
@@ -80,6 +82,7 @@ export class UpdateOrderStatus {
 		if (!canTransition(order.status, status, order.deliveryMethod))
 			throw new DomainError(OrderErrors.INVALID_TRANSITION);
 		if (status === "cancelado" && !cancelReason) throw new DomainError(OrderErrors.CANCEL_REASON_REQUIRED);
+		if (status === "problema" && !problemReason) throw new DomainError(OrderErrors.INVALID_TRANSITION);
 
 		if (preparedById) {
 			const kitchenMember = await this.prisma.user.findFirst({
@@ -91,6 +94,7 @@ export class UpdateOrderStatus {
 		const updated = await this.prisma.order.update({
 			data: {
 				cancelReason: status === "cancelado" ? cancelReason : null,
+				problemReason: status === "problema" ? problemReason : order.problemReason,
 				...(preparedById !== undefined ? { preparedById } : {}),
 				status,
 			},

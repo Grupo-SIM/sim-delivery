@@ -115,8 +115,8 @@ function OrderTrackingPage() {
 				</div>
 			) : (
 				<>
-					<div className="flex items-start gap-3 rounded-lg border border-primary/30 bg-primary/5 p-5">
-						<CurrentIcon className="mt-0.5 size-6 text-primary" />
+					<div className="flex animate-in items-start gap-3 rounded-lg border border-primary/30 bg-primary/5 p-5 fade-in slide-in-from-bottom-2 duration-500">
+						<CurrentIcon className="mt-0.5 size-6 animate-pulse text-primary" />
 						<div className="space-y-1">
 							<p className="font-semibold">{current ? t(current.title) : t("store.checkout.tracking.status.awaiting_payment")}</p>
 							<p className="text-muted-foreground text-sm">{currentDescription}</p>
@@ -130,9 +130,9 @@ function OrderTrackingPage() {
 							const complete = stageIndex >= index;
 							const statusTime = complete ? formatStatusTime(eventByStatus.get(status)) : null;
 							return (
-								<li className="flex gap-3" key={status}>
+								<li className="flex animate-in gap-3 fade-in slide-in-from-left-2 duration-500" key={status} style={{ animationDelay: `${index * 90}ms`, animationFillMode: "both" }}>
 									<div className="flex flex-col items-center">
-										<div className={`grid size-7 place-items-center rounded-full ${complete ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+										<div className={`grid size-7 place-items-center rounded-full transition-all duration-500 ${complete ? "scale-105 bg-primary text-primary-foreground shadow-sm" : "bg-muted text-muted-foreground"}`}>
 											<Icon className="size-4" />
 										</div>
 										{index < stages.length - 1 && <div className={`h-10 w-px ${stageIndex > index ? "bg-primary" : "bg-border"}`} />}

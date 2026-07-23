@@ -26,6 +26,7 @@ export class GetCustomerOrder {
 			deliveryMethod: order.deliveryMethod,
 			id: order.id,
 			items: order.items.map(item => ({ ...item, options: item.optionSnapshots })),
+			problemReason: order.problemReason,
 			status: order.status,
 			statusEvents:
 				order.statusEvents?.length > 0
