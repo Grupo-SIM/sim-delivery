@@ -234,6 +234,25 @@
 	}
 }
 
+@utility scrollbar-themed {
+	scrollbar-color: var(--muted-foreground) transparent;
+	scrollbar-width: thin;
+
+	&::-webkit-scrollbar {
+		width: 0.5rem;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: var(--muted-foreground);
+		border: 0.125rem solid var(--card);
+		border-radius: 9999px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
+}
+
 /* Display type helper — Luckiest Guy needs a little breathing room */
 @utility font-display {
 	font-family: var(--font-display);

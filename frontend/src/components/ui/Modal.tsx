@@ -20,7 +20,7 @@ export function Modal({ children, isOpen, maxWidth = "640px", onClose, title }: 
 			<Dialog.Portal>
 				<Dialog.Overlay className="fixed inset-0 z-50 bg-black/55 backdrop-blur-sm" />
 				<Dialog.Content
-					className="fixed top-1/2 left-1/2 z-50 max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto overflow-x-hidden rounded-2xl bg-card p-4 text-card-foreground shadow-2xl sm:w-[92vw] sm:max-w-[92vw] sm:p-7"
+				className="scrollbar-themed fixed top-1/2 left-1/2 z-50 max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto overflow-x-hidden rounded-2xl bg-card p-4 text-card-foreground shadow-2xl sm:w-[92vw] sm:max-w-[92vw] sm:p-7"
 					style={{ maxWidth }}
 				>
 					<div className="mb-2 flex justify-end">
