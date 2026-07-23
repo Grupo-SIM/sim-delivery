@@ -167,7 +167,7 @@ function OrderTrackingPage() {
 				<p className="font-medium text-sm">{t("store.checkout.tracking.items")}</p>
 				<ul className="space-y-2 text-muted-foreground text-sm">
 					{order.items.map(item => (
-						<li key={item.id}>{item.quantity}x {item.productName}{item.note ? ` - ${item.note}` : ""}</li>
+						<li className="[overflow-wrap:anywhere]" key={item.id}>{item.quantity}x {item.productName}{item.note ? ` - ${item.note}` : ""}</li>
 					))}
 				</ul>
 			</section>
