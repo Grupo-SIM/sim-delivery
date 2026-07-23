@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LuShoppingCart } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Modal } from "@/components/ui/Modal";
@@ -36,6 +37,7 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 	if (!item) return null;
 	const selectedItem = item;
 	const delta = optionsPriceDelta(selectedItem.optionGroups, options);
+	const totalCents = (Number(selectedItem.priceCents) + delta) * quantity;
 	const invalidGroup = findInvalidGroup(selectedItem.optionGroups, options);
 	const chooseLabel = (required: boolean, maxSelect: number) => {
 		if (required && maxSelect === 1) return t("store.product.chooseExact", { count: 1 });
@@ -214,7 +216,9 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 						</Button>
 					</div>
 					<Button disabled={Boolean(invalidGroup)} onClick={add} type="button">
+						<LuShoppingCart aria-hidden="true" />
 						{t("store.cart.add")}
+						{money.format(totalCents / 100)}
 					</Button>
 				</div>
 			</div>

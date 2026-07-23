@@ -10,7 +10,13 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { StatCard } from "@/components/ui/StatCard";
 import type { GetReportsSummaryQueryParamsPeriodEnumKey } from "@/lib/api";
-import { useGetOrders, useGetReportsBestSellers, useGetReportsSummary } from "@/lib/api";
+import {
+	useGetOrders,
+	useGetReportsBestSellers,
+	useGetReportsDashboardAnalytics,
+	useGetReportsSummary,
+} from "@/lib/api";
+import { DashboardDeliveryRadiusTable, DashboardHourlyOrdersChart } from "./components";
 
 function formatCents(cents: number): string {
 	return (cents / 100).toLocaleString("pt-BR", { currency: "BRL", style: "currency" });
@@ -32,6 +38,9 @@ function AdminDashboardPage() {
 		isPending: summaryPending,
 	} = useGetReportsSummary({ period });
 	const { data: bestSellers, isError: bsError, isPending: bsPending } = useGetReportsBestSellers({ period });
+	const { data: analytics, isError: analyticsError, isPending: analyticsPending } = useGetReportsDashboardAnalytics({
+		period,
+	});
 	const { data: allOrders, isError: ordersError, isPending: ordersPending } = useGetOrders();
 
 	const recentOrders = allOrders?.slice(0, 10) ?? [];
@@ -109,6 +118,39 @@ function AdminDashboardPage() {
 					</DataTable>
 				)}
 			</div>
+
+			{analyticsPending ? (
+				<div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+					<Skeleton className="h-72" />
+					<Skeleton className="h-72" />
+				</div>
+			) : analyticsError ? (
+				<ErrorState title={t("admin.reports.loadError")} />
+			) : (
+				<div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+					<DashboardHourlyOrdersChart
+						ordersByHour={analytics.ordersByHour}
+						title={t("admin.reports.ordersByHour.title")}
+					/>
+					{analytics.deliveryRadiusPerformance.length === 0 ? (
+						<EmptyState title={t("admin.reports.deliveryRadius.empty")} />
+					) : (
+						<DashboardDeliveryRadiusTable
+							columns={{
+								deliveryFee: t("admin.reports.deliveryRadius.columns.deliveryFee"),
+								orderCount: t("admin.reports.deliveryRadius.columns.orderCount"),
+								radius: t("admin.reports.deliveryRadius.columns.radius"),
+								revenue: t("admin.reports.deliveryRadius.columns.revenue"),
+								unit: t("admin.reports.deliveryRadius.columns.unit"),
+							}}
+							formatCents={formatCents}
+							noRadius={t("admin.reports.deliveryRadius.noRadius")}
+							rows={analytics.deliveryRadiusPerformance}
+							title={t("admin.reports.deliveryRadius.title")}
+						/>
+					)}
+				</div>
+			)}
 
 			{/* Recent orders */}
 			<div>

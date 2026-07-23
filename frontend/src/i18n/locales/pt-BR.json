@@ -582,8 +582,23 @@
 					},
 					"title": "Mais vendidos"
 				},
+				"deliveryRadius": {
+					"columns": {
+						"deliveryFee": "Frete",
+						"orderCount": "Pedidos",
+						"radius": "Raio",
+						"revenue": "Receita",
+						"unit": "Unidade"
+					},
+					"empty": "Nenhum pedido com entrega neste período.",
+					"noRadius": "Tarifa padrão",
+					"title": "Pedidos e receita por raio"
+				},
 				"empty": "Nenhum pedido concluído neste período.",
 				"loadError": "Não foi possível carregar os relatórios.",
+				"ordersByHour": {
+					"title": "Pedidos por hora"
+				},
 				"period": {
 					"month": "Este mês",
 					"title": "Período",
@@ -973,6 +988,14 @@
 					"emailHint": "O email não pode ser alterado.",
 					"name": "Nome",
 					"namePlaceholder": "Ex: Maria Silva",
+					"notificationEmail": "Receber atualizações por e-mail",
+					"notificationWhatsApp": "Receber atualizações por WhatsApp",
+					"notificationsHint": "Escolha como receber atualizações dos seus pedidos.",
+					"notificationsSave": "Salvar preferências",
+					"notificationsSaved": "Preferências de notificação atualizadas!",
+					"notificationsSaveError": "Não foi possível salvar as preferências de notificação.",
+					"notificationsSaving": "Salvando preferências...",
+					"notificationsTitle": "Notificações de pedidos",
 					"save": "Salvar",
 					"saved": "Perfil atualizado!",
 					"saveError": "Não foi possível salvar. Tente novamente.",

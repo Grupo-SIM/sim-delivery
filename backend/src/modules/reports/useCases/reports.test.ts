@@ -1,6 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { GetBestSellers } from "./GetBestSellers";
+import { GetDashboardAnalytics } from "./GetDashboardAnalytics";
 import { GetRevenueSummary } from "./GetRevenueSummary";
 
 type Where = Record<string, unknown>;
@@ -243,5 +244,32 @@ describe("GetBestSellers", () => {
 		const createdAt = calls[0].createdAt as { gte: Date };
 		expect(createdAt.gte.getDate()).toBe(1);
 		expect(createdAt.gte.getMonth()).toBe(now.getMonth());
+	});
+});
+
+describe("GetDashboardAnalytics", () => {
+	it("groups completed orders by hour and delivery fee radius", async () => {
+		const prisma = {
+			order: {
+				findMany: async () => [
+					{ createdAt: new Date(2026, 6, 23, 12), deliveryFee: 500, deliveryMethod: "delivery", total: 3500, unitId: "unit_1" },
+					{ createdAt: new Date(2026, 6, 23, 12), deliveryFee: 500, deliveryMethod: "delivery", total: 2500, unitId: "unit_1" },
+					{ createdAt: new Date(2026, 6, 23, 18), deliveryFee: 0, deliveryMethod: "pickup", total: 4000, unitId: "unit_1" },
+				],
+			},
+			unit: {
+				findMany: async () => [
+					{ deliveryZones: [{ fee: 500, radiusKm: 5 }], id: "unit_1", name: "Centro" },
+				],
+			},
+		} as unknown as PrismaInstance;
+
+		const result = await new GetDashboardAnalytics(prisma).execute("cmp_1", {});
+
+		expect(result.ordersByHour[12]).toEqual({ hour: 12, orderCount: 2 });
+		expect(result.ordersByHour[18]).toEqual({ hour: 18, orderCount: 1 });
+		expect(result.deliveryRadiusPerformance).toEqual([
+			{ deliveryFee: 500, orderCount: 2, radiusKm: 5, totalRevenue: 6000, unitId: "unit_1", unitName: "Centro" },
+		]);
 	});
 });
