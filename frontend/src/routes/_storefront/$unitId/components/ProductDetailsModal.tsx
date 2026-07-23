@@ -9,6 +9,7 @@ import type { CartItem, SelectedOption } from "@/stores";
 import { useCartStore } from "@/stores";
 import { applyOptionQuantity, findInvalidGroup, optionsPriceDelta } from "./product-options";
 import { type MenuItem, money } from "./types";
+import { OptionImagePreviewModal } from "./OptionImagePreviewModal";
 
 interface ProductDetailsModalProps {
 	item: MenuItem | null;
@@ -25,6 +26,7 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 	const [localNote, setLocalNote] = useDebouncedInput(note, setNote);
 	const [quantity, setQuantity] = useState(1);
 	const [options, setOptions] = useState<SelectedOption[]>([]);
+	const [imagePreview, setImagePreview] = useState<{ alt: string; imageUrl: string } | null>(null);
 
 	useEffect(() => {
 		if (!item) return;
@@ -70,6 +72,7 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 	}
 
 	return (
+		<>
 		<Modal isOpen maxWidth="1100px" onClose={onClose}>
 			<div className="min-w-0 space-y-6">
 				<div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)]">
@@ -124,11 +127,14 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 											return (
 										<div className="flex min-w-0 items-center gap-3 px-4 py-3" key={option.id}>
 													{option.imageUrl ? (
-														<img
-															alt=""
-															className="size-14 shrink-0 rounded object-cover"
-															src={option.imageUrl}
-														/>
+													<button
+														aria-label={`Ampliar imagem de ${option.name}`}
+														className="size-14 shrink-0 cursor-pointer overflow-hidden rounded border border-border"
+														onClick={() => setImagePreview({ alt: option.name, imageUrl: option.imageUrl as string })}
+														type="button"
+													>
+														<img alt="" className="size-full object-cover" src={option.imageUrl} />
+													</button>
 													) : (
 														<div className="size-14 shrink-0 rounded bg-muted" />
 													)}
@@ -223,5 +229,11 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 				</div>
 			</div>
 		</Modal>
+		<OptionImagePreviewModal
+			alt={imagePreview?.alt ?? ""}
+			imageUrl={imagePreview?.imageUrl ?? null}
+			onClose={() => setImagePreview(null)}
+		/>
+		</>
 	);
 }
