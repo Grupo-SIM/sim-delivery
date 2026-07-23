@@ -1,0 +1,1 @@
+ALTER TABLE "coupon" ADD COLUMN "active" BOOLEAN NOT NULL DEFAULT true;

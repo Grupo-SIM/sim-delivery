@@ -35,6 +35,7 @@ function makePrisma(
 const baseBody = { code: "SAVE10", orderSubtotal: 5000, slug: "demo", unitId: "unit_1" };
 
 const baseCoupon = {
+	active: true,
 	code: "SAVE10",
 	companyId: "cmp_1",
 	expiresAt: null,

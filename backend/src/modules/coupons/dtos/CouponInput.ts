@@ -2,6 +2,7 @@ import { t } from "elysia";
 
 /** Editable coupon fields shared by create (required code/type/value) and update (all optional). */
 const fields = {
+	active: t.Optional(t.Boolean()),
 	expiresAt: t.Optional(t.Nullable(t.String({ format: "date-time" }))),
 	maxUses: t.Optional(t.Nullable(t.Integer({ minimum: 1 }))),
 	minOrderCents: t.Optional(t.Integer({ minimum: 0 })),

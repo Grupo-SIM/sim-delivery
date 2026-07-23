@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuPencil, LuTrash2 } from "react-icons/lu";
+import { LuCircleOff, LuPencil, LuPower, LuTrash2 } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Modal } from "@/components/ui/Modal";
@@ -95,6 +95,19 @@ export function CouponRow({ coupon, units }: CouponRowProps) {
 		);
 	}
 
+	function toggleActive() {
+		update.mutate(
+			{ couponId: coupon.id, data: { active: !coupon.active } },
+			{
+				onError: () => showToast(t("admin.coupons.edit.error"), "negative"),
+				onSuccess: () => {
+					void invalidate();
+					showToast(coupon.active ? "Cupom desativado" : "Cupom ativado", "positive");
+				},
+			},
+		);
+	}
+
 	const unit = units?.find(item => item.id === coupon.unitId);
 	const expiresAt = coupon.expiresAt ? new Date(coupon.expiresAt).toLocaleString("pt-BR") : t("admin.coupons.row.never");
 	const value = coupon.type === "fixed" ? `R$ ${(Number(coupon.value) / 100).toFixed(2).replace(".", ",")}` : `${coupon.value}%`;
@@ -102,7 +115,9 @@ export function CouponRow({ coupon, units }: CouponRowProps) {
 	return (
 		<>
 			<tr className="border-border/60 border-b last:border-0">
-				<td className="px-4 py-3 font-mono font-medium">{coupon.code}</td>
+				<td className="px-4 py-3 font-mono font-medium">
+					{coupon.code} {!coupon.active && <span className="ml-2 text-destructive text-xs">Inativo</span>}
+				</td>
 				<td className="px-4 py-3">{coupon.type === "fixed" ? t("admin.coupons.types.fixed") : t("admin.coupons.types.percent")}</td>
 				<td className="px-4 py-3">{value}</td>
 				<td className="px-4 py-3">{unit?.name ?? t("admin.coupons.row.allUnits")}</td>
@@ -113,6 +128,18 @@ export function CouponRow({ coupon, units }: CouponRowProps) {
 							<LuPencil className="size-4" />
 							{t("admin.coupons.edit.action")}
 						</Button>
+						<ConfirmActionButton
+							confirmation={coupon.active ? "Clique novamente para desativar" : "Clique novamente para ativar"}
+							confirmLabel={coupon.active ? "Desativar" : "Ativar"}
+							disabled={update.isPending}
+							idleIcon={coupon.active ? <LuCircleOff className="size-4" /> : <LuPower className="size-4" />}
+							onConfirm={toggleActive}
+							size="sm"
+							type="button"
+							variant="outline"
+						>
+							{coupon.active ? "Desativar" : "Ativar"}
+						</ConfirmActionButton>
 						<ConfirmActionButton
 							confirmation={t("admin.coupons.row.deleteConfirm", { code: coupon.code })}
 							confirmLabel={t("admin.coupons.row.delete")}

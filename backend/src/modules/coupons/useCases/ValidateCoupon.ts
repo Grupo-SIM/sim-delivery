@@ -15,7 +15,7 @@ export class ValidateCoupon {
 		const coupon = await this.prisma.coupon.findUnique({
 			where: { companyId_code: { code: code.toUpperCase(), companyId: company.id } },
 		});
-		if (!coupon) throw new DomainError(CouponErrors.COUPON_NOT_FOUND);
+		if (!coupon || !coupon.active) throw new DomainError(CouponErrors.COUPON_NOT_FOUND);
 
 		if (coupon.unitId && coupon.unitId !== unitId) throw new DomainError(CouponErrors.COUPON_NOT_FOUND);
 
