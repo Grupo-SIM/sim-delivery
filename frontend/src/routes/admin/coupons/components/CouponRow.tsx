@@ -128,18 +128,10 @@ export function CouponRow({ coupon, units }: CouponRowProps) {
 							<LuPencil className="size-4" />
 							{t("admin.coupons.edit.action")}
 						</Button>
-						<ConfirmActionButton
-							confirmation={coupon.active ? "Clique novamente para desativar" : "Clique novamente para ativar"}
-							confirmLabel={coupon.active ? "Desativar" : "Ativar"}
-							disabled={update.isPending}
-							idleIcon={coupon.active ? <LuCircleOff className="size-4" /> : <LuPower className="size-4" />}
-							onConfirm={toggleActive}
-							size="sm"
-							type="button"
-							variant="outline"
-						>
+						<Button disabled={update.isPending} onClick={toggleActive} size="sm" type="button" variant="outline">
+							{coupon.active ? <LuCircleOff className="size-4" /> : <LuPower className="size-4" />}
 							{coupon.active ? "Desativar" : "Ativar"}
-						</ConfirmActionButton>
+						</Button>
 						<ConfirmActionButton
 							confirmation={t("admin.coupons.row.deleteConfirm", { code: coupon.code })}
 							confirmLabel={t("admin.coupons.row.delete")}

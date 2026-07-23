@@ -13,11 +13,14 @@ interface SessionUser {
 	id: string;
 	image?: string | null;
 	name: string;
+	phoneNumber?: string | null;
+	phoneNumberVerified?: boolean | null;
 	role?: string | null;
 }
 
 /** Maps a Better Auth session user (with tenant additionalFields) to the store shape. */
-export function mapSessionUser(user: SessionUser): AuthUser {
+export function mapSessionUser(sessionUser: unknown): AuthUser {
+	const user = sessionUser as SessionUser;
 	return {
 		companyId: user.companyId ?? null,
 		createdAt: user.createdAt,
@@ -26,6 +29,8 @@ export function mapSessionUser(user: SessionUser): AuthUser {
 		id: user.id,
 		image: user.image ?? null,
 		name: user.name,
+		phoneNumber: user.phoneNumber ?? null,
+		phoneNumberVerified: user.phoneNumberVerified ?? false,
 		role: user.role ?? "customer",
 	};
 }
@@ -38,6 +43,8 @@ export interface AuthUser {
 	id: string;
 	image: string | null;
 	name: string;
+	phoneNumber: string | null;
+	phoneNumberVerified: boolean;
 	role: string;
 }
 
