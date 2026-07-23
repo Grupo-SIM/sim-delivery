@@ -38,11 +38,17 @@ export function AssociateProductForm({
 	const { isPending, mutate } = usePostUnitsByUnitIdProducts();
 
 	const associatedIds = new Set(associations.map(a => a.productId));
-	const availableProducts = products.filter(p => !associatedIds.has(p.id));
+	const availableProducts = products
+		.filter(product => !associatedIds.has(product.id))
+		.toSorted((first, second) => first.title.localeCompare(second.title, "pt-BR"));
 
 	const productOptions = [
 		{ label: t("admin.unitProducts.form.productPlaceholder"), value: "" },
-		...availableProducts.map(p => ({ label: p.title, value: p.id })),
+		...availableProducts.map(product => ({
+			imageUrl: product.imageUrl,
+			label: product.title,
+			value: product.id,
+		})),
 	];
 	function reset() {
 		setProductId("");

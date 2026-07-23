@@ -49,7 +49,18 @@ export function UnitProductRow({ association, categories, products, tags, unitId
 	return (
 		<>
 			<tr className="border-border/60 border-b last:border-0">
-				<td className="px-4 py-3 font-medium">{product?.title ?? association.productId}</td>
+				<td className="px-4 py-3 font-medium">
+					<div className="flex items-center gap-3">
+						{product?.imageUrl && (
+							<img
+								alt={product.title}
+								className="size-12 shrink-0 rounded border border-border object-cover"
+								src={product.imageUrl}
+							/>
+						)}
+						<span>{product?.title ?? association.productId}</span>
+					</div>
+				</td>
 				<td className="px-4 py-3 text-muted-foreground">
 					<div className="flex flex-wrap gap-1">
 						{effectiveCategories.map(category => (

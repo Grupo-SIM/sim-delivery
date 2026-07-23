@@ -20,6 +20,12 @@ export function UnitProductsTable({
 	unitId,
 }: UnitProductsTableProps) {
 	const { t } = useTranslation();
+	const sortedAssociations = associations.toSorted((first, second) => {
+		const firstProduct = products.find(product => product.id === first.productId);
+		const secondProduct = products.find(product => product.id === second.productId);
+
+		return (firstProduct?.title ?? "").localeCompare(secondProduct?.title ?? "", "pt-BR");
+	});
 
 	if (associations.length === 0) {
 		return <EmptyState title={t("admin.unitProducts.empty")} />;
@@ -38,7 +44,7 @@ export function UnitProductsTable({
 				</tr>
 			</thead>
 			<tbody>
-				{associations.map(association => (
+				{sortedAssociations.map(association => (
 					<UnitProductRow
 						association={association}
 						categories={categories}

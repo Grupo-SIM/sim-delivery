@@ -4,6 +4,7 @@ import { LuChevronDown } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 
 export interface SelectOption {
+	imageUrl?: string;
 	label: string;
 	value: string;
 }
@@ -91,7 +92,12 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 				ref={triggerRef}
 				type="button"
 			>
-				<span className={cn(!selected && "text-muted-foreground")}>{selected?.label ?? "—"}</span>
+				<span className={cn("flex min-w-0 items-center gap-2", !selected && "text-muted-foreground")}>
+					{selected?.imageUrl && (
+						<img alt="" className="size-7 shrink-0 rounded object-cover" src={selected.imageUrl} />
+					)}
+					<span className="truncate">{selected?.label ?? "—"}</span>
+				</span>
 				<LuChevronDown
 					className={cn(
 						"ml-2 h-4 w-4 shrink-0 text-muted-foreground transition-transform",
@@ -133,7 +139,12 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 												role="option"
 												type="button"
 											>
-												{opt.label}
+												<span className="flex items-center gap-2">
+													{opt.imageUrl && (
+														<img alt="" className="size-8 shrink-0 rounded object-cover" src={opt.imageUrl} />
+													)}
+													<span className="truncate">{opt.label}</span>
+												</span>
 											</button>
 										))}
 									</div>
@@ -149,7 +160,12 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 										role="option"
 										type="button"
 									>
-										{opt.label}
+										<span className="flex items-center gap-2">
+											{opt.imageUrl && (
+												<img alt="" className="size-8 shrink-0 rounded object-cover" src={opt.imageUrl} />
+											)}
+											<span className="truncate">{opt.label}</span>
+										</span>
 									</button>
 								))}
 					</div>,
