@@ -221,10 +221,10 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 							+
 						</Button>
 					</div>
-					<Button disabled={Boolean(invalidGroup)} onClick={add} type="button">
+					<Button className="gap-3" disabled={Boolean(invalidGroup)} onClick={add} type="button">
 						<LuShoppingCart aria-hidden="true" />
-						{t("store.cart.add")}
-						{money.format(totalCents / 100)}
+						<span>{t("store.cart.add")}</span>
+						<span>{money.format(totalCents / 100)}</span>
 					</Button>
 				</div>
 			</div>
