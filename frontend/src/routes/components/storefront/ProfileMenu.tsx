@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { LuLogOut, LuReceiptText, LuUser } from "react-icons/lu";
+import { LuBell, LuLogOut, LuReceiptText, LuUser } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/stores/auth";
 
@@ -89,6 +89,15 @@ export function ProfileMenu({ logoutTo = "/", onlyLogout = false }: ProfileMenuP
 					>
 						<LuReceiptText aria-hidden className="size-4 text-muted-foreground" />
 						{t("store.account.myOrders")}
+					</Link>}
+					{!onlyLogout && <Link
+						className="flex cursor-pointer items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-muted"
+						onClick={() => setOpen(false)}
+						role="menuitem"
+						to="/preferences"
+					>
+						<LuBell aria-hidden className="size-4 text-muted-foreground" />
+						{t("store.account.preferences.title")}
 					</Link>}
 					{!onlyLogout && <Link
 						className="flex cursor-pointer items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-muted"

@@ -73,7 +73,7 @@ export class UpdateOrderStatus {
 		const order = await this.prisma.order.findFirst({
 			include: {
 				company: { select: { orderStatusWhatsAppTemplates: true } },
-				customer: { include: { user: { select: { email: true } } } },
+				customer: { include: { user: { select: { email: true, phoneNumber: true } } } },
 			},
 			where: { ...(companyId ? { companyId } : {}), id: orderId },
 		});
@@ -115,8 +115,9 @@ export class UpdateOrderStatus {
 		if (shouldNotify(order.status, status, order.deliveryMethod)) {
 			const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
 			const message = formatOrderStatusMessage(templates?.[status]?.trim() || undefined, status, orderId);
-			if (order.customer.notificationWhatsApp !== false && order.customer.phone) {
-				await this.whatsApp.sendOrderStatus(order.customer.phone, status, orderId, message).catch(() => {});
+			const phone = order.customer.phone ?? order.customer.user.phoneNumber;
+			if (order.customer.notificationWhatsApp !== false && phone) {
+				await this.whatsApp.sendOrderStatus(phone, status, orderId, message).catch(() => {});
 			}
 			if (order.customer.notificationEmail !== false && order.customer.user.email) {
 				await sendOrderStatusEmail(order.customer.user.email, status, orderId, message).catch(() => {});

@@ -22,7 +22,7 @@ export class CancelExpiredUnpaidOrders {
 						notificationEmail: true,
 						notificationWhatsApp: true,
 						phone: true,
-						user: { select: { email: true } },
+						user: { select: { email: true, phoneNumber: true } },
 					},
 				},
 			},
@@ -53,8 +53,9 @@ export class CancelExpiredUnpaidOrders {
 				templates?.cancelado?.trim() ||
 				"Seu pedido {{orderId}} foi cancelado porque o pagamento não foi confirmado em até 1 hora."
 			).replaceAll("{{orderId}}", order.id);
-			if (order.customer.notificationWhatsApp !== false && order.customer.phone) {
-				await this.whatsApp.sendOrderStatus(order.customer.phone, "cancelado", order.id, message).catch(() => {});
+			const phone = order.customer.phone ?? order.customer.user?.phoneNumber;
+			if (order.customer.notificationWhatsApp !== false && phone) {
+				await this.whatsApp.sendOrderStatus(phone, "cancelado", order.id, message).catch(() => {});
 			}
 			if (order.customer.notificationEmail !== false && order.customer.user?.email) {
 				await sendOrderStatusEmail(order.customer.user.email, "cancelado", order.id, message).catch(() => {});

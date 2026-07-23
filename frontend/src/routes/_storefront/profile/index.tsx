@@ -2,17 +2,15 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/Checkbox";
 import { Container } from "@/components/ui/Container";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
+import { MaskedInput } from "@/components/ui/MaskedInput";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { authClient } from "@/lib/auth-client";
 import { branding } from "@/lib/branding";
-import { useGetCustomersMe, usePatchCustomersMeNotificationPreferences } from "@/lib/api";
-import { slug } from "@/lib/variant";
 import { mapSessionUser, useAuthStore } from "@/stores/auth";
 
 function initials(name: string): string {
@@ -29,11 +27,6 @@ function ProfilePage() {
 	const isAuthenticated = useAuthStore(state => state.isAuthenticated);
 	const user = useAuthStore(state => state.user);
 	const setUser = useAuthStore(state => state.setUser);
-	const customerQuery = useGetCustomersMe(
-		{ slug: slug ?? "" },
-		{ query: { enabled: isAuthenticated && !!slug, retry: false } },
-	);
-	const updatePreferences = usePatchCustomersMeNotificationPreferences();
 
 	const [name, setName] = useState(user?.name ?? "");
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
@@ -44,20 +37,17 @@ function ProfilePage() {
 	const [savingPassword, setSavingPassword] = useState(false);
 	const [passwordSaved, setPasswordSaved] = useState(false);
 	const [passwordError, setPasswordError] = useState<string | null>(null);
-	const [notificationEmail, setNotificationEmail] = useState(true);
-	const [notificationWhatsApp, setNotificationWhatsApp] = useState(true);
-	const [preferencesError, setPreferencesError] = useState<string | null>(null);
-	const [preferencesSaved, setPreferencesSaved] = useState(false);
+	const [phone, setPhone] = useState(user?.phoneNumber ?? "");
+	const [phoneCode, setPhoneCode] = useDebouncedInput("", () => {});
+	const [phoneError, setPhoneError] = useState<string | null>(null);
+	const [phoneStep, setPhoneStep] = useState<"idle" | "sending" | "verifying" | "verification">("idle");
+	const [phoneSuccess, setPhoneSuccess] = useState(false);
 
 	useEffect(() => {
-		if (user) setName(user.name);
+		if (!user) return;
+		setName(user.name);
+		setPhone(user.phoneNumber ?? "");
 	}, [user]);
-
-	useEffect(() => {
-		if (!customerQuery.data) return;
-		setNotificationEmail(customerQuery.data.notificationEmail);
-		setNotificationWhatsApp(customerQuery.data.notificationWhatsApp);
-	}, [customerQuery.data]);
 
 	useEffect(() => {
 		if (hydrated && !isAuthenticated) void navigate({ to: "/identify" });
@@ -117,17 +107,41 @@ function ProfilePage() {
 		setPasswordSaved(true);
 	}
 
-	function handleSavePreferences() {
-		setPreferencesError(null);
-		setPreferencesSaved(false);
-		updatePreferences.mutate(
-			{ data: { email: notificationEmail, whatsApp: notificationWhatsApp } },
-			{
-				onError: () => setPreferencesError(t("store.account.profile.notificationsSaveError")),
-				onSuccess: () => setPreferencesSaved(true),
-			},
-		);
+	async function handleSendPhoneCode() {
+		const phoneNumber = `+${phone.replace(/\D/g, "")}`;
+		setPhoneError(null);
+		setPhoneSuccess(false);
+		setPhoneStep("sending");
+		const { error: caught } = await authClient.phoneNumber.sendOtp({ phoneNumber });
+		if (caught) {
+			setPhoneError(t("store.account.profile.phoneSendError"));
+			setPhoneStep("idle");
+			return;
+		}
+		setPhoneStep("verification");
 	}
+
+	async function handleVerifyPhone() {
+		const phoneNumber = `+${phone.replace(/\D/g, "")}`;
+		setPhoneError(null);
+		setPhoneSuccess(false);
+		setPhoneStep("verifying");
+		const { error: caught } = await authClient.phoneNumber.verify({
+			code: phoneCode,
+			phoneNumber,
+			updatePhoneNumber: true,
+		});
+		if (caught) {
+			setPhoneError(t("store.account.profile.phoneVerifyError"));
+			setPhoneStep("verification");
+			return;
+		}
+		const session = await authClient.getSession();
+		if (session.data?.user) setUser(mapSessionUser(session.data.user));
+		setPhoneStep("idle");
+		setPhoneSuccess(true);
+	}
+
 
 	return (
 		<Container className="max-w-xl space-y-6 py-8">
@@ -166,6 +180,48 @@ function ProfilePage() {
 					<Input disabled placeholder="cliente@email.com" readOnly value={user.email} />
 				</Label>
 				<p className="text-muted-foreground text-xs">{t("store.account.profile.emailHint")}</p>
+				<div className="space-y-3">
+					<Label>
+						{t("store.account.profile.phone")}
+						<MaskedInput
+							format="+55 (##) #####-####"
+							inputMode="tel"
+							mask="_"
+							onValueChange={({ value }) => setPhone(value)}
+							placeholder={t("store.account.profile.phonePlaceholder")}
+							value={phone.replace(/^\+/, "")}
+						/>
+					</Label>
+					<p className="text-muted-foreground text-xs">{t("store.account.profile.phoneHint")}</p>
+					{phoneStep === "verification" ? (
+						<>
+							<Label>
+								{t("store.account.profile.phoneCode")}
+								<Input
+									autoComplete="one-time-code"
+									inputMode="numeric"
+									onChange={event => setPhoneCode(event.currentTarget.value)}
+									placeholder={t("store.account.profile.phoneCodePlaceholder")}
+									value={phoneCode}
+								/>
+							</Label>
+							<Button disabled={phoneCode.length === 0} onClick={() => void handleVerifyPhone()} type="button" variant="outline">
+								{t("store.account.profile.phoneVerify")}
+							</Button>
+						</>
+					) : (
+						<Button
+							disabled={phone.replace(/\D/g, "").length !== 13 || phoneStep === "sending"}
+							onClick={() => void handleSendPhoneCode()}
+							type="button"
+							variant="outline"
+						>
+							{phoneStep === "sending" ? t("store.account.profile.phoneSending") : t("store.account.profile.phoneSend")}
+						</Button>
+					)}
+					{phoneError && <p className="text-destructive text-sm">{phoneError}</p>}
+					{phoneSuccess && <p className="text-primary text-sm">{t("store.account.profile.phoneSaved")}</p>}
+				</div>
 
 				<div className="space-y-3 border-border border-t pt-4">
 					<Label>
@@ -189,39 +245,6 @@ function ProfilePage() {
 							? t("store.account.profile.passwordSaving")
 							: t("store.account.profile.passwordSave")}
 					</Button>
-				</div>
-
-				<div className="space-y-3 border-border border-t pt-4">
-					<div>
-						<p className="font-medium">{t("store.account.profile.notificationsTitle")}</p>
-						<p className="text-muted-foreground text-sm">{t("store.account.profile.notificationsHint")}</p>
-					</div>
-					{customerQuery.isPending ? (
-						<Skeleton className="h-12 w-full" />
-					) : customerQuery.data ? (
-						<>
-							<label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3">
-								<Checkbox checked={notificationEmail} onChange={event => setNotificationEmail(event.currentTarget.checked)} />
-								<span>{t("store.account.profile.notificationEmail")}</span>
-							</label>
-							<label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3">
-								<Checkbox checked={notificationWhatsApp} onChange={event => setNotificationWhatsApp(event.currentTarget.checked)} />
-								<span>{t("store.account.profile.notificationWhatsApp")}</span>
-							</label>
-							{preferencesError && <p className="text-destructive text-sm">{preferencesError}</p>}
-							{preferencesSaved && <p className="text-primary text-sm">{t("store.account.profile.notificationsSaved")}</p>}
-							<Button
-								disabled={updatePreferences.isPending}
-								onClick={handleSavePreferences}
-								type="button"
-								variant="outline"
-							>
-								{updatePreferences.isPending
-									? t("store.account.profile.notificationsSaving")
-									: t("store.account.profile.notificationsSave")}
-							</Button>
-						</>
-					) : null}
 				</div>
 
 				{error && <p className="text-destructive text-sm">{error}</p>}
