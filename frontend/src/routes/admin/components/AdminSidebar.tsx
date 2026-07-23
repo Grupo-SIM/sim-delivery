@@ -13,7 +13,6 @@ import {
 	LuStore,
 	LuTicket,
 	LuUsers,
-	LuUtensilsCrossed,
 } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 import { isSuperAdmin, useAuthStore } from "@/stores/auth";
@@ -85,6 +84,12 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 					to="/admin/products"
 				/>
 				<NavItem
+					icon={LuTicket}
+					label={t("admin.coupons.title")}
+					onNavigate={onNavigate}
+					to="/admin/coupons"
+				/>
+				<NavItem
 					icon={LuImages}
 					label={t("admin.promotionalImages.title")}
 					onNavigate={onNavigate}
@@ -105,18 +110,6 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 					label={t("admin.customers.title")}
 					onNavigate={onNavigate}
 					to="/admin/customers"
-				/>
-				<NavItem
-					icon={LuTicket}
-					label={t("admin.coupons.title")}
-					onNavigate={onNavigate}
-					to="/admin/coupons"
-				/>
-				<NavItem
-					icon={LuUtensilsCrossed}
-					label={t("admin.kitchen.title")}
-					onNavigate={onNavigate}
-					to="/admin/kitchen"
 				/>
 				<NavItem icon={LuStar} label={t("admin.reviews.title")} onNavigate={onNavigate} to="/admin/reviews" />
 			</NavGroup>
