@@ -4,17 +4,18 @@ import { Modal } from "@/components/ui/Modal";
 import { AddressForm, type AddressValue } from "./AddressForm";
 
 interface AddressCreateModalProps {
+	isSubmodal?: boolean;
 	isOpen: boolean;
 	isSaving: boolean;
 	onClose: () => void;
 	onCreate: (address: AddressValue) => void;
 }
 
-export function AddressCreateModal({ isOpen, isSaving, onClose, onCreate }: AddressCreateModalProps) {
+export function AddressCreateModal({ isOpen, isSaving, isSubmodal = false, onClose, onCreate }: AddressCreateModalProps) {
 	const { t } = useTranslation();
 
 	return (
-		<Modal isOpen={isOpen} maxWidth="640px" onClose={onClose} title={t("store.checkout.address.addTitle")}>
+		<Modal isOpen={isOpen} layer={isSubmodal ? "submodal" : "modal"} maxWidth="640px" onClose={onClose} title={t("store.checkout.address.addTitle")}>
 			<AddressForm
 				disabled={isSaving}
 				footer={({ canSubmit, isSubmitting }) => (

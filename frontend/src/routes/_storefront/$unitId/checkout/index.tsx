@@ -314,7 +314,6 @@ function CheckoutPage() {
 				isOpen={addressModalOpen}
 				onClose={() => setAddressModalOpen(false)}
 				onCreate={() => {
-					setAddressModalOpen(false);
 					setAddressCreateModalOpen(true);
 				}}
 				onDelete={addressId => deleteAddress.mutate(
@@ -335,6 +334,7 @@ function CheckoutPage() {
 			<AddressCreateModal
 				isOpen={addressCreateModalOpen}
 				isSaving={isSavingCustomer}
+				isSubmodal={addressModalOpen}
 				onClose={() => setAddressCreateModalOpen(false)}
 				onCreate={handleAddressSubmit}
 			/>
