@@ -189,12 +189,12 @@ function makeUpdateStatusPrisma(order: {
 		items: unknown[];
 		deliveryMethod: string;
 		company: { orderStatusWhatsAppTemplates: Record<string, string> | null };
-		customer: { phone: string | null };
+		customer: { notificationEmail?: boolean; notificationWhatsApp?: boolean; phone: string | null; user: { email: string } };
 	} = {
 		...order,
 		cancelReason: null,
 		company: { orderStatusWhatsAppTemplates: order.templates ?? null },
-		customer: { phone: order.phone ?? null },
+		customer: { notificationEmail: true, notificationWhatsApp: true, phone: order.phone ?? null, user: { email: "cliente@example.com" } },
 		deliveryMethod: order.deliveryMethod ?? "delivery",
 		items: [],
 	};
@@ -271,6 +271,24 @@ describe("UpdateOrderStatus", () => {
 		await new UpdateOrderStatus(prisma, whatsApp).execute("cmp_1", "ord_1", { status: "em_preparo" });
 
 		expect(messages).toEqual(["Pedido ord_1 em produção."]);
+	});
+
+	it("does not send WhatsApp when customer opted out", async () => {
+		const { prisma, stored } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			deliveryMethod: "delivery",
+			id: "ord_1",
+			phone: "+5511999999999",
+			status: "recebido",
+		});
+		stored.customer.notificationWhatsApp = false;
+		const messages: string[] = [];
+
+		await new UpdateOrderStatus(prisma, { sendOrderStatus: async () => void messages.push("sent") }).execute("cmp_1", "ord_1", {
+			status: "em_preparo",
+		});
+
+		expect(messages).toEqual([]);
 	});
 
 	it("throws ORDER_NOT_FOUND for wrong companyId", async () => {

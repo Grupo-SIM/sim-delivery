@@ -8,6 +8,8 @@ interface CustomerMetricSource {
 	cpf: string | null;
 	domId: string | null;
 	id: string;
+	notificationEmail: boolean;
+	notificationWhatsApp: boolean;
 	orders: { createdAt: Date; total: number }[];
 	phone: string | null;
 	updatedAt: Date;

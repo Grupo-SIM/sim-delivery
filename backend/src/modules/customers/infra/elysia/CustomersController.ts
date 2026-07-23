@@ -9,8 +9,9 @@ import {
 	GetMyCustomerQuery,
 	ListCustomersQuery,
 	MaybeCustomerReturn,
+	UpdateNotificationPreferencesBody,
 } from "../../dtos";
-import { DeleteCustomerAddress, GetCustomer, GetMyCustomer, ListCustomers, UpsertCustomer } from "../../useCases";
+import { DeleteCustomerAddress, GetCustomer, GetMyCustomer, ListCustomers, UpdateNotificationPreferences, UpsertCustomer } from "../../useCases";
 
 export const CustomersController = new Elysia({
 	detail: { tags: ["Customers"] },
@@ -25,6 +26,7 @@ export const CustomersController = new Elysia({
 				getMyCustomer: new GetMyCustomer(prisma),
 				listCustomers: new ListCustomers(prisma),
 				prisma,
+				updateNotificationPreferences: new UpdateNotificationPreferences(prisma),
 				upsertCustomer: new UpsertCustomer(prisma),
 			}))
 			.get(
@@ -60,6 +62,14 @@ export const CustomersController = new Elysia({
 					return upsertCustomer.execute(userId, body);
 				},
 				{ body: CreateCustomerBody, response: CustomerReturn },
+			)
+			.patch(
+				"/me/notification-preferences",
+				async ({ body, request, updateNotificationPreferences }) => {
+					const { userId } = await AuthGuard.execute(request.headers);
+					return updateNotificationPreferences.execute(userId, body);
+				},
+				{ body: UpdateNotificationPreferencesBody, response: CustomerReturn },
 			)
 			.delete(
 				"/me/addresses/:addressId",

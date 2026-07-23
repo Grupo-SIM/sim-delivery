@@ -7,6 +7,9 @@ model Customer {
     userId    String   @unique
     cpf       String?
     phone     String?
+    /// Customer-selected channels for transactional order-status notifications.
+    notificationEmail    Boolean @default(true)
+    notificationWhatsApp Boolean @default(true)
     /// DOM Pagamentos customer id, created lazily on the first card payment.
     domId     String?
     createdAt DateTime @default(now())

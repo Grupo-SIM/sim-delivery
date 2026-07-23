@@ -27,6 +27,12 @@ export const GetMyCustomerQuery = t.Object({
 });
 export type GetMyCustomerQuery = typeof GetMyCustomerQuery.static;
 
+export const UpdateNotificationPreferencesBody = t.Object({
+	email: t.Boolean(),
+	whatsApp: t.Boolean(),
+});
+export type UpdateNotificationPreferencesBody = typeof UpdateNotificationPreferencesBody.static;
+
 export const ListCustomersQuery = t.Object({
 	page: t.Optional(t.Integer({ minimum: 1 })),
 	pageSize: t.Optional(t.Integer({ maximum: 100, minimum: 1 })),

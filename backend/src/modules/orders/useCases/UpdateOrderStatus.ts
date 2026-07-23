@@ -1,6 +1,7 @@
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { WhatsAppProvider } from "@/shared/infra/whatsapp";
+import { sendOrderStatusEmail } from "@/shared/infra/mail";
 import { UserErrors } from "@/modules/users/errors";
 import type { Role } from "@/shared/permissions";
 import type { OrderReturn, UpdateOrderStatusBody } from "../dtos";
@@ -70,7 +71,10 @@ export class UpdateOrderStatus {
 		const { status, cancelReason, preparedById, problemReason } = data;
 
 		const order = await this.prisma.order.findFirst({
-			include: { company: { select: { orderStatusWhatsAppTemplates: true } }, customer: true },
+			include: {
+				company: { select: { orderStatusWhatsAppTemplates: true } },
+				customer: { include: { user: { select: { email: true } } } },
+			},
 			where: { ...(companyId ? { companyId } : {}), id: orderId },
 		});
 		if (!order) throw new DomainError(OrderErrors.ORDER_NOT_FOUND);
@@ -108,16 +112,15 @@ export class UpdateOrderStatus {
 			});
 		}
 
-		if (shouldNotify(order.status, status, order.deliveryMethod) && order.customer.phone) {
+		if (shouldNotify(order.status, status, order.deliveryMethod)) {
 			const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
-			await this.whatsApp
-				.sendOrderStatus(
-					order.customer.phone,
-					status,
-					orderId,
-					formatOrderStatusMessage(templates?.[status]?.trim() || undefined, status, orderId),
-				)
-				.catch(() => {});
+			const message = formatOrderStatusMessage(templates?.[status]?.trim() || undefined, status, orderId);
+			if (order.customer.notificationWhatsApp !== false && order.customer.phone) {
+				await this.whatsApp.sendOrderStatus(order.customer.phone, status, orderId, message).catch(() => {});
+			}
+			if (order.customer.notificationEmail !== false && order.customer.user.email) {
+				await sendOrderStatusEmail(order.customer.user.email, status, orderId, message).catch(() => {});
+			}
 		}
 
 		return { ...updated, items: updated.items.map(item => ({ ...item, options: item.optionSnapshots })) };

@@ -38,6 +38,7 @@ export const envSchema = t.Object({
 	}),
 	DOM_API_KEY: t.Optional(t.String()),
 	MAIL_DRIVER: t.Enum(MailProvidersEnum),
+	MAIL_FROM: t.Optional(t.String({ format: "email" })),
 	MAIL_HOST: t.String(),
 	MAIL_PASS: t.String(),
 	MAIL_PORT: t.String(),
@@ -73,6 +74,12 @@ export const envSchema = t.Object({
 	TWILIO_ACCOUNT_SID: t.Optional(t.String()),
 	TWILIO_AUTH_TOKEN: t.Optional(t.String()),
 	TWILIO_FROM_NUMBER: t.Optional(t.String()),
+	WHATSAPP_ACCESS_TOKEN: t.Optional(t.String()),
+	WHATSAPP_API_VERSION: t.Optional(t.String({ default: "v23.0" })),
+	WHATSAPP_DRIVER: t.Optional(t.String({ default: "disabled" })),
+	WHATSAPP_PHONE_NUMBER_ID: t.Optional(t.String()),
+	WHATSAPP_TEMPLATE_LANGUAGE: t.Optional(t.String({ default: "pt_BR" })),
+	WHATSAPP_TEMPLATE_NAME: t.Optional(t.String()),
 });
 
 declare global {
