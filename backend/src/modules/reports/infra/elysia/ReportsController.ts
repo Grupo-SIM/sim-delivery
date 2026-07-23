@@ -1,7 +1,13 @@
 import Elysia from "elysia";
 import { CompanyScopeGuard } from "@/modules/users/guards";
 import { prisma } from "@/shared/infra/sql";
-import { BestSellersReturn, DashboardAnalyticsReturn, GetReportsQuery, RevenueSummaryReturn } from "../../dtos";
+import {
+	BestSellersReturn,
+	DashboardAnalyticsReturn,
+	GetDashboardAnalyticsQuery,
+	GetReportsQuery,
+	RevenueSummaryReturn,
+} from "../../dtos";
 import { GetBestSellers, GetDashboardAnalytics, GetRevenueSummary } from "../../useCases";
 
 const getBestSellers = new GetBestSellers(prisma);
@@ -25,7 +31,7 @@ export const ReportsController = new Elysia({ prefix: "/reports" })
 			CompanyScopeGuard.authorize(scope, "reports", "read");
 			return getDashboardAnalytics.execute(scope.companyId, query);
 		},
-		{ query: GetReportsQuery, response: DashboardAnalyticsReturn },
+		{ query: GetDashboardAnalyticsQuery, response: DashboardAnalyticsReturn },
 	)
 	.get(
 		"/best-sellers",

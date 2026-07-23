@@ -1,22 +1,31 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/Container";
-import { CustomSelect } from "@/components/ui/CustomSelect";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { StatCard } from "@/components/ui/StatCard";
-import type { GetReportsSummaryQueryParamsPeriodEnumKey } from "@/lib/api";
+import type { GetReportsDashboardAnalytics200GroupByEnumKey } from "@/lib/api";
 import {
+	exportReports,
 	useGetOrders,
 	useGetReportsBestSellers,
 	useGetReportsDashboardAnalytics,
 	useGetReportsSummary,
 } from "@/lib/api";
-import { DashboardDeliveryRadiusTable, DashboardHourlyOrdersChart } from "./components";
+import { showToast } from "@/stores";
+import {
+	DashboardDateRangePicker,
+	DashboardDeliveryRadiusTable,
+	DashboardOrdersByPeriodChart,
+	DashboardPeriodPicker,
+	type DashboardPeriod,
+	type DashboardPeriodSelection,
+} from "./components";
 
 function formatCents(cents: number): string {
 	return (cents / 100).toLocaleString("pt-BR", { currency: "BRL", style: "currency" });
@@ -24,26 +33,62 @@ function formatCents(cents: number): string {
 
 function AdminDashboardPage() {
 	const { t } = useTranslation();
-	const [period, setPeriod] = useState<GetReportsSummaryQueryParamsPeriodEnumKey>("month");
+	const [period, setPeriod] = useState<DashboardPeriodSelection>("month");
+	const [groupBy, setGroupBy] = useState<GetReportsDashboardAnalytics200GroupByEnumKey>("hourOfDay");
+	const [dateRange, setDateRange] = useState<{ endDate: string; startDate: string } | null>(null);
+	const [isExporting, setIsExporting] = useState(false);
 
-	const periodOptions = [
-		{ label: t("admin.reports.period.today"), value: "today" },
-		{ label: t("admin.reports.period.week"), value: "week" },
-		{ label: t("admin.reports.period.month"), value: "month" },
-	];
+	const periodLabels: Record<DashboardPeriodSelection, string> = {
+		today: t("admin.reports.period.today"),
+		yesterday: t("admin.reports.period.yesterday"),
+		week: t("admin.reports.period.week"),
+		month: t("admin.reports.period.month"),
+		lastMonth: t("admin.reports.period.lastMonth"),
+		quarter: t("admin.reports.period.quarter"),
+		semester: t("admin.reports.period.semester"),
+		year: t("admin.reports.period.year"),
+		custom: t("admin.reports.period.custom"),
+	};
+
+	const groupByOptions = [
+		{ label: t("admin.reports.groupBy.hourOfDay"), value: "hourOfDay" },
+		{ label: t("admin.reports.groupBy.dayOfWeek"), value: "dayOfWeek" },
+		{ label: t("admin.reports.groupBy.dayOfMonth"), value: "dayOfMonth" },
+		{ label: t("admin.reports.groupBy.month"), value: "month" },
+		{ label: t("admin.reports.groupBy.quarter"), value: "quarter" },
+		{ label: t("admin.reports.groupBy.year"), value: "year" },
+	] as const;
+
+	const queryPeriod = period === "custom" ? undefined : period;
 
 	const {
 		data: summary,
 		isError: summaryError,
 		isPending: summaryPending,
-	} = useGetReportsSummary({ period });
-	const { data: bestSellers, isError: bsError, isPending: bsPending } = useGetReportsBestSellers({ period });
+	} = useGetReportsSummary({ ...dateRange, period: queryPeriod });
+	const { data: bestSellers, isError: bsError, isPending: bsPending } = useGetReportsBestSellers({ ...dateRange, period: queryPeriod });
 	const { data: analytics, isError: analyticsError, isPending: analyticsPending } = useGetReportsDashboardAnalytics({
-		period,
+		...dateRange,
+		groupBy,
+		period: queryPeriod,
 	});
 	const { data: allOrders, isError: ordersError, isPending: ordersPending } = useGetOrders();
 
 	const recentOrders = allOrders?.slice(0, 10) ?? [];
+
+	// The spreadsheet must match what's on screen, so it takes the same period params as the hooks above.
+	const handleExport = async () => {
+		setIsExporting(true);
+
+		try {
+			await exportReports({ ...dateRange, period: queryPeriod });
+			showToast(t("admin.reports.export.success"), "positive");
+		} catch {
+			showToast(t("admin.reports.export.error"), "negative");
+		} finally {
+			setIsExporting(false);
+		}
+	};
 
 	return (
 		<Container className="space-y-8 py-8">
@@ -51,13 +96,24 @@ function AdminDashboardPage() {
 				<SectionHeading subtitle={t("admin.dashboard.subtitle")} title={t("admin.dashboard.title")} />
 				<div className="flex items-center gap-3">
 					<span className="font-medium text-sm">{t("admin.reports.period.title")}</span>
-					<div className="w-40">
-						<CustomSelect
-							onChange={v => setPeriod(v as GetReportsSummaryQueryParamsPeriodEnumKey)}
-							options={periodOptions}
-							value={period}
-						/>
-					</div>
+					<DashboardPeriodPicker
+						datePicker={
+							<DashboardDateRangePicker
+								inline
+								onChange={range => {
+									setDateRange(range);
+									setPeriod("custom");
+								}}
+								value={dateRange}
+							/>
+						}
+						labels={periodLabels}
+						onChange={nextPeriod => { setDateRange(null); setPeriod(nextPeriod); }}
+						period={period}
+					/>
+					<Button disabled={isExporting} onClick={handleExport} type="button" variant="outline">
+						{isExporting ? t("admin.reports.export.pending") : t("admin.reports.export.button")}
+					</Button>
 				</div>
 			</div>
 
@@ -91,8 +147,6 @@ function AdminDashboardPage() {
 					<Skeleton className="h-40 w-full" />
 				) : bsError ? (
 					<ErrorState title={t("admin.reports.loadError")} />
-				) : bestSellers.length === 0 ? (
-					<EmptyState title={t("admin.reports.empty")} />
 				) : (
 					<DataTable>
 						<thead>
@@ -107,6 +161,13 @@ function AdminDashboardPage() {
 							</tr>
 						</thead>
 						<tbody>
+							{bestSellers.length === 0 && (
+								<tr>
+									<td className="px-6 py-10 text-center font-semibold text-sm" colSpan={3}>
+										{t("admin.reports.empty")}
+									</td>
+								</tr>
+							)}
 							{bestSellers.map(item => (
 								<tr className="border-border/60 border-b last:border-0" key={item.productId}>
 									<td className="px-4 py-3 font-medium">{item.productName}</td>
@@ -128,27 +189,28 @@ function AdminDashboardPage() {
 				<ErrorState title={t("admin.reports.loadError")} />
 			) : (
 				<div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-					<DashboardHourlyOrdersChart
-						ordersByHour={analytics.ordersByHour}
-						title={t("admin.reports.ordersByHour.title")}
+					<DashboardOrdersByPeriodChart
+						groupBy={analytics.groupBy}
+						onGroupByChange={setGroupBy}
+						options={groupByOptions}
+						ordersByPeriod={analytics.ordersByPeriod}
+						selectLabel={t("admin.reports.groupBy.title")}
+						title={t("admin.reports.ordersByPeriod.title")}
 					/>
-					{analytics.deliveryRadiusPerformance.length === 0 ? (
-						<EmptyState title={t("admin.reports.deliveryRadius.empty")} />
-					) : (
-						<DashboardDeliveryRadiusTable
-							columns={{
-								deliveryFee: t("admin.reports.deliveryRadius.columns.deliveryFee"),
-								orderCount: t("admin.reports.deliveryRadius.columns.orderCount"),
-								radius: t("admin.reports.deliveryRadius.columns.radius"),
-								revenue: t("admin.reports.deliveryRadius.columns.revenue"),
-								unit: t("admin.reports.deliveryRadius.columns.unit"),
-							}}
-							formatCents={formatCents}
-							noRadius={t("admin.reports.deliveryRadius.noRadius")}
-							rows={analytics.deliveryRadiusPerformance}
-							title={t("admin.reports.deliveryRadius.title")}
-						/>
-					)}
+					<DashboardDeliveryRadiusTable
+						columns={{
+							deliveryFee: t("admin.reports.deliveryRadius.columns.deliveryFee"),
+							orderCount: t("admin.reports.deliveryRadius.columns.orderCount"),
+							radius: t("admin.reports.deliveryRadius.columns.radius"),
+							revenue: t("admin.reports.deliveryRadius.columns.revenue"),
+							unit: t("admin.reports.deliveryRadius.columns.unit"),
+						}}
+						empty={t("admin.reports.deliveryRadius.empty")}
+						formatCents={formatCents}
+						noRadius={t("admin.reports.deliveryRadius.noRadius")}
+						rows={analytics.deliveryRadiusPerformance}
+						title={t("admin.reports.deliveryRadius.title")}
+					/>
 				</div>
 			)}
 

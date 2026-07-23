@@ -595,15 +595,37 @@
 					"title": "Pedidos e receita por raio"
 				},
 				"empty": "Nenhum pedido concluído neste período.",
+				"export": {
+					"button": "Exportar planilha",
+					"error": "Não foi possível gerar a planilha.",
+					"pending": "Gerando…",
+					"success": "Planilha baixada."
+				},
+				"groupBy": {
+					"dayOfMonth": "Dias do mês",
+					"dayOfWeek": "Dias da semana",
+					"hourOfDay": "Horas do dia",
+					"month": "Meses",
+					"quarter": "Trimestres",
+					"title": "Agrupar por",
+					"year": "Anos"
+				},
 				"loadError": "Não foi possível carregar os relatórios.",
-				"ordersByHour": {
-					"title": "Pedidos por hora"
+				"ordersByPeriod": {
+					"title": "Pedidos por período"
 				},
 				"period": {
+					"custom": "Datas personalizadas",
+					"customPlaceholder": "Escolher datas",
+					"lastMonth": "Mês passado",
 					"month": "Este mês",
+					"quarter": "Trimestre atual",
+					"semester": "Semestre atual",
 					"title": "Período",
 					"today": "Hoje",
-					"week": "Últimos 7 dias"
+					"week": "Últimos 7 dias",
+					"year": "Este ano",
+					"yesterday": "Ontem"
 				},
 				"subtitle": "Relatórios de receita e vendas.",
 				"summary": {
@@ -745,6 +767,7 @@
 				"loadError": "Não foi possível carregar o cardápio da unidade.",
 				"options": {
 					"add": "Adicionar opção desta unidade",
+					"disable": "Desabilitar",
 					"overrideDescription": "Altere só os campos necessários. O restante continua herdado do produto.",
 					"overrideTitle": "Opções desta unidade",
 					"remove": "Remover",

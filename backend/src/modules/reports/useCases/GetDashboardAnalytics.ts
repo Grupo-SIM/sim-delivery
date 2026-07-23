@@ -1,31 +1,18 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
-import type { DashboardAnalyticsReturn, GetReportsQuery } from "../dtos";
+import type { DashboardAnalyticsReturn, GetDashboardAnalyticsQuery } from "../dtos";
+import { getOrdersByPeriod } from "../utils/ordersByPeriod";
+import { getDefaultReportGroupBy, getReportDateRange } from "../utils/reportPeriod";
 
 const COMPLETED = ["entregue", "retirado"];
-
-function periodStart(period?: string): Date | undefined {
-	const now = new Date();
-	if (period === "today") {
-		return new Date(now.getFullYear(), now.getMonth(), now.getDate());
-	}
-	if (period === "week") {
-		const d = new Date(now);
-		d.setDate(d.getDate() - 6);
-		d.setHours(0, 0, 0, 0);
-		return d;
-	}
-	if (period === "month") {
-		return new Date(now.getFullYear(), now.getMonth(), 1);
-	}
-	return undefined;
-}
 
 export class GetDashboardAnalytics {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(companyId: string | null, query: GetReportsQuery): Promise<DashboardAnalyticsReturn> {
-		const { period, unitId } = query;
-		const since = periodStart(period);
+	async execute(companyId: string | null, query: GetDashboardAnalyticsQuery): Promise<DashboardAnalyticsReturn> {
+		const { endDate, groupBy: requestedGroupBy, period, startDate, unitId } = query;
+		const now = new Date();
+		const { since, until } = getReportDateRange(period, startDate, endDate, now);
+		const groupBy = requestedGroupBy ?? getDefaultReportGroupBy(since, now);
 		const orders = await this.prisma.order.findMany({
 			select: {
 				createdAt: true,
@@ -38,14 +25,11 @@ export class GetDashboardAnalytics {
 				...(companyId ? { companyId } : {}),
 				status: { in: COMPLETED },
 				...(unitId ? { unitId } : {}),
-				...(since ? { createdAt: { gte: since } } : {}),
+				...(since || until ? { createdAt: { ...(since ? { gte: since } : {}), ...(until ? { lt: until } : {}) } } : {}),
 			},
 		});
 
-		const ordersByHour = Array.from({ length: 24 }, (_, hour) => ({ hour, orderCount: 0 }));
-		for (const order of orders) {
-			ordersByHour[order.createdAt.getHours()].orderCount += 1;
-		}
+		const ordersByPeriod = getOrdersByPeriod(orders, groupBy, since, now);
 
 		const deliveryOrders = orders.filter(order => order.deliveryMethod === "delivery");
 		const unitIds = [...new Set(deliveryOrders.map(order => order.unitId))];
@@ -84,7 +68,8 @@ export class GetDashboardAnalytics {
 
 		return {
 			deliveryRadiusPerformance: [...deliveryRadiusPerformance.values()].sort((a, b) => b.totalRevenue - a.totalRevenue),
-			ordersByHour,
+			groupBy,
+			ordersByPeriod,
 		};
 	}
 }

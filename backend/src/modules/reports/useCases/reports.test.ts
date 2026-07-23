@@ -264,10 +264,11 @@ describe("GetDashboardAnalytics", () => {
 			},
 		} as unknown as PrismaInstance;
 
-		const result = await new GetDashboardAnalytics(prisma).execute("cmp_1", {});
+		const result = await new GetDashboardAnalytics(prisma).execute("cmp_1", { groupBy: "hourOfDay" });
 
-		expect(result.ordersByHour[12]).toEqual({ hour: 12, orderCount: 2 });
-		expect(result.ordersByHour[18]).toEqual({ hour: 18, orderCount: 1 });
+		expect(result.groupBy).toBe("hourOfDay");
+		expect(result.ordersByPeriod[12]).toEqual({ key: "12", label: "12", orderCount: 2 });
+		expect(result.ordersByPeriod[18]).toEqual({ key: "18", label: "18", orderCount: 1 });
 		expect(result.deliveryRadiusPerformance).toEqual([
 			{ deliveryFee: 500, orderCount: 2, radiusKm: 5, totalRevenue: 6000, unitId: "unit_1", unitName: "Centro" },
 		]);

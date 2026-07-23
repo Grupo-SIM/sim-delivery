@@ -18,11 +18,12 @@ export type BestSellerItem = typeof BestSellerItem.static;
 export const BestSellersReturn = t.Array(BestSellerItem);
 export type BestSellersReturn = typeof BestSellersReturn.static;
 
-export const OrdersByHourItem = t.Object({
-	hour: t.Integer({ minimum: 0, maximum: 23 }),
+export const OrdersByPeriodItem = t.Object({
+	key: t.String(),
+	label: t.String(),
 	orderCount: t.Integer(),
 });
-export type OrdersByHourItem = typeof OrdersByHourItem.static;
+export type OrdersByPeriodItem = typeof OrdersByPeriodItem.static;
 
 export const DeliveryRadiusPerformanceItem = t.Object({
 	deliveryFee: t.Integer(),
@@ -36,6 +37,14 @@ export type DeliveryRadiusPerformanceItem = typeof DeliveryRadiusPerformanceItem
 
 export const DashboardAnalyticsReturn = t.Object({
 	deliveryRadiusPerformance: t.Array(DeliveryRadiusPerformanceItem),
-	ordersByHour: t.Array(OrdersByHourItem),
+	groupBy: t.Union([
+		t.Literal("hourOfDay"),
+		t.Literal("dayOfWeek"),
+		t.Literal("dayOfMonth"),
+		t.Literal("month"),
+		t.Literal("quarter"),
+		t.Literal("year"),
+	]),
+	ordersByPeriod: t.Array(OrdersByPeriodItem),
 });
 export type DashboardAnalyticsReturn = typeof DashboardAnalyticsReturn.static;
