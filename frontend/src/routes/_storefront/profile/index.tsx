@@ -11,6 +11,8 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { authClient } from "@/lib/auth-client";
 import { branding } from "@/lib/branding";
+import { useGetCustomersMe } from "@/lib/api";
+import { slug } from "@/lib/variant";
 import { mapSessionUser, useAuthStore } from "@/stores/auth";
 
 function initials(name: string): string {
@@ -27,6 +29,7 @@ function ProfilePage() {
 	const isAuthenticated = useAuthStore(state => state.isAuthenticated);
 	const user = useAuthStore(state => state.user);
 	const setUser = useAuthStore(state => state.setUser);
+	const customerQuery = useGetCustomersMe({ slug: slug ?? "" }, { query: { enabled: isAuthenticated && !!slug } });
 
 	const [name, setName] = useState(user?.name ?? "");
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
@@ -34,20 +37,19 @@ function ProfilePage() {
 	const [saved, setSaved] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [password, setPassword] = useState("");
-	const [savingPassword, setSavingPassword] = useState(false);
-	const [passwordSaved, setPasswordSaved] = useState(false);
-	const [passwordError, setPasswordError] = useState<string | null>(null);
+	const [currentPassword, setCurrentPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState("");
 	const [phone, setPhone] = useState(user?.phoneNumber ?? "");
-	const [phoneCode, setPhoneCode] = useDebouncedInput("", () => {});
-	const [phoneError, setPhoneError] = useState<string | null>(null);
-	const [phoneStep, setPhoneStep] = useState<"idle" | "sending" | "verifying" | "verification">("idle");
-	const [phoneSuccess, setPhoneSuccess] = useState(false);
 
 	useEffect(() => {
 		if (!user) return;
 		setName(user.name);
 		setPhone(user.phoneNumber ?? "");
 	}, [user]);
+
+	useEffect(() => {
+		if (customerQuery.data?.phone) setPhone(customerQuery.data.phone);
+	}, [customerQuery.data?.phone]);
 
 	useEffect(() => {
 		if (hydrated && !isAuthenticated) void navigate({ to: "/identify" });
@@ -69,79 +71,63 @@ function ProfilePage() {
 	if (!user) return null;
 
 	const trimmedName = localName.trim();
-	const dirty = trimmedName.length > 0 && trimmedName !== user.name;
+	const hasPasswordUpdate = Boolean(currentPassword || password || confirmPassword);
+	const dirty =
+		(trimmedName.length > 0 && trimmedName !== user.name) ||
+		phone.replace(/\D/g, "").length === 13 ||
+		hasPasswordUpdate;
 
 	async function handleSave() {
 		flushName();
 		setError(null);
 		setSaved(false);
 		setSaving(true);
+		if (hasPasswordUpdate && (!password || password !== confirmPassword)) {
+			setError(t("store.account.profile.passwordMismatch"));
+			setSaving(false);
+			return;
+		}
 		const { error: caught } = await authClient.updateUser({ name: trimmedName });
 		if (caught) {
 			setError(t("store.account.profile.saveError"));
 			setSaving(false);
 			return;
 		}
+		const phoneDigits = phone.replace(/\D/g, "");
+		if (phoneDigits.length === 13) {
+			const phoneResponse = await fetch(`${branding.apiUrl}/customers/me/phone`, {
+				body: JSON.stringify({ phone: phoneDigits }),
+				credentials: "include",
+				headers: { "Content-Type": "application/json" },
+				method: "PATCH",
+			});
+			if (!phoneResponse.ok) {
+				setError(t("store.account.profile.saveError"));
+				setSaving(false);
+				return;
+			}
+		}
+		if (hasPasswordUpdate) {
+			const passwordResponse = await fetch(`${branding.apiUrl}/auth/set-password`, {
+				body: JSON.stringify({ currentPassword: currentPassword || null, newPassword: password }),
+				credentials: "include",
+				headers: { "Content-Type": "application/json" },
+				method: "POST",
+			});
+			if (!passwordResponse.ok) {
+				setError(t("store.account.profile.passwordSaveError"));
+				setSaving(false);
+				return;
+			}
+			setCurrentPassword("");
+			setPassword("");
+			setConfirmPassword("");
+		}
 		const session = await authClient.getSession();
 		if (session.data?.user) setUser(mapSessionUser(session.data.user));
 		setSaving(false);
 		setSaved(true);
 	}
-
-	async function handleSetPassword() {
-		setPasswordError(null);
-		setPasswordSaved(false);
-		setSavingPassword(true);
-		const response = await fetch(`${branding.apiUrl}/auth/set-password`, {
-			body: JSON.stringify({ newPassword: password }),
-			credentials: "include",
-			headers: { "Content-Type": "application/json" },
-			method: "POST",
-		});
-		setSavingPassword(false);
-		if (!response.ok) {
-			setPasswordError(t("store.account.profile.passwordSaveError"));
-			return;
-		}
-		setPassword("");
-		setPasswordSaved(true);
-	}
-
-	async function handleSendPhoneCode() {
-		const phoneNumber = `+${phone.replace(/\D/g, "")}`;
-		setPhoneError(null);
-		setPhoneSuccess(false);
-		setPhoneStep("sending");
-		const { error: caught } = await authClient.phoneNumber.sendOtp({ phoneNumber });
-		if (caught) {
-			setPhoneError(t("store.account.profile.phoneSendError"));
-			setPhoneStep("idle");
-			return;
-		}
-		setPhoneStep("verification");
-	}
-
-	async function handleVerifyPhone() {
-		const phoneNumber = `+${phone.replace(/\D/g, "")}`;
-		setPhoneError(null);
-		setPhoneSuccess(false);
-		setPhoneStep("verifying");
-		const { error: caught } = await authClient.phoneNumber.verify({
-			code: phoneCode,
-			phoneNumber,
-			updatePhoneNumber: true,
-		});
-		if (caught) {
-			setPhoneError(t("store.account.profile.phoneVerifyError"));
-			setPhoneStep("verification");
-			return;
-		}
-		const session = await authClient.getSession();
-		if (session.data?.user) setUser(mapSessionUser(session.data.user));
-		setPhoneStep("idle");
-		setPhoneSuccess(true);
-	}
-
 
 	return (
 		<Container className="max-w-xl space-y-6 py-8">
@@ -180,71 +166,40 @@ function ProfilePage() {
 					<Input disabled placeholder="cliente@email.com" readOnly value={user.email} />
 				</Label>
 				<p className="text-muted-foreground text-xs">{t("store.account.profile.emailHint")}</p>
-				<div className="space-y-3">
-					<Label>
-						{t("store.account.profile.phone")}
-						<MaskedInput
-							format="+55 (##) #####-####"
-							inputMode="tel"
-							mask="_"
-							onValueChange={({ value }) => setPhone(value)}
-							placeholder={t("store.account.profile.phonePlaceholder")}
-							value={phone.replace(/^\+/, "")}
-						/>
-					</Label>
-					<p className="text-muted-foreground text-xs">{t("store.account.profile.phoneHint")}</p>
-					{phoneStep === "verification" ? (
-						<>
-							<Label>
-								{t("store.account.profile.phoneCode")}
-								<Input
-									autoComplete="one-time-code"
-									inputMode="numeric"
-									onChange={event => setPhoneCode(event.currentTarget.value)}
-									placeholder={t("store.account.profile.phoneCodePlaceholder")}
-									value={phoneCode}
-								/>
-							</Label>
-							<Button disabled={phoneCode.length === 0} onClick={() => void handleVerifyPhone()} type="button" variant="outline">
-								{t("store.account.profile.phoneVerify")}
-							</Button>
-						</>
-					) : (
-						<Button
-							disabled={phone.replace(/\D/g, "").length !== 13 || phoneStep === "sending"}
-							onClick={() => void handleSendPhoneCode()}
-							type="button"
-							variant="outline"
-						>
-							{phoneStep === "sending" ? t("store.account.profile.phoneSending") : t("store.account.profile.phoneSend")}
-						</Button>
-					)}
-					{phoneError && <p className="text-destructive text-sm">{phoneError}</p>}
-					{phoneSuccess && <p className="text-primary text-sm">{t("store.account.profile.phoneSaved")}</p>}
-				</div>
+				<Label>
+					{t("store.account.profile.phone")}
+					<MaskedInput
+						format="+55 (##) #####-####"
+						inputMode="tel"
+						mask="_"
+						onValueChange={({ value }) => setPhone(value)}
+						placeholder={t("store.account.profile.phonePlaceholder")}
+						value={phone.replace(/^\+/, "")}
+					/>
+				</Label>
 
 				<div className="space-y-3 border-border border-t pt-4">
+					<Label>
+						{t("store.account.profile.currentPassword")}
+						<Input autoComplete="current-password" onChange={event => setCurrentPassword(event.currentTarget.value)} placeholder={t("store.account.profile.currentPasswordPlaceholder")} type="password" value={currentPassword} />
+					</Label>
 					<Label>
 						{t("store.account.profile.password")}
 						<Input
 							autoComplete="new-password"
 							onChange={event => {
 								setPassword(event.currentTarget.value);
-								setPasswordError(null);
 							}}
 							placeholder={t("store.account.profile.passwordPlaceholder")}
 							type="password"
 							value={password}
 						/>
 					</Label>
+					<Label>
+						{t("store.account.profile.confirmPassword")}
+						<Input autoComplete="new-password" onChange={event => setConfirmPassword(event.currentTarget.value)} placeholder={t("store.account.profile.confirmPasswordPlaceholder")} type="password" value={confirmPassword} />
+					</Label>
 					<p className="text-muted-foreground text-xs">{t("store.account.profile.passwordHint")}</p>
-					{passwordError && <p className="text-destructive text-sm">{passwordError}</p>}
-					{passwordSaved && <p className="text-primary text-sm">{t("store.account.profile.passwordSaved")}</p>}
-					<Button disabled={!password || savingPassword} onClick={() => void handleSetPassword()} type="button" variant="outline">
-						{savingPassword
-							? t("store.account.profile.passwordSaving")
-							: t("store.account.profile.passwordSave")}
-					</Button>
 				</div>
 
 				{error && <p className="text-destructive text-sm">{error}</p>}

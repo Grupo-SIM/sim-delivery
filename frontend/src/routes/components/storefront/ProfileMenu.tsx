@@ -85,10 +85,10 @@ export function ProfileMenu({ logoutTo = "/", onlyLogout = false }: ProfileMenuP
 						className="flex cursor-pointer items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-muted"
 						onClick={() => setOpen(false)}
 						role="menuitem"
-						to="/orders"
+						to="/profile"
 					>
-						<LuReceiptText aria-hidden className="size-4 text-muted-foreground" />
-						{t("store.account.myOrders")}
+						<LuUser aria-hidden className="size-4 text-muted-foreground" />
+						{t("store.account.myProfile")}
 					</Link>}
 					{!onlyLogout && <Link
 						className="flex cursor-pointer items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-muted"
@@ -103,10 +103,10 @@ export function ProfileMenu({ logoutTo = "/", onlyLogout = false }: ProfileMenuP
 						className="flex cursor-pointer items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-muted"
 						onClick={() => setOpen(false)}
 						role="menuitem"
-						to="/profile"
+						to="/orders"
 					>
-						<LuUser aria-hidden className="size-4 text-muted-foreground" />
-						{t("store.account.myProfile")}
+						<LuReceiptText aria-hidden className="size-4 text-muted-foreground" />
+						{t("store.account.myOrders")}
 					</Link>}
 					<button
 						className="flex w-full cursor-pointer items-center gap-2.5 border-border border-t px-4 py-2.5 text-destructive text-sm transition hover:bg-muted"
