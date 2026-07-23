@@ -11,7 +11,7 @@ export class UpdateCourierUnits {
 
 		const courier = await this.prisma.user.findFirst({
 			select: { createdAt: true, email: true, id: true, name: true, role: true },
-			where: { companyId, id: courierId, role: "courier" },
+			where: { companyId, id: courierId, role: { in: ["courier", "kitchen"] } },
 		});
 		if (!courier) throw new DomainError(StaffErrors.STAFF_NOT_FOUND);
 

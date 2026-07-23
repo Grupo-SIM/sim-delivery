@@ -1,6 +1,6 @@
-/// Units where a courier may receive delivery assignments.
+/// Units where operational staff (courier or kitchen) may work.
 model CourierUnit {
-    courierId String
+	 courierId String
     unitId    String
 
     courier User @relation(fields: [courierId], references: [id], onDelete: Cascade)

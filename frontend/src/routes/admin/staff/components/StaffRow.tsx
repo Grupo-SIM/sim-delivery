@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { LuTrash2 } from "react-icons/lu";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import {
 	type GetStaff200,
@@ -96,18 +97,17 @@ export function StaffRow({ member }: StaffRowProps) {
 				)}
 			</td>
 			<td className="px-4 py-3">
-				{member.role === "courier" &&
+				{(member.role === "courier" || member.role === "kitchen") &&
 					(unitsQuery.isPending ? (
 						<div className="h-8 w-40 animate-pulse rounded bg-muted" />
 					) : (
 						<div className="flex flex-wrap gap-2">
 							{unitsQuery.data?.map(unit => (
 								<label className="flex cursor-pointer items-center gap-1 text-sm" key={unit.id}>
-									<input
+									<Checkbox
 										checked={member.unitIds.includes(unit.id)}
 										disabled={updateUnits.isPending}
 										onChange={() => toggleUnit(unit.id)}
-										type="checkbox"
 									/>
 									{unit.name}
 								</label>

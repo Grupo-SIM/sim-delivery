@@ -20,8 +20,8 @@ export class ListOrders {
 			orderBy: { createdAt: "desc" },
 			where: {
 				...(companyId ? { companyId } : {}),
-				...(role === "courier" && userId
-					? { deliveryMethod: "delivery", unit: { courierUnits: { some: { courierId: userId } } } }
+				...((role === "courier" || role === "kitchen") && userId
+					? { ...(role === "courier" ? { deliveryMethod: "delivery" } : {}), unit: { courierUnits: { some: { courierId: userId } } } }
 					: {}),
 				...(customerId ? { customerId } : {}),
 				...(deliveryMethod ? { deliveryMethod } : {}),
@@ -63,6 +63,7 @@ export class ListOrders {
 			})),
 			loyaltyPointsRedeemed: o.loyaltyPointsRedeemed,
 			preparedBy: o.preparedBy,
+			problemReason: o.problemReason,
 			status: o.status,
 			subtotal: o.subtotal,
 			total: o.total,

@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
-import { getOrdersQueryKey, useGetOrders, usePostOrdersCloseDay } from "@/lib/api";
+import { CustomSelect } from "@/components/ui/CustomSelect";
+import { getOrdersQueryKey, useGetOrders, useGetUnits, usePostOrdersCloseDay } from "@/lib/api";
 import { isOperationalStaff } from "@/lib/staff-guard";
 import { showToast, useAuthStore } from "@/stores";
 import { OrdersKanban } from "./components";
@@ -20,6 +21,7 @@ const KANBAN_STATUSES = [
 	"em_preparo",
 	"pronto",
 	"saiu_para_entrega",
+	"problema",
 	"entregue",
 	"retirado",
 	"cancelado",
@@ -41,6 +43,8 @@ function OrdersPage() {
 	const hasOperationalAccess = isOperationalStaff(role);
 	const [search, setSearch] = useState("");
 	const [date, setDate] = useState("");
+	const [unitId, setUnitId] = useState("");
+	const unitsQuery = useGetUnits();
 
 	const closeDay = usePostOrdersCloseDay();
 	const {
@@ -48,6 +52,7 @@ function OrdersPage() {
 		isError,
 		isPending,
 	} = useGetOrders({
+		...(unitId ? { unitId } : {}),
 		...(search.trim() ? { search: search.trim() } : {}),
 		...(date
 			? {
@@ -87,7 +92,7 @@ function OrdersPage() {
 				)}
 			</div>
 
-			<div className="grid gap-4 sm:grid-cols-[minmax(0,15rem)_11rem] sm:items-end">
+			<div className="grid gap-4 sm:grid-cols-[minmax(0,15rem)_11rem_minmax(0,15rem)] sm:items-end">
 				<TextField
 					label={t("admin.orders.filter.search")}
 					onValueChange={setSearch}
@@ -103,6 +108,10 @@ function OrdersPage() {
 						value={date}
 					/>
 				</label>
+				<div className="space-y-1">
+					<span className="font-medium text-sm">Unidade</span>
+					<CustomSelect onChange={setUnitId} options={[{ label: "Todas as unidades", value: "" }, ...(unitsQuery.data?.map(unit => ({ label: unit.name, value: unit.id })) ?? [])]} value={unitId} />
+				</div>
 			</div>
 
 			{isPending ? (
