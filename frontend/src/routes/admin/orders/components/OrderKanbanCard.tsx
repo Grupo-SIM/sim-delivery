@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import type { GetOrders200 } from "@/lib/api";
 import { AssignCourierModal } from "./AssignCourierModal";
 import { AssignKitchenModal } from "./AssignKitchenModal";
-import { OrderDetailsModal } from "./OrderDetailsModal";
+import { OrderSummaryModal } from "@/components/orders";
 
 interface OrderKanbanCardProps {
 	canManageAssignments: boolean;
@@ -143,7 +143,7 @@ export function OrderKanbanCard({
 				orderId={order.id}
 				status={order.status as "recebido" | "em_preparo" | "pronto" | "retirado" | "cancelado"}
 			/>
-			<OrderDetailsModal onClose={() => setDetailsOpen(false)} order={detailsOpen ? order : null} />
+			<OrderSummaryModal onClose={() => setDetailsOpen(false)} order={detailsOpen ? order : null} view="orders" />
 		</article>
 	);
 }

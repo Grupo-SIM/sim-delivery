@@ -6,7 +6,7 @@ import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Tooltip } from "@/components/ui/Tooltip";
 import type { GetOrders200 } from "@/lib/api";
-import { CustomerOrderDetailsModal } from "./CustomerOrderDetailsModal";
+import { OrderSummaryModal } from "@/components/orders";
 
 interface CustomerOrdersTableProps {
 	orders: GetOrders200;
@@ -52,7 +52,7 @@ export function CustomerOrdersTable({ orders }: CustomerOrdersTableProps) {
 				))}
 			</tbody>
 		</DataTable>
-		<CustomerOrderDetailsModal onClose={() => setSelectedOrder(null)} order={selectedOrder} />
+		<OrderSummaryModal onClose={() => setSelectedOrder(null)} order={selectedOrder} view="customer" />
 		</>
 	);
 }
