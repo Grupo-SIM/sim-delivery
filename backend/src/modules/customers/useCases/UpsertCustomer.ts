@@ -29,7 +29,7 @@ export class UpsertCustomer {
 		});
 
 		return this.prisma.customer.findUniqueOrThrow({
-			include: { addresses: { orderBy: { isDefault: "desc" } } },
+			include: { addresses: { orderBy: { isDefault: "desc" }, where: { deletedAt: null } } },
 			where: { id: customer.id },
 		});
 	}

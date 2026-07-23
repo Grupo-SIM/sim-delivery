@@ -18,6 +18,7 @@ model Address {
     isDefault    Boolean  @default(false)
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
+    deletedAt    DateTime?
 
     customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
     orders   Order[]

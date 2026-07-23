@@ -10,7 +10,7 @@ export class GetMyCustomer {
 
 		return (
 			(await this.prisma.customer.findFirst({
-				include: { addresses: { orderBy: { isDefault: "desc" } } },
+				include: { addresses: { orderBy: { isDefault: "desc" }, where: { deletedAt: null } } },
 				where: { companyId: company.id, userId },
 			})) ?? null
 		);

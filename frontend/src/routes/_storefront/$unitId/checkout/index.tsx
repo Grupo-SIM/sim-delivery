@@ -12,6 +12,7 @@ import {
 	type PostCustomersMe200,
 	useGetCashbackMe,
 	useGetLoyaltyMe,
+	useDeleteCustomersMeAddressesByAddressId,
 	usePostCustomersMe,
 	usePostOrders,
 } from "@/lib/api";
@@ -78,6 +79,7 @@ function CheckoutPage() {
 		mutation: { mutationKey: ["checkout-customer"] },
 	});
 	const { mutate: placeOrder, isPending: isPlacingOrder } = usePostOrders();
+	const deleteAddress = useDeleteCustomersMeAddressesByAddressId();
 
 	const { data: existingCustomer, isLoading: loadingCustomer } = useQuery({
 		...getCustomersMeQueryOptions({ slug: slug ?? "" }),
@@ -310,6 +312,16 @@ function CheckoutPage() {
 				isSaving={isSavingCustomer}
 				onClose={() => setAddressModalOpen(false)}
 				onCreate={handleAddressSubmit}
+				onDelete={addressId => deleteAddress.mutate(
+					{ addressId },
+					{
+						onError: () => void showAlert("Não foi possível excluir o endereço."),
+						onSuccess: () => {
+							setSavedCustomer(current => current ? { ...current, addresses: current.addresses.filter(address => address.id !== addressId) } : current);
+							if (selectedAddressId === addressId) setSelectedAddressId(null);
+						},
+					},
+				)}
 				onSelect={address => {
 					setSelectedAddressId(address.id);
 					setAddressModalOpen(false);

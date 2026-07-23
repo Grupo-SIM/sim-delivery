@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/Modal";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import type { PostCustomersMe200 } from "@/lib/api";
+import { LuTrash2 } from "react-icons/lu";
 import { AddressForm, type AddressValue } from "./AddressForm";
 
 type Address = PostCustomersMe200["addresses"][number];
@@ -16,6 +18,7 @@ interface AddressSelectorModalProps {
 	isSaving: boolean;
 	onClose: () => void;
 	onCreate: (address: AddressValue) => void;
+	onDelete: (addressId: string) => void;
 	onSelect: (address: Address) => void;
 }
 
@@ -29,6 +32,7 @@ export function AddressSelectorModal({
 	isSaving,
 	onClose,
 	onCreate,
+	onDelete,
 	onSelect,
 }: AddressSelectorModalProps) {
 	const { t } = useTranslation();
@@ -36,8 +40,8 @@ export function AddressSelectorModal({
 	const [search, setSearch] = useDebouncedInput("", () => undefined);
 
 	useEffect(() => {
-		if (isOpen) setView("list");
-	}, [isOpen]);
+		if (isOpen) setView(addresses.length === 0 ? "create" : "list");
+	}, [addresses.length, isOpen]);
 
 	const visibleAddresses = useMemo(() => {
 		const term = search.trim().toLocaleLowerCase();
@@ -72,12 +76,11 @@ export function AddressSelectorModal({
 				/>
 				<div className="space-y-2">
 					{visibleAddresses.map(address => (
-						<button
-							className="w-full cursor-pointer rounded-md border border-border p-3 text-left transition-colors hover:bg-muted"
+						<div
+							className="flex w-full items-center gap-2 rounded-md border border-border p-3 transition-colors hover:bg-muted"
 							key={address.id}
-							onClick={() => onSelect(address)}
-							type="button"
 						>
+							<button className="min-w-0 flex-1 cursor-pointer text-left" onClick={() => onSelect(address)} type="button">
 							<div className="flex items-center gap-2">
 								<p className="font-medium text-sm">{formatAddress(address)}</p>
 								{address.isDefault && (
@@ -89,7 +92,9 @@ export function AddressSelectorModal({
 							<p className="text-muted-foreground text-sm">
 								{[address.neighborhood, address.city, address.state].filter(Boolean).join(", ")}
 							</p>
-						</button>
+							</button>
+							<ConfirmActionButton confirmation="Clique novamente para excluir este endereço" confirmLabel="Excluir" idleIcon={<LuTrash2 className="size-4" />} onConfirm={() => onDelete(address.id)} size="icon" type="button" variant="outline"><span className="sr-only">Excluir endereço</span></ConfirmActionButton>
+						</div>
 					))}
 					{visibleAddresses.length === 0 && (
 						<p className="text-muted-foreground text-sm">{t("store.checkout.address.noResults")}</p>

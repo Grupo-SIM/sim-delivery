@@ -10,7 +10,7 @@ import {
 	ListCustomersQuery,
 	MaybeCustomerReturn,
 } from "../../dtos";
-import { GetCustomer, GetMyCustomer, ListCustomers, UpsertCustomer } from "../../useCases";
+import { DeleteCustomerAddress, GetCustomer, GetMyCustomer, ListCustomers, UpsertCustomer } from "../../useCases";
 
 export const CustomersController = new Elysia({
 	detail: { tags: ["Customers"] },
@@ -20,6 +20,7 @@ export const CustomersController = new Elysia({
 		app
 			.decorate(({ prisma, ...injected }) => ({
 				...injected,
+				deleteCustomerAddress: new DeleteCustomerAddress(prisma),
 				getCustomer: new GetCustomer(prisma),
 				getMyCustomer: new GetMyCustomer(prisma),
 				listCustomers: new ListCustomers(prisma),
@@ -59,5 +60,14 @@ export const CustomersController = new Elysia({
 					return upsertCustomer.execute(userId, body);
 				},
 				{ body: CreateCustomerBody, response: CustomerReturn },
+			)
+			.delete(
+				"/me/addresses/:addressId",
+				async ({ deleteCustomerAddress, params, request }) => {
+					const { userId } = await AuthGuard.execute(request.headers);
+					await deleteCustomerAddress.execute(userId, params.addressId);
+					return { ok: true };
+				},
+				{ response: t.Object({ ok: t.Boolean() }) },
 			),
 	);

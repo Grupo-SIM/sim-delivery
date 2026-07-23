@@ -9,7 +9,7 @@ export class GetCustomer {
 	async execute(companyId: string | null, customerId: string): Promise<CustomerAdminReturn> {
 		const customer = await this.prisma.customer.findFirst({
 			include: {
-				addresses: { orderBy: { isDefault: "desc" } },
+				addresses: { orderBy: { isDefault: "desc" }, where: { deletedAt: null } },
 				cashbackLedger: { select: { amount: true } },
 				orders: { orderBy: { createdAt: "desc" }, select: { createdAt: true, total: true } },
 				user: { select: { email: true, name: true } },
