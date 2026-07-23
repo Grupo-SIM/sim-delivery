@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
@@ -7,17 +7,14 @@ import { Modal } from "@/components/ui/Modal";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import type { PostCustomersMe200 } from "@/lib/api";
 import { LuTrash2 } from "react-icons/lu";
-import { AddressForm, type AddressValue } from "./AddressForm";
 
 type Address = PostCustomersMe200["addresses"][number];
-type View = "list" | "create";
 
 interface AddressSelectorModalProps {
 	addresses: Address[];
 	isOpen: boolean;
-	isSaving: boolean;
 	onClose: () => void;
-	onCreate: (address: AddressValue) => void;
+	onCreate: () => void;
 	onDelete: (addressId: string) => void;
 	onSelect: (address: Address) => void;
 }
@@ -29,19 +26,13 @@ function formatAddress(address: Address) {
 export function AddressSelectorModal({
 	addresses,
 	isOpen,
-	isSaving,
 	onClose,
 	onCreate,
 	onDelete,
 	onSelect,
 }: AddressSelectorModalProps) {
 	const { t } = useTranslation();
-	const [view, setView] = useState<View>("list");
 	const [search, setSearch] = useDebouncedInput("", () => undefined);
-
-	useEffect(() => {
-		if (isOpen) setView(addresses.length === 0 ? "create" : "list");
-	}, [addresses.length, isOpen]);
 
 	const visibleAddresses = useMemo(() => {
 		const term = search.trim().toLocaleLowerCase();
@@ -56,7 +47,6 @@ export function AddressSelectorModal({
 	}, [addresses, search]);
 
 	function handleClose() {
-		setView("list");
 		setSearch("");
 		onClose();
 	}
@@ -100,33 +90,10 @@ export function AddressSelectorModal({
 						<p className="text-muted-foreground text-sm">{t("store.checkout.address.noResults")}</p>
 					)}
 				</div>
-				<Button onClick={() => setView("create")} type="button" variant="outline">
+				<Button onClick={onCreate} type="button" variant="outline">
 					{t("store.checkout.address.add")}
 				</Button>
 			</div>
-			{view === "create" && (
-				<Modal
-					isOpen
-					maxWidth="640px"
-					onClose={() => setView("list")}
-					title={t("store.checkout.address.addTitle")}
-				>
-					<AddressForm
-						disabled={isSaving}
-						footer={({ canSubmit, isSubmitting }) => (
-							<div className="flex items-center justify-between gap-3 border-border border-t pt-4">
-								<Button disabled={isSubmitting} onClick={() => setView(addresses.length === 0 ? "create" : "list")} type="button" variant="outline">
-									{t("common.cancel", { defaultValue: "Cancelar" })}
-								</Button>
-								<Button disabled={!canSubmit || isSubmitting} type="submit">
-									{t("store.checkout.address.save")}
-								</Button>
-							</div>
-						)}
-						onSubmit={onCreate}
-					/>
-				</Modal>
-			)}
 		</Modal>
 	);
 }

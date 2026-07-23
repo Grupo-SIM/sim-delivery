@@ -19,7 +19,7 @@ import {
 import { slug } from "@/lib/variant";
 import { cartTotalCents, showAlert, useAuthStore, useCartStore, useCouponStore, useDeliveryMethodStore } from "@/stores";
 import {
-	AddressForm,
+	AddressCreateModal,
 	AddressSelectorModal,
 	type AddressValue,
 	type AppliedCoupon,
@@ -47,6 +47,7 @@ function CheckoutPage() {
 	const [savedCustomer, setSavedCustomer] = useState<PostCustomersMe200 | null>(null);
 	const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
 	const [addressModalOpen, setAddressModalOpen] = useState(false);
+	const [addressCreateModalOpen, setAddressCreateModalOpen] = useState(false);
 	const [editingLineKey, setEditingLineKey] = useState<string | null>(null);
 	const getMethod = useDeliveryMethodStore(state => state.getMethod);
 	const setStoredMethod = useDeliveryMethodStore(state => state.setMethod);
@@ -159,10 +160,11 @@ function CheckoutPage() {
 			},
 			{
 				onError: () => void showAlert(t("store.checkout.profile.error")),
-				onSuccess: data => {
+					onSuccess: data => {
 					setSavedCustomer(data);
 					setSelectedAddressId(data.addresses.find(address => address.isDefault)?.id ?? null);
 					setAddressModalOpen(false);
+					setAddressCreateModalOpen(false);
 				},
 			},
 		);
@@ -280,6 +282,7 @@ function CheckoutPage() {
 						onChangeLoyaltyRedeem={setLoyaltyRedeemPoints}
 						onEditItem={item => setEditingLineKey(item.lineKey)}
 						onOpenAddressSelector={() => setAddressModalOpen(true)}
+						onOpenAddressCreator={() => setAddressCreateModalOpen(true)}
 						onSetCoupon={handleSetCoupon}
 						onSubmit={handlePlaceOrder}
 						slug={slug ?? ""}
@@ -309,9 +312,11 @@ function CheckoutPage() {
 			<AddressSelectorModal
 				addresses={addresses}
 				isOpen={addressModalOpen}
-				isSaving={isSavingCustomer}
 				onClose={() => setAddressModalOpen(false)}
-				onCreate={handleAddressSubmit}
+				onCreate={() => {
+					setAddressModalOpen(false);
+					setAddressCreateModalOpen(true);
+				}}
 				onDelete={addressId => deleteAddress.mutate(
 					{ addressId },
 					{
@@ -326,6 +331,12 @@ function CheckoutPage() {
 					setSelectedAddressId(address.id);
 					setAddressModalOpen(false);
 				}}
+			/>
+			<AddressCreateModal
+				isOpen={addressCreateModalOpen}
+				isSaving={isSavingCustomer}
+				onClose={() => setAddressCreateModalOpen(false)}
+				onCreate={handleAddressSubmit}
 			/>
 			<ProductDetailsModal
 				editingItem={editingItem}

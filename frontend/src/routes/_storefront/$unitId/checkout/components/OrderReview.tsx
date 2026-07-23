@@ -32,6 +32,7 @@ interface OrderReviewProps {
 	onChangeLoyaltyRedeem: (points: number) => void;
 	onEditItem: (item: CartItem) => void;
 	onOpenAddressSelector: () => void;
+	onOpenAddressCreator: () => void;
 	onSetCoupon: (coupon: AppliedCoupon | null) => void;
 	onSubmit: () => void;
 	subtotal: number;
@@ -56,6 +57,7 @@ export function OrderReview({
 	onChangeLoyaltyRedeem,
 	onEditItem,
 	onOpenAddressSelector,
+	onOpenAddressCreator,
 	onSetCoupon,
 	onSubmit,
 	subtotal,
@@ -151,7 +153,7 @@ export function OrderReview({
 							)}
 						</div>
 					) : (
-						<Button className="w-full" onClick={onOpenAddressSelector} type="button" variant="outline">
+						<Button className="w-full" onClick={onOpenAddressCreator} type="button" variant="outline">
 							{t("store.checkout.address.add")}
 						</Button>
 					)}
