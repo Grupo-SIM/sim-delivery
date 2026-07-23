@@ -161,8 +161,9 @@ await writeFile(join(publicDir, "branding.css"), createBrandingCss(themeColors, 
 
 await writeFile(
 	brandingPath,
-	`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tapiUrl: string;\n\tcompanyName: string;\n\tfontDisplay: string;\n\tfontDisplayUrl: string | null;\n\tfontFamily: string;\n\tfontFamilyUrl: string | null;\n\tfooterText: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n}\n\nexport const branding: Branding = ${JSON.stringify(
+	`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tallowThemeToggle: boolean;\n\tapiUrl: string;\n\tcompanyName: string;\n\tfontDisplay: string;\n\tfontDisplayUrl: string | null;\n\tfontFamily: string;\n\tfontFamilyUrl: string | null;\n\tfooterText: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n}\n\nexport const branding: Branding = ${JSON.stringify(
 		{
+			allowThemeToggle: true,
 			apiUrl,
 			companyName: company.name,
 			fontDisplay,

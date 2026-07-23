@@ -1,0 +1,1 @@
+ALTER TABLE "company" ADD COLUMN "allowThemeToggle" BOOLEAN NOT NULL DEFAULT true;

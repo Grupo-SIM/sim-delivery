@@ -25,6 +25,7 @@ export class GetBranding {
 
 		if (!resolvedCompanyId) {
 			return {
+				allowThemeToggle: true,
 				companyName: null,
 				footerFacebookUrl: null,
 				footerInstagramUrl: null,
@@ -47,6 +48,7 @@ export class GetBranding {
 
 		const company = await this.prisma.company.findUnique({
 			select: {
+				allowThemeToggle: true,
 				fontDisplay: true,
 				fontDisplayUrl: true,
 				fontFamily: true,
@@ -69,6 +71,7 @@ export class GetBranding {
 		});
 
 		return {
+			allowThemeToggle: company?.allowThemeToggle ?? true,
 			companyName: company?.name ?? null,
 			footerFacebookUrl: company?.footerFacebookUrl ?? null,
 			footerInstagramUrl: company?.footerInstagramUrl ?? null,

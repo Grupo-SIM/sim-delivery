@@ -20,6 +20,7 @@ model Company {
     fontFamilyUrl String?
     fontDisplayUrl String?
     themeColors Json?
+    allowThemeToggle Boolean @default(true)
     /// Per-company WhatsApp messages keyed by order status.
     orderStatusWhatsAppTemplates Json?
     /// Marketing tracking IDs injected into the store at runtime.

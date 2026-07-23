@@ -3,6 +3,7 @@ import { __nullable__ } from "sql/typebox";
 import { OrderStatusWhatsAppTemplates, ThemeColors } from "./BrandingInput";
 
 export const BrandingReturn = t.Object({
+	allowThemeToggle: t.Boolean(),
 	companyName: __nullable__(t.String()),
 	footerFacebookUrl: __nullable__(t.String()),
 	footerInstagramUrl: __nullable__(t.String()),

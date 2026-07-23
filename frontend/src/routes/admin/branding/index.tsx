@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/Container";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { FormSectionHeading } from "@/components/ui/FormSectionHeading";
 import { Label } from "@/components/ui/label";
@@ -34,6 +35,7 @@ function BrandingPage() {
 	const put = usePutBranding();
 
 	const [logoUrl, setLogoUrl] = useState("");
+	const [allowThemeToggle, setAllowThemeToggle] = useState(true);
 	const [fontFamily, setFontFamily] = useState("");
 	const [fontFamilyUrl, setFontFamilyUrl] = useState("");
 	const [fontDisplay, setFontDisplay] = useState("");
@@ -53,6 +55,7 @@ function BrandingPage() {
 
 	useEffect(() => {
 		if (branding) {
+			setAllowThemeToggle(branding.allowThemeToggle);
 			setLogoUrl(branding.logoUrl ?? "");
 			setFontFamily(branding.fontFamily ?? "");
 			setFontFamilyUrl(branding.fontFamilyUrl ?? "");
@@ -106,6 +109,7 @@ function BrandingPage() {
 		put.mutate(
 			{
 				data: {
+					allowThemeToggle,
 					fontDisplay: fontDisplay.trim() || undefined,
 					fontDisplayUrl: fontDisplayUrl.trim() || undefined,
 					fontFamily: fontFamily.trim() || undefined,
@@ -142,6 +146,10 @@ function BrandingPage() {
 	return (
 		<Container className="max-w-5xl space-y-6 py-8">
 			<SectionHeading subtitle={t("admin.branding.subtitle")} title={t("admin.branding.title")} />
+			<label className="flex cursor-pointer items-center gap-2 rounded-lg border border-border p-4">
+				<Checkbox checked={allowThemeToggle} onChange={event => setAllowThemeToggle(event.currentTarget.checked)} />
+				<span>Permitir troca entre tema claro e escuro pelo botão flutuante</span>
+			</label>
 
 			{isPending ? (
 				<div className="space-y-4">

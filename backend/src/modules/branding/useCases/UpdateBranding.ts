@@ -7,6 +7,7 @@ export class UpdateBranding {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute({
+		allowThemeToggle,
 		companyId,
 		footerFacebookUrl,
 		footerInstagramUrl,
@@ -29,6 +30,7 @@ export class UpdateBranding {
 
 		const company = await this.prisma.company.update({
 			data: {
+				allowThemeToggle,
 				footerFacebookUrl,
 				footerInstagramUrl,
 				footerPaymentMethods,
@@ -47,6 +49,7 @@ export class UpdateBranding {
 				themeColors,
 			},
 			select: {
+				allowThemeToggle: true,
 				fontDisplay: true,
 				fontDisplayUrl: true,
 				fontFamily: true,
@@ -69,6 +72,7 @@ export class UpdateBranding {
 		});
 
 		return {
+			allowThemeToggle: company.allowThemeToggle,
 			companyName: company.name,
 			footerFacebookUrl: company.footerFacebookUrl ?? null,
 			footerInstagramUrl: company.footerInstagramUrl ?? null,

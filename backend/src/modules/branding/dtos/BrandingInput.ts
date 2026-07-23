@@ -44,6 +44,7 @@ export const OrderStatusWhatsAppTemplates = t.Object({
 export type OrderStatusWhatsAppTemplates = typeof OrderStatusWhatsAppTemplates.static;
 
 export const UpdateBrandingBody = t.Object({
+	allowThemeToggle: t.Optional(t.Boolean()),
 	footerFacebookUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
 	footerInstagramUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
 	footerPaymentMethods: t.Optional(t.Array(t.String({ maxLength: 100 }), { maxItems: 10 })),

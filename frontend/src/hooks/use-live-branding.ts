@@ -18,6 +18,7 @@ export function useLiveBranding(): Branding {
 
 		return {
 			...staticBranding,
+			allowThemeToggle: data.allowThemeToggle,
 			companyName: data.companyName ?? staticBranding.companyName,
 			footerFacebookUrl: data.footerFacebookUrl,
 			footerInstagramUrl: data.footerInstagramUrl,
