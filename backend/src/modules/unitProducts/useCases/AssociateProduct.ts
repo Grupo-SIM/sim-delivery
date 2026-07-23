@@ -8,6 +8,7 @@ import {
 	mapUnitProductTaxonomy,
 	unitProductTaxonomyInclude,
 	validateExcludedOptions,
+	validateUnitProductOptions,
 	validateUnitTaxonomy,
 } from "./taxonomy";
 
@@ -20,11 +21,12 @@ export class AssociateProduct {
 	): Promise<UnitProductReturn> {
 		const unit = companyId ? await this.prisma.unit.findFirst({ where: { companyId, id: unitId } }) : null;
 		if (!companyId || !unit) throw new DomainError(UnitErrors.UNIT_NOT_FOUND);
-		const { productId, categoryIds, excludedOptionIds, tagIds, ...overrides } = data;
+		const { additionalOptions, productId, categoryIds, excludedOptionIds, optionOverrides, tagIds, ...overrides } = data;
 		const product = await this.prisma.product.findFirst({ where: { companyId, id: productId } });
 		if (!product) throw new DomainError(ProductErrors.PRODUCT_NOT_FOUND);
 		await validateUnitTaxonomy(this.prisma, companyId, categoryIds, tagIds);
 		await validateExcludedOptions(this.prisma, companyId, productId, excludedOptionIds);
+		await validateUnitProductOptions(this.prisma, companyId, productId, optionOverrides, additionalOptions);
 		const existing = await this.prisma.unitProduct.findUnique({
 			where: { unitId_productId: { productId, unitId } },
 		});
@@ -51,11 +53,43 @@ export class AssociateProduct {
 				data: excludedOptionIds.map(optionId => ({ optionId, unitProductId: association.id })),
 			});
 		}
-		return mapUnitProductTaxonomy({
+		if (optionOverrides?.length || additionalOptions?.length) {
+			const optionStore = this.prisma as unknown as {
+				unitProductAdditionalOption: { createMany: (args: { data: object[] }) => Promise<unknown> };
+				unitProductOptionOverride: { createMany: (args: { data: object[] }) => Promise<unknown> };
+			};
+			if (optionOverrides?.length) {
+				await optionStore.unitProductOptionOverride.createMany({
+					data: optionOverrides.map(({ optionId, ...override }) => ({ ...override, optionId, unitProductId: association.id })),
+				});
+			}
+			if (additionalOptions?.length) {
+				await optionStore.unitProductAdditionalOption.createMany({
+					data: additionalOptions.map(option => ({
+						available: option.available ?? true,
+						description: option.description ?? "",
+						groupId: option.groupId,
+						imageUrl: option.imageUrl ?? null,
+						maxPerItem: option.maxPerItem ?? null,
+						name: option.name,
+						priceDeltaCents: option.priceDeltaCents,
+						sortOrder: option.sortOrder ?? 0,
+						unitProductId: association.id,
+					})),
+				});
+			}
+		}
+		const saved = (await this.prisma.unitProduct.findUnique({
+			include: unitProductTaxonomyInclude,
+			where: { id: association.id },
+		})) as object | null;
+		return mapUnitProductTaxonomy((saved ?? {
 			...association,
+			additionalOptions: [],
 			categories: [],
-			excludedOptions: excludedOptionIds?.map(optionId => ({ optionId })) ?? [],
+			excludedOptions: [],
+			optionOverrides: [],
 			tags: [],
-		} as never);
+		}) as never);
 	}
 }

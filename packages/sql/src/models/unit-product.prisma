@@ -28,13 +28,60 @@ model UnitProduct {
     unit       Unit                  @relation(fields: [unitId], references: [id], onDelete: Cascade)
     product    Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
     categories UnitProductCategory[]
+    additionalOptions UnitProductAdditionalOption[]
     excludedOptions UnitProductExcludedOption[]
+    optionOverrides UnitProductOptionOverride[]
     tags       UnitProductTag[]
 
     @@unique([unitId, productId])
     @@index([unitId])
     @@index([productId])
     @@map("unit_product")
+}
+
+/// Sparse per-unit changes to a shared product option. Null fields inherit from the product option.
+model UnitProductOptionOverride {
+    unitProductId    String
+    optionId         String
+    name             String?
+    description      String?
+    imageUrl         String?
+    priceDeltaCents  Int?
+    maxPerItem       Int?
+    available        Boolean?
+    sortOrder        Int?
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
+
+    option      Option      @relation(fields: [optionId], references: [id], onDelete: Cascade)
+    unitProduct UnitProduct @relation(fields: [unitProductId], references: [id], onDelete: Cascade)
+
+    @@id([unitProductId, optionId])
+    @@index([optionId])
+    @@map("unit_product_option_override")
+}
+
+/// An option available only in one unit, attached to an existing shared option group.
+model UnitProductAdditionalOption {
+    id              String   @id @default(cuid())
+    unitProductId   String
+    groupId         String
+    name            String
+    description     String   @default("")
+    imageUrl        String?
+    priceDeltaCents Int      @default(0)
+    maxPerItem      Int?
+    available       Boolean  @default(true)
+    sortOrder       Int      @default(0)
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+
+    group       OptionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+    unitProduct UnitProduct @relation(fields: [unitProductId], references: [id], onDelete: Cascade)
+
+    @@index([groupId])
+    @@index([unitProductId])
+    @@map("unit_product_additional_option")
 }
 
 /// Hides a globally-defined option from one unit's effective product catalog.

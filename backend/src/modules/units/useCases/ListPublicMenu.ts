@@ -26,16 +26,15 @@ export class ListPublicMenu {
 
 		const associations = await this.prisma.unitProduct.findMany({
 			include: {
+				additionalOptions: true,
 				categories: { include: { category: true } },
+				optionOverrides: true,
 				product: {
 					include: {
 						categories: { include: { category: true } },
 						optionGroups: {
 							include: {
-								options: {
-									orderBy: { sortOrder: "asc" },
-									where: { available: true },
-								},
+							options: { orderBy: { sortOrder: "asc" } },
 							},
 							orderBy: { sortOrder: "asc" },
 						},
@@ -78,9 +77,31 @@ export class ListPublicMenu {
 		for (const association of associations) {
 			const { product } = association;
 			const excludedOptionIds = excludedByAssociation.get(association.id) ?? new Set<string>();
+			const overridesByOptionId = new Map(
+				(association.optionOverrides ?? []).map(override => [override.optionId, override]),
+			);
 			const optionGroups = product.optionGroups.map(group => ({
 				...group,
-				options: group.options.filter(option => !excludedOptionIds.has(option.id)),
+				options: [
+					...group.options.map(option => {
+						const override = overridesByOptionId.get(option.id);
+						return {
+							...option,
+							available: override?.available ?? option.available,
+							description: override?.description ?? option.description,
+							imageUrl: override?.imageUrl ?? option.imageUrl,
+							maxPerItem: override?.maxPerItem ?? option.maxPerItem,
+							name: override?.name ?? option.name,
+							priceDeltaCents: override?.priceDeltaCents ?? option.priceDeltaCents,
+							sortOrder: override?.sortOrder ?? option.sortOrder,
+						};
+					}),
+					...(association.additionalOptions ?? [])
+						.filter(option => option.groupId === group.id)
+						.map(option => ({ ...option, popularity: 0 })),
+				]
+					.filter(option => option.available !== false && !excludedOptionIds.has(option.id))
+					.sort((a, b) => a.sortOrder - b.sortOrder),
 			}));
 			const isOrderable = optionGroups.every(group => {
 				if (!group.required) return true;

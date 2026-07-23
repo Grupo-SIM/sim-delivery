@@ -38,12 +38,31 @@ export class CreateOrder {
 
 		// Resolve prices from unit product associations
 		const unitProducts = (await this.prisma.unitProduct.findMany({
-			include: { product: { include: { optionGroups: { include: { options: true } } } } },
+			include: {
+				additionalOptions: true,
+				optionOverrides: true,
+				product: { include: { optionGroups: { include: { options: true } } } },
+			},
 			where: { id: { in: items.map(i => i.unitProductId) }, unitId },
 		} as never)) as Array<{
 			id: string;
 			priceCentsOverride: number | null;
 			promotionalPriceCents: number | null;
+			additionalOptions: Array<{
+				available: boolean;
+				groupId: string;
+				id: string;
+				maxPerItem: number | null;
+				name: string;
+				priceDeltaCents: number;
+			}>;
+			optionOverrides: Array<{
+				available: boolean | null;
+				maxPerItem: number | null;
+				name: string | null;
+				optionId: string;
+				priceDeltaCents: number | null;
+			}>;
 			product: {
 				basePriceCents: number;
 				id: string;
@@ -100,7 +119,25 @@ export class CreateOrder {
 				priceDeltaCents: number;
 				quantity: number;
 			}[] = [];
-			const optionGroups = assoc.product.optionGroups ?? [];
+			const overridesByOptionId = new Map(
+				(assoc.optionOverrides ?? []).map(override => [override.optionId, override]),
+			);
+			const optionGroups = (assoc.product.optionGroups ?? []).map(group => ({
+				...group,
+				options: [
+					...group.options.map(option => {
+						const override = overridesByOptionId.get(option.id);
+						return {
+							...option,
+							available: override?.available ?? option.available,
+							maxPerItem: override?.maxPerItem ?? option.maxPerItem,
+							name: override?.name ?? option.name,
+							priceDeltaCents: override?.priceDeltaCents ?? option.priceDeltaCents,
+						};
+					}),
+					...(assoc.additionalOptions ?? []).filter(option => option.groupId === group.id),
+				],
+			}));
 			for (const group of optionGroups) {
 				const selected = selections
 					.map(selection => ({
@@ -116,7 +153,7 @@ export class CreateOrder {
 				for (const selection of selected) {
 					const option = selection.option!;
 					if (
-						!option.available ||
+						option.available === false ||
 						excludedOptionIds.has(option.id) ||
 						(option.maxPerItem !== null && selection.quantity > option.maxPerItem)
 					)

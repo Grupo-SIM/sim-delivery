@@ -12,6 +12,7 @@ import {
 } from "@/lib/api";
 import type { Category, Product, Tag, UnitProduct } from "./types";
 import { UnitOptionExclusionsFields } from "./UnitOptionExclusionsFields";
+import { UnitOptionOverridesFields, type UnitAdditionalOption, type UnitOptionOverride } from "./UnitOptionOverridesFields";
 import { UnitProductFormFields } from "./UnitProductFormFields";
 
 interface UnitProductEditModalProps {
@@ -45,6 +46,8 @@ export function UnitProductEditModal({
 	const [stock, setStock] = useState(0);
 	const [error, setError] = useState<string | null>(null);
 	const [excludedOptionIds, setExcludedOptionIds] = useState<string[]>([]);
+	const [optionOverrides, setOptionOverrides] = useState<UnitOptionOverride[]>([]);
+	const [additionalOptions, setAdditionalOptions] = useState<UnitAdditionalOption[]>([]);
 
 	const { isPending, mutate } = usePatchUnitsByUnitIdProductsByUnitProductId();
 	const optionGroups = useGetProductsByProductIdOptionGroups(product?.id);
@@ -64,6 +67,17 @@ export function UnitProductEditModal({
 		setStockEnabled(association.stock !== null);
 		setStock(Number(association.stock ?? 0));
 		setExcludedOptionIds(association.excludedOptionIds);
+		setOptionOverrides(association.optionOverrides.map(override => ({
+			available: override.available,
+			description: override.description,
+			imageUrl: override.imageUrl,
+			maxPerItem: override.maxPerItem === null ? null : Number(override.maxPerItem),
+			name: override.name,
+			optionId: override.optionId,
+			priceDeltaCents: override.priceDeltaCents === null ? null : Number(override.priceDeltaCents),
+			sortOrder: override.sortOrder === null ? null : Number(override.sortOrder),
+		})));
+		setAdditionalOptions(association.additionalOptions.map(option => ({ ...option, maxPerItem: option.maxPerItem === null ? null : Number(option.maxPerItem), priceDeltaCents: Number(option.priceDeltaCents), sortOrder: Number(option.sortOrder) })));
 		setError(null);
 	}, [association]);
 
@@ -78,6 +92,8 @@ export function UnitProductEditModal({
 					available: stockEnabled ? stock > 0 : available,
 					categoryIds: categoriesOverridden ? categoryIds : null,
 					excludedOptionIds,
+					additionalOptions,
+					optionOverrides,
 					priceCentsOverride: priceEnabled ? Math.round(priceReais * 100) : null,
 					promotionalPriceCents: promotionalPriceReais === null ? null : Math.round(promotionalPriceReais * 100),
 					stock: stockEnabled ? Math.round(stock) : null,
@@ -132,12 +148,21 @@ export function UnitProductEditModal({
 					<span className="text-muted-foreground text-xs">Deixe vazio para remover promoção.</span>
 				</label>
 				{optionGroups.data && (
-					<UnitOptionExclusionsFields
+				<UnitOptionExclusionsFields
 						excludedOptionIds={excludedOptionIds}
 						groups={optionGroups.data}
 						onChange={setExcludedOptionIds}
-					/>
-				)}
+				/>
+			)}
+			{optionGroups.data && (
+				<UnitOptionOverridesFields
+					additionalOptions={additionalOptions}
+					groups={optionGroups.data}
+					onAdditionalOptionsChange={setAdditionalOptions}
+					onOptionOverridesChange={setOptionOverrides}
+					optionOverrides={optionOverrides}
+				/>
+			)}
 
 				{error && <p className="text-destructive text-xs">{error}</p>}
 				<div className="flex justify-end gap-2">

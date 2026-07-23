@@ -20,6 +20,7 @@ model OptionGroup {
 
     product Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
     options Option[]
+    unitProductAdditionalOptions UnitProductAdditionalOption[]
 
     @@index([productId])
     @@map("option_group")
@@ -46,6 +47,7 @@ model Option {
     group            OptionGroup       @relation(fields: [groupId], references: [id], onDelete: Cascade)
     orderItemOptions OrderItemOption[]
     unitProductExclusions UnitProductExcludedOption[]
+    unitProductOverrides UnitProductOptionOverride[]
 
     @@index([groupId])
     @@map("option")
