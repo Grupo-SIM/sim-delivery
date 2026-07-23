@@ -744,6 +744,10 @@
 				},
 				"loadError": "Não foi possível carregar o cardápio da unidade.",
 				"options": {
+					"add": "Adicionar opção desta unidade",
+					"overrideDescription": "Altere só os campos necessários. O restante continua herdado do produto.",
+					"overrideTitle": "Opções desta unidade",
+					"remove": "Remover",
 					"unavailableTitle": "Opções indisponíveis nesta unidade"
 				},
 				"row": {
@@ -889,7 +893,7 @@
 					"action": "Cardápio"
 				},
 				"promotionalImages": {
-					"action": "Promoções",
+					"action": "Imagens Promocionais",
 					"empty": "Cadastre imagens promocionais antes de associá-las.",
 					"title": "Imagens promocionais da unidade"
 				},
