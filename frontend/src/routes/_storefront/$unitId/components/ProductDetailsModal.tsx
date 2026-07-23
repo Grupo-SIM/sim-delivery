@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuShoppingCart } from "react-icons/lu";
+import { FaCartShopping } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Modal } from "@/components/ui/Modal";
@@ -222,7 +222,7 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 						</Button>
 					</div>
 					<Button className="gap-3" disabled={Boolean(invalidGroup)} onClick={add} type="button">
-						<LuShoppingCart aria-hidden="true" />
+						<FaCartShopping aria-hidden="true" />
 						<span>{t("store.cart.add")}</span>
 						<span>{money.format(totalCents / 100)}</span>
 					</Button>
