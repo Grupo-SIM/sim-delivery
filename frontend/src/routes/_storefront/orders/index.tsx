@@ -11,16 +11,8 @@ import { formatMoney } from "@/lib/formatMoney";
 import { slug } from "@/lib/variant";
 import { useAuthStore } from "@/stores/auth";
 
-const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-
 /** Terminal statuses render muted; everything else reads as an active order. */
 const CLOSED_STATUSES = new Set(["entregue", "retirado", "cancelado"]);
-
-function displayStatus(status: string, createdAt: string): string {
-	if (status === "awaiting_payment" && Date.now() - new Date(createdAt).getTime() > ONE_DAY_MS)
-		return "cancelado";
-	return status;
-}
 
 function statusToneClass(status: string): string {
 	if (status === "cancelado") return "bg-destructive/10 text-destructive";
@@ -76,7 +68,7 @@ function OrdersPage() {
 				<ul className="space-y-3">
 					{orders.map(order => {
 						const DeliveryIcon = order.deliveryMethod === "delivery" ? LuBike : LuShoppingBag;
-						const visibleStatus = displayStatus(order.status, order.createdAt);
+						const visibleStatus = order.status;
 
 						return (
 							<li key={order.id}>
