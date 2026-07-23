@@ -11,6 +11,8 @@ model UnitProduct {
     tagsOverridden          Boolean  @default(false)
     /// Per-unit price override in cents; null = use the product base price.
     priceCentsOverride      Int?
+    /// Temporary promotional price in cents for this unit; null = no promotion.
+    promotionalPriceCents   Int?
     /// Per-unit cashback percent override; null = use the product/unit default.
     cashbackPercentOverride Float?
     /// Whether the product is currently orderable at this unit.

@@ -7,6 +7,7 @@ const fields = {
 	categoryIds: t.Optional(t.Nullable(t.Array(t.String(), { uniqueItems: true }))),
 	excludedOptionIds: t.Optional(t.Array(t.String(), { uniqueItems: true })),
 	priceCentsOverride: t.Optional(t.Nullable(t.Integer({ minimum: 0 }))),
+	promotionalPriceCents: t.Optional(t.Nullable(t.Integer({ minimum: 0 }))),
 	stock: t.Optional(t.Nullable(t.Integer({ minimum: 0 }))),
 	tagIds: t.Optional(t.Nullable(t.Array(t.String(), { uniqueItems: true }))),
 };

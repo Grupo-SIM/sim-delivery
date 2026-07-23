@@ -34,6 +34,7 @@ export const PublicMenuItemReturn = t.Object({
 	optionGroups: t.Array(PublicOptionGroupReturn),
 	popularity: t.Integer(),
 	priceCents: t.Integer(),
+	regularPriceCents: t.Integer(),
 	productId: t.String(),
 	productSlug: t.String(),
 	ratingAverage: t.Nullable(t.Number()),

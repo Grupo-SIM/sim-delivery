@@ -30,7 +30,8 @@ export function UnitProductRow({ association, categories, products, tags, unitId
 	const effectiveTags = association.tagsOverridden
 		? tags.filter(tag => association.tagIds.includes(tag.id))
 		: (product?.tags ?? []);
-	const priceCents = Number(association.priceCentsOverride ?? product?.basePriceCents ?? 0);
+	const regularPriceCents = Number(association.priceCentsOverride ?? product?.basePriceCents ?? 0);
+	const priceCents = Number(association.promotionalPriceCents ?? regularPriceCents);
 
 	function del() {
 		remove.mutate(
@@ -77,6 +78,7 @@ export function UnitProductRow({ association, categories, products, tags, unitId
 				</td>
 				<td className="px-4 py-3 text-muted-foreground">
 					{money.format(priceCents / 100)}
+					{association.promotionalPriceCents !== null && <Badge className="ml-2 border-green-500/30 bg-green-500/10 text-green-600">Promoção</Badge>}
 					{association.priceCentsOverride !== null && (
 						<span className="ml-1 text-xs">{t("admin.unitProducts.row.overridden")}</span>
 					)}

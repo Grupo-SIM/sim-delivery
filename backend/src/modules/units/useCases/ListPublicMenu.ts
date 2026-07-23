@@ -110,7 +110,8 @@ export class ListPublicMenu {
 					positionOf.set(key, category?.position ?? Number.POSITIVE_INFINITY);
 				}
 
-				const basePriceCents = association.priceCentsOverride ?? product.basePriceCents;
+				const regularPriceCents = association.priceCentsOverride ?? product.basePriceCents;
+				const basePriceCents = association.promotionalPriceCents ?? regularPriceCents;
 				const rating = ratingByProduct.get(product.id);
 
 				// "A partir de": base + sum of cheapest available option per required group.
@@ -150,6 +151,7 @@ export class ListPublicMenu {
 					})),
 					popularity: product.popularity,
 					priceCents: basePriceCents,
+					regularPriceCents,
 					productId: product.id,
 					productSlug: product.slug,
 					ratingAverage: rating?._avg.rating ?? null,

@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
+import { NumericFormat } from "react-number-format";
+import { Input } from "@/components/ui/input";
 import {
 	getUnitsByUnitIdProductsQueryKey,
 	useGetProductsByProductIdOptionGroups,
@@ -38,6 +40,7 @@ export function UnitProductEditModal({
 	const [available, setAvailable] = useState(true);
 	const [priceEnabled, setPriceEnabled] = useState(false);
 	const [priceReais, setPriceReais] = useState(0);
+	const [promotionalPriceReais, setPromotionalPriceReais] = useState<number | null>(null);
 	const [stockEnabled, setStockEnabled] = useState(false);
 	const [stock, setStock] = useState(0);
 	const [error, setError] = useState<string | null>(null);
@@ -57,6 +60,7 @@ export function UnitProductEditModal({
 		setAvailable(association.available);
 		setPriceEnabled(association.priceCentsOverride !== null);
 		setPriceReais(Number(association.priceCentsOverride ?? 0) / 100);
+		setPromotionalPriceReais(association.promotionalPriceCents === null ? null : Number(association.promotionalPriceCents) / 100);
 		setStockEnabled(association.stock !== null);
 		setStock(Number(association.stock ?? 0));
 		setExcludedOptionIds(association.excludedOptionIds);
@@ -75,6 +79,7 @@ export function UnitProductEditModal({
 					categoryIds: categoriesOverridden ? categoryIds : null,
 					excludedOptionIds,
 					priceCentsOverride: priceEnabled ? Math.round(priceReais * 100) : null,
+					promotionalPriceCents: promotionalPriceReais === null ? null : Math.round(promotionalPriceReais * 100),
 					stock: stockEnabled ? Math.round(stock) : null,
 					tagIds: tagsOverridden ? tagIds : null,
 				},
@@ -121,6 +126,11 @@ export function UnitProductEditModal({
 						tagsOverridden={tagsOverridden}
 					/>
 				</div>
+				<label className="block space-y-1">
+					<span className="font-medium text-sm">Preço promocional nesta unidade</span>
+					<NumericFormat customInput={Input} decimalScale={2} decimalSeparator="," onValueChange={values => setPromotionalPriceReais(values.floatValue ?? null)} placeholder="R$ 19,90" prefix="R$ " thousandSeparator="." value={promotionalPriceReais ?? ""} />
+					<span className="text-muted-foreground text-xs">Deixe vazio para remover promoção.</span>
+				</label>
 				{optionGroups.data && (
 					<UnitOptionExclusionsFields
 						excludedOptionIds={excludedOptionIds}

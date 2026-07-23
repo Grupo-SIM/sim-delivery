@@ -43,6 +43,7 @@ export class CreateOrder {
 		} as never)) as Array<{
 			id: string;
 			priceCentsOverride: number | null;
+			promotionalPriceCents: number | null;
 			product: {
 				basePriceCents: number;
 				id: string;
@@ -157,7 +158,7 @@ export class CreateOrder {
 			) {
 				throw new DomainError(OrderErrors.INVALID_OPTIONS);
 			}
-			const unitPrice = (assoc.priceCentsOverride ?? assoc.product.basePriceCents) + optionDelta;
+			const unitPrice = (assoc.promotionalPriceCents ?? assoc.priceCentsOverride ?? assoc.product.basePriceCents) + optionDelta;
 			return {
 				note: item.note ?? null,
 				options: snapshots,

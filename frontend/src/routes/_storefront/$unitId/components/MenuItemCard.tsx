@@ -15,6 +15,7 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 	const hasGroups = item.optionGroups.length > 0;
 
 	const displayPrice = money.format(Number(hasGroups ? item.fromPriceCents : item.priceCents) / 100);
+	const isPromotional = Number(item.priceCents) < Number(item.regularPriceCents);
 
 	return (
 		<Card
@@ -62,10 +63,12 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 				)}
 				<div className="mt-auto flex items-end gap-2 pt-2">
 					<div>
+						{isPromotional && <span className="mr-2 text-muted-foreground text-xs line-through">{money.format(Number(item.regularPriceCents) / 100)}</span>}
 						{hasGroups && (
 							<span className="block text-[11px] text-muted-foreground">{t("store.product.from")}</span>
 						)}
 						<span className="font-bold text-lg">{displayPrice}</span>
+						{isPromotional && <Badge className="ml-2 border-green-500/30 bg-green-500/10 text-green-600">Oferta</Badge>}
 					</div>
 					{item.cashbackPercent != null && (
 						<Badge className="border-green-500/30 bg-green-500/10 text-green-500">
