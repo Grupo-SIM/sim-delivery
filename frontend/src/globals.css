@@ -73,14 +73,6 @@
 }
 
 @layer base {
-	html {
-		scrollbar-width: none;
-	}
-
-	html::-webkit-scrollbar {
-		display: none;
-	}
-
 	:root {
 		--radius: 1rem;
 
@@ -243,23 +235,22 @@
 }
 
 @utility scrollbar-themed {
-	scrollbar-color: var(--foreground) var(--muted);
-	scrollbar-width: auto;
+	scrollbar-color: var(--muted-foreground) var(--card);
+	scrollbar-width: thin;
 }
 
 .scrollbar-themed::-webkit-scrollbar {
-	width: 0.75rem;
+	width: 0.625rem;
 }
 
 .scrollbar-themed::-webkit-scrollbar-thumb {
-	background-color: var(--foreground);
+	background-color: var(--muted-foreground);
 	border: 0.1875rem solid var(--card);
 	border-radius: 9999px;
 }
 
 .scrollbar-themed::-webkit-scrollbar-track {
-	background-color: var(--muted);
-	border-radius: 9999px;
+	background-color: var(--card);
 }
 
 /* Display type helper — Luckiest Guy needs a little breathing room */
