@@ -187,7 +187,7 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 
 				<div className="space-y-2">
 					<label className="font-semibold text-sm" htmlFor="product-note">
-						{t("store.product.notePlaceholder")}
+					{t("store.product.noteLabel")}
 					</label>
 					<textarea
 						className="min-h-20 w-full rounded border border-input bg-surface p-3 placeholder:text-muted-foreground"
