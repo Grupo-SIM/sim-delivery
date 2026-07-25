@@ -202,7 +202,7 @@
 				},
 				"empty": "Nenhum cupom ainda.",
 				"form": {
-				"allUnits": "Todas as unidades",
+					"allUnits": "Todas as unidades",
 					"code": "Código",
 					"codePlaceholder": "Ex: BEMVINDO10",
 					"expiresAt": "Validade",
@@ -257,13 +257,6 @@
 					"totalSpent": "Total gasto"
 				},
 				"none": "—",
-				"orders": {
-					"date": "Data",
-					"status": "Status",
-					"total": "Total",
-					"unit": "Loja",
-					"view": "Ver detalhes"
-				},
 				"orderDetails": {
 					"date": "Data",
 					"deliveryMethod": "Método de entrega",
@@ -272,6 +265,13 @@
 					"title": "Resumo do pedido",
 					"total": "Total",
 					"unit": "Loja"
+				},
+				"orders": {
+					"date": "Data",
+					"status": "Status",
+					"total": "Total",
+					"unit": "Loja",
+					"view": "Ver detalhes"
 				},
 				"search": {
 					"label": "Buscar clientes",
@@ -282,10 +282,10 @@
 			},
 			"dashboard": {
 				"nav": {
-					"catalog": "Catálogo",
 					"logout": "Sair",
 					"operations": "Operações",
 					"platform": "Plataforma",
+					"products": "Produtos",
 					"settings": "Configurações"
 				},
 				"recentOrders": "Pedidos recentes",
@@ -342,8 +342,8 @@
 					"assignKitchen": "Definir cozinha",
 					"courier": "Entregador",
 					"deadline": "Prazo estimado",
-					"estimatedTime": "{{min}}–{{max}} min",
 					"error": "Não foi possível atualizar a pessoa responsável.",
+					"estimatedTime": "{{min}}–{{max}} min",
 					"kitchenTitle": "Definir responsável pela cozinha",
 					"noKitchen": "Nenhuma pessoa da cozinha disponível.",
 					"preparedBy": "Preparado por",
@@ -854,9 +854,9 @@
 				},
 				"create": {
 					"error": "Não foi possível criar a unidade.",
-					"noCompany": "Sua conta não está vinculada a uma empresa. Entre com uma conta de gestor da empresa ou peça a um administrador para vinculá-la antes de criar uma unidade.",
 					"name": "Nome",
 					"namePlaceholder": "Ex: Centro",
+					"noCompany": "Sua conta não está vinculada a uma empresa. Entre com uma conta de gestor da empresa ou peça a um administrador para vinculá-la antes de criar uma unidade.",
 					"phone": "Telefone",
 					"phonePlaceholder": "(11) 90000-0000",
 					"sectionAddress": "Endereço",
@@ -977,13 +977,13 @@
 			"empty": "Nenhuma entrega atribuída a você.",
 			"history": "Histórico de entregas",
 			"loadError": "Não foi possível carregar suas entregas.",
-		"order": {
-			"address": "Endereço de entrega",
-			"identifier": "Pedido #{{id}}",
-			"items": "{{count}} item",
-			"items_other": "{{count}} itens",
-			"zipCode": "CEP {{zipCode}}"
-		},
+			"order": {
+				"address": "Endereço de entrega",
+				"identifier": "Pedido #{{id}}",
+				"items": "{{count}} item",
+				"items_other": "{{count}} itens",
+				"zipCode": "CEP {{zipCode}}"
+			},
 			"subtitle": "Suas entregas ativas.",
 			"title": "Entregas"
 		},
@@ -1010,32 +1010,6 @@
 					"subtitle": "Acompanhe o status de todos os seus pedidos.",
 					"title": "Meus pedidos"
 				},
-				"profile": {
-					"email": "Email",
-					"emailHint": "O email não pode ser alterado.",
-					"name": "Nome",
-					"namePlaceholder": "Ex: Maria Silva",
-					"phone": "Celular",
-					"phonePlaceholder": "(11) 99999-9999",
-					"confirmPassword": "Confirmar nova senha",
-					"confirmPasswordPlaceholder": "Repita a nova senha",
-					"currentPassword": "Senha atual",
-					"currentPasswordPlaceholder": "Digite sua senha atual",
-					"passwordMismatch": "A confirmação da nova senha não confere.",
-					"save": "Salvar",
-					"saved": "Perfil atualizado!",
-					"saveError": "Não foi possível salvar. Tente novamente.",
-					"saving": "Salvando...",
-					"subtitle": "Gerencie seus dados.",
-					"title": "Meu perfil",
-					"password": "Senha de acesso",
-					"passwordHint": "Defina uma senha para entrar sem precisar solicitar um link.",
-					"passwordPlaceholder": "Crie uma senha",
-					"passwordSave": "Salvar senha",
-					"passwordSaved": "Senha definida!",
-					"passwordSaveError": "Não foi possível definir a senha. Tente novamente.",
-					"passwordSaving": "Salvando senha…"
-				},
 				"preferences": {
 					"email": "E-mail",
 					"save": "Salvar preferências",
@@ -1046,9 +1020,35 @@
 					"title": "Preferências",
 					"whatsApp": "WhatsApp"
 				},
+				"profile": {
+					"confirmPassword": "Confirmar nova senha",
+					"confirmPasswordPlaceholder": "Repita a nova senha",
+					"currentPassword": "Senha atual",
+					"currentPasswordPlaceholder": "Digite sua senha atual",
+					"email": "Email",
+					"emailHint": "O email não pode ser alterado.",
+					"name": "Nome",
+					"namePlaceholder": "Ex: Maria Silva",
+					"password": "Senha de acesso",
+					"passwordHint": "Defina uma senha para entrar sem precisar solicitar um link.",
+					"passwordMismatch": "A confirmação da nova senha não confere.",
+					"passwordPlaceholder": "Crie uma senha",
+					"passwordSave": "Salvar senha",
+					"passwordSaved": "Senha definida!",
+					"passwordSaveError": "Não foi possível definir a senha. Tente novamente.",
+					"passwordSaving": "Salvando senha…",
+					"phone": "Celular",
+					"phonePlaceholder": "(11) 99999-9999",
+					"save": "Salvar",
+					"saved": "Perfil atualizado!",
+					"saveError": "Não foi possível salvar. Tente novamente.",
+					"saving": "Salvando...",
+					"subtitle": "Gerencie seus dados.",
+					"title": "Meu perfil"
+				},
 				"signIn": "Entrar",
-				"staffOrders": "Painel de pedidos",
-				"signOut": "Sair"
+				"signOut": "Sair",
+				"staffOrders": "Painel de pedidos"
 			},
 			"cart": {
 				"add": "Adicionar",
@@ -1083,15 +1083,15 @@
 					"default": "Padrão",
 					"neighborhood": "Bairro",
 					"neighborhoodPlaceholder": "Ex: Centro",
-					"noResults": "Nenhum endereço encontrado.",
 					"noNumber": "Sem número",
 					"none": "Nenhum endereço selecionado.",
+					"noResults": "Nenhum endereço encontrado.",
 					"number": "Número",
 					"reference": "Ponto de referência",
 					"referencePlaceholder": "Ex: próximo à padaria",
+					"save": "Salvar endereço",
 					"searching": "Buscando endereço…",
 					"searchPlaceholder": "Buscar endereço",
-					"save": "Salvar endereço",
 					"selectTitle": "Selecionar endereço",
 					"state": "Estado",
 					"street": "Rua",
@@ -1110,25 +1110,25 @@
 					"email": "E-mail",
 					"emailHint": "Enviaremos um link de acesso. Sem senha, sem complicação.",
 					"errors": {
+						"invalidCredentials": "E-mail ou senha inválidos.",
 						"magicLink": "Este link é inválido ou expirou.",
-						"send": "Não foi possível enviar o link. Tente novamente.",
-						"invalidCredentials": "E-mail ou senha inválidos."
+						"send": "Não foi possível enviar o link. Tente novamente."
 					},
 					"linkResent": "Link reenviado!",
 					"linkSent": "Enviamos um link de acesso para <strong>{{email}}</strong>. Verifique sua caixa de entrada.",
 					"linkSentTitle": "Confira seu e-mail!",
+					"password": "Senha",
+					"passwordPlaceholder": "Digite sua senha",
 					"resend": "Reenviar link",
 					"resendIn": "Reenviar em {{seconds}}s",
 					"sending": "Enviando…",
 					"sendLink": "Enviar link de acesso",
-					"subtitle": "Informe seu e-mail para entrar sem senha.",
-					"title": "Identificação",
-					"verifying": "Verificando…",
-					"password": "Senha",
-					"passwordPlaceholder": "Digite sua senha",
+					"signInWithLink": "Entrar com link de acesso",
 					"signInWithPassword": "Entrar com senha",
 					"signingIn": "Entrando…",
-					"signInWithLink": "Entrar com link de acesso"
+					"subtitle": "Informe seu e-mail para entrar sem senha.",
+					"title": "Identificação",
+					"verifying": "Verificando…"
 				},
 				"order": {
 					"cashback": "Saldo de cashback",
@@ -1303,10 +1303,10 @@
 					"alreadyReviewed": "Avaliado",
 					"comment": "Comentário (opcional)",
 					"error": "Não foi possível enviar a avaliação.",
-					"subtitle": "Avalie os produtos que você comprou neste pedido.",
 					"submit": "Enviar",
-					"submitting": "Enviando...",
 					"submitted": "Obrigado pela avaliação!",
+					"submitting": "Enviando...",
+					"subtitle": "Avalie os produtos que você comprou neste pedido.",
 					"title": "Avaliar produtos"
 				},
 				"rating": "Avaliação",

@@ -5,12 +5,14 @@ import {
 	LuBuilding2,
 	LuChartBar,
 	LuClipboardList,
+	LuFolderTree,
 	LuImages,
 	LuLogOut,
 	LuPackage,
 	LuPalette,
 	LuStar,
 	LuStore,
+	LuTag,
 	LuTicket,
 	LuUsers,
 } from "react-icons/lu";
@@ -76,12 +78,28 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 
 			<NavItem exact icon={LuChartBar} label="Dashboard" onNavigate={onNavigate} to="/admin/" />
 
-			<NavGroup label={t("admin.dashboard.nav.catalog")}>
+			<NavGroup label={t("admin.dashboard.nav.products")}>
 				<NavItem
 					icon={LuPackage}
 					label={t("admin.products.title")}
 					onNavigate={onNavigate}
 					to="/admin/products"
+				/>
+				<NavItem
+					icon={LuFolderTree}
+					label={t("admin.categories.title")}
+					onNavigate={onNavigate}
+					to="/admin/categories"
+				/>
+				<NavItem icon={LuTag} label={t("admin.tags.title")} onNavigate={onNavigate} to="/admin/tags" />
+			</NavGroup>
+
+			<NavGroup label={t("admin.dashboard.nav.operations")}>
+				<NavItem
+					icon={LuClipboardList}
+					label={t("admin.orders.title")}
+					onNavigate={onNavigate}
+					to="/admin/orders"
 				/>
 				<NavItem
 					icon={LuTicket}
@@ -95,16 +113,6 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 					onNavigate={onNavigate}
 					to="/admin/promotional-images"
 				/>
-				<NavItem icon={LuStore} label={t("admin.units.title")} onNavigate={onNavigate} to="/admin/units" />
-			</NavGroup>
-
-			<NavGroup label={t("admin.dashboard.nav.operations")}>
-				<NavItem
-					icon={LuClipboardList}
-					label={t("admin.orders.title")}
-					onNavigate={onNavigate}
-					to="/admin/orders"
-				/>
 				<NavItem
 					icon={LuUsers}
 					label={t("admin.customers.title")}
@@ -115,6 +123,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 			</NavGroup>
 
 			<NavGroup label={t("admin.dashboard.nav.settings")}>
+				<NavItem icon={LuStore} label={t("admin.units.title")} onNavigate={onNavigate} to="/admin/units" />
 				<NavItem icon={LuUsers} label={t("admin.staff.title")} onNavigate={onNavigate} to="/admin/staff" />
 				<NavItem
 					icon={LuPalette}
