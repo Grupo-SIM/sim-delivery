@@ -11,14 +11,15 @@ import { Input } from "@/components/ui/input";
 interface NumericInputProps extends Omit<ComponentPropsWithoutRef<"input">, "onChange" | "prefix" | "value"> {
 	decimalScale?: number;
 	decimalSeparator?: string;
-	onValueChange: (values: { floatValue: number }) => void;
+	onValueChange: (values: { floatValue: number; isEmpty: boolean }) => void;
 	prefix?: string;
 	suffix?: string;
 	thousandSeparator?: string;
-	value: number;
+	value: number | null;
 }
 
-function toDigits(value: number, decimalScale: number) {
+function toDigits(value: number | null, decimalScale: number) {
+	if (value === null) return "";
 	return String(Math.round(Math.abs(value) * 10 ** decimalScale)) || "0";
 }
 
@@ -34,6 +35,7 @@ function formatDigits(
 	prefix: string,
 	suffix: string,
 ) {
+	if (digits === "") return "";
 	const padded = digits.padStart(decimalScale + 1, "0");
 	const integerPart = decimalScale > 0 ? padded.slice(0, -decimalScale) : padded;
 	const decimalPart = decimalScale > 0 ? padded.slice(-decimalScale) : "";
@@ -60,17 +62,30 @@ export function NumericInput({
 }: NumericInputProps) {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [digits, setDigits] = useState(() => toDigits(value, decimalScale));
+	const historyRef = useRef<string[]>([]);
+	const redoRef = useRef<string[]>([]);
 
 	useEffect(() => {
 		if (document.activeElement === inputRef.current) return;
-		setDigits(toDigits(value, decimalScale));
+		const nextDigits = toDigits(value, decimalScale);
+		setDigits(nextDigits);
+		historyRef.current = [];
+		redoRef.current = [];
 	}, [value, decimalScale]);
 
 	const formatted = formatDigits(digits, decimalScale, decimalSeparator, thousandSeparator, prefix, suffix);
 
-	function commit(nextDigits: string) {
+	function commit(nextDigits: string, recordHistory = true) {
+		if (nextDigits === digits) return;
+		if (recordHistory) {
+			historyRef.current = [...historyRef.current.slice(-99), digits];
+			redoRef.current = [];
+		}
 		setDigits(nextDigits);
-		onValueChange({ floatValue: Number(nextDigits) / 10 ** decimalScale });
+		onValueChange({
+			floatValue: Number(nextDigits || 0) / 10 ** decimalScale,
+			isEmpty: nextDigits === "",
+		});
 	}
 
 	function handleNativeInput(event: React.FormEvent<HTMLInputElement>) {
@@ -87,7 +102,25 @@ export function NumericInput({
 	}, [suffix]);
 
 	function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-		if (event.ctrlKey || event.metaKey) return;
+		if (event.ctrlKey || event.metaKey) {
+			if (event.key.toLowerCase() === "z") {
+				event.preventDefault();
+				const nextDigits = event.shiftKey ? redoRef.current.pop() : historyRef.current.pop();
+				if (nextDigits === undefined) return;
+				if (event.shiftKey) historyRef.current.push(digits);
+				else redoRef.current.push(digits);
+				commit(nextDigits, false);
+				return;
+			}
+			if (event.key.toLowerCase() === "y") {
+				event.preventDefault();
+				const nextDigits = redoRef.current.pop();
+				if (nextDigits === undefined) return;
+				historyRef.current.push(digits);
+				commit(nextDigits, false);
+			}
+			return;
+		}
 
 		const input = event.currentTarget;
 		const hasSelection = input.selectionStart !== input.selectionEnd;
@@ -99,12 +132,12 @@ export function NumericInput({
 		}
 		if (event.key === "Backspace") {
 			event.preventDefault();
-			commit(hasSelection || digits.length <= 1 ? "0" : digits.slice(0, -1));
+			commit(hasSelection || digits.length <= 1 ? "" : digits.slice(0, -1));
 			return;
 		}
 		if (event.key === "Delete" && hasSelection) {
 			event.preventDefault();
-			commit("0");
+			commit("");
 		}
 	}
 

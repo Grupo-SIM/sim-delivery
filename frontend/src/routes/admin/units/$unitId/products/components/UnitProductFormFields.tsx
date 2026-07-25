@@ -3,6 +3,7 @@ import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/Checkbox";
+import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { NumericInput } from "@/components/ui/NumericInput";
 import type { Category, Product, Tag } from "./types";
@@ -165,14 +166,10 @@ export function UnitProductFormFields(props: UnitProductFormFieldsProps) {
 					/>
 					{t("admin.unitProducts.form.priceOverride")}
 				</label>
-				<NumericInput
-					decimalScale={2}
-					decimalSeparator=","
+				<CurrencyInput
 					disabled={!priceEnabled}
 					onValueChange={({ floatValue }) => onPriceReaisChange(floatValue ?? 0)}
 					placeholder="R$ 18,90"
-					prefix="R$ "
-					thousandSeparator="."
 					value={priceReais}
 				/>
 			</div>

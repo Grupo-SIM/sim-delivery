@@ -2,17 +2,19 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { Modal } from "@/components/ui/Modal";
-import { NumericFormat } from "react-number-format";
-import { Input } from "@/components/ui/input";
 import {
 	getUnitsByUnitIdProductsQueryKey,
 	useGetProductsByProductIdOptionGroups,
 	usePatchUnitsByUnitIdProductsByUnitProductId,
 } from "@/lib/api";
 import type { Category, Product, Tag, UnitProduct } from "./types";
-import { UnitOptionExclusionsFields } from "./UnitOptionExclusionsFields";
-import { UnitOptionOverridesFields, type UnitAdditionalOption, type UnitOptionOverride } from "./UnitOptionOverridesFields";
+import {
+	type UnitAdditionalOption,
+	type UnitOptionOverride,
+	UnitOptionOverridesFields,
+} from "./UnitOptionOverridesFields";
 import { UnitProductFormFields } from "./UnitProductFormFields";
 
 interface UnitProductEditModalProps {
@@ -45,7 +47,6 @@ export function UnitProductEditModal({
 	const [stockEnabled, setStockEnabled] = useState(false);
 	const [stock, setStock] = useState(0);
 	const [error, setError] = useState<string | null>(null);
-	const [excludedOptionIds, setExcludedOptionIds] = useState<string[]>([]);
 	const [optionOverrides, setOptionOverrides] = useState<UnitOptionOverride[]>([]);
 	const [additionalOptions, setAdditionalOptions] = useState<UnitAdditionalOption[]>([]);
 
@@ -63,21 +64,31 @@ export function UnitProductEditModal({
 		setAvailable(association.available);
 		setPriceEnabled(association.priceCentsOverride !== null);
 		setPriceReais(Number(association.priceCentsOverride ?? 0) / 100);
-		setPromotionalPriceReais(association.promotionalPriceCents === null ? null : Number(association.promotionalPriceCents) / 100);
+		setPromotionalPriceReais(
+			association.promotionalPriceCents === null ? null : Number(association.promotionalPriceCents) / 100,
+		);
 		setStockEnabled(association.stock !== null);
 		setStock(Number(association.stock ?? 0));
-		setExcludedOptionIds(association.excludedOptionIds);
-		setOptionOverrides(association.optionOverrides.map(override => ({
-			available: override.available,
-			description: override.description,
-			imageUrl: override.imageUrl,
-			maxPerItem: override.maxPerItem === null ? null : Number(override.maxPerItem),
-			name: override.name,
-			optionId: override.optionId,
-			priceDeltaCents: override.priceDeltaCents === null ? null : Number(override.priceDeltaCents),
-			sortOrder: override.sortOrder === null ? null : Number(override.sortOrder),
-		})));
-		setAdditionalOptions(association.additionalOptions.map(option => ({ ...option, maxPerItem: option.maxPerItem === null ? null : Number(option.maxPerItem), priceDeltaCents: Number(option.priceDeltaCents), sortOrder: Number(option.sortOrder) })));
+		setOptionOverrides(
+			association.optionOverrides.map(override => ({
+				available: override.available,
+				description: override.description,
+				imageUrl: override.imageUrl,
+				maxPerItem: override.maxPerItem === null ? null : Number(override.maxPerItem),
+				name: override.name,
+				optionId: override.optionId,
+				priceDeltaCents: override.priceDeltaCents === null ? null : Number(override.priceDeltaCents),
+				sortOrder: override.sortOrder === null ? null : Number(override.sortOrder),
+			})),
+		);
+		setAdditionalOptions(
+			association.additionalOptions.map(option => ({
+				...option,
+				maxPerItem: option.maxPerItem === null ? null : Number(option.maxPerItem),
+				priceDeltaCents: Number(option.priceDeltaCents),
+				sortOrder: Number(option.sortOrder),
+			})),
+		);
 		setError(null);
 	}, [association]);
 
@@ -89,13 +100,13 @@ export function UnitProductEditModal({
 		mutate(
 			{
 				data: {
+					additionalOptions,
 					available: stockEnabled ? stock > 0 : available,
 					categoryIds: categoriesOverridden ? categoryIds : null,
-					excludedOptionIds,
-					additionalOptions,
 					optionOverrides,
 					priceCentsOverride: priceEnabled ? Math.round(priceReais * 100) : null,
-					promotionalPriceCents: promotionalPriceReais === null ? null : Math.round(promotionalPriceReais * 100),
+					promotionalPriceCents:
+						promotionalPriceReais === null ? null : Math.round(promotionalPriceReais * 100),
 					stock: stockEnabled ? Math.round(stock) : null,
 					tagIds: tagsOverridden ? tagIds : null,
 				},
@@ -142,27 +153,24 @@ export function UnitProductEditModal({
 						tagsOverridden={tagsOverridden}
 					/>
 				</div>
-				<label className="block space-y-1">
+				<div className="block space-y-1">
 					<span className="font-medium text-sm">Preço promocional nesta unidade</span>
-					<NumericFormat customInput={Input} decimalScale={2} decimalSeparator="," onValueChange={values => setPromotionalPriceReais(values.floatValue ?? null)} placeholder="R$ 19,90" prefix="R$ " thousandSeparator="." value={promotionalPriceReais ?? ""} />
+					<CurrencyInput
+						onValueChange={({ floatValue }) => setPromotionalPriceReais(floatValue)}
+						placeholder="R$ 19,90"
+						value={promotionalPriceReais}
+					/>
 					<span className="text-muted-foreground text-xs">Deixe vazio para remover promoção.</span>
-				</label>
-				{optionGroups.data && (
-				<UnitOptionExclusionsFields
-						excludedOptionIds={excludedOptionIds}
+				</div>
+				{optionGroups.data && optionGroups.data.length > 0 && (
+					<UnitOptionOverridesFields
+						additionalOptions={additionalOptions}
 						groups={optionGroups.data}
-						onChange={setExcludedOptionIds}
-				/>
-			)}
-			{optionGroups.data && (
-				<UnitOptionOverridesFields
-					additionalOptions={additionalOptions}
-					groups={optionGroups.data}
-					onAdditionalOptionsChange={setAdditionalOptions}
-					onOptionOverridesChange={setOptionOverrides}
-					optionOverrides={optionOverrides}
-				/>
-			)}
+						onAdditionalOptionsChange={setAdditionalOptions}
+						onOptionOverridesChange={setOptionOverrides}
+						optionOverrides={optionOverrides}
+					/>
+				)}
 
 				{error && <p className="text-destructive text-xs">{error}</p>}
 				<div className="flex justify-end gap-2">
