@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { hexToHsv, hexToRgb, hsvToHex, isValidHex, rgbToHex } from "./color-utils";
 import { HueSlider } from "./HueSlider";
-import { RgbInputs } from "./RgbInputs";
+import { RgbInput } from "./RgbInput";
 import { SaturationPanel } from "./SaturationPanel";
 import type { HSV } from "./types";
 
@@ -134,7 +134,7 @@ export function ColorField({ onChange, value }: ColorFieldProps) {
 						/>
 						<div className="flex flex-col gap-3 p-3">
 							<HueSlider hue={hsv.h} onChange={h => updateHsv({ ...hsv, h })} />
-							<RgbInputs onChange={rgb => updateHsv(hexToHsv(rgbToHex(rgb)))} rgb={hexToRgb(hsvToHex(hsv))} />
+							<RgbInput onChange={rgb => updateHsv(hexToHsv(rgbToHex(rgb)))} rgb={hexToRgb(hsvToHex(hsv))} />
 						</div>
 					</div>,
 					document.body,
