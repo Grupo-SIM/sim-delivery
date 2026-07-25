@@ -147,6 +147,40 @@ function AdminDashboardPage() {
 				</div>
 			)}
 
+			{analyticsPending ? (
+				<div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+					<Skeleton className="h-72" />
+					<Skeleton className="h-72" />
+				</div>
+			) : analyticsError ? (
+				<ErrorState title={t("admin.reports.loadError")} />
+			) : (
+				<div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+					<DashboardOrdersByPeriodChart
+						groupBy={analytics.groupBy}
+						onGroupByChange={setGroupBy}
+						options={groupByOptions}
+						ordersByPeriod={analytics.ordersByPeriod}
+						selectLabel={t("admin.reports.groupBy.title")}
+						title={t("admin.reports.ordersByPeriod.title")}
+					/>
+					<DashboardDeliveryRadiusTable
+						columns={{
+							deliveryFee: t("admin.reports.deliveryRadius.columns.deliveryFee"),
+							orderCount: t("admin.reports.deliveryRadius.columns.orderCount"),
+							radius: t("admin.reports.deliveryRadius.columns.radius"),
+							revenue: t("admin.reports.deliveryRadius.columns.revenue"),
+							unit: t("admin.reports.deliveryRadius.columns.unit"),
+						}}
+						empty={t("admin.reports.deliveryRadius.empty")}
+						formatCents={formatCents}
+						noRadius={t("admin.reports.deliveryRadius.noRadius")}
+						rows={analytics.deliveryRadiusPerformance}
+						title={t("admin.reports.deliveryRadius.title")}
+					/>
+				</div>
+			)}
+
 			{/* Best sellers */}
 			<div>
 				<h2 className="mb-3 font-semibold text-base">{t("admin.reports.bestSellers.title")}</h2>
@@ -186,40 +220,6 @@ function AdminDashboardPage() {
 					</DataTable>
 				)}
 			</div>
-
-			{analyticsPending ? (
-				<div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-					<Skeleton className="h-72" />
-					<Skeleton className="h-72" />
-				</div>
-			) : analyticsError ? (
-				<ErrorState title={t("admin.reports.loadError")} />
-			) : (
-				<div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-					<DashboardOrdersByPeriodChart
-						groupBy={analytics.groupBy}
-						onGroupByChange={setGroupBy}
-						options={groupByOptions}
-						ordersByPeriod={analytics.ordersByPeriod}
-						selectLabel={t("admin.reports.groupBy.title")}
-						title={t("admin.reports.ordersByPeriod.title")}
-					/>
-					<DashboardDeliveryRadiusTable
-						columns={{
-							deliveryFee: t("admin.reports.deliveryRadius.columns.deliveryFee"),
-							orderCount: t("admin.reports.deliveryRadius.columns.orderCount"),
-							radius: t("admin.reports.deliveryRadius.columns.radius"),
-							revenue: t("admin.reports.deliveryRadius.columns.revenue"),
-							unit: t("admin.reports.deliveryRadius.columns.unit"),
-						}}
-						empty={t("admin.reports.deliveryRadius.empty")}
-						formatCents={formatCents}
-						noRadius={t("admin.reports.deliveryRadius.noRadius")}
-						rows={analytics.deliveryRadiusPerformance}
-						title={t("admin.reports.deliveryRadius.title")}
-					/>
-				</div>
-			)}
 
 			{/* Recent orders */}
 			<div>

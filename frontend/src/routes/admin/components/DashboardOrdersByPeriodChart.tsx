@@ -25,10 +25,15 @@ export function DashboardOrdersByPeriodChart({
 			<div className="mb-3 flex min-h-11 flex-wrap items-center justify-between gap-2">
 				<h2 className="font-semibold text-base">{title}</h2>
 				<div aria-label={selectLabel} className="w-44">
-					<CustomSelect className="h-9" onChange={value => onGroupByChange(value as GetReportsDashboardAnalytics200GroupByEnumKey)} options={[...options]} value={groupBy} />
+					<CustomSelect
+						className="h-9"
+						onChange={value => onGroupByChange(value as GetReportsDashboardAnalytics200GroupByEnumKey)}
+						options={[...options]}
+						value={groupBy}
+					/>
 				</div>
 			</div>
-			<div className="rounded-md border border-border bg-card px-5 py-4">
+			<div className="overflow-x-auto rounded-md border border-border bg-card px-5 py-4">
 				<div aria-label={title} className="flex h-[193px] min-w-max items-end gap-1" role="img">
 					{ordersByPeriod.map(item => {
 						const orderCount = Number(item.orderCount);
