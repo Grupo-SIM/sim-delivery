@@ -5,7 +5,7 @@ interface MagicLinkEmailProps {
 	url: string;
 }
 
-export function MagicLinkEmail({ url }: MagicLinkEmailProps) {
+export function MagicLinkEmailTemplate({ url }: MagicLinkEmailProps) {
 	return (
 		<EmailLayout preview="Seu link de acesso ao Template App">
 			<Heading

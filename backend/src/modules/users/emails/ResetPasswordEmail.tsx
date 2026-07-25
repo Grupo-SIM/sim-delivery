@@ -6,7 +6,7 @@ interface ResetPasswordEmailProps {
 	url: string;
 }
 
-export function ResetPasswordEmail({ name, url }: ResetPasswordEmailProps) {
+export function ResetPasswordEmailTemplate({ name, url }: ResetPasswordEmailProps) {
 	return (
 		<EmailLayout preview="Defina sua senha do Template App">
 			<Heading
@@ -41,7 +41,8 @@ export function ResetPasswordEmail({ name, url }: ResetPasswordEmailProps) {
 					margin: "24px 0 0",
 				}}
 			>
-				O link expira em 7 dias e pode ser usado uma única vez. Se você não solicitou esta ação, ignore este e-mail.
+				O link expira em 7 dias e pode ser usado uma única vez. Se você não solicitou esta ação, ignore este
+				e-mail.
 			</Text>
 
 			<Hr style={{ borderColor: emailColors.border, margin: "32px 0 24px" }} />

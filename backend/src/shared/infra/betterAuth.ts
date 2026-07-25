@@ -1,10 +1,8 @@
 import "@/env";
-import { render } from "@react-email/components";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { magicLink, phoneNumber } from "better-auth/plugins";
-import { MagicLinkEmail, ResetPasswordEmail } from "@/modules/users/emails";
-import { mailer } from "./mail";
+import { MagicLinkEmail, ResetPasswordEmail } from "./emails";
 import { type PhoneOtpProviderKey, phoneOtpProviders } from "./phoneOtp";
 import { resolveSiteSessionOverride } from "./resolveSiteSessionOverride";
 import { prisma } from "./sql";
@@ -29,9 +27,7 @@ export const auth = betterAuth({
 			create: {
 				before: async (session, context) => {
 					const slug = context?.query?.slug as string | undefined;
-					if (!slug) {
-						return;
-					}
+					if (!slug) return;
 
 					const [user, company] = await Promise.all([
 						prisma.user.findUnique({
@@ -40,9 +36,7 @@ export const auth = betterAuth({
 						}),
 						prisma.company.findUnique({ select: { id: true }, where: { slug } }),
 					]);
-					if (!user || !company) {
-						return;
-					}
+					if (!user || !company) return;
 
 					const override = resolveSiteSessionOverride(company.id, user);
 					return override ? { data: override } : undefined;
@@ -53,19 +47,13 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 		minPasswordLength: 6,
-		resetPasswordTokenExpiresIn: 60 * 60 * 24 * 7,
 		password: {
 			hash: password => Bun.password.hash(password, { algorithm }),
 			verify: ({ hash, password }) => Bun.password.verify(password, hash, algorithm),
 		},
+		resetPasswordTokenExpiresIn: 60 * 60 * 24 * 7,
 		sendResetPassword: async ({ url, user }) => {
-			await mailer.sendMail({
-				from: `"Template App" <${process.env.MAIL_USER}>`,
-				html: await render(ResetPasswordEmail({ name: user.name, url })),
-			subject: "Defina sua senha",
-			text: `Olá, ${user.name}! Acesse o link para definir sua senha: ${url}. O link expira em 7 dias e pode ser usado uma única vez.`,
-				to: user.email,
-			});
+			await new ResetPasswordEmail({ name: user.name, to: user.email, url }).send();
 		},
 	},
 	plugins: [
@@ -82,13 +70,7 @@ export const auth = betterAuth({
 			sendMagicLink: async ({ email, metadata, token }) => {
 				const unitId = typeof metadata?.unitId === "string" ? metadata.unitId : undefined;
 				const url = `${process.env.APP_URL}/identify/magic-link?token=${token}${unitId ? `&unitId=${unitId}` : ""}`;
-				await mailer.sendMail({
-					from: `"Template App" <${process.env.MAIL_USER}>`,
-					html: await render(MagicLinkEmail({ url })),
-					subject: "Seu link de acesso",
-					text: `Acesse sua conta: ${url}. O link expira em 5 minutos.`,
-					to: email,
-				});
+				await new MagicLinkEmail({ to: email, url }).send();
 			},
 		}),
 	],

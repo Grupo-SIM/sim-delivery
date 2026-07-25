@@ -1,6 +1,6 @@
+import { OrderStatusEmail } from "@/shared/infra/emails";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { WhatsAppProvider } from "@/shared/infra/whatsapp";
-import { sendOrderStatusEmail } from "@/shared/infra/mail";
 
 const CANCELLATION_REASON = "Pagamento não confirmado em até 1 hora.";
 const EXPIRATION_MS = 60 * 60 * 1_000;
@@ -31,34 +31,37 @@ export class CancelExpiredUnpaidOrders {
 
 		let cancelled = 0;
 		for (const order of orders) {
-			const result = await this.prisma.order.updateMany({
-				data: { cancelReason: CANCELLATION_REASON, status: "cancelado" },
-				where: {
-					createdAt: { lt: expiresAt },
-					id: order.id,
-					OR: [
-						{ payment: { is: null } },
-						{ payment: { is: { status: { not: "confirmed" } } } },
-					],
-					status: "awaiting_payment",
-				},
-			});
-			if (result.count === 0) continue;
+			try {
+				const result = await this.prisma.order.updateMany({
+					data: { cancelReason: CANCELLATION_REASON, status: "cancelado" },
+					where: {
+						createdAt: { lt: expiresAt },
+						id: order.id,
+						OR: [{ payment: { is: null } }, { payment: { is: { status: { not: "confirmed" } } } }],
+						status: "awaiting_payment",
+					},
+				});
+				if (result.count === 0) continue;
 
-			cancelled += 1;
-			await this.prisma.orderStatusEvent?.create({ data: { orderId: order.id, status: "cancelado" } });
+				cancelled += 1;
+				await this.prisma.orderStatusEvent?.create({ data: { orderId: order.id, status: "cancelado" } });
 
-			const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
-			const message = (
-				templates?.cancelado?.trim() ||
-				"Seu pedido {{orderId}} foi cancelado porque o pagamento não foi confirmado em até 1 hora."
-			).replaceAll("{{orderId}}", order.id);
-			const phone = order.customer.phone ?? order.customer.user?.phoneNumber;
-			if (order.customer.notificationWhatsApp !== false && phone) {
-				await this.whatsApp.sendOrderStatus(phone, "cancelado", order.id, message).catch(() => {});
-			}
-			if (order.customer.notificationEmail !== false && order.customer.user?.email) {
-				await sendOrderStatusEmail(order.customer.user.email, "cancelado", order.id, message).catch(() => {});
+				const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
+				const message = (
+					templates?.cancelado?.trim() ||
+					"Seu pedido {{orderId}} foi cancelado porque o pagamento não foi confirmado em até 1 hora."
+				).replaceAll("{{orderId}}", order.id);
+				const phone = order.customer.phone ?? order.customer.user?.phoneNumber;
+				if (order.customer.notificationWhatsApp !== false && phone) {
+					await this.whatsApp.sendOrderStatus(phone, "cancelado", order.id, message).catch(() => {});
+				}
+				if (order.customer.notificationEmail !== false && order.customer.user?.email) {
+					await new OrderStatusEmail({ message, orderId: order.id, status: "cancelado", to: order.customer.user.email }).send().catch(
+						() => {},
+					);
+				}
+			} catch (error) {
+				console.error(`Failed to cancel expired unpaid order ${order.id}`, error);
 			}
 		}
 
@@ -71,7 +74,10 @@ export function startExpiredUnpaidOrderCancellation(
 	whatsApp: WhatsAppProvider,
 ): () => void {
 	const cancellation = new CancelExpiredUnpaidOrders(prisma, whatsApp);
-	const run = () => void cancellation.execute().catch(error => console.error("Failed to cancel expired unpaid orders", error));
+	const run = () =>
+		void cancellation
+			.execute()
+			.catch(error => console.error("Failed to cancel expired unpaid orders", error));
 
 	run();
 	const timer = setInterval(run, INTERVAL_MS);

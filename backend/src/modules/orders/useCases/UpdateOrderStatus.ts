@@ -1,8 +1,8 @@
+import { UserErrors } from "@/modules/users/errors";
 import { DomainError } from "@/shared/errors";
+import { OrderStatusEmail } from "@/shared/infra/emails";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { WhatsAppProvider } from "@/shared/infra/whatsapp";
-import { sendOrderStatusEmail } from "@/shared/infra/mail";
-import { UserErrors } from "@/modules/users/errors";
 import type { Role } from "@/shared/permissions";
 import type { OrderReturn, UpdateOrderStatusBody } from "../dtos";
 import { OrderErrors } from "../errors";
@@ -35,10 +35,15 @@ function canTransition(current: string, next: string, deliveryMethod: string): b
 
 function canRoleTransition(role: Role | undefined, current: string, next: string): boolean {
 	if (role === "kitchen") {
-		return (current === "recebido" && next === "em_preparo") || (current === "em_preparo" && next === "pronto");
+		return (
+			(current === "recebido" && next === "em_preparo") || (current === "em_preparo" && next === "pronto")
+		);
 	}
 	if (role === "courier") {
-		return (current === "pronto" && next === "saiu_para_entrega") || (current === "saiu_para_entrega" && next === "entregue");
+		return (
+			(current === "pronto" && next === "saiu_para_entrega") ||
+			(current === "saiu_para_entrega" && next === "entregue")
+		);
 	}
 	return true;
 }
@@ -120,7 +125,7 @@ export class UpdateOrderStatus {
 				await this.whatsApp.sendOrderStatus(phone, status, orderId, message).catch(() => {});
 			}
 			if (order.customer.notificationEmail !== false && order.customer.user.email) {
-				await sendOrderStatusEmail(order.customer.user.email, status, orderId, message).catch(() => {});
+				await new OrderStatusEmail({ message, orderId, status, to: order.customer.user.email }).send().catch(() => {});
 			}
 		}
 
