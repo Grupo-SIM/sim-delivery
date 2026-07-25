@@ -22,8 +22,6 @@ import {
 	DashboardDateRangePicker,
 	DashboardDeliveryRadiusTable,
 	DashboardOrdersByPeriodChart,
-	DashboardPeriodPicker,
-	type DashboardPeriod,
 	type DashboardPeriodSelection,
 } from "./components";
 
@@ -34,20 +32,20 @@ function formatCents(cents: number): string {
 function AdminDashboardPage() {
 	const { t } = useTranslation();
 	const [period, setPeriod] = useState<DashboardPeriodSelection>("month");
-	const [groupBy, setGroupBy] = useState<GetReportsDashboardAnalytics200GroupByEnumKey>("hourOfDay");
+	const [groupBy, setGroupBy] = useState<GetReportsDashboardAnalytics200GroupByEnumKey | "auto">("auto");
 	const [dateRange, setDateRange] = useState<{ endDate: string; startDate: string } | null>(null);
 	const [isExporting, setIsExporting] = useState(false);
 
 	const periodLabels: Record<DashboardPeriodSelection, string> = {
-		today: t("admin.reports.period.today"),
-		yesterday: t("admin.reports.period.yesterday"),
-		week: t("admin.reports.period.week"),
-		month: t("admin.reports.period.month"),
+		custom: t("admin.reports.period.custom"),
 		lastMonth: t("admin.reports.period.lastMonth"),
+		month: t("admin.reports.period.month"),
 		quarter: t("admin.reports.period.quarter"),
 		semester: t("admin.reports.period.semester"),
+		today: t("admin.reports.period.today"),
+		week: t("admin.reports.period.week"),
 		year: t("admin.reports.period.year"),
-		custom: t("admin.reports.period.custom"),
+		yesterday: t("admin.reports.period.yesterday"),
 	};
 
 	const groupByOptions = [
@@ -66,10 +64,18 @@ function AdminDashboardPage() {
 		isError: summaryError,
 		isPending: summaryPending,
 	} = useGetReportsSummary({ ...dateRange, period: queryPeriod });
-	const { data: bestSellers, isError: bsError, isPending: bsPending } = useGetReportsBestSellers({ ...dateRange, period: queryPeriod });
-	const { data: analytics, isError: analyticsError, isPending: analyticsPending } = useGetReportsDashboardAnalytics({
+	const {
+		data: bestSellers,
+		isError: bsError,
+		isPending: bsPending,
+	} = useGetReportsBestSellers({ ...dateRange, period: queryPeriod });
+	const {
+		data: analytics,
+		isError: analyticsError,
+		isPending: analyticsPending,
+	} = useGetReportsDashboardAnalytics({
 		...dateRange,
-		groupBy,
+		...(groupBy === "auto" ? {} : { groupBy }),
 		period: queryPeriod,
 	});
 	const { data: allOrders, isError: ordersError, isPending: ordersPending } = useGetOrders();
@@ -96,20 +102,21 @@ function AdminDashboardPage() {
 				<SectionHeading subtitle={t("admin.dashboard.subtitle")} title={t("admin.dashboard.title")} />
 				<div className="flex items-center gap-3">
 					<span className="font-medium text-sm">{t("admin.reports.period.title")}</span>
-					<DashboardPeriodPicker
-						datePicker={
-							<DashboardDateRangePicker
-								inline
-								onChange={range => {
-									setDateRange(range);
-									setPeriod("custom");
-								}}
-								value={dateRange}
-							/>
-						}
-						labels={periodLabels}
-						onChange={nextPeriod => { setDateRange(null); setPeriod(nextPeriod); }}
-						period={period}
+					<DashboardDateRangePicker
+						onPresetChange={nextPeriod => {
+							setDateRange(null);
+							setPeriod(nextPeriod as DashboardPeriodSelection);
+							setGroupBy("auto");
+						}}
+						presetOptions={Object.entries(periodLabels).map(([value, label]) => ({ label, value }))}
+						presetValue={period}
+						onChange={range => {
+							setDateRange(range);
+							setPeriod("custom");
+							setGroupBy("auto");
+						}}
+						placeholder={t("admin.reports.period.customPlaceholder")}
+						value={dateRange}
 					/>
 					<Button disabled={isExporting} onClick={handleExport} type="button" variant="outline">
 						{isExporting ? t("admin.reports.export.pending") : t("admin.reports.export.button")}
