@@ -24,12 +24,13 @@ describe("email classes", () => {
 		await email.send();
 
 		expect(messages[0]).toMatchObject({
-			from: '"Template App" <notifications@example.com>',
+			from: '"Zero Grau" <notifications@example.com>',
 			subject: "Defina sua senha",
 			to: "maria@example.com",
 		});
 		expect(messages[0]?.text).toContain("Maria");
 		expect(messages[0]?.html).toContain("Definição de senha");
+		expect(messages[0]?.html).toContain("Zero Grau");
 	});
 
 	it("builds magic-link and order-status payloads", async () => {

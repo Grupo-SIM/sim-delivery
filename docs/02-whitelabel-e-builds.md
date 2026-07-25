@@ -1,8 +1,8 @@
 # 02 — Whitelabel e builds
 
-Cada build atende uma empresa. A seleção vem de `VITE_COMPANY_SLUG`; não há
-`variants.json`, diretórios de assets por variante, nem consulta ao backend na primeira
-renderização.
+Cada build atende uma empresa. A seleção vem de `VITE_COMPANY_SLUG` no frontend e
+`COMPANY_SLUG` no backend; não há `variants.json`, diretórios de assets por variante,
+nem consulta ao backend na primeira renderização.
 
 ## Configure a empresa antes de compilar
 
@@ -10,7 +10,7 @@ A tabela `company` é a fonte de verdade. Preencha estes campos para a empresa s
 
 | Campo | Uso no build |
 |---|---|
-| `slug` | Seleciona a empresa por `VITE_COMPANY_SLUG`. |
+| `slug` | Seleciona a empresa por `VITE_COMPANY_SLUG` (frontend) e `COMPANY_SLUG` (backend). |
 | `name` | Nome exibido e nome do app Tauri. |
 | `packageName` | Identificador Android/iOS/desktop. Substitui `bundleIdentifier`. |
 | `siteUrl` | URL pública da loja. |
@@ -25,6 +25,7 @@ Defina o slug no ambiente do processo ou em `frontend/.env` / `frontend/.env.loc
 
 ```sh
 VITE_COMPANY_SLUG=acai-top
+COMPANY_SLUG=acai-top
 ```
 
 Depois execute normalmente:
@@ -35,13 +36,17 @@ bun run dev
 bun run build
 ```
 
-Os dois comandos executam `scripts/inject-branding.ts` antes do Vite. O script consulta
-o Prisma diretamente, baixa a logo, gera `branding.css`, atualiza o módulo estático de
-branding e regenera favicon, Apple touch icon e ícones Tauri.
+Os dois comandos executam `scripts/inject.ts` antes do Vite. O script consulta o Prisma
+diretamente, baixa a logo, gera `branding.css`, atualiza o módulo estático de branding e
+regenera favicon, Apple touch icon e ícones Tauri.
 
-Em Docker, passe `DATABASE_URL` e `VITE_COMPANY_SLUG` como argumentos de build. A imagem
-final continua estática; ela não precisa de acesso ao banco ou ao backend para carregar a
-marca inicial.
+O Turborepo também executa `backend/scripts/inject.ts` antes de `dev` e `build`. Ele
+gera o branding estático dos e-mails (nome, logo e cores primárias), sem consultar o
+banco em runtime.
+
+Em Docker, passe `DATABASE_URL`, `VITE_COMPANY_SLUG` e `COMPANY_SLUG` como argumentos de
+build. As imagens finais continuam estáticas; elas não precisam de acesso ao banco para
+carregar ou enviar a marca configurada.
 
 ## Mudanças de marca exigem nova build
 

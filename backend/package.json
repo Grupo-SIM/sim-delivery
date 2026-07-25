@@ -8,6 +8,7 @@
 		"check-types": "tsc --noEmit",
 		"dev": "bun --watch src/main.ts",
 		"export": "bun ./src/generateOpenApi.ts",
+		"inject": "bun ./scripts/inject.ts",
 		"start": "NODE_ENV=production bun dist/main.js",
 		"test:unit": "bun test --coverage"
 	},

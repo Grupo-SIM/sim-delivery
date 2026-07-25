@@ -1,4 +1,5 @@
 import { Heading, Hr, Text } from "@react-email/components";
+import { emailBranding } from "@/shared/infra/branding";
 import { EmailButton, EmailLayout, emailColors } from "./components";
 
 interface ResetPasswordEmailProps {
@@ -8,7 +9,7 @@ interface ResetPasswordEmailProps {
 
 export function ResetPasswordEmailTemplate({ name, url }: ResetPasswordEmailProps) {
 	return (
-		<EmailLayout preview="Defina sua senha do Template App">
+		<EmailLayout preview={`Defina sua senha do ${emailBranding.companyName}`}>
 			<Heading
 				style={{
 					color: emailColors.foreground,
@@ -55,7 +56,7 @@ export function ResetPasswordEmailTemplate({ name, url }: ResetPasswordEmailProp
 					margin: "0",
 				}}
 			>
-				© {new Date().getFullYear()} Template App.
+				© {new Date().getFullYear()} {emailBranding.companyName}.
 			</Text>
 		</EmailLayout>
 	);

@@ -1,4 +1,5 @@
 import { Heading, Hr, Text } from "@react-email/components";
+import { emailBranding } from "@/shared/infra/branding";
 import { EmailButton, EmailLayout, emailColors } from "./components";
 
 interface MagicLinkEmailProps {
@@ -7,7 +8,7 @@ interface MagicLinkEmailProps {
 
 export function MagicLinkEmailTemplate({ url }: MagicLinkEmailProps) {
 	return (
-		<EmailLayout preview="Seu link de acesso ao Template App">
+		<EmailLayout preview={`Seu link de acesso ao ${emailBranding.companyName}`}>
 			<Heading
 				style={{
 					color: emailColors.foreground,
@@ -53,7 +54,7 @@ export function MagicLinkEmailTemplate({ url }: MagicLinkEmailProps) {
 					margin: "0",
 				}}
 			>
-				© {new Date().getFullYear()} Template App.
+				© {new Date().getFullYear()} {emailBranding.companyName}.
 			</Text>
 		</EmailLayout>
 	);

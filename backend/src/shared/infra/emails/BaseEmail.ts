@@ -1,3 +1,4 @@
+import { emailBranding } from "@/shared/infra/branding";
 import { mailer } from "@/shared/infra/mail";
 
 export interface EmailTransport {
@@ -20,7 +21,7 @@ export abstract class BaseEmail {
 
 	protected get from(): string {
 		const address = process.env.MAIL_FROM ?? process.env.MAIL_USER;
-		return address?.includes("<") ? address : `"Template App" <${address}>`;
+		return address?.includes("<") ? address : `"${emailBranding.companyName}" <${address}>`;
 	}
 
 	async send(): Promise<void> {
