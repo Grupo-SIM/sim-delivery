@@ -9,13 +9,15 @@ import { RequiredMark } from "@/components/ui/label";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { getCouponsQueryKey, useGetUnits, usePostCoupons } from "@/lib/api";
 import { CouponFormFields } from "./CouponFormFields";
-import { dateTimeToDate, emptyCouponForm, type CouponFormState } from "./types";
+import { type CouponFormState, dateTimeToDate, emptyCouponForm } from "./types";
 
 export function CreateCouponForm() {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [form, setForm] = useState<CouponFormState>(emptyCouponForm);
-	const [localCode, setLocalCode, flushCode] = useDebouncedInput(form.code, code => setForm(prev => ({ ...prev, code })));
+	const [localCode, setLocalCode, flushCode] = useDebouncedInput(form.code, code =>
+		setForm(prev => ({ ...prev, code })),
+	);
 	const { data: units, isPending: unitsPending } = useGetUnits();
 	const [error, setError] = useState<string | null>(null);
 	const { isPending, mutate } = usePostCoupons();
@@ -46,8 +48,8 @@ export function CreateCouponForm() {
 						expiresAt,
 						maxUses: form.maxUses,
 						minOrderCents: form.minOrderCents,
-						unitId: form.unitId,
 						type: form.type,
+						unitId: form.unitId,
 						value: form.value,
 					},
 				},
@@ -74,6 +76,7 @@ export function CreateCouponForm() {
 			}}
 		>
 			<div className="grid gap-4 md:grid-cols-2">
+				{/* biome-ignore lint/a11y/noLabelWithoutControl: Input is a custom control nested in the label. */}
 				<label className="grid gap-2 font-medium text-sm">
 					<span>
 						{t("admin.coupons.form.code")} <RequiredMark />
@@ -114,7 +117,11 @@ export function CreateCouponForm() {
 			</CollapsibleFormSection>
 			<div className="flex items-center justify-between gap-4">
 				{error && <p className="text-destructive text-sm">{error}</p>}
-				<Button className="ml-auto" disabled={isPending || unitsPending || !localCode.trim() || form.value <= 0} type="submit">
+				<Button
+					className="ml-auto"
+					disabled={isPending || unitsPending || !localCode.trim() || form.value <= 0}
+					type="submit"
+				>
 					{isPending ? t("admin.coupons.create.submitting") : t("admin.coupons.create.submit")}
 				</Button>
 			</div>

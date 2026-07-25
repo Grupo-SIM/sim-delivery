@@ -200,53 +200,101 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 							placeholder="00000-000"
 							value={address.zipCode}
 						/>
-						{lookingUp && <span className="text-muted-foreground text-xs">{t("admin.units.address.searching")}</span>}
+						{lookingUp && (
+							<span className="text-muted-foreground text-xs">{t("admin.units.address.searching")}</span>
+						)}
 						{cepError && <span className="text-destructive text-xs">{cepError}</span>}
 					</Label>
 					<Label>
 						{t("admin.units.address.street")}
-						<Input onChange={event => setAddressField("addressLine", event.currentTarget.value)} placeholder={t("admin.units.address.streetPlaceholder")} value={address.addressLine} />
+						<Input
+							onChange={event => setAddressField("addressLine", event.currentTarget.value)}
+							placeholder={t("admin.units.address.streetPlaceholder")}
+							value={address.addressLine}
+						/>
 					</Label>
 					<div className="grid grid-cols-2 gap-4">
 						<Label>
 							{t("admin.units.address.number")}
-							<Input inputMode="numeric" onChange={event => setAddressField("number", event.currentTarget.value)} placeholder="123" value={address.number} />
+							<Input
+								inputMode="numeric"
+								onChange={event => setAddressField("number", event.currentTarget.value)}
+								placeholder="123"
+								value={address.number}
+							/>
 						</Label>
 						<Label>
 							{t("admin.units.address.complement")}
-							<Input onChange={event => setAddressField("complement", event.currentTarget.value)} placeholder={t("admin.units.address.complementPlaceholder")} value={address.complement} />
+							<Input
+								onChange={event => setAddressField("complement", event.currentTarget.value)}
+								placeholder={t("admin.units.address.complementPlaceholder")}
+								value={address.complement}
+							/>
 						</Label>
 					</div>
 					<Label>
 						{t("admin.units.address.neighborhood")}
-						<Input onChange={event => setAddressField("neighborhood", event.currentTarget.value)} placeholder={t("admin.units.address.neighborhoodPlaceholder")} value={address.neighborhood} />
+						<Input
+							onChange={event => setAddressField("neighborhood", event.currentTarget.value)}
+							placeholder={t("admin.units.address.neighborhoodPlaceholder")}
+							value={address.neighborhood}
+						/>
 					</Label>
 					<div className="grid grid-cols-[1fr_5rem] gap-4">
 						<Label>
 							{t("admin.units.address.city")}
-							<Input onChange={event => setAddressField("city", event.currentTarget.value)} placeholder={t("admin.units.address.cityPlaceholder")} value={address.city} />
+							<Input
+								onChange={event => setAddressField("city", event.currentTarget.value)}
+								placeholder={t("admin.units.address.cityPlaceholder")}
+								value={address.city}
+							/>
 						</Label>
 						<Label>
 							{t("admin.units.address.state")}
-							<Input maxLength={2} onChange={event => setAddressField("state", event.currentTarget.value.toUpperCase())} placeholder="SP" value={address.state} />
+							<Input
+								maxLength={2}
+								onChange={event => setAddressField("state", event.currentTarget.value.toUpperCase())}
+								placeholder="SP"
+								value={address.state}
+							/>
 						</Label>
 					</div>
 					<Label>
 						{t("admin.units.address.reference")}
-						<Input onChange={event => setAddressField("reference", event.currentTarget.value)} placeholder={t("admin.units.address.referencePlaceholder")} value={address.reference} />
+						<Input
+							onChange={event => setAddressField("reference", event.currentTarget.value)}
+							placeholder={t("admin.units.address.referencePlaceholder")}
+							value={address.reference}
+						/>
 					</Label>
 				</section>
 
 				<section className="space-y-4 border-border border-t pt-6">
 					<h2 className="font-semibold text-lg">{t("admin.units.banner.title")}</h2>
-					<MediaUrlInput asset="banner" onUploadError={() => void showAlert(t("admin.units.banner.uploadError"))} onValueChange={setBannerUrl} uploadLabel={t("admin.units.banner.upload")} value={bannerUrl} />
-					{bannerUrl && <img alt="" className="max-h-[min(60dvh,36rem)] w-full rounded object-contain" src={bannerUrl} />}
+					<MediaUrlInput
+						asset="banner"
+						onUploadError={() => void showAlert(t("admin.units.banner.uploadError"))}
+						onValueChange={setBannerUrl}
+						uploadLabel={t("admin.units.banner.upload")}
+						value={bannerUrl}
+					/>
+					{bannerUrl && (
+						<img alt="" className="max-h-[min(60dvh,36rem)] w-full rounded object-contain" src={bannerUrl} />
+					)}
 				</section>
 
 				<section className="space-y-4 border-border border-t pt-6">
 					<h2 className="font-semibold text-lg">{t("admin.units.image.title")}</h2>
-					<MediaUrlInput asset="unit" onUploadError={() => void showAlert(t("admin.units.image.uploadError"))} onValueChange={setImageUrl} uploadLabel={t("admin.units.image.upload")} value={imageUrl} />
-					{imageUrl && <img alt="" className="max-h-[min(60dvh,36rem)] w-full rounded object-contain" src={imageUrl} />}
+					<MediaUrlInput
+						asset="unit"
+						onUploadError={() => void showAlert(t("admin.units.image.uploadError"))}
+						onValueChange={setImageUrl}
+						uploadLabel={t("admin.units.image.upload")}
+						value={imageUrl}
+					/>
+					{imageUrl && (
+						<img alt="" className="max-h-[min(60dvh,36rem)] w-full rounded object-contain" src={imageUrl} />
+					)}
 				</section>
 
 				<div className="flex justify-end gap-2 pt-2">

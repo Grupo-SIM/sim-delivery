@@ -189,12 +189,22 @@ function makeUpdateStatusPrisma(order: {
 		items: unknown[];
 		deliveryMethod: string;
 		company: { orderStatusWhatsAppTemplates: Record<string, string> | null };
-		customer: { notificationEmail?: boolean; notificationWhatsApp?: boolean; phone: string | null; user: { email: string } };
+		customer: {
+			notificationEmail?: boolean;
+			notificationWhatsApp?: boolean;
+			phone: string | null;
+			user: { email: string };
+		};
 	} = {
 		...order,
 		cancelReason: null,
 		company: { orderStatusWhatsAppTemplates: order.templates ?? null },
-		customer: { notificationEmail: true, notificationWhatsApp: true, phone: order.phone ?? null, user: { email: "cliente@example.com" } },
+		customer: {
+			notificationEmail: true,
+			notificationWhatsApp: true,
+			phone: order.phone ?? null,
+			user: { email: "cliente@example.com" },
+		},
 		deliveryMethod: order.deliveryMethod ?? "delivery",
 		items: [],
 	};
@@ -232,10 +242,20 @@ describe("UpdateOrderStatus", () => {
 			id: "ord_1",
 			status: "recebido",
 		});
-		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "em_preparo" }, "kitchen");
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute(
+			"cmp_1",
+			"ord_1",
+			{ status: "em_preparo" },
+			"kitchen",
+		);
 		expect(stored.status).toBe("em_preparo");
 		await expect(
-			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "saiu_para_entrega" }, "kitchen"),
+			new UpdateOrderStatus(prisma, noopWhatsApp).execute(
+				"cmp_1",
+				"ord_1",
+				{ status: "saiu_para_entrega" },
+				"kitchen",
+			),
 		).rejects.toThrow("FORBIDDEN");
 	});
 
@@ -245,10 +265,20 @@ describe("UpdateOrderStatus", () => {
 			id: "ord_1",
 			status: "pronto",
 		});
-		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "saiu_para_entrega" }, "courier");
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute(
+			"cmp_1",
+			"ord_1",
+			{ status: "saiu_para_entrega" },
+			"courier",
+		);
 		expect(stored.status).toBe("saiu_para_entrega");
 		await expect(
-			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "em_preparo" }, "courier"),
+			new UpdateOrderStatus(prisma, noopWhatsApp).execute(
+				"cmp_1",
+				"ord_1",
+				{ status: "em_preparo" },
+				"courier",
+			),
 		).rejects.toThrow("FORBIDDEN");
 	});
 
@@ -284,9 +314,13 @@ describe("UpdateOrderStatus", () => {
 		stored.customer.notificationWhatsApp = false;
 		const messages: string[] = [];
 
-		await new UpdateOrderStatus(prisma, { sendOrderStatus: async () => void messages.push("sent") }).execute("cmp_1", "ord_1", {
-			status: "em_preparo",
-		});
+		await new UpdateOrderStatus(prisma, { sendOrderStatus: async () => void messages.push("sent") }).execute(
+			"cmp_1",
+			"ord_1",
+			{
+				status: "em_preparo",
+			},
+		);
 
 		expect(messages).toEqual([]);
 	});
@@ -362,9 +396,9 @@ function makeListOrdersPrisma() {
 		addressId: null,
 		cancelReason: null,
 		cashbackCentsRedeemed: 0,
-			companyId: "cmp_1",
-			coupon: null,
-			couponId: null,
+		companyId: "cmp_1",
+		coupon: null,
+		couponId: null,
 		createdAt: new Date("2024-01-01"),
 		customer: baseCustomer,
 		customerId: "cust_1",

@@ -11,7 +11,14 @@ import {
 	MaybeCustomerReturn,
 	UpdateNotificationPreferencesBody,
 } from "../../dtos";
-import { DeleteCustomerAddress, GetCustomer, GetMyCustomer, ListCustomers, UpdateNotificationPreferences, UpsertCustomer } from "../../useCases";
+import {
+	DeleteCustomerAddress,
+	GetCustomer,
+	GetMyCustomer,
+	ListCustomers,
+	UpdateNotificationPreferences,
+	UpsertCustomer,
+} from "../../useCases";
 
 export const CustomersController = new Elysia({
 	detail: { tags: ["Customers"] },

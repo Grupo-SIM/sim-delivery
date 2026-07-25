@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { LuChevronDown } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 
@@ -61,11 +61,13 @@ export function DashboardPeriodPicker({ datePicker, labels, onChange, period }: 
 				type="button"
 			>
 				{labels[period]}
-				<LuChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")} />
+				<LuChevronDown
+					className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")}
+				/>
 			</button>
 			{open && (
 				<div
-					className="absolute z-50 mt-2 max-h-80 w-full overflow-y-auto rounded-xl border border-border bg-popover py-1 shadow-medium scrollbar-themed"
+					className="scrollbar-themed absolute z-50 mt-2 max-h-80 w-full overflow-y-auto rounded-xl border border-border bg-popover py-1 shadow-medium"
 					role="listbox"
 				>
 					{dashboardPeriodValues.map(option => (

@@ -13,7 +13,12 @@ interface CreateProductTagsModalProps {
 	selectedTagIds: string[];
 }
 
-export function CreateProductTagsModal({ isOpen, onClose, onSave, selectedTagIds }: CreateProductTagsModalProps) {
+export function CreateProductTagsModal({
+	isOpen,
+	onClose,
+	onSave,
+	selectedTagIds,
+}: CreateProductTagsModalProps) {
 	const { t } = useTranslation();
 	const { data: tags, isPending } = useGetTags();
 	const [selectedIds, setSelectedIds] = useState<string[]>([]);

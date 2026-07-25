@@ -45,7 +45,12 @@ describe("CancelExpiredUnpaidOrders", () => {
 		]);
 		expect(statusEvents).toEqual([{ data: { orderId: "ord_1", status: "cancelado" } }]);
 		expect(notifications).toEqual([
-			["5511999999999", "cancelado", "ord_1", "Seu pedido ord_1 foi cancelado porque o pagamento não foi confirmado em até 1 hora."],
+			[
+				"5511999999999",
+				"cancelado",
+				"ord_1",
+				"Seu pedido ord_1 foi cancelado porque o pagamento não foi confirmado em até 1 hora.",
+			],
 		]);
 	});
 

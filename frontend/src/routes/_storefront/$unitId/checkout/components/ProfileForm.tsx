@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MaskedInput } from "@/components/ui/MaskedInput";
 import { Label } from "@/components/ui/label";
+import { MaskedInput } from "@/components/ui/MaskedInput";
 
 export interface ProfileValue {
 	cpf: string;

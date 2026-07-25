@@ -41,7 +41,9 @@ describe("GetCashbackBalance", () => {
 
 	it("returns 0 when no customer record exists yet", async () => {
 		const { prisma } = makePrisma({ customer: null });
-		await expect(new GetCashbackBalance(prisma).execute("user_1", "demo")).resolves.toEqual({ balanceCents: 0 });
+		await expect(new GetCashbackBalance(prisma).execute("user_1", "demo")).resolves.toEqual({
+			balanceCents: 0,
+		});
 	});
 
 	it("returns 0 when ledger is empty", async () => {

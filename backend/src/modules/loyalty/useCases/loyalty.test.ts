@@ -41,7 +41,9 @@ describe("GetLoyaltyBalance", () => {
 
 	it("returns 0 when no customer record exists yet", async () => {
 		const { prisma } = makePrisma({ customer: null });
-		await expect(new GetLoyaltyBalance(prisma).execute("user_1", "demo")).resolves.toEqual({ balancePoints: 0 });
+		await expect(new GetLoyaltyBalance(prisma).execute("user_1", "demo")).resolves.toEqual({
+			balancePoints: 0,
+		});
 	});
 
 	it("returns 0 when ledger is empty", async () => {

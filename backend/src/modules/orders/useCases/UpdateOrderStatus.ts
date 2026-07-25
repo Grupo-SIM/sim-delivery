@@ -125,7 +125,9 @@ export class UpdateOrderStatus {
 				await this.whatsApp.sendOrderStatus(phone, status, orderId, message).catch(() => {});
 			}
 			if (order.customer.notificationEmail !== false && order.customer.user.email) {
-				await new OrderStatusEmail({ message, orderId, status, to: order.customer.user.email }).send().catch(() => {});
+				await new OrderStatusEmail({ message, orderId, status, to: order.customer.user.email })
+					.send()
+					.catch(() => {});
 			}
 		}
 

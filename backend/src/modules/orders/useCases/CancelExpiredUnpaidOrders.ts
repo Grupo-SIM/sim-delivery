@@ -56,9 +56,14 @@ export class CancelExpiredUnpaidOrders {
 					await this.whatsApp.sendOrderStatus(phone, "cancelado", order.id, message).catch(() => {});
 				}
 				if (order.customer.notificationEmail !== false && order.customer.user?.email) {
-					await new OrderStatusEmail({ message, orderId: order.id, status: "cancelado", to: order.customer.user.email }).send().catch(
-						() => {},
-					);
+					await new OrderStatusEmail({
+						message,
+						orderId: order.id,
+						status: "cancelado",
+						to: order.customer.user.email,
+					})
+						.send()
+						.catch(() => {});
 				}
 			} catch (error) {
 				console.error(`Failed to cancel expired unpaid order ${order.id}`, error);

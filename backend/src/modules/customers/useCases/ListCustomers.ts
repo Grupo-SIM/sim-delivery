@@ -29,13 +29,13 @@ export class ListCustomers {
 			...(companyId ? { companyId } : {}),
 			...(search
 				? {
-					OR: [
-						{ cpf: { contains: search } },
-						{ phone: { contains: search } },
-						{ user: { email: { contains: search, mode: "insensitive" } } },
-						{ user: { name: { contains: search, mode: "insensitive" } } },
-					],
-				}
+						OR: [
+							{ cpf: { contains: search } },
+							{ phone: { contains: search } },
+							{ user: { email: { contains: search, mode: "insensitive" } } },
+							{ user: { name: { contains: search, mode: "insensitive" } } },
+						],
+					}
 				: {}),
 		};
 

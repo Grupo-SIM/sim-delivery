@@ -42,11 +42,17 @@ export function CustomersTable({ customers }: CustomersTableProps) {
 						<td className="px-4 py-3 text-sm">{customer.orderCount}</td>
 						<td className="px-4 py-3 text-sm">{currency(customer.totalSpent)}</td>
 						<td className="px-4 py-3 text-sm">
-							{customer.lastOrderAt ? new Date(customer.lastOrderAt).toLocaleDateString("pt-BR") : t("admin.customers.none")}
+							{customer.lastOrderAt
+								? new Date(customer.lastOrderAt).toLocaleDateString("pt-BR")
+								: t("admin.customers.none")}
 						</td>
 						<td className="px-4 py-3 text-right">
 							<Link
-								className={buttonClassName({ className: "inline-flex gap-2", size: "sm", variant: "outline" })}
+								className={buttonClassName({
+									className: "inline-flex gap-2",
+									size: "sm",
+									variant: "outline",
+								})}
 								params={{ customerId: customer.id }}
 								to="/admin/customers/$customerId"
 							>

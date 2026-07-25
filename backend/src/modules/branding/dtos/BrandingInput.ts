@@ -45,14 +45,14 @@ export type OrderStatusWhatsAppTemplates = typeof OrderStatusWhatsAppTemplates.s
 
 export const UpdateBrandingBody = t.Object({
 	allowThemeToggle: t.Optional(t.Boolean()),
-	footerFacebookUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
-	footerInstagramUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
-	footerPaymentMethods: t.Optional(t.Array(t.String({ maxLength: 100 }), { maxItems: 10 })),
-	footerSupportEmail: t.Optional(t.String({ format: "email", maxLength: 320 })),
 	fontDisplay: t.Optional(t.String({ maxLength: 100 })),
 	fontDisplayUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
 	fontFamily: t.Optional(t.String({ maxLength: 100 })),
 	fontFamilyUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
+	footerFacebookUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
+	footerInstagramUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
+	footerPaymentMethods: t.Optional(t.Array(t.String({ maxLength: 100 }), { maxItems: 10 })),
+	footerSupportEmail: t.Optional(t.String({ format: "email", maxLength: 320 })),
 	footerText: t.Optional(t.String({ maxLength: 500 })),
 	footerWhatsApp: t.Optional(t.String({ maxLength: 30 })),
 	ga4Id: t.Optional(t.String({ maxLength: 50 })),

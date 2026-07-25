@@ -9,4 +9,3 @@ export const mailer = nodemailer.createTransport({
 	port: Number(process.env.MAIL_PORT),
 	secure: Number(process.env.MAIL_PORT) === 465,
 });
-

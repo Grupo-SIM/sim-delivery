@@ -31,34 +31,37 @@ export function CouponFormFields({
 
 	return (
 		<>
-			{showBasics && <div className="grid gap-4 md:grid-cols-2">
-				<label className="grid gap-2 font-medium text-sm">
-					<span>
-						{t("admin.coupons.form.code")} <RequiredMark />
-					</span>
-					<Input
-						onBlur={onCodeBlur}
-						onChange={event => onCodeChange(event.currentTarget.value.toUpperCase())}
-						placeholder={t("admin.coupons.form.codePlaceholder")}
-						required
-						value={code}
-					/>
-				</label>
+			{showBasics && (
+				<div className="grid gap-4 md:grid-cols-2">
+					{/* biome-ignore lint/a11y/noLabelWithoutControl: Input is a custom control nested in the label. */}
+					<label className="grid gap-2 font-medium text-sm">
+						<span>
+							{t("admin.coupons.form.code")} <RequiredMark />
+						</span>
+						<Input
+							onBlur={onCodeBlur}
+							onChange={event => onCodeChange(event.currentTarget.value.toUpperCase())}
+							placeholder={t("admin.coupons.form.codePlaceholder")}
+							required
+							value={code}
+						/>
+					</label>
 
-				<div className="grid gap-2 font-medium text-sm">
-					<span>
-						{t("admin.coupons.form.type")} <RequiredMark />
-					</span>
-					<CustomSelect
-						onChange={type => onChange({ type: type as CouponFormState["type"], value: 0 })}
-						options={[
-							{ label: t("admin.coupons.types.percent"), value: "percent" },
-							{ label: t("admin.coupons.types.fixed"), value: "fixed" },
-						]}
-						value={value.type}
-					/>
+					<div className="grid gap-2 font-medium text-sm">
+						<span>
+							{t("admin.coupons.form.type")} <RequiredMark />
+						</span>
+						<CustomSelect
+							onChange={type => onChange({ type: type as CouponFormState["type"], value: 0 })}
+							options={[
+								{ label: t("admin.coupons.types.percent"), value: "percent" },
+								{ label: t("admin.coupons.types.fixed"), value: "fixed" },
+							]}
+							value={value.type}
+						/>
+					</div>
 				</div>
-			</div>}
+			)}
 
 			<div className="grid gap-4 md:grid-cols-2">
 				<div className="grid gap-2 font-medium text-sm">
@@ -94,7 +97,9 @@ export function CouponFormFields({
 				<div className="grid gap-2 font-medium text-sm">
 					<span>{t("admin.coupons.form.minOrder")}</span>
 					<NumericInput
-						onValueChange={({ floatValue }) => onChange({ minOrderCents: Math.round((floatValue ?? 0) * 100) })}
+						onValueChange={({ floatValue }) =>
+							onChange({ minOrderCents: Math.round((floatValue ?? 0) * 100) })
+						}
 						placeholder="R$ 50,00"
 						prefix="R$ "
 						value={value.minOrderCents / 100}
@@ -105,7 +110,9 @@ export function CouponFormFields({
 					<span>{t("admin.coupons.form.maxUses")}</span>
 					<NumericInput
 						decimalScale={0}
-						onValueChange={({ floatValue }) => onChange({ maxUses: floatValue ? Math.round(floatValue) : null })}
+						onValueChange={({ floatValue }) =>
+							onChange({ maxUses: floatValue ? Math.round(floatValue) : null })
+						}
 						placeholder={t("admin.coupons.form.maxUsesPlaceholder")}
 						value={value.maxUses ?? 0}
 					/>

@@ -20,8 +20,8 @@ const baseOrder: OrderRow = {
 };
 
 const baseBody = {
-	companyId: "cmp_1",
 	comment: "Muito saboroso",
+	companyId: "cmp_1",
 	customerId: "cust_1",
 	orderId: "order_1",
 	productId: "prod_1",

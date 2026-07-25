@@ -52,7 +52,20 @@ describe("getOrdersByPeriod", () => {
 
 	it("creates all months and quarters", () => {
 		const months = getOrdersByPeriod(orders, "month", new Date(2026, 0, 1), now);
-		expect(months.map(item => item.label)).toEqual(["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]);
+		expect(months.map(item => item.label)).toEqual([
+			"Jan",
+			"Fev",
+			"Mar",
+			"Abr",
+			"Mai",
+			"Jun",
+			"Jul",
+			"Ago",
+			"Set",
+			"Out",
+			"Nov",
+			"Dez",
+		]);
 		expect(months[0].orderCount).toBe(1);
 		expect(months[3].orderCount).toBe(1);
 

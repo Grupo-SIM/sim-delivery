@@ -103,7 +103,10 @@ function OrderTrackingPage() {
 
 	return (
 		<Container className="max-w-lg space-y-6 py-8">
-			<SectionHeading subtitle={t("store.checkout.tracking.subtitle")} title={t("store.checkout.tracking.title")} />
+			<SectionHeading
+				subtitle={t("store.checkout.tracking.subtitle")}
+				title={t("store.checkout.tracking.title")}
+			/>
 
 			{order.status === "cancelado" ? (
 				<div className="space-y-2 rounded-lg border border-destructive/40 bg-destructive/5 p-5">
@@ -115,10 +118,12 @@ function OrderTrackingPage() {
 				</div>
 			) : (
 				<>
-					<div className="flex animate-in items-start gap-3 rounded-lg border border-primary/30 bg-primary/5 p-5 fade-in slide-in-from-bottom-2 duration-500">
+					<div className="fade-in slide-in-from-bottom-2 flex animate-in items-start gap-3 rounded-lg border border-primary/30 bg-primary/5 p-5 duration-500">
 						<CurrentIcon className="mt-0.5 size-6 animate-pulse text-primary" />
 						<div className="space-y-1">
-							<p className="font-semibold">{current ? t(current.title) : t("store.checkout.tracking.status.awaiting_payment")}</p>
+							<p className="font-semibold">
+								{current ? t(current.title) : t("store.checkout.tracking.status.awaiting_payment")}
+							</p>
 							<p className="text-muted-foreground text-sm">{currentDescription}</p>
 						</div>
 					</div>
@@ -130,15 +135,27 @@ function OrderTrackingPage() {
 							const complete = stageIndex >= index;
 							const statusTime = complete ? formatStatusTime(eventByStatus.get(status)) : null;
 							return (
-								<li className="flex animate-in gap-3 fade-in slide-in-from-left-2 duration-500" key={status} style={{ animationDelay: `${index * 90}ms`, animationFillMode: "both" }}>
+								<li
+									className="fade-in slide-in-from-left-2 flex animate-in gap-3 duration-500"
+									key={status}
+									style={{ animationDelay: `${index * 90}ms`, animationFillMode: "both" }}
+								>
 									<div className="flex flex-col items-center">
-										<div className={`grid size-7 place-items-center rounded-full transition-all duration-500 ${complete ? "scale-105 bg-primary text-primary-foreground shadow-sm" : "bg-muted text-muted-foreground"}`}>
+										<div
+											className={`grid size-7 place-items-center rounded-full transition-all duration-500 ${complete ? "scale-105 bg-primary text-primary-foreground shadow-sm" : "bg-muted text-muted-foreground"}`}
+										>
 											<Icon className="size-4" />
 										</div>
-										{index < stages.length - 1 && <div className={`h-10 w-px ${stageIndex > index ? "bg-primary" : "bg-border"}`} />}
+										{index < stages.length - 1 && (
+											<div className={`h-10 w-px ${stageIndex > index ? "bg-primary" : "bg-border"}`} />
+										)}
 									</div>
-									<div className="pb-4 pt-0.5">
-										<p className={`font-medium text-sm ${complete ? "text-foreground" : "text-muted-foreground"}`}>{t(copy.title)}</p>
+									<div className="pt-0.5 pb-4">
+										<p
+											className={`font-medium text-sm ${complete ? "text-foreground" : "text-muted-foreground"}`}
+										>
+											{t(copy.title)}
+										</p>
 										{statusTime && <p className="mt-1 text-muted-foreground text-xs">{statusTime}</p>}
 									</div>
 								</li>
@@ -161,18 +178,25 @@ function OrderTrackingPage() {
 
 			<section className="space-y-3 rounded-lg border border-border bg-card p-5">
 				<div className="flex items-center justify-between">
-					<div className="flex items-center gap-2 font-semibold"><LuShoppingBag className="size-4" /> {order.unitName}</div>
+					<div className="flex items-center gap-2 font-semibold">
+						<LuShoppingBag className="size-4" /> {order.unitName}
+					</div>
 					<span className="font-semibold">{formatMoney(order.total / 100)}</span>
 				</div>
 				<p className="font-medium text-sm">{t("store.checkout.tracking.items")}</p>
 				<ul className="space-y-2 text-muted-foreground text-sm">
 					{order.items.map(item => (
-						<li className="[overflow-wrap:anywhere]" key={item.id}>{item.quantity}x {item.productName}{item.note ? ` - ${item.note}` : ""}</li>
+						<li className="[overflow-wrap:anywhere]" key={item.id}>
+							{item.quantity}x {item.productName}
+							{item.note ? ` - ${item.note}` : ""}
+						</li>
 					))}
 				</ul>
 			</section>
 
-			<p className="flex items-center justify-center gap-2 text-muted-foreground text-xs"><LuClock3 className="size-3" /> {t("store.checkout.tracking.refreshing")}</p>
+			<p className="flex items-center justify-center gap-2 text-muted-foreground text-xs">
+				<LuClock3 className="size-3" /> {t("store.checkout.tracking.refreshing")}
+			</p>
 		</Container>
 	);
 }

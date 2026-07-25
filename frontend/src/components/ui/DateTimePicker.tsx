@@ -2,8 +2,8 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { LuCalendarDays, LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import { cn } from "@/lib/utils";
-import { MaskedInput } from "./MaskedInput";
 import { Button } from "./button";
+import { MaskedInput } from "./MaskedInput";
 
 interface DateTimePickerProps {
 	className?: string;
@@ -62,7 +62,12 @@ function monthLabel(date: Date) {
 	return new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(date);
 }
 
-export function DateTimePicker({ className, onChange, placeholder = "dd/mm/aaaa hh:mm", value }: DateTimePickerProps) {
+export function DateTimePicker({
+	className,
+	onChange,
+	placeholder = "dd/mm/aaaa hh:mm",
+	value,
+}: DateTimePickerProps) {
 	const inputId = useId();
 	const fieldRef = useRef<HTMLDivElement>(null);
 	const triggerRef = useRef<HTMLButtonElement>(null);
@@ -74,12 +79,17 @@ export function DateTimePicker({ className, onChange, placeholder = "dd/mm/aaaa 
 		const date = parsedValue ?? new Date();
 		return new Date(date.getFullYear(), date.getMonth(), 1);
 	});
-	const [time, setTime] = useState(() => (parsedValue ? `${value.slice(8, 10)}:${value.slice(10, 12)}` : "23:59"));
+	const [time, setTime] = useState(() =>
+		parsedValue ? `${value.slice(8, 10)}:${value.slice(10, 12)}` : "23:59",
+	);
 	const isInvalid = value.length > 0 && !parsedValue;
 	const days = useMemo(() => {
 		const firstDay = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1).getDay();
 		const totalDays = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
-		return Array.from({ length: Math.ceil((firstDay + totalDays) / 7) * 7 }, (_, index) => index - firstDay + 1);
+		return Array.from(
+			{ length: Math.ceil((firstDay + totalDays) / 7) * 7 },
+			(_, index) => index - firstDay + 1,
+		);
 	}, [calendarMonth]);
 
 	function openPicker() {
@@ -95,7 +105,13 @@ export function DateTimePicker({ className, onChange, placeholder = "dd/mm/aaaa 
 
 	function selectDay(day: number) {
 		const [hours = "23", minutes = "59"] = time.split(":");
-		const date = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day, Number(hours), Number(minutes));
+		const date = new Date(
+			calendarMonth.getFullYear(),
+			calendarMonth.getMonth(),
+			day,
+			Number(hours),
+			Number(minutes),
+		);
 		onChange(toDigits(date));
 		setOpen(false);
 	}
@@ -114,7 +130,11 @@ export function DateTimePicker({ className, onChange, placeholder = "dd/mm/aaaa 
 		if (!open) return;
 
 		function closeOnOutsideClick(event: MouseEvent) {
-			if (!triggerRef.current?.contains(event.target as Node) && !popupRef.current?.contains(event.target as Node)) setOpen(false);
+			if (
+				!triggerRef.current?.contains(event.target as Node) &&
+				!popupRef.current?.contains(event.target as Node)
+			)
+				setOpen(false);
 		}
 
 		function closeOnEscape(event: KeyboardEvent) {
@@ -145,7 +165,7 @@ export function DateTimePicker({ className, onChange, placeholder = "dd/mm/aaaa 
 				/>
 				<button
 					aria-label="Selecionar data e hora"
-					className="absolute inset-y-0 right-0 flex w-11 cursor-pointer items-center justify-center rounded-r-md border-l border-input text-muted-foreground hover:bg-accent hover:text-foreground"
+					className="absolute inset-y-0 right-0 flex w-11 cursor-pointer items-center justify-center rounded-r-md border-input border-l text-muted-foreground hover:bg-accent hover:text-foreground"
 					onClick={openPicker}
 					ref={triggerRef}
 					type="button"
@@ -153,7 +173,11 @@ export function DateTimePicker({ className, onChange, placeholder = "dd/mm/aaaa 
 					<LuCalendarDays className="h-4 w-4" />
 				</button>
 			</div>
-			{isInvalid && <p className="mt-1 text-destructive text-xs" id={`${inputId}-error`}>Informe uma data e hora válidas.</p>}
+			{isInvalid && (
+				<p className="mt-1 text-destructive text-xs" id={`${inputId}-error`}>
+					Informe uma data e hora válidas.
+				</p>
+			)}
 
 			{open &&
 				createPortal(
@@ -163,24 +187,52 @@ export function DateTimePicker({ className, onChange, placeholder = "dd/mm/aaaa 
 						style={{ left: popupPosition.left, position: "fixed", top: popupPosition.top, zIndex: 9999 }}
 					>
 						<div className="mb-3 flex items-center justify-between">
-							<Button aria-label="Mês anterior" onClick={() => setCalendarMonth(month => new Date(month.getFullYear(), month.getMonth() - 1, 1))} size="icon" type="button" variant="outline">
+							<Button
+								aria-label="Mês anterior"
+								onClick={() =>
+									setCalendarMonth(month => new Date(month.getFullYear(), month.getMonth() - 1, 1))
+								}
+								size="icon"
+								type="button"
+								variant="outline"
+							>
 								<LuChevronLeft className="h-4 w-4" />
 							</Button>
-							<strong className="capitalize text-sm">{monthLabel(calendarMonth)}</strong>
-							<Button aria-label="Próximo mês" onClick={() => setCalendarMonth(month => new Date(month.getFullYear(), month.getMonth() + 1, 1))} size="icon" type="button" variant="outline">
+							<strong className="text-sm capitalize">{monthLabel(calendarMonth)}</strong>
+							<Button
+								aria-label="Próximo mês"
+								onClick={() =>
+									setCalendarMonth(month => new Date(month.getFullYear(), month.getMonth() + 1, 1))
+								}
+								size="icon"
+								type="button"
+								variant="outline"
+							>
 								<LuChevronRight className="h-4 w-4" />
 							</Button>
 						</div>
 						<div className="grid grid-cols-7 gap-1 text-center text-muted-foreground text-xs">
-							{["D", "S", "T", "Q", "Q", "S", "S"].map((day, index) => <span key={`${day}-${index}`}>{day}</span>)}
+							{["D", "S", "T", "Q", "Q", "S", "S"].map((day, index) => (
+								<span key={`${day}-${index}`}>{day}</span>
+							))}
 						</div>
 						<div className="mt-1 grid grid-cols-7 gap-1">
 							{days.map((day, index) => {
-								const inMonth = day > 0 && day <= new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
-								const selected = inMonth && parsedValue?.getFullYear() === calendarMonth.getFullYear() && parsedValue.getMonth() === calendarMonth.getMonth() && parsedValue.getDate() === day;
+								const inMonth =
+									day > 0 &&
+									day <= new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
+								const selected =
+									inMonth &&
+									parsedValue?.getFullYear() === calendarMonth.getFullYear() &&
+									parsedValue.getMonth() === calendarMonth.getMonth() &&
+									parsedValue.getDate() === day;
 								return (
 									<button
-										className={cn("h-9 rounded text-sm", inMonth ? "cursor-pointer hover:bg-accent" : "cursor-default", selected && "bg-primary font-semibold text-primary-foreground hover:bg-primary")}
+										className={cn(
+											"h-9 rounded text-sm",
+											inMonth ? "cursor-pointer hover:bg-accent" : "cursor-default",
+											selected && "bg-primary font-semibold text-primary-foreground hover:bg-primary",
+										)}
 										disabled={!inMonth}
 										key={index}
 										onClick={() => inMonth && selectDay(day)}
@@ -191,6 +243,7 @@ export function DateTimePicker({ className, onChange, placeholder = "dd/mm/aaaa 
 								);
 							})}
 						</div>
+						{/* biome-ignore lint/a11y/noLabelWithoutControl: MaskedInput is a custom control nested in the label. */}
 						<label className="mt-3 grid gap-1 font-medium text-sm">
 							Hora
 							<MaskedInput

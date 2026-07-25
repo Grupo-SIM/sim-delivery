@@ -9,7 +9,14 @@ import {
 	UpdateCourierUnitsBody,
 	UpdateStaffRoleBody,
 } from "../../dtos";
-import { InviteStaff, ListCouriers, ListStaff, RemoveStaff, UpdateCourierUnits, UpdateStaffRole } from "../../useCases";
+import {
+	InviteStaff,
+	ListCouriers,
+	ListStaff,
+	RemoveStaff,
+	UpdateCourierUnits,
+	UpdateStaffRole,
+} from "../../useCases";
 
 export const StaffController = new Elysia({
 	detail: {
@@ -74,7 +81,11 @@ export const StaffController = new Elysia({
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "staff", "setRole");
 
-					return updateCourierUnits.execute({ ...body, companyId: scope.companyId, courierId: params.courierId });
+					return updateCourierUnits.execute({
+						...body,
+						companyId: scope.companyId,
+						courierId: params.courierId,
+					});
 				},
 				{
 					body: UpdateCourierUnitsBody,

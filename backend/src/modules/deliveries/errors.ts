@@ -12,8 +12,8 @@ export const DeliveryErrors = createEnumFromArray([
 ]);
 
 export const DeliveryErrorsStatusCodes: Record<keyof typeof DeliveryErrors, StatusCodes> = {
-	DELIVERY_NOT_FOUND: StatusCodes.NOT_FOUND,
 	COURIER_NOT_AVAILABLE: StatusCodes.UNPROCESSABLE_ENTITY,
+	DELIVERY_NOT_FOUND: StatusCodes.NOT_FOUND,
 	FORBIDDEN_COURIER: StatusCodes.FORBIDDEN,
 	INVALID_TRANSITION: StatusCodes.UNPROCESSABLE_ENTITY,
 	ORDER_ALREADY_ASSIGNED: StatusCodes.CONFLICT,

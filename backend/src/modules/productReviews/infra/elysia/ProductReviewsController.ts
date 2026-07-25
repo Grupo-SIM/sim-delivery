@@ -1,8 +1,13 @@
 import Elysia from "elysia";
 import { AuthGuard, CompanyScopeGuard } from "@/modules/users/guards";
-import { prisma } from "@/shared/infra/sql";
 import { DomainError } from "@/shared/errors";
-import { CreateProductReviewBody, ListProductReviewsQuery, ProductReviewListReturn, ProductReviewReturn } from "../../dtos";
+import { prisma } from "@/shared/infra/sql";
+import {
+	CreateProductReviewBody,
+	ListProductReviewsQuery,
+	ProductReviewListReturn,
+	ProductReviewReturn,
+} from "../../dtos";
 import { ProductReviewErrors } from "../../errors";
 import { CreateProductReview, ListProductReviews } from "../../useCases";
 

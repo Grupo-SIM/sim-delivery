@@ -4,12 +4,12 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Container } from "@/components/ui/Container";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Input } from "@/components/ui/input";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
-import { CustomSelect } from "@/components/ui/CustomSelect";
 import { getOrdersQueryKey, useGetOrders, useGetUnits, usePostOrdersCloseDay } from "@/lib/api";
 import { isOperationalStaff } from "@/lib/staff-guard";
 import { showToast, useAuthStore } from "@/stores";
@@ -110,7 +110,14 @@ function OrdersPage() {
 				</label>
 				<div className="space-y-1">
 					<span className="font-medium text-sm">Unidade</span>
-					<CustomSelect onChange={setUnitId} options={[{ label: "Todas as unidades", value: "" }, ...(unitsQuery.data?.map(unit => ({ label: unit.name, value: unit.id })) ?? [])]} value={unitId} />
+					<CustomSelect
+						onChange={setUnitId}
+						options={[
+							{ label: "Todas as unidades", value: "" },
+							...(unitsQuery.data?.map(unit => ({ label: unit.name, value: unit.id })) ?? []),
+						]}
+						value={unitId}
+					/>
 				</div>
 			</div>
 

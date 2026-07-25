@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from "bun:test";
-import { MagicLinkEmail, OrderStatusEmail, ResetPasswordEmail, type EmailTransport } from ".";
+import { type EmailTransport, MagicLinkEmail, OrderStatusEmail, ResetPasswordEmail } from ".";
 
 function fakeTransport() {
-	const messages: Array<Record<string, unknown>> = [];
+	const messages: Record<string, unknown>[] = [];
 	const transport: EmailTransport = {
 		sendMail: async message => {
 			messages.push(message);
@@ -19,7 +19,11 @@ describe("email classes", () => {
 	it("centralizes the sender and sends a reset-password email", async () => {
 		const { messages, transport } = fakeTransport();
 
-		const email = new ResetPasswordEmail({ name: "Maria", to: "maria@example.com", url: "https://example.com/reset" });
+		const email = new ResetPasswordEmail({
+			name: "Maria",
+			to: "maria@example.com",
+			url: "https://example.com/reset",
+		});
 		Object.defineProperty(email, "transport", { value: transport });
 		await email.send();
 

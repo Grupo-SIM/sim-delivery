@@ -22,7 +22,9 @@ export class GetBestSellers {
 					...(companyId ? { companyId } : {}),
 					status: { in: COMPLETED },
 					...(unitId ? { unitId } : {}),
-					...(since || until ? { createdAt: { ...(since ? { gte: since } : {}), ...(until ? { lt: until } : {}) } } : {}),
+					...(since || until
+						? { createdAt: { ...(since ? { gte: since } : {}), ...(until ? { lt: until } : {}) } }
+						: {}),
 				},
 			},
 		});

@@ -1,6 +1,6 @@
 export { CartBar } from "./CartBar";
-export { DesktopCart } from "./DesktopCart";
 export { DeliveryMethodSelector } from "./DeliveryMethodSelector";
+export { DesktopCart } from "./DesktopCart";
 export { InfoPill } from "./InfoPill";
 export { MenuBrowser } from "./MenuBrowser";
 export { OptionImagePreviewModal } from "./OptionImagePreviewModal";
@@ -9,6 +9,6 @@ export { PromotionalCarousel } from "./PromotionalCarousel";
 export { StoreHoursModal } from "./StoreHoursModal";
 export { StoreToolbar } from "./StoreToolbar";
 export { UnitBanner } from "./UnitBanner";
-export { UnitStoreSkeleton } from "./UnitStoreSkeleton";
 export { UnitReviews } from "./UnitReviews";
+export { UnitStoreSkeleton } from "./UnitStoreSkeleton";
 export { UnitSwitcher } from "./UnitSwitcher";

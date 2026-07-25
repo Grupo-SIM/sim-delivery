@@ -1,7 +1,14 @@
 import ky from "ky";
 import { branding } from "@/lib/branding";
 
-export type MediaAsset = "banner" | "font-display" | "font-family" | "logo" | "product" | "promotion" | "unit";
+export type MediaAsset =
+	| "banner"
+	| "font-display"
+	| "font-family"
+	| "logo"
+	| "product"
+	| "promotion"
+	| "unit";
 
 export async function uploadMedia(asset: MediaAsset, file: File): Promise<string> {
 	const data = new FormData();

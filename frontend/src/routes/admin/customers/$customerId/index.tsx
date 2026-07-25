@@ -1,4 +1,4 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { LuArrowLeft } from "react-icons/lu";
 import { buttonClassName } from "@/components/ui/button";
@@ -16,17 +16,28 @@ function CustomerDetailPage() {
 	const ordersQuery = useGetOrders({ customerId });
 
 	if (customerQuery.isPending || ordersQuery.isPending) {
-		return <Container className="py-8"><Skeleton className="h-80 w-full" /></Container>;
+		return (
+			<Container className="py-8">
+				<Skeleton className="h-80 w-full" />
+			</Container>
+		);
 	}
 
 	if (customerQuery.isError || ordersQuery.isError) {
-		return <Container className="py-8"><ErrorState title={t("admin.customers.detail.loadError")} /></Container>;
+		return (
+			<Container className="py-8">
+				<ErrorState title={t("admin.customers.detail.loadError")} />
+			</Container>
+		);
 	}
 
 	const customer = customerQuery.data;
 	return (
 		<Container className="space-y-6 py-8">
-			<Link className={buttonClassName({ className: "inline-flex gap-2", size: "sm", variant: "outline" })} to="/admin/customers">
+			<Link
+				className={buttonClassName({ className: "inline-flex gap-2", size: "sm", variant: "outline" })}
+				to="/admin/customers"
+			>
 				<LuArrowLeft className="size-4" />
 				{t("admin.customers.detail.back")}
 			</Link>

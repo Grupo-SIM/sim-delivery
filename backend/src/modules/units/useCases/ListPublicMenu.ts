@@ -34,7 +34,7 @@ export class ListPublicMenu {
 						categories: { include: { category: true } },
 						optionGroups: {
 							include: {
-							options: { orderBy: { sortOrder: "asc" } },
+								options: { orderBy: { sortOrder: "asc" } },
 							},
 							orderBy: { sortOrder: "asc" },
 						},
@@ -172,11 +172,11 @@ export class ListPublicMenu {
 					})),
 					popularity: product.popularity,
 					priceCents: basePriceCents,
-					regularPriceCents,
 					productId: product.id,
 					productSlug: product.slug,
 					ratingAverage: rating?._avg.rating ?? null,
 					ratingCount: rating?._count.rating ?? 0,
+					regularPriceCents,
 					tags,
 					title: product.title,
 				});

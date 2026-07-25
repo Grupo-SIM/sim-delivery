@@ -25,14 +25,20 @@ export function CustomerTopProducts({ orders }: CustomerTopProductsProps) {
 		<section className="space-y-3">
 			<h2 className="font-semibold text-lg">{t("admin.customers.detail.topProducts")}</h2>
 			{products.length === 0 ? (
-				<p className="rounded-lg border border-border bg-card p-4 text-muted-foreground text-sm">{t("admin.customers.detail.emptyTopProducts")}</p>
+				<p className="rounded-lg border border-border bg-card p-4 text-muted-foreground text-sm">
+					{t("admin.customers.detail.emptyTopProducts")}
+				</p>
 			) : (
 				<ol className="divide-y divide-border rounded-lg border border-border bg-card">
 					{products.map((product, index) => (
 						<li className="flex items-center gap-3 px-4 py-3" key={product.name}>
-							<span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary/10 font-semibold text-primary text-xs">{index + 1}</span>
+							<span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary/10 font-semibold text-primary text-xs">
+								{index + 1}
+							</span>
 							<span className="min-w-0 flex-1 break-words font-medium text-sm">{product.name}</span>
-							<span className="shrink-0 text-muted-foreground text-sm">{t("admin.customers.detail.productQuantity", { count: product.quantity })}</span>
+							<span className="shrink-0 text-muted-foreground text-sm">
+								{t("admin.customers.detail.productQuantity", { count: product.quantity })}
+							</span>
 						</li>
 					))}
 				</ol>

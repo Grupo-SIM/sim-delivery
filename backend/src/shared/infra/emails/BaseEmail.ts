@@ -2,13 +2,22 @@ import { emailBranding } from "@/shared/infra/branding";
 import { mailer } from "@/shared/infra/mail";
 
 export interface EmailTransport {
-	sendMail(message: { from: string; html?: string; subject: string; text: string; to: string }): Promise<unknown>;
+	sendMail(message: {
+		from: string;
+		html?: string;
+		subject: string;
+		text: string;
+		to: string;
+	}): Promise<unknown>;
 }
 
 export abstract class BaseEmail {
 	protected readonly to: string;
 
-	protected constructor(to: string, protected readonly transport: EmailTransport = mailer) {
+	protected constructor(
+		to: string,
+		protected readonly transport: EmailTransport = mailer,
+	) {
 		this.to = to;
 	}
 

@@ -19,7 +19,9 @@ export class AssignDelivery {
 			where: { companyId: order.companyId, id: courierId, role: "courier" },
 		});
 		const courierUnit = courier
-			? await this.prisma.courierUnit.findUnique({ where: { courierId_unitId: { courierId, unitId: order.unitId } } })
+			? await this.prisma.courierUnit.findUnique({
+					where: { courierId_unitId: { courierId, unitId: order.unitId } },
+				})
 			: null;
 		if (!courierUnit) throw new DomainError(DeliveryErrors.COURIER_NOT_AVAILABLE);
 

@@ -18,8 +18,8 @@ const baseOrder: OrderRow = {
 };
 
 const baseBody = {
-	companyId: "cmp_1",
 	comment: "Chegou quentinha",
+	companyId: "cmp_1",
 	customerId: "cust_1",
 	orderId: "order_1",
 	rating: 5,
@@ -102,8 +102,12 @@ describe("CreateReview", () => {
 	it("rejects ratings outside 1..5", async () => {
 		const { prisma } = makeCreatePrisma();
 
-		await expect(new CreateReview(prisma).execute({ ...baseBody, rating: 0 })).rejects.toThrow("INVALID_RATING");
-		await expect(new CreateReview(prisma).execute({ ...baseBody, rating: 6 })).rejects.toThrow("INVALID_RATING");
+		await expect(new CreateReview(prisma).execute({ ...baseBody, rating: 0 })).rejects.toThrow(
+			"INVALID_RATING",
+		);
+		await expect(new CreateReview(prisma).execute({ ...baseBody, rating: 6 })).rejects.toThrow(
+			"INVALID_RATING",
+		);
 	});
 
 	it("accepts the boundary ratings", async () => {

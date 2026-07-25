@@ -24,7 +24,7 @@ export function DashboardOrdersByPeriodChart({
 		<section>
 			<div className="mb-3 flex min-h-11 flex-wrap items-center justify-between gap-2">
 				<h2 className="font-semibold text-base">{title}</h2>
-				<div aria-label={selectLabel} className="w-44">
+				<div className="w-44">
 					<CustomSelect
 						className="h-9"
 						onChange={value => onGroupByChange(value as GetReportsDashboardAnalytics200GroupByEnumKey)}
@@ -42,7 +42,6 @@ export function DashboardOrdersByPeriodChart({
 						return (
 							<div className="group flex h-full min-w-5 flex-1 flex-col justify-end" key={item.key}>
 								<div
-									aria-label={`${item.label}: ${orderCount}`}
 									className="w-full rounded-t-sm bg-primary transition-colors group-hover:bg-primary/75"
 									style={{ height: `${height}%` }}
 								/>

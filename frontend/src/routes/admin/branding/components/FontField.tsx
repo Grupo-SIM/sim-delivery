@@ -1,7 +1,7 @@
+import { useTranslation } from "react-i18next";
 import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { useGoogleFont } from "@/hooks/use-google-font";
 import type { MediaAsset } from "@/lib/api";
-import { useTranslation } from "react-i18next";
 
 interface FontFieldProps {
 	label: string;

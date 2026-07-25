@@ -43,7 +43,13 @@ function makePrisma(
 					addresses.push(a);
 					return a;
 				},
-				updateMany: async ({ data, where }: { data: { isDefault: boolean }; where: { customerId: string } }) => {
+				updateMany: async ({
+					data,
+					where,
+				}: {
+					data: { isDefault: boolean };
+					where: { customerId: string };
+				}) => {
 					for (const address of addresses as Array<{ customerId?: string; isDefault?: boolean }>) {
 						if (address.customerId === where.customerId) address.isDefault = data.isDefault;
 					}
@@ -173,7 +179,9 @@ describe("customers use-cases", () => {
 				customer: { findFirst: async () => null },
 			} as unknown as PrismaInstance;
 
-			await expect(new GetCustomer(prisma).execute("cmp_1", "cust_other")).rejects.toThrow("CUSTOMER_NOT_FOUND");
+			await expect(new GetCustomer(prisma).execute("cmp_1", "cust_other")).rejects.toThrow(
+				"CUSTOMER_NOT_FOUND",
+			);
 		});
 	});
 });

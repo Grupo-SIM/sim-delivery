@@ -19,10 +19,10 @@ function makeOption(overrides: Partial<Option> & { id: string }): Option {
 function makeGroup(overrides: Partial<OptionGroup> & { id: string }): OptionGroup {
 	return {
 		maxSelect: 1,
-		required: false,
 		name: `Grupo ${overrides.id}`,
 		options: [],
 		priceRule: "sum",
+		required: false,
 		selectionType: "single",
 		...overrides,
 	} as OptionGroup;

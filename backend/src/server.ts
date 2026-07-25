@@ -12,7 +12,10 @@ import { LoyaltyController } from "./modules/loyalty/infra";
 import { MediaController } from "./modules/media/infra/elysia";
 import { OrdersController } from "./modules/orders/infra";
 import { PaymentsController } from "./modules/payments/infra";
-import { ProductReviewsController, PublicProductReviewsController } from "./modules/productReviews/infra/elysia";
+import {
+	ProductReviewsController,
+	PublicProductReviewsController,
+} from "./modules/productReviews/infra/elysia";
 import { ProductsController } from "./modules/products/infra";
 import { PromotionalImagesController } from "./modules/promotionalImages/infra";
 import { ReportsController } from "./modules/reports/infra";

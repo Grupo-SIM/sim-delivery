@@ -22,7 +22,11 @@ describe("branding query cache", () => {
 });
 
 describe("checkout identity queries", () => {
-	for (const queryKey of [["Customers", "/customers/me"], ["Cashback", "/cashback/me"], ["Loyalty", "/loyalty/me"]]) {
+	for (const queryKey of [
+		["Customers", "/customers/me"],
+		["Cashback", "/cashback/me"],
+		["Loyalty", "/loyalty/me"],
+	]) {
 		it(`does not refetch ${queryKey[1]} during remounts or focus`, () => {
 			expect(reactQueryClient.getQueryDefaults(queryKey)).toMatchObject({
 				refetchOnMount: false,

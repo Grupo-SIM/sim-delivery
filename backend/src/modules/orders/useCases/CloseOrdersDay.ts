@@ -6,7 +6,11 @@ export class CloseOrdersDay {
 	constructor(private readonly prisma: PrismaInstance) {}
 	async execute(companyId: string | null): Promise<CloseOrdersDayReturn> {
 		if (!companyId) throw new DomainError(UserErrors.FORBIDDEN);
-		const company = await this.prisma.company.update({ data: { orderBoardStartedAt: new Date() }, select: { orderBoardStartedAt: true }, where: { id: companyId } });
+		const company = await this.prisma.company.update({
+			data: { orderBoardStartedAt: new Date() },
+			select: { orderBoardStartedAt: true },
+			where: { id: companyId },
+		});
 		return { orderBoardStartedAt: company.orderBoardStartedAt!.toISOString() };
 	}
 }

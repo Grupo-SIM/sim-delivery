@@ -162,8 +162,12 @@ function makeWorld(opts: WorldOptions = {}) {
 	};
 
 	const tx = {
-		cashbackLedger: { create: async ({ data }: { data: Record<string, unknown> }) => cashbackLedger.push(data) },
-		loyaltyLedger: { create: async ({ data }: { data: Record<string, unknown> }) => loyaltyLedger.push(data) },
+		cashbackLedger: {
+			create: async ({ data }: { data: Record<string, unknown> }) => cashbackLedger.push(data),
+		},
+		loyaltyLedger: {
+			create: async ({ data }: { data: Record<string, unknown> }) => loyaltyLedger.push(data),
+		},
 		order: orderDelegate,
 		payment: paymentDelegate,
 	};
@@ -207,8 +211,7 @@ function makeWorld(opts: WorldOptions = {}) {
 					.filter(card => card.customerId === where.customerId)
 					.sort(
 						(a, b) =>
-							Number(b.isDefault) - Number(a.isDefault) ||
-							b.createdAt.getTime() - a.createdAt.getTime(),
+							Number(b.isDefault) - Number(a.isDefault) || b.createdAt.getTime() - a.createdAt.getTime(),
 					),
 		},
 	} as unknown as PrismaInstance;
@@ -592,7 +595,9 @@ describe("GetPaymentStatus", () => {
 		const { prisma } = makePending();
 		const { simpay } = makeSimpay();
 
-		await expect(new GetPaymentStatus(prisma, simpay).execute("token_9")).rejects.toThrow("PAYMENT_NOT_FOUND");
+		await expect(new GetPaymentStatus(prisma, simpay).execute("token_9")).rejects.toThrow(
+			"PAYMENT_NOT_FOUND",
+		);
 	});
 
 	it("returns the stored status without polling when already confirmed", async () => {
@@ -721,10 +726,7 @@ describe("ListSavedCards", () => {
 
 	it("puts the default card first", async () => {
 		const { prisma } = makeWorld({
-			savedCards: [
-				makeCard(),
-				makeCard({ id: "card_2", isDefault: true, last4: "1111" }),
-			],
+			savedCards: [makeCard(), makeCard({ id: "card_2", isDefault: true, last4: "1111" })],
 		});
 
 		expect((await new ListSavedCards(prisma).execute("user_1", "zero-grau")).map(card => card.id)).toEqual([
@@ -753,7 +755,13 @@ describe("ListSavedCards", () => {
 });
 
 describe("CreateCardPayment", () => {
-	const card = { cvv: "123", expMonth: 12, expYear: 2030, holderName: "MARIA S", number: "4242 4242 4242 4242" };
+	const card = {
+		cvv: "123",
+		expMonth: 12,
+		expYear: 2030,
+		holderName: "MARIA S",
+		number: "4242 4242 4242 4242",
+	};
 	const body = { card, orderId: "order_1", slug: "zero-grau" };
 
 	it("tokenizes a new card, charges it and confirms right away", async () => {
@@ -873,7 +881,11 @@ describe("CreateCardPayment", () => {
 
 		expect(result.status).toBe("confirmed");
 		expect(domCalls.tokens).toHaveLength(0);
-		expect(calls.card[0]).toMatchObject({ brand: "mastercard", holder_name: "MARIA SILVA", token: "tok_saved" });
+		expect(calls.card[0]).toMatchObject({
+			brand: "mastercard",
+			holder_name: "MARIA SILVA",
+			token: "tok_saved",
+		});
 	});
 
 	it("refuses a saved card that belongs to someone else", async () => {

@@ -14,7 +14,12 @@ export function DesktopCartItem({ item }: DesktopCartItemProps) {
 	return (
 		<div className="flex gap-3 py-4">
 			{item.imageUrl && (
-				<img alt={item.title} className="size-12 shrink-0 rounded-lg object-cover" loading="lazy" src={item.imageUrl} />
+				<img
+					alt={item.title}
+					className="size-12 shrink-0 rounded-lg object-cover"
+					loading="lazy"
+					src={item.imageUrl}
+				/>
 			)}
 			<div className="min-w-0 flex-1">
 				<div className="flex gap-2">

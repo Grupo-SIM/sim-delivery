@@ -6,7 +6,9 @@ import { GetRevenueSummary } from "./GetRevenueSummary";
 
 type Where = Record<string, unknown>;
 
-function makeRevenuePrisma(rows: { companyId: string; createdAt: Date; status: string; total: number; unitId: string }[]) {
+function makeRevenuePrisma(
+	rows: { companyId: string; createdAt: Date; status: string; total: number; unitId: string }[],
+) {
 	const calls: Where[] = [];
 
 	const prisma = {
@@ -41,10 +43,12 @@ const daysAgo = (days: number) => new Date(now.getTime() - days * 24 * 60 * 60 *
 
 describe("GetRevenueSummary", () => {
 	it("sums completed orders and averages the ticket", async () => {
-		const { prisma } = makeRevenuePrisma([
-			{ companyId: "cmp_1", createdAt: now, status: "entregue", total: 3000 },
-			{ companyId: "cmp_1", createdAt: now, status: "retirado", total: 2000 },
-		].map(row => ({ ...row, unitId: "unit_1" })));
+		const { prisma } = makeRevenuePrisma(
+			[
+				{ companyId: "cmp_1", createdAt: now, status: "entregue", total: 3000 },
+				{ companyId: "cmp_1", createdAt: now, status: "retirado", total: 2000 },
+			].map(row => ({ ...row, unitId: "unit_1" })),
+		);
 
 		const result = await new GetRevenueSummary(prisma).execute("cmp_1", {});
 
@@ -252,15 +256,31 @@ describe("GetDashboardAnalytics", () => {
 		const prisma = {
 			order: {
 				findMany: async () => [
-					{ createdAt: new Date(2026, 6, 23, 12), deliveryFee: 500, deliveryMethod: "delivery", total: 3500, unitId: "unit_1" },
-					{ createdAt: new Date(2026, 6, 23, 12), deliveryFee: 500, deliveryMethod: "delivery", total: 2500, unitId: "unit_1" },
-					{ createdAt: new Date(2026, 6, 23, 18), deliveryFee: 0, deliveryMethod: "pickup", total: 4000, unitId: "unit_1" },
+					{
+						createdAt: new Date(2026, 6, 23, 12),
+						deliveryFee: 500,
+						deliveryMethod: "delivery",
+						total: 3500,
+						unitId: "unit_1",
+					},
+					{
+						createdAt: new Date(2026, 6, 23, 12),
+						deliveryFee: 500,
+						deliveryMethod: "delivery",
+						total: 2500,
+						unitId: "unit_1",
+					},
+					{
+						createdAt: new Date(2026, 6, 23, 18),
+						deliveryFee: 0,
+						deliveryMethod: "pickup",
+						total: 4000,
+						unitId: "unit_1",
+					},
 				],
 			},
 			unit: {
-				findMany: async () => [
-					{ deliveryZones: [{ fee: 500, radiusKm: 5 }], id: "unit_1", name: "Centro" },
-				],
+				findMany: async () => [{ deliveryZones: [{ fee: 500, radiusKm: 5 }], id: "unit_1", name: "Centro" }],
 			},
 		} as unknown as PrismaInstance;
 
@@ -270,7 +290,14 @@ describe("GetDashboardAnalytics", () => {
 		expect(result.ordersByPeriod[12]).toEqual({ key: "12", label: "12", orderCount: 2 });
 		expect(result.ordersByPeriod[18]).toEqual({ key: "18", label: "18", orderCount: 1 });
 		expect(result.deliveryRadiusPerformance).toEqual([
-			{ deliveryFee: 500, orderCount: 2, radiusKm: 5, totalRevenue: 6000, unitId: "unit_1", unitName: "Centro" },
+			{
+				deliveryFee: 500,
+				orderCount: 2,
+				radiusKm: 5,
+				totalRevenue: 6000,
+				unitId: "unit_1",
+				unitName: "Centro",
+			},
 		]);
 	});
 });

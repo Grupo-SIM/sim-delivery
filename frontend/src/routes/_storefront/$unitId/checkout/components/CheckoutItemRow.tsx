@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { LuMinus, LuPencil, LuPlus, LuTrash2 } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
+import { LuMinus, LuPencil, LuPlus, LuTrash2 } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { formatMoney } from "@/lib/formatMoney";
@@ -34,11 +34,12 @@ export function CheckoutItemRow({ item, onEdit }: CheckoutItemRowProps) {
 		if (!textarea || manuallyResized.current) return;
 		const style = getComputedStyle(textarea);
 		const lineHeight = Number.parseFloat(style.lineHeight) || 20;
-		const maxHeight = lineHeight * 4 + Number.parseFloat(style.paddingTop) + Number.parseFloat(style.paddingBottom);
+		const maxHeight =
+			lineHeight * 4 + Number.parseFloat(style.paddingTop) + Number.parseFloat(style.paddingBottom);
 		textarea.style.height = "auto";
 		textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
 		automaticHeight.current = textarea.offsetHeight;
-	}, [localNote]);
+	}, []);
 
 	useEffect(() => {
 		const textarea = noteRef.current;
@@ -56,7 +57,12 @@ export function CheckoutItemRow({ item, onEdit }: CheckoutItemRowProps) {
 			<div className="grid grid-cols-[5rem_minmax(0,1fr)_auto] gap-x-3">
 				<div className="relative size-20">
 					{item.imageUrl ? (
-						<img alt={item.title} className="size-20 rounded-lg object-cover" loading="lazy" src={item.imageUrl} />
+						<img
+							alt={item.title}
+							className="size-20 rounded-lg object-cover"
+							loading="lazy"
+							src={item.imageUrl}
+						/>
 					) : (
 						<div aria-hidden className="size-20 rounded-lg bg-muted" />
 					)}
@@ -76,13 +82,18 @@ export function CheckoutItemRow({ item, onEdit }: CheckoutItemRowProps) {
 					{item.options.length > 0 && (
 						<p className="mt-1 text-muted-foreground text-xs leading-4">
 							{item.options
-								.map(option => `${option.groupName}: ${option.quantity > 1 ? `${option.quantity}× ` : ""}${option.optionName}`)
+								.map(
+									option =>
+										`${option.groupName}: ${option.quantity > 1 ? `${option.quantity}× ` : ""}${option.optionName}`,
+								)
 								.join(" · ")}
 						</p>
 					)}
 				</div>
 				<div className="flex min-w-18 flex-col items-end gap-2">
-					<span className="whitespace-nowrap font-semibold text-sm">{formatMoney((item.priceCents * item.quantity) / 100)}</span>
+					<span className="whitespace-nowrap font-semibold text-sm">
+						{formatMoney((item.priceCents * item.quantity) / 100)}
+					</span>
 					<div className="flex items-center overflow-hidden rounded-md border border-border bg-muted/30">
 						<Button
 							aria-label={item.quantity === 1 ? "Excluir item" : "Diminuir quantidade"}

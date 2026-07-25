@@ -1,6 +1,38 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "@/lib/utils";
+
 type BrandTone = "primary" | "accent" | "cyan" | "whatsapp" | "outline";
-interface BrandButtonProps extends ComponentPropsWithoutRef<"button"> { tone?: BrandTone; fullWidth?: boolean; children: ReactNode; }
-const tones: Record<BrandTone, string> = { primary: "border-black bg-black text-white hover:bg-black/90", accent: "border-black bg-white text-black hover:bg-neutral-100", cyan: "border-black bg-neutral-100 text-black hover:bg-neutral-200", whatsapp: "border-black bg-black text-white hover:bg-black/90", outline: "border-black bg-transparent text-black hover:bg-black hover:text-white" };
-export function BrandButton({ children, className, fullWidth, tone = "primary", ...props }: BrandButtonProps) { return <button className={cn("inline-flex min-h-12 items-center justify-center rounded-full border-2 px-6 font-extrabold tracking-wide transition hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-50", tones[tone], fullWidth && "w-full", className)} type="button" {...props}>{children}</button>; }
+interface BrandButtonProps extends ComponentPropsWithoutRef<"button"> {
+	tone?: BrandTone;
+	fullWidth?: boolean;
+	children: ReactNode;
+}
+const tones: Record<BrandTone, string> = {
+	accent: "border-black bg-white text-black hover:bg-neutral-100",
+	cyan: "border-black bg-neutral-100 text-black hover:bg-neutral-200",
+	outline: "border-black bg-transparent text-black hover:bg-black hover:text-white",
+	primary: "border-black bg-black text-white hover:bg-black/90",
+	whatsapp: "border-black bg-black text-white hover:bg-black/90",
+};
+export function BrandButton({
+	children,
+	className,
+	fullWidth,
+	tone = "primary",
+	...props
+}: BrandButtonProps) {
+	return (
+		<button
+			className={cn(
+				"inline-flex min-h-12 items-center justify-center rounded-full border-2 px-6 font-extrabold tracking-wide transition hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-50",
+				tones[tone],
+				fullWidth && "w-full",
+				className,
+			)}
+			type="button"
+			{...props}
+		>
+			{children}
+		</button>
+	);
+}

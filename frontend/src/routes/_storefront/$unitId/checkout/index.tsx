@@ -7,17 +7,25 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import {
 	getCustomersMeQueryOptions,
-	getPublicUnitsQueryOptions,
 	getPublicUnitsByUnitSlugMenuQueryOptions,
+	getPublicUnitsQueryOptions,
 	type PostCustomersMe200,
+	useDeleteCustomersMeAddressesByAddressId,
 	useGetCashbackMe,
 	useGetLoyaltyMe,
-	useDeleteCustomersMeAddressesByAddressId,
 	usePostCustomersMe,
 	usePostOrders,
 } from "@/lib/api";
 import { slug } from "@/lib/variant";
-import { cartTotalCents, showAlert, useAuthStore, useCartStore, useCouponStore, useDeliveryMethodStore } from "@/stores";
+import {
+	cartTotalCents,
+	showAlert,
+	useAuthStore,
+	useCartStore,
+	useCouponStore,
+	useDeliveryMethodStore,
+} from "@/stores";
+import { ProductDetailsModal } from "../components";
 import {
 	AddressCreateModal,
 	AddressSelectorModal,
@@ -30,7 +38,6 @@ import {
 	ProfileForm,
 	type ProfileValue,
 } from "./components";
-import { ProductDetailsModal } from "../components";
 
 type Step = "identify" | "profile" | "review" | "payment";
 
@@ -84,10 +91,10 @@ function CheckoutPage() {
 
 	const { data: existingCustomer, isLoading: loadingCustomer } = useQuery({
 		...getCustomersMeQueryOptions({ slug: slug ?? "" }),
+		enabled: identified && !!slug,
 		// Profile cannot change while this screen is open. Fetch once, then keep its
 		// result through component remounts; POST /customers/me returns saved profile.
 		gcTime: Number.POSITIVE_INFINITY,
-		enabled: identified && !!slug,
 		refetchOnMount: false,
 		refetchOnReconnect: false,
 		refetchOnWindowFocus: false,
@@ -110,7 +117,9 @@ function CheckoutPage() {
 	const activeCustomer = savedCustomer ?? existingCustomer ?? null;
 	const addresses: PostCustomersMe200["addresses"] = activeCustomer?.addresses ?? [];
 	const savedAddress =
-		addresses.find(address => address.id === selectedAddressId) ?? addresses.find(address => address.isDefault) ?? null;
+		addresses.find(address => address.id === selectedAddressId) ??
+		addresses.find(address => address.isDefault) ??
+		null;
 	const hasCustomer = activeCustomer !== null;
 	// Magic-link/OTP accounts can end up with a blank name; without one we can't skip
 	// straight to address (the save would submit an empty name and fail server-side).
@@ -160,7 +169,7 @@ function CheckoutPage() {
 			},
 			{
 				onError: () => void showAlert(t("store.checkout.profile.error")),
-					onSuccess: data => {
+				onSuccess: data => {
 					setSavedCustomer(data);
 					setSelectedAddressId(data.addresses.find(address => address.isDefault)?.id ?? null);
 					setAddressModalOpen(false);
@@ -281,8 +290,8 @@ function CheckoutPage() {
 						onChangeDeliveryMethod={handleChangeDeliveryMethod}
 						onChangeLoyaltyRedeem={setLoyaltyRedeemPoints}
 						onEditItem={item => setEditingLineKey(item.lineKey)}
-						onOpenAddressSelector={() => setAddressModalOpen(true)}
 						onOpenAddressCreator={() => setAddressCreateModalOpen(true)}
+						onOpenAddressSelector={() => setAddressModalOpen(true)}
 						onSetCoupon={handleSetCoupon}
 						onSubmit={handlePlaceOrder}
 						slug={slug ?? ""}
@@ -316,16 +325,22 @@ function CheckoutPage() {
 				onCreate={() => {
 					setAddressCreateModalOpen(true);
 				}}
-				onDelete={addressId => deleteAddress.mutate(
-					{ addressId },
-					{
-						onError: () => void showAlert("Não foi possível excluir o endereço."),
-						onSuccess: () => {
-							setSavedCustomer(current => current ? { ...current, addresses: current.addresses.filter(address => address.id !== addressId) } : current);
-							if (selectedAddressId === addressId) setSelectedAddressId(null);
+				onDelete={addressId =>
+					deleteAddress.mutate(
+						{ addressId },
+						{
+							onError: () => void showAlert("Não foi possível excluir o endereço."),
+							onSuccess: () => {
+								setSavedCustomer(current =>
+									current
+										? { ...current, addresses: current.addresses.filter(address => address.id !== addressId) }
+										: current,
+								);
+								if (selectedAddressId === addressId) setSelectedAddressId(null);
+							},
 						},
-					},
-				)}
+					)
+				}
 				onSelect={address => {
 					setSelectedAddressId(address.id);
 					setAddressModalOpen(false);

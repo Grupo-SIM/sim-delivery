@@ -28,6 +28,9 @@ function makeAssignPrisma(opts: {
 	const created: object[] = [];
 
 	const prisma = {
+		courierUnit: {
+			findUnique: async () => courierUnit,
+		},
 		delivery: {
 			create: async ({ data }: { data: object }) => {
 				const d = {
@@ -46,9 +49,6 @@ function makeAssignPrisma(opts: {
 		order: {
 			findFirst: async ({ where }: { where: { companyId: string; id: string } }) =>
 				order?.companyId === where.companyId && order?.id === where.id ? order : null,
-		},
-		courierUnit: {
-			findUnique: async () => courierUnit,
 		},
 		user: {
 			findFirst: async () => courier,

@@ -9,7 +9,7 @@ export function DashboardHourlyOrdersChart({ ordersByPeriod, title }: DashboardP
 	return (
 		<section>
 			<h2 className="mb-3 font-semibold text-base">{title}</h2>
-			<div className="overflow-x-auto rounded-md border border-border bg-card px-5 py-4 scrollbar-themed">
+			<div className="scrollbar-themed overflow-x-auto rounded-md border border-border bg-card px-5 py-4">
 				<div aria-label={title} className="flex h-[193px] min-w-max items-end gap-1" role="img">
 					{ordersByPeriod.map(item => {
 						const { label } = item;
@@ -19,7 +19,6 @@ export function DashboardHourlyOrdersChart({ ordersByPeriod, title }: DashboardP
 						return (
 							<div className="group flex h-full min-w-5 flex-1 flex-col justify-end" key={item.key}>
 								<div
-									aria-label={`${label}: ${orderCount}`}
 									className="w-full rounded-t-sm bg-primary transition-colors group-hover:bg-primary/75"
 									style={{ height: `${height}%` }}
 								/>

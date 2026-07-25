@@ -26,7 +26,13 @@ export class UpdateUnitProduct {
 		const { additionalOptions, categoryIds, excludedOptionIds, optionOverrides, tagIds, ...fields } = data;
 		await validateUnitTaxonomy(this.prisma, companyId, categoryIds, tagIds);
 		await validateExcludedOptions(this.prisma, companyId, existing.productId, excludedOptionIds);
-		await validateUnitProductOptions(this.prisma, companyId, existing.productId, optionOverrides, additionalOptions);
+		await validateUnitProductOptions(
+			this.prisma,
+			companyId,
+			existing.productId,
+			optionOverrides,
+			additionalOptions,
+		);
 		await this.prisma.unitProduct.update({
 			data: {
 				...fields,
@@ -71,7 +77,11 @@ export class UpdateUnitProduct {
 				await optionStore.unitProductOptionOverride.deleteMany({ where: { unitProductId } });
 				if (optionOverrides.length > 0) {
 					await optionStore.unitProductOptionOverride.createMany({
-						data: optionOverrides.map(({ optionId, ...override }) => ({ ...override, optionId, unitProductId })),
+						data: optionOverrides.map(({ optionId, ...override }) => ({
+							...override,
+							optionId,
+							unitProductId,
+						})),
 					});
 				}
 			}
@@ -98,13 +108,15 @@ export class UpdateUnitProduct {
 			include: unitProductTaxonomyInclude,
 			where: { id: unitProductId },
 		});
-		return mapUnitProductTaxonomy((saved ?? {
-			additionalOptions: [],
-			categories: [],
-			excludedOptions: [],
-			id: unitProductId,
-			optionOverrides: [],
-			tags: [],
-		}) as never);
+		return mapUnitProductTaxonomy(
+			(saved ?? {
+				additionalOptions: [],
+				categories: [],
+				excludedOptions: [],
+				id: unitProductId,
+				optionOverrides: [],
+				tags: [],
+			}) as never,
+		);
 	}
 }

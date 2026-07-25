@@ -60,7 +60,11 @@ export function UnitOptionOverridesFields({
 		};
 		const next = { ...existing, ...changes };
 		const isEmpty = Object.entries(next).every(([key, value]) => key === "optionId" || value === null);
-		onOptionOverridesChange(isEmpty ? optionOverrides.filter(override => override.optionId !== optionId) : [...optionOverrides.filter(override => override.optionId !== optionId), next]);
+		onOptionOverridesChange(
+			isEmpty
+				? optionOverrides.filter(override => override.optionId !== optionId)
+				: [...optionOverrides.filter(override => override.optionId !== optionId), next],
+		);
 	}
 
 	function addOption(groupId: string) {
@@ -87,7 +91,11 @@ export function UnitOptionOverridesFields({
 				<div className="space-y-2 rounded border border-border p-2" key={group.id}>
 					<div className="flex items-center justify-between gap-2">
 						<p className="font-medium text-sm">{group.name}</p>
-						<button className="cursor-pointer rounded border border-border px-2 py-1 text-sm" onClick={() => addOption(group.id)} type="button">
+						<button
+							className="cursor-pointer rounded border border-border px-2 py-1 text-sm"
+							onClick={() => addOption(group.id)}
+							type="button"
+						>
 							{t("admin.products.options.addOption")}
 						</button>
 					</div>
@@ -98,7 +106,9 @@ export function UnitOptionOverridesFields({
 								<Checkbox
 									checked={override?.available === false}
 									id={`${fieldId}-unavailable-${option.id}`}
-									onChange={event => updateOverride(option.id, { available: event.currentTarget.checked ? false : null })}
+									onChange={event =>
+										updateOverride(option.id, { available: event.currentTarget.checked ? false : null })
+									}
 								/>
 								<label className="cursor-pointer" htmlFor={`${fieldId}-unavailable-${option.id}`}>
 									{option.name}
@@ -108,11 +118,19 @@ export function UnitOptionOverridesFields({
 									customInput={Input}
 									decimalScale={2}
 									decimalSeparator=","
-									onValueChange={({ floatValue, value }) => updateOverride(option.id, { priceDeltaCents: value === "" ? null : Math.max(0, Math.round((floatValue ?? 0) * 100)) })}
+									onValueChange={({ floatValue, value }) =>
+										updateOverride(option.id, {
+											priceDeltaCents: value === "" ? null : Math.max(0, Math.round((floatValue ?? 0) * 100)),
+										})
+									}
 									placeholder={`R$ ${(Number(option.priceDeltaCents) / 100).toFixed(2).replace(".", ",")}`}
 									prefix="R$ "
 									thousandSeparator="."
-									value={override?.priceDeltaCents === null || override?.priceDeltaCents === undefined ? "" : Number(override.priceDeltaCents) / 100}
+									value={
+										override?.priceDeltaCents === null || override?.priceDeltaCents === undefined
+											? ""
+											: Number(override.priceDeltaCents) / 100
+									}
 								/>
 							</div>
 						);
@@ -123,8 +141,14 @@ export function UnitOptionOverridesFields({
 						.map(({ index, option }) => (
 							<UnitAdditionalOptionRow
 								key={`${group.id}-${index}`}
-								onChange={next => onAdditionalOptionsChange(additionalOptions.map((item, itemIndex) => itemIndex === index ? next : item))}
-								onRemove={() => onAdditionalOptionsChange(additionalOptions.filter((_, itemIndex) => itemIndex !== index))}
+								onChange={next =>
+									onAdditionalOptionsChange(
+										additionalOptions.map((item, itemIndex) => (itemIndex === index ? next : item)),
+									)
+								}
+								onRemove={() =>
+									onAdditionalOptionsChange(additionalOptions.filter((_, itemIndex) => itemIndex !== index))
+								}
 								option={option}
 							/>
 						))}

@@ -30,7 +30,9 @@ describe("MetaWhatsAppProvider", () => {
 	it("throws when Meta rejects the message", async () => {
 		const provider = new MetaWhatsAppProvider(
 			{ accessToken: "token", phoneNumberId: "123" },
-			mock(() => Promise.resolve(new Response("invalid", { status: 400 }))) as unknown as typeof globalThis.fetch,
+			mock(() =>
+				Promise.resolve(new Response("invalid", { status: 400 })),
+			) as unknown as typeof globalThis.fetch,
 		);
 
 		await expect(provider.sendOrderStatus("5511999999999", "em_preparo", "ord_1")).rejects.toThrow(

@@ -3,9 +3,9 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Input } from "@/components/ui/input";
+import { Label, RequiredMark } from "@/components/ui/label";
 import { MaskedInput } from "@/components/ui/MaskedInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
-import { Label, RequiredMark } from "@/components/ui/label";
 import { getCepByCep } from "@/lib/api";
 
 export interface AddressValue {
@@ -57,10 +57,14 @@ export function AddressForm({ disabled, footer, onSubmit, submitLabel }: Address
 		set("zipCode", digits);
 		if (digits.length === 8) void lookupCep(digits);
 	});
-	const [addressLine, setAddressLine] = useDebouncedInput(value.addressLine, next => set("addressLine", next));
+	const [addressLine, setAddressLine] = useDebouncedInput(value.addressLine, next =>
+		set("addressLine", next),
+	);
 	const [addressNumber, setAddressNumber] = useDebouncedInput(value.number, next => set("number", next));
 	const [complement, setComplement] = useDebouncedInput(value.complement, next => set("complement", next));
-	const [neighborhood, setNeighborhood] = useDebouncedInput(value.neighborhood, next => set("neighborhood", next));
+	const [neighborhood, setNeighborhood] = useDebouncedInput(value.neighborhood, next =>
+		set("neighborhood", next),
+	);
 	const [city, setCity] = useDebouncedInput(value.city, next => set("city", next));
 	const [state, setState] = useDebouncedInput(value.state, next => set("state", next.toUpperCase()));
 	const [reference, setReference] = useDebouncedInput(value.reference, next => set("reference", next));
@@ -162,6 +166,7 @@ export function AddressForm({ disabled, footer, onSubmit, submitLabel }: Address
 						value={number}
 					/>
 				</Label>
+				{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
 				<label className="flex cursor-pointer items-end gap-2 pb-3 font-medium text-sm">
 					<Checkbox checked={noNumber} onChange={event => setNoNumber(event.currentTarget.checked)} />
 					{t("store.checkout.address.noNumber")}

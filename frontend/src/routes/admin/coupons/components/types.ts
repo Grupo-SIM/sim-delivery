@@ -50,7 +50,8 @@ export function dateTimeToDate(value: string): Date | null {
 		date.getDate() !== day ||
 		date.getHours() !== hours ||
 		date.getMinutes() !== minutes
-	) throw new Error("Invalid date-time");
+	)
+		throw new Error("Invalid date-time");
 
 	return date;
 }

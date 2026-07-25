@@ -83,7 +83,7 @@ export function MediaUrlInput({
 		<div
 			className={cn(
 				"relative",
-				"rounded-md border border-dashed border-input p-1 transition-colors",
+				"rounded-md border border-input border-dashed p-1 transition-colors",
 				isDragging && "border-primary bg-primary/10 ring-2 ring-primary/30",
 			)}
 			onDragEnter={handleDragEnter}
@@ -102,7 +102,9 @@ export function MediaUrlInput({
 			)}
 			<Input
 				className={
-					localValue ? "border-0 pr-22 shadow-none focus-visible:ring-0" : "border-0 pr-11 shadow-none focus-visible:ring-0"
+					localValue
+						? "border-0 pr-22 shadow-none focus-visible:ring-0"
+						: "border-0 pr-11 shadow-none focus-visible:ring-0"
 				}
 				onBlur={flushValue}
 				onChange={event => setLocalValue(event.currentTarget.value)}

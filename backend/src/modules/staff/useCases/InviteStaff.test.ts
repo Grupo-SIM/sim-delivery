@@ -42,7 +42,10 @@ const baseInput = {
 describe("InviteStaff", () => {
 	it("creates a staff member scoped to the company", async () => {
 		const { prisma, updates } = fakePrisma();
-		const staff = await new InviteStaff(prisma, signUp, requestPasswordReset).execute({ ...baseInput, companyId: "cmp_1" });
+		const staff = await new InviteStaff(prisma, signUp, requestPasswordReset).execute({
+			...baseInput,
+			companyId: "cmp_1",
+		});
 
 		expect(staff.role).toBe("manager");
 		expect(updates[0]).toEqual({ data: { companyId: "cmp_1", role: "manager" }, id: "u_new" });
@@ -50,9 +53,9 @@ describe("InviteStaff", () => {
 
 	it("throws NO_COMPANY when the inviter has no tenant", async () => {
 		const { prisma } = fakePrisma();
-		await expect(new InviteStaff(prisma, signUp, requestPasswordReset).execute({ ...baseInput, companyId: null })).rejects.toThrow(
-			"NO_COMPANY",
-		);
+		await expect(
+			new InviteStaff(prisma, signUp, requestPasswordReset).execute({ ...baseInput, companyId: null }),
+		).rejects.toThrow("NO_COMPANY");
 	});
 
 	it("requires at least one unit for a courier", async () => {

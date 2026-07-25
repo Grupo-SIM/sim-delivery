@@ -8,7 +8,10 @@ const COMPLETED = ["entregue", "retirado"];
 export class GetDashboardAnalytics {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(companyId: string | null, query: GetDashboardAnalyticsQuery): Promise<DashboardAnalyticsReturn> {
+	async execute(
+		companyId: string | null,
+		query: GetDashboardAnalyticsQuery,
+	): Promise<DashboardAnalyticsReturn> {
 		const { endDate, groupBy: requestedGroupBy, period, startDate, unitId } = query;
 		const now = new Date();
 		const { since, until } = getReportDateRange(period, startDate, endDate, now);
@@ -25,7 +28,9 @@ export class GetDashboardAnalytics {
 				...(companyId ? { companyId } : {}),
 				status: { in: COMPLETED },
 				...(unitId ? { unitId } : {}),
-				...(since || until ? { createdAt: { ...(since ? { gte: since } : {}), ...(until ? { lt: until } : {}) } } : {}),
+				...(since || until
+					? { createdAt: { ...(since ? { gte: since } : {}), ...(until ? { lt: until } : {}) } }
+					: {}),
 			},
 		});
 
@@ -44,7 +49,14 @@ export class GetDashboardAnalytics {
 		const unitsById = new Map(units.map(unit => [unit.id, unit]));
 		const deliveryRadiusPerformance = new Map<
 			string,
-			{ deliveryFee: number; orderCount: number; radiusKm: number | null; totalRevenue: number; unitId: string; unitName: string }
+			{
+				deliveryFee: number;
+				orderCount: number;
+				radiusKm: number | null;
+				totalRevenue: number;
+				unitId: string;
+				unitName: string;
+			}
 		>();
 
 		for (const order of deliveryOrders) {
@@ -67,7 +79,9 @@ export class GetDashboardAnalytics {
 		}
 
 		return {
-			deliveryRadiusPerformance: [...deliveryRadiusPerformance.values()].sort((a, b) => b.totalRevenue - a.totalRevenue),
+			deliveryRadiusPerformance: [...deliveryRadiusPerformance.values()].sort(
+				(a, b) => b.totalRevenue - a.totalRevenue,
+			),
 			groupBy,
 			ordersByPeriod,
 		};

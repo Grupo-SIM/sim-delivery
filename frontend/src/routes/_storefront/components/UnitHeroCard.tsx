@@ -37,8 +37,18 @@ export function UnitHeroCard({ openLabel, unit }: UnitHeroCardProps) {
 				</div>
 				<div>
 					<p className="font-display text-4xl">{unit.name}</p>
-					{address && <p className="mt-3 flex items-center gap-2 text-sm text-white/90"><LuMapPin className="size-4" />{address}</p>}
-					{prepTime && <p className="mt-1 flex items-center gap-2 text-sm text-white/90"><LuClock3 className="size-4" />{prepTime}</p>}
+					{address && (
+						<p className="mt-3 flex items-center gap-2 text-sm text-white/90">
+							<LuMapPin className="size-4" />
+							{address}
+						</p>
+					)}
+					{prepTime && (
+						<p className="mt-1 flex items-center gap-2 text-sm text-white/90">
+							<LuClock3 className="size-4" />
+							{prepTime}
+						</p>
+					)}
 				</div>
 			</div>
 		</Link>

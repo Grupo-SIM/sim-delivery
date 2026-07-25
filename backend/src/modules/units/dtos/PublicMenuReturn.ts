@@ -34,11 +34,11 @@ export const PublicMenuItemReturn = t.Object({
 	optionGroups: t.Array(PublicOptionGroupReturn),
 	popularity: t.Integer(),
 	priceCents: t.Integer(),
-	regularPriceCents: t.Integer(),
 	productId: t.String(),
 	productSlug: t.String(),
 	ratingAverage: t.Nullable(t.Number()),
 	ratingCount: t.Integer(),
+	regularPriceCents: t.Integer(),
 	tags: t.Array(t.Object({ color: t.String(), id: t.String(), name: t.String() })),
 	title: t.String(),
 });

@@ -8,7 +8,14 @@ import { getOrdersQueryKey, usePatchOrdersByOrderIdStatus } from "@/lib/api";
 import { showAlert } from "@/stores";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 
-type NextStatus = "recebido" | "em_preparo" | "pronto" | "saiu_para_entrega" | "entregue" | "retirado" | "cancelado";
+type NextStatus =
+	| "recebido"
+	| "em_preparo"
+	| "pronto"
+	| "saiu_para_entrega"
+	| "entregue"
+	| "retirado"
+	| "cancelado";
 
 const TRANSITIONS: Record<string, NextStatus[]> = {
 	cancelado: ["recebido", "em_preparo", "pronto"],

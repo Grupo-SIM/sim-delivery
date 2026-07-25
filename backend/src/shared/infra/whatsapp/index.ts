@@ -17,7 +17,9 @@ export function createWhatsAppProvider(): WhatsAppProvider {
 			const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
 			const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
 			if (!accessToken || !phoneNumberId) {
-				throw new Error("WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID are required for WHATSAPP_DRIVER=meta");
+				throw new Error(
+					"WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID are required for WHATSAPP_DRIVER=meta",
+				);
 			}
 			return new MetaWhatsAppProvider({
 				accessToken,

@@ -21,8 +21,8 @@ describe("LookupCep", () => {
 		mockFetch(
 			{
 				payload: {
-					cep: "04038001",
 					bairro: "Vila Clementino",
+					cep: "04038001",
 					localidade: "São Paulo",
 					logradouro: "Rua Borges Lagoa",
 					uf: "SP",
@@ -49,8 +49,8 @@ describe("LookupCep", () => {
 		mockFetch(
 			{
 				payload: {
-					cep: "01001000",
 					bairro: "Sé",
+					cep: "01001000",
 					localidade: "São Paulo",
 					logradouro: "Praça da Sé",
 					uf: "SP",
@@ -68,8 +68,8 @@ describe("LookupCep", () => {
 	it("returns ViaCEP address when Brasil API coordinate lookup fails", async () => {
 		mockFetch({
 			payload: {
-				cep: "01001000",
 				bairro: "Sé",
+				cep: "01001000",
 				localidade: "São Paulo",
 				logradouro: "Praça da Sé",
 				uf: "SP",

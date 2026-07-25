@@ -1,14 +1,14 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/button";
-import { Modal } from "@/components/ui/Modal";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Input } from "@/components/ui/input";
+import { Modal } from "@/components/ui/Modal";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import {
-	getOrdersQueryKey,
 	type GetOrders200,
+	getOrdersQueryKey,
 	type PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey,
 	usePatchOrdersByOrderIdStatus,
 } from "@/lib/api";
@@ -44,7 +44,9 @@ const MOVABLE_STATUSES: readonly PatchOrdersByOrderIdStatusMutationRequestStatus
 const AUTO_SCROLL_EDGE_PX = 120;
 const AUTO_SCROLL_MAX_SPEED = 22;
 
-function isMovableStatus(status: KanbanStatus): status is PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey {
+function isMovableStatus(
+	status: KanbanStatus,
+): status is PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey {
 	return MOVABLE_STATUSES.includes(status as PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey);
 }
 
@@ -80,7 +82,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 		[orders, statuses],
 	);
 
-	useEffect(() => stopAutoScroll, []);
+	useEffect(() => stopAutoScroll);
 
 	if (orders.length === 0) {
 		return <EmptyState title={t("admin.orders.empty")} />;
@@ -116,9 +118,13 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 		let nextSpeed = 0;
 
 		if (distanceFromLeft < AUTO_SCROLL_EDGE_PX) {
-			nextSpeed = -Math.ceil(((AUTO_SCROLL_EDGE_PX - distanceFromLeft) / AUTO_SCROLL_EDGE_PX) * AUTO_SCROLL_MAX_SPEED);
+			nextSpeed = -Math.ceil(
+				((AUTO_SCROLL_EDGE_PX - distanceFromLeft) / AUTO_SCROLL_EDGE_PX) * AUTO_SCROLL_MAX_SPEED,
+			);
 		} else if (distanceFromRight < AUTO_SCROLL_EDGE_PX) {
-			nextSpeed = Math.ceil(((AUTO_SCROLL_EDGE_PX - distanceFromRight) / AUTO_SCROLL_EDGE_PX) * AUTO_SCROLL_MAX_SPEED);
+			nextSpeed = Math.ceil(
+				((AUTO_SCROLL_EDGE_PX - distanceFromRight) / AUTO_SCROLL_EDGE_PX) * AUTO_SCROLL_MAX_SPEED,
+			);
 		}
 
 		scrollSpeedRef.current = nextSpeed;
@@ -134,36 +140,48 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 	}
 
 	function showStatusAlert(message: string) {
-		void showAlert(message, t("admin.orders.updateStatus.blockedTitle", { defaultValue: "Status não alterado" }));
+		void showAlert(
+			message,
+			t("admin.orders.updateStatus.blockedTitle", { defaultValue: "Status não alterado" }),
+		);
 	}
 
 	function getMoveBlockReason(order: GetOrders200[number], status: KanbanStatus) {
 		if (order.status === status) return null;
 		if (
 			role === "kitchen" &&
-			!((order.status === "recebido" && status === "em_preparo") || (order.status === "em_preparo" && status === "pronto"))
+			!(
+				(order.status === "recebido" && status === "em_preparo") ||
+				(order.status === "em_preparo" && status === "pronto")
+			)
 		) {
 			return "Você só pode avançar pedidos de Recebido para Em preparo ou de Em preparo para Pronto.";
 		}
 		if (
 			role === "courier" &&
-			!((order.status === "pronto" && status === "saiu_para_entrega") || (order.status === "saiu_para_entrega" && status === "entregue"))
+			!(
+				(order.status === "pronto" && status === "saiu_para_entrega") ||
+				(order.status === "saiu_para_entrega" && status === "entregue")
+			)
 		) {
 			return "Você só pode avançar pedidos de Pronto para Saiu para entrega ou de Saiu para entrega para Entregue.";
 		}
 		if (order.status === "awaiting_payment") {
 			return t("admin.orders.updateStatus.errors.awaitingPayment", {
-				defaultValue: "Este pedido ainda está aguardando pagamento. Ele só pode ir para preparo depois que o pagamento for confirmado e o status virar Recebido.",
+				defaultValue:
+					"Este pedido ainda está aguardando pagamento. Ele só pode ir para preparo depois que o pagamento for confirmado e o status virar Recebido.",
 			});
 		}
 		if (!isMovableStatus(status)) {
 			return t("admin.orders.updateStatus.errors.cannotReturnToPayment", {
-				defaultValue: "Não é possível voltar um pedido para Aguardando pagamento pelo kanban. Esse status é controlado pelo pagamento.",
+				defaultValue:
+					"Não é possível voltar um pedido para Aguardando pagamento pelo kanban. Esse status é controlado pelo pagamento.",
 			});
 		}
 		if (status === "saiu_para_entrega" && order.deliveryMethod !== "delivery") {
 			return t("admin.orders.updateStatus.errors.deliveryOnly", {
-				defaultValue: "Somente pedidos de entrega podem sair para entrega. Pedidos de retirada devem ir para Retirado.",
+				defaultValue:
+					"Somente pedidos de entrega podem sair para entrega. Pedidos de retirada devem ir para Retirado.",
 			});
 		}
 		if (status === "saiu_para_entrega" && !order.delivery && role !== "courier") {
@@ -173,7 +191,8 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 		}
 		if (status === "retirado" && order.deliveryMethod !== "pickup") {
 			return t("admin.orders.updateStatus.errors.pickupOnly", {
-				defaultValue: "Somente pedidos de retirada podem ser marcados como Retirado. Para delivery, use Saiu para entrega e depois Entregue.",
+				defaultValue:
+					"Somente pedidos de retirada podem ser marcados como Retirado. Para delivery, use Saiu para entrega e depois Entregue.",
 			});
 		}
 		if (order.status === "cancelado" && !["recebido", "em_preparo", "pronto"].includes(status)) {
@@ -228,93 +247,119 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 		if (!problemOrderId || !problemReason.trim()) return;
 		patchStatus.mutate(
 			{ data: { problemReason: problemReason.trim(), status: "problema" }, orderId: problemOrderId },
-			{ onSuccess: () => { void queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() }); setProblemOrderId(null); setProblemReason(""); } },
+			{
+				onSuccess: () => {
+					void queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() });
+					setProblemOrderId(null);
+					setProblemReason("");
+				},
+			},
 		);
 	}
 
 	return (
 		<>
-		<div
-			className="-mx-5 overflow-x-auto px-5 pb-3"
-			onDragLeave={event => {
-				const nextTarget = event.relatedTarget as Node | null;
-				if (nextTarget && !event.currentTarget.contains(nextTarget)) finishDrag();
-			}}
-			onDragOver={event => updateAutoScroll(event.clientX)}
-			ref={scrollContainerRef}
-		>
-			<div className="flex min-w-max gap-3">
-				{ordersByStatus.map(column => {
-					const isDropTarget = dragOverStatus === column.status;
-					return (
-						<section
-							className={`min-h-[36rem] w-[280px] shrink-0 rounded-2xl border bg-muted/35 transition ${
-								isDropTarget ? "border-primary bg-primary/5" : "border-border"
-							}`}
-							key={column.status}
-							onDragLeave={event => {
-								if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragOverStatus(null);
-							}}
-							onDragOver={event => {
-								event.preventDefault();
-								event.dataTransfer.dropEffect = "move";
-								updateAutoScroll(event.clientX);
-								setDragOverStatus(column.status);
-							}}
-							onDrop={event => {
-								event.preventDefault();
-								const orderId = event.dataTransfer.getData("text/plain") || draggedOrderId;
-								finishDrag();
-								if (orderId) moveOrder(orderId, column.status);
-							}}
-						>
-							<header className="relative z-20 flex items-center justify-between gap-2 px-4 py-3">
-								<OrderStatusBadge showHelp status={column.status} />
-								<span className="rounded-md bg-background px-2 py-1 font-semibold text-foreground text-sm shadow-sm">
-									{column.orders.length}
-								</span>
-							</header>
-							<div className="space-y-3 px-3 pb-3">
-								{column.orders.length === 0 ? (
-									<p className="rounded-md border border-dashed border-border px-2 py-8 text-center text-muted-foreground text-xs">
-										{t("admin.orders.kanban.emptyColumn")}
-									</p>
-								) : (
-									column.orders.map(order => (
-										<OrderKanbanCard
-											canManageAssignments={role !== "kitchen" && role !== "courier"}
-											canDrag={
-												role !== "kitchen" && role !== "courier"
-													? true
-													: role === "kitchen"
-														? order.status === "recebido" || order.status === "em_preparo"
-														: order.status === "pronto" || order.status === "saiu_para_entrega"
-											}
-											key={order.id}
-											onDragEnd={finishDrag}
-											onDragStart={setDraggedOrderId}
-											order={order}
-										/>
-									))
-								)}
-							</div>
-						</section>
-					);
-				})}
-			</div>
-		</div>
-		<Modal isOpen={problemOrderId !== null} maxWidth="520px" onClose={() => setProblemOrderId(null)} title="Registrar pendência">
-			<div className="space-y-4">
-				<label className="space-y-1">
-					<span className="font-medium text-sm">Explique o que aconteceu *</span>
-					<Input onChange={event => setProblemReason(event.currentTarget.value)} placeholder="Ex: Item faltante será enviado novamente." type="text" value={problemReason} />
-				</label>
-				<div className="flex justify-end gap-2">
-					<Button onClick={() => setProblemOrderId(null)} type="button" variant="outline">Descartar</Button>
-					<Button disabled={!problemReason.trim() || patchStatus.isPending} onClick={confirmProblem} type="button">Salvar pendência</Button>
+			<div
+				className="-mx-5 overflow-x-auto px-5 pb-3"
+				onDragLeave={event => {
+					const nextTarget = event.relatedTarget as Node | null;
+					if (nextTarget && !event.currentTarget.contains(nextTarget)) finishDrag();
+				}}
+				onDragOver={event => updateAutoScroll(event.clientX)}
+				ref={scrollContainerRef}
+			>
+				<div className="flex min-w-max gap-3">
+					{ordersByStatus.map(column => {
+						const isDropTarget = dragOverStatus === column.status;
+						return (
+							<section
+								className={`min-h-[36rem] w-[280px] shrink-0 rounded-2xl border bg-muted/35 transition ${
+									isDropTarget ? "border-primary bg-primary/5" : "border-border"
+								}`}
+								key={column.status}
+								onDragLeave={event => {
+									if (!event.currentTarget.contains(event.relatedTarget as Node | null))
+										setDragOverStatus(null);
+								}}
+								onDragOver={event => {
+									event.preventDefault();
+									event.dataTransfer.dropEffect = "move";
+									updateAutoScroll(event.clientX);
+									setDragOverStatus(column.status);
+								}}
+								onDrop={event => {
+									event.preventDefault();
+									const orderId = event.dataTransfer.getData("text/plain") || draggedOrderId;
+									finishDrag();
+									if (orderId) moveOrder(orderId, column.status);
+								}}
+							>
+								<header className="relative z-20 flex items-center justify-between gap-2 px-4 py-3">
+									<OrderStatusBadge showHelp status={column.status} />
+									<span className="rounded-md bg-background px-2 py-1 font-semibold text-foreground text-sm shadow-sm">
+										{column.orders.length}
+									</span>
+								</header>
+								<div className="space-y-3 px-3 pb-3">
+									{column.orders.length === 0 ? (
+										<p className="rounded-md border border-border border-dashed px-2 py-8 text-center text-muted-foreground text-xs">
+											{t("admin.orders.kanban.emptyColumn")}
+										</p>
+									) : (
+										column.orders.map(order => (
+											<OrderKanbanCard
+												canDrag={
+													role !== "kitchen" && role !== "courier"
+														? true
+														: role === "kitchen"
+															? order.status === "recebido" || order.status === "em_preparo"
+															: order.status === "pronto" || order.status === "saiu_para_entrega"
+												}
+												canManageAssignments={role !== "kitchen" && role !== "courier"}
+												key={order.id}
+												onDragEnd={finishDrag}
+												onDragStart={setDraggedOrderId}
+												order={order}
+											/>
+										))
+									)}
+								</div>
+							</section>
+						);
+					})}
 				</div>
 			</div>
-		</Modal>
+			<Modal
+				isOpen={problemOrderId !== null}
+				maxWidth="520px"
+				onClose={() => setProblemOrderId(null)}
+				title="Registrar pendência"
+			>
+				<div className="space-y-4">
+					{/* biome-ignore lint/a11y/noLabelWithoutControl: Input is a custom control nested in the label. */}
+					<label className="space-y-1">
+						<span className="font-medium text-sm">Explique o que aconteceu *</span>
+						<Input
+							onChange={event => setProblemReason(event.currentTarget.value)}
+							placeholder="Ex: Item faltante será enviado novamente."
+							type="text"
+							value={problemReason}
+						/>
+					</label>
+					<div className="flex justify-end gap-2">
+						<Button onClick={() => setProblemOrderId(null)} type="button" variant="outline">
+							Descartar
+						</Button>
+						<Button
+							disabled={!problemReason.trim() || patchStatus.isPending}
+							onClick={confirmProblem}
+							type="button"
+						>
+							Salvar pendência
+						</Button>
+					</div>
+				</div>
+			</Modal>
 		</>
 	);
 }

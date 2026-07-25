@@ -131,8 +131,8 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 										{group.options.map(opt => (
 											<button
 												className={cn(
-												"w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-accent",
-												opt.value === value && "bg-accent/60 font-medium",
+													"w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-accent",
+													opt.value === value && "bg-accent/60 font-medium",
 												)}
 												key={opt.value}
 												onClick={() => select(opt.value)}
@@ -152,8 +152,8 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 							: options?.map(opt => (
 									<button
 										className={cn(
-										"w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-accent",
-										opt.value === value && "bg-accent/60 font-medium",
+											"w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-accent",
+											opt.value === value && "bg-accent/60 font-medium",
 										)}
 										key={opt.value}
 										onClick={() => select(opt.value)}

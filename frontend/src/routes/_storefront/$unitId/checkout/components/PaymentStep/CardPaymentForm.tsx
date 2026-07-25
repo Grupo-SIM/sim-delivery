@@ -4,8 +4,8 @@ import { FaCcAmex, FaCcDiscover, FaCcMastercard, FaCcVisa, FaCreditCard } from "
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Input } from "@/components/ui/input";
-import { MaskedInput } from "@/components/ui/MaskedInput";
 import { Label } from "@/components/ui/label";
+import { MaskedInput } from "@/components/ui/MaskedInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import type { GetPaymentsCards200 } from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
@@ -199,6 +199,7 @@ export function CardPaymentForm({
 						</Label>
 					</div>
 
+					{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
 					<label className="flex items-center gap-2 font-medium text-sm">
 						<Checkbox checked={saveCard} onChange={event => setSaveCard(event.currentTarget.checked)} />
 						{t("store.checkout.payment.card.save")}

@@ -28,7 +28,9 @@ export function CreateProductCategoriesModal({
 	}, [selectedCategoryIds]);
 
 	function toggle(categoryId: string) {
-		setSelectedIds(ids => (ids.includes(categoryId) ? ids.filter(id => id !== categoryId) : [...ids, categoryId]));
+		setSelectedIds(ids =>
+			ids.includes(categoryId) ? ids.filter(id => id !== categoryId) : [...ids, categoryId],
+		);
 	}
 
 	return (

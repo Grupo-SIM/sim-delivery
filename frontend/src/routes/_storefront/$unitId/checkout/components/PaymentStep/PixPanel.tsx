@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCopy, LuCopyCheck, LuLoaderCircle } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,7 @@ export function PixPanel({ onConfirmed, orderId, slug }: PixPanelProps) {
 
 	const { isPending, mutateAsync: createPix } = usePostPaymentsPix();
 
-	async function generate() {
+	const generate = useCallback(async () => {
 		setFailed(false);
 		try {
 			setPix(await createPix({ data: { orderId, slug } }));
@@ -29,14 +29,13 @@ export function PixPanel({ onConfirmed, orderId, slug }: PixPanelProps) {
 			setFailed(true);
 			void showAlert(t("store.checkout.payment.pix.error"));
 		}
-	}
+	}, [createPix, orderId, slug, t]);
 
 	useEffect(() => {
 		if (requestedRef.current) return;
 		requestedRef.current = true;
 		void generate();
-		// eslint-disable-next-line react-hooks/exhaustive-deps -- fire the charge once on mount
-	}, []);
+	}, [generate]);
 
 	const { data: status } = useGetPaymentsStatusByToken(pix?.token, {
 		query: { enabled: !!pix, refetchInterval: 4000 },

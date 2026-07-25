@@ -150,9 +150,7 @@ export function CreateProductForm() {
 			<CollapsibleFormSection expanded={hasData}>
 				<div className="grid gap-4 md:grid-cols-2">
 					<div>
-						<span className="font-medium text-sm">
-						{t("admin.products.create.price")}
-						</span>
+						<span className="font-medium text-sm">{t("admin.products.create.price")}</span>
 						<NumericInput
 							decimalScale={2}
 							decimalSeparator=","
@@ -212,7 +210,9 @@ export function CreateProductForm() {
 					<div className="flex flex-col items-start gap-2">
 						<span className="font-medium text-sm">{t("admin.products.create.tags")}</span>
 						<Button onClick={() => setIsTagsModalOpen(true)} type="button" variant="outline">
-							{tagNames && tagNames.length > 0 ? tagNames.join(", ") : t("admin.products.create.tagsPlaceholder")}
+							{tagNames && tagNames.length > 0
+								? tagNames.join(", ")
+								: t("admin.products.create.tagsPlaceholder")}
 						</Button>
 					</div>
 					<div className="flex flex-col items-start gap-2">

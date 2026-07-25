@@ -21,8 +21,8 @@ export const AdminOrderReturn = t.Object({
 	id: t.String(),
 	items: t.Array(
 		t.Object({
-			imageUrl: __nullable__(t.String()),
 			id: t.String(),
+			imageUrl: __nullable__(t.String()),
 			note: __nullable__(t.String()),
 			options: t.Array(
 				t.Object({
@@ -49,9 +49,9 @@ export const AdminOrderReturn = t.Object({
 	subtotal: t.Integer(),
 	total: t.Integer(),
 	unitId: t.String(),
+	unitName: t.String(),
 	unitPrepTimeMaxMinutes: __nullable__(t.Integer()),
 	unitPrepTimeMinMinutes: __nullable__(t.Integer()),
-	unitName: t.String(),
 	updatedAt: t.Date(),
 });
 export type AdminOrderReturn = typeof AdminOrderReturn.static;
@@ -114,11 +114,11 @@ export type OrderStatusEventReturn = typeof OrderStatusEventReturn.static;
 
 export const CustomerOrderTrackingReturn = t.Object({
 	cancelReason: __nullable__(t.String()),
-	problemReason: __nullable__(t.String()),
 	createdAt: t.Date(),
 	deliveryMethod: t.String(),
 	id: t.String(),
 	items: t.Array(OrderItemReturn),
+	problemReason: __nullable__(t.String()),
 	status: t.String(),
 	statusEvents: t.Array(OrderStatusEventReturn),
 	total: t.Integer(),

@@ -36,7 +36,12 @@ function PreferencesPage() {
 	}, [customerQuery.data]);
 
 	if (!hydrated || customerQuery.isPending) {
-		return <Container className="max-w-xl space-y-6 py-8"><Skeleton className="h-16 w-full" /><Skeleton className="h-48 w-full" /></Container>;
+		return (
+			<Container className="max-w-xl space-y-6 py-8">
+				<Skeleton className="h-16 w-full" />
+				<Skeleton className="h-48 w-full" />
+			</Container>
+		);
 	}
 
 	function handleSave() {
@@ -53,12 +58,19 @@ function PreferencesPage() {
 
 	return (
 		<Container className="max-w-xl space-y-6 py-8">
-			<SectionHeading subtitle={t("store.account.preferences.subtitle")} title={t("store.account.preferences.title")} />
+			<SectionHeading
+				subtitle={t("store.account.preferences.subtitle")}
+				title={t("store.account.preferences.title")}
+			/>
 			<div className="space-y-4 rounded-xl border border-border bg-card p-5">
+				{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
+				{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
+				{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
 				<label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3">
 					<Checkbox checked={email} onChange={event => setEmail(event.currentTarget.checked)} />
 					<span>{t("store.account.preferences.email")}</span>
 				</label>
+				{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
 				<label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3">
 					<Checkbox checked={whatsApp} onChange={event => setWhatsApp(event.currentTarget.checked)} />
 					<span>{t("store.account.preferences.whatsApp")}</span>
@@ -66,7 +78,9 @@ function PreferencesPage() {
 				{error && <p className="text-destructive text-sm">{error}</p>}
 				{saved && <p className="text-primary text-sm">{t("store.account.preferences.saved")}</p>}
 				<Button disabled={updatePreferences.isPending} onClick={handleSave} type="button">
-					{updatePreferences.isPending ? t("store.account.preferences.saving") : t("store.account.preferences.save")}
+					{updatePreferences.isPending
+						? t("store.account.preferences.saving")
+						: t("store.account.preferences.save")}
 				</Button>
 			</div>
 		</Container>

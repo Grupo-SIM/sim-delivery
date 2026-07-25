@@ -15,7 +15,7 @@ import {
 } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 import { CouponFormFields } from "./CouponFormFields";
-import { dateTimeToDate, dateTimeToDigits, type CouponFormState } from "./types";
+import { type CouponFormState, dateTimeToDate, dateTimeToDigits } from "./types";
 
 interface CouponRowProps {
 	coupon: GetCoupons200[number];
@@ -39,7 +39,9 @@ export function CouponRow({ coupon, units }: CouponRowProps) {
 	const queryClient = useQueryClient();
 	const [editing, setEditing] = useState(false);
 	const [form, setForm] = useState(() => couponToForm(coupon));
-	const [localCode, setLocalCode, flushCode] = useDebouncedInput(form.code, code => setForm(prev => ({ ...prev, code })));
+	const [localCode, setLocalCode, flushCode] = useDebouncedInput(form.code, code =>
+		setForm(prev => ({ ...prev, code })),
+	);
 	const update = usePatchCouponsByCouponId();
 	const remove = useDeleteCouponsByCouponId();
 
@@ -109,16 +111,23 @@ export function CouponRow({ coupon, units }: CouponRowProps) {
 	}
 
 	const unit = units?.find(item => item.id === coupon.unitId);
-	const expiresAt = coupon.expiresAt ? new Date(coupon.expiresAt).toLocaleString("pt-BR") : t("admin.coupons.row.never");
-	const value = coupon.type === "fixed" ? `R$ ${(Number(coupon.value) / 100).toFixed(2).replace(".", ",")}` : `${coupon.value}%`;
+	const expiresAt = coupon.expiresAt
+		? new Date(coupon.expiresAt).toLocaleString("pt-BR")
+		: t("admin.coupons.row.never");
+	const value =
+		coupon.type === "fixed"
+			? `R$ ${(Number(coupon.value) / 100).toFixed(2).replace(".", ",")}`
+			: `${coupon.value}%`;
 
 	return (
 		<>
 			<tr className="border-border/60 border-b last:border-0">
-				<td className="px-4 py-3 font-mono font-medium">
+				<td className="px-4 py-3 font-medium font-mono">
 					{coupon.code} {!coupon.active && <span className="ml-2 text-destructive text-xs">Inativo</span>}
 				</td>
-				<td className="px-4 py-3">{coupon.type === "fixed" ? t("admin.coupons.types.fixed") : t("admin.coupons.types.percent")}</td>
+				<td className="px-4 py-3">
+					{coupon.type === "fixed" ? t("admin.coupons.types.fixed") : t("admin.coupons.types.percent")}
+				</td>
 				<td className="px-4 py-3">{value}</td>
 				<td className="px-4 py-3">{unit?.name ?? t("admin.coupons.row.allUnits")}</td>
 				<td className="px-4 py-3">{expiresAt}</td>
@@ -128,7 +137,13 @@ export function CouponRow({ coupon, units }: CouponRowProps) {
 							<LuPencil className="size-4" />
 							{t("admin.coupons.edit.action")}
 						</Button>
-						<Button disabled={update.isPending} onClick={toggleActive} size="sm" type="button" variant="outline">
+						<Button
+							disabled={update.isPending}
+							onClick={toggleActive}
+							size="sm"
+							type="button"
+							variant="outline"
+						>
 							{coupon.active ? <LuCircleOff className="size-4" /> : <LuPower className="size-4" />}
 							{coupon.active ? "Desativar" : "Ativar"}
 						</Button>
@@ -161,7 +176,11 @@ export function CouponRow({ coupon, units }: CouponRowProps) {
 						<Button disabled={update.isPending} onClick={cancel} type="button" variant="outline">
 							{t("admin.coupons.edit.cancel")}
 						</Button>
-						<Button disabled={update.isPending || !localCode.trim() || form.value <= 0} onClick={save} type="button">
+						<Button
+							disabled={update.isPending || !localCode.trim() || form.value <= 0}
+							onClick={save}
+							type="button"
+						>
 							{update.isPending ? t("admin.coupons.edit.saving") : t("admin.coupons.edit.save")}
 						</Button>
 					</div>

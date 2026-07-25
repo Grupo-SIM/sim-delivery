@@ -21,7 +21,15 @@ export class AssociateProduct {
 	): Promise<UnitProductReturn> {
 		const unit = companyId ? await this.prisma.unit.findFirst({ where: { companyId, id: unitId } }) : null;
 		if (!companyId || !unit) throw new DomainError(UnitErrors.UNIT_NOT_FOUND);
-		const { additionalOptions, productId, categoryIds, excludedOptionIds, optionOverrides, tagIds, ...overrides } = data;
+		const {
+			additionalOptions,
+			productId,
+			categoryIds,
+			excludedOptionIds,
+			optionOverrides,
+			tagIds,
+			...overrides
+		} = data;
 		const product = await this.prisma.product.findFirst({ where: { companyId, id: productId } });
 		if (!product) throw new DomainError(ProductErrors.PRODUCT_NOT_FOUND);
 		await validateUnitTaxonomy(this.prisma, companyId, categoryIds, tagIds);
@@ -60,7 +68,11 @@ export class AssociateProduct {
 			};
 			if (optionOverrides?.length) {
 				await optionStore.unitProductOptionOverride.createMany({
-					data: optionOverrides.map(({ optionId, ...override }) => ({ ...override, optionId, unitProductId: association.id })),
+					data: optionOverrides.map(({ optionId, ...override }) => ({
+						...override,
+						optionId,
+						unitProductId: association.id,
+					})),
 				});
 			}
 			if (additionalOptions?.length) {
@@ -83,13 +95,15 @@ export class AssociateProduct {
 			include: unitProductTaxonomyInclude,
 			where: { id: association.id },
 		})) as object | null;
-		return mapUnitProductTaxonomy((saved ?? {
-			...association,
-			additionalOptions: [],
-			categories: [],
-			excludedOptions: [],
-			optionOverrides: [],
-			tags: [],
-		}) as never);
+		return mapUnitProductTaxonomy(
+			(saved ?? {
+				...association,
+				additionalOptions: [],
+				categories: [],
+				excludedOptions: [],
+				optionOverrides: [],
+				tags: [],
+			}) as never,
+		);
 	}
 }

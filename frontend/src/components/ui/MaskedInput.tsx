@@ -1,5 +1,9 @@
-import type { ComponentPropsWithoutRef } from "react";
-import { PatternFormat, type NumberFormatValues, type PatternFormatProps, type SourceInfo } from "react-number-format";
+import {
+	type NumberFormatValues,
+	PatternFormat,
+	type PatternFormatProps,
+	type SourceInfo,
+} from "react-number-format";
 import { Input } from "@/components/ui/input";
 
 type MaskedInputProps = Omit<PatternFormatProps<typeof Input>, "customInput" | "onValueChange"> & {

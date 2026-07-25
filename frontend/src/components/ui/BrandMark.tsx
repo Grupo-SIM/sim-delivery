@@ -1,4 +1,4 @@
-import { useTranslation } from "react-i18next";
+import { useLiveBranding } from "@/hooks/use-live-branding";
 import { cn } from "@/lib/utils";
 
 interface BrandMarkProps {
@@ -8,7 +8,7 @@ interface BrandMarkProps {
 }
 
 export function BrandMark({ className, showWordmark = true, variant = "default" }: BrandMarkProps) {
-	const { t } = useTranslation();
+	const { companyName } = useLiveBranding();
 	const inverse = variant === "inverse";
 
 	return (
@@ -24,7 +24,7 @@ export function BrandMark({ className, showWordmark = true, variant = "default" 
 			</span>
 			{showWordmark && (
 				<span className={cn("font-display text-lg tracking-wide", inverse && "text-white")}>
-					{t("app.name")}
+					{companyName}
 				</span>
 			)}
 		</div>

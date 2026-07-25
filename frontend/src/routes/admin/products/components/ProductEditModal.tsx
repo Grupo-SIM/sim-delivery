@@ -111,9 +111,7 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 
 				<div className="grid gap-4 md:grid-cols-2">
 					<div>
-						<span className="font-medium text-sm">
-						{t("admin.products.create.price")}
-						</span>
+						<span className="font-medium text-sm">{t("admin.products.create.price")}</span>
 						<NumericInput
 							decimalScale={2}
 							decimalSeparator=","
@@ -126,6 +124,7 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 					</div>
 
 					<div className="space-y-2">
+						{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
 						<label className="flex cursor-pointer items-center gap-2 font-medium text-sm">
 							<Checkbox
 								checked={cashbackEnabled}
@@ -156,7 +155,7 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 					/>
 				</Label>
 
-				<ProductOptionsEditor ref={optionsRef} product={product} />
+				<ProductOptionsEditor product={product} ref={optionsRef} />
 
 				{error && <p className="text-destructive text-xs">{error}</p>}
 				<div className="flex justify-end gap-2">

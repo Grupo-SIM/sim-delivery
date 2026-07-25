@@ -9,9 +9,9 @@ import { MaskedInput } from "@/components/ui/MaskedInput";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { useGetCustomersMe } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 import { branding } from "@/lib/branding";
-import { useGetCustomersMe } from "@/lib/api";
 import { slug } from "@/lib/variant";
 import { mapSessionUser, useAuthStore } from "@/stores/auth";
 
@@ -29,7 +29,10 @@ function ProfilePage() {
 	const isAuthenticated = useAuthStore(state => state.isAuthenticated);
 	const user = useAuthStore(state => state.user);
 	const setUser = useAuthStore(state => state.setUser);
-	const customerQuery = useGetCustomersMe({ slug: slug ?? "" }, { query: { enabled: isAuthenticated && !!slug } });
+	const customerQuery = useGetCustomersMe(
+		{ slug: slug ?? "" },
+		{ query: { enabled: isAuthenticated && !!slug } },
+	);
 
 	const [name, setName] = useState(user?.name ?? "");
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
@@ -181,7 +184,13 @@ function ProfilePage() {
 				<div className="space-y-3 border-border border-t pt-4">
 					<Label>
 						{t("store.account.profile.currentPassword")}
-						<Input autoComplete="current-password" onChange={event => setCurrentPassword(event.currentTarget.value)} placeholder={t("store.account.profile.currentPasswordPlaceholder")} type="password" value={currentPassword} />
+						<Input
+							autoComplete="current-password"
+							onChange={event => setCurrentPassword(event.currentTarget.value)}
+							placeholder={t("store.account.profile.currentPasswordPlaceholder")}
+							type="password"
+							value={currentPassword}
+						/>
 					</Label>
 					<Label>
 						{t("store.account.profile.password")}
@@ -197,7 +206,13 @@ function ProfilePage() {
 					</Label>
 					<Label>
 						{t("store.account.profile.confirmPassword")}
-						<Input autoComplete="new-password" onChange={event => setConfirmPassword(event.currentTarget.value)} placeholder={t("store.account.profile.confirmPasswordPlaceholder")} type="password" value={confirmPassword} />
+						<Input
+							autoComplete="new-password"
+							onChange={event => setConfirmPassword(event.currentTarget.value)}
+							placeholder={t("store.account.profile.confirmPasswordPlaceholder")}
+							type="password"
+							value={confirmPassword}
+						/>
 					</Label>
 					<p className="text-muted-foreground text-xs">{t("store.account.profile.passwordHint")}</p>
 				</div>

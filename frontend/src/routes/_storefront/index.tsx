@@ -13,13 +13,15 @@ function StorePage() {
 
 	return (
 		<div className="bg-[#f6f7fb]">
-				<section className="mx-auto max-w-6xl px-5 pt-12 pb-8 sm:pt-16">
-					<p className="font-semibold text-primary text-sm">ZERO GRAU</p>
-					<h1 className="mt-2 max-w-2xl font-display text-4xl text-brand-ink sm:text-5xl">{t("store.chooseUnit.title")}</h1>
-					<p className="mt-3 max-w-xl text-muted-foreground text-lg">{t("store.chooseUnit.subtitle")}</p>
-				</section>
+			<section className="mx-auto max-w-6xl px-5 pt-12 pb-8 sm:pt-16">
+				<p className="font-semibold text-primary text-sm">ZERO GRAU</p>
+				<h1 className="mt-2 max-w-2xl font-display text-4xl text-brand-ink sm:text-5xl">
+					{t("store.chooseUnit.title")}
+				</h1>
+				<p className="mt-3 max-w-xl text-lg text-muted-foreground">{t("store.chooseUnit.subtitle")}</p>
+			</section>
 
-				<section className="mx-auto max-w-6xl px-5 pb-12" id="unidades">
+			<section className="mx-auto max-w-6xl px-5 pb-12" id="unidades">
 				{isPending ? (
 					<div className="grid gap-4 md:grid-cols-2">
 						<Skeleton className="h-80 w-full" />
@@ -36,7 +38,7 @@ function StorePage() {
 						))}
 					</div>
 				)}
-				</section>
+			</section>
 		</div>
 	);
 }

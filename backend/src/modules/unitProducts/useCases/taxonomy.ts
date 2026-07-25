@@ -13,7 +13,6 @@ export const unitProductTaxonomyInclude = {
 	tags: true,
 } as const;
 
-
 type UnitProductTaxonomySource = Omit<
 	UnitProductReturn,
 	"additionalOptions" | "categoryIds" | "excludedOptionIds" | "optionOverrides" | "tagIds"
@@ -96,7 +95,9 @@ export async function validateUnitProductOptions(
 		if (count !== optionIds.length) throw new DomainError(UnitProductErrors.INVALID_EXCLUDED_OPTION);
 	}
 	if (groupIds.length > 0) {
-		const count = await prisma.optionGroup.count({ where: { product: { companyId, id: productId }, id: { in: groupIds } } });
+		const count = await prisma.optionGroup.count({
+			where: { id: { in: groupIds }, product: { companyId, id: productId } },
+		});
 		if (count !== groupIds.length) throw new DomainError(UnitProductErrors.INVALID_EXCLUDED_OPTION);
 	}
 }

@@ -27,7 +27,9 @@ export function CouponsTable({ coupons, units }: CouponsTableProps) {
 				</tr>
 			</thead>
 			<tbody>
-				{coupons.map(coupon => <CouponRow coupon={coupon} key={coupon.id} units={units} />)}
+				{coupons.map(coupon => (
+					<CouponRow coupon={coupon} key={coupon.id} units={units} />
+				))}
 			</tbody>
 		</DataTable>
 	);

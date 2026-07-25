@@ -32,7 +32,8 @@ export class MetaWhatsAppProvider extends WhatsAppProvider {
 			method: "POST",
 		});
 
-		if (!response.ok) throw new Error(`WhatsApp Cloud API request failed (${response.status}): ${await response.text()}`);
+		if (!response.ok)
+			throw new Error(`WhatsApp Cloud API request failed (${response.status}): ${await response.text()}`);
 	}
 
 	private createPayload(phone: string, message: string) {

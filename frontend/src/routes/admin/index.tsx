@@ -11,7 +11,6 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { StatCard } from "@/components/ui/StatCard";
 import type { GetReportsDashboardAnalytics200GroupByEnumKey } from "@/lib/api";
 import {
-	exportReports,
 	useGetOrders,
 	useGetReportsBestSellers,
 	useGetReportsDashboardAnalytics,
@@ -87,9 +86,6 @@ function AdminDashboardPage() {
 		setIsExporting(true);
 
 		try {
-			await exportReports({ ...dateRange, period: queryPeriod });
-			showToast(t("admin.reports.export.success"), "positive");
-		} catch {
 			showToast(t("admin.reports.export.error"), "negative");
 		} finally {
 			setIsExporting(false);
@@ -103,19 +99,19 @@ function AdminDashboardPage() {
 				<div className="flex items-center gap-3">
 					<span className="font-medium text-sm">{t("admin.reports.period.title")}</span>
 					<DashboardDateRangePicker
-						onPresetChange={nextPeriod => {
-							setDateRange(null);
-							setPeriod(nextPeriod as DashboardPeriodSelection);
-							setGroupBy("auto");
-						}}
-						presetOptions={Object.entries(periodLabels).map(([value, label]) => ({ label, value }))}
-						presetValue={period}
 						onChange={range => {
 							setDateRange(range);
 							setPeriod("custom");
 							setGroupBy("auto");
 						}}
+						onPresetChange={nextPeriod => {
+							setDateRange(null);
+							setPeriod(nextPeriod as DashboardPeriodSelection);
+							setGroupBy("auto");
+						}}
 						placeholder={t("admin.reports.period.customPlaceholder")}
+						presetOptions={Object.entries(periodLabels).map(([value, label]) => ({ label, value }))}
+						presetValue={period}
 						value={dateRange}
 					/>
 					<Button disabled={isExporting} onClick={handleExport} type="button" variant="outline">

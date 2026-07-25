@@ -3,10 +3,7 @@ import type { SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CreatePixPaymentBody, PixPaymentReturn } from "../dtos";
 import { PaymentErrors } from "../errors";
-import {
-	buildPaymentDescription,
-	resolvePayingCustomer,
-} from "./resolvePayingCustomer";
+import { buildPaymentDescription, resolvePayingCustomer } from "./resolvePayingCustomer";
 
 export class CreatePixPayment {
 	constructor(

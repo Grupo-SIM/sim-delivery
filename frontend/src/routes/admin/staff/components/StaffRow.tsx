@@ -1,8 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { LuTrash2 } from "react-icons/lu";
-import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Checkbox } from "@/components/ui/Checkbox";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import {
 	type GetStaff200,
@@ -59,10 +59,10 @@ export function StaffRow({ member }: StaffRowProps) {
 			{ staffId: member.id },
 			{
 				onError: () => void showAlert(t("admin.staff.row.removeError")),
-			onSuccess: () => {
-				void invalidate();
-				showToast(t("admin.staff.row.removeSuccess"), "positive");
-			},
+				onSuccess: () => {
+					void invalidate();
+					showToast(t("admin.staff.row.removeSuccess"), "positive");
+				},
 			},
 		);
 	}
@@ -103,6 +103,7 @@ export function StaffRow({ member }: StaffRowProps) {
 					) : (
 						<div className="flex flex-wrap gap-2">
 							{unitsQuery.data?.map(unit => (
+								// biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label.
 								<label className="flex cursor-pointer items-center gap-1 text-sm" key={unit.id}>
 									<Checkbox
 										checked={member.unitIds.includes(unit.id)}

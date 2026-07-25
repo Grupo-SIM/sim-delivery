@@ -3,7 +3,8 @@ import { LuCheck } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/Tooltip";
 
-interface ConfirmActionButtonProps extends Omit<ComponentPropsWithoutRef<typeof Button>, "children" | "onClick"> {
+interface ConfirmActionButtonProps
+	extends Omit<ComponentPropsWithoutRef<typeof Button>, "children" | "onClick"> {
 	children: ReactNode;
 	confirmation: string;
 	confirmLabel: string;
@@ -44,8 +45,15 @@ export function ConfirmActionButton({
 	}
 
 	return (
-		<Tooltip content={confirming ? confirmation : tooltip ?? buttonProps["aria-label"] ?? ""} open={confirming || undefined}>
-			<Button {...buttonProps} aria-label={confirming ? confirmLabel : buttonProps["aria-label"]} onClick={handleClick}>
+		<Tooltip
+			content={confirming ? confirmation : (tooltip ?? buttonProps["aria-label"] ?? "")}
+			open={confirming || undefined}
+		>
+			<Button
+				{...buttonProps}
+				aria-label={confirming ? confirmLabel : buttonProps["aria-label"]}
+				onClick={handleClick}
+			>
 				{confirming ? (confirmIcon ?? <LuCheck className="size-4" />) : idleIcon}
 				{confirming ? (buttonProps.size === "icon" ? null : confirmLabel) : children}
 			</Button>

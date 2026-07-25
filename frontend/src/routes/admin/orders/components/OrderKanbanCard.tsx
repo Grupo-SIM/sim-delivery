@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuBike, LuShoppingBag, LuUserRound } from "react-icons/lu";
+import { OrderSummaryModal } from "@/components/orders";
 import { Button } from "@/components/ui/button";
 import type { GetOrders200 } from "@/lib/api";
 import { AssignCourierModal } from "./AssignCourierModal";
 import { AssignKitchenModal } from "./AssignKitchenModal";
-import { OrderSummaryModal } from "@/components/orders";
 
 interface OrderKanbanCardProps {
 	canManageAssignments: boolean;
@@ -143,7 +143,11 @@ export function OrderKanbanCard({
 				orderId={order.id}
 				status={order.status as "recebido" | "em_preparo" | "pronto" | "retirado" | "cancelado"}
 			/>
-			<OrderSummaryModal onClose={() => setDetailsOpen(false)} order={detailsOpen ? order : null} view="orders" />
+			<OrderSummaryModal
+				onClose={() => setDetailsOpen(false)}
+				order={detailsOpen ? order : null}
+				view="orders"
+			/>
 		</article>
 	);
 }

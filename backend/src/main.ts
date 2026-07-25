@@ -1,5 +1,5 @@
-import { server } from "./server";
 import { startExpiredUnpaidOrderCancellation } from "./modules/orders/useCases";
+import { server } from "./server";
 import { auth } from "./shared/infra/betterAuth";
 import { app } from "./shared/infra/elysia";
 import { SeedAdmin } from "./shared/infra/SeedAdmin";

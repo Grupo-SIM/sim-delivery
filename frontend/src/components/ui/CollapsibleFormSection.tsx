@@ -12,7 +12,12 @@ interface CollapsibleFormSectionProps extends ComponentPropsWithoutRef<"div"> {
  * hovers/focuses the form or fills any input. The parent `<form>` must carry the
  * `group` class so `group-hover` / `group-focus-within` reach this element.
  */
-export function CollapsibleFormSection({ expanded, className, children, ...props }: CollapsibleFormSectionProps) {
+export function CollapsibleFormSection({
+	expanded,
+	className,
+	children,
+	...props
+}: CollapsibleFormSectionProps) {
 	return (
 		<div
 			className={cn(

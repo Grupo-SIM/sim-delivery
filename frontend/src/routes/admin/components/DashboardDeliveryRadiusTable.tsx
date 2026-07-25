@@ -53,12 +53,19 @@ export function DashboardDeliveryRadiusTable({
 						</tr>
 					)}
 					{rows.map(row => (
-						<tr className="border-border/60 border-b last:border-0" key={`${row.unitId}-${row.radiusKm}-${row.deliveryFee}`}>
+						<tr
+							className="border-border/60 border-b last:border-0"
+							key={`${row.unitId}-${row.radiusKm}-${row.deliveryFee}`}
+						>
 							<td className="py-3 pr-2 pl-4 font-medium">{row.unitName}</td>
-							<td className="px-2 py-3 text-muted-foreground">{row.radiusKm === null ? noRadius : `≤ ${row.radiusKm} km`}</td>
+							<td className="px-2 py-3 text-muted-foreground">
+								{row.radiusKm === null ? noRadius : `≤ ${row.radiusKm} km`}
+							</td>
 							<td className="px-2 py-3 text-right">{formatCents(Number(row.deliveryFee))}</td>
 							<td className="px-2 py-3 text-right">{Number(row.orderCount)}</td>
-							<td className="py-3 pr-4 pl-2 text-right font-medium">{formatCents(Number(row.totalRevenue))}</td>
+							<td className="py-3 pr-4 pl-2 text-right font-medium">
+								{formatCents(Number(row.totalRevenue))}
+							</td>
 						</tr>
 					))}
 				</tbody>

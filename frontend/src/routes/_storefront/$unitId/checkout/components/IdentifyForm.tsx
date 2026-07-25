@@ -251,7 +251,11 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 						{loading && <Spinner className="size-4" />}
 						{loading
 							? t(usePassword ? "store.checkout.identify.signingIn" : "store.checkout.identify.sending")
-							: t(usePassword ? "store.checkout.identify.signInWithPassword" : "store.checkout.identify.sendLink")}
+							: t(
+									usePassword
+										? "store.checkout.identify.signInWithPassword"
+										: "store.checkout.identify.sendLink",
+								)}
 					</Button>
 					<button
 						className="w-full cursor-pointer text-muted-foreground text-sm underline underline-offset-4"

@@ -11,13 +11,17 @@ export class DeleteCustomerAddress {
 		});
 		if (!address) throw new DomainError(CustomerErrors.CUSTOMER_NOT_FOUND);
 
-		await this.prisma.address.update({ data: { deletedAt: new Date(), isDefault: false }, where: { id: addressId } });
+		await this.prisma.address.update({
+			data: { deletedAt: new Date(), isDefault: false },
+			where: { id: addressId },
+		});
 		if (address.isDefault) {
 			const replacement = await this.prisma.address.findFirst({
 				orderBy: { createdAt: "desc" },
 				where: { customerId: address.customerId, deletedAt: null },
 			});
-			if (replacement) await this.prisma.address.update({ data: { isDefault: true }, where: { id: replacement.id } });
+			if (replacement)
+				await this.prisma.address.update({ data: { isDefault: true }, where: { id: replacement.id } });
 		}
 	}
 }

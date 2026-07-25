@@ -20,9 +20,7 @@ const baseCompany: CompanyRow = {
 	themeColors: { primary: "#ff0000" },
 };
 
-function makePrisma(
-	opts: { companies?: CompanyRow[]; units?: { companyId: string; id: string }[] } = {},
-) {
+function makePrisma(opts: { companies?: CompanyRow[]; units?: { companyId: string; id: string }[] } = {}) {
 	const { companies = [baseCompany], units = [{ companyId: "cmp_1", id: "unit_1" }] } = opts;
 	const companyLookups: Record<string, unknown>[] = [];
 
@@ -75,7 +73,9 @@ describe("GetBranding", () => {
 	it("resolves the company through the slug when unscoped", async () => {
 		const { prisma } = makePrisma();
 
-		expect((await new GetBranding(prisma).execute(null, { slug: "zero-grau" })).companyName).toBe("Zero Grau");
+		expect((await new GetBranding(prisma).execute(null, { slug: "zero-grau" })).companyName).toBe(
+			"Zero Grau",
+		);
 	});
 
 	it("prefers the session scope over the query hints", async () => {

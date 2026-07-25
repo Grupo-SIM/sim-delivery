@@ -52,14 +52,14 @@ function prismaWith(unit: { id: string; slug: string } | null, associations: Ass
 			findUnique: async ({ where }: { where: { slug: string } }) =>
 				where.slug === "demo" ? { id: "c1" } : null,
 		},
+		productReview: {
+			groupBy: async () => [],
+		},
 		unit: {
 			findUnique: async ({ where }: { where: { companyId_slug: { companyId: string; slug: string } } }) =>
 				unit && where.companyId_slug.companyId === "c1" && unit.slug === where.companyId_slug.slug
 					? unit
 					: null,
-		},
-		productReview: {
-			groupBy: async () => [],
 		},
 		unitProduct: {
 			findMany: async ({ where }: { where: { available: boolean; unitId: string } }) =>

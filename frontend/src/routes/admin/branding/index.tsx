@@ -3,8 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Container } from "@/components/ui/Container";
 import { Checkbox } from "@/components/ui/Checkbox";
+import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { FormSectionHeading } from "@/components/ui/FormSectionHeading";
 import { Label } from "@/components/ui/label";
@@ -114,12 +114,15 @@ function BrandingPage() {
 					fontDisplayUrl: fontDisplayUrl.trim() || undefined,
 					fontFamily: fontFamily.trim() || undefined,
 					fontFamilyUrl: fontFamilyUrl.trim() || undefined,
-					footerText: footerText.trim() || undefined,
-					footerPaymentMethods: footerPaymentMethods.split(",").map(method => method.trim()).filter(Boolean),
-					footerInstagramUrl: footerInstagramUrl.trim() || undefined,
 					footerFacebookUrl: footerFacebookUrl.trim() || undefined,
-					footerWhatsApp: footerWhatsApp.trim() || undefined,
+					footerInstagramUrl: footerInstagramUrl.trim() || undefined,
+					footerPaymentMethods: footerPaymentMethods
+						.split(",")
+						.map(method => method.trim())
+						.filter(Boolean),
 					footerSupportEmail: footerSupportEmail.trim() || undefined,
+					footerText: footerText.trim() || undefined,
+					footerWhatsApp: footerWhatsApp.trim() || undefined,
 					ga4Id: ga4Id.trim() || undefined,
 					gtmId: gtmId.trim() || undefined,
 					logoUrl: logoUrl.trim() || undefined,
@@ -146,8 +149,12 @@ function BrandingPage() {
 	return (
 		<Container className="max-w-5xl space-y-6 py-8">
 			<SectionHeading subtitle={t("admin.branding.subtitle")} title={t("admin.branding.title")} />
+			{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
 			<label className="flex cursor-pointer items-center gap-2 rounded-lg border border-border p-4">
-				<Checkbox checked={allowThemeToggle} onChange={event => setAllowThemeToggle(event.currentTarget.checked)} />
+				<Checkbox
+					checked={allowThemeToggle}
+					onChange={event => setAllowThemeToggle(event.currentTarget.checked)}
+				/>
 				<span>Permitir troca entre tema claro e escuro pelo botão flutuante</span>
 			</label>
 
@@ -174,11 +181,36 @@ function BrandingPage() {
 							value={footerText}
 						/>
 						<FormSectionHeading>{t("admin.branding.sectionFooter")}</FormSectionHeading>
-						<TextField label={t("admin.branding.footerPaymentMethods")} onValueChange={setFooterPaymentMethods} placeholder={t("admin.branding.footerPaymentMethodsPlaceholder")} value={footerPaymentMethods} />
-						<TextField label={t("admin.branding.footerWhatsApp")} onValueChange={setFooterWhatsApp} placeholder={t("admin.branding.footerWhatsAppPlaceholder")} value={footerWhatsApp} />
-						<TextField label={t("admin.branding.footerSupportEmail")} onValueChange={setFooterSupportEmail} placeholder="contato@minhaloja.com" value={footerSupportEmail} />
-						<TextField label={t("admin.branding.footerInstagramUrl")} onValueChange={setFooterInstagramUrl} placeholder="https://instagram.com/minhaloja" value={footerInstagramUrl} />
-						<TextField label={t("admin.branding.footerFacebookUrl")} onValueChange={setFooterFacebookUrl} placeholder="https://facebook.com/minhaloja" value={footerFacebookUrl} />
+						<TextField
+							label={t("admin.branding.footerPaymentMethods")}
+							onValueChange={setFooterPaymentMethods}
+							placeholder={t("admin.branding.footerPaymentMethodsPlaceholder")}
+							value={footerPaymentMethods}
+						/>
+						<TextField
+							label={t("admin.branding.footerWhatsApp")}
+							onValueChange={setFooterWhatsApp}
+							placeholder={t("admin.branding.footerWhatsAppPlaceholder")}
+							value={footerWhatsApp}
+						/>
+						<TextField
+							label={t("admin.branding.footerSupportEmail")}
+							onValueChange={setFooterSupportEmail}
+							placeholder="contato@minhaloja.com"
+							value={footerSupportEmail}
+						/>
+						<TextField
+							label={t("admin.branding.footerInstagramUrl")}
+							onValueChange={setFooterInstagramUrl}
+							placeholder="https://instagram.com/minhaloja"
+							value={footerInstagramUrl}
+						/>
+						<TextField
+							label={t("admin.branding.footerFacebookUrl")}
+							onValueChange={setFooterFacebookUrl}
+							placeholder="https://facebook.com/minhaloja"
+							value={footerFacebookUrl}
+						/>
 						<Label>
 							{t("admin.branding.logoUrl")}
 							<MediaUrlInput
