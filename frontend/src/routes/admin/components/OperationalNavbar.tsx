@@ -3,5 +3,7 @@ import { StorefrontHeader } from "@/routes/components/storefront";
 
 export function OperationalNavbar() {
 	const branding = useLiveBranding();
-	return <StorefrontHeader branding={branding} hideUnitChange profileMenuLogoutTo="/login" profileMenuOnlyLogout />;
+	return (
+		<StorefrontHeader branding={branding} hideUnitChange profileMenuLogoutTo="/identify" profileMenuOnlyLogout />
+	);
 }

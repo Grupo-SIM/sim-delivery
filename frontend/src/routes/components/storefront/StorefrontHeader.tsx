@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { LuMapPin } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
+import { LuMapPin } from "react-icons/lu";
 import { isStaff } from "@/lib/staff-guard";
 import { useAuthStore } from "@/stores/auth";
 import { ProfileMenu } from "./ProfileMenu";
@@ -10,7 +10,7 @@ interface StorefrontHeaderProps {
 	branding?: StorefrontBranding;
 	hideUnitChange?: boolean;
 	profileMenuOnlyLogout?: boolean;
-	profileMenuLogoutTo?: "/" | "/login";
+	profileMenuLogoutTo?: "/" | "/identify";
 	unitName?: string;
 }
 
@@ -43,12 +43,21 @@ export function StorefrontHeader({
 				</Link>
 
 				<div className="flex items-center gap-4">
-					{!hideUnitChange && <Link className="hidden items-center gap-2 text-muted-foreground text-sm sm:flex" hash="unidades" to="/">
-						<LuMapPin aria-hidden className="h-4 w-4 text-primary" />
-						{t("store.unit.change")}
-					</Link>}
+					{!hideUnitChange && (
+						<Link
+							className="hidden items-center gap-2 text-muted-foreground text-sm sm:flex"
+							hash="unidades"
+							to="/"
+						>
+							<LuMapPin aria-hidden className="h-4 w-4 text-primary" />
+							{t("store.unit.change")}
+						</Link>
+					)}
 					{isStaff(role) && (
-						<Link className="hidden cursor-pointer rounded-md border border-border px-3 py-2 font-semibold text-sm transition-colors hover:bg-muted sm:flex" to="/admin/orders">
+						<Link
+							className="hidden cursor-pointer rounded-md border border-border px-3 py-2 font-semibold text-sm transition-colors hover:bg-muted sm:flex"
+							to="/admin/orders"
+						>
 							{t("store.account.staffOrders")}
 						</Link>
 					)}

@@ -282,6 +282,7 @@
 			},
 			"dashboard": {
 				"nav": {
+					"backToCustomerArea": "Voltar para área do cliente",
 					"logout": "Sair",
 					"operations": "Operações",
 					"platform": "Plataforma",
@@ -934,21 +935,9 @@
 				"title": "Unidades"
 			}
 		},
-		"app": {
-			"name": "Template App"
-		},
 		"auth": {
 			"errors": {
 				"invalidCredentials": "E-mail ou senha inválidos."
-			},
-			"login": {
-				"email": "E-mail",
-				"emailPlaceholder": "voce@empresa.com",
-				"password": "Senha",
-				"submit": "Entrar",
-				"submitting": "Entrando...",
-				"subtitle": "Acesse o painel de gerenciamento.",
-				"title": "Entrar como funcionário"
 			},
 			"resetPassword": {
 				"goToLogin": "Ir para o login",
@@ -994,6 +983,7 @@
 		},
 		"store": {
 			"account": {
+				"backToCustomerArea": "Voltar para área do cliente",
 				"identify": {
 					"subtitle": "Entre com seu e-mail para acompanhar seus pedidos.",
 					"title": "Entrar"

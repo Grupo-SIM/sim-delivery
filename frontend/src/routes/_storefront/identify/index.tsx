@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { isOperationalStaff, isStaff } from "@/lib/staff-guard";
 import { useAuthStore } from "@/stores/auth";
 import { IdentifyForm } from "../$unitId/checkout/components";
 
@@ -11,10 +12,15 @@ function IdentifyPage() {
 	const navigate = useNavigate();
 	const isAuthenticated = useAuthStore(state => state.isAuthenticated);
 	const hydrated = useAuthStore(state => state.hydrated);
+	const role = useAuthStore(state => state.role);
 
 	useEffect(() => {
-		if (hydrated && isAuthenticated) void navigate({ to: "/orders" });
-	}, [hydrated, isAuthenticated, navigate]);
+		if (hydrated && isAuthenticated) {
+			void navigate({
+				to: isOperationalStaff(role) ? "/admin/orders" : isStaff(role) ? "/admin" : "/orders",
+			});
+		}
+	}, [hydrated, isAuthenticated, role, navigate]);
 
 	return (
 		<div className="flex min-h-full flex-1 items-center py-6 sm:py-10">

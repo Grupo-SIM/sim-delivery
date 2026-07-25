@@ -2,6 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import type { IconType } from "react-icons";
 import {
+	LuArrowLeft,
 	LuBuilding2,
 	LuChartBar,
 	LuClipboardList,
@@ -67,7 +68,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 
 	async function handleLogout() {
 		await logout();
-		void navigate({ to: "/login" });
+		void navigate({ to: "/identify" });
 	}
 
 	return (
@@ -144,8 +145,17 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 				</NavGroup>
 			)}
 
+			<Link
+				className="mt-auto flex items-center gap-3 rounded-md px-3 py-2 text-muted-foreground text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
+				onClick={onNavigate}
+				to="/"
+			>
+				<LuArrowLeft className="size-4 shrink-0" />
+				{t("admin.dashboard.nav.backToCustomerArea")}
+			</Link>
+
 			<button
-				className="mt-auto flex items-center gap-3 rounded-md px-3 py-2 text-left text-muted-foreground text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
+				className="flex items-center gap-3 rounded-md px-3 py-2 text-left text-muted-foreground text-sm transition-colors hover:bg-primary hover:text-primary-foreground"
 				onClick={() => void handleLogout()}
 				type="button"
 			>

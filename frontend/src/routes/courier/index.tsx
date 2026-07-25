@@ -77,7 +77,7 @@ export const Route = createFileRoute("/courier/")({
 		const session = await authClient.getSession();
 		const role = (session.data?.user as { role?: string } | null)?.role ?? null;
 		if (!session.data?.user || role !== "courier") {
-			throw redirect({ to: "/login" });
+			throw redirect({ to: "/identify" });
 		}
 	},
 	component: CourierPage,

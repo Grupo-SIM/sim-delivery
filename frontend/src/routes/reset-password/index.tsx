@@ -2,8 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Container } from "@/components/ui/Container";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { branding } from "@/lib/branding";
@@ -64,7 +64,7 @@ function PasswordResetPage() {
 					{isSuccess ? (
 						<div className="space-y-4">
 							<p className="text-sm">{t("auth.resetPassword.success")}</p>
-							<Button className="w-full" onClick={() => void navigate({ to: "/login" })} type="button">
+							<Button className="w-full" onClick={() => void navigate({ to: "/identify" })} type="button">
 								{t("auth.resetPassword.goToLogin")}
 							</Button>
 						</div>
@@ -116,5 +116,7 @@ function PasswordResetPage() {
 
 export const Route = createFileRoute("/reset-password/")({
 	component: PasswordResetPage,
-	validateSearch: (search: Record<string, unknown>): PasswordResetSearch => ({ token: String(search.token ?? "") }),
+	validateSearch: (search: Record<string, unknown>): PasswordResetSearch => ({
+		token: String(search.token ?? ""),
+	}),
 });

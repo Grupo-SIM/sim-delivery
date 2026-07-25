@@ -54,13 +54,13 @@ describe("requireStaffBeforeLoad", () => {
 	});
 
 	it("redirects to login when there is no session", async () => {
-		await expect(requireStaffBeforeLoad()).rejects.toMatchObject({ to: "/login" });
+		await expect(requireStaffBeforeLoad()).rejects.toMatchObject({ to: "/identify" });
 	});
 
 	it("redirects a customer to login", async () => {
 		session = { data: { user: { role: "customer" } } };
 
-		await expect(requireStaffBeforeLoad()).rejects.toMatchObject({ to: "/login" });
+		await expect(requireStaffBeforeLoad()).rejects.toMatchObject({ to: "/identify" });
 	});
 
 	it("lets a courier through", async () => {
@@ -84,7 +84,7 @@ describe("requireStaffBeforeLoad", () => {
 	it("redirects a user with no role at all to login", async () => {
 		session = { data: { user: {} } };
 
-		await expect(requireStaffBeforeLoad()).rejects.toMatchObject({ to: "/login" });
+		await expect(requireStaffBeforeLoad()).rejects.toMatchObject({ to: "/identify" });
 	});
 
 	it("does not treat a rate-limited session fetch as unauthenticated", async () => {
@@ -100,7 +100,7 @@ describe("requireStaffBeforeLoad", () => {
 	it("still redirects when the session fetch fails with 401", async () => {
 		session = { data: null, error: { status: 401 } };
 
-		await expect(requireStaffBeforeLoad()).rejects.toMatchObject({ to: "/login" });
+		await expect(requireStaffBeforeLoad()).rejects.toMatchObject({ to: "/identify" });
 		expect(toasts).toHaveLength(0);
 	});
 });

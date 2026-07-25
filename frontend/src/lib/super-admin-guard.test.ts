@@ -35,7 +35,7 @@ describe("requireSuperAdminBeforeLoad", () => {
 	});
 
 	it("redirects to login when there is no session", async () => {
-		await expect(requireSuperAdminBeforeLoad()).rejects.toMatchObject({ to: "/login" });
+		await expect(requireSuperAdminBeforeLoad()).rejects.toMatchObject({ to: "/identify" });
 	});
 
 	it("sends an authenticated non-superAdmin back to the panel, not to login", async () => {
@@ -63,7 +63,7 @@ describe("requireSuperAdminBeforeLoad", () => {
 	it("still redirects when the session fetch fails with 403", async () => {
 		session = { data: null, error: { status: 403 } };
 
-		await expect(requireSuperAdminBeforeLoad()).rejects.toMatchObject({ to: "/login" });
+		await expect(requireSuperAdminBeforeLoad()).rejects.toMatchObject({ to: "/identify" });
 		expect(toasts).toHaveLength(0);
 	});
 });
