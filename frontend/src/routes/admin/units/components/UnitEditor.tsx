@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { CollapsibleModalSection } from "@/components/ui/CollapsibleModalSection";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
@@ -67,6 +68,18 @@ function toAddressState(unit: Unit | null): AddressState {
 		state: unit.state ?? "",
 		zipCode: unit.zipCode ?? "",
 	};
+}
+
+function formatAddressSummary(address: AddressState) {
+	return [
+		[address.addressLine, address.number].filter(Boolean).join(", "),
+		address.complement,
+		address.neighborhood,
+		[address.city, address.state].filter(Boolean).join(" - "),
+		address.zipCode,
+	]
+		.filter(Boolean)
+		.join(" · ");
 }
 
 export function UnitEditor({ onClose, unit }: UnitEditorProps) {
@@ -185,8 +198,10 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 					</div>
 				</section>
 
-				<section className="space-y-4 border-border border-t pt-6">
-					<h2 className="font-semibold text-lg">{t("admin.units.address.title")}</h2>
+				<CollapsibleModalSection
+					summary={formatAddressSummary(address) || "—"}
+					title={t("admin.units.address.title")}
+				>
 					<Label>
 						{t("admin.units.address.cep")}
 						<MaskedInput
@@ -267,7 +282,7 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 							value={address.reference}
 						/>
 					</Label>
-				</section>
+				</CollapsibleModalSection>
 
 				<section className="space-y-4 border-border border-t pt-6">
 					<h2 className="font-semibold text-lg">{t("admin.units.banner.title")}</h2>
