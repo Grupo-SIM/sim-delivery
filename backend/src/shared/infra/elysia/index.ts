@@ -5,6 +5,7 @@ import Elysia from "elysia";
 import { envSchema } from "@/env";
 import { DomainError } from "@/shared/errors/DomainError";
 import { auth } from "@/shared/infra/betterAuth";
+import { prisma } from "@/shared/infra/sql";
 import { GlobalPlugin } from "./global";
 import { OpenAPI } from "./openapi";
 import { consume } from "./rateLimit";
@@ -42,16 +43,36 @@ export const app = new Elysia({ normalize: "typebox" })
 			typeof body !== "object" ||
 			body === null ||
 			!("newPassword" in body) ||
-			typeof body.newPassword !== "string"
+			typeof body.newPassword !== "string" ||
+			!("currentPassword" in body) ||
+			(body.currentPassword !== null && typeof body.currentPassword !== "string")
 		) {
 			set.status = 400;
 			return { error: "INVALID_PASSWORD" };
 		}
 
-		return auth.api.setPassword({
-			body: { newPassword: body.newPassword },
-			headers: request.headers,
+		const session = await auth.api.getSession({ headers: request.headers });
+		if (!session?.user) {
+			set.status = 401;
+			return { error: "UNAUTHORIZED" };
+		}
+		const accounts = await prisma.account.findMany({
+			select: { password: true },
+			where: { providerId: "credential", userId: session.user.id },
 		});
+		const hasPassword = accounts.some(account => !!account.password);
+		if (hasPassword) {
+			if (!body.currentPassword) {
+				set.status = 400;
+				return { error: "CURRENT_PASSWORD_REQUIRED" };
+			}
+			return auth.api.changePassword({
+				body: { currentPassword: body.currentPassword, newPassword: body.newPassword },
+				headers: request.headers,
+			});
+		}
+
+		return auth.api.setPassword({ body: { newPassword: body.newPassword }, headers: request.headers });
 	})
 	.all("/auth/*", ({ request, set }) => {
 		const outcome = consume(request, {
