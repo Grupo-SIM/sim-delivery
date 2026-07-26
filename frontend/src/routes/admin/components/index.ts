@@ -2,8 +2,6 @@ export * from "./AdminSectionCard";
 export * from "./AdminSidebar";
 export * from "./DashboardDateRangePicker";
 export * from "./DashboardDeliveryRadiusTable";
-export * from "./DashboardHourlyOrdersChart";
-export * from "./DashboardOrdersByPeriodChart";
 export * from "./DashboardOrdersByPeriodChart";
 export * from "./DashboardPeriodPicker";
 export * from "./OperationalNavbar";
