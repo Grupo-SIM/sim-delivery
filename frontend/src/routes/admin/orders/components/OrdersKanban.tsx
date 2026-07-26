@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -82,11 +82,14 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 		[orders, statuses],
 	);
 
-	useEffect(() => stopAutoScroll);
+	const stopAutoScroll = useCallback(() => {
+		scrollSpeedRef.current = 0;
+		if (scrollFrameRef.current === null) return;
+		window.cancelAnimationFrame(scrollFrameRef.current);
+		scrollFrameRef.current = null;
+	}, []);
 
-	if (orders.length === 0) {
-		return <EmptyState title={t("admin.orders.empty")} />;
-	}
+	useEffect(() => stopAutoScroll, [stopAutoScroll]);
 
 	function runAutoScroll() {
 		const container = scrollContainerRef.current;
@@ -99,13 +102,6 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 
 		container.scrollLeft += speed;
 		scrollFrameRef.current = window.requestAnimationFrame(runAutoScroll);
-	}
-
-	function stopAutoScroll() {
-		scrollSpeedRef.current = 0;
-		if (scrollFrameRef.current === null) return;
-		window.cancelAnimationFrame(scrollFrameRef.current);
-		scrollFrameRef.current = null;
 	}
 
 	function updateAutoScroll(clientX: number) {
@@ -255,6 +251,10 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 				},
 			},
 		);
+	}
+
+	if (orders.length === 0) {
+		return <EmptyState title={t("admin.orders.empty")} />;
 	}
 
 	return (
