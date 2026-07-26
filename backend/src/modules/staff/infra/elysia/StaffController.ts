@@ -111,7 +111,7 @@ export const StaffController = new Elysia({
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "staff", "remove");
 
-					await removeStaff.execute(scope.companyId, params.staffId);
+					await removeStaff.execute(scope.companyId, params.staffId, scope.role === "superAdmin");
 
 					return { ok: true };
 				},
