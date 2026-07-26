@@ -54,3 +54,6 @@ next-env.d.ts
 
 # TypeScript
 *.tsbuildinfo
+
+# Agent scratch plans (canonical plans live in plans/)
+.claude/plans/
