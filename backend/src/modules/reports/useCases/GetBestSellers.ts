@@ -7,7 +7,12 @@ const COMPLETED = ["entregue", "retirado"];
 export class GetBestSellers {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(companyId: string | null, query: GetReportsQuery): Promise<BestSellersReturn> {
+	/** `limit` defaults to the dashboard's top 10; pass `null` to rank every product (spreadsheet export). */
+	async execute(
+		companyId: string | null,
+		query: GetReportsQuery,
+		limit: number | null = 10,
+	): Promise<BestSellersReturn> {
 		const { endDate, period, startDate, unitId } = query;
 		const now = new Date();
 		const { since, until } = getReportDateRange(period, startDate, endDate, now);
@@ -16,7 +21,7 @@ export class GetBestSellers {
 			_sum: { quantity: true, total: true },
 			by: ["productId", "productName"],
 			orderBy: { _sum: { quantity: "desc" } },
-			take: 10,
+			...(limit === null ? {} : { take: limit }),
 			where: {
 				order: {
 					...(companyId ? { companyId } : {}),

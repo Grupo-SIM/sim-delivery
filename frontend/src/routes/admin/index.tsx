@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { StatCard } from "@/components/ui/StatCard";
 import type { GetReportsDashboardAnalytics200GroupByEnumKey } from "@/lib/api";
 import {
+	exportReports,
 	useGetOrders,
 	useGetReportsBestSellers,
 	useGetReportsDashboardAnalytics,
@@ -86,6 +87,9 @@ function AdminDashboardPage() {
 		setIsExporting(true);
 
 		try {
+			await exportReports({ ...dateRange, period: queryPeriod });
+			showToast(t("admin.reports.export.success"), "positive");
+		} catch {
 			showToast(t("admin.reports.export.error"), "negative");
 		} finally {
 			setIsExporting(false);
