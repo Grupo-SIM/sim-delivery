@@ -46,7 +46,12 @@ export function UnitPromotionalImagesEditor({ onClose, unit }: UnitPromotionalIm
 	}
 
 	return (
-		<Modal isOpen={unit !== null} onClose={onClose} title={t("admin.units.promotionalImages.title")}>
+		<Modal
+			isOpen={unit !== null}
+			maxWidth="760px"
+			onClose={onClose}
+			title={t("admin.units.promotionalImages.title")}
+		>
 			<div className="space-y-4">
 				{imagesPending || assignedPending ? (
 					<div className="space-y-2">
