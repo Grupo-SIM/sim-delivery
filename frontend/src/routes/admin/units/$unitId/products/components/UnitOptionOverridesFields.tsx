@@ -1,10 +1,7 @@
-import { useId } from "react";
 import { useTranslation } from "react-i18next";
-import { NumericFormat } from "react-number-format";
-import { Checkbox } from "@/components/ui/Checkbox";
-import { Input } from "@/components/ui/input";
 import type { GetProductsByProductIdOptionGroups200 } from "@/lib/api";
 import { UnitAdditionalOptionRow } from "./UnitAdditionalOptionRow";
+import { UnitOptionOverrideRow } from "./UnitOptionOverrideRow";
 
 export interface UnitAdditionalOption {
 	available: boolean;
@@ -44,7 +41,6 @@ export function UnitOptionOverridesFields({
 	optionOverrides,
 }: UnitOptionOverridesFieldsProps) {
 	const { t } = useTranslation();
-	const fieldId = useId();
 	const overrideByOptionId = new Map(optionOverrides.map(override => [override.optionId, override]));
 
 	function updateOverride(optionId: string, changes: Partial<UnitOptionOverride>) {
@@ -101,38 +97,18 @@ export function UnitOptionOverridesFields({
 					</div>
 					{group.options.map(option => {
 						const override = overrideByOptionId.get(option.id);
+						const disabled = override?.available === false;
 						return (
-							<div className="flex items-center gap-2 text-sm" key={option.id}>
-								<Checkbox
-									checked={override?.available === false}
-									id={`${fieldId}-unavailable-${option.id}`}
-									onChange={event =>
-										updateOverride(option.id, { available: event.currentTarget.checked ? false : null })
-									}
-								/>
-								<label className="cursor-pointer" htmlFor={`${fieldId}-unavailable-${option.id}`}>
-									{option.name}
-								</label>
-								<NumericFormat
-									className="ml-auto max-w-28"
-									customInput={Input}
-									decimalScale={2}
-									decimalSeparator=","
-									onValueChange={({ floatValue, value }) =>
-										updateOverride(option.id, {
-											priceDeltaCents: value === "" ? null : Math.max(0, Math.round((floatValue ?? 0) * 100)),
-										})
-									}
-									placeholder={`R$ ${(Number(option.priceDeltaCents) / 100).toFixed(2).replace(".", ",")}`}
-									prefix="R$ "
-									thousandSeparator="."
-									value={
-										override?.priceDeltaCents === null || override?.priceDeltaCents === undefined
-											? ""
-											: Number(override.priceDeltaCents) / 100
-									}
-								/>
-							</div>
+							<UnitOptionOverrideRow
+								disabled={disabled}
+								key={option.id}
+								onDisabledChange={nextDisabled =>
+									updateOverride(option.id, { available: nextDisabled ? false : null })
+								}
+								onPriceChange={priceDeltaCents => updateOverride(option.id, { priceDeltaCents })}
+								option={option}
+								override={override}
+							/>
 						);
 					})}
 					{additionalOptions
