@@ -33,6 +33,11 @@ export const UpdateNotificationPreferencesBody = t.Object({
 });
 export type UpdateNotificationPreferencesBody = typeof UpdateNotificationPreferencesBody.static;
 
+export const UpdateCustomerPhoneBody = t.Object({
+	phone: t.String({ maxLength: 15, minLength: 10 }),
+});
+export type UpdateCustomerPhoneBody = typeof UpdateCustomerPhoneBody.static;
+
 export const ListCustomersQuery = t.Object({
 	page: t.Optional(t.Integer({ minimum: 1 })),
 	pageSize: t.Optional(t.Integer({ maximum: 100, minimum: 1 })),

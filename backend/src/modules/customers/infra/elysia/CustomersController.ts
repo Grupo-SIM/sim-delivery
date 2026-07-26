@@ -9,6 +9,7 @@ import {
 	GetMyCustomerQuery,
 	ListCustomersQuery,
 	MaybeCustomerReturn,
+	UpdateCustomerPhoneBody,
 	UpdateNotificationPreferencesBody,
 } from "../../dtos";
 import {
@@ -16,6 +17,7 @@ import {
 	GetCustomer,
 	GetMyCustomer,
 	ListCustomers,
+	UpdateCustomerPhone,
 	UpdateNotificationPreferences,
 	UpsertCustomer,
 } from "../../useCases";
@@ -33,6 +35,7 @@ export const CustomersController = new Elysia({
 				getMyCustomer: new GetMyCustomer(prisma),
 				listCustomers: new ListCustomers(prisma),
 				prisma,
+				updateCustomerPhone: new UpdateCustomerPhone(prisma),
 				updateNotificationPreferences: new UpdateNotificationPreferences(prisma),
 				upsertCustomer: new UpsertCustomer(prisma),
 			}))
@@ -77,6 +80,15 @@ export const CustomersController = new Elysia({
 					return updateNotificationPreferences.execute(userId, body);
 				},
 				{ body: UpdateNotificationPreferencesBody, response: CustomerReturn },
+			)
+			.patch(
+				"/me/phone",
+				async ({ body, request, updateCustomerPhone }) => {
+					const { userId } = await AuthGuard.execute(request.headers);
+					await updateCustomerPhone.execute(userId, body.phone);
+					return { ok: true };
+				},
+				{ body: UpdateCustomerPhoneBody, response: t.Object({ ok: t.Boolean() }) },
 			)
 			.delete(
 				"/me/addresses/:addressId",
