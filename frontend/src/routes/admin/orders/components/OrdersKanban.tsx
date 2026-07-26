@@ -336,7 +336,6 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 				title="Registrar pendência"
 			>
 				<div className="space-y-4">
-					{/* biome-ignore lint/a11y/noLabelWithoutControl: Input is a custom control nested in the label. */}
 					<label className="space-y-1">
 						<span className="font-medium text-sm">Explique o que aconteceu *</span>
 						<Input

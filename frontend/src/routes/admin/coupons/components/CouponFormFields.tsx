@@ -33,7 +33,6 @@ export function CouponFormFields({
 		<>
 			{showBasics && (
 				<div className="grid gap-4 md:grid-cols-2">
-					{/* biome-ignore lint/a11y/noLabelWithoutControl: Input is a custom control nested in the label. */}
 					<label className="grid gap-2 font-medium text-sm">
 						<span>
 							{t("admin.coupons.form.code")} <RequiredMark />
