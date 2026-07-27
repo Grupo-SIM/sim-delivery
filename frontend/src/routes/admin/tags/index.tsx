@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -29,7 +29,5 @@ function TagsPage() {
 }
 
 export const Route = createFileRoute("/admin/tags/")({
-	beforeLoad: () => {
-		throw redirect({ search: { tab: "tags" }, to: "/admin/products" });
-	},
+	component: TagsPage,
 });
