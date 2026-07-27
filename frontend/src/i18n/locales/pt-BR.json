@@ -318,12 +318,15 @@
 			},
 			"inventory": {
 				"actions": {
+					"registerEntry": "Registrar entrada",
+					"registerLoss": "Registrar saída",
 					"save": "Salvar"
 				},
 				"addItem": "Adicionar insumo",
 				"addMovement": "Registrar movimentação",
 				"back": "Voltar ao estoque",
 				"columns": {
+					"actions": "Ações",
 					"available": "Disponível",
 					"cost": "Custo médio",
 					"coverage": "Cobertura",
@@ -342,6 +345,7 @@
 					"name": "Nome",
 					"quantity": "Quantidade",
 					"reason": "Motivo",
+					"totalCost": "Custo total",
 					"type": "Tipo",
 					"unit": "Unidade",
 					"unitCost": "Custo unitário"
@@ -362,6 +366,7 @@
 				"loadError": "Não foi possível carregar o estoque.",
 				"movement": {
 					"error": "Não foi possível registrar a movimentação.",
+					"quickTitle": "Registrar movimentação",
 					"success": "Movimentação registrada.",
 					"title": "Nova movimentação"
 				},

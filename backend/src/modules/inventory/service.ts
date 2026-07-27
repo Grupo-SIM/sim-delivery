@@ -149,7 +149,7 @@ export class InventoryService {
 			const consumptionPerDay = used / settings.consumptionWindowDays;
 			const coverageDays = consumptionPerDay > 0 ? available / consumptionPerDay : null;
 			return {
-				alert: available <= 0 || (coverageDays !== null && coverageDays < settings.coverageTargetDays),
+				alert: available < 0 || (coverageDays !== null && coverageDays < settings.coverageTargetDays),
 				averageCostCents,
 				consumptionPerDay,
 				coverageDays,
@@ -175,7 +175,7 @@ export class InventoryService {
 				item.averageCostCents / 100,
 				item.coverageDays ?? "sem histórico",
 			].some(value => String(value).toLocaleLowerCase().includes(normalizedSearch));
-			const matchesStatus = query.status === undefined || query.status === "all" || (query.status === "low" && item.alert) || (query.status === "negative" && item.quantity - item.reservedQuantity <= 0) || (query.status === "no_history" && item.coverageDays === null);
+			const matchesStatus = query.status === undefined || query.status === "all" || (query.status === "low" && item.alert) || (query.status === "negative" && item.quantity - item.reservedQuantity < 0) || (query.status === "no_history" && item.coverageDays === null);
 			return matchesSearch && matchesStatus;
 		});
 		return { items: filtered, settings };
