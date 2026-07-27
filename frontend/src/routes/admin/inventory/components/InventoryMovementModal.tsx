@@ -10,7 +10,7 @@ import { TextField } from "@/components/ui/TextField";
 import { getInventoryOverviewQueryKey, useGetInventoryItems, useGetUnits, usePostInventoryMovements } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 
-export function InventoryMovementModal({ initialInventoryItemId = "", initialType = "entry", initialUnitId = "", isOpen, onClose }: {
+export function InventoryMovementModal({ initialInventoryItemId = "", initialType, initialUnitId = "", isOpen, onClose }: {
 	initialInventoryItemId?: string;
 	initialType?: "entry" | "adjustment" | "loss";
 	initialUnitId?: string;
@@ -24,7 +24,7 @@ export function InventoryMovementModal({ initialInventoryItemId = "", initialTyp
 	const mutation = usePostInventoryMovements();
 	const [inventoryItemId, setInventoryItemId] = useState(initialInventoryItemId);
 	const [unitId, setUnitId] = useState(initialUnitId);
-	const [type, setType] = useState<"entry" | "adjustment" | "loss">(initialType);
+	const [type, setType] = useState<"entry" | "adjustment" | "loss">(initialType ?? "entry");
 	const [quantity, setQuantity] = useState(0);
 	const [totalCostCents, setTotalCostCents] = useState(0);
 	const [reason, setReason] = useState("");
@@ -32,7 +32,7 @@ export function InventoryMovementModal({ initialInventoryItemId = "", initialTyp
 	function close() {
 		setInventoryItemId(initialInventoryItemId);
 		setUnitId(initialUnitId);
-		setType(initialType);
+		setType(initialType ?? "entry");
 		setQuantity(0);
 		setTotalCostCents(0);
 		setReason("");
@@ -46,7 +46,7 @@ export function InventoryMovementModal({ initialInventoryItemId = "", initialTyp
 				quantity,
 				reason,
 				type,
-				unitCostCents: Math.round(totalCostCents / quantity),
+				...(type === "entry" ? { unitCostCents: Math.round(totalCostCents / quantity) } : {}),
 				unitId,
 			},
 		}, {
@@ -60,12 +60,13 @@ export function InventoryMovementModal({ initialInventoryItemId = "", initialTyp
 	}
 
 	const itemIsKnown = Boolean(initialInventoryItemId);
-	const typeIsKnown = initialType !== "adjustment";
-	const requiresTotalCost = true;
+	const unitIsKnown = Boolean(initialUnitId);
+	const typeIsKnown = initialType !== undefined;
+	const requiresTotalCost = type === "entry";
 
 	return <Modal isOpen={isOpen} onClose={close} title={t(itemIsKnown ? "admin.inventory.movement.quickTitle" : "admin.inventory.movement.title")}>
 		<div className="space-y-4">
-			<div><span className="mb-1 block font-medium text-sm">{t("admin.inventory.fields.unit")} <RequiredMark /></span><CustomSelect onChange={setUnitId} options={units.map(unit => ({ label: unit.name, value: unit.id }))} value={unitId} /></div>
+			{!unitIsKnown && <div><span className="mb-1 block font-medium text-sm">{t("admin.inventory.fields.unit")} <RequiredMark /></span><CustomSelect onChange={setUnitId} options={units.map(unit => ({ label: unit.name, value: unit.id }))} value={unitId} /></div>}
 			{!itemIsKnown && <div><span className="mb-1 block font-medium text-sm">{t("admin.inventory.fields.item")} <RequiredMark /></span><CustomSelect onChange={setInventoryItemId} options={items.map(item => ({ label: item.name, value: item.id }))} value={inventoryItemId} /></div>}
 			{!typeIsKnown && <div><span className="mb-1 block font-medium text-sm">{t("admin.inventory.fields.type")} <RequiredMark /></span><CustomSelect onChange={value => setType(value as typeof type)} options={[{ label: t("admin.inventory.types.entry"), value: "entry" }, { label: t("admin.inventory.types.adjustment"), value: "adjustment" }, { label: t("admin.inventory.types.loss"), value: "loss" }]} value={type} /></div>}
 			<div><span className="mb-1 block font-medium text-sm">{t("admin.inventory.fields.quantity")} <RequiredMark /></span><NumericInput decimalScale={3} onValueChange={({ floatValue }) => setQuantity(floatValue)} placeholder="Ex: 10,000" value={quantity} /></div>
