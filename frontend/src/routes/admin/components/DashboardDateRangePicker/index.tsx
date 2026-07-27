@@ -84,8 +84,9 @@ export function DashboardDateRangePicker({
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [open, setOpen] = useState(inline);
 	const [calendarMonth, setCalendarMonth] = useState(() => new Date());
-	const [startDate, setStartDate] = useState<string | null>(value?.startDate ?? null);
-	const [endDate, setEndDate] = useState<string | null>(value?.endDate ?? null);
+	const [draftStartDate, setDraftStartDate] = useState<string | null>(null);
+	const [draftEndDate, setDraftEndDate] = useState<string | null>(null);
+	const [hoveredDate, setHoveredDate] = useState<string | null>(null);
 	const days = useMemo(() => {
 		const firstOfMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1);
 		const firstVisibleDate = new Date(firstOfMonth);
@@ -100,25 +101,40 @@ export function DashboardDateRangePicker({
 		});
 	}, [calendarMonth]);
 
-	useEffect(() => {
-		const initialRange = value ?? (presetValue && presetValue !== "custom" ? getPresetRange(presetValue) : null);
-		setStartDate(initialRange?.startDate ?? null);
-		setEndDate(initialRange?.endDate ?? null);
+	const committedRange = value ?? (presetValue && presetValue !== "custom" ? getPresetRange(presetValue) : null);
+	const selectionStartDate = draftStartDate ?? committedRange?.startDate ?? null;
+	const selectionEndDate = draftStartDate ? draftEndDate : (committedRange?.endDate ?? null);
 
-		if (!initialRange) return;
-		const date = new Date(`${initialRange.startDate}T12:00:00`);
-		setCalendarMonth(new Date(date.getFullYear(), date.getMonth(), 1));
-	}, [presetValue, value]);
+	function resetDraft() {
+		setDraftStartDate(null);
+		setDraftEndDate(null);
+		setHoveredDate(null);
+	}
+
+	function openCalendar() {
+		const initialDate = committedRange?.startDate;
+		if (initialDate) {
+			const date = new Date(`${initialDate}T12:00:00`);
+			setCalendarMonth(new Date(date.getFullYear(), date.getMonth(), 1));
+		}
+		resetDraft();
+		setOpen(true);
+	}
+
+	function closeCalendar() {
+		resetDraft();
+		setOpen(false);
+	}
 
 	useEffect(() => {
 		if (!open || inline) return;
 
 		function closeOnOutsideClick(event: MouseEvent) {
-			if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
+			if (!containerRef.current?.contains(event.target as Node)) closeCalendar();
 		}
 
 		function closeOnEscape(event: KeyboardEvent) {
-			if (event.key === "Escape") setOpen(false);
+			if (event.key === "Escape") closeCalendar();
 		}
 
 		document.addEventListener("mousedown", closeOnOutsideClick);
@@ -131,34 +147,27 @@ export function DashboardDateRangePicker({
 
 	function selectDay(date: Date) {
 		const nextDate = formatDate(date);
-		if (!startDate || endDate) {
-			setStartDate(nextDate);
-			setEndDate(null);
+		if (!draftStartDate || draftEndDate) {
+			setDraftStartDate(nextDate);
+			setDraftEndDate(null);
+			setHoveredDate(null);
 			return;
 		}
 
 		const range =
-			nextDate < startDate ? { endDate: startDate, startDate: nextDate } : { endDate: nextDate, startDate };
-		setStartDate(range.startDate);
-		setEndDate(range.endDate);
+			nextDate < draftStartDate ? { endDate: draftStartDate, startDate: nextDate } : { endDate: nextDate, startDate: draftStartDate };
 		onChange(range);
-		setOpen(false);
+		closeCalendar();
 	}
 
 	function selectPreset(nextPreset: string) {
-		const range = getPresetRange(nextPreset);
-		setStartDate(range?.startDate ?? null);
-		setEndDate(range?.endDate ?? null);
-		if (range) {
-			const date = new Date(`${range.startDate}T12:00:00`);
-			setCalendarMonth(new Date(date.getFullYear(), date.getMonth(), 1));
-		}
+		resetDraft();
 		onPresetChange?.(nextPreset);
+		closeCalendar();
 	}
 
-	const selectedRange = startDate ? { endDate: endDate ?? startDate, startDate } : null;
-	const label = selectedRange
-		? formatRange(selectedRange)
+	const label = committedRange
+		? formatRange(committedRange)
 		: (presetOptions?.find(option => option.value === presetValue && option.value !== "custom")?.label ??
 			placeholder);
 
@@ -201,23 +210,29 @@ export function DashboardDateRangePicker({
 				{days.map(date => {
 					const dateValue = formatDate(date);
 					const inMonth = date.getMonth() === calendarMonth.getMonth();
-					const isStartDate = dateValue === startDate;
-					const isEndDate = dateValue === endDate;
+					const isStartDate = dateValue === selectionStartDate;
+					const isEndDate = dateValue === selectionEndDate;
+					const isHoveredEndDate = Boolean(draftStartDate && !draftEndDate && dateValue === hoveredDate);
+					const rangeEndDate = draftStartDate && !draftEndDate ? hoveredDate : selectionEndDate;
 					const withinRange = Boolean(
-						startDate && endDate && dateValue > startDate && dateValue < endDate,
+						selectionStartDate && rangeEndDate &&
+							dateValue > (selectionStartDate < rangeEndDate ? selectionStartDate : rangeEndDate) &&
+							dateValue < (selectionStartDate < rangeEndDate ? rangeEndDate : selectionStartDate),
 					);
 
 					return (
 						<button
 							className={cn(
-								"h-9 cursor-pointer rounded text-sm transition-colors hover:bg-accent",
+								"h-9 cursor-pointer rounded text-sm transition-colors hover:bg-accent/80",
 								!inMonth && "text-muted-foreground",
 								withinRange && "bg-primary/10",
 								isStartDate && "bg-warning font-semibold text-warning-foreground hover:bg-warning",
-								isEndDate && "bg-primary font-semibold text-primary-foreground hover:bg-primary",
+								isEndDate && !draftStartDate && "bg-primary font-semibold text-primary-foreground hover:bg-primary",
+								isHoveredEndDate && "bg-primary font-semibold text-primary-foreground hover:bg-primary",
 							)}
 							key={dateValue}
 							onClick={() => selectDay(date)}
+							onMouseEnter={() => draftStartDate && !draftEndDate && setHoveredDate(dateValue)}
 							type="button"
 						>
 							{date.getDate()}
@@ -226,7 +241,7 @@ export function DashboardDateRangePicker({
 				})}
 			</div>
 			<p className="mt-3 text-muted-foreground text-xs">
-				{startDate && !endDate ? "Selecione a data final." : "Selecione a data inicial e a final."}
+				{draftStartDate && !draftEndDate ? "Selecione a data final." : "Selecione a data inicial e a final."}
 			</p>
 			{presetOptions && onPresetChange && presetValue && (
 				<div className="mt-3 border-border border-t pt-3">
@@ -244,7 +259,7 @@ export function DashboardDateRangePicker({
 				aria-expanded={open}
 				aria-haspopup="dialog"
 				className="flex h-11 min-w-48 cursor-pointer items-center gap-2 rounded-xl border border-input bg-background px-3 font-semibold text-sm shadow-sm outline-none ring-offset-background transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-				onClick={() => setOpen(value => !value)}
+				onClick={() => (open ? closeCalendar() : openCalendar())}
 				type="button"
 			>
 				<LuCalendarDays className="h-4 w-4 text-muted-foreground" />
