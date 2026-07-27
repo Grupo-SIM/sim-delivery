@@ -46,18 +46,77 @@ export function DashboardDateRangePicker({
 	const [startDate, setStartDate] = useState<string | null>(value?.startDate ?? null);
 	const [endDate, setEndDate] = useState<string | null>(value?.endDate ?? null);
 	const days = useMemo(() => {
-		const firstDay = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1).getDay();
-		const totalDays = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
-		return Array.from(
-			{ length: Math.ceil((firstDay + totalDays) / 7) * 7 },
-			(_, index) => index - firstDay + 1,
-		);
+		const firstOfMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1);
+		const firstVisibleDate = new Date(firstOfMonth);
+		firstVisibleDate.setDate(firstOfMonth.getDate() - firstOfMonth.getDay());
+		const lastOfMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0);
+		const visibleWeekCount = Math.ceil((firstOfMonth.getDay() + lastOfMonth.getDate()) / 7);
+
+		return Array.from({ length: visibleWeekCount * 7 }, (_, index) => {
+			const date = new Date(firstVisibleDate);
+			date.setDate(firstVisibleDate.getDate() + index);
+			return date;
+		});
 	}, [calendarMonth]);
+
+	const presetRange = useMemo(() => {
+		if (value || !presetValue || presetValue === "custom") return null;
+
+		const today = new Date();
+		const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+		const end = new Date(start);
+
+		switch (presetValue) {
+			case "today":
+				break;
+			case "yesterday":
+				start.setDate(start.getDate() - 1);
+				end.setDate(end.getDate() - 1);
+				break;
+			case "week":
+				start.setDate(start.getDate() - 6);
+				break;
+			case "month":
+				start.setDate(1);
+				end.setFullYear(today.getFullYear(), today.getMonth() + 1, 0);
+				break;
+			case "lastMonth":
+				start.setFullYear(today.getFullYear(), today.getMonth() - 1, 1);
+				end.setFullYear(today.getFullYear(), today.getMonth(), 0);
+				break;
+			case "quarter":
+				start.setFullYear(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3, 1);
+				end.setFullYear(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3 + 3, 0);
+				break;
+			case "semester":
+				start.setFullYear(today.getFullYear(), today.getMonth() < 6 ? 0 : 6, 1);
+				end.setFullYear(today.getFullYear(), today.getMonth() < 6 ? 6 : 12, 0);
+				break;
+			case "year":
+				start.setFullYear(today.getFullYear(), 0, 1);
+				end.setFullYear(today.getFullYear(), 11, 31);
+				break;
+			default:
+				return null;
+		}
+
+		return { endDate: formatDate(end), startDate: formatDate(start) };
+	}, [presetValue, value]);
+
+	const selectedRange = value ?? (startDate && !endDate ? { endDate: startDate, startDate } : presetRange);
+	const selectedStartDate = selectedRange?.startDate;
+	const selectedEndDate = selectedRange?.endDate;
 
 	useEffect(() => {
 		setStartDate(value?.startDate ?? null);
 		setEndDate(value?.endDate ?? null);
-	}, [value]);
+
+		const initialDate = value?.startDate ?? presetRange?.startDate;
+		if (!initialDate) return;
+
+		const date = new Date(`${initialDate}T12:00:00`);
+		setCalendarMonth(new Date(date.getFullYear(), date.getMonth(), 1));
+	}, [presetRange?.startDate, value]);
 
 	useEffect(() => {
 		if (!open || inline) return;
@@ -78,8 +137,8 @@ export function DashboardDateRangePicker({
 		};
 	}, [open, inline]);
 
-	function selectDay(day: number) {
-		const nextDate = formatDate(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day));
+	function selectDay(date: Date) {
+		const nextDate = formatDate(date);
 		if (!startDate || endDate) {
 			setStartDate(nextDate);
 			setEndDate(null);
@@ -136,30 +195,29 @@ export function DashboardDateRangePicker({
 				))}
 			</div>
 			<div className="mt-1 grid grid-cols-7 gap-1">
-				{days.map((day, index) => {
-					const inMonth =
-						day > 0 &&
-						day <= new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
-					const date = inMonth
-						? formatDate(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day))
-						: null;
-					const selected = Boolean(date) && (date === startDate || date === endDate);
-					const withinRange = Boolean(date && startDate && endDate && date > startDate && date < endDate);
+				{days.map(date => {
+					const dateValue = formatDate(date);
+					const inMonth = date.getMonth() === calendarMonth.getMonth();
+					const selected = Boolean(selectedRange) && (dateValue === selectedStartDate || dateValue === selectedEndDate);
+					const withinRange = Boolean(
+						selectedRange &&
+						dateValue > selectedRange.startDate &&
+						dateValue < selectedRange.endDate,
+					);
 
 					return (
 						<button
 							className={cn(
-								"h-9 rounded text-sm",
-								inMonth ? "cursor-pointer hover:bg-accent" : "cursor-default",
+								"h-9 cursor-pointer rounded text-sm hover:bg-accent",
+								!inMonth && "text-muted-foreground",
 								withinRange && "bg-primary/10",
 								selected && "bg-primary font-semibold text-primary-foreground hover:bg-primary",
 							)}
-							disabled={!inMonth}
-							key={index}
-							onClick={() => inMonth && selectDay(day)}
+							key={dateValue}
+							onClick={() => selectDay(date)}
 							type="button"
 						>
-							{inMonth ? day : ""}
+							{date.getDate()}
 						</button>
 					);
 				})}
