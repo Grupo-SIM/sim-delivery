@@ -148,77 +148,92 @@ function AdminDashboardPage() {
 			)}
 
 			{analyticsPending ? (
-				<div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-					<Skeleton className="h-72" />
-					<Skeleton className="h-72" />
-				</div>
+				<Skeleton className="h-72" />
 			) : analyticsError ? (
 				<ErrorState title={t("admin.reports.loadError")} />
 			) : (
-				<div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-					<DashboardOrdersByPeriodChart
-						groupBy={analytics.groupBy}
-						onGroupByChange={setGroupBy}
-						options={groupByOptions}
-						ordersByPeriod={analytics.ordersByPeriod}
-						selectLabel={t("admin.reports.groupBy.title")}
-						title={t("admin.reports.ordersByPeriod.title")}
-					/>
-					<DashboardDeliveryRadiusTable
-						columns={{
-							deliveryFee: t("admin.reports.deliveryRadius.columns.deliveryFee"),
-							orderCount: t("admin.reports.deliveryRadius.columns.orderCount"),
-							radius: t("admin.reports.deliveryRadius.columns.radius"),
-							revenue: t("admin.reports.deliveryRadius.columns.revenue"),
-							unit: t("admin.reports.deliveryRadius.columns.unit"),
-						}}
-						empty={t("admin.reports.deliveryRadius.empty")}
-						formatCents={formatCents}
-						noRadius={t("admin.reports.deliveryRadius.noRadius")}
-						rows={analytics.deliveryRadiusPerformance}
-						title={t("admin.reports.deliveryRadius.title")}
-					/>
-				</div>
+				<DashboardOrdersByPeriodChart
+					groupBy={analytics.groupBy}
+					onGroupByChange={setGroupBy}
+					options={groupByOptions}
+					ordersByPeriod={analytics.ordersByPeriod}
+					selectLabel={t("admin.reports.groupBy.title")}
+					title={t("admin.reports.ordersByPeriod.title")}
+				/>
 			)}
 
-			{/* Best sellers */}
-			<div>
-				<h2 className="mb-3 font-semibold text-base">{t("admin.reports.bestSellers.title")}</h2>
-				{bsPending ? (
-					<Skeleton className="h-40 w-full" />
-				) : bsError ? (
-					<ErrorState title={t("admin.reports.loadError")} />
-				) : (
-					<DataTable>
-						<thead>
-							<tr className="border-border border-b text-left text-muted-foreground">
-								<th className="px-4 py-3 font-medium">{t("admin.reports.bestSellers.columns.product")}</th>
-								<th className="px-4 py-3 text-right font-medium">
-									{t("admin.reports.bestSellers.columns.quantity")}
-								</th>
-								<th className="px-4 py-3 text-right font-medium">
-									{t("admin.reports.bestSellers.columns.revenue")}
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							{bestSellers.length === 0 && (
-								<tr>
-									<td className="px-6 py-10 text-center font-semibold text-sm" colSpan={3}>
-										{t("admin.reports.empty")}
-									</td>
+			<div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+				<div className="min-w-0">
+					{analyticsPending ? (
+						<Skeleton className="h-72" />
+					) : analyticsError ? (
+						<ErrorState title={t("admin.reports.loadError")} />
+					) : (
+						<DashboardDeliveryRadiusTable
+							columns={{
+								deliveryFee: t("admin.reports.deliveryRadius.columns.deliveryFee"),
+								orderCount: t("admin.reports.deliveryRadius.columns.orderCount"),
+								radius: t("admin.reports.deliveryRadius.columns.radius"),
+								revenue: t("admin.reports.deliveryRadius.columns.revenue"),
+								unit: t("admin.reports.deliveryRadius.columns.unit"),
+							}}
+							empty={t("admin.reports.deliveryRadius.empty")}
+							formatCents={formatCents}
+							noRadius={t("admin.reports.deliveryRadius.noRadius")}
+							rows={analytics.deliveryRadiusPerformance}
+							title={t("admin.reports.deliveryRadius.title")}
+						/>
+					)}
+				</div>
+
+				{/* Best sellers */}
+				<div className="min-w-0">
+					<h2 className="mb-3 font-semibold text-base">{t("admin.reports.bestSellers.title")}</h2>
+					{bsPending ? (
+						<Skeleton className="h-40 w-full" />
+					) : bsError ? (
+						<ErrorState title={t("admin.reports.loadError")} />
+					) : (
+						<DataTable tableClassName="!min-w-0 table-fixed">
+							<colgroup>
+								<col className="w-[52%]" />
+								<col className="w-[24%]" />
+								<col className="w-[24%]" />
+							</colgroup>
+							<thead>
+								<tr className="border-border border-b text-left text-muted-foreground">
+									<th className="py-3 pr-2 pl-4 font-medium">
+										{t("admin.reports.bestSellers.columns.product")}
+									</th>
+									<th className="px-2 py-3 text-right font-medium">
+										{t("admin.reports.bestSellers.columns.quantity")}
+									</th>
+									<th className="py-3 pr-4 pl-2 text-right font-medium">
+										{t("admin.reports.bestSellers.columns.revenue")}
+									</th>
 								</tr>
-							)}
-							{bestSellers.map(item => (
-								<tr className="border-border/60 border-b last:border-0" key={item.productId}>
-									<td className="px-4 py-3 font-medium">{item.productName}</td>
-									<td className="px-4 py-3 text-right text-sm">{Number(item.totalQuantity)}</td>
-									<td className="px-4 py-3 text-right text-sm">{formatCents(Number(item.totalRevenue))}</td>
-								</tr>
-							))}
-						</tbody>
-					</DataTable>
-				)}
+							</thead>
+							<tbody>
+								{bestSellers.length === 0 && (
+									<tr>
+										<td className="px-6 py-20 text-center font-semibold text-sm" colSpan={3}>
+											{t("admin.reports.empty")}
+										</td>
+									</tr>
+								)}
+								{bestSellers.map(item => (
+									<tr className="border-border/60 border-b last:border-0" key={item.productId}>
+										<td className="py-3 pr-2 pl-4 font-medium">{item.productName}</td>
+										<td className="px-2 py-3 text-right text-sm">{Number(item.totalQuantity)}</td>
+										<td className="py-3 pr-4 pl-2 text-right text-sm">
+											{formatCents(Number(item.totalRevenue))}
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</DataTable>
+					)}
+				</div>
 			</div>
 
 			{/* Recent orders */}
