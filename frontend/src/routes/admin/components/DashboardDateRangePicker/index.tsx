@@ -142,6 +142,7 @@ export function DashboardDateRangePicker({
 		setStartDate(range.startDate);
 		setEndDate(range.endDate);
 		onChange(range);
+		setOpen(false);
 	}
 
 	function selectPreset(nextPreset: string) {
@@ -209,7 +210,7 @@ export function DashboardDateRangePicker({
 					return (
 						<button
 							className={cn(
-								"h-9 cursor-pointer rounded text-sm hover:bg-accent",
+								"h-9 cursor-pointer rounded text-sm transition-colors hover:bg-accent",
 								!inMonth && "text-muted-foreground",
 								withinRange && "bg-primary/10",
 								isStartDate && "bg-warning font-semibold text-warning-foreground hover:bg-warning",

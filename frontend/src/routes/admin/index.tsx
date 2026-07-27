@@ -78,7 +78,11 @@ function AdminDashboardPage() {
 		...(groupBy === "auto" ? {} : { groupBy }),
 		period: queryPeriod,
 	});
-	const { data: allOrders, isError: ordersError, isPending: ordersPending } = useGetOrders();
+	const { data: allOrders, isError: ordersError, isPending: ordersPending } = useGetOrders(
+		dateRange
+			? { from: `${dateRange.startDate}T00:00:00`, to: `${dateRange.endDate}T23:59:59.999` }
+			: undefined,
+	);
 
 	const recentOrders = allOrders?.slice(0, 10) ?? [];
 
