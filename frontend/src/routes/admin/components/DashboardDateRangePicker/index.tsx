@@ -31,6 +31,47 @@ function formatRange(range: DateRange) {
 	return `${formatter.format(new Date(`${range.startDate}T12:00:00`))} – ${formatter.format(new Date(`${range.endDate}T12:00:00`))}`;
 }
 
+function getPresetRange(preset: string, today = new Date()): DateRange | null {
+	const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+	const end = new Date(start);
+
+	switch (preset) {
+		case "today":
+			break;
+		case "yesterday":
+			start.setDate(start.getDate() - 1);
+			end.setDate(end.getDate() - 1);
+			break;
+		case "week":
+			start.setDate(start.getDate() - 6);
+			break;
+		case "month":
+			start.setDate(1);
+			end.setFullYear(today.getFullYear(), today.getMonth() + 1, 0);
+			break;
+		case "lastMonth":
+			start.setFullYear(today.getFullYear(), today.getMonth() - 1, 1);
+			end.setFullYear(today.getFullYear(), today.getMonth(), 0);
+			break;
+		case "quarter":
+			start.setFullYear(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3, 1);
+			end.setFullYear(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3 + 3, 0);
+			break;
+		case "semester":
+			start.setFullYear(today.getFullYear(), today.getMonth() < 6 ? 0 : 6, 1);
+			end.setFullYear(today.getFullYear(), today.getMonth() < 6 ? 6 : 12, 0);
+			break;
+		case "year":
+			start.setFullYear(today.getFullYear(), 0, 1);
+			end.setFullYear(today.getFullYear(), 11, 31);
+			break;
+		default:
+			return null;
+	}
+
+	return { endDate: formatDate(end), startDate: formatDate(start) };
+}
+
 export function DashboardDateRangePicker({
 	inline = false,
 	onChange,
@@ -59,64 +100,15 @@ export function DashboardDateRangePicker({
 		});
 	}, [calendarMonth]);
 
-	const presetRange = useMemo(() => {
-		if (value || !presetValue || presetValue === "custom") return null;
-
-		const today = new Date();
-		const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-		const end = new Date(start);
-
-		switch (presetValue) {
-			case "today":
-				break;
-			case "yesterday":
-				start.setDate(start.getDate() - 1);
-				end.setDate(end.getDate() - 1);
-				break;
-			case "week":
-				start.setDate(start.getDate() - 6);
-				break;
-			case "month":
-				start.setDate(1);
-				end.setFullYear(today.getFullYear(), today.getMonth() + 1, 0);
-				break;
-			case "lastMonth":
-				start.setFullYear(today.getFullYear(), today.getMonth() - 1, 1);
-				end.setFullYear(today.getFullYear(), today.getMonth(), 0);
-				break;
-			case "quarter":
-				start.setFullYear(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3, 1);
-				end.setFullYear(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3 + 3, 0);
-				break;
-			case "semester":
-				start.setFullYear(today.getFullYear(), today.getMonth() < 6 ? 0 : 6, 1);
-				end.setFullYear(today.getFullYear(), today.getMonth() < 6 ? 6 : 12, 0);
-				break;
-			case "year":
-				start.setFullYear(today.getFullYear(), 0, 1);
-				end.setFullYear(today.getFullYear(), 11, 31);
-				break;
-			default:
-				return null;
-		}
-
-		return { endDate: formatDate(end), startDate: formatDate(start) };
-	}, [presetValue, value]);
-
-	const selectedRange = value ?? (startDate && !endDate ? { endDate: startDate, startDate } : presetRange);
-	const selectedStartDate = selectedRange?.startDate;
-	const selectedEndDate = selectedRange?.endDate;
-
 	useEffect(() => {
-		setStartDate(value?.startDate ?? null);
-		setEndDate(value?.endDate ?? null);
+		const initialRange = value ?? (presetValue && presetValue !== "custom" ? getPresetRange(presetValue) : null);
+		setStartDate(initialRange?.startDate ?? null);
+		setEndDate(initialRange?.endDate ?? null);
 
-		const initialDate = value?.startDate ?? presetRange?.startDate;
-		if (!initialDate) return;
-
-		const date = new Date(`${initialDate}T12:00:00`);
+		if (!initialRange) return;
+		const date = new Date(`${initialRange.startDate}T12:00:00`);
 		setCalendarMonth(new Date(date.getFullYear(), date.getMonth(), 1));
-	}, [presetRange?.startDate, value]);
+	}, [presetValue, value]);
 
 	useEffect(() => {
 		if (!open || inline) return;
@@ -150,12 +142,22 @@ export function DashboardDateRangePicker({
 		setStartDate(range.startDate);
 		setEndDate(range.endDate);
 		onChange(range);
-		if (!inline) setOpen(false);
 	}
 
-	// A preset is what's actually driving the query while `value` is null, so the trigger shows its label.
-	const label = value
-		? formatRange(value)
+	function selectPreset(nextPreset: string) {
+		const range = getPresetRange(nextPreset);
+		setStartDate(range?.startDate ?? null);
+		setEndDate(range?.endDate ?? null);
+		if (range) {
+			const date = new Date(`${range.startDate}T12:00:00`);
+			setCalendarMonth(new Date(date.getFullYear(), date.getMonth(), 1));
+		}
+		onPresetChange?.(nextPreset);
+	}
+
+	const selectedRange = startDate ? { endDate: endDate ?? startDate, startDate } : null;
+	const label = selectedRange
+		? formatRange(selectedRange)
 		: (presetOptions?.find(option => option.value === presetValue && option.value !== "custom")?.label ??
 			placeholder);
 
@@ -198,11 +200,10 @@ export function DashboardDateRangePicker({
 				{days.map(date => {
 					const dateValue = formatDate(date);
 					const inMonth = date.getMonth() === calendarMonth.getMonth();
-					const selected = Boolean(selectedRange) && (dateValue === selectedStartDate || dateValue === selectedEndDate);
+					const isStartDate = dateValue === startDate;
+					const isEndDate = dateValue === endDate;
 					const withinRange = Boolean(
-						selectedRange &&
-						dateValue > selectedRange.startDate &&
-						dateValue < selectedRange.endDate,
+						startDate && endDate && dateValue > startDate && dateValue < endDate,
 					);
 
 					return (
@@ -211,7 +212,8 @@ export function DashboardDateRangePicker({
 								"h-9 cursor-pointer rounded text-sm hover:bg-accent",
 								!inMonth && "text-muted-foreground",
 								withinRange && "bg-primary/10",
-								selected && "bg-primary font-semibold text-primary-foreground hover:bg-primary",
+								isStartDate && "bg-warning font-semibold text-warning-foreground hover:bg-warning",
+								isEndDate && "bg-primary font-semibold text-primary-foreground hover:bg-primary",
 							)}
 							key={dateValue}
 							onClick={() => selectDay(date)}
@@ -222,10 +224,12 @@ export function DashboardDateRangePicker({
 					);
 				})}
 			</div>
-			<p className="mt-3 text-muted-foreground text-xs">Selecione a data inicial e a final.</p>
+			<p className="mt-3 text-muted-foreground text-xs">
+				{startDate && !endDate ? "Selecione a data final." : "Selecione a data inicial e a final."}
+			</p>
 			{presetOptions && onPresetChange && presetValue && (
 				<div className="mt-3 border-border border-t pt-3">
-					<CustomSelect onChange={onPresetChange} options={presetOptions} value={presetValue} />
+					<CustomSelect onChange={selectPreset} options={presetOptions} value={presetValue} />
 				</div>
 			)}
 		</div>
