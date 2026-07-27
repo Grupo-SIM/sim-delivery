@@ -137,7 +137,7 @@ export function DashboardDateRangePicker({
 					const date = inMonth
 						? formatDate(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), day))
 						: null;
-					const selected = date === startDate || date === endDate;
+					const selected = Boolean(date) && (date === startDate || date === endDate);
 					const withinRange = Boolean(date && startDate && endDate && date > startDate && date < endDate);
 
 					return (
