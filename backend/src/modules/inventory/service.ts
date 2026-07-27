@@ -113,16 +113,58 @@ export class InventoryService {
 	async overview(companyId: string, query: InventoryOverviewQuery) {
 		const settings = await this.getSettings(companyId);
 		const since = new Date(Date.now() - settings.consumptionWindowDays * 86_400_000);
-		const balances = await this.prisma.unitInventoryBalance.findMany({ include: { inventoryItem: true, unit: true }, where: { unit: { companyId }, ...(query.unitId ? { unitId: query.unitId } : {}), ...(query.search ? { inventoryItem: { name: { contains: query.search, mode: "insensitive" } } } : {}) } });
-		const usages = await this.prisma.inventoryMovement.groupBy({ _sum: { quantity: true }, by: ["unitId", "inventoryItemId"], where: { createdAt: { gte: since }, type: { in: ["consumption", "loss"] }, unit: { companyId } } });
+		const [units, inventoryItems, balances, usages] = await Promise.all([
+			this.prisma.unit.findMany({
+				orderBy: { name: "asc" },
+				where: { companyId, ...(query.unitId ? { id: query.unitId } : {}) },
+			}),
+			this.prisma.inventoryItem.findMany({
+				orderBy: { name: "asc" },
+				where: {
+					active: true,
+					companyId,
+					...(query.search ? { name: { contains: query.search, mode: "insensitive" } } : {}),
+				},
+			}),
+			this.prisma.unitInventoryBalance.findMany({
+				where: {
+					unit: { companyId },
+					...(query.unitId ? { unitId: query.unitId } : {}),
+					...(query.search ? { inventoryItem: { name: { contains: query.search, mode: "insensitive" } } } : {}),
+				},
+			}),
+			this.prisma.inventoryMovement.groupBy({
+				_sum: { quantity: true },
+				by: ["unitId", "inventoryItemId"],
+				where: { createdAt: { gte: since }, type: { in: ["consumption", "loss"] }, unit: { companyId } },
+			}),
+		]);
+		const balancesByKey = new Map(balances.map(balance => [`${balance.unitId}:${balance.inventoryItemId}`, balance]));
 		const usageByKey = new Map(usages.map(row => [`${row.unitId}:${row.inventoryItemId}`, Math.abs(number(row._sum.quantity))]));
-		const items = balances.map(balance => {
-			const available = number(balance.quantity) - number(balance.reservedQuantity);
-			const used = usageByKey.get(`${balance.unitId}:${balance.inventoryItemId}`) ?? 0;
+		const items = units.flatMap(unit => inventoryItems.map(inventoryItem => {
+			const balance = balancesByKey.get(`${unit.id}:${inventoryItem.id}`);
+			const quantity = number(balance?.quantity);
+			const reservedQuantity = number(balance?.reservedQuantity);
+			const averageCostCents = number(balance?.averageCostCents);
+			const available = quantity - reservedQuantity;
+			const used = usageByKey.get(`${unit.id}:${inventoryItem.id}`) ?? 0;
 			const consumptionPerDay = used / settings.consumptionWindowDays;
 			const coverageDays = consumptionPerDay > 0 ? available / consumptionPerDay : null;
-			return { alert: available <= 0 || (coverageDays !== null && coverageDays < settings.coverageTargetDays), averageCostCents: number(balance.averageCostCents), consumptionPerDay, coverageDays, inventoryItemId: balance.inventoryItemId, inventoryItemName: balance.inventoryItem.name, quantity: number(balance.quantity), reservedQuantity: number(balance.reservedQuantity), unit: balance.inventoryItem.unit as "unit" | "gram" | "milliliter", unitId: balance.unitId, unitName: balance.unit.name, valueCents: number(balance.quantity) * number(balance.averageCostCents) };
-		});
+			return {
+				alert: available <= 0 || (coverageDays !== null && coverageDays < settings.coverageTargetDays),
+				averageCostCents,
+				consumptionPerDay,
+				coverageDays,
+				inventoryItemId: inventoryItem.id,
+				inventoryItemName: inventoryItem.name,
+				quantity,
+				reservedQuantity,
+				unit: inventoryItem.unit as "unit" | "gram" | "milliliter",
+				unitId: unit.id,
+				unitName: unit.name,
+				valueCents: quantity * averageCostCents,
+			};
+		}));
 		const filtered = items.filter(item => query.status === undefined || query.status === "all" || (query.status === "low" && item.alert) || (query.status === "negative" && item.quantity - item.reservedQuantity <= 0) || (query.status === "no_history" && item.coverageDays === null));
 		return { items: filtered, settings };
 	}
