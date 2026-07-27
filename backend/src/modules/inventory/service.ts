@@ -123,14 +123,12 @@ export class InventoryService {
 				where: {
 					active: true,
 					companyId,
-					...(query.search ? { name: { contains: query.search, mode: "insensitive" } } : {}),
 				},
 			}),
 			this.prisma.unitInventoryBalance.findMany({
 				where: {
 					unit: { companyId },
 					...(query.unitId ? { unitId: query.unitId } : {}),
-					...(query.search ? { inventoryItem: { name: { contains: query.search, mode: "insensitive" } } } : {}),
 				},
 			}),
 			this.prisma.inventoryMovement.groupBy({
@@ -165,7 +163,21 @@ export class InventoryService {
 				valueCents: quantity * averageCostCents,
 			};
 		}));
-		const filtered = items.filter(item => query.status === undefined || query.status === "all" || (query.status === "low" && item.alert) || (query.status === "negative" && item.quantity - item.reservedQuantity <= 0) || (query.status === "no_history" && item.coverageDays === null));
+		const normalizedSearch = query.search?.trim().toLocaleLowerCase();
+		const filtered = items.filter(item => {
+			const matchesSearch = !normalizedSearch || [
+				item.inventoryItemName,
+				item.unitName,
+				item.quantity,
+				item.reservedQuantity,
+				item.quantity - item.reservedQuantity,
+				item.averageCostCents,
+				item.averageCostCents / 100,
+				item.coverageDays ?? "sem histórico",
+			].some(value => String(value).toLocaleLowerCase().includes(normalizedSearch));
+			const matchesStatus = query.status === undefined || query.status === "all" || (query.status === "low" && item.alert) || (query.status === "negative" && item.quantity - item.reservedQuantity <= 0) || (query.status === "no_history" && item.coverageDays === null);
+			return matchesSearch && matchesStatus;
+		});
 		return { items: filtered, settings };
 	}
 
