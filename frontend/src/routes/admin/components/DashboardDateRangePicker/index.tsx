@@ -94,6 +94,12 @@ export function DashboardDateRangePicker({
 		if (!inline) setOpen(false);
 	}
 
+	// A preset is what's actually driving the query while `value` is null, so the trigger shows its label.
+	const label = value
+		? formatRange(value)
+		: (presetOptions?.find(option => option.value === presetValue && option.value !== "custom")?.label ??
+			placeholder);
+
 	const calendar = (
 		<div
 			className={cn(
@@ -179,7 +185,7 @@ export function DashboardDateRangePicker({
 				type="button"
 			>
 				<LuCalendarDays className="h-4 w-4 text-muted-foreground" />
-				<span>{value ? formatRange(value) : placeholder}</span>
+				<span>{label}</span>
 			</button>
 			{open && calendar}
 		</div>
