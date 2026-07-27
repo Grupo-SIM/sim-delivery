@@ -1,0 +1,143 @@
+model InventoryItem {
+    id        String   @id @default(cuid())
+    companyId String
+    name      String
+    /// unit | gram | milliliter
+    unit      String
+    active    Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    company          Company                    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    balances         UnitInventoryBalance[]
+    movements        InventoryMovement[]
+    productRecipes   ProductRecipeIngredient[]
+    optionRecipes    OptionRecipeIngredient[]
+    localOptionRecipes LocalOptionRecipeIngredient[]
+    reservations     InventoryReservation[]
+
+    @@unique([companyId, name])
+    @@index([companyId, active])
+    @@map("inventory_item")
+}
+
+model InventorySettings {
+    companyId          String   @id
+    coverageTargetDays Int      @default(7)
+    consumptionWindowDays Int   @default(30)
+    createdAt          DateTime @default(now())
+    updatedAt          DateTime @updatedAt
+
+    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+    @@map("inventory_settings")
+}
+
+model UnitInventoryBalance {
+    unitId          String
+    inventoryItemId String
+    quantity        Decimal  @default(0) @db.Decimal(18, 6)
+    reservedQuantity Decimal @default(0) @db.Decimal(18, 6)
+    averageCostCents Decimal @default(0) @db.Decimal(18, 6)
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+
+    unit          Unit          @relation(fields: [unitId], references: [id], onDelete: Cascade)
+    inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+    movements     InventoryMovement[]
+    reservations  InventoryReservation[]
+
+    @@id([unitId, inventoryItemId])
+    @@index([inventoryItemId])
+    @@map("unit_inventory_balance")
+}
+
+model InventoryMovement {
+    id               String   @id @default(cuid())
+    unitId           String
+    inventoryItemId  String
+    /// entry | adjustment | loss | consumption | reversal
+    type             String
+    quantity         Decimal  @db.Decimal(18, 6)
+    unitCostCents    Decimal? @db.Decimal(18, 6)
+    reason           String
+    userId           String?
+    orderId          String?
+    balanceAfter     Decimal  @db.Decimal(18, 6)
+    createdAt        DateTime @default(now())
+
+    balance       UnitInventoryBalance @relation(fields: [unitId, inventoryItemId], references: [unitId, inventoryItemId], onDelete: Cascade)
+    inventoryItem InventoryItem         @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+    unit          Unit                  @relation(fields: [unitId], references: [id], onDelete: Cascade)
+    user          User?                 @relation(fields: [userId], references: [id], onDelete: SetNull)
+    order         Order?                @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+    @@index([unitId, createdAt])
+    @@index([inventoryItemId, createdAt])
+    @@index([orderId])
+    @@map("inventory_movement")
+}
+
+model ProductRecipeIngredient {
+    productId       String
+    inventoryItemId String
+    quantity        Decimal @db.Decimal(18, 6)
+
+    product       Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+    inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+
+    @@id([productId, inventoryItemId])
+    @@index([inventoryItemId])
+    @@map("product_recipe_ingredient")
+}
+
+model OptionRecipeIngredient {
+    optionId        String
+    inventoryItemId String
+    /// Positive adds consumption; negative removes base consumption.
+    quantityDelta   Decimal @db.Decimal(18, 6)
+
+    option        Option        @relation(fields: [optionId], references: [id], onDelete: Cascade)
+    inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+
+    @@id([optionId, inventoryItemId])
+    @@index([inventoryItemId])
+    @@map("option_recipe_ingredient")
+}
+
+model LocalOptionRecipeIngredient {
+    localOptionId   String
+    inventoryItemId String
+    quantityDelta   Decimal @db.Decimal(18, 6)
+
+    localOption   UnitProductAdditionalOption @relation(fields: [localOptionId], references: [id], onDelete: Cascade)
+    inventoryItem InventoryItem               @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+
+    @@id([localOptionId, inventoryItemId])
+    @@index([inventoryItemId])
+    @@map("local_option_recipe_ingredient")
+}
+
+model InventoryReservation {
+    id               String   @id @default(cuid())
+    orderId          String
+    orderItemId      String?
+    unitId           String
+    inventoryItemId  String
+    quantity         Decimal  @db.Decimal(18, 6)
+    unitCostCents    Decimal  @db.Decimal(18, 6)
+    /// reserved | consumed | released
+    status           String   @default("reserved")
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
+
+    order         Order                @relation(fields: [orderId], references: [id], onDelete: Cascade)
+    orderItem     OrderItem?           @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+    balance       UnitInventoryBalance @relation(fields: [unitId, inventoryItemId], references: [unitId, inventoryItemId], onDelete: Restrict)
+    inventoryItem InventoryItem        @relation(fields: [inventoryItemId], references: [id], onDelete: Restrict)
+    unit          Unit                 @relation(fields: [unitId], references: [id], onDelete: Restrict)
+
+    @@index([orderId, status])
+    @@index([unitId, inventoryItemId, status])
+    @@map("inventory_reservation")
+}

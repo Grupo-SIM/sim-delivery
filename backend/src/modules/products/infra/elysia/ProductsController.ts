@@ -15,6 +15,8 @@ import {
 	UpdateProductBody,
 } from "../../dtos";
 import { CreateProduct, DeleteProduct, ListProducts, ProductOptions, UpdateProduct } from "../../useCases";
+import { ProductRecipeReturn, PutProductRecipeBody } from "@/modules/inventory/dtos";
+import { InventoryService } from "@/modules/inventory/service";
 
 export const ProductsController = new Elysia({
 	detail: {
@@ -34,7 +36,18 @@ export const ProductsController = new Elysia({
 				productOptions: new ProductOptions(prisma),
 				setProductUnits: new SetProductUnits(prisma),
 				updateProduct: new UpdateProduct(prisma),
+				inventory: new InventoryService(prisma),
 			}))
+			.get("/:productId/recipe", async ({ inventory, params, request }) => {
+				const scope = await CompanyScopeGuard.execute(request.headers);
+				CompanyScopeGuard.authorize(scope, "inventory", "read");
+				return inventory.getProductRecipe(scope.companyId!, params.productId);
+			}, { response: ProductRecipeReturn })
+			.put("/:productId/recipe", async ({ body, inventory, params, request }) => {
+				const scope = await CompanyScopeGuard.execute(request.headers);
+				CompanyScopeGuard.authorize(scope, "inventory", "update");
+				return inventory.putProductRecipe(scope.companyId!, params.productId, body);
+			}, { body: PutProductRecipeBody, response: ProductRecipeReturn })
 			.get(
 				"/:productId/option-groups",
 				async ({ params, productOptions, request }) => {

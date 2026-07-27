@@ -1,4 +1,5 @@
 import { UserErrors } from "@/modules/users/errors";
+import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
 import { DomainError } from "@/shared/errors";
 import { OrderStatusEmail } from "@/shared/infra/emails";
 import type { PrismaInstance } from "@/shared/infra/sql";
@@ -100,8 +101,11 @@ export class UpdateOrderStatus {
 			if (!kitchenMember) throw new DomainError(UserErrors.FORBIDDEN);
 		}
 
-		const updated = await this.prisma.order.update({
-			data: {
+		const updated = await this.prisma.$transaction(async tx => {
+			if (order.status !== status && status === "cancelado") await InventoryLifecycle.release(tx, orderId);
+			if (order.status === "cancelado" && status !== "cancelado") await InventoryLifecycle.restore(tx, orderId, order.unitId);
+			if (order.status !== status && status === "em_preparo") await InventoryLifecycle.consume(tx, orderId, preparedById ?? undefined);
+			const result = await tx.order.update({ data: {
 				cancelReason: status === "cancelado" ? cancelReason : null,
 				problemReason: status === "problema" ? problemReason : order.problemReason,
 				...(preparedById !== undefined ? { preparedById } : {}),
@@ -110,12 +114,11 @@ export class UpdateOrderStatus {
 			include: { items: { include: { optionSnapshots: true } } },
 			where: { id: orderId },
 		});
-
-		if (order.status !== status) {
-			await this.prisma.orderStatusEvent?.create({
+			if (order.status !== status) await tx.orderStatusEvent?.create({
 				data: { orderId, status },
 			});
-		}
+			return result;
+		});
 
 		if (shouldNotify(order.status, status, order.deliveryMethod)) {
 			const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;

@@ -64,6 +64,7 @@ model User {
     preparedOrders Order[] @relation("PreparedOrders")
     courierUnits CourierUnit[]
     sessions   Session[]
+    inventoryMovements InventoryMovement[]
 
     @@index([companyId])
     @@map("user")

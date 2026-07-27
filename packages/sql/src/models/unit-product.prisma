@@ -78,6 +78,7 @@ model UnitProductAdditionalOption {
 
     group       OptionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
     unitProduct UnitProduct @relation(fields: [unitProductId], references: [id], onDelete: Cascade)
+    recipeIngredients LocalOptionRecipeIngredient[]
 
     @@index([groupId])
     @@index([unitProductId])

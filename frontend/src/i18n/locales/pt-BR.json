@@ -316,6 +316,78 @@
 					"recusada": "Recusada"
 				}
 			},
+			"inventory": {
+				"actions": {
+					"save": "Salvar"
+				},
+				"addItem": "Adicionar insumo",
+				"addMovement": "Registrar movimentação",
+				"back": "Voltar ao estoque",
+				"columns": {
+					"available": "Disponível",
+					"cost": "Custo médio",
+					"coverage": "Cobertura",
+					"date": "Data",
+					"item": "Insumo",
+					"reserved": "Reservado",
+					"unit": "Unidade"
+				},
+				"days_one": "{{count}} dia",
+				"days_other": "{{count}} dias",
+				"empty": "Nenhum saldo de estoque encontrado.",
+				"emptyMovements": "Nenhuma movimentação encontrada.",
+				"fields": {
+					"item": "Insumo",
+					"measureUnit": "Unidade de medida",
+					"name": "Nome",
+					"quantity": "Quantidade",
+					"reason": "Motivo",
+					"type": "Tipo",
+					"unit": "Unidade",
+					"unitCost": "Custo unitário"
+				},
+				"filters": {
+					"allItems": "Todos os insumos",
+					"allTypes": "Todos os tipos",
+					"allUnits": "Todas as unidades",
+					"search": "Buscar",
+					"status": "Situação",
+					"unit": "Unidade"
+				},
+				"item": {
+					"error": "Não foi possível criar o insumo.",
+					"success": "Insumo criado.",
+					"title": "Novo insumo"
+				},
+				"loadError": "Não foi possível carregar o estoque.",
+				"movement": {
+					"error": "Não foi possível registrar a movimentação.",
+					"success": "Movimentação registrada.",
+					"title": "Nova movimentação"
+				},
+				"movementsSubtitle": "Histórico de entradas, ajustes e perdas.",
+				"movementsTitle": "Movimentações de estoque",
+				"noHistory": "Sem histórico",
+				"status": {
+					"all": "Todos",
+					"low": "Cobertura baixa",
+					"negative": "Saldo negativo",
+					"no_history": "Sem histórico"
+				},
+				"subtitle": "Saldos, reservas, custos e cobertura por unidade.",
+				"title": "Estoque",
+				"types": {
+					"adjustment": "Ajuste",
+					"entry": "Entrada",
+					"loss": "Perda"
+				},
+				"units": {
+					"gram": "Grama",
+					"milliliter": "Mililitro",
+					"unit": "Unidade"
+				},
+				"viewMovements": "Ver movimentações"
+			},
 			"kitchen": {
 				"columns": {
 					"emPreparo": "Em preparo",
@@ -495,6 +567,26 @@
 					"title": "Customizações",
 					"unavailable": "Indisponível"
 				},
+				"recipe": {
+					"action": "Ficha técnica",
+					"add": "Adicionar insumo",
+					"addConsumption": "Adicionar",
+					"addDelta": "Adicionar variação",
+					"delta": "Quantidade",
+					"empty": "Nenhum insumo configurado. Sem ficha, o produto continua usando o estoque legado quando configurado.",
+					"error": "Não foi possível salvar a ficha técnica.",
+					"help": "Informe o consumo de cada insumo para uma unidade vendida do produto.",
+					"ingredient": "Insumo",
+					"operation": "Operação",
+					"optionsSummary": "Ajuste opcional de consumo para cada opção do produto.",
+					"optionsTitle": "Variações por opção",
+					"quantity": "Quantidade",
+					"remove": "Remover insumo",
+					"removeConsumption": "Remover",
+					"save": "Salvar ficha técnica",
+					"success": "Ficha técnica atualizada.",
+					"title": "Ficha técnica — {{name}}"
+				},
 				"row": {
 					"cashbackPercent": "{{value}}%",
 					"delete": "Excluir",
@@ -577,6 +669,7 @@
 			"reports": {
 				"bestSellers": {
 					"columns": {
+						"grossMargin": "Margem bruta",
 						"product": "Produto",
 						"quantity": "Qtd vendida",
 						"revenue": "Receita"
@@ -631,6 +724,8 @@
 				"subtitle": "Relatórios de receita e vendas.",
 				"summary": {
 					"averageOrderValue": "Ticket médio",
+					"grossMargin": "Margem bruta",
+					"noKnownCost": "Sem custo conhecido",
 					"orderCount": "Pedidos concluídos",
 					"totalRevenue": "Receita total"
 				},

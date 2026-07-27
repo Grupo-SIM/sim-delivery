@@ -36,6 +36,8 @@ function makeOrderPrisma(
 	const prisma = {
 		$transaction: async (fn: (tx: unknown) => Promise<unknown>) => {
 			const tx = {
+				inventoryReservation: { createMany: async () => ({ count: 0 }) },
+				localOptionRecipeIngredient: { findMany: async () => [] },
 				order: {
 					create: async ({ data }: { data: object }) => {
 						const o = {
@@ -63,6 +65,11 @@ function makeOrderPrisma(
 						});
 						return { count: data.length };
 					},
+					update: async ({ data, where }: { data: object; where: { id: string } }) => {
+						const item = orderItems.find(candidate => (candidate as { id: string }).id === where.id)!;
+						Object.assign(item, data);
+						return item;
+					},
 				},
 				orderItemOption: {
 					createMany: async ({ data }: { data: object[] }) => {
@@ -70,6 +77,9 @@ function makeOrderPrisma(
 						return { count: data.length };
 					},
 				},
+				optionRecipeIngredient: { findMany: async () => [] },
+				productRecipeIngredient: { findMany: async () => [] },
+				unitProduct: { updateMany: async () => ({ count: 1 }) },
 			};
 			return fn(tx);
 		},
@@ -200,7 +210,7 @@ function makeUpdateStatusPrisma(order: {
 		cancelReason: null,
 		company: { orderStatusWhatsAppTemplates: order.templates ?? null },
 		customer: {
-			notificationEmail: true,
+			notificationEmail: false,
 			notificationWhatsApp: true,
 			phone: order.phone ?? null,
 			user: { email: "cliente@example.com" },
@@ -210,6 +220,11 @@ function makeUpdateStatusPrisma(order: {
 	};
 
 	const prisma = {
+		$transaction: async (fn: (tx: unknown) => Promise<unknown>) => fn(prisma),
+		inventoryReservation: {
+			findMany: async () => [],
+			updateMany: async () => ({ count: 0 }),
+		},
 		order: {
 			findFirst: async ({ where }: { where: { companyId?: string; id: string } }) =>
 				(where.companyId ? stored.companyId === where.companyId : true) && stored.id === where.id
@@ -220,6 +235,9 @@ function makeUpdateStatusPrisma(order: {
 				return { ...stored };
 			},
 		},
+		orderItem: { findMany: async () => [] },
+		orderStatusEvent: { create: async () => ({}) },
+		unitProduct: { updateMany: async () => ({ count: 1 }) },
 	} as unknown as PrismaInstance;
 
 	return { prisma, stored };

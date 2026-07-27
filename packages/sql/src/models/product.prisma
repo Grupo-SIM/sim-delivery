@@ -22,6 +22,7 @@ model Product {
     reviews      ProductReview[]
     tags         ProductTag[]
     unitProducts UnitProduct[]
+    recipeIngredients ProductRecipeIngredient[]
 
     @@index([companyId])
     @@unique([companyId, slug])

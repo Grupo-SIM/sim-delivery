@@ -8,6 +8,7 @@ type Where = Record<string, unknown>;
 
 function makeRevenuePrisma(
 	rows: { companyId: string; createdAt: Date; status: string; total: number; unitId: string }[],
+	items: { costCents: number | null; netRevenueCents: number | null; total: number }[] = [],
 ) {
 	const calls: Where[] = [];
 
@@ -33,6 +34,7 @@ function makeRevenuePrisma(
 				};
 			},
 		},
+		orderItem: { findMany: async () => items },
 	} as unknown as PrismaInstance;
 
 	return { calls, prisma };
@@ -52,7 +54,7 @@ describe("GetRevenueSummary", () => {
 
 		const result = await new GetRevenueSummary(prisma).execute("cmp_1", {});
 
-		expect(result).toEqual({ averageOrderValue: 2500, orderCount: 2, totalRevenue: 5000 });
+		expect(result).toMatchObject({ averageOrderValue: 2500, orderCount: 2, totalRevenue: 5000 });
 	});
 
 	it("ignores orders that are not completed", async () => {
@@ -64,7 +66,7 @@ describe("GetRevenueSummary", () => {
 
 		const result = await new GetRevenueSummary(prisma).execute("cmp_1", {});
 
-		expect(result).toEqual({ averageOrderValue: 1000, orderCount: 1, totalRevenue: 1000 });
+		expect(result).toMatchObject({ averageOrderValue: 1000, orderCount: 1, totalRevenue: 1000 });
 	});
 
 	it("returns zeroes when nothing matches", async () => {
@@ -72,7 +74,7 @@ describe("GetRevenueSummary", () => {
 
 		const result = await new GetRevenueSummary(prisma).execute("cmp_1", {});
 
-		expect(result).toEqual({ averageOrderValue: 0, orderCount: 0, totalRevenue: 0 });
+		expect(result).toMatchObject({ averageOrderValue: 0, orderCount: 0, totalRevenue: 0 });
 	});
 
 	it("rounds the average order value", async () => {
@@ -86,6 +88,26 @@ describe("GetRevenueSummary", () => {
 		expect(result.averageOrderValue).toBe(1001);
 	});
 
+	it("calculates gross margin only from items with known cost", async () => {
+		const { prisma } = makeRevenuePrisma(
+			[{ companyId: "cmp_1", createdAt: now, status: "entregue", total: 3500, unitId: "unit_1" }],
+			[
+				{ costCents: 400, netRevenueCents: 1000, total: 1200 },
+				{ costCents: null, netRevenueCents: 2000, total: 2300 },
+			],
+		);
+
+		const result = await new GetRevenueSummary(prisma).execute("cmp_1", {});
+
+		expect(result).toMatchObject({
+			grossMarginPercent: 60,
+			grossProfitCents: 600,
+			knownCostCents: 400,
+			knownNetRevenueCents: 1000,
+			unknownCostRevenueCents: 2000,
+		});
+	});
+
 	it("does not count another company's orders", async () => {
 		const { prisma } = makeRevenuePrisma([
 			{ companyId: "cmp_1", createdAt: now, status: "entregue", total: 1000, unitId: "unit_1" },
@@ -94,7 +116,7 @@ describe("GetRevenueSummary", () => {
 
 		const result = await new GetRevenueSummary(prisma).execute("cmp_1", {});
 
-		expect(result).toEqual({ averageOrderValue: 1000, orderCount: 1, totalRevenue: 1000 });
+		expect(result).toMatchObject({ averageOrderValue: 1000, orderCount: 1, totalRevenue: 1000 });
 	});
 
 	it("aggregates across companies when companyId is null (super admin)", async () => {
@@ -117,7 +139,7 @@ describe("GetRevenueSummary", () => {
 
 		const result = await new GetRevenueSummary(prisma).execute("cmp_1", { unitId: "unit_2" });
 
-		expect(result).toEqual({ averageOrderValue: 4000, orderCount: 1, totalRevenue: 4000 });
+		expect(result).toMatchObject({ averageOrderValue: 4000, orderCount: 1, totalRevenue: 4000 });
 	});
 
 	it("keeps only today's orders for the today period", async () => {
@@ -157,7 +179,7 @@ describe("GetRevenueSummary", () => {
 });
 
 interface BestSellerRow {
-	_sum: { quantity: number | null; total: number | null };
+	_sum: { costCents?: number | null; netRevenueCents?: number | null; quantity: number | null; total: number | null };
 	productId: string;
 	productName: string;
 }
@@ -187,7 +209,7 @@ describe("GetBestSellers", () => {
 
 		const result = await new GetBestSellers(prisma).execute("cmp_1", {});
 
-		expect(result).toEqual([
+		expect(result).toMatchObject([
 			{ productId: "prod_1", productName: "Pizza", totalQuantity: 12, totalRevenue: 24000 },
 			{ productId: "prod_2", productName: "Refri", totalQuantity: 3, totalRevenue: 1500 },
 		]);

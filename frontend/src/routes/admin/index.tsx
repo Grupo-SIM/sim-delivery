@@ -126,7 +126,8 @@ function AdminDashboardPage() {
 
 			{/* Stats */}
 			{summaryPending ? (
-				<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+					<Skeleton className="h-24" />
 					<Skeleton className="h-24" />
 					<Skeleton className="h-24" />
 					<Skeleton className="h-24" />
@@ -134,7 +135,7 @@ function AdminDashboardPage() {
 			) : summaryError ? (
 				<ErrorState title={t("admin.reports.loadError")} />
 			) : (
-				<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 					<StatCard
 						label={t("admin.reports.summary.totalRevenue")}
 						value={formatCents(Number(summary.totalRevenue))}
@@ -143,6 +144,10 @@ function AdminDashboardPage() {
 					<StatCard
 						label={t("admin.reports.summary.averageOrderValue")}
 						value={formatCents(Number(summary.averageOrderValue))}
+					/>
+					<StatCard
+						label={t("admin.reports.summary.grossMargin")}
+						value={summary.grossMarginPercent == null ? t("admin.reports.summary.noKnownCost") : `${Number(summary.grossMarginPercent).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`}
 					/>
 				</div>
 			)}
@@ -196,9 +201,10 @@ function AdminDashboardPage() {
 					) : (
 						<DataTable tableClassName="!min-w-0 table-fixed">
 							<colgroup>
-								<col className="w-[52%]" />
-								<col className="w-[24%]" />
-								<col className="w-[24%]" />
+								<col className="w-[40%]" />
+								<col className="w-[18%]" />
+								<col className="w-[22%]" />
+								<col className="w-[20%]" />
 							</colgroup>
 							<thead>
 								<tr className="border-border border-b text-left text-muted-foreground">
@@ -211,12 +217,15 @@ function AdminDashboardPage() {
 									<th className="py-3 pr-4 pl-2 text-right font-medium">
 										{t("admin.reports.bestSellers.columns.revenue")}
 									</th>
+									<th className="py-3 pr-4 pl-2 text-right font-medium">
+										{t("admin.reports.bestSellers.columns.grossMargin")}
+									</th>
 								</tr>
 							</thead>
 							<tbody>
 								{bestSellers.length === 0 && (
 									<tr>
-										<td className="px-6 py-20 text-center font-semibold text-sm" colSpan={3}>
+										<td className="px-6 py-20 text-center font-semibold text-sm" colSpan={4}>
 											{t("admin.reports.empty")}
 										</td>
 									</tr>
@@ -227,6 +236,9 @@ function AdminDashboardPage() {
 										<td className="px-2 py-3 text-right text-sm">{Number(item.totalQuantity)}</td>
 										<td className="py-3 pr-4 pl-2 text-right text-sm">
 											{formatCents(Number(item.totalRevenue))}
+										</td>
+										<td className="py-3 pr-4 pl-2 text-right text-sm">
+											{item.grossMarginPercent == null ? t("admin.reports.summary.noKnownCost") : `${Number(item.grossMarginPercent).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`}
 										</td>
 									</tr>
 								))}

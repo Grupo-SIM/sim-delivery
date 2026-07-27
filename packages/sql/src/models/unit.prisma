@@ -51,6 +51,9 @@ model Unit {
     products      UnitProduct[]
     promotionalImages UnitPromotionalImage[]
     orders        Order[]
+    inventoryBalances UnitInventoryBalance[]
+    inventoryMovements InventoryMovement[]
+    inventoryReservations InventoryReservation[]
 
     @@index([companyId])
     @@unique([companyId, slug])

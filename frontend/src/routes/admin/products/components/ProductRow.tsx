@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuPencil, LuStore, LuTags, LuTrash2 } from "react-icons/lu";
+import { LuClipboardList, LuPencil, LuStore, LuTags, LuTrash2 } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
@@ -9,6 +9,7 @@ import { Tooltip } from "@/components/ui/Tooltip";
 import { getProductsQueryKey, useDeleteProductsByProductId } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 import { ProductEditModal } from "./ProductEditModal";
+import { ProductRecipeModal } from "./ProductRecipeModal";
 import { ProductTaxonomyModal } from "./ProductTaxonomyModal";
 import { ProductUnitsModal } from "./ProductUnitsModal";
 import type { Product } from "./types";
@@ -25,6 +26,7 @@ export function ProductRow({ product }: ProductRowProps) {
 	const [editing, setEditing] = useState(false);
 	const [managingUnits, setManagingUnits] = useState(false);
 	const [managingTaxonomy, setManagingTaxonomy] = useState(false);
+	const [managingRecipe, setManagingRecipe] = useState(false);
 	const remove = useDeleteProductsByProductId();
 
 	function del() {
@@ -117,6 +119,9 @@ export function ProductRow({ product }: ProductRowProps) {
 								<LuPencil className="h-4 w-4" />
 							</Button>
 						</Tooltip>
+						<Tooltip content={t("admin.products.recipe.action")}>
+							<Button aria-label={t("admin.products.recipe.action")} onClick={() => setManagingRecipe(true)} size="icon" type="button" variant="outline"><LuClipboardList className="h-4 w-4" /></Button>
+						</Tooltip>
 						<Tooltip content={t("admin.products.taxonomy.action")}>
 							<Button
 								aria-label={t("admin.products.taxonomy.action")}
@@ -145,6 +150,7 @@ export function ProductRow({ product }: ProductRowProps) {
 				</td>
 			</tr>
 			<ProductEditModal onClose={() => setEditing(false)} product={editing ? product : null} />
+			<ProductRecipeModal onClose={() => setManagingRecipe(false)} product={managingRecipe ? product : null} />
 			<ProductUnitsModal onClose={() => setManagingUnits(false)} product={managingUnits ? product : null} />
 			<ProductTaxonomyModal
 				onClose={() => setManagingTaxonomy(false)}

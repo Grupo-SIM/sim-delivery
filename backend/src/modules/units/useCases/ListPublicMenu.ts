@@ -69,6 +69,12 @@ export class ListPublicMenu {
 			where: { productId: { in: associations.map(association => association.product.id) } },
 		});
 		const ratingByProduct = new Map(ratings.map(r => [r.productId, r]));
+		const productIds = associations.map(association => association.product.id);
+		const baseRecipes = await this.prisma.productRecipeIngredient.findMany({ where: { productId: { in: productIds } } });
+		const balances = await this.prisma.unitInventoryBalance.findMany({ where: { unitId: unit.id } });
+		const availableByItem = new Map(balances.map(balance => [balance.inventoryItemId, Number(balance.quantity) - Number(balance.reservedQuantity)]));
+		const recipeByProduct = new Map<string, typeof baseRecipes>();
+		for (const row of baseRecipes) recipeByProduct.set(row.productId, [...(recipeByProduct.get(row.productId) ?? []), row]);
 
 		// Preserve category order (position asc) with the loose group last.
 		const sections = new Map<string, PublicMenuSectionReturn>();
@@ -76,6 +82,9 @@ export class ListPublicMenu {
 
 		for (const association of associations) {
 			const { product } = association;
+			const baseRecipe = recipeByProduct.get(product.id) ?? [];
+			if (baseRecipe.length > 0 && baseRecipe.some(row => (availableByItem.get(row.inventoryItemId) ?? 0) < Number(row.quantity))) continue;
+			if (baseRecipe.length === 0 && association.stock !== null && association.stock <= 0) continue;
 			const excludedOptionIds = excludedByAssociation.get(association.id) ?? new Set<string>();
 			const overridesByOptionId = new Map(
 				(association.optionOverrides ?? []).map(override => [override.optionId, override]),

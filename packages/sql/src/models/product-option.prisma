@@ -48,6 +48,7 @@ model Option {
     orderItemOptions OrderItemOption[]
     unitProductExclusions UnitProductExcludedOption[]
     unitProductOverrides UnitProductOptionOverride[]
+    recipeIngredients OptionRecipeIngredient[]
 
     @@index([groupId])
     @@map("option")

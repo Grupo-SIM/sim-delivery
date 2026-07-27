@@ -37,6 +37,8 @@ model Order {
     productReviews  ProductReview[]
     review          Review?
     statusEvents    OrderStatusEvent[]
+    inventoryMovements InventoryMovement[]
+    inventoryReservations InventoryReservation[]
 
     @@index([companyId, status])
     @@index([customerId])
@@ -61,14 +63,18 @@ model OrderItem {
     id          String  @id @default(cuid())
     orderId     String
     productId   String
+    unitProductId String?
     productName String
     unitPrice   Int
     quantity    Int
     note        String?
     total       Int
+    costCents   Int?
+    netRevenueCents Int?
 
     order           Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
     optionSnapshots OrderItemOption[]
+    inventoryReservations InventoryReservation[]
 
     @@index([orderId])
     @@map("order_item")

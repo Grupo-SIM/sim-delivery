@@ -10,6 +10,7 @@ import {
 	LuImages,
 	LuLogOut,
 	LuPackage,
+	LuPackageOpen,
 	LuPalette,
 	LuStar,
 	LuStore,
@@ -101,6 +102,12 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 					label={t("admin.orders.title")}
 					onNavigate={onNavigate}
 					to="/admin/orders"
+				/>
+				<NavItem
+					icon={LuPackageOpen}
+					label={t("admin.inventory.title")}
+					onNavigate={onNavigate}
+					to="/admin/inventory"
 				/>
 				<NavItem
 					icon={LuTicket}

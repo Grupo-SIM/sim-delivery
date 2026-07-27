@@ -43,6 +43,8 @@ model Company {
     tags       Tag[]
     units      Unit[]
     users      User[]
+    inventoryItems InventoryItem[]
+    inventorySettings InventorySettings?
 
     @@map("company")
 }

@@ -2,16 +2,26 @@ import { t } from "elysia";
 
 export const RevenueSummaryReturn = t.Object({
 	averageOrderValue: t.Integer(),
+	grossProfitCents: t.Optional(t.Integer()),
+	grossMarginPercent: t.Optional(t.Nullable(t.Number())),
+	knownCostCents: t.Optional(t.Integer()),
+	knownNetRevenueCents: t.Optional(t.Integer()),
 	orderCount: t.Integer(),
 	totalRevenue: t.Integer(),
+	unknownCostRevenueCents: t.Optional(t.Integer()),
 });
 export type RevenueSummaryReturn = typeof RevenueSummaryReturn.static;
 
 export const BestSellerItem = t.Object({
 	productId: t.String(),
 	productName: t.String(),
+	grossProfitCents: t.Optional(t.Integer()),
+	grossMarginPercent: t.Optional(t.Nullable(t.Number())),
+	knownCostCents: t.Optional(t.Integer()),
+	knownNetRevenueCents: t.Optional(t.Integer()),
 	totalQuantity: t.Integer(),
 	totalRevenue: t.Integer(),
+	unknownCostRevenueCents: t.Optional(t.Integer()),
 });
 export type BestSellerItem = typeof BestSellerItem.static;
 

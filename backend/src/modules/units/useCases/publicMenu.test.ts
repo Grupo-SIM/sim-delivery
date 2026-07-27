@@ -55,6 +55,7 @@ function prismaWith(unit: { id: string; slug: string } | null, associations: Ass
 		productReview: {
 			groupBy: async () => [],
 		},
+		productRecipeIngredient: { findMany: async () => [] },
 		unit: {
 			findUnique: async ({ where }: { where: { companyId_slug: { companyId: string; slug: string } } }) =>
 				unit && where.companyId_slug.companyId === "c1" && unit.slug === where.companyId_slug.slug
@@ -76,6 +77,7 @@ function prismaWith(unit: { id: string; slug: string } | null, associations: Ass
 					)
 					.filter(exclusion => where.unitProductId.in.includes(exclusion.unitProductId)),
 		},
+		unitInventoryBalance: { findMany: async () => [] },
 	} as unknown as PrismaInstance;
 }
 

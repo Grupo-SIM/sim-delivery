@@ -18,7 +18,7 @@ export class GetBestSellers {
 		const { since, until } = getReportDateRange(period, startDate, endDate, now);
 
 		const rows = await this.prisma.orderItem.groupBy({
-			_sum: { quantity: true, total: true },
+			_sum: { costCents: true, netRevenueCents: true, quantity: true, total: true },
 			by: ["productId", "productName"],
 			orderBy: { _sum: { quantity: "desc" } },
 			...(limit === null ? {} : { take: limit }),
@@ -34,11 +34,21 @@ export class GetBestSellers {
 			},
 		});
 
-		return rows.map(r => ({
+		return rows.map(r => {
+			const knownCostCents = r._sum.costCents ?? 0;
+			const knownNetRevenueCents = r._sum.netRevenueCents ?? 0;
+			const grossProfitCents = knownNetRevenueCents - knownCostCents;
+			return {
 			productId: r.productId,
 			productName: r.productName,
+			grossMarginPercent: knownNetRevenueCents > 0 ? grossProfitCents / knownNetRevenueCents * 100 : null,
+			grossProfitCents,
+			knownCostCents,
+			knownNetRevenueCents,
 			totalQuantity: r._sum.quantity ?? 0,
 			totalRevenue: r._sum.total ?? 0,
-		}));
+			unknownCostRevenueCents: (r._sum.total ?? 0) - knownNetRevenueCents,
+		};
+		});
 	}
 }

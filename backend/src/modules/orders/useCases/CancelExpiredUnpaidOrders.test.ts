@@ -8,6 +8,8 @@ describe("CancelExpiredUnpaidOrders", () => {
 		const statusEvents: unknown[] = [];
 		const notifications: unknown[] = [];
 		const prisma = {
+			$transaction: async (fn: (tx: unknown) => Promise<unknown>) => fn(prisma),
+			inventoryReservation: { findMany: async () => [], updateMany: async () => ({ count: 0 }) },
 			order: {
 				findMany: async () => [
 					{
@@ -21,6 +23,7 @@ describe("CancelExpiredUnpaidOrders", () => {
 					return { count: 1 };
 				},
 			},
+			orderItem: { findMany: async () => [] },
 			orderStatusEvent: { create: async (args: unknown) => statusEvents.push(args) },
 		} as unknown as PrismaInstance;
 		const whatsApp = {
@@ -57,6 +60,8 @@ describe("CancelExpiredUnpaidOrders", () => {
 	it("does not notify when payment confirmation wins the update race", async () => {
 		const notifications: unknown[] = [];
 		const prisma = {
+			$transaction: async (fn: (tx: unknown) => Promise<unknown>) => fn(prisma),
+			inventoryReservation: { findMany: async () => [], updateMany: async () => ({ count: 0 }) },
 			order: {
 				findMany: async () => [
 					{
@@ -67,6 +72,7 @@ describe("CancelExpiredUnpaidOrders", () => {
 				],
 				updateMany: async () => ({ count: 0 }),
 			},
+			orderItem: { findMany: async () => [] },
 			orderStatusEvent: { create: async () => undefined },
 		} as unknown as PrismaInstance;
 		const whatsApp = {
