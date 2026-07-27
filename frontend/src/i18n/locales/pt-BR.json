@@ -573,7 +573,7 @@
 					"unavailable": "Indisponível"
 				},
 				"recipe": {
-					"action": "Ficha técnica",
+					"action": "Ingredientes",
 					"add": "Adicionar insumo",
 					"addConsumption": "Adicionar",
 					"addDelta": "Adicionar variação",
