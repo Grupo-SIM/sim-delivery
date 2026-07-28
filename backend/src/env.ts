@@ -39,10 +39,10 @@ export const envSchema = t.Object({
 	DOM_API_KEY: t.Optional(t.String()),
 	MAIL_DRIVER: t.Enum(MailProvidersEnum, { default: MailProvidersEnum.NODEMAILER }),
 	MAIL_FROM: t.Optional(t.String({ format: "email" })),
-	MAIL_HOST: t.String(),
-	MAIL_PASS: t.String(),
-	MAIL_PORT: t.String(),
-	MAIL_USER: t.String(),
+	MAIL_HOST: t.Optional(t.String()),
+	MAIL_PASS: t.Optional(t.String()),
+	MAIL_PORT: t.Optional(t.String()),
+	MAIL_USER: t.Optional(t.String()),
 	NODE_ENV: t.Optional(
 		t.Enum(NodeEnv, {
 			default: NodeEnv.Production,
