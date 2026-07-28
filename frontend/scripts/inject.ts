@@ -33,13 +33,18 @@ async function readEnvFile(path: string) {
 	);
 }
 
-// Explicit process variables win. Local frontend values override frontend/.env.
-const databaseEnv = await readEnvFile(join(ROOT, "packages", "sql", ".env"));
-const frontendEnv = {
-	...(await readEnvFile(join(FRONTEND, ".env"))),
-	...(await readEnvFile(join(FRONTEND, ".env.local"))),
-};
-for (const [key, value] of Object.entries({ ...databaseEnv, ...frontendEnv })) process.env[key] ??= value;
+if (process.env.NODE_ENV !== "production") {
+	// Explicit process variables win. Local frontend values override frontend/.env.
+	const databaseEnv = await readEnvFile(join(ROOT, "packages", "sql", ".env"));
+	const frontendEnv = {
+		...(await readEnvFile(join(FRONTEND, ".env"))),
+		...(await readEnvFile(join(FRONTEND, ".env.local"))),
+	};
+
+	for (const [key, value] of Object.entries({ ...databaseEnv, ...frontendEnv })) {
+		process.env[key] ??= value;
+	}
+}
 
 const slug = process.env.VITE_COMPANY_SLUG?.trim();
 if (!slug) throw new Error("VITE_COMPANY_SLUG is required to run the branded frontend.");

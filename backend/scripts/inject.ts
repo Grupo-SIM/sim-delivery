@@ -6,25 +6,27 @@ import { fileURLToPath } from "node:url";
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const brandingPath = join(ROOT, "backend", "src", "shared", "infra", "branding.ts");
 
-async function readEnvFile(path: string) {
-	if (!existsSync(path)) return {};
-	const lines = (await readFile(path, "utf8")).split("\n");
-	return Object.fromEntries(
-		lines.flatMap(line => {
-			const match = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/);
-			if (!match) return [];
-			const rawValue = match[2];
-			const value =
-				rawValue.length >= 2 && ["'", '"'].includes(rawValue[0]) && rawValue.at(-1) === rawValue[0]
-					? rawValue.slice(1, -1)
-					: rawValue;
-			return [[match[1], value]];
-		}),
-	);
-}
+if (process.env.NODE_ENV !== "production") {
+	async function readEnvFile(path: string) {
+		if (!existsSync(path)) return {};
+		const lines = (await readFile(path, "utf8")).split("\n");
+		return Object.fromEntries(
+			lines.flatMap(line => {
+				const match = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/);
+				if (!match) return [];
+				const rawValue = match[2];
+				const value =
+					rawValue.length >= 2 && ["'", '"'].includes(rawValue[0]) && rawValue.at(-1) === rawValue[0]
+						? rawValue.slice(1, -1)
+						: rawValue;
+				return [[match[1], value]];
+			}),
+		);
+	}
 
-for (const [key, value] of Object.entries(await readEnvFile(join(ROOT, "packages", "sql", ".env")))) {
-	process.env[key] ??= value;
+	for (const [key, value] of Object.entries(await readEnvFile(join(ROOT, "packages", "sql", ".env")))) {
+		process.env[key] ??= value;
+	}
 }
 
 const slug = process.env.COMPANY_SLUG?.trim();
