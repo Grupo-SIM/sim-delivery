@@ -16,7 +16,7 @@
 		},
 		"backend#inject": {
 			"dependsOn": ["sql#export"],
-			"env": ["COMPANY_SLUG", "DATABASE_URL"],
+			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV"],
 			"inputs": ["scripts/inject.ts", ".env*"],
 			"outputLogs": "new-only",
 			"outputs": ["src/shared/infra/branding.ts"]
@@ -64,7 +64,14 @@
 		},
 		"frontend#inject": {
 			"dependsOn": ["sql#export"],
-			"env": ["DATABASE_URL", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
+			"env": [
+				"COMPANY_SLUG",
+				"DATABASE_URL",
+				"NODE_ENV",
+				"VITE_API_URL",
+				"VITE_APP_URL",
+				"VITE_COMPANY_SLUG"
+			],
 			"inputs": ["scripts/inject.ts", ".env*"],
 			"outputLogs": "new-only",
 			"outputs": [
