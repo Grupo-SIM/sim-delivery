@@ -16,8 +16,9 @@ jobs:
       # "frontend" is in it. A push that touches neither builds nothing.
       # An empty base-sha (workflow_dispatch / first push) plans every service.
       tasks: ${{ steps.affected.outputs.tasks }}
-      # JSON array parsed from comma-separated GitHub VITE_COMPANY_SLUG variable.
+      # JSON arrays parsed from newline-separated slug@url GitHub variables.
       slugs: ${{ steps.slugs.outputs.values }}
+      variants: ${{ steps.slugs.outputs.variants }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -35,14 +36,37 @@ jobs:
       - name: Parse company slugs
         id: slugs
         env:
-          VITE_COMPANY_SLUG: ${{ vars.VARIANTS }}
+          APP_URLS: ${{ vars.APP_URL }}
+          API_URLS: ${{ vars.API_URL }}
         run: |
-          slugs=$(jq -cn --arg value "$VITE_COMPANY_SLUG" '$value | split(",") | map(gsub("^\\s+|\\s+$"; "")) | map(select(length > 0)) | unique')
+          parse_urls() {
+            jq -Rn --arg value "$1" '
+              $value
+              | split("\n")
+              | map(gsub("^\\s+|\\s+$"; ""))
+              | map(select(length > 0) | capture("^(?<slug>[^@]+)@(?<url>.*)$") | {key: .slug, value: .url})
+              | from_entries
+            '
+          }
+
+          app_urls=$(parse_urls "$APP_URLS")
+          api_urls=$(parse_urls "$API_URLS")
+          variants=$(jq -cn --argjson app "$app_urls" --argjson api "$api_urls" '
+            ($app | keys) as $appSlugs
+            | ($api | keys) as $apiSlugs
+            | if $appSlugs != $apiSlugs then
+                error("APP_URL and API_URL must contain the same slugs")
+              else
+                [$appSlugs[] | {slug: ., appUrl: $app[.], apiUrl: $api[.]}]
+              end
+          ')
+          slugs=$(jq -c '[.[].slug]' <<< "$variants")
           if [ "$slugs" = "[]" ]; then
-            echo "::error title=Missing frontend companies::Set VITE_COMPANY_SLUG to one or more comma-separated company slugs."
+            echo "::error title=Missing frontend companies::Set APP_URL and API_URL using slug@url lines."
             exit 1
           fi
           echo "values=$slugs" >> "$GITHUB_OUTPUT"
+          echo "variants=$variants" >> "$GITHUB_OUTPUT"
 
   ghcr-backend:
     name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Build and publish backend image
@@ -55,7 +79,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        slug: ${{ fromJSON(needs.detect.outputs.slugs) }}
+        include: ${{ fromJSON(needs.detect.outputs.variants) }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -83,7 +107,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        slug: ${{ fromJSON(needs.detect.outputs.slugs) }}
+        include: ${{ fromJSON(needs.detect.outputs.variants) }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -99,8 +123,8 @@ jobs:
           dockerfile: frontend/Dockerfile
           build-args: |
             NODE_ENV=production
-            VITE_API_URL=${{ vars.VITE_API_URL }}
-            VITE_APP_URL=${{ vars.VITE_APP_URL }}
+            VITE_API_URL=${{ matrix.apiUrl }}
+            VITE_APP_URL=${{ matrix.appUrl }}
             VITE_COMPANY_SLUG=${{ matrix.slug }}
           cache-scope: frontend-${{ matrix.slug }}
           password: ${{ secrets.GITHUB_TOKEN }}

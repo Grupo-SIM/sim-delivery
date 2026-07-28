@@ -38,7 +38,7 @@
 			"persistent": true
 		},
 		"export": {
-			"dependsOn": ["^export", "generate"],
+			"dependsOn": ["^export", "generate", "inject"],
 			"env": ["DATABASE_URL"],
 			"inputs": ["src/**", "!src/**/generated/**"],
 			"outputLogs": "new-only",
@@ -87,6 +87,13 @@
 			"env": ["DATABASE_URL", "DATABASE_TEST_URL"],
 			"inputs": ["src/migrations/**"],
 			"outputLogs": "new-only"
+		},
+		"sql#export": {
+			"dependsOn": ["^export", "generate"],
+			"env": ["DATABASE_URL"],
+			"inputs": ["src/**", "!src/**/generated/**"],
+			"outputLogs": "new-only",
+			"outputs": ["out/**"]
 		},
 		"test": {
 			"dependsOn": ["test:e2e", "test:unit"]
