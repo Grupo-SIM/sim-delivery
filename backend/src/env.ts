@@ -12,6 +12,9 @@ const defaultApiUrl = `http://localhost:${port}`;
 const apiUrl = (process.env.API_URL ?? defaultApiUrl) as string;
 
 export const envSchema = t.Object({
+	ADMIN_EMAIL: t.Optional(t.String()),
+	ADMIN_NAME: t.Optional(t.String()),
+	ADMIN_PASSWORD: t.Optional(t.String()),
 	API_URL: t.String({
 		default: defaultApiUrl,
 		format: "uri",
