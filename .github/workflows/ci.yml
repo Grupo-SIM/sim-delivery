@@ -42,6 +42,8 @@ jobs:
     needs: detect
     runs-on: ubuntu-latest
     env:
+      COMPANY_SLUG: zero-grau
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
       VITE_COMPANY_SLUG: zero-grau
     strategy:
       fail-fast: false
@@ -62,6 +64,7 @@ jobs:
     if: contains(fromJSON(needs.detect.outputs.tasks)['build'], 'frontend')
     runs-on: ubuntu-latest
     env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
       VITE_COMPANY_SLUG: zero-grau
     steps:
       - name: Checkout repository
@@ -76,6 +79,9 @@ jobs:
     name: "${{ matrix.package }} / Type-check"
     needs: detect
     runs-on: ubuntu-latest
+    env:
+      COMPANY_SLUG: zero-grau
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     strategy:
       fail-fast: false
       matrix:
@@ -83,6 +89,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+
+      - name: Set up Bun for backend branding injection
+        if: matrix.package == 'backend'
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies for backend branding injection
+        if: matrix.package == 'backend'
+        run: bun install --frozen-lockfile --linker=isolated
+
+      - name: Generate backend branding
+        if: matrix.package == 'backend'
+        run: bunx turbo backend#inject --force
 
       - name: Check types
         uses: hyoretsu/gh-actions/check-types@main
