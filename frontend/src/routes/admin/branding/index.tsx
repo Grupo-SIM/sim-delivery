@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
 import { getBrandingQueryKey, useGetBranding, usePutBranding } from "@/lib/api";
 import { defaultThemeColors, resolveThemeColors, type ThemeColors } from "@/lib/theme-colors";
+import { slug } from "@/lib/variant";
 import { showToast } from "@/stores";
 import { FontField, ThemeEditor } from "./components";
 
@@ -31,7 +32,7 @@ const defaultOrderStatusTemplates: OrderStatusTemplates = {
 function BrandingPage() {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
-	const { data: branding, isError, isPending } = useGetBranding();
+	const { data: branding, isError, isPending } = useGetBranding(slug ? { slug } : undefined);
 	const put = usePutBranding();
 
 	const [logoUrl, setLogoUrl] = useState("");
@@ -139,7 +140,7 @@ function BrandingPage() {
 			{
 				onError: () => showToast(t("admin.branding.saveError"), "negative"),
 				onSuccess: () => {
-					queryClient.invalidateQueries({ queryKey: getBrandingQueryKey() });
+					queryClient.invalidateQueries({ queryKey: getBrandingQueryKey(slug ? { slug } : undefined) });
 					showToast(t("admin.branding.saveSuccess"), "positive");
 				},
 			},

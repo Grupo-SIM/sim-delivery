@@ -12,17 +12,7 @@ export const BrandingController = new Elysia({ prefix: "/branding" })
 	.use(GlobalPlugin)
 	.get(
 		"/",
-		async ({ query, request }) => {
-			// Public endpoint: resolve companyId from auth header if present, else from unitId
-			let companyId: string | null = null;
-			try {
-				const scope = await CompanyScopeGuard.execute(request.headers);
-				companyId = scope.companyId;
-			} catch {
-				// unauthenticated — resolve from unitId query param
-			}
-			return getBranding.execute(companyId, query);
-		},
+		async ({ query }) => getBranding.execute(query),
 		{ query: GetBrandingQuery, response: BrandingReturn },
 	)
 	.put(

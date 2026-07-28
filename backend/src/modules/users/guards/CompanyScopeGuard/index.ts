@@ -17,43 +17,31 @@ export abstract class CompanyScopeGuard {
 			throw new DomainError(UserErrors.WRONG_CREDENTIALS);
 		}
 
-		let { companyId, role } = session.user;
-		const { id: userId } = session.user;
-
-		// Better Auth currently omits the custom additionalFields (role/companyId) from
-		// the session payload, so fall back to the user row rather than silently degrading to
-		// "customer" (which produced blanket 403s on every staff route).
-		if (!isRole(role)) {
-			const user = await prisma.user.findUnique({
-				select: { companyId: true, role: true },
-				where: { id: userId },
-			});
-			role = user?.role ?? role;
-			companyId = user?.companyId ?? companyId;
+		const slug = headers.get("x-company-slug");
+		if (!slug) {
+			throw new DomainError(UserErrors.FORBIDDEN);
 		}
 
-		// Session-level tenant/role override (site-scoped login, docs/03): superAdmin
-		// scoped to the site they logged into, or staff downgraded to customer on a site
-		// that isn't their own. Set once at sign-in by betterAuth's session.create hook.
-		const sessionRole = session.session.role;
-		if (sessionRole === undefined) {
-			const dbSession = await prisma.session.findUnique({
+		const [company, user] = await Promise.all([
+			prisma.company.findUnique({ select: { id: true }, where: { slug } }),
+			prisma.user.findUnique({
 				select: { companyId: true, role: true },
-				where: { id: session.session.id },
-			});
-			if (dbSession && isRole(dbSession.role)) {
-				role = dbSession.role;
-				companyId = dbSession.companyId ?? null;
-			}
-		} else if (isRole(sessionRole)) {
-			role = sessionRole;
-			companyId = session.session.companyId ?? null;
+				where: { id: session.user.id },
+			}),
+		]);
+
+		if (!company || !user || !isRole(user.role)) {
+			throw new DomainError(UserErrors.FORBIDDEN);
+		}
+
+		if (user.role !== "superAdmin" && user.companyId !== company.id) {
+			throw new DomainError(UserErrors.FORBIDDEN);
 		}
 
 		return {
-			companyId: companyId ?? null,
-			role: isRole(role) ? role : "customer",
-			userId,
+			companyId: company.id,
+			role: user.role,
+			userId: session.user.id,
 		};
 	}
 

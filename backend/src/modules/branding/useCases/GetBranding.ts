@@ -4,48 +4,7 @@ import type { BrandingReturn, GetBrandingQuery } from "../dtos";
 export class GetBranding {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(companyId: string | null, query: GetBrandingQuery): Promise<BrandingReturn> {
-		let resolvedCompanyId = companyId;
-
-		if (!resolvedCompanyId && query.unitId) {
-			const unit = await this.prisma.unit.findUnique({
-				select: { companyId: true },
-				where: { id: query.unitId },
-			});
-			resolvedCompanyId = unit?.companyId ?? null;
-		}
-
-		if (!resolvedCompanyId && query.slug) {
-			const company = await this.prisma.company.findUnique({
-				select: { id: true },
-				where: { slug: query.slug },
-			});
-			resolvedCompanyId = company?.id ?? null;
-		}
-
-		if (!resolvedCompanyId) {
-			return {
-				allowThemeToggle: true,
-				companyName: null,
-				fontDisplay: null,
-				fontDisplayUrl: null,
-				fontFamily: null,
-				fontFamilyUrl: null,
-				footerFacebookUrl: null,
-				footerInstagramUrl: null,
-				footerPaymentMethods: [],
-				footerSupportEmail: null,
-				footerText: null,
-				footerWhatsApp: null,
-				ga4Id: null,
-				gtmId: null,
-				logoUrl: null,
-				metaPixelId: null,
-				orderStatusWhatsAppTemplates: null,
-				themeColors: null,
-			};
-		}
-
+	async execute({ slug }: GetBrandingQuery): Promise<BrandingReturn> {
 		const company = await this.prisma.company.findUnique({
 			select: {
 				allowThemeToggle: true,
@@ -67,7 +26,7 @@ export class GetBranding {
 				orderStatusWhatsAppTemplates: true,
 				themeColors: true,
 			},
-			where: { id: resolvedCompanyId },
+			where: { slug },
 		});
 
 		return {
