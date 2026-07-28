@@ -87,13 +87,13 @@ jobs:
       - name: Build and publish image
         uses: hyoretsu/gh-actions/ghcr@main
         with:
-          image: ghcr.io/${{ github.repository }}_backend-${{ matrix.slug }}
+          image: ghcr.io/${{ github.repository }}_backend_${{ matrix.slug }}
           dockerfile: backend/Dockerfile
           build-args: |
             NODE_ENV=production
             COMPANY_SLUG=${{ matrix.slug }}
           secrets: DATABASE_URL=${{ secrets.DATABASE_URL }}
-          cache-scope: backend-${{ matrix.slug }}
+          cache-scope: backend_${{ matrix.slug }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
   ghcr-frontend:
@@ -119,14 +119,15 @@ jobs:
         uses: hyoretsu/gh-actions/ghcr@main
         with:
           # Each company gets its own tagged image: frontend-zero-grau, frontend-acai-top, …
-          image: ghcr.io/${{ github.repository }}_frontend-${{ matrix.slug }}
+          image: ghcr.io/${{ github.repository }}_frontend_${{ matrix.slug }}
           dockerfile: frontend/Dockerfile
           build-args: |
+            COMPANY_SLUG=${{ matrix.slug }}
             NODE_ENV=production
             VITE_API_URL=${{ matrix.apiUrl }}
             VITE_APP_URL=${{ matrix.appUrl }}
             VITE_COMPANY_SLUG=${{ matrix.slug }}
-          cache-scope: frontend-${{ matrix.slug }}
+          cache-scope: frontend_${{ matrix.slug }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
   desktop:
