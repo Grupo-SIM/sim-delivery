@@ -38,6 +38,12 @@ describe("createPermissions matrix", () => {
 		expect(createPermissions("manager").check("branding", "update")).toBe(false);
 	});
 
+	it("only owner and superAdmin may invite another owner", () => {
+		expect(createPermissions("superAdmin").check("staff", "inviteOwner")).toBe(true);
+		expect(createPermissions("owner").check("staff", "inviteOwner")).toBe(true);
+		expect(createPermissions("manager").check("staff", "inviteOwner")).toBe(false);
+	});
+
 	it("attendant handles orders/customers but not menu or reports", () => {
 		const permix = createPermissions("attendant");
 		expect(permix.check("orders", "create")).toBe(true);

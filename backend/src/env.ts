@@ -12,9 +12,6 @@ const defaultApiUrl = `http://localhost:${port}`;
 const apiUrl = (process.env.API_URL ?? defaultApiUrl) as string;
 
 export const envSchema = t.Object({
-	ADMIN_EMAIL: t.Optional(t.String()),
-	ADMIN_NAME: t.Optional(t.String()),
-	ADMIN_PASSWORD: t.Optional(t.String()),
 	API_URL: t.String({
 		default: defaultApiUrl,
 		format: "uri",
@@ -48,6 +45,9 @@ export const envSchema = t.Object({
 			default: NodeEnv.Production,
 		}),
 	),
+	OWNER_EMAIL: t.Optional(t.String()),
+	OWNER_NAME: t.Optional(t.String()),
+	OWNER_PASSWORD: t.Optional(t.String()),
 	PHONE_OTP_DRIVER: t.Enum(PhoneOtpProvidersEnum, { default: PhoneOtpProvidersEnum.CONSOLE }),
 	PORT: t.Optional(t.Numeric({ default: defaultPort })),
 	RESEND_API_KEY: t.Optional(t.String()),

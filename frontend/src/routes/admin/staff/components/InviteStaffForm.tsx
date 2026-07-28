@@ -8,13 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { getStaffQueryKey, useGetUnits, usePostStaff } from "@/lib/api";
-import { showToast } from "@/stores";
+import { showToast, useAuthStore } from "@/stores";
 
-type Role = "manager" | "attendant" | "kitchen" | "courier";
+type Role = "owner" | "manager" | "attendant" | "kitchen" | "courier";
 
 export function InviteStaffForm() {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
+	const currentUserRole = useAuthStore(state => state.role);
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [role, setRole] = useState<Role>("attendant");
@@ -27,6 +28,9 @@ export function InviteStaffForm() {
 	const { isPending, mutate } = usePostStaff();
 
 	const roleOptions = [
+		...(currentUserRole === "owner" || currentUserRole === "superAdmin"
+			? [{ label: t("admin.staff.roles.owner"), value: "owner" }]
+			: []),
 		{ label: t("admin.staff.roles.manager"), value: "manager" },
 		{ label: t("admin.staff.roles.attendant"), value: "attendant" },
 		{ label: t("admin.staff.roles.kitchen"), value: "kitchen" },

@@ -26,6 +26,9 @@ Defina o slug no ambiente do processo ou em `frontend/.env` / `frontend/.env.loc
 ```sh
 VITE_COMPANY_SLUG=acai-top
 COMPANY_SLUG=acai-top
+OWNER_EMAIL=dono@acai-top.com
+OWNER_NAME="Dono da Açaí Top"
+OWNER_PASSWORD=senha-segura
 ```
 
 Depois execute normalmente:
@@ -45,8 +48,9 @@ gera o branding estático dos e-mails (nome, logo e cores primárias), sem consu
 banco em runtime.
 
 Em Docker, passe `DATABASE_URL`, `VITE_COMPANY_SLUG` e `COMPANY_SLUG` como argumentos de
-build. As imagens finais continuam estáticas; elas não precisam de acesso ao banco para
-carregar ou enviar a marca configurada.
+build. Para provisionar o dono da empresa, passe também `OWNER_EMAIL`, `OWNER_NAME` e
+`OWNER_PASSWORD` como variáveis de runtime. As imagens finais continuam estáticas; elas não
+precisam de acesso ao banco para carregar ou enviar a marca configurada.
 
 ## Mudanças de marca exigem nova build
 

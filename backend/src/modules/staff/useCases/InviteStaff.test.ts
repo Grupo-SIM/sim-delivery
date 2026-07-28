@@ -51,6 +51,18 @@ describe("InviteStaff", () => {
 		expect(updates[0]).toEqual({ data: { companyId: "cmp_1", role: "manager" }, id: "u_new" });
 	});
 
+	it("creates an additional owner scoped to the company", async () => {
+		const { prisma, updates } = fakePrisma();
+		const staff = await new InviteStaff(prisma, signUp, requestPasswordReset).execute({
+			...baseInput,
+			companyId: "cmp_1",
+			role: "owner",
+		});
+
+		expect(staff.role).toBe("owner");
+		expect(updates[0]).toEqual({ data: { companyId: "cmp_1", role: "owner" }, id: "u_new" });
+	});
+
 	it("throws NO_COMPANY when the inviter has no tenant", async () => {
 		const { prisma } = fakePrisma();
 		await expect(

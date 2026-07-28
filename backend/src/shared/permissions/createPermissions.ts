@@ -76,6 +76,7 @@ export function createPermissions(role: Role) {
 		},
 		staff: {
 			invite: mgmt,
+			inviteOwner: isSuper || isOwner,
 			read: mgmt,
 			remove: mgmt,
 			setRole: mgmt,
