@@ -1,4 +1,3 @@
-import { Switch } from "baseui/switch";
 import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
@@ -195,7 +194,18 @@ export function UnitProductFormFields(props: UnitProductFormFieldsProps) {
 				) : (
 					<div className="flex flex-1 items-center justify-between">
 						<span className="font-medium text-sm">{t("admin.unitProducts.form.available")}</span>
-						<Switch checked={available} onChange={event => onAvailableChange(event.currentTarget.checked)} />
+						<button
+							aria-checked={available}
+							aria-label={t("admin.unitProducts.form.available")}
+							className={`relative h-6 w-11 cursor-pointer rounded-full transition-colors ${available ? "bg-primary" : "bg-muted"}`}
+							onClick={() => onAvailableChange(!available)}
+							role="switch"
+							type="button"
+						>
+							<span
+								className={`absolute top-1 size-4 rounded-full bg-white transition-transform ${available ? "translate-x-6" : "translate-x-1"}`}
+							/>
+						</button>
 					</div>
 				)}
 			</div>
