@@ -46,6 +46,7 @@
 		},
 		"frontend#build": {
 			"dependsOn": ["^export", "generate", "inject"],
+			"env": ["DATABASE_URL"],
 			"inputs": ["src/**", "!src/**/generated/**"],
 			"outputLogs": "new-only",
 			"outputs": ["build/**", "dist/**", "out/**", ".next/**", "!.next/cache/**"]
@@ -63,7 +64,7 @@
 		},
 		"frontend#inject": {
 			"dependsOn": ["sql#export"],
-			"env": ["VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
+			"env": ["DATABASE_URL", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
 			"inputs": ["scripts/inject.ts", ".env*"],
 			"outputLogs": "new-only",
 			"outputs": [

@@ -91,7 +91,6 @@ jobs:
           dockerfile: backend/Dockerfile
           build-args: |
             COMPANY_SLUG=${{ matrix.slug }}
-            DATABASE_URL=${{ secrets.DATABASE_URL }}
             NODE_ENV=production
           secrets: DATABASE_URL=${{ secrets.DATABASE_URL }}
           cache-scope: backend_${{ matrix.slug }}
@@ -124,11 +123,11 @@ jobs:
           dockerfile: frontend/Dockerfile
           build-args: |
             COMPANY_SLUG=${{ matrix.slug }}
-            DATABASE_URL=${{ secrets.DATABASE_URL }}
             NODE_ENV=production
             VITE_API_URL=${{ matrix.apiUrl }}
             VITE_APP_URL=${{ matrix.appUrl }}
             VITE_COMPANY_SLUG=${{ matrix.slug }}
+          secrets: DATABASE_URL=${{ secrets.DATABASE_URL }}
           cache-scope: frontend_${{ matrix.slug }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
