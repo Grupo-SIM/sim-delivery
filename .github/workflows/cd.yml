@@ -131,93 +131,93 @@ jobs:
           cache-scope: frontend_${{ matrix.slug }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-  desktop:
-    name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Build & release ${{ matrix.platform }} app
-    needs: detect
-    # Only the Tauri frontend produces these apps; skip when it isn't affected.
-    if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'frontend') }}
-    permissions:
-      # tauri-action creates the GitHub release / uploads the installers.
-      contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        slug: ${{ fromJSON(needs.detect.outputs.slugs) }}
-        platform: [windows-latest, ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.platform }}
-    env:
-      VITE_COMPANY_SLUG: ${{ matrix.slug }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
+  # desktop:
+  #   name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Build & release ${{ matrix.platform }} app
+  #   needs: detect
+  #   # Only the Tauri frontend produces these apps; skip when it isn't affected.
+  #   if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'frontend') }}
+  #   permissions:
+  #     # tauri-action creates the GitHub release / uploads the installers.
+  #     contents: write
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       slug: ${{ fromJSON(needs.detect.outputs.slugs) }}
+  #       platform: [windows-latest, ubuntu-latest, macos-latest]
+  #   runs-on: ${{ matrix.platform }}
+  #   env:
+  #     VITE_COMPANY_SLUG: ${{ matrix.slug }}
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v5
 
-      - name: Build & release desktop app
-        uses: hyoretsu/gh-actions/tauri-build@main
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          release-name: Template App v__VERSION__
+  #     - name: Build & release desktop app
+  #       uses: hyoretsu/gh-actions/tauri-build@main
+  #       with:
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #         release-name: Template App v__VERSION__
 
-  android:
-    name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Build & release Android app
-    needs: detect
-    if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'frontend') }}
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        slug: ${{ fromJSON(needs.detect.outputs.slugs) }}
-    env:
-      VITE_COMPANY_SLUG: ${{ matrix.slug }}
-    permissions:
-      # softprops/action-gh-release creates the GitHub release / uploads the APK.
-      contents: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
+  # android:
+  #   name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Build & release Android app
+  #   needs: detect
+  #   if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'frontend') }}
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       slug: ${{ fromJSON(needs.detect.outputs.slugs) }}
+  #   env:
+  #     VITE_COMPANY_SLUG: ${{ matrix.slug }}
+  #   permissions:
+  #     # softprops/action-gh-release creates the GitHub release / uploads the APK.
+  #     contents: write
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v5
 
-      - name: Build Android app (APK + AAB)
-        id: build
-        uses: hyoretsu/gh-actions/tauri-android-build@main
-        with:
-          keystore-base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          keystore-password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          key-alias: ${{ secrets.ANDROID_KEY_ALIAS }}
+  #     - name: Build Android app (APK + AAB)
+  #       id: build
+  #       uses: hyoretsu/gh-actions/tauri-android-build@main
+  #       with:
+  #         keystore-base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+  #         keystore-password: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+  #         key-alias: ${{ secrets.ANDROID_KEY_ALIAS }}
 
-      - name: Publish APK to GitHub release
-        uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          # Same tag the desktop job uses; the action creates it once and appends assets.
-          tag_name: v${{ steps.build.outputs.version }}
-          name: Template App v${{ steps.build.outputs.version }}
-          draft: false
-          prerelease: false
-          # AAB goes to Play, not the release — only attach the signed APK(s).
-          files: ${{ steps.build.outputs.apk-glob }}
+  #     - name: Publish APK to GitHub release
+  #       uses: softprops/action-gh-release@v2
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         # Same tag the desktop job uses; the action creates it once and appends assets.
+  #         tag_name: v${{ steps.build.outputs.version }}
+  #         name: Template App v${{ steps.build.outputs.version }}
+  #         draft: false
+  #         prerelease: false
+  #         # AAB goes to Play, not the release — only attach the signed APK(s).
+  #         files: ${{ steps.build.outputs.apk-glob }}
 
-      # Store uploads consume the single build above; add one step per store.
-      - name: Upload AAB to Google Play
-        if: vars.ANDROID_PACKAGE_NAME != ''
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
-          packageName: ${{ vars.ANDROID_PACKAGE_NAME }}
-          releaseFiles: ${{ steps.build.outputs.aab-glob }}
-          track: production
-          status: completed
+  #     # Store uploads consume the single build above; add one step per store.
+  #     - name: Upload AAB to Google Play
+  #       if: vars.ANDROID_PACKAGE_NAME != ''
+  #       uses: r0adkll/upload-google-play@v1
+  #       with:
+  #         serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+  #         packageName: ${{ vars.ANDROID_PACKAGE_NAME }}
+  #         releaseFiles: ${{ steps.build.outputs.aab-glob }}
+  #         track: production
+  #         status: completed
 
-  ios:
-    name: Build iOS app (stub)
-    needs: detect
-    if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'frontend') }}
-    # Stub slot: iOS shipping needs a macOS runner, an Apple Developer account and
-    # signing certs/provisioning profiles that aren't wired up yet. Kept as a
-    # placeholder so the platform is tracked; flip to a real build once those exist.
-    runs-on: ubuntu-latest
-    steps:
-      - name: iOS build not configured
-        run: |
-          echo "::notice title=iOS::iOS build is a stub."
-          echo "To enable: run on macos-latest, 'bun tauri ios init', then"
-          echo "'bun tauri ios build' with APPLE signing secrets and a provisioning profile."
+  # ios:
+  #   name: Build iOS app (stub)
+  #   needs: detect
+  #   if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'frontend') }}
+  #   # Stub slot: iOS shipping needs a macOS runner, an Apple Developer account and
+  #   # signing certs/provisioning profiles that aren't wired up yet. Kept as a
+  #   # placeholder so the platform is tracked; flip to a real build once those exist.
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: iOS build not configured
+  #       run: |
+  #         echo "::notice title=iOS::iOS build is a stub."
+  #         echo "To enable: run on macos-latest, 'bun tauri ios init', then"
+  #         echo "'bun tauri ios build' with APPLE signing secrets and a provisioning profile."
