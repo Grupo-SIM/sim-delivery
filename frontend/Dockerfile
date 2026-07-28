@@ -37,8 +37,8 @@ COPY --from=build /app/frontend/dist /public
 
 # Scratch-based static binary: no OS packages, so ~no CVEs.
 ENV SERVER_ROOT=/public
-ENV SERVER_PORT=3000
+ENV SERVER_PORT=5173
 # SPA fallback: client-side routing handles unknown paths.
 ENV SERVER_FALLBACK_PAGE=/public/index.html
 
-EXPOSE 3000
+EXPOSE 5173
