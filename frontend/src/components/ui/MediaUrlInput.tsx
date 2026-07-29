@@ -1,7 +1,7 @@
 import { type DragEvent, useRef, useState } from "react";
 import { LuImageUp, LuLoaderCircle, LuTrash2, LuUpload } from "react-icons/lu";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
-import { type MediaAsset, uploadMedia } from "@/lib/api";
+import { deleteMedia, type MediaAsset, uploadMedia } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { Input } from "./input";
 
@@ -17,6 +17,7 @@ const acceptByAsset: Record<MediaAsset, string> = {
 
 interface MediaUrlInputProps {
 	asset: MediaAsset;
+	onDeleteError?: () => void;
 	onUploadError: () => void;
 	onUploadingChange?: (isUploading: boolean) => void;
 	onValueChange: (value: string) => void;
@@ -27,6 +28,7 @@ interface MediaUrlInputProps {
 
 export function MediaUrlInput({
 	asset,
+	onDeleteError,
 	onUploadError,
 	onUploadingChange,
 	onValueChange,
@@ -37,6 +39,7 @@ export function MediaUrlInput({
 	const dragDepthRef = useRef(0);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [isDragging, setIsDragging] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
 	const [isUploading, setIsUploading] = useState(false);
 	const [localValue, setLocalValue, flushValue] = useDebouncedInput(value, onValueChange);
 	const isImageAsset = !asset.startsWith("font-");
@@ -45,18 +48,30 @@ export function MediaUrlInput({
 	async function upload(file: File) {
 		setIsUploading(true);
 		onUploadingChange?.(true);
+		let uploadedUrl: string | null = null;
 		try {
-			onValueChange(await uploadMedia(asset, file));
+			uploadedUrl = await uploadMedia(asset, file);
+			if (value && value !== uploadedUrl) await deleteMedia(asset, value);
+			onValueChange(uploadedUrl);
 		} catch {
+			if (uploadedUrl) await deleteMedia(asset, uploadedUrl).catch(() => undefined);
 			onUploadError();
 		} finally {
 			setIsUploading(false);
 			onUploadingChange?.(false);
 		}
 	}
-	function removeImage() {
-		setLocalValue("");
-		onValueChange("");
+	async function removeImage() {
+		setIsDeleting(true);
+		try {
+			if (value) await deleteMedia(asset, value);
+			setLocalValue("");
+			onValueChange("");
+		} catch {
+			onDeleteError?.() ?? onUploadError();
+		} finally {
+			setIsDeleting(false);
+		}
 	}
 	function handleDrop(event: DragEvent<HTMLDivElement>) {
 		event.preventDefault();
@@ -126,8 +141,8 @@ export function MediaUrlInput({
 				<button
 					aria-label={isImageAsset ? "Remover imagem" : "Remover fonte"}
 					className="absolute inset-y-0 right-11 flex w-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
-					disabled={isUploading}
-					onClick={removeImage}
+					disabled={isUploading || isDeleting}
+					onClick={() => void removeImage()}
 					title={isImageAsset ? "Remover imagem" : "Remover fonte"}
 					type="button"
 				>
@@ -137,7 +152,7 @@ export function MediaUrlInput({
 			<button
 				aria-label={uploadLabel}
 				className="absolute inset-y-0 right-0 flex w-11 items-center justify-center bg-transparent text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-				disabled={isUploading}
+				disabled={isUploading || isDeleting}
 				onClick={() => fileInputRef.current?.click()}
 				title={uploadLabel}
 				type="button"

@@ -78,4 +78,22 @@ export const MediaController = new Elysia({ prefix: "/media" })
 			params: t.Object({ asset: Asset }),
 			response: UploadReturn,
 		},
+	)
+	.delete(
+		"/:asset/:filename",
+		async ({ params, request, storageProvider }) => {
+			const scope = await CompanyScopeGuard.execute(request.headers);
+			CompanyScopeGuard.authorize(
+				scope,
+				["product", "promotion"].includes(params.asset) ? "menu" : "branding",
+				"update",
+			);
+
+			await storageProvider.deleteFile(params.filename);
+			return { ok: true };
+		},
+		{
+			params: t.Object({ asset: Asset, filename: Filename }),
+			response: t.Object({ ok: t.Boolean() }),
+		},
 	);

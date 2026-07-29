@@ -29,7 +29,7 @@
       "dependencies": {
         "@elysiajs/openapi": "^1.4.15",
         "@elysiajs/static": "^1.4.10",
-        "@hyoretsu/providers": "^2.1.1",
+        "@hyoretsu/providers": "^2.1.2",
         "@hyoretsu/utils": "^1.18.1",
         "@react-email/components": "^1.0.12",
         "@sinclair/typebox": "^0.34.52",
@@ -393,7 +393,7 @@
 
     "@hyoretsu/prismabox": ["@hyoretsu/prismabox@1.2.2", "", { "dependencies": { "@prisma/generator-helper": "^6.13.0", "@sinclair/typebox": "^0.34.3", "prettier": "^3.6.2" }, "bin": { "prismabox": "dist/cli.js" } }, "sha512-uFcIVvoqt6vd3QuujaoQK06x17+apBMj7wM2fNjmxk+1Q0vAnOKbOXC5NoSHQJHjOti9FIwsUYZkwBJqL/glwQ=="],
 
-    "@hyoretsu/providers": ["@hyoretsu/providers@2.1.1", "", { "dependencies": { "iso8601-duration": "^2.1.2" }, "peerDependencies": { "@opentelemetry/api-logs": "^0.57.2", "@opentelemetry/exporter-logs-otlp-http": "^0.57.2", "@opentelemetry/otlp-exporter-base": "^0.57.2", "@opentelemetry/resources": "^1.30.1", "@opentelemetry/sdk-logs": "^0.57.2", "amqplib": "^1.0.3", "bcrypt": "^5.1.1", "bcryptjs": "^2.4.3", "ioredis": "^5.4.2", "jose": "^5.6.3", "jsonwebtoken": "^9.0.2", "kafkajs": "^2.2.4", "nodemailer": "^6.9.3", "nodemailer-sendgrid": "^1.0.3", "pino": "^9.6.0", "pino-loki": "^2.5.0" }, "optionalPeers": ["@opentelemetry/api-logs", "@opentelemetry/exporter-logs-otlp-http", "@opentelemetry/otlp-exporter-base", "@opentelemetry/resources", "@opentelemetry/sdk-logs", "amqplib", "bcrypt", "bcryptjs", "ioredis", "jose", "jsonwebtoken", "kafkajs", "nodemailer", "nodemailer-sendgrid", "pino", "pino-loki"] }, "sha512-TDe99iD1o0TEUIVLpQUwb5mtDyidwBjH9ap0Q7qWPiyhHuXSTybXlCvg9B26MBgaLpZlpXcPGtiHD19dpAOuqA=="],
+    "@hyoretsu/providers": ["@hyoretsu/providers@2.1.2", "", { "dependencies": { "iso8601-duration": "^2.1.2" }, "peerDependencies": { "@opentelemetry/api-logs": "^0.57.2", "@opentelemetry/exporter-logs-otlp-http": "^0.57.2", "@opentelemetry/otlp-exporter-base": "^0.57.2", "@opentelemetry/resources": "^1.30.1", "@opentelemetry/sdk-logs": "^0.57.2", "amqplib": "^1.0.3", "bcrypt": "^5.1.1", "bcryptjs": "^2.4.3", "ioredis": "^5.4.2", "jose": "^5.6.3", "jsonwebtoken": "^9.0.2", "kafkajs": "^2.2.4", "nodemailer": "^6.9.3", "nodemailer-sendgrid": "^1.0.3", "pino": "^9.6.0", "pino-loki": "^2.5.0" }, "optionalPeers": ["@opentelemetry/api-logs", "@opentelemetry/exporter-logs-otlp-http", "@opentelemetry/otlp-exporter-base", "@opentelemetry/resources", "@opentelemetry/sdk-logs", "amqplib", "bcrypt", "bcryptjs", "ioredis", "jose", "jsonwebtoken", "kafkajs", "nodemailer", "nodemailer-sendgrid", "pino", "pino-loki"] }, "sha512-DOOl1vyVHXXQULXpURD5M23xxFe7+7u7wusbns7ZiUYCfVwvfU7MhLXlVggaUC/nqdRg2FaZwHXDg0d81h4eEw=="],
 
     "@hyoretsu/utils": ["@hyoretsu/utils@1.18.1", "", {}, "sha512-ogYE2x0T6BK+P6rgsDJGIbj39s6czZOCf6ldwqVp+BtRV9SiSXKhW2wL92TUsz42P3DUK+u5Ikwz1W3tF8iYzA=="],
 
