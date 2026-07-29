@@ -95,6 +95,14 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 	const [lookingUp, setLookingUp] = useState(false);
 	const [name, setName] = useState("");
 	const [localName, setLocalName] = useDebouncedInput(name, setName);
+	const [phone, setPhone] = useState("");
+	const [whatsApp, setWhatsApp] = useState("");
+	const [xUrl, setXUrl] = useState("");
+	const [localXUrl, setLocalXUrl] = useDebouncedInput(xUrl, setXUrl);
+	const [instagramUrl, setInstagramUrl] = useState("");
+	const [localInstagramUrl, setLocalInstagramUrl] = useDebouncedInput(instagramUrl, setInstagramUrl);
+	const [facebookUrl, setFacebookUrl] = useState("");
+	const [localFacebookUrl, setLocalFacebookUrl] = useDebouncedInput(facebookUrl, setFacebookUrl);
 
 	useEffect(() => {
 		setAddress(toAddressState(unit));
@@ -104,6 +112,11 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 		setCepError(null);
 		setImageUrl(unit?.imageUrl ?? "");
 		setName(unit?.name ?? "");
+		setPhone(unit?.phone ?? "");
+		setWhatsApp(unit?.whatsApp ?? "");
+		setXUrl(unit?.xUrl ?? "");
+		setInstagramUrl(unit?.instagramUrl ?? "");
+		setFacebookUrl(unit?.facebookUrl ?? "");
 	}, [unit]);
 
 	function setAddressField<K extends keyof AddressState>(key: K, value: AddressState[K]) {
@@ -145,6 +158,11 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 					imageUrl: imageUrl.trim() || null,
 					isOpenManual: toIsOpenManual(availability),
 					name: localName.trim(),
+					phone: phone || null,
+					whatsApp: whatsApp || null,
+					xUrl: localXUrl.trim() || null,
+					instagramUrl: localInstagramUrl.trim() || null,
+					facebookUrl: localFacebookUrl.trim() || null,
 				},
 				unitId: unit.id,
 			},
@@ -196,6 +214,58 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 							value={availability}
 						/>
 					</div>
+				</section>
+
+				<section className="space-y-4 border-border border-t pt-6">
+					<h2 className="font-semibold text-lg">{t("admin.units.config.contact.title")}</h2>
+					<div className="grid gap-4 sm:grid-cols-2">
+						<Label>
+							{t("admin.units.config.contact.phone")}
+							<MaskedInput
+								format="(##) #####-####"
+								inputMode="numeric"
+								mask="_"
+								onValueChange={({ value }) => setPhone(value)}
+								placeholder="(11) 90000-0000"
+								value={phone}
+							/>
+						</Label>
+						<Label>
+							{t("admin.units.config.contact.whatsApp")}
+							<MaskedInput
+								format="(##) #####-####"
+								inputMode="numeric"
+								mask="_"
+								onValueChange={({ value }) => setWhatsApp(value)}
+								placeholder="(11) 90000-0000"
+								value={whatsApp}
+							/>
+						</Label>
+					</div>
+					<Label>
+						{t("admin.units.config.contact.instagram")}
+						<Input
+							onChange={event => setLocalInstagramUrl(event.currentTarget.value)}
+							placeholder="https://instagram.com/minhaunidade"
+							value={localInstagramUrl}
+						/>
+					</Label>
+					<Label>
+						{t("admin.units.config.contact.x")}
+						<Input
+							onChange={event => setLocalXUrl(event.currentTarget.value)}
+							placeholder="https://x.com/minhaunidade"
+							value={localXUrl}
+						/>
+					</Label>
+					<Label>
+						{t("admin.units.config.contact.facebook")}
+						<Input
+							onChange={event => setLocalFacebookUrl(event.currentTarget.value)}
+							placeholder="https://facebook.com/minhaunidade"
+							value={localFacebookUrl}
+						/>
+					</Label>
 				</section>
 
 				<CollapsibleModalSection

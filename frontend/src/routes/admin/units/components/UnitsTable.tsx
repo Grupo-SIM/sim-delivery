@@ -2,14 +2,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuBookOpen, LuClock, LuImages, LuSettings, LuTrash2, LuTruck } from "react-icons/lu";
+import { LuBookOpen, LuClock, LuImages, LuPower, LuPowerOff, LuSettings, LuTrash2, LuTruck } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Tooltip } from "@/components/ui/Tooltip";
-import { type GetUnits200, getUnitsQueryKey, useDeleteUnitsByUnitId } from "@/lib/api";
+import { type GetUnits200, getUnitsQueryKey, useDeleteUnitsByUnitId, usePatchUnitsByUnitId } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 import { UnitDeliveryZonesEditor } from "./UnitDeliveryZonesEditor";
 import { UnitEditor } from "./UnitEditor";
@@ -24,6 +24,7 @@ export function UnitsTable({ units }: UnitsTableProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const remove = useDeleteUnitsByUnitId();
+	const update = usePatchUnitsByUnitId();
 	const [hoursUnitId, setHoursUnitId] = useState<string | null>(null);
 	const [editorUnit, setEditorUnit] = useState<GetUnits200[number] | null>(null);
 	const [zonesUnit, setZonesUnit] = useState<GetUnits200[number] | null>(null);
@@ -33,14 +34,34 @@ export function UnitsTable({ units }: UnitsTableProps) {
 		return <EmptyState title={t("admin.units.empty")} />;
 	}
 
+	function invalidateUnits() {
+		return queryClient.invalidateQueries({ queryKey: getUnitsQueryKey() });
+	}
+
 	function deleteUnit(id: string) {
 		remove.mutate(
 			{ unitId: id },
 			{
 				onError: () => void showAlert(t("admin.units.row.deleteError")),
 				onSuccess: () => {
-					void queryClient.invalidateQueries({ queryKey: getUnitsQueryKey() });
+					void invalidateUnits();
 					showToast(t("admin.units.row.deleteSuccess"), "positive");
+				},
+			},
+		);
+	}
+
+	function updateUnitStatus(unit: GetUnits200[number]) {
+		update.mutate(
+			{ data: { active: !unit.active }, unitId: unit.id },
+			{
+				onError: () => void showAlert(t("admin.units.row.statusError")),
+				onSuccess: () => {
+					void invalidateUnits();
+					showToast(
+						t(unit.active ? "admin.units.row.activateSuccess" : "admin.units.row.deactivateSuccess"),
+						"positive",
+					);
 				},
 			},
 		);
@@ -78,18 +99,43 @@ export function UnitsTable({ units }: UnitsTableProps) {
 								<td className="px-4 py-3 text-muted-foreground">{unit.phone ?? "—"}</td>
 								<td className="px-4 py-3 text-muted-foreground">{unit.city ?? "—"}</td>
 								<td className="px-4 py-3">
-									<Badge
-										className={
-											unit.isOpenNow
-												? "border-green-500/30 bg-green-500/10 text-green-500"
-												: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
-										}
-									>
-										{unit.isOpenNow ? t("admin.units.status.open") : t("admin.units.status.closed")}
-									</Badge>
+									<div className="flex items-center gap-2">
+										<Badge
+											className={
+												unit.active
+													? "border-green-500/30 bg-green-500/10 text-green-500"
+													: "border-destructive/30 bg-destructive/10 text-destructive"
+											}
+										>
+											{unit.active ? t("admin.units.status.active") : t("admin.units.status.inactive")}
+										</Badge>
+										{unit.active && (
+											<Badge
+												className={
+													unit.isOpenNow
+														? "border-green-500/30 bg-green-500/10 text-green-500"
+														: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
+												}
+											>
+												{unit.isOpenNow ? t("admin.units.status.open") : t("admin.units.status.closed")}
+											</Badge>
+										)}
+									</div>
 								</td>
 								<td className="px-4 py-3 text-right">
 									<div className="flex justify-end gap-2">
+										<Tooltip content={t(unit.active ? "admin.units.row.deactivate" : "admin.units.row.activate")}>
+											<Button
+												aria-label={t(unit.active ? "admin.units.row.deactivate" : "admin.units.row.activate")}
+												disabled={update.isPending}
+												onClick={() => updateUnitStatus(unit)}
+												size="icon"
+												type="button"
+												variant="outline"
+											>
+												{unit.active ? <LuPowerOff className="h-4 w-4" /> : <LuPower className="h-4 w-4" />}
+											</Button>
+										</Tooltip>
 										<Tooltip content={t("admin.units.menu.action")}>
 											<Link
 												aria-label={t("admin.units.menu.action")}

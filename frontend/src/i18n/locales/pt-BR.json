@@ -942,6 +942,14 @@
 					"availabilityOpen": "Forçar aberto",
 					"cancel": "Cancelar",
 					"cashback": "Cashback",
+					"contact": {
+						"facebook": "Facebook",
+						"instagram": "Instagram",
+						"phone": "Telefone para chamadas",
+						"title": "Contato e redes sociais",
+						"whatsApp": "WhatsApp",
+						"x": "X (Twitter)"
+					},
 					"deliveryFee": "Taxa de entrega",
 					"deliveryFeeFallback": "Usar essa taxa fixa quando o endereço estiver fora de todas as faixas de raio",
 					"deliveryMethods": "Métodos de entrega",
@@ -1025,13 +1033,20 @@
 					"title": "Imagens promocionais da unidade"
 				},
 				"row": {
+					"activate": "Reativar",
+					"activateSuccess": "Unidade reativada.",
+					"deactivate": "Desativar",
+					"deactivateSuccess": "Unidade desativada.",
 					"delete": "Desativar",
 					"deleteConfirm": "Desativar unidade {{name}}? Ela ficará indisponível para pedidos.",
 					"deleteError": "Não foi possível desativar a unidade.",
-					"deleteSuccess": "Unidade desativada."
+					"deleteSuccess": "Unidade desativada.",
+					"statusError": "Não foi possível atualizar o status da unidade."
 				},
 				"status": {
+					"active": "Ativa",
 					"closed": "Fechado",
+					"inactive": "Desativada",
 					"open": "Aberto"
 				},
 				"subtitle": "Lojas desta empresa.",

@@ -6,6 +6,12 @@ model Unit {
     name         String
     slug         String
     phone        String?
+    /// Customer-support WhatsApp number for this specific unit.
+    whatsApp     String?
+    /// Social profiles shown on this unit's storefront.
+    xUrl         String?
+    instagramUrl String?
+    facebookUrl  String?
     /// Image used to represent this unit in storefront unit listings.
     imageUrl     String?
     /// Storefront banner rendered only on this unit's page.

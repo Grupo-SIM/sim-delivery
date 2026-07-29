@@ -9,6 +9,7 @@ export { PromotionalCarousel } from "./PromotionalCarousel";
 export { StoreHoursModal } from "./StoreHoursModal";
 export { StoreToolbar } from "./StoreToolbar";
 export { UnitBanner } from "./UnitBanner";
+export { UnitContactLinks } from "./UnitContactLinks";
 export { UnitReviews } from "./UnitReviews";
 export { UnitStoreSkeleton } from "./UnitStoreSkeleton";
 export { UnitSwitcher } from "./UnitSwitcher";

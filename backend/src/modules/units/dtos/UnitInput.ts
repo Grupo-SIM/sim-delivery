@@ -17,6 +17,10 @@ const fields = {
 	neighborhood: t.Optional(t.Nullable(t.String())),
 	number: t.Optional(t.Nullable(t.String())),
 	phone: t.Optional(t.Nullable(t.String())),
+	whatsApp: t.Optional(t.Nullable(t.String({ maxLength: 30 }))),
+	xUrl: t.Optional(t.Nullable(t.String({ format: "uri", maxLength: 1000 }))),
+	instagramUrl: t.Optional(t.Nullable(t.String({ format: "uri", maxLength: 1000 }))),
+	facebookUrl: t.Optional(t.Nullable(t.String({ format: "uri", maxLength: 1000 }))),
 	reference: t.Optional(t.Nullable(t.String())),
 	state: t.Optional(t.Nullable(t.String())),
 	zipCode: t.Optional(t.Nullable(t.String())),
@@ -25,5 +29,9 @@ const fields = {
 export const CreateUnitBody = t.Object({ ...fields, name: t.String({ minLength: 1 }) });
 export type CreateUnitBody = typeof CreateUnitBody.static;
 
-export const UpdateUnitBody = t.Object({ ...fields, name: t.Optional(t.String({ minLength: 1 })) });
+export const UpdateUnitBody = t.Object({
+	...fields,
+	active: t.Optional(t.Boolean()),
+	name: t.Optional(t.String({ minLength: 1 })),
+});
 export type UpdateUnitBody = typeof UpdateUnitBody.static;

@@ -18,6 +18,7 @@ import {
 	StoreHoursModal,
 	StoreToolbar,
 	UnitBanner,
+	UnitContactLinks,
 	UnitReviews,
 	UnitStoreSkeleton,
 	UnitSwitcher,
@@ -74,7 +75,10 @@ function UnitStorePage() {
 							<StarRating average={unit.ratingAverage} count={Number(unit.ratingCount)} />
 						)}
 					</div>
-					{units && <UnitSwitcher unitId={unitSlug} units={units} />}
+					<div className="flex flex-wrap items-center justify-end gap-3">
+						<UnitContactLinks unit={unit} />
+						{units && <UnitSwitcher unitId={unitSlug} units={units} />}
+					</div>
 				</div>
 
 				{menu.isPending ? (
