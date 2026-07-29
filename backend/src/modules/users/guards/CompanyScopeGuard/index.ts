@@ -17,7 +17,7 @@ export abstract class CompanyScopeGuard {
 			throw new DomainError(UserErrors.WRONG_CREDENTIALS);
 		}
 
-		const slug = headers.get("x-company-slug");
+		const slug = process.env.COMPANY_SLUG?.trim();
 		if (!slug) {
 			throw new DomainError(UserErrors.FORBIDDEN);
 		}

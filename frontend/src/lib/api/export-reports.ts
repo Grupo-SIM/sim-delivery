@@ -1,6 +1,5 @@
 import ky from "ky";
 import { branding } from "@/lib/branding";
-import { slug } from "@/lib/variant";
 
 export interface ExportReportsParams {
 	endDate?: string;
@@ -23,7 +22,6 @@ export async function exportReports(params: ExportReportsParams): Promise<void> 
 	const searchParams = Object.entries(params).filter((entry): entry is [string, string] => Boolean(entry[1]));
 	const response = await ky.get(`${branding.apiUrl}/reports/export`, {
 		credentials: "include",
-		headers: slug ? { "x-company-slug": slug } : undefined,
 		searchParams,
 		timeout: false,
 	});
