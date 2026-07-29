@@ -2,14 +2,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuBookOpen, LuClock, LuImages, LuPower, LuPowerOff, LuSettings, LuTrash2, LuTruck } from "react-icons/lu";
+import { LuBookOpen, LuClock, LuDoorClosed, LuImages, LuSettings, LuSlash, LuTruck } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonClassName } from "@/components/ui/button";
-import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Tooltip } from "@/components/ui/Tooltip";
-import { type GetUnits200, getUnitsQueryKey, useDeleteUnitsByUnitId, usePatchUnitsByUnitId } from "@/lib/api";
+import { type GetUnits200, getUnitsQueryKey, usePatchUnitsByUnitId } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 import { UnitDeliveryZonesEditor } from "./UnitDeliveryZonesEditor";
 import { UnitEditor } from "./UnitEditor";
@@ -23,7 +22,6 @@ interface UnitsTableProps {
 export function UnitsTable({ units }: UnitsTableProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
-	const remove = useDeleteUnitsByUnitId();
 	const update = usePatchUnitsByUnitId();
 	const [hoursUnitId, setHoursUnitId] = useState<string | null>(null);
 	const [editorUnit, setEditorUnit] = useState<GetUnits200[number] | null>(null);
@@ -34,30 +32,13 @@ export function UnitsTable({ units }: UnitsTableProps) {
 		return <EmptyState title={t("admin.units.empty")} />;
 	}
 
-	function invalidateUnits() {
-		return queryClient.invalidateQueries({ queryKey: getUnitsQueryKey() });
-	}
-
-	function deleteUnit(id: string) {
-		remove.mutate(
-			{ unitId: id },
-			{
-				onError: () => void showAlert(t("admin.units.row.deleteError")),
-				onSuccess: () => {
-					void invalidateUnits();
-					showToast(t("admin.units.row.deleteSuccess"), "positive");
-				},
-			},
-		);
-	}
-
 	function updateUnitStatus(unit: GetUnits200[number]) {
 		update.mutate(
 			{ data: { active: !unit.active }, unitId: unit.id },
 			{
 				onError: () => void showAlert(t("admin.units.row.statusError")),
 				onSuccess: () => {
-					void invalidateUnits();
+					void queryClient.invalidateQueries({ queryKey: getUnitsQueryKey() });
 					showToast(
 						t(unit.active ? "admin.units.row.activateSuccess" : "admin.units.row.deactivateSuccess"),
 						"positive",
@@ -124,18 +105,6 @@ export function UnitsTable({ units }: UnitsTableProps) {
 								</td>
 								<td className="px-4 py-3 text-right">
 									<div className="flex justify-end gap-2">
-										<Tooltip content={t(unit.active ? "admin.units.row.deactivate" : "admin.units.row.activate")}>
-											<Button
-												aria-label={t(unit.active ? "admin.units.row.deactivate" : "admin.units.row.activate")}
-												disabled={update.isPending}
-												onClick={() => updateUnitStatus(unit)}
-												size="icon"
-												type="button"
-												variant="outline"
-											>
-												{unit.active ? <LuPowerOff className="h-4 w-4" /> : <LuPower className="h-4 w-4" />}
-											</Button>
-										</Tooltip>
 										<Tooltip content={t("admin.units.menu.action")}>
 											<Link
 												aria-label={t("admin.units.menu.action")}
@@ -190,19 +159,25 @@ export function UnitsTable({ units }: UnitsTableProps) {
 												<LuTruck className="h-4 w-4" />
 											</Button>
 										</Tooltip>
-										<ConfirmActionButton
-											aria-label={t("admin.units.row.delete")}
-											confirmation={t("admin.units.row.deleteConfirm", { name: unit.name })}
-											confirmLabel={t("admin.units.row.delete")}
-											disabled={remove.isPending}
-											idleIcon={<LuTrash2 className="h-4 w-4" />}
-											onConfirm={() => deleteUnit(unit.id)}
-											size="icon"
-											type="button"
-											variant="outline"
-										>
-											{null}
-										</ConfirmActionButton>
+										<Tooltip content={t(unit.active ? "admin.units.row.deactivate" : "admin.units.row.activate")}>
+											<Button
+												aria-label={t(unit.active ? "admin.units.row.deactivate" : "admin.units.row.activate")}
+												disabled={update.isPending}
+												onClick={() => updateUnitStatus(unit)}
+												size="icon"
+												type="button"
+												variant="outline"
+											>
+												{unit.active ? (
+												<span className="relative block h-4 w-4">
+													<LuDoorClosed className="h-4 w-4" />
+													<LuSlash className="absolute inset-0 h-4 w-4" />
+												</span>
+											) : (
+												<LuDoorClosed className="h-4 w-4" />
+											)}
+											</Button>
+										</Tooltip>
 									</div>
 								</td>
 							</tr>
