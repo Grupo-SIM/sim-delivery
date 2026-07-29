@@ -19,6 +19,7 @@ function getFileName(contentDisposition: string | null): string {
  * binary workbook rather than JSON — same reason `upload-media` talks to `ky` directly.
  */
 export async function exportReports(params: ExportReportsParams): Promise<void> {
+	// Kubb's shared client JSON-parses every response; XLSX downloads must remain binary.
 	const searchParams = Object.entries(params).filter((entry): entry is [string, string] => Boolean(entry[1]));
 	const response = await ky.get(`${branding.apiUrl}/reports/export`, {
 		credentials: "include",
