@@ -90,6 +90,9 @@
 				"subtitle": "Personalize a aparência da sua loja e as análises.",
 				"themeColors": "Cores do tema",
 				"title": "Identidade visual",
+				"unitFallbackImagePreview": "Prévia da imagem padrão da unidade",
+				"unitFallbackImageUpload": "Enviar imagem padrão da unidade",
+				"unitFallbackImageUrl": "URL da imagem padrão da unidade",
 				"uploadError": "Não foi possível enviar o arquivo."
 			},
 			"categories": {
