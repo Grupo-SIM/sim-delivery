@@ -131,7 +131,7 @@ export function UnitHoursEditor({ onClose, unitId }: UnitHoursEditorProps) {
 							>
 								<span className="text-sm">{weekdayLabels[index]}</span>
 								<label
-									className="flex items-center gap-1 text-muted-foreground text-xs"
+									className="flex cursor-pointer items-center gap-1 text-muted-foreground text-xs"
 									htmlFor={`unit-hours-closed-${WEEKDAYS[index]}`}
 								>
 									<Checkbox
