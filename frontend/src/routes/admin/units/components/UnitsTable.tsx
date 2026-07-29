@@ -63,7 +63,18 @@ export function UnitsTable({ units }: UnitsTableProps) {
 						.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"))
 						.map(unit => (
 							<tr className="border-border/60 border-b last:border-0" key={unit.id}>
-								<td className="px-4 py-3 font-medium">{unit.name}</td>
+								<td className="px-4 py-3 font-medium">
+									<div className="flex items-center gap-3">
+										{unit.imageUrl && (
+											<img
+												alt=""
+												className="h-10 w-10 shrink-0 rounded object-cover"
+												src={unit.imageUrl}
+											/>
+										)}
+										<span>{unit.name}</span>
+									</div>
+								</td>
 								<td className="px-4 py-3 text-muted-foreground">{unit.phone ?? "—"}</td>
 								<td className="px-4 py-3 text-muted-foreground">{unit.city ?? "—"}</td>
 								<td className="px-4 py-3">
