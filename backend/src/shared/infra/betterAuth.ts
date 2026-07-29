@@ -4,7 +4,6 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { magicLink, phoneNumber } from "better-auth/plugins";
 import { MagicLinkEmail, ResetPasswordEmail } from "./emails";
 import { type PhoneOtpProviderKey, phoneOtpProviders } from "./phoneOtp";
-import { resolveSiteSessionOverride } from "./resolveSiteSessionOverride";
 import { prisma } from "./sql";
 
 const algorithm = "argon2id";
@@ -16,34 +15,7 @@ export const auth = betterAuth({
 	database: prismaAdapter(prisma, {
 		provider: "postgresql",
 	}),
-	// Site-scoped login (docs/02, docs/03): each whitelabel frontend build sends its own
-	// `slug` (VITE_COMPANY_SLUG, same one used by the public storefront to resolve
-	// its company) as a `?slug=` query param on sign-in. A superAdmin session gets
-	// scoped to that site's companyId without touching their (company-agnostic) user row;
-	// a staff member signing into a site that isn't their own is downgraded to "customer"
-	// for that session only, so their staff powers don't leak across tenants.
-	databaseHooks: {
-		session: {
-			create: {
-				before: async (session, context) => {
-					const slug = context?.query?.slug as string | undefined;
-					if (!slug) return;
 
-					const [user, company] = await Promise.all([
-						prisma.user.findUnique({
-							select: { companyId: true, role: true },
-							where: { id: session.userId },
-						}),
-						prisma.company.findUnique({ select: { id: true }, where: { slug } }),
-					]);
-					if (!user || !company) return;
-
-					const override = resolveSiteSessionOverride(company.id, user);
-					return override ? { data: override } : undefined;
-				},
-			},
-		},
-	},
 	emailAndPassword: {
 		enabled: true,
 		minPasswordLength: 6,
