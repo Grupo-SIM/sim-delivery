@@ -3,12 +3,14 @@ import { LuArrowRight, LuClock3, LuMapPin } from "react-icons/lu";
 import type { PublicUnit } from "../../components/storefront/types";
 
 interface UnitHeroCardProps {
+	fallbackImageUrl?: string | null;
 	openLabel: string;
 	unit: PublicUnit;
 }
 
-export function UnitHeroCard({ openLabel, unit }: UnitHeroCardProps) {
+export function UnitHeroCard({ fallbackImageUrl, openLabel, unit }: UnitHeroCardProps) {
 	const address = [unit.addressLine, unit.neighborhood, unit.city].filter(Boolean).join(", ");
+	const imageUrl = unit.imageUrl || fallbackImageUrl;
 	const prepTime =
 		unit.prepTimeMinMinutes !== null && unit.prepTimeMaxMinutes !== null
 			? `${unit.prepTimeMinMinutes}-${unit.prepTimeMaxMinutes} min`
@@ -20,14 +22,14 @@ export function UnitHeroCard({ openLabel, unit }: UnitHeroCardProps) {
 			params={{ unitId: unit.slug }}
 			to="/$unitId"
 		>
-			{unit.imageUrl && (
+			{imageUrl && (
 				<img
 					alt={`Unidade ${unit.name}`}
 					className="absolute inset-0 h-full w-full object-cover opacity-75 transition duration-500 group-hover:scale-105"
-					src={unit.imageUrl}
+					src={imageUrl}
 				/>
 			)}
-			{unit.imageUrl && <div className="absolute inset-0 bg-black/50" />}
+			{imageUrl && <div className="absolute inset-0 bg-black/50" />}
 			<div className="relative flex min-h-80 flex-col justify-between p-6">
 				<div className="flex items-start justify-between gap-4">
 					<span className="rounded-full bg-white/90 px-3 py-1.5 font-semibold text-brand-ink text-xs">

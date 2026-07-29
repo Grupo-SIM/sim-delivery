@@ -9,6 +9,7 @@ interface CompanyRow {
 	name: string;
 	slug: string;
 	themeColors: unknown;
+	unitFallbackImageUrl: string | null;
 }
 
 const baseCompany: CompanyRow = {
@@ -18,6 +19,7 @@ const baseCompany: CompanyRow = {
 	name: "Zero Grau",
 	slug: "zero-grau",
 	themeColors: { primary: "#ff0000" },
+	unitFallbackImageUrl: "https://cdn.zero-grau.com/unit-fallback.png",
 };
 
 function makePrisma(opts: { companies?: CompanyRow[] } = {}) {
@@ -50,6 +52,7 @@ describe("GetBranding", () => {
 			footerPaymentMethods: ["Pix"],
 			logoUrl: "https://cdn.zero-grau.com/logo.png",
 			themeColors: { primary: "#ff0000" },
+			unitFallbackImageUrl: "https://cdn.zero-grau.com/unit-fallback.png",
 		});
 	});
 

@@ -21,5 +21,6 @@ export const BrandingReturn = t.Object({
 	metaPixelId: __nullable__(t.String()),
 	orderStatusWhatsAppTemplates: __nullable__(OrderStatusWhatsAppTemplates),
 	themeColors: __nullable__(ThemeColors),
+	unitFallbackImageUrl: __nullable__(t.String()),
 });
 export type BrandingReturn = typeof BrandingReturn.static;

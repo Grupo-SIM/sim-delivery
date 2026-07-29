@@ -24,6 +24,7 @@ describe("UpdateBranding", () => {
 					name: where.id,
 					orderStatusWhatsAppTemplates: null,
 					themeColors: null,
+					unitFallbackImageUrl: data.unitFallbackImageUrl ?? null,
 				}),
 			},
 		} as unknown as PrismaInstance;
@@ -34,6 +35,7 @@ describe("UpdateBranding", () => {
 			footerPaymentMethods: ["Pix", "Crédito"],
 			footerSupportEmail: "contato@zero-grau.com",
 			footerWhatsApp: "5581999999999",
+			unitFallbackImageUrl: "https://cdn.zero-grau.com/unit-fallback.png",
 		});
 
 		expect(result).toMatchObject({
@@ -42,6 +44,7 @@ describe("UpdateBranding", () => {
 			footerPaymentMethods: ["Pix", "Crédito"],
 			footerSupportEmail: "contato@zero-grau.com",
 			footerWhatsApp: "5581999999999",
+			unitFallbackImageUrl: "https://cdn.zero-grau.com/unit-fallback.png",
 		});
 	});
 

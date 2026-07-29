@@ -36,6 +36,7 @@ function BrandingPage() {
 	const put = usePutBranding();
 
 	const [logoUrl, setLogoUrl] = useState("");
+	const [unitFallbackImageUrl, setUnitFallbackImageUrl] = useState("");
 	const [allowThemeToggle, setAllowThemeToggle] = useState(true);
 	const [fontFamily, setFontFamily] = useState("");
 	const [fontFamilyUrl, setFontFamilyUrl] = useState("");
@@ -58,6 +59,7 @@ function BrandingPage() {
 		if (branding) {
 			setAllowThemeToggle(branding.allowThemeToggle);
 			setLogoUrl(branding.logoUrl ?? "");
+			setUnitFallbackImageUrl(branding.unitFallbackImageUrl ?? "");
 			setFontFamily(branding.fontFamily ?? "");
 			setFontFamilyUrl(branding.fontFamilyUrl ?? "");
 			setFontDisplay(branding.fontDisplay ?? "");
@@ -135,6 +137,7 @@ function BrandingPage() {
 						}),
 					),
 					themeColors,
+					unitFallbackImageUrl: unitFallbackImageUrl.trim() || undefined,
 				},
 			},
 			{
@@ -229,6 +232,29 @@ function BrandingPage() {
 									{t("admin.branding.logoPreview")}
 								</p>
 								<img alt="logo preview" className="h-12 object-contain" src={logoUrl} />
+							</div>
+						)}
+
+						<Label>
+							{t("admin.branding.unitFallbackImageUrl")}
+							<MediaUrlInput
+								asset="unit"
+								onUploadError={() => showToast(t("admin.branding.uploadError"), "negative")}
+								onValueChange={setUnitFallbackImageUrl}
+								uploadLabel={t("admin.branding.unitFallbackImageUpload")}
+								value={unitFallbackImageUrl}
+							/>
+						</Label>
+						{unitFallbackImageUrl && (
+							<div className="rounded border border-border p-3">
+								<p className="mb-2 font-medium text-muted-foreground text-xs uppercase">
+									{t("admin.branding.unitFallbackImagePreview")}
+								</p>
+								<img
+									alt={t("admin.branding.unitFallbackImagePreview")}
+									className="h-32 w-full rounded object-cover"
+									src={unitFallbackImageUrl}
+								/>
 							</div>
 						)}
 

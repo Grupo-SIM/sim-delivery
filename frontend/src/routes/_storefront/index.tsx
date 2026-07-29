@@ -3,12 +3,13 @@ import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { useGetPublicUnits } from "@/lib/api";
+import { useGetBranding, useGetPublicUnits } from "@/lib/api";
 import { slug } from "@/lib/variant";
 import { UnitHeroCard } from "./components";
 
 function StorePage() {
 	const { t } = useTranslation();
+	const { data: branding, isPending: isBrandingPending } = useGetBranding(slug ? { slug } : undefined);
 	const { data: units, isError, isPending } = useGetPublicUnits({ slug });
 
 	return (
@@ -22,7 +23,7 @@ function StorePage() {
 			</section>
 
 			<section className="mx-auto max-w-6xl px-5 pb-12" id="unidades">
-				{isPending ? (
+				{isPending || isBrandingPending ? (
 					<div className="grid gap-4 md:grid-cols-2">
 						<Skeleton className="h-80 w-full" />
 						<Skeleton className="h-80 w-full" />
@@ -34,7 +35,12 @@ function StorePage() {
 				) : (
 					<div className="grid gap-4 md:grid-cols-2">
 						{units.map(unit => (
-							<UnitHeroCard key={unit.id} openLabel={t("store.status.open")} unit={unit} />
+							<UnitHeroCard
+								fallbackImageUrl={branding?.unitFallbackImageUrl}
+								key={unit.id}
+								openLabel={t("store.status.open")}
+								unit={unit}
+							/>
 						))}
 					</div>
 				)}

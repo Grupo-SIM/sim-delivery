@@ -25,6 +25,7 @@ export class UpdateBranding {
 		metaPixelId,
 		orderStatusWhatsAppTemplates,
 		themeColors,
+		unitFallbackImageUrl,
 	}: UpdateBrandingDTO): Promise<BrandingReturn> {
 		if (!companyId) throw new DomainError(UserErrors.FORBIDDEN);
 
@@ -47,6 +48,7 @@ export class UpdateBranding {
 				metaPixelId,
 				orderStatusWhatsAppTemplates,
 				themeColors,
+				unitFallbackImageUrl,
 			},
 			select: {
 				allowThemeToggle: true,
@@ -67,6 +69,7 @@ export class UpdateBranding {
 				name: true,
 				orderStatusWhatsAppTemplates: true,
 				themeColors: true,
+				unitFallbackImageUrl: true,
 			},
 			where: { id: companyId },
 		});
@@ -91,6 +94,7 @@ export class UpdateBranding {
 			orderStatusWhatsAppTemplates:
 				(company.orderStatusWhatsAppTemplates as BrandingReturn["orderStatusWhatsAppTemplates"]) ?? null,
 			themeColors: (company.themeColors as BrandingReturn["themeColors"]) ?? null,
+			unitFallbackImageUrl: company.unitFallbackImageUrl ?? null,
 		};
 	}
 }

@@ -25,6 +25,7 @@ export class GetBranding {
 				name: true,
 				orderStatusWhatsAppTemplates: true,
 				themeColors: true,
+				unitFallbackImageUrl: true,
 			},
 			where: { slug },
 		});
@@ -49,6 +50,7 @@ export class GetBranding {
 			orderStatusWhatsAppTemplates:
 				(company?.orderStatusWhatsAppTemplates as BrandingReturn["orderStatusWhatsAppTemplates"]) ?? null,
 			themeColors: (company?.themeColors as BrandingReturn["themeColors"]) ?? null,
+			unitFallbackImageUrl: company?.unitFallbackImageUrl ?? null,
 		};
 	}
 }

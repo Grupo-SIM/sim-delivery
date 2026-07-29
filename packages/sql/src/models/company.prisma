@@ -9,6 +9,8 @@ model Company {
     apiUrl      String?
     /// Branding fields rendered in the store footer and app shell.
     logoUrl     String?
+    /// Image used when a storefront unit has no listing image of its own.
+    unitFallbackImageUrl String?
     footerText  String?
     footerPaymentMethods String[] @default([])
     footerInstagramUrl String?

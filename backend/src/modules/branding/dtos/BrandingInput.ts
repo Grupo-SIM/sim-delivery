@@ -60,6 +60,7 @@ export const UpdateBrandingBody = t.Object({
 	metaPixelId: t.Optional(t.String({ maxLength: 50 })),
 	orderStatusWhatsAppTemplates: t.Optional(OrderStatusWhatsAppTemplates),
 	themeColors: t.Optional(ThemeColors),
+	unitFallbackImageUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
 });
 export type UpdateBrandingBody = typeof UpdateBrandingBody.static;
 
