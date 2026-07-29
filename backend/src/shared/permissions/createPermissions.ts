@@ -19,21 +19,39 @@ export function createPermissions(role: Role) {
 	const isCourier = role === "courier";
 	const isCustomer = role === "customer";
 
-	// Company management (owner + up). "mgmt" = owner-equivalent operational access.
-	const mgmt = isSuper || isOwner || isManager;
+	if (isSuper) {
+		permix.setup({
+			branding: { read: true, update: true },
+			company: { create: true, delete: true, read: true, update: true },
+			coupons: { apply: true, create: true, delete: true, read: true, update: true },
+			customers: { read: true, update: true },
+			deliveries: { assign: true, read: true, updateStatus: true },
+			inventory: { create: true, read: true, update: true },
+			menu: { create: true, delete: true, read: true, update: true },
+			orders: { create: true, read: true, updateStatus: true },
+			reports: { read: true },
+			reviews: { create: true, read: true },
+			staff: { invite: true, inviteOwner: true, read: true, remove: true, setRole: true },
+			units: { create: true, delete: true, read: true, update: true },
+		});
+		return permix;
+	}
+
+	// Company management (owner + manager). "mgmt" = operational management access.
+	const mgmt = isOwner || isManager;
 	// Anyone who works a store and may read catalog/units.
 	const staffRead = mgmt || isAttendant || isKitchen;
 
 	permix.setup({
 		branding: {
 			read: mgmt,
-			update: isSuper || isOwner,
+			update: isOwner,
 		},
 		company: {
-			create: isSuper,
-			delete: isSuper,
-			read: isSuper,
-			update: isSuper,
+			create: false,
+			delete: false,
+			read: false,
+			update: false,
 		},
 		coupons: {
 			apply: mgmt || isAttendant,
@@ -76,7 +94,7 @@ export function createPermissions(role: Role) {
 		},
 		staff: {
 			invite: mgmt,
-			inviteOwner: isSuper || isOwner,
+			inviteOwner: isOwner,
 			read: mgmt,
 			remove: mgmt,
 			setRole: mgmt,

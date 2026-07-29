@@ -14,10 +14,46 @@ describe("roles guards", () => {
 });
 
 describe("createPermissions matrix", () => {
-	it("superAdmin manages companies; nobody else can", () => {
+	it("superAdmin has every platform permission", () => {
 		const superAdmin = createPermissions("superAdmin");
+		expect(superAdmin.check("branding", "read")).toBe(true);
+		expect(superAdmin.check("branding", "update")).toBe(true);
 		expect(superAdmin.check("company", "create")).toBe(true);
+		expect(superAdmin.check("company", "delete")).toBe(true);
 		expect(superAdmin.check("company", "read")).toBe(true);
+		expect(superAdmin.check("company", "update")).toBe(true);
+		expect(superAdmin.check("coupons", "apply")).toBe(true);
+		expect(superAdmin.check("coupons", "create")).toBe(true);
+		expect(superAdmin.check("coupons", "delete")).toBe(true);
+		expect(superAdmin.check("coupons", "read")).toBe(true);
+		expect(superAdmin.check("coupons", "update")).toBe(true);
+		expect(superAdmin.check("customers", "read")).toBe(true);
+		expect(superAdmin.check("customers", "update")).toBe(true);
+		expect(superAdmin.check("deliveries", "assign")).toBe(true);
+		expect(superAdmin.check("deliveries", "read")).toBe(true);
+		expect(superAdmin.check("deliveries", "updateStatus")).toBe(true);
+		expect(superAdmin.check("inventory", "create")).toBe(true);
+		expect(superAdmin.check("inventory", "read")).toBe(true);
+		expect(superAdmin.check("inventory", "update")).toBe(true);
+		expect(superAdmin.check("menu", "create")).toBe(true);
+		expect(superAdmin.check("menu", "delete")).toBe(true);
+		expect(superAdmin.check("menu", "read")).toBe(true);
+		expect(superAdmin.check("menu", "update")).toBe(true);
+		expect(superAdmin.check("orders", "create")).toBe(true);
+		expect(superAdmin.check("orders", "read")).toBe(true);
+		expect(superAdmin.check("orders", "updateStatus")).toBe(true);
+		expect(superAdmin.check("reports", "read")).toBe(true);
+		expect(superAdmin.check("reviews", "create")).toBe(true);
+		expect(superAdmin.check("reviews", "read")).toBe(true);
+		expect(superAdmin.check("staff", "invite")).toBe(true);
+		expect(superAdmin.check("staff", "inviteOwner")).toBe(true);
+		expect(superAdmin.check("staff", "read")).toBe(true);
+		expect(superAdmin.check("staff", "remove")).toBe(true);
+		expect(superAdmin.check("staff", "setRole")).toBe(true);
+		expect(superAdmin.check("units", "create")).toBe(true);
+		expect(superAdmin.check("units", "delete")).toBe(true);
+		expect(superAdmin.check("units", "read")).toBe(true);
+		expect(superAdmin.check("units", "update")).toBe(true);
 		expect(createPermissions("owner").check("company", "create")).toBe(false);
 		expect(createPermissions("owner").check("company", "read")).toBe(false);
 		expect(createPermissions("manager").check("company", "delete")).toBe(false);
