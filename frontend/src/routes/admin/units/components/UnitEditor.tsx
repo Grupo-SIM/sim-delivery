@@ -285,20 +285,6 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 				</CollapsibleModalSection>
 
 				<section className="space-y-4 border-border border-t pt-6">
-					<h2 className="font-semibold text-lg">{t("admin.units.banner.title")}</h2>
-					<MediaUrlInput
-						asset="banner"
-						onUploadError={() => void showAlert(t("admin.units.banner.uploadError"))}
-						onValueChange={setBannerUrl}
-						uploadLabel={t("admin.units.banner.upload")}
-						value={bannerUrl}
-					/>
-					{bannerUrl && (
-						<img alt="" className="max-h-[min(60dvh,36rem)] w-full rounded object-contain" src={bannerUrl} />
-					)}
-				</section>
-
-				<section className="space-y-4 border-border border-t pt-6">
 					<h2 className="font-semibold text-lg">{t("admin.units.image.title")}</h2>
 					<MediaUrlInput
 						asset="unit"
@@ -309,6 +295,20 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 					/>
 					{imageUrl && (
 						<img alt="" className="max-h-[min(60dvh,36rem)] w-full rounded object-contain" src={imageUrl} />
+					)}
+				</section>
+
+				<section className="space-y-4 border-border border-t pt-6">
+					<h2 className="font-semibold text-lg">{t("admin.units.banner.title")}</h2>
+					<MediaUrlInput
+						asset="banner"
+						onUploadError={() => void showAlert(t("admin.units.banner.uploadError"))}
+						onValueChange={setBannerUrl}
+						uploadLabel={t("admin.units.banner.upload")}
+						value={bannerUrl}
+					/>
+					{bannerUrl && (
+						<img alt="" className="max-h-[min(60dvh,36rem)] w-full rounded object-contain" src={bannerUrl} />
 					)}
 				</section>
 
