@@ -64,7 +64,10 @@ export function UnitsTable({ units }: UnitsTableProps) {
 					{[...units]
 						.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"))
 						.map(unit => (
-							<tr className="border-border/60 border-b last:border-0" key={unit.id}>
+							<tr
+								className={`border-border/60 border-b last:border-0 ${unit.active ? "" : "opacity-50"}`}
+								key={unit.id}
+							>
 								<td className="px-4 py-3 font-medium">
 									<div className="flex items-center gap-3">
 										{unit.imageUrl && (
@@ -81,15 +84,6 @@ export function UnitsTable({ units }: UnitsTableProps) {
 								<td className="px-4 py-3 text-muted-foreground">{unit.city ?? "—"}</td>
 								<td className="px-4 py-3">
 									<div className="flex items-center gap-2">
-										<Badge
-											className={
-												unit.active
-													? "border-green-500/30 bg-green-500/10 text-green-500"
-													: "border-destructive/30 bg-destructive/10 text-destructive"
-											}
-										>
-											{unit.active ? t("admin.units.status.active") : t("admin.units.status.inactive")}
-										</Badge>
 										{unit.active && (
 											<Badge
 												className={
