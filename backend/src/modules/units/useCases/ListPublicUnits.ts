@@ -29,7 +29,7 @@ export class ListPublicUnits {
 					},
 				},
 				orderBy: { createdAt: "asc" },
-				where: { companyId: company.id },
+				where: { active: true, companyId: company.id },
 			}),
 			this.prisma.review.groupBy({
 				_avg: { rating: true },

@@ -16,8 +16,8 @@ export class ListPublicMenu {
 
 		const company = await this.prisma.company.findUnique({ where: { slug: companySlug } });
 		const unit = company
-			? await this.prisma.unit.findUnique({
-					where: { companyId_slug: { companyId: company.id, slug: unitSlug } },
+			? await this.prisma.unit.findFirst({
+					where: { active: true, companyId: company.id, slug: unitSlug },
 				})
 			: null;
 		if (!unit) {

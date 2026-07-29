@@ -13,6 +13,12 @@ export class DeleteUnit {
 			throw new DomainError(UnitErrors.UNIT_NOT_FOUND);
 		}
 
+		const hasOrders = await this.prisma.order.count({ where: { unitId } });
+		if (hasOrders) {
+			await this.prisma.unit.update({ data: { active: false }, where: { id: unitId } });
+			return;
+		}
+
 		await this.prisma.unit.delete({ where: { id: unitId } });
 	}
 }

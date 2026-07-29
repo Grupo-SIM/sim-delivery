@@ -32,6 +32,8 @@ model Unit {
     cashbackPercent Float    @default(0)
     /// Loyalty points rate: points earned per 100 cents spent on this unit (0 = disabled).
     loyaltyPointsRate Float  @default(0)
+    /// Whether this unit remains operational. Inactive units stay in admin history but are hidden from customers.
+    active             Boolean  @default(true)
     /// Manual open/closed override. Null = follow the weekly hours (docs/04).
     isOpenManual       Boolean?
     /// Minimum order subtotal in cents for delivery orders (0 = no minimum).

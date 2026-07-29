@@ -1022,10 +1022,10 @@
 					"title": "Imagens promocionais da unidade"
 				},
 				"row": {
-					"delete": "Excluir",
-					"deleteConfirm": "Excluir unidade {{name}}?",
-					"deleteError": "Não foi possível excluir a unidade.",
-					"deleteSuccess": "Unidade excluída."
+					"delete": "Desativar",
+					"deleteConfirm": "Desativar unidade {{name}}? Ela ficará indisponível para pedidos.",
+					"deleteError": "Não foi possível desativar a unidade.",
+					"deleteSuccess": "Unidade desativada."
 				},
 				"status": {
 					"closed": "Fechado",

@@ -57,10 +57,11 @@ function prismaWith(unit: { id: string; slug: string } | null, associations: Ass
 		},
 		productRecipeIngredient: { findMany: async () => [] },
 		unit: {
-			findUnique: async ({ where }: { where: { companyId_slug: { companyId: string; slug: string } } }) =>
-				unit && where.companyId_slug.companyId === "c1" && unit.slug === where.companyId_slug.slug
-					? unit
-					: null,
+			findFirst: async ({
+				where,
+			}: {
+				where: { active: boolean; companyId: string; slug: string };
+			}) => (unit && where.active && where.companyId === "c1" && unit.slug === where.slug ? unit : null),
 		},
 		unitProduct: {
 			findMany: async ({ where }: { where: { available: boolean; unitId: string } }) =>
