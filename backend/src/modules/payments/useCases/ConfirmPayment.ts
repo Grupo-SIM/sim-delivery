@@ -20,7 +20,7 @@ export class ConfirmPayment {
 
 		await this.prisma.$transaction(async tx => {
 			await tx.payment.update({
-				data: { status: "confirmed" },
+				data: { confirmedAt: new Date(), status: "confirmed" },
 				where: { id: payment.id },
 			});
 

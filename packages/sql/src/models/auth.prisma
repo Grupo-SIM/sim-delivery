@@ -62,7 +62,7 @@ model User {
     customer   Customer?
     deliveries Delivery[]
     preparedOrders Order[] @relation("PreparedOrders")
-    courierUnits CourierUnit[]
+    staffUnits StaffUnit[]
     sessions   Session[]
     inventoryMovements InventoryMovement[]
 

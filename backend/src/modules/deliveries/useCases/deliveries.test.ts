@@ -15,21 +15,21 @@ const baseDelivery = {
 
 function makeAssignPrisma(opts: {
 	courier?: { companyId: string; id: string; role: string } | null;
-	courierUnit?: { courierId: string; unitId: string } | null;
+	staffUnit?: { userId: string; unitId: string } | null;
 	existing?: typeof baseDelivery | null;
 	order?: typeof baseOrder | null;
 }) {
 	const {
 		courier = { companyId: "cmp_1", id: "courier_1", role: "courier" },
-		courierUnit = { courierId: "courier_1", unitId: "unit_1" },
+		staffUnit = { userId: "courier_1", unitId: "unit_1" },
 		order = baseOrder,
 		existing = null,
 	} = opts;
 	const created: object[] = [];
 
 	const prisma = {
-		courierUnit: {
-			findUnique: async () => courierUnit,
+		staffUnit: {
+			findUnique: async () => staffUnit,
 		},
 		delivery: {
 			create: async ({ data }: { data: object }) => {
@@ -82,7 +82,7 @@ describe("AssignDelivery", () => {
 	});
 
 	it("throws COURIER_NOT_AVAILABLE when courier is outside order unit", async () => {
-		const { prisma } = makeAssignPrisma({ courierUnit: null });
+		const { prisma } = makeAssignPrisma({ staffUnit: null });
 		await expect(
 			new AssignDelivery(prisma).execute("cmp_1", { courierId: "courier_1", orderId: "ord_1" }),
 		).rejects.toThrow("COURIER_NOT_AVAILABLE");

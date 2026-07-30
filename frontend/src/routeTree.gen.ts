@@ -20,11 +20,11 @@ import { Route as AdminUnitsIndexRouteImport } from './routes/admin/units/index'
 import { Route as AdminTagsIndexRouteImport } from './routes/admin/tags/index'
 import { Route as AdminStaffIndexRouteImport } from './routes/admin/staff/index'
 import { Route as AdminReviewsIndexRouteImport } from './routes/admin/reviews/index'
-import { Route as AdminReportsIndexRouteImport } from './routes/admin/reports/index'
 import { Route as AdminPromotionalImagesIndexRouteImport } from './routes/admin/promotional-images/index'
 import { Route as AdminProductsIndexRouteImport } from './routes/admin/products/index'
 import { Route as AdminOrdersIndexRouteImport } from './routes/admin/orders/index'
 import { Route as AdminInventoryIndexRouteImport } from './routes/admin/inventory/index'
+import { Route as AdminFinanceIndexRouteImport } from './routes/admin/finance/index'
 import { Route as AdminCustomersIndexRouteImport } from './routes/admin/customers/index'
 import { Route as AdminCouponsIndexRouteImport } from './routes/admin/coupons/index'
 import { Route as AdminCompaniesIndexRouteImport } from './routes/admin/companies/index'
@@ -98,11 +98,6 @@ const AdminReviewsIndexRoute = AdminReviewsIndexRouteImport.update({
   path: '/reviews/',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminReportsIndexRoute = AdminReportsIndexRouteImport.update({
-  id: '/reports/',
-  path: '/reports/',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminPromotionalImagesIndexRoute =
   AdminPromotionalImagesIndexRouteImport.update({
     id: '/promotional-images/',
@@ -122,6 +117,11 @@ const AdminOrdersIndexRoute = AdminOrdersIndexRouteImport.update({
 const AdminInventoryIndexRoute = AdminInventoryIndexRouteImport.update({
   id: '/inventory/',
   path: '/inventory/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFinanceIndexRoute = AdminFinanceIndexRouteImport.update({
+  id: '/finance/',
+  path: '/finance/',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminCustomersIndexRoute = AdminCustomersIndexRouteImport.update({
@@ -241,11 +241,11 @@ export interface FileRoutesByFullPath {
   '/admin/companies/': typeof AdminCompaniesIndexRoute
   '/admin/coupons/': typeof AdminCouponsIndexRoute
   '/admin/customers/': typeof AdminCustomersIndexRoute
+  '/admin/finance/': typeof AdminFinanceIndexRoute
   '/admin/inventory/': typeof AdminInventoryIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
   '/admin/promotional-images/': typeof AdminPromotionalImagesIndexRoute
-  '/admin/reports/': typeof AdminReportsIndexRoute
   '/admin/reviews/': typeof AdminReviewsIndexRoute
   '/admin/staff/': typeof AdminStaffIndexRoute
   '/admin/tags/': typeof AdminTagsIndexRoute
@@ -275,11 +275,11 @@ export interface FileRoutesByTo {
   '/admin/companies': typeof AdminCompaniesIndexRoute
   '/admin/coupons': typeof AdminCouponsIndexRoute
   '/admin/customers': typeof AdminCustomersIndexRoute
+  '/admin/finance': typeof AdminFinanceIndexRoute
   '/admin/inventory': typeof AdminInventoryIndexRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
   '/admin/products': typeof AdminProductsIndexRoute
   '/admin/promotional-images': typeof AdminPromotionalImagesIndexRoute
-  '/admin/reports': typeof AdminReportsIndexRoute
   '/admin/reviews': typeof AdminReviewsIndexRoute
   '/admin/staff': typeof AdminStaffIndexRoute
   '/admin/tags': typeof AdminTagsIndexRoute
@@ -312,11 +312,11 @@ export interface FileRoutesById {
   '/admin/companies/': typeof AdminCompaniesIndexRoute
   '/admin/coupons/': typeof AdminCouponsIndexRoute
   '/admin/customers/': typeof AdminCustomersIndexRoute
+  '/admin/finance/': typeof AdminFinanceIndexRoute
   '/admin/inventory/': typeof AdminInventoryIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
   '/admin/promotional-images/': typeof AdminPromotionalImagesIndexRoute
-  '/admin/reports/': typeof AdminReportsIndexRoute
   '/admin/reviews/': typeof AdminReviewsIndexRoute
   '/admin/staff/': typeof AdminStaffIndexRoute
   '/admin/tags/': typeof AdminTagsIndexRoute
@@ -349,11 +349,11 @@ export interface FileRouteTypes {
     | '/admin/companies/'
     | '/admin/coupons/'
     | '/admin/customers/'
+    | '/admin/finance/'
     | '/admin/inventory/'
     | '/admin/orders/'
     | '/admin/products/'
     | '/admin/promotional-images/'
-    | '/admin/reports/'
     | '/admin/reviews/'
     | '/admin/staff/'
     | '/admin/tags/'
@@ -383,11 +383,11 @@ export interface FileRouteTypes {
     | '/admin/companies'
     | '/admin/coupons'
     | '/admin/customers'
+    | '/admin/finance'
     | '/admin/inventory'
     | '/admin/orders'
     | '/admin/products'
     | '/admin/promotional-images'
-    | '/admin/reports'
     | '/admin/reviews'
     | '/admin/staff'
     | '/admin/tags'
@@ -419,11 +419,11 @@ export interface FileRouteTypes {
     | '/admin/companies/'
     | '/admin/coupons/'
     | '/admin/customers/'
+    | '/admin/finance/'
     | '/admin/inventory/'
     | '/admin/orders/'
     | '/admin/products/'
     | '/admin/promotional-images/'
-    | '/admin/reports/'
     | '/admin/reviews/'
     | '/admin/staff/'
     | '/admin/tags/'
@@ -525,13 +525,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminReviewsIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/reports/': {
-      id: '/admin/reports/'
-      path: '/reports'
-      fullPath: '/admin/reports/'
-      preLoaderRoute: typeof AdminReportsIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/admin/promotional-images/': {
       id: '/admin/promotional-images/'
       path: '/promotional-images'
@@ -558,6 +551,13 @@ declare module '@tanstack/react-router' {
       path: '/inventory'
       fullPath: '/admin/inventory/'
       preLoaderRoute: typeof AdminInventoryIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/finance/': {
+      id: '/admin/finance/'
+      path: '/finance'
+      fullPath: '/admin/finance/'
+      preLoaderRoute: typeof AdminFinanceIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/customers/': {
@@ -730,11 +730,11 @@ interface AdminRouteChildren {
   AdminCompaniesIndexRoute: typeof AdminCompaniesIndexRoute
   AdminCouponsIndexRoute: typeof AdminCouponsIndexRoute
   AdminCustomersIndexRoute: typeof AdminCustomersIndexRoute
+  AdminFinanceIndexRoute: typeof AdminFinanceIndexRoute
   AdminInventoryIndexRoute: typeof AdminInventoryIndexRoute
   AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
   AdminProductsIndexRoute: typeof AdminProductsIndexRoute
   AdminPromotionalImagesIndexRoute: typeof AdminPromotionalImagesIndexRoute
-  AdminReportsIndexRoute: typeof AdminReportsIndexRoute
   AdminReviewsIndexRoute: typeof AdminReviewsIndexRoute
   AdminStaffIndexRoute: typeof AdminStaffIndexRoute
   AdminTagsIndexRoute: typeof AdminTagsIndexRoute
@@ -751,11 +751,11 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCompaniesIndexRoute: AdminCompaniesIndexRoute,
   AdminCouponsIndexRoute: AdminCouponsIndexRoute,
   AdminCustomersIndexRoute: AdminCustomersIndexRoute,
+  AdminFinanceIndexRoute: AdminFinanceIndexRoute,
   AdminInventoryIndexRoute: AdminInventoryIndexRoute,
   AdminOrdersIndexRoute: AdminOrdersIndexRoute,
   AdminProductsIndexRoute: AdminProductsIndexRoute,
   AdminPromotionalImagesIndexRoute: AdminPromotionalImagesIndexRoute,
-  AdminReportsIndexRoute: AdminReportsIndexRoute,
   AdminReviewsIndexRoute: AdminReviewsIndexRoute,
   AdminStaffIndexRoute: AdminStaffIndexRoute,
   AdminTagsIndexRoute: AdminTagsIndexRoute,

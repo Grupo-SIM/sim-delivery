@@ -33,7 +33,7 @@ export class ListOrders {
 				...((role === "courier" || role === "kitchen") && userId
 					? {
 							...(role === "courier" ? { deliveryMethod: "delivery" } : {}),
-							unit: { courierUnits: { some: { courierId: userId } } },
+							unit: { staffUnits: { some: { userId } } },
 						}
 					: {}),
 				...(customerId ? { customerId } : {}),

@@ -1,5 +1,6 @@
 import type { Row, Sheet, SheetData } from "write-excel-file/node";
 import { getOrdersByPeriod } from "./ordersByPeriod";
+import type { FinancialAnalyticsReturn } from "../dtos";
 import type { ReportGroupBy } from "./reportPeriod";
 
 /** Same statuses the dashboard counts as revenue. The "Pedidos" sheet deliberately ignores this. */
@@ -37,6 +38,7 @@ export interface ExportableOrder {
 }
 
 export interface ReportSheetsInput {
+	financial?: FinancialAnalyticsReturn;
 	analytics: {
 		deliveryRadiusPerformance: {
 			deliveryFee: number;
@@ -74,6 +76,24 @@ function buildSummarySheet(input: Pick<ReportSheetsInput, "since" | "summary" | 
 		["Receita total", money(summary.totalRevenue)],
 		["Pedidos concluídos", summary.orderCount],
 		["Ticket médio", money(summary.averageOrderValue)],
+	];
+}
+
+function buildFinancialSheet(financial: FinancialAnalyticsReturn): SheetData {
+	const { summary } = financial;
+	return [
+		header("Indicador", "Valor"),
+		["Faturamento bruto", money(summary.grossRevenueCents)],
+		["Descontos", money(summary.discountCents)],
+		["Cashback resgatado", money(summary.cashbackRedeemedCents)],
+		["Frete", money(summary.deliveryFeeCents)],
+		["Receita líquida", money(summary.netRevenueCents)],
+		["Pedidos concluídos", summary.orderCount],
+		["Ticket médio", money(summary.averageOrderValue)],
+		["Custos conhecidos", money(summary.knownCostCents)],
+		["Lucro bruto parcial", money(summary.grossProfitCents)],
+		["Margem bruta parcial", summary.grossMarginPercent === null ? "—" : `${summary.grossMarginPercent.toFixed(2)}%`],
+		["Receita sem custo conhecido", money(summary.unknownCostRevenueCents)],
 	];
 }
 
@@ -160,12 +180,13 @@ function buildOrdersSheet(orders: ExportableOrder[]): SheetData {
  * the contents can be asserted without writing and re-parsing a workbook.
  */
 export function buildReportSheets(input: ReportSheetsInput): Sheet<Buffer>[] {
-	const { analytics, bestSellers, now, orders, since, summary, until } = input;
+	const { analytics, bestSellers, financial, now, orders, since, summary, until } = input;
 	// The period sheets mirror the dashboard chart, which only counts completed orders — unlike the
 	// "Pedidos" sheet, which lists every status.
 	const completedOrders = orders.filter(order => COMPLETED.includes(order.status));
 
 	return [
+		...(financial ? [{ data: buildFinancialSheet(financial), sheet: "Financeiro" }] : []),
 		{ data: buildSummarySheet({ since, summary, until }), sheet: "Resumo" },
 		{ data: buildBestSellersSheet(bestSellers), sheet: "Mais vendidos" },
 		...GROUP_BY_SHEETS.map(({ groupBy, sheet }) => ({

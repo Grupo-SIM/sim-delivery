@@ -8,7 +8,7 @@ function fakePrisma(capture: { where?: unknown } = {}) {
 			findMany: async ({ where }: { where: unknown }) => {
 				capture.where = where;
 				return [
-					{ courierUnits: [], createdAt: new Date(), email: "a@b.c", id: "u1", name: "Owner", role: "owner" },
+					{ staffUnits: [], createdAt: new Date(), email: "a@b.c", id: "u1", name: "Owner", role: "owner" },
 				];
 			},
 		},

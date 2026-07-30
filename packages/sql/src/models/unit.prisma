@@ -52,7 +52,7 @@ model Unit {
 
     company       Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
     coupons       Coupon[]
-    courierUnits  CourierUnit[]
+    staffUnits StaffUnit[]
     deliveries    Delivery[]
     deliveryZones DeliveryZone[]
     hours         UnitHours[]

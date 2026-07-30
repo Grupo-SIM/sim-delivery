@@ -1,0 +1,13 @@
+/// Unit assignments for unit-scoped staff. Managers may have no assignments,
+/// which means company-wide access; couriers require at least one assignment.
+model StaffUnit {
+    userId String
+    unitId String
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    unit Unit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+    @@id([userId, unitId])
+    @@index([unitId])
+    @@map("staff_unit")
+}

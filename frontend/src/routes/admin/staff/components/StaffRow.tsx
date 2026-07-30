@@ -10,7 +10,7 @@ import {
 	useDeleteStaffByStaffId,
 	useGetUnits,
 	usePatchStaffByStaffId,
-	usePutStaffByCourierIdUnits,
+	usePutStaffByStaffIdUnits,
 } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 
@@ -27,11 +27,11 @@ export function StaffRow({ member }: StaffRowProps) {
 	const queryClient = useQueryClient();
 	const patch = usePatchStaffByStaffId();
 	const remove = useDeleteStaffByStaffId();
-	const updateUnits = usePutStaffByCourierIdUnits();
+	const updateUnits = usePutStaffByStaffIdUnits();
 	const unitsQuery = useGetUnits();
 
 	const isEditableRole = editableRoles.has(member.role);
-	const canRemove = isEditableRole || member.role === "courier";
+	const canRemove = isEditableRole || ["courier", "manager"].includes(member.role);
 	const invalidate = () => queryClient.invalidateQueries({ queryKey: getStaffQueryKey() });
 
 	const roleOptions = [
@@ -72,7 +72,7 @@ export function StaffRow({ member }: StaffRowProps) {
 			? member.unitIds.filter(id => id !== unitId)
 			: [...member.unitIds, unitId];
 		updateUnits.mutate(
-			{ courierId: member.id, data: { unitIds } },
+			{ staffId: member.id, data: { unitIds } },
 			{
 				onError: () => void showAlert(t("admin.staff.row.updateError")),
 				onSuccess: () => {
@@ -97,7 +97,7 @@ export function StaffRow({ member }: StaffRowProps) {
 				)}
 			</td>
 			<td className="px-4 py-3">
-				{(member.role === "courier" || member.role === "kitchen") &&
+				{(["courier", "manager"].includes(member.role) || member.role === "kitchen") &&
 					(unitsQuery.isPending ? (
 						<div className="h-8 w-40 animate-pulse rounded bg-muted" />
 					) : (

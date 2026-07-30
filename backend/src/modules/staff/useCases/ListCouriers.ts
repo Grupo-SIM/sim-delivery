@@ -8,7 +8,7 @@ export class ListCouriers {
 		const couriers = await this.prisma.user.findMany({
 			orderBy: { name: "asc" },
 			select: {
-				courierUnits: { select: { unitId: true } },
+				staffUnits: { select: { unitId: true } },
 				createdAt: true,
 				email: true,
 				id: true,
@@ -18,9 +18,9 @@ export class ListCouriers {
 			where: { ...(companyId ? { companyId } : {}), role: "courier" },
 		});
 
-		return couriers.map(({ courierUnits, ...courier }) => ({
+		return couriers.map(({ staffUnits, ...courier }) => ({
 			...courier,
-			unitIds: courierUnits.map(({ unitId }) => unitId),
+			unitIds: staffUnits.map(({ unitId }) => unitId),
 		})) as StaffListReturn;
 	}
 }

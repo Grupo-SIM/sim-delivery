@@ -20,7 +20,7 @@ export class UpdateStaffRole {
 			select: { createdAt: true, email: true, id: true, name: true, role: true },
 			where: { id: staffId },
 		});
-		await this.prisma.courierUnit.deleteMany({ where: { courierId: staffId } });
+		await this.prisma.staffUnit.deleteMany({ where: { userId: staffId } });
 
 		return { ...staff, unitIds: [] } as StaffReturn;
 	}

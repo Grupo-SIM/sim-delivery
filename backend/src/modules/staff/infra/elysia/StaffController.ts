@@ -6,7 +6,7 @@ import {
 	InviteStaffBody,
 	StaffListReturn,
 	StaffReturn,
-	UpdateCourierUnitsBody,
+	UpdateStaffUnitsBody,
 	UpdateStaffRoleBody,
 } from "../../dtos";
 import {
@@ -14,7 +14,7 @@ import {
 	ListCouriers,
 	ListStaff,
 	RemoveStaff,
-	UpdateCourierUnits,
+	UpdateStaffUnits,
 	UpdateStaffRole,
 } from "../../useCases";
 
@@ -37,7 +37,7 @@ export const StaffController = new Elysia({
 				listStaff: new ListStaff(prisma),
 				prisma,
 				removeStaff: new RemoveStaff(prisma),
-				updateCourierUnits: new UpdateCourierUnits(prisma),
+				updateStaffUnits: new UpdateStaffUnits(prisma),
 				updateStaffRole: new UpdateStaffRole(prisma),
 			}))
 			.get(
@@ -77,19 +77,19 @@ export const StaffController = new Elysia({
 				},
 			)
 			.put(
-				"/:courierId/units",
-				async ({ body, params, request, updateCourierUnits }) => {
+				"/:staffId/units",
+				async ({ body, params, request, updateStaffUnits }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "staff", "setRole");
 
-					return updateCourierUnits.execute({
+					return updateStaffUnits.execute({
 						...body,
 						companyId: scope.companyId,
-						courierId: params.courierId,
+						staffId: params.staffId,
 					});
 				},
 				{
-					body: UpdateCourierUnitsBody,
+					body: UpdateStaffUnitsBody,
 					response: StaffReturn,
 				},
 			)

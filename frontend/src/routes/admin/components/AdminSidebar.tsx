@@ -7,6 +7,7 @@ import {
 	LuChartBar,
 	LuClipboardList,
 	LuFolderTree,
+	LuLandmark,
 	LuImages,
 	LuLogOut,
 	LuPackage,

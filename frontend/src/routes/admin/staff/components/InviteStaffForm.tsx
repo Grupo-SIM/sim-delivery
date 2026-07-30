@@ -44,7 +44,7 @@ export function InviteStaffForm() {
 				event.preventDefault();
 				setError(null);
 				mutate(
-					{ data: { email, name, role, ...(role === "courier" ? { unitIds } : {}) } },
+					{ data: { email, name, role, ...(["courier", "manager"].includes(role) ? { unitIds } : {}) } },
 					{
 						onError: caught =>
 							setError(
@@ -97,7 +97,7 @@ export function InviteStaffForm() {
 				/>
 			</div>
 
-			{role === "courier" && (
+			{["courier", "manager"].includes(role) && (
 				<fieldset className="sm:col-span-2 lg:col-span-4">
 					<legend className="font-medium text-sm">{t("admin.staff.invite.units")}</legend>
 					{unitsQuery.isPending ? (

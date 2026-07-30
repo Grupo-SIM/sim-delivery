@@ -11,7 +11,7 @@ describe("ListCouriers", () => {
 					capture.where = where;
 					return [
 						{
-							courierUnits: [{ unitId: "unit_1" }],
+							staffUnits: [{ unitId: "unit_1" }],
 							createdAt: new Date(),
 							email: "courier@example.com",
 							id: "courier_1",

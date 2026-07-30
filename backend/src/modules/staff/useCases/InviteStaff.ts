@@ -23,8 +23,8 @@ export class InviteStaff {
 		if (!companyId) {
 			throw new DomainError(StaffErrors.NO_COMPANY);
 		}
-		if (role === "courier" && unitIds.length === 0) throw new DomainError(StaffErrors.COURIER_UNIT_REQUIRED);
-		if (role === "courier") await this.ensureCompanyUnits(companyId, unitIds);
+		if (["courier", "manager"].includes(role) && role === "courier" && unitIds.length === 0) throw new DomainError(StaffErrors.COURIER_UNIT_REQUIRED);
+		if (["courier", "manager"].includes(role)) await this.ensureCompanyUnits(companyId, unitIds);
 
 		const existing = await this.prisma.user.findUnique({ where: { email } });
 		if (existing) {
@@ -38,9 +38,9 @@ export class InviteStaff {
 			select: { createdAt: true, email: true, id: true, name: true, role: true },
 			where: { id: user.id },
 		});
-		if (role === "courier" && unitIds.length > 0) {
-			await this.prisma.courierUnit.createMany({
-				data: unitIds.map(unitId => ({ courierId: staff.id, unitId })),
+		if (["courier", "manager"].includes(role) && unitIds.length > 0) {
+			await this.prisma.staffUnit.createMany({
+				data: unitIds.map(unitId => ({ userId: staff.id, unitId })),
 			});
 		}
 
@@ -48,7 +48,7 @@ export class InviteStaff {
 			body: { email, redirectTo: `${process.env.APP_URL}/reset-password` },
 		});
 
-		return { ...staff, unitIds: role === "courier" ? unitIds : [] } as StaffReturn;
+		return { ...staff, unitIds: ["courier", "manager"].includes(role) ? unitIds : [] } as StaffReturn;
 	}
 
 	private async ensureCompanyUnits(companyId: string, unitIds: string[]) {

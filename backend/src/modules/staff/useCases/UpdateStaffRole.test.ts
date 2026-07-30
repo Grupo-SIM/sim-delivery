@@ -4,7 +4,7 @@ import { UpdateStaffRole } from "./UpdateStaffRole";
 
 function fakePrisma(target: { id: string; companyId: string } | null) {
 	return {
-		courierUnit: {
+		staffUnit: {
 			deleteMany: async () => ({ count: 0 }),
 		},
 		user: {
