@@ -141,7 +141,7 @@ export function OrderReview({
 				</section>
 			)}
 
-			{deliveryMethod === "delivery" && (
+			{(
 				<section className="space-y-2">
 					<span className="font-semibold text-sm">{t("store.checkout.order.deliveryAddress")}</span>
 					{address ? (
@@ -308,7 +308,7 @@ export function OrderReview({
 
 			<Button
 				className="w-full"
-				disabled={isPending || blockedByFreight || (deliveryMethod === "delivery" && !address)}
+				disabled={isPending || blockedByFreight || !address}
 				onClick={onSubmit}
 				type="button"
 			>

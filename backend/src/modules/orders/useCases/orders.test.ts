@@ -11,18 +11,21 @@ const noopWhatsApp = new DisabledWhatsAppProvider();
 const baseCompany = { id: "cmp_1", slug: "demo" };
 const baseUnit = { companyId: "cmp_1", deliveryFee: 500, id: "unit_1" };
 const baseCustomer = { companyId: "cmp_1", id: "cust_1", userId: "user_1" };
+const baseAddress = { customerId: "cust_1", deletedAt: null, id: "addr_1" };
 const baseProduct = { basePriceCents: 1000, id: "prod_1", title: "Pão de queijo" };
 const baseUnitProduct = { id: "up_1", priceCentsOverride: null, product: baseProduct, unitId: "unit_1" };
 
 function makeOrderPrisma(
 	opts: {
 		company?: typeof baseCompany | null;
+		address?: typeof baseAddress | null;
 		customer?: typeof baseCustomer | null;
 		unit?: typeof baseUnit | null;
 		unitProducts?: (typeof baseUnitProduct)[];
 	} = {},
 ) {
 	const {
+		address = baseAddress,
 		company = baseCompany,
 		customer = baseCustomer,
 		unit = baseUnit,
@@ -83,6 +86,12 @@ function makeOrderPrisma(
 			};
 			return fn(tx);
 		},
+		address: {
+			findFirst: async ({ where }: { where: { customerId: string; deletedAt: null; id: string } }) =>
+				address?.customerId === where.customerId && address?.deletedAt === where.deletedAt && address?.id === where.id
+					? address
+					: null,
+		},
 		company: {
 			findUnique: async ({ where }: { where: { slug?: string } }) =>
 				company?.slug === where.slug ? company : null,
@@ -105,6 +114,7 @@ function makeOrderPrisma(
 }
 
 const baseBody = {
+	addressId: "addr_1",
 	deliveryMethod: "delivery" as const,
 	items: [{ note: undefined, quantity: 2, unitProductId: "up_1" }],
 	slug: "demo",
@@ -174,6 +184,11 @@ describe("CreateOrder", () => {
 		const { orders, prisma } = makeOrderPrisma({ unitProducts: [overrideProduct] });
 		await new CreateOrder(prisma).execute("user_1", baseBody);
 		expect(orders[0]).toMatchObject({ subtotal: 1600, total: 2100 });
+	});
+
+	it("requires an address for every order", async () => {
+		const { prisma } = makeOrderPrisma({ address: null });
+		await expect(new CreateOrder(prisma).execute("user_1", baseBody)).rejects.toThrow("DELIVERY_ADDRESS_REQUIRED");
 	});
 
 	it("sets deliveryFee to 0 for pickup", async () => {

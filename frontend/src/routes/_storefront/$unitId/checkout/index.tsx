@@ -180,11 +180,11 @@ function CheckoutPage() {
 	}
 
 	function handlePlaceOrder() {
-		if (!activeCustomer || cartItems.length === 0) return;
+		if (!activeCustomer || !savedAddress || cartItems.length === 0) return;
 		placeOrder(
 			{
 				data: {
-					addressId: savedAddress?.id,
+					addressId: savedAddress.id,
 					couponCode: appliedCoupon?.code,
 					deliveryMethod,
 					items: cartItems.map(item => ({

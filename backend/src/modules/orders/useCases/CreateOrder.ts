@@ -37,6 +37,11 @@ export class CreateOrder {
 		});
 		if (!customer) throw new DomainError(OrderErrors.CUSTOMER_NOT_FOUND);
 
+		const address = await this.prisma.address.findFirst({
+			where: { customerId: customer.id, deletedAt: null, id: addressId },
+		});
+		if (!address) throw new DomainError(OrderErrors.DELIVERY_ADDRESS_REQUIRED);
+
 		// Resolve prices from unit product associations
 		const unitProducts = (await this.prisma.unitProduct.findMany({
 			include: {
