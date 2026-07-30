@@ -22,6 +22,7 @@ pre-commit:
   parallel: true
   jobs:
     - name: "Check types"
+      glob: "*.(cjs|js|jsx|mjs|ts|tsx)"
       run: bunx turbo check-types --affected --only
 
     - name: "Format and lint"
