@@ -20,18 +20,17 @@ import { slug } from "@/lib/variant";
 import {
 	cartTotalCents,
 	showAlert,
+	type AppliedCoupon,
+	type DeliveryMethod,
 	useAuthStore,
 	useCartStore,
 	useCouponStore,
 	useDeliveryMethodStore,
 } from "@/stores";
+import { AddressCreateModal, type AddressValue } from "@/components/address";
 import { ProductDetailsModal } from "../components";
 import {
-	AddressCreateModal,
 	AddressSelectorModal,
-	type AddressValue,
-	type AppliedCoupon,
-	type DeliveryMethod,
 	IdentifyForm,
 	OrderReview,
 	PaymentStep,

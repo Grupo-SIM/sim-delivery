@@ -1,4 +1,4 @@
-export { type AuthState, useAuthStore } from "./auth";
+export { type AuthState, mapSessionUser, useAuthStore } from "./auth";
 export {
 	type CartItem,
 	type CartItemInput,

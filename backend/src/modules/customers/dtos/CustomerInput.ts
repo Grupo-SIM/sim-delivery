@@ -33,10 +33,25 @@ export const UpdateNotificationPreferencesBody = t.Object({
 });
 export type UpdateNotificationPreferencesBody = typeof UpdateNotificationPreferencesBody.static;
 
-export const UpdateCustomerPhoneBody = t.Object({
-	phone: t.String({ maxLength: 15, minLength: 10 }),
+export const CreateCustomerAddressBody = t.Object({
+	...AddressInput.properties,
+	isDefault: t.Optional(t.Boolean()),
+	label: t.Optional(t.String()),
+	slug: t.String({ minLength: 1 }),
 });
-export type UpdateCustomerPhoneBody = typeof UpdateCustomerPhoneBody.static;
+export type CreateCustomerAddressBody = typeof CreateCustomerAddressBody.static;
+
+export const UpdateCustomerAddressBody = t.Partial(
+	t.Object({ ...AddressInput.properties, isDefault: t.Boolean(), label: t.String() }),
+);
+export type UpdateCustomerAddressBody = typeof UpdateCustomerAddressBody.static;
+
+export const UpdateCustomerBody = t.Object({
+	cpf: t.Optional(t.Nullable(t.String())),
+	phone: t.Optional(t.Nullable(t.String({ maxLength: 13, minLength: 13 }))),
+	slug: t.String({ minLength: 1 }),
+});
+export type UpdateCustomerBody = typeof UpdateCustomerBody.static;
 
 export const ListCustomersQuery = t.Object({
 	page: t.Optional(t.Integer({ minimum: 1 })),

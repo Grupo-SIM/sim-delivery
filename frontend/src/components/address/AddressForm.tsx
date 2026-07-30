@@ -37,13 +37,14 @@ const emptyAddress: AddressValue = {
 interface AddressFormProps {
 	footer?: (props: { canSubmit: boolean; isSubmitting: boolean }) => ReactNode;
 	disabled?: boolean;
+	initialValue?: AddressValue;
 	onSubmit?: (value: AddressValue) => void;
 	submitLabel?: string;
 }
 
-export function AddressForm({ disabled, footer, onSubmit, submitLabel }: AddressFormProps) {
+export function AddressForm({ disabled, footer, initialValue, onSubmit, submitLabel }: AddressFormProps) {
 	const { t } = useTranslation();
-	const [value, setValue] = useState<AddressValue>(emptyAddress);
+	const [value, setValue] = useState<AddressValue>(initialValue ?? emptyAddress);
 	const [noNumber, setNoNumber] = useState(false);
 	const [lookingUp, setLookingUp] = useState(false);
 	const [cepError, setCepError] = useState<string | null>(null);
