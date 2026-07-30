@@ -4,6 +4,7 @@ import type {
 	CreateOptionBody,
 	CreateOptionGroupBody,
 	ProductOptionGroupsReturn,
+	SaveProductOptionGroupsBody,
 	UpdateOptionBody,
 	UpdateOptionGroupBody,
 } from "../dtos";
@@ -59,6 +60,69 @@ export class ProductOptions {
 	async createOption(companyId: string | null, productId: string, groupId: string, data: CreateOptionBody) {
 		await this.group(companyId, productId, groupId);
 		return this.prisma.option.create({ data: { ...data, groupId } });
+	}
+	async save(companyId: string | null, productId: string, data: SaveProductOptionGroupsBody) {
+		await this.product(companyId, productId);
+		for (const group of data.groups) validateGroup(group);
+
+		return this.prisma.$transaction(async tx => {
+			const existingGroups = await tx.optionGroup.findMany({
+				include: { options: true },
+				where: { productId },
+			});
+			const existingGroupIds = new Set(existingGroups.map(group => group.id));
+			const submittedGroupIds = new Set<string>();
+
+			for (const group of data.groups) {
+				if (group.id) submittedGroupIds.add(group.id);
+				const groupData = {
+					maxSelect: group.maxSelect,
+					name: group.name,
+					priceRule: group.priceRule,
+					required: group.required,
+					selectionType: group.selectionType,
+					sortOrder: group.sortOrder,
+				};
+				const existingGroup = group.id ? existingGroups.find(item => item.id === group.id) : undefined;
+				if (group.id && !existingGroup) throw new DomainError(ProductErrors.INVALID_OPTION_GROUP);
+				const savedGroup = existingGroup
+					? await tx.optionGroup.update({ data: groupData, where: { id: existingGroup.id } })
+					: await tx.optionGroup.create({ data: { ...groupData, productId } });
+				const existingOptions = existingGroup?.options ?? [];
+				const existingOptionIds = new Set(existingOptions.map(option => option.id));
+				const submittedOptionIds = new Set<string>();
+				for (const option of group.options) if (option.id) submittedOptionIds.add(option.id);
+
+				await tx.option.deleteMany({
+					where: { groupId: savedGroup.id, id: { in: [...existingOptionIds].filter(id => !submittedOptionIds.has(id)) } },
+				});
+				for (const option of group.options) {
+					const optionData = {
+						available: option.available,
+						description: option.description,
+						imageUrl: option.imageUrl,
+						maxPerItem: option.maxPerItem,
+						name: option.name,
+						priceDeltaCents: option.priceDeltaCents,
+						sortOrder: option.sortOrder,
+					};
+					if (option.id && !existingOptionIds.has(option.id))
+						throw new DomainError(ProductErrors.INVALID_OPTION_GROUP);
+					if (option.id)
+						await tx.option.update({ data: optionData, where: { id: option.id } });
+					else await tx.option.create({ data: { ...optionData, groupId: savedGroup.id } });
+				}
+			}
+
+			await tx.optionGroup.deleteMany({
+				where: { id: { in: [...existingGroupIds].filter(id => !submittedGroupIds.has(id)) }, productId },
+			});
+			return tx.optionGroup.findMany({
+				include: { options: { orderBy: { sortOrder: "asc" } } },
+				orderBy: { sortOrder: "asc" },
+				where: { productId },
+			});
+		});
 	}
 	async updateOption(
 		companyId: string | null,

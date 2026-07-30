@@ -10,6 +10,7 @@ import {
 	ProductListReturn,
 	ProductOptionGroupsReturn,
 	ProductReturn,
+	SaveProductOptionGroupsBody,
 	UpdateOptionBody,
 	UpdateOptionGroupBody,
 	UpdateProductBody,
@@ -65,6 +66,15 @@ export const ProductsController = new Elysia({
 					return productOptions.createGroup(scope.companyId, params.productId, body);
 				},
 				{ body: CreateOptionGroupBody, response: t.Any() },
+			)
+			.put(
+				"/:productId/option-groups",
+				async ({ body, params, productOptions, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "menu", "update");
+					return productOptions.save(scope.companyId, params.productId, body);
+				},
+				{ body: SaveProductOptionGroupsBody, response: ProductOptionGroupsReturn },
 			)
 			.patch(
 				"/:productId/option-groups/:groupId",

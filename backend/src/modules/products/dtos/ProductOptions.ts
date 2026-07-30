@@ -27,6 +27,20 @@ export type CreateOptionBody = typeof CreateOptionBody.static;
 export const UpdateOptionBody = t.Partial(CreateOptionBody);
 export type UpdateOptionBody = typeof UpdateOptionBody.static;
 
+const saveOptionFields = {
+	...optionFields,
+	id: t.Optional(t.String()),
+};
+const saveOptionGroupFields = {
+	...groupFields,
+	id: t.Optional(t.String()),
+	options: t.Array(t.Object(saveOptionFields)),
+};
+export const SaveProductOptionGroupsBody = t.Object({
+	groups: t.Array(t.Object(saveOptionGroupFields)),
+});
+export type SaveProductOptionGroupsBody = typeof SaveProductOptionGroupsBody.static;
+
 const OptionReturn = t.Object({
 	available: t.Boolean(),
 	description: t.String(),
