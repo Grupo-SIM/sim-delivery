@@ -58,18 +58,6 @@ Enforced automatically in two places, so commit validation is normally hands-off
 
 This is a local gate; running it never implies pushing or triggering CI — see the absolute local-boundary rule above.
 
-## Serena — Required When Starting a Session
-
-This project uses Serena. The full protocol is in `SERENA.md`/`@SERENA.md`.
-
-**When starting any session, run these steps in order:**
-
-1. Call `mcp__serena__initial_instructions` to read the Serena manual.
-2. Call `mcp__serena__check_onboarding_performed`. If onboarding has not been performed, call `mcp__serena__onboarding`.
-3. Before any work on code files, make Serena tools available. If Serena tools are not already visible in the active tool list, load them through `ToolSearch` first. Tool names may or may not have the `mcp__serena__` prefix depending on the agent/runtime.
-
-Serena is PRIMARY for all TypeScript/TSX code. Built-in Read/Edit/Grep are SECONDARY — only use them when Serena fails or the target is not code.
-
 ## Caveman
 
 Terse like caveman. Technical substance exact. Only fluff die.

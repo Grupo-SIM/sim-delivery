@@ -1,8 +1,0 @@
-{
-	"mcpServers": {
-		"serena": {
-			"args": ["start-mcp-server", "--context=junie", "--project-from-cwd"],
-			"command": "serena"
-		}
-	}
-}
