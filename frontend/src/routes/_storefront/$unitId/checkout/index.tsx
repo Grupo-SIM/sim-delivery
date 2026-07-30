@@ -199,7 +199,7 @@ function CheckoutPage() {
 					redeemCashbackCents: cashbackRedeemCents > 0 ? cashbackRedeemCents : undefined,
 					redeemLoyaltyPoints: loyaltyRedeemPoints > 0 ? loyaltyRedeemPoints : undefined,
 					slug: slug ?? "",
-					unitId,
+					unitSlug,
 				},
 			},
 			{

@@ -9,7 +9,7 @@ import { UpdateOrderStatus } from "./UpdateOrderStatus";
 const noopWhatsApp = new DisabledWhatsAppProvider();
 
 const baseCompany = { id: "cmp_1", slug: "demo" };
-const baseUnit = { companyId: "cmp_1", deliveryFee: 500, id: "unit_1" };
+const baseUnit = { active: true, companyId: "cmp_1", deliveryFee: 500, id: "unit_1", slug: "centro" };
 const baseCustomer = { companyId: "cmp_1", id: "cust_1", userId: "user_1" };
 const baseAddress = { customerId: "cust_1", deletedAt: null, id: "addr_1" };
 const baseProduct = { basePriceCents: 1000, id: "prod_1", title: "Pão de queijo" };
@@ -101,8 +101,10 @@ function makeOrderPrisma(
 				customer?.companyId === where.companyId && customer?.userId === where.userId ? customer : null,
 		},
 		unit: {
-			findFirst: async ({ where }: { where: { companyId: string; id: string } }) =>
-				unit?.companyId === where.companyId && unit?.id === where.id ? unit : null,
+			findFirst: async ({ where }: { where: { active: boolean; companyId: string; slug: string } }) =>
+				unit?.active === where.active && unit?.companyId === where.companyId && unit?.slug === where.slug
+					? unit
+					: null,
 		},
 		unitProduct: {
 			findMany: async ({ where }: { where: { id: { in: string[] }; unitId: string } }) =>
@@ -118,7 +120,7 @@ const baseBody = {
 	deliveryMethod: "delivery" as const,
 	items: [{ note: undefined, quantity: 2, unitProductId: "up_1" }],
 	slug: "demo",
-	unitId: "unit_1",
+	unitSlug: "centro",
 };
 
 describe("CreateOrder", () => {
@@ -132,8 +134,13 @@ describe("CreateOrder", () => {
 	it("throws UNIT_NOT_FOUND when unit not in company", async () => {
 		const { prisma } = makeOrderPrisma({ unit: null });
 		await expect(
-			new CreateOrder(prisma).execute("user_1", { ...baseBody, unitId: "unit_999" }),
+			new CreateOrder(prisma).execute("user_1", { ...baseBody, unitSlug: "other" }),
 		).rejects.toThrow("UNIT_NOT_FOUND");
+	});
+
+	it("throws UNIT_NOT_FOUND when unit is inactive", async () => {
+		const { prisma } = makeOrderPrisma({ unit: { ...baseUnit, active: false } });
+		await expect(new CreateOrder(prisma).execute("user_1", baseBody)).rejects.toThrow("UNIT_NOT_FOUND");
 	});
 
 	it("throws CUSTOMER_NOT_FOUND when no customer record", async () => {

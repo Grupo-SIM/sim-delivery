@@ -20,7 +20,7 @@ export class CreateOrder {
 			items,
 			redeemCashbackCents,
 			redeemLoyaltyPoints,
-			unitId,
+			unitSlug,
 			slug,
 		} = data;
 
@@ -29,8 +29,11 @@ export class CreateOrder {
 		const company = await this.prisma.company.findUnique({ where: { slug } });
 		if (!company) throw new DomainError(OrderErrors.COMPANY_NOT_FOUND);
 
-		const unit = await this.prisma.unit.findFirst({ where: { companyId: company.id, id: unitId } });
+		const unit = await this.prisma.unit.findFirst({
+			where: { active: true, companyId: company.id, slug: unitSlug },
+		});
 		if (!unit) throw new DomainError(OrderErrors.UNIT_NOT_FOUND);
+		const unitId = unit.id;
 
 		const customer = await this.prisma.customer.findFirst({
 			where: { companyId: company.id, userId },
