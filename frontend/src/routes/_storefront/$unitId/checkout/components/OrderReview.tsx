@@ -143,7 +143,9 @@ export function OrderReview({
 
 			{(
 				<section className="space-y-2">
-					<span className="font-semibold text-sm">{t("store.checkout.order.deliveryAddress")}</span>
+					<span className="font-semibold text-sm">
+						{t("store.checkout.order.deliveryAddress")} <span className="text-destructive">*</span>
+					</span>
 					{address ? (
 						<div className="rounded-lg border border-border bg-muted/30 p-3 text-sm">
 							<div className="flex items-start justify-between gap-3">
@@ -182,9 +184,12 @@ export function OrderReview({
 							)}
 						</div>
 					) : (
-						<Button className="w-full" onClick={onOpenAddressCreator} type="button" variant="outline">
-							{t("store.checkout.address.add")}
-						</Button>
+						<>
+							<Button className="w-full" onClick={onOpenAddressCreator} type="button" variant="outline">
+								{t("store.checkout.address.add")}
+							</Button>
+							<p className="text-destructive text-xs">Endereço obrigatório para fazer o pedido.</p>
+						</>
 					)}
 				</section>
 			)}
