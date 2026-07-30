@@ -11,6 +11,7 @@ import { Modal } from "@/components/ui/Modal";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { AddOptionModal } from "./AddOptionModal";
 import { type EditableOption, OptionEditor } from "./OptionEditor";
 
 export interface OptionGroup {
@@ -51,27 +52,18 @@ export function OptionGroupEditor({
 	const [wasExpandedBeforeDrag, setWasExpandedBeforeDrag] = useState(false);
 	const [name, setName] = useState(group.name);
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
-	const [optionName, setOptionName, flushOptionName] = useDebouncedInput("", () => undefined);
 
-	function addOption() {
-		flushOptionName();
-		if (!optionName.trim()) return;
+	function addOption(option: EditableOption) {
 		onChange({
 			...group,
 			options: [
 				...group.options,
 				{
-					available: true,
-					description: "",
-					id: crypto.randomUUID(),
-					imageUrl: null,
-					name: optionName.trim(),
-					priceDeltaCents: 0,
+					...option,
 					sortOrder: group.options.length,
 				},
 			],
 		});
-		setOptionName("");
 	}
 
 	function moveOption(targetId: string) {
@@ -264,16 +256,8 @@ export function OptionGroupEditor({
 							))}
 						</div>
 					)}
-					<div className="flex gap-2 border-border border-t pt-4">
-						<Input
-							onBlur={flushOptionName}
-							onChange={event => setOptionName(event.currentTarget.value)}
-							placeholder={t("admin.products.options.optionPlaceholder")}
-							value={optionName}
-						/>
-						<Button disabled={!optionName.trim()} onClick={addOption} type="button" variant="outline">
-							{t("admin.products.options.addOption")}
-						</Button>
+					<div className="border-border border-t pt-4">
+						<AddOptionModal onAdd={addOption} />
 					</div>
 					<div className="flex justify-end gap-2 border-border border-t pt-4">
 						<Button
