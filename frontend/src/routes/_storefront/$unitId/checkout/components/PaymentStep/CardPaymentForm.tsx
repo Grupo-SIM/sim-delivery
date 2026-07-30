@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaCcAmex, FaCcDiscover, FaCcMastercard, FaCcVisa, FaCreditCard } from "react-icons/fa";
+import { LuEye, LuEyeOff } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MaskedInput } from "@/components/ui/MaskedInput";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import type { GetPaymentsCards200 } from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
@@ -61,6 +63,7 @@ export function CardPaymentForm({
 	const [number, setNumber] = useState("");
 	const [expiry, setExpiry] = useState("");
 	const [cvv, setCvv] = useState("");
+	const [cvcVisible, setCvcVisible] = useState(false);
 	const [cpf, setCpf] = useState("");
 	const [saveCard, setSaveCard] = useState(true);
 	const [cardNickname, setCardNickname] = useDebouncedInput("", () => undefined);
@@ -178,13 +181,27 @@ export function CardPaymentForm({
 					<div className="grid grid-cols-2 gap-4">
 						<Label>
 							{t("store.checkout.payment.card.cvc")}
-							<MaskedInput
-								format="####"
-								inputMode="numeric"
-								onValueChange={({ value: digits }) => setCvv(digits)}
-								placeholder="123"
-								value={cvv}
-							/>
+							<div className="relative">
+								<MaskedInput
+									className="pr-10"
+									format="####"
+									inputMode="numeric"
+									onValueChange={({ value: digits }) => setCvv(digits)}
+									placeholder="123"
+									type={cvcVisible ? "text" : "password"}
+									value={cvv}
+								/>
+								<Tooltip content={t(`store.checkout.payment.card.${cvcVisible ? "hideCvc" : "showCvc"}`)}>
+									<button
+										aria-label={t(`store.checkout.payment.card.${cvcVisible ? "hideCvc" : "showCvc"}`)}
+										className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-muted-foreground transition-colors hover:text-foreground"
+										onClick={() => setCvcVisible(visible => !visible)}
+										type="button"
+									>
+										{cvcVisible ? <LuEyeOff className="size-4" /> : <LuEye className="size-4" />}
+									</button>
+								</Tooltip>
+							</div>
 						</Label>
 						<Label>
 							{t("store.checkout.payment.card.expiry")}
