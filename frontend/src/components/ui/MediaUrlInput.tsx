@@ -22,6 +22,8 @@ interface MediaUrlInputProps {
 	onUploadingChange?: (isUploading: boolean) => void;
 	onValueChange: (value: string) => void;
 	placeholder?: string;
+	/** Renders a small image preview below the field. Ignored for font assets. */
+	preview?: boolean;
 	uploadLabel: string;
 	value: string;
 }
@@ -33,6 +35,7 @@ export function MediaUrlInput({
 	onUploadingChange,
 	onValueChange,
 	placeholder = "Envie um arquivo ou cole uma URL",
+	preview = true,
 	uploadLabel,
 	value,
 }: MediaUrlInputProps) {
@@ -95,70 +98,75 @@ export function MediaUrlInput({
 	}
 
 	return (
-		<div
-			className={cn(
-				"relative",
-				"rounded-md border border-input border-dashed p-1 transition-colors",
-				isDragging && "border-primary bg-primary/10 ring-2 ring-primary/30",
-			)}
-			onDragEnter={handleDragEnter}
-			onDragLeave={handleDragLeave}
-			onDragOver={event => event.preventDefault()}
-			onDrop={handleDrop}
-		>
-			{isDragging && (
-				<div
-					aria-hidden
-					className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center gap-2 rounded-md bg-primary/10 font-semibold text-primary text-sm"
-				>
-					<LuImageUp className="size-5" />
-					{dropLabel}
-				</div>
-			)}
-			<Input
-				className={
-					localValue
-						? "border-0 pr-22 shadow-none focus-visible:ring-0"
-						: "border-0 pr-11 shadow-none focus-visible:ring-0"
-				}
-				onBlur={flushValue}
-				onChange={event => setLocalValue(event.currentTarget.value)}
-				placeholder={placeholder}
-				value={localValue}
-			/>
-			<input
-				accept={acceptByAsset[asset]}
-				className="hidden"
-				onChange={event => {
-					const file = event.currentTarget.files?.[0];
-					if (file) void upload(file);
-					event.currentTarget.value = "";
-				}}
-				ref={fileInputRef}
-				type="file"
-			/>
-			{localValue && (
+		<div className="grid justify-items-start gap-2">
+			<div
+				className={cn(
+					"relative w-full",
+					"rounded-md border border-input border-dashed p-1 transition-colors",
+					isDragging && "border-primary bg-primary/10 ring-2 ring-primary/30",
+				)}
+				onDragEnter={handleDragEnter}
+				onDragLeave={handleDragLeave}
+				onDragOver={event => event.preventDefault()}
+				onDrop={handleDrop}
+			>
+				{isDragging && (
+					<div
+						aria-hidden
+						className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center gap-2 rounded-md bg-primary/10 font-semibold text-primary text-sm"
+					>
+						<LuImageUp className="size-5" />
+						{dropLabel}
+					</div>
+				)}
+				<Input
+					className={
+						localValue
+							? "border-0 pr-22 shadow-none focus-visible:ring-0"
+							: "border-0 pr-11 shadow-none focus-visible:ring-0"
+					}
+					onBlur={flushValue}
+					onChange={event => setLocalValue(event.currentTarget.value)}
+					placeholder={placeholder}
+					value={localValue}
+				/>
+				<input
+					accept={acceptByAsset[asset]}
+					className="hidden"
+					onChange={event => {
+						const file = event.currentTarget.files?.[0];
+						if (file) void upload(file);
+						event.currentTarget.value = "";
+					}}
+					ref={fileInputRef}
+					type="file"
+				/>
+				{localValue && (
+					<button
+						aria-label={isImageAsset ? "Remover imagem" : "Remover fonte"}
+						className="absolute inset-y-0 right-11 flex w-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+						disabled={isUploading || isDeleting}
+						onClick={() => void removeImage()}
+						title={isImageAsset ? "Remover imagem" : "Remover fonte"}
+						type="button"
+					>
+						<LuTrash2 className="size-4" />
+					</button>
+				)}
 				<button
-					aria-label={isImageAsset ? "Remover imagem" : "Remover fonte"}
-					className="absolute inset-y-0 right-11 flex w-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+					aria-label={uploadLabel}
+					className="absolute inset-y-0 right-0 flex w-11 items-center justify-center bg-transparent text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
 					disabled={isUploading || isDeleting}
-					onClick={() => void removeImage()}
-					title={isImageAsset ? "Remover imagem" : "Remover fonte"}
+					onClick={() => fileInputRef.current?.click()}
+					title={uploadLabel}
 					type="button"
 				>
-					<LuTrash2 className="size-4" />
+					{isUploading ? <LuLoaderCircle className="size-4 animate-spin" /> : <LuUpload className="size-4" />}
 				</button>
+			</div>
+			{preview && isImageAsset && localValue && (
+				<img alt="" className="size-12 rounded object-contain" src={localValue} />
 			)}
-			<button
-				aria-label={uploadLabel}
-				className="absolute inset-y-0 right-0 flex w-11 items-center justify-center bg-transparent text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-				disabled={isUploading || isDeleting}
-				onClick={() => fileInputRef.current?.click()}
-				title={uploadLabel}
-				type="button"
-			>
-				{isUploading ? <LuLoaderCircle className="size-4 animate-spin" /> : <LuUpload className="size-4" />}
-			</button>
 		</div>
 	);
 }

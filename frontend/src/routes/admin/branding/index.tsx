@@ -226,15 +226,6 @@ function BrandingPage() {
 							/>
 						</Label>
 
-						{logoUrl && (
-							<div className="rounded border border-border p-3">
-								<p className="mb-2 font-medium text-muted-foreground text-xs uppercase">
-									{t("admin.branding.logoPreview")}
-								</p>
-								<img alt="logo preview" className="h-12 object-contain" src={logoUrl} />
-							</div>
-						)}
-
 						<Label>
 							{t("admin.branding.unitFallbackImageUrl")}
 							<MediaUrlInput
@@ -245,18 +236,6 @@ function BrandingPage() {
 								value={unitFallbackImageUrl}
 							/>
 						</Label>
-						{unitFallbackImageUrl && (
-							<div className="rounded border border-border p-3">
-								<p className="mb-2 font-medium text-muted-foreground text-xs uppercase">
-									{t("admin.branding.unitFallbackImagePreview")}
-								</p>
-								<img
-									alt={t("admin.branding.unitFallbackImagePreview")}
-									className="h-32 w-full rounded object-cover"
-									src={unitFallbackImageUrl}
-								/>
-							</div>
-						)}
 
 						<FontField
 							family={fontFamily}

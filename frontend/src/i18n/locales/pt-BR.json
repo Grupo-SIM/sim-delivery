@@ -65,7 +65,6 @@
 				"gtmId": "ID do Google Tag Manager",
 				"lightTheme": "Tema claro",
 				"loadError": "Não foi possível carregar as configurações de identidade visual.",
-				"logoPreview": "Prévia do logotipo",
 				"logoUpload": "Enviar logotipo",
 				"logoUrl": "URL do logotipo",
 				"metaPixelId": "ID do Meta Pixel",
@@ -90,7 +89,6 @@
 				"subtitle": "Personalize a aparência da sua loja e as análises.",
 				"themeColors": "Cores do tema",
 				"title": "Identidade visual",
-				"unitFallbackImagePreview": "Prévia da imagem padrão da unidade",
 				"unitFallbackImageUpload": "Enviar imagem padrão da unidade",
 				"unitFallbackImageUrl": "URL da imagem padrão da unidade",
 				"uploadError": "Não foi possível enviar o arquivo."

@@ -363,9 +363,6 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 						uploadLabel={t("admin.units.image.upload")}
 						value={imageUrl}
 					/>
-					{imageUrl && (
-						<img alt="" className="max-h-[min(60dvh,36rem)] w-full rounded object-contain" src={imageUrl} />
-					)}
 				</section>
 
 				<section className="space-y-4 border-border border-t pt-6">
@@ -377,9 +374,6 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 						uploadLabel={t("admin.units.banner.upload")}
 						value={bannerUrl}
 					/>
-					{bannerUrl && (
-						<img alt="" className="max-h-[min(60dvh,36rem)] w-full rounded object-contain" src={bannerUrl} />
-					)}
 				</section>
 
 				<div className="flex justify-end gap-2 pt-2">
