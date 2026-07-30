@@ -77,12 +77,10 @@ export const envSchema = t.Object({
 	TWILIO_ACCOUNT_SID: t.Optional(t.String()),
 	TWILIO_AUTH_TOKEN: t.Optional(t.String()),
 	TWILIO_FROM_NUMBER: t.Optional(t.String()),
-	WHATSAPP_ACCESS_TOKEN: t.Optional(t.String()),
-	WHATSAPP_API_VERSION: t.Optional(t.String({ default: "v23.0" })),
+	WAHA_API_KEY: t.Optional(t.String()),
+	WAHA_BASE_URL: t.Optional(t.String({ format: "uri" })),
+	WAHA_SESSION: t.Optional(t.String({ default: "default" })),
 	WHATSAPP_DRIVER: t.Optional(t.String({ default: "disabled" })),
-	WHATSAPP_PHONE_NUMBER_ID: t.Optional(t.String()),
-	WHATSAPP_TEMPLATE_LANGUAGE: t.Optional(t.String({ default: "pt_BR" })),
-	WHATSAPP_TEMPLATE_NAME: t.Optional(t.String()),
 });
 
 declare global {
