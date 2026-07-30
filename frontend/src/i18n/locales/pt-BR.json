@@ -360,9 +360,15 @@
 					"unit": "Unidade"
 				},
 				"item": {
+					"delete": "Apagar insumo",
+					"deleteConfirm": "Apagar o insumo {{name}}? O histórico será preservado.",
+					"deleteError": "Não foi possível apagar o insumo.",
+					"deleteSuccess": "Insumo apagado.",
 					"error": "Não foi possível criar o insumo.",
 					"success": "Insumo criado.",
-					"title": "Novo insumo"
+					"title": "Novo insumo",
+					"unitCount_one": "{{count}} unidade",
+					"unitCount_other": "{{count}} unidades"
 				},
 				"loadError": "Não foi possível carregar o estoque.",
 				"movement": {
