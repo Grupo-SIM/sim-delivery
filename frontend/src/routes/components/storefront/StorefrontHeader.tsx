@@ -11,6 +11,7 @@ interface StorefrontHeaderProps {
 	hideUnitChange?: boolean;
 	profileMenuOnlyLogout?: boolean;
 	profileMenuLogoutTo?: "/" | "/identify";
+	showBackToCustomerArea?: boolean;
 	unitName?: string;
 }
 
@@ -19,6 +20,7 @@ export function StorefrontHeader({
 	hideUnitChange = false,
 	profileMenuLogoutTo,
 	profileMenuOnlyLogout = false,
+	showBackToCustomerArea = false,
 	unitName,
 }: StorefrontHeaderProps) {
 	const { t } = useTranslation();
@@ -61,7 +63,11 @@ export function StorefrontHeader({
 							{t("store.account.staffOrders")}
 						</Link>
 					)}
-					<ProfileMenu logoutTo={profileMenuLogoutTo} onlyLogout={profileMenuOnlyLogout} />
+					<ProfileMenu
+						logoutTo={profileMenuLogoutTo}
+						onlyLogout={profileMenuOnlyLogout}
+						showBackToCustomerArea={showBackToCustomerArea}
+					/>
 				</div>
 			</div>
 		</header>

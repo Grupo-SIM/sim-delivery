@@ -9,6 +9,7 @@ export function OperationalNavbar() {
 			hideUnitChange
 			profileMenuLogoutTo="/identify"
 			profileMenuOnlyLogout
+			showBackToCustomerArea
 		/>
 	);
 }

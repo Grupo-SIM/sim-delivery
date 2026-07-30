@@ -9,6 +9,7 @@ import { useAuthStore } from "@/stores/auth";
 interface ProfileMenuProps {
 	logoutTo?: "/" | "/identify";
 	onlyLogout?: boolean;
+	showBackToCustomerArea?: boolean;
 }
 
 function initials(name: string): string {
@@ -18,7 +19,11 @@ function initials(name: string): string {
 	return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-export function ProfileMenu({ logoutTo = "/", onlyLogout = false }: ProfileMenuProps) {
+export function ProfileMenu({
+	logoutTo = "/",
+	onlyLogout = false,
+	showBackToCustomerArea = false,
+}: ProfileMenuProps) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const hydrated = useAuthStore(state => state.hydrated);
@@ -117,7 +122,7 @@ export function ProfileMenu({ logoutTo = "/", onlyLogout = false }: ProfileMenuP
 							{t("store.account.myOrders")}
 						</Link>
 					)}
-					{isStaff(role) && (
+					{showBackToCustomerArea && isStaff(role) && (
 						<Link
 							className="flex cursor-pointer items-center gap-2.5 border-border border-t px-4 py-2.5 text-sm transition hover:bg-muted"
 							onClick={() => setOpen(false)}
