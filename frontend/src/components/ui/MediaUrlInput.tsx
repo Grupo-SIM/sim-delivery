@@ -24,6 +24,8 @@ interface MediaUrlInputProps {
 	placeholder?: string;
 	/** Renders a small image preview below the field. Ignored for font assets. */
 	preview?: boolean;
+	/** Overrides the preview size, e.g. `"size-36"`. */
+	previewClassName?: string;
 	uploadLabel: string;
 	value: string;
 }
@@ -36,6 +38,7 @@ export function MediaUrlInput({
 	onValueChange,
 	placeholder = "Envie um arquivo ou cole uma URL",
 	preview = true,
+	previewClassName,
 	uploadLabel,
 	value,
 }: MediaUrlInputProps) {
@@ -165,7 +168,11 @@ export function MediaUrlInput({
 				</button>
 			</div>
 			{preview && isImageAsset && localValue && (
-				<img alt="" className="size-12 rounded object-contain" src={localValue} />
+				<img
+					alt=""
+					className={cn("mx-auto size-12 h-auto w-auto rounded object-contain", previewClassName)}
+					src={localValue}
+				/>
 			)}
 		</div>
 	);

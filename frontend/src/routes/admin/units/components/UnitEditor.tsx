@@ -155,14 +155,14 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 					...address,
 					bannerUrl: bannerUrl.trim() || null,
 					cashbackPercent: cashback,
+					facebookUrl: localFacebookUrl.trim() || null,
 					imageUrl: imageUrl.trim() || null,
+					instagramUrl: localInstagramUrl.trim() || null,
 					isOpenManual: toIsOpenManual(availability),
 					name: localName.trim(),
 					phone: phone || null,
 					whatsApp: whatsApp || null,
 					xUrl: localXUrl.trim() || null,
-					instagramUrl: localInstagramUrl.trim() || null,
-					facebookUrl: localFacebookUrl.trim() || null,
 				},
 				unitId: unit.id,
 			},
@@ -360,6 +360,7 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 						asset="unit"
 						onUploadError={() => void showAlert(t("admin.units.image.uploadError"))}
 						onValueChange={setImageUrl}
+						previewClassName="h-60"
 						uploadLabel={t("admin.units.image.upload")}
 						value={imageUrl}
 					/>
@@ -371,6 +372,7 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 						asset="banner"
 						onUploadError={() => void showAlert(t("admin.units.banner.uploadError"))}
 						onValueChange={setBannerUrl}
+						previewClassName="h-48"
 						uploadLabel={t("admin.units.banner.upload")}
 						value={bannerUrl}
 					/>
