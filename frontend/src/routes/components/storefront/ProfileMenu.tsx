@@ -1,8 +1,8 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuArrowLeft, LuBell, LuLogOut, LuReceiptText, LuUser } from "react-icons/lu";
-import { isStaff } from "@/lib/staff-guard";
+import { LuArrowLeft, LuBell, LuLayoutDashboard, LuLogOut, LuReceiptText, LuUser } from "react-icons/lu";
+import { getStaffAreaPath, isOperationalStaff, isStaff } from "@/lib/staff-guard";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth";
 
@@ -120,6 +120,17 @@ export function ProfileMenu({
 						>
 							<LuReceiptText aria-hidden className="size-4 text-muted-foreground" />
 							{t("store.account.myOrders")}
+						</Link>
+					)}
+					{!onlyLogout && isStaff(role) && (
+						<Link
+							className="flex cursor-pointer items-center gap-2.5 border-border border-t px-4 py-2.5 text-sm transition hover:bg-muted sm:hidden"
+							onClick={() => setOpen(false)}
+							role="menuitem"
+							to={getStaffAreaPath(role)}
+						>
+							<LuLayoutDashboard aria-hidden className="size-4 text-muted-foreground" />
+							{t(isOperationalStaff(role) ? "store.account.staffOrders" : "store.account.staffAdmin")}
 						</Link>
 					)}
 					{showBackToCustomerArea && isStaff(role) && (

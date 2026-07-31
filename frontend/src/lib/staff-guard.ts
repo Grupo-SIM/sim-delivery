@@ -14,6 +14,10 @@ export function isOperationalStaff(role: string | null | undefined): boolean {
 	return !!role && operationalRoles.has(role);
 }
 
+export function getStaffAreaPath(role: string | null | undefined): "/admin" | "/admin/orders" {
+	return isOperationalStaff(role) ? "/admin/orders" : "/admin";
+}
+
 /** Route `beforeLoad` gate. Operational roles are limited to the orders board. */
 export async function requireStaffBeforeLoad(pathname?: string) {
 	const session = await authClient.getSession();

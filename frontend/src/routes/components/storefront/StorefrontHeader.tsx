@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { LuMapPin } from "react-icons/lu";
-import { isStaff } from "@/lib/staff-guard";
+import { getStaffAreaPath, isOperationalStaff, isStaff } from "@/lib/staff-guard";
 import { useAuthStore } from "@/stores/auth";
 import { ProfileMenu } from "./ProfileMenu";
 import type { StorefrontBranding } from "./types";
@@ -26,9 +26,10 @@ export function StorefrontHeader({
 	const { t } = useTranslation();
 	const role = useAuthStore(state => state.role);
 	const companyName = branding?.companyName ?? "JB Delivery";
+	const staffAreaPath = getStaffAreaPath(role);
 
 	return (
-		<header className="border-border/70 border-b bg-background/95 backdrop-blur">
+		<header className="relative z-30 border-border/70 border-b bg-background/95 backdrop-blur">
 			<div className="mx-auto flex min-h-20 max-w-6xl items-center justify-between gap-5 px-5 py-3">
 				<Link aria-label={companyName} className="flex min-w-0 items-center gap-3" to="/">
 					{branding?.logoUrl ? (
@@ -58,9 +59,9 @@ export function StorefrontHeader({
 					{isStaff(role) && (
 						<Link
 							className="hidden cursor-pointer rounded-md border border-border px-3 py-2 font-semibold text-sm transition-colors hover:bg-muted sm:flex"
-							to="/admin/orders"
+							to={staffAreaPath}
 						>
-							{t("store.account.staffOrders")}
+							{t(isOperationalStaff(role) ? "store.account.staffOrders" : "store.account.staffAdmin")}
 						</Link>
 					)}
 					<ProfileMenu

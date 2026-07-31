@@ -1203,6 +1203,7 @@
 				},
 				"signIn": "Entrar",
 				"signOut": "Sair",
+				"staffAdmin": "Painel administrativo",
 				"staffOrders": "Painel de pedidos"
 			},
 			"cart": {

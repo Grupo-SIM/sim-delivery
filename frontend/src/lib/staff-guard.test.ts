@@ -20,7 +20,7 @@ mock.module("@tanstack/react-router", () => ({
 	redirect: (options: { to: string }) => Object.assign(new Error(`redirect:${options.to}`), options),
 }));
 
-const { isStaff, requireStaffBeforeLoad } = await import("./staff-guard");
+const { getStaffAreaPath, isStaff, requireStaffBeforeLoad } = await import("./staff-guard");
 
 describe("isStaff", () => {
 	it("accepts every back-office role", () => {
@@ -37,6 +37,19 @@ describe("isStaff", () => {
 		expect(isStaff(null)).toBe(false);
 		expect(isStaff(undefined)).toBe(false);
 		expect(isStaff("")).toBe(false);
+	});
+});
+
+describe("getStaffAreaPath", () => {
+	it("sends kitchen and courier roles to the orders board", () => {
+		expect(getStaffAreaPath("kitchen")).toBe("/admin/orders");
+		expect(getStaffAreaPath("courier")).toBe("/admin/orders");
+	});
+
+	it("sends other staff roles to the administrative area", () => {
+		for (const role of ["superAdmin", "owner", "manager", "attendant"]) {
+			expect(getStaffAreaPath(role)).toBe("/admin");
+		}
 	});
 });
 
