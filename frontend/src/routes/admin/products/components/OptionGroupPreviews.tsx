@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { OptionGroupCard } from "./OptionGroupCard";
 import type { Product } from "./types";
 
 interface OptionGroupPreviewsProps {
@@ -22,14 +23,9 @@ export function OptionGroupPreviews({ groups, pending = false }: OptionGroupPrev
 	}
 
 	return (
-		<div className={pending ? "space-y-2 opacity-70" : "space-y-2"}>
+		<div className="space-y-2">
 			{groups.map(group => (
-				<div className="flex items-center justify-between gap-3 rounded border border-border px-3 py-2" key={group.id}>
-					<span className="truncate text-sm">{group.name}</span>
-					<span className="shrink-0 text-muted-foreground text-xs">
-						{t("admin.products.options.optionCount", { count: Number(group.optionCount) })}
-					</span>
-				</div>
+				<OptionGroupCard key={group.id} name={group.name} optionCount={Number(group.optionCount)} />
 			))}
 		</div>
 	);

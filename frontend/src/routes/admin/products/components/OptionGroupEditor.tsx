@@ -15,7 +15,7 @@ import {
 } from "@dnd-kit/sortable";
 import { type DragEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuChevronDown, LuChevronUp, LuGripVertical, LuPencil } from "react-icons/lu";
+import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
@@ -25,10 +25,10 @@ import { Label } from "@/components/ui/label";
 import { Modal } from "@/components/ui/Modal";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { ScrollArea } from "@/components/ui/ScrollArea";
-import { Tooltip } from "@/components/ui/Tooltip";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { AddOptionModal } from "./AddOptionModal";
 import { type EditableOption, OptionEditor } from "./OptionEditor";
+import { OptionGroupCard } from "./OptionGroupCard";
 
 export interface OptionGroup {
 	id: string;
@@ -95,57 +95,29 @@ export function OptionGroupEditor({
 	}
 
 	return (
-		<div
-			className="overflow-hidden rounded-lg border border-border bg-surface"
-			onDragOver={onDragOver}
-			onDrop={onDrop}
-		>
-			<div className="flex items-center justify-between gap-3 border-border border-b bg-muted/30 px-4 py-3">
-				<div className="flex min-w-0 items-center gap-2">
-					<button
-						aria-label={t("admin.products.options.reorder")}
-						className="cursor-grab text-muted-foreground active:cursor-grabbing"
-						draggable
-						onDragEnd={() => {
-							if (wasExpandedBeforeDrag) setIsExpanded(true);
-							setWasExpandedBeforeDrag(false);
-							onDragEnd();
-						}}
-						onDragStart={event => {
-							event.dataTransfer.effectAllowed = "move";
-							event.dataTransfer.setData("text/plain", group.id);
-							setWasExpandedBeforeDrag(isExpanded);
-							setIsExpanded(false);
-							onDragStart();
-						}}
-						type="button"
-					>
-						<LuGripVertical className="h-5 w-5" />
-					</button>
-					<div className="min-w-0">
-						<p className="truncate font-semibold">{group.name}</p>
-						<p className="text-muted-foreground text-sm">
-							{group.options.length === 1
-								? t("admin.products.options.optionCount_one", { count: group.options.length })
-								: t("admin.products.options.optionCount_other", { count: group.options.length })}
-						</p>
-					</div>
-				</div>
-				<Tooltip content={t("admin.products.options.edit")}>
-					<Button
-						aria-label={t("admin.products.options.edit")}
-						onClick={() => {
-							setOriginalGroup(structuredClone(group));
-							setIsExpanded(true);
-						}}
-						size="icon"
-						type="button"
-						variant="outline"
-					>
-						<LuPencil className="size-4" />
-					</Button>
-				</Tooltip>
-			</div>
+		<>
+			<OptionGroupCard
+				name={group.name}
+				onDragEnd={() => {
+					if (wasExpandedBeforeDrag) setIsExpanded(true);
+					setWasExpandedBeforeDrag(false);
+					onDragEnd();
+				}}
+				onDragOver={onDragOver}
+				onDragStart={event => {
+					event.dataTransfer.effectAllowed = "move";
+					event.dataTransfer.setData("text/plain", group.id);
+					setWasExpandedBeforeDrag(isExpanded);
+					setIsExpanded(false);
+					onDragStart();
+				}}
+				onDrop={onDrop}
+				onEdit={() => {
+					setOriginalGroup(structuredClone(group));
+					setIsExpanded(true);
+				}}
+				optionCount={group.options.length}
+			/>
 			<Modal
 				isOpen={isExpanded}
 				maxWidth="900px"
@@ -249,11 +221,7 @@ export function OptionGroupEditor({
 								</Button>
 							</div>
 							{isOptionsExpanded && (
-								<DndContext
-									collisionDetection={closestCenter}
-									onDragEnd={moveOption}
-									sensors={optionSensors}
-								>
+								<DndContext collisionDetection={closestCenter} onDragEnd={moveOption} sensors={optionSensors}>
 									<SortableContext items={group.options} strategy={verticalListSortingStrategy}>
 										<ScrollArea className="max-h-[30rem] space-y-2 overflow-y-auto pr-1">
 											{group.options.map(option => (
@@ -262,9 +230,7 @@ export function OptionGroupEditor({
 													onChange={value =>
 														onChange({
 															...group,
-															options: group.options.map(item =>
-																item.id === option.id ? value : item,
-															),
+															options: group.options.map(item => (item.id === option.id ? value : item)),
 														})
 													}
 													onDelete={() =>
@@ -311,6 +277,6 @@ export function OptionGroupEditor({
 					</div>
 				</div>
 			</Modal>
-		</div>
+		</>
 	);
 }
