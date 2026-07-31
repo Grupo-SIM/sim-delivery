@@ -82,7 +82,7 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 	return (
 		<Modal isOpen={product !== null} onClose={onClose} title={t("admin.products.edit.title")}>
 			<div className="space-y-4">
-				<div className="grid gap-4 md:grid-cols-2">
+				<div className="grid items-start gap-4 md:grid-cols-2">
 					<Label>
 						<span>
 							{t("admin.products.create.title")} <RequiredMark />
