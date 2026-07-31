@@ -110,7 +110,10 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 				createPortal(
 					<div
 						className="overflow-hidden rounded-md border border-border bg-card text-card-foreground shadow-medium"
-						onMouseDown={e => e.preventDefault()}
+							onMouseDown={event => {
+								event.preventDefault();
+								event.stopPropagation();
+							}}
 						ref={dropdownRef}
 						role="listbox"
 						style={{
