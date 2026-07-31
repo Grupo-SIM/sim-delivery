@@ -4,6 +4,7 @@ import { FaCartShopping } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Modal } from "@/components/ui/Modal";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import type { CartItem, SelectedOption } from "@/stores";
 import { useCartStore } from "@/stores";
@@ -73,31 +74,32 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 
 	return (
 		<>
-			<Modal isOpen maxWidth="1100px" onClose={onClose}>
-				<div className="min-w-0 space-y-6">
-					<div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)]">
-						<div className="overflow-hidden rounded-brand bg-muted lg:row-span-2">
+			<Modal isOpen maxWidth="1100px" onClose={onClose} scrollable={false}>
+				<div className="flex h-full min-h-0 min-w-0 flex-col gap-6">
+					<div className="grid min-h-0 min-w-0 flex-1 gap-6 overflow-hidden lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)]">
+						<div className="aspect-[4/3] w-full shrink-0 self-start overflow-hidden rounded-brand bg-muted lg:aspect-square">
 							{selectedItem.imageUrl ? (
 								<img
 									alt={selectedItem.title}
-									className="aspect-[4/3] size-full object-cover lg:aspect-square"
+									className="size-full object-cover"
 									src={selectedItem.imageUrl}
 								/>
 							) : (
-								<div className="aspect-[4/3] lg:aspect-square" />
+								<div className="size-full" />
 							)}
 						</div>
-						<div className="flex min-w-0 flex-col justify-center gap-2 sm:pr-8">
-							<h2 className="font-bold text-2xl text-foreground">{selectedItem.title}</h2>
-							{selectedItem.description && (
-								<p className="whitespace-pre-line text-muted-foreground text-sm">
-									{selectedItem.description}
-								</p>
-							)}
-						</div>
+						<div className="flex min-h-0 min-w-0 flex-col gap-5">
+							<div className="shrink-0 space-y-2 sm:pr-8">
+								<h2 className="font-bold text-2xl text-foreground">{selectedItem.title}</h2>
+								{selectedItem.description && (
+									<p className="whitespace-pre-line text-muted-foreground text-sm">
+										{selectedItem.description}
+									</p>
+								)}
+							</div>
 
-						<div className="min-w-0 space-y-5">
-							{selectedItem.optionGroups.map(group => {
+							<ScrollArea className="h-0 min-h-0 flex-1 space-y-5 overflow-y-auto pr-2">
+								{selectedItem.optionGroups.map(group => {
 								const groupSelected = options.filter(value => value.groupId === group.id);
 								const groupQuantity = groupSelected.reduce((sum, value) => sum + value.quantity, 0);
 								const groupIsValid = !group.required || groupQuantity >= 1;
@@ -197,7 +199,8 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 										</div>
 									</section>
 								);
-							})}
+								})}
+							</ScrollArea>
 						</div>
 					</div>
 

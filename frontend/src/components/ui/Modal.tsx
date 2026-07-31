@@ -10,9 +10,18 @@ interface ModalProps {
 	title?: ReactNode;
 	children: ReactNode;
 	maxWidth?: string;
+	scrollable?: boolean;
 }
 
-export function Modal({ children, isOpen, layer = "modal", maxWidth = "640px", onClose, title }: ModalProps) {
+export function Modal({
+	children,
+	isOpen,
+	layer = "modal",
+	maxWidth = "640px",
+	onClose,
+	scrollable = true,
+	title,
+}: ModalProps) {
 	const zIndexClass = layer === "submodal" ? "z-[60]" : "z-50";
 	const [content, setContent] = useState<HTMLDivElement | null>(null);
 
@@ -30,10 +39,14 @@ export function Modal({ children, isOpen, layer = "modal", maxWidth = "640px", o
 					style={{ maxWidth }}
 				>
 					<div
-						className="scrollbar-none max-h-[calc(100dvh-2rem)] overflow-y-auto overflow-x-hidden p-4 pr-7 sm:p-7 sm:pr-10"
+						className={`scrollbar-none max-h-[calc(100dvh-2rem)] overflow-x-hidden p-4 pr-7 sm:p-7 sm:pr-10 ${
+							scrollable
+								? "overflow-y-auto"
+								: "flex h-[calc(100dvh-2rem)] flex-col overflow-y-hidden"
+						}`}
 						ref={setContent}
 					>
-						<div className="mb-2 flex justify-end">
+						<div className="mb-2 flex shrink-0 justify-end">
 							<Dialog.Close
 								aria-label="Fechar"
 								className="grid size-9 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -41,10 +54,14 @@ export function Modal({ children, isOpen, layer = "modal", maxWidth = "640px", o
 								<LuX className="size-5" />
 							</Dialog.Close>
 						</div>
-						{title && <Dialog.Title className="font-bold text-xl">{title}</Dialog.Title>}
-						<div className={title ? "min-w-0 pt-4" : "min-w-0"}>{children}</div>
+						{title && <Dialog.Title className="shrink-0 font-bold text-xl">{title}</Dialog.Title>}
+						<div
+							className={`${title ? "pt-4" : ""} min-w-0 ${scrollable ? "" : "min-h-0 flex-1"}`}
+						>
+							{children}
+						</div>
 					</div>
-					<Scrollbar container={content} />
+					{scrollable && <Scrollbar container={content} />}
 				</Dialog.Content>
 			</Dialog.Portal>
 		</Dialog.Root>
