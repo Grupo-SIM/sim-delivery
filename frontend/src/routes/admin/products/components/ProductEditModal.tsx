@@ -35,9 +35,10 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 	const [cashback, setCashback] = useState(0);
 	const [error, setError] = useState<string | null>(null);
 	const [isUploadingImage, setIsUploadingImage] = useState(false);
+	const [isSaving, setIsSaving] = useState(false);
 	const optionsRef = useRef<ProductOptionsEditorHandle>(null);
 
-	const { isPending, mutateAsync } = usePatchProductsByProductId();
+	const { mutateAsync } = usePatchProductsByProductId();
 
 	useEffect(() => {
 		if (!product) {
@@ -60,6 +61,7 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 		flushImageUrl();
 		flushDescription();
 		setError(null);
+		setIsSaving(true);
 		try {
 			await mutateAsync({
 				data: {
@@ -76,6 +78,8 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 			onClose();
 		} catch {
 			setError(t("admin.products.edit.error"));
+		} finally {
+			setIsSaving(false);
 		}
 	}
 
@@ -159,15 +163,15 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 
 				{error && <p className="text-destructive text-xs">{error}</p>}
 				<div className="flex justify-end gap-2">
-					<Button disabled={isPending} onClick={onClose} type="button" variant="outline">
+					<Button disabled={isSaving} onClick={onClose} type="button" variant="outline">
 						{t("admin.products.edit.cancel")}
 					</Button>
 					<Button
-						disabled={isPending || isUploadingImage || !localTitle}
+						disabled={isSaving || isUploadingImage || !localTitle}
 						onClick={() => void save()}
 						type="button"
 					>
-						{isPending ? t("admin.products.edit.saving") : t("admin.products.edit.save")}
+						{isSaving ? t("admin.products.edit.saving") : t("admin.products.edit.save")}
 					</Button>
 				</div>
 			</div>
