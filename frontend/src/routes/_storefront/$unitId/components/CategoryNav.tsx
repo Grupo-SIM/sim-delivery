@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { type MenuSection, sectionAnchor } from "./types";
 
 interface CategoryNavProps {
@@ -18,7 +19,7 @@ export function CategoryNav({ sections }: CategoryNavProps) {
 	}
 
 	return (
-		<div className="scrollbar-none sticky top-0 z-10 -mx-4 flex gap-2 overflow-x-auto bg-background/90 px-4 py-2 backdrop-blur">
+		<ScrollArea className="sticky top-0 z-10 -mx-4 flex gap-2 overflow-x-auto bg-background/90 px-4 py-2 backdrop-blur">
 			{sections
 				.filter(section => section.categoryId !== null)
 				.map(section => (
@@ -31,6 +32,6 @@ export function CategoryNav({ sections }: CategoryNavProps) {
 						{section.categoryName ?? t("store.menu.loose")}
 					</button>
 				))}
-		</div>
+		</ScrollArea>
 	);
 }

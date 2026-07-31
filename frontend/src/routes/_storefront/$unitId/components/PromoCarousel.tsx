@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { type MenuItem, type MenuSection, money } from "./types";
 
 interface PromoCarouselProps {
@@ -29,7 +30,7 @@ export function PromoCarousel({ sections }: PromoCarouselProps) {
 	return (
 		<section className="space-y-3">
 			<h2 className="font-semibold text-lg">{t("store.menu.highlights")}</h2>
-			<div className="scrollbar-none -mx-4 flex gap-3 overflow-x-auto px-4 pb-1">
+			<ScrollArea className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1">
 				{highlights.map(item => (
 					<Card className="flex w-40 shrink-0 flex-col overflow-hidden" key={item.id}>
 						{item.imageUrl && (
@@ -46,7 +47,7 @@ export function PromoCarousel({ sections }: PromoCarouselProps) {
 						</div>
 					</Card>
 				))}
-			</div>
+			</ScrollArea>
 		</section>
 	);
 }

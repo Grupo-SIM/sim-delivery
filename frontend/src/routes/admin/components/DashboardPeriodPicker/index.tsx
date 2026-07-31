@@ -1,5 +1,6 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { LuChevronDown } from "react-icons/lu";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { cn } from "@/lib/utils";
 
 export const dashboardPeriodValues = [
@@ -66,8 +67,8 @@ export function DashboardPeriodPicker({ datePicker, labels, onChange, period }: 
 				/>
 			</button>
 			{open && (
-				<div
-					className="scrollbar-themed absolute z-50 mt-2 max-h-80 w-full overflow-y-auto rounded-xl border border-border bg-popover py-1 shadow-medium"
+				<ScrollArea
+					className="absolute z-50 mt-2 max-h-80 w-full overflow-y-auto rounded-xl border border-border bg-popover py-1 shadow-medium"
 					role="listbox"
 				>
 					{dashboardPeriodValues.map(option => (
@@ -86,7 +87,7 @@ export function DashboardPeriodPicker({ datePicker, labels, onChange, period }: 
 						</button>
 					))}
 					{datePicker && <div className="border-border border-t">{datePicker}</div>}
-				</div>
+				</ScrollArea>
 			)}
 		</div>
 	);

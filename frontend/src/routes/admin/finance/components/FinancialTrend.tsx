@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/Skeleton";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 
 interface FinancialTrendProps {
 	formatCents: (value: number) => string;
@@ -13,7 +14,7 @@ export function FinancialTrend({ formatCents, isPending, rows, title }: Financia
 	return (
 		<section>
 			<h2 className="mb-3 font-semibold text-base">{title}</h2>
-			<div className="overflow-x-auto rounded-md border border-border bg-card p-5">
+			<ScrollArea className="overflow-x-auto rounded-md border border-border bg-card p-5">
 				{isPending ? (
 					<Skeleton className="h-52 min-w-[36rem]" />
 				) : (
@@ -32,7 +33,7 @@ export function FinancialTrend({ formatCents, isPending, rows, title }: Financia
 						))}
 					</div>
 				)}
-			</div>
+			</ScrollArea>
 		</section>
 	);
 }

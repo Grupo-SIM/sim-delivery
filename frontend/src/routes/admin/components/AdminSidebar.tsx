@@ -20,6 +20,7 @@ import {
 	LuUsers,
 } from "react-icons/lu";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { isSuperAdmin, useAuthStore } from "@/stores/auth";
 
 interface NavItemProps {
@@ -74,7 +75,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 	}
 
 	return (
-		<div className="flex h-full flex-col gap-6 overflow-y-auto p-4">
+		<ScrollArea className="flex h-full flex-col gap-6 overflow-y-auto p-4">
 			<div className="px-1">
 				<span className="font-bold text-foreground text-lg">Admin</span>
 			</div>
@@ -171,6 +172,6 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 				<LuLogOut className="size-4 shrink-0" />
 				{t("admin.dashboard.nav.logout")}
 			</button>
-		</div>
+		</ScrollArea>
 	);
 }

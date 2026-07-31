@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import { ColorField } from "@/components/ui/ColorField";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/Modal";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import {
@@ -136,7 +137,7 @@ export function ProductTaxonomyModal({ onClose, product }: ProductTaxonomyModalP
 								<h3 className="font-semibold">{t("admin.products.taxonomy.categories")}</h3>
 								<p className="text-muted-foreground text-sm">{t("admin.products.taxonomy.categoriesHint")}</p>
 							</div>
-							<div className="max-h-52 space-y-2 overflow-y-auto">
+							<ScrollArea className="max-h-52 space-y-2 overflow-y-auto">
 								{categoriesQuery.data?.map(category => (
 									<div
 										className="flex cursor-pointer items-center gap-2 rounded-md border border-transparent p-2 hover:border-border hover:bg-muted/40"
@@ -153,7 +154,7 @@ export function ProductTaxonomyModal({ onClose, product }: ProductTaxonomyModalP
 										<Badge tone="neutral">{category.products.length}</Badge>
 									</div>
 								))}
-							</div>
+							</ScrollArea>
 							<div className="flex gap-2 border-border border-t pt-3">
 								<Input
 									onBlur={flushCategoryName}
@@ -176,7 +177,7 @@ export function ProductTaxonomyModal({ onClose, product }: ProductTaxonomyModalP
 								<h3 className="font-semibold">{t("admin.products.taxonomy.tags")}</h3>
 								<p className="text-muted-foreground text-sm">{t("admin.products.taxonomy.tagsHint")}</p>
 							</div>
-							<div className="max-h-52 space-y-2 overflow-y-auto">
+							<ScrollArea className="max-h-52 space-y-2 overflow-y-auto">
 								{tagsQuery.data?.map(tag => (
 									<div
 										className="flex cursor-pointer items-center gap-2 rounded-md border border-transparent p-2 hover:border-border hover:bg-muted/40"
@@ -198,7 +199,7 @@ export function ProductTaxonomyModal({ onClose, product }: ProductTaxonomyModalP
 										<Badge tone="neutral">{tag.products.length}</Badge>
 									</div>
 								))}
-							</div>
+							</ScrollArea>
 							<div className="space-y-2 border-border border-t pt-3">
 								<div className="flex gap-2">
 									<Input

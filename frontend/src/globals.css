@@ -241,6 +241,7 @@
 
 .scrollbar-themed::-webkit-scrollbar {
 	width: 0.625rem;
+	height: 0.625rem;
 }
 
 .scrollbar-themed::-webkit-scrollbar-thumb {

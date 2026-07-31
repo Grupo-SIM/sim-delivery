@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Modal } from "@/components/ui/Modal";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetTags } from "@/lib/api";
 
@@ -40,7 +41,7 @@ export function CreateProductTagsModal({
 						<Skeleton className="h-8 w-full" />
 					</div>
 				) : tags && tags.length > 0 ? (
-					<div className="max-h-72 space-y-2 overflow-y-auto">
+					<ScrollArea className="max-h-72 space-y-2 overflow-y-auto">
 						{tags.map(tag => (
 							<label
 								className="flex cursor-pointer items-center gap-2 rounded-md border border-transparent p-2 text-sm hover:border-border hover:bg-muted/40"
@@ -56,7 +57,7 @@ export function CreateProductTagsModal({
 								<span>{tag.name}</span>
 							</label>
 						))}
-					</div>
+					</ScrollArea>
 				) : (
 					<p className="text-muted-foreground text-sm">{t("admin.products.create.tagsEmpty")}</p>
 				)}

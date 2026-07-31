@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Modal } from "@/components/ui/Modal";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { Skeleton } from "@/components/ui/Skeleton";
 import {
 	type GetPromotionalImages200,
@@ -56,7 +57,7 @@ export function PromotionalImageUnitsModal({ image, onClose }: PromotionalImageU
 	return (
 		<Modal isOpen={image !== null} onClose={onClose} title={t("admin.promotionalImages.units.title")}>
 			<div className="space-y-4">
-				<div className="max-h-72 space-y-2 overflow-y-auto">
+				<ScrollArea className="max-h-72 space-y-2 overflow-y-auto">
 					{unitsPending || assignedPending ? (
 						<>
 							<Skeleton className="h-8 w-full" />
@@ -75,7 +76,7 @@ export function PromotionalImageUnitsModal({ image, onClose }: PromotionalImageU
 							</div>
 						))
 					)}
-				</div>
+				</ScrollArea>
 				<div className="flex justify-end gap-2">
 					<Button onClick={onClose} type="button" variant="outline">
 						{t("actions.cancel")}

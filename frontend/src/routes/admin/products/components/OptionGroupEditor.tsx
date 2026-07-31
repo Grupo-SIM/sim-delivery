@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Modal } from "@/components/ui/Modal";
 import { NumericInput } from "@/components/ui/NumericInput";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { AddOptionModal } from "./AddOptionModal";
@@ -233,7 +234,7 @@ export function OptionGroupEditor({
 								</Button>
 							</div>
 							{isOptionsExpanded && (
-								<div className="max-h-[30rem] space-y-2 overflow-y-auto pr-1">
+								<ScrollArea className="max-h-[30rem] space-y-2 overflow-y-auto pr-1">
 									{group.options.map(option => (
 										<OptionEditor
 											key={option.id}
@@ -258,7 +259,7 @@ export function OptionGroupEditor({
 											option={option}
 										/>
 									))}
-								</div>
+								</ScrollArea>
 							)}
 						</>
 					)}

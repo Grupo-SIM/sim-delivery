@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useState } from "react";
 import { LuMenu, LuX } from "react-icons/lu";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { isOperationalStaff, requireStaffBeforeLoad } from "@/lib/staff-guard";
 import { useAuthStore } from "@/stores";
 import { AdminSidebar, OperationalNavbar } from "./admin/components";
@@ -13,8 +14,10 @@ function AdminLayout() {
 		return (
 			<div className="flex h-dvh flex-col overflow-hidden">
 				<OperationalNavbar />
-				<main className="min-h-0 flex-1 overflow-y-auto">
-					<Outlet />
+				<main className="min-h-0 flex-1">
+					<ScrollArea className="h-full overflow-y-auto">
+						<Outlet />
+					</ScrollArea>
 				</main>
 			</div>
 		);

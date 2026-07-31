@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { MaskedInput } from "@/components/ui/MaskedInput";
 import { Modal } from "@/components/ui/Modal";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { getUnitsByUnitIdHoursQueryKey, useGetUnitsByUnitIdHours, usePutUnitsByUnitIdHours } from "@/lib/api";
 import { showAlert } from "@/stores";
@@ -111,7 +112,7 @@ export function UnitHoursEditor({ onClose, unitId }: UnitHoursEditorProps) {
 			{isPending ? (
 				<Skeleton className="h-64 w-full" />
 			) : (
-				<div className="space-y-3 overflow-x-auto pb-1">
+				<ScrollArea className="space-y-3 overflow-x-auto pb-1">
 					<div className="min-w-[31rem] space-y-3">
 						<div className="grid grid-cols-[6rem_1fr_7rem_1rem_7rem] items-center gap-3">
 							<span />
@@ -172,7 +173,7 @@ export function UnitHoursEditor({ onClose, unitId }: UnitHoursEditorProps) {
 							</Button>
 						</div>
 					</div>
-				</div>
+				</ScrollArea>
 			)}
 		</Modal>
 	);

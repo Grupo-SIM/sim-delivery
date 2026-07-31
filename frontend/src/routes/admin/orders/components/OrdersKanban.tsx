@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/Modal";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import {
 	type GetOrders200,
@@ -259,7 +260,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 
 	return (
 		<>
-			<div
+			<ScrollArea
 				className="-mx-5 overflow-x-auto px-5 pb-3"
 				onDragLeave={event => {
 					const nextTarget = event.relatedTarget as Node | null;
@@ -328,7 +329,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 						);
 					})}
 				</div>
-			</div>
+			</ScrollArea>
 			<Modal
 				isOpen={problemOrderId !== null}
 				maxWidth="520px"

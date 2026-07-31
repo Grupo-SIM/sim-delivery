@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { useCartStore } from "@/stores";
 import { type MenuItem, type MenuSection, money } from "./types";
 
@@ -37,7 +38,7 @@ export function CartSuggestions({ sections, unitId }: CartSuggestionsProps) {
 	return (
 		<section className="space-y-2">
 			<h3 className="font-medium text-sm">{t("store.cart.suggestions")}</h3>
-			<div className="scrollbar-none -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+			<ScrollArea className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
 				{suggestions.map(item => (
 					<Card className="flex w-32 shrink-0 flex-col overflow-hidden" key={item.id}>
 						{item.imageUrl && (
@@ -69,7 +70,7 @@ export function CartSuggestions({ sections, unitId }: CartSuggestionsProps) {
 						</div>
 					</Card>
 				))}
-			</div>
+			</ScrollArea>
 		</section>
 	);
 }

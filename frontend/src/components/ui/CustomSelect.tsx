@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { LuChevronDown } from "react-icons/lu";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "./ScrollArea";
 
 export interface SelectOption {
 	imageUrl?: string;
@@ -108,8 +109,8 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 
 			{open &&
 				createPortal(
-					<div
-						className="overflow-hidden rounded-md border border-border bg-card text-card-foreground shadow-medium"
+					<ScrollArea
+						className="max-h-[260px] overflow-y-auto overflow-x-hidden rounded-md border border-border bg-card text-card-foreground shadow-medium"
 							onMouseDown={event => {
 								event.preventDefault();
 								event.stopPropagation();
@@ -118,8 +119,6 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 						role="listbox"
 						style={{
 							left: pos.left,
-							maxHeight: 260,
-							overflowY: "auto",
 							pointerEvents: "auto",
 							position: "fixed",
 							top: pos.top,
@@ -171,7 +170,7 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 										</span>
 									</button>
 								))}
-					</div>,
+					</ScrollArea>,
 					document.body,
 				)}
 		</>

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Modal } from "@/components/ui/Modal";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetUnits } from "@/lib/api";
 
@@ -40,7 +41,7 @@ export function CreateProductUnitsModal({
 						<Skeleton className="h-8 w-full" />
 					</div>
 				) : (
-					<div className="max-h-72 space-y-2 overflow-y-auto">
+					<ScrollArea className="max-h-72 space-y-2 overflow-y-auto">
 						{units?.map(unit => (
 							<label
 								className="flex cursor-pointer items-center gap-2 rounded-md border border-transparent p-2 text-sm hover:border-border hover:bg-muted/40"
@@ -55,7 +56,7 @@ export function CreateProductUnitsModal({
 								<span>{unit.name}</span>
 							</label>
 						))}
-					</div>
+					</ScrollArea>
 				)}
 				<div className="flex justify-end gap-2">
 					<Button onClick={onClose} type="button" variant="outline">

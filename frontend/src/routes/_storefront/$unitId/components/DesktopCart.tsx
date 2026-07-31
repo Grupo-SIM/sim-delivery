@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { cartCount, cartTotalCents, useCartStore, useDeliveryMethodStore } from "@/stores";
 import { DesktopCartItem } from "./DesktopCartItem";
 import { money } from "./types";
@@ -35,11 +36,11 @@ export function DesktopCart({ deliveryFee, minOrderCents, unitId, unitSlug }: De
 				</div>
 				{isCurrentUnit && count > 0 ? (
 					<>
-						<div className="max-h-[52vh] divide-y divide-border/70 overflow-y-auto px-5">
+						<ScrollArea className="max-h-[52vh] divide-y divide-border/70 overflow-y-auto px-5">
 							{items.map(item => (
 								<DesktopCartItem item={item} key={item.lineKey} />
 							))}
-						</div>
+						</ScrollArea>
 						<div className="space-y-3 border-border border-t p-5">
 							<div className="flex items-center justify-between font-semibold">
 								<span>{t("store.cart.subtotal")}</span>

@@ -1,4 +1,5 @@
 import { CustomSelect } from "@/components/ui/CustomSelect";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import type { GetReportsDashboardAnalytics200GroupByEnumKey } from "@/lib/api";
 
 interface DashboardOrdersByPeriodChartProps {
@@ -33,7 +34,7 @@ export function DashboardOrdersByPeriodChart({
 					/>
 				</div>
 			</div>
-			<div className="overflow-x-auto rounded-md border border-border bg-card px-5 py-4">
+			<ScrollArea className="overflow-x-auto rounded-md border border-border bg-card px-5 py-4">
 				<div aria-label={title} className="flex h-[193px] min-w-max items-end gap-1" role="img">
 					{ordersByPeriod.map(item => {
 						const orderCount = Number(item.orderCount);
@@ -50,7 +51,7 @@ export function DashboardOrdersByPeriodChart({
 						);
 					})}
 				</div>
-			</div>
+			</ScrollArea>
 		</section>
 	);
 }

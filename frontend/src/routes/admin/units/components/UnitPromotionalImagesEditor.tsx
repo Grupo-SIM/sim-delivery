@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Modal } from "@/components/ui/Modal";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { Skeleton } from "@/components/ui/Skeleton";
 import {
 	type GetUnits200,
@@ -62,7 +63,7 @@ export function UnitPromotionalImagesEditor({ onClose, unit }: UnitPromotionalIm
 				) : images?.length === 0 ? (
 					<p className="text-muted-foreground text-sm">{t("admin.units.promotionalImages.empty")}</p>
 				) : (
-					<div className="max-h-80 space-y-2 overflow-y-auto">
+					<ScrollArea className="max-h-80 space-y-2 overflow-y-auto">
 						{images?.map(image => (
 							<label
 								className="flex cursor-pointer items-center gap-3 rounded-md border border-border p-2"
@@ -78,7 +79,7 @@ export function UnitPromotionalImagesEditor({ onClose, unit }: UnitPromotionalIm
 								<span className="text-sm">{image.title}</span>
 							</label>
 						))}
-					</div>
+					</ScrollArea>
 				)}
 				<div className="flex justify-end gap-2">
 					<Button onClick={onClose} type="button" variant="outline">

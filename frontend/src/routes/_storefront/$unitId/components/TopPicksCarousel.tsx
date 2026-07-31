@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { type MenuItem, type MenuSection, money } from "./types";
 
 interface TopPicksCarouselProps {
@@ -41,7 +42,7 @@ export function TopPicksCarousel({ onSelect, sections }: TopPicksCarouselProps) 
 	return (
 		<section className="space-y-3">
 			<h2 className="font-semibold text-lg">{t("store.menu.topPicks")}</h2>
-			<div className="scrollbar-none -mx-4 flex gap-3 overflow-x-auto px-4 pb-1">
+			<ScrollArea className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1">
 				{picks.map(item => (
 					<button
 						className="w-40 shrink-0 text-left"
@@ -76,7 +77,7 @@ export function TopPicksCarousel({ onSelect, sections }: TopPicksCarouselProps) 
 						</Card>
 					</button>
 				))}
-			</div>
+			</ScrollArea>
 		</section>
 	);
 }

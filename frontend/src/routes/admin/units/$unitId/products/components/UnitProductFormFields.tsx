@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import { CurrencyInput } from "@/components/ui/CurrencyInput";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { NumericInput } from "@/components/ui/NumericInput";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import type { Category, Product, Tag } from "./types";
 
 interface UnitProductFormFieldsProps {
@@ -85,7 +86,7 @@ export function UnitProductFormFields(props: UnitProductFormFieldsProps) {
 					{t("admin.unitProducts.form.categoriesOverride")}
 				</label>
 				{categoriesOverridden ? (
-					<div className="max-h-32 space-y-1 overflow-auto rounded-md border border-border p-2">
+					<ScrollArea className="max-h-32 space-y-1 overflow-auto rounded-md border border-border p-2">
 						{categories.map(category => (
 							<label
 								className="flex cursor-pointer items-center gap-2 text-sm"
@@ -100,7 +101,7 @@ export function UnitProductFormFields(props: UnitProductFormFieldsProps) {
 								{category.name}
 							</label>
 						))}
-					</div>
+					</ScrollArea>
 				) : (
 					<div className="flex flex-wrap gap-1">
 						{selectedProduct?.categories.map(category => (
@@ -125,7 +126,7 @@ export function UnitProductFormFields(props: UnitProductFormFieldsProps) {
 					{t("admin.unitProducts.form.tagsOverride")}
 				</label>
 				{tagsOverridden ? (
-					<div className="max-h-32 space-y-1 overflow-auto rounded-md border border-border p-2">
+					<ScrollArea className="max-h-32 space-y-1 overflow-auto rounded-md border border-border p-2">
 						{tags.map(tag => (
 							<label
 								className="flex cursor-pointer items-center gap-2 text-sm"
@@ -141,7 +142,7 @@ export function UnitProductFormFields(props: UnitProductFormFieldsProps) {
 								{tag.name}
 							</label>
 						))}
-					</div>
+					</ScrollArea>
 				) : (
 					<div className="flex flex-wrap gap-1">
 						{selectedProduct?.tags.map(tag => (
