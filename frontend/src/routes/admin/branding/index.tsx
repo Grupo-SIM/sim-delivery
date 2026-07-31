@@ -38,6 +38,7 @@ function BrandingPage() {
 	const [logoUrl, setLogoUrl] = useState("");
 	const [unitFallbackImageUrl, setUnitFallbackImageUrl] = useState("");
 	const [allowThemeToggle, setAllowThemeToggle] = useState(true);
+	const [defaultTheme, setDefaultTheme] = useState<"dark" | "light">("light");
 	const [fontFamily, setFontFamily] = useState("");
 	const [fontFamilyUrl, setFontFamilyUrl] = useState("");
 	const [fontDisplay, setFontDisplay] = useState("");
@@ -58,6 +59,7 @@ function BrandingPage() {
 	useEffect(() => {
 		if (branding) {
 			setAllowThemeToggle(branding.allowThemeToggle);
+			setDefaultTheme(branding.defaultTheme);
 			setLogoUrl(branding.logoUrl ?? "");
 			setUnitFallbackImageUrl(branding.unitFallbackImageUrl ?? "");
 			setFontFamily(branding.fontFamily ?? "");
@@ -113,6 +115,7 @@ function BrandingPage() {
 			{
 				data: {
 					allowThemeToggle,
+					defaultTheme,
 					fontDisplay: fontDisplay.trim() || undefined,
 					fontDisplayUrl: fontDisplayUrl.trim() || undefined,
 					fontFamily: fontFamily.trim() || undefined,
@@ -159,8 +162,30 @@ function BrandingPage() {
 					checked={allowThemeToggle}
 					onChange={event => setAllowThemeToggle(event.currentTarget.checked)}
 				/>
-				<span>Permitir troca entre tema claro e escuro pelo botão flutuante</span>
+				<span>Permitir que cada usuário escolha o tema nas configurações.</span>
 			</label>
+			<div className="space-y-2 rounded-lg border border-border p-4">
+				<p className="font-medium text-sm">Tema padrão da empresa</p>
+				<div className="flex gap-2">
+					<Button
+						aria-pressed={defaultTheme === "light"}
+						onClick={() => setDefaultTheme("light")}
+						type="button"
+						variant={defaultTheme === "light" ? "default" : "outline"}
+					>
+						Tema claro
+					</Button>
+					<Button
+						aria-pressed={defaultTheme === "dark"}
+						onClick={() => setDefaultTheme("dark")}
+						type="button"
+						variant={defaultTheme === "dark" ? "default" : "outline"}
+					>
+						Tema escuro
+					</Button>
+				</div>
+				<p className="text-muted-foreground text-sm">Usado para todos quando a troca estiver desabilitada.</p>
+			</div>
 
 			{isPending ? (
 				<div className="space-y-4">
