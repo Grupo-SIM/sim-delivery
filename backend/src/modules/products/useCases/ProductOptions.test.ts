@@ -126,12 +126,19 @@ describe("ProductOptions", () => {
 					maxSelect: 1,
 					name: "Adicionais",
 					options: {
-						create: [
-							{
-								name: "Queijo",
-								priceDeltaCents: 200,
-							},
-						],
+						createMany: {
+							data: [
+								{
+									available: undefined,
+									description: undefined,
+									imageUrl: undefined,
+									maxPerItem: undefined,
+									name: "Queijo",
+									priceDeltaCents: 200,
+									sortOrder: undefined,
+								},
+							],
+						},
 					},
 					priceRule: "sum",
 					productId: "product_1",

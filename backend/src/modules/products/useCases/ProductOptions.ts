@@ -88,70 +88,151 @@ export class ProductOptions {
 		const removedGroupIds = existingGroups
 			.map(group => group.id)
 			.filter(groupId => !submittedGroupIds.has(groupId));
+		const operations = [];
+		const optionUpdates: Array<{
+			available: boolean;
+			description: string;
+			groupId: string;
+			id: string;
+			imageUrl: string | null;
+			maxPerItem: number | null;
+			name: string;
+			priceDeltaCents: number;
+			sortOrder: number;
+		}> = [];
+
+		for (const group of data.groups) {
+			const groupData = {
+				maxSelect: group.maxSelect,
+				name: group.name,
+				priceRule: group.priceRule,
+				required: group.required,
+				selectionType: group.selectionType,
+				sortOrder: group.sortOrder,
+			};
+			const optionData = (option: (typeof group.options)[number]) => ({
+				available: option.available,
+				description: option.description,
+				imageUrl: option.imageUrl,
+				maxPerItem: option.maxPerItem,
+				name: option.name,
+				priceDeltaCents: option.priceDeltaCents,
+				sortOrder: option.sortOrder,
+			});
+			const existingGroup = group.id ? existingGroupsById.get(group.id) : undefined;
+
+			if (!existingGroup) {
+				operations.push(
+					this.prisma.optionGroup.create({
+						data: {
+							...groupData,
+							options: { createMany: { data: group.options.map(optionData) } },
+							productId,
+						},
+					}),
+				);
+				continue;
+			}
+
+			const existingOptionsById = new Map(existingGroup.options.map(option => [option.id, option]));
+			for (const option of group.options) {
+				if (option.id && !existingOptionsById.has(option.id))
+					throw new DomainError(ProductErrors.INVALID_OPTION_GROUP);
+			}
+
+			const submittedOptionIds = new Set(
+				group.options.flatMap(option => (option.id ? [option.id] : [])),
+			);
+			const removedOptionIds = existingGroup.options
+				.map(option => option.id)
+				.filter(optionId => !submittedOptionIds.has(optionId));
+
+			operations.push(
+				this.prisma.optionGroup.update({
+					data: groupData,
+					where: { id: existingGroup.id },
+				}),
+			);
+			if (removedOptionIds.length) {
+				operations.push(
+					this.prisma.option.deleteMany({
+						where: { groupId: existingGroup.id, id: { in: removedOptionIds } },
+					}),
+				);
+			}
+
+			const newOptions = group.options.filter(option => !option.id).map(optionData);
+			if (newOptions.length) {
+				operations.push(
+					this.prisma.option.createMany({
+						data: newOptions.map(option => ({ ...option, groupId: existingGroup.id })),
+					}),
+				);
+			}
+
+			for (const option of group.options) {
+				if (!option.id) continue;
+				const existingOption = existingOptionsById.get(option.id)!;
+				const nextOption = {
+					available: option.available ?? existingOption.available,
+					description: option.description ?? existingOption.description,
+					groupId: existingGroup.id,
+					id: option.id,
+					imageUrl: option.imageUrl === undefined ? existingOption.imageUrl : option.imageUrl,
+					maxPerItem: option.maxPerItem === undefined ? existingOption.maxPerItem : option.maxPerItem,
+					name: option.name ?? existingOption.name,
+					priceDeltaCents: option.priceDeltaCents ?? existingOption.priceDeltaCents,
+					sortOrder: option.sortOrder ?? existingOption.sortOrder,
+				};
+				if (
+					nextOption.available !== existingOption.available ||
+					nextOption.description !== existingOption.description ||
+					nextOption.imageUrl !== existingOption.imageUrl ||
+					nextOption.maxPerItem !== existingOption.maxPerItem ||
+					nextOption.name !== existingOption.name ||
+					nextOption.priceDeltaCents !== existingOption.priceDeltaCents ||
+					nextOption.sortOrder !== existingOption.sortOrder
+				) {
+					optionUpdates.push(nextOption);
+				}
+			}
+		}
+
+		if (optionUpdates.length) {
+			operations.push(
+				this.prisma.$executeRawUnsafe(
+					`UPDATE "option" AS target
+					SET
+						"available" = changes."available",
+						"description" = changes."description",
+						"imageUrl" = changes."imageUrl",
+						"maxPerItem" = changes."maxPerItem",
+						"name" = changes."name",
+						"priceDeltaCents" = changes."priceDeltaCents",
+						"sortOrder" = changes."sortOrder",
+						"updatedAt" = CURRENT_TIMESTAMP
+					FROM jsonb_to_recordset($1::jsonb) AS changes(
+						"id" text,
+						"groupId" text,
+						"name" text,
+						"description" text,
+						"imageUrl" text,
+						"maxPerItem" integer,
+						"priceDeltaCents" integer,
+						"available" boolean,
+						"sortOrder" integer
+					)
+					WHERE target."id" = changes."id" AND target."groupId" = changes."groupId"`,
+					JSON.stringify(optionUpdates),
+				),
+			);
+		}
 
 		await Promise.all([
 			...(removedGroupIds.length
 				? [this.prisma.optionGroup.deleteMany({ where: { id: { in: removedGroupIds }, productId } })]
 				: []),
-			...data.groups.map(group => {
-				const groupData = {
-					maxSelect: group.maxSelect,
-					name: group.name,
-					priceRule: group.priceRule,
-					required: group.required,
-					selectionType: group.selectionType,
-					sortOrder: group.sortOrder,
-				};
-				const optionData = (option: (typeof group.options)[number]) => ({
-					available: option.available,
-					description: option.description,
-					imageUrl: option.imageUrl,
-					maxPerItem: option.maxPerItem,
-					name: option.name,
-					priceDeltaCents: option.priceDeltaCents,
-					sortOrder: option.sortOrder,
-				});
-				const existingGroup = group.id ? existingGroupsById.get(group.id) : undefined;
-
-				if (!existingGroup) {
-					return this.prisma.optionGroup.create({
-						data: {
-							...groupData,
-							options: { create: group.options.map(optionData) },
-							productId,
-						},
-					});
-				}
-
-				const existingOptionIds = new Set(existingGroup.options.map(option => option.id));
-				for (const option of group.options) {
-					if (option.id && !existingOptionIds.has(option.id))
-						throw new DomainError(ProductErrors.INVALID_OPTION_GROUP);
-				}
-
-				const submittedOptionIds = new Set(
-					group.options.flatMap(option => (option.id ? [option.id] : [])),
-				);
-				const removedOptionIds = existingGroup.options
-					.map(option => option.id)
-					.filter(optionId => !submittedOptionIds.has(optionId));
-
-				return this.prisma.optionGroup.update({
-					data: {
-						...groupData,
-						options: {
-							create: group.options.filter(option => !option.id).map(optionData),
-							...(removedOptionIds.length
-								? { deleteMany: { id: { in: removedOptionIds } } }
-								: {}),
-							update: group.options
-								.filter((option): option is typeof option & { id: string } => Boolean(option.id))
-								.map(option => ({ data: optionData(option), where: { id: option.id } })),
-						},
-					},
-					where: { id: existingGroup.id },
-				});
-			}),
+			...operations,
 		]);
 
 		return this.prisma.optionGroup.findMany({

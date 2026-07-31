@@ -1,11 +1,9 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import {
-	getProductsByProductIdOptionGroupsQueryKey,
 	useGetProductsByProductIdOptionGroups,
 	usePutProductsByProductIdOptionGroups,
 } from "@/lib/api";
@@ -24,17 +22,12 @@ export interface ProductOptionsEditorHandle {
 export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, ProductOptionsEditorProps>(
 	function ProductOptionsEditor({ product }, ref) {
 		const { t } = useTranslation();
-		const queryClient = useQueryClient();
 		const [name, setName] = useState("");
 		const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
 		const [draftGroups, setDraftGroups] = useState<OptionGroup[]>([]);
 		const [draggedGroupId, setDraggedGroupId] = useState<string | null>(null);
 		const groups = useGetProductsByProductIdOptionGroups(product?.id);
 		const saveOptionGroups = usePutProductsByProductIdOptionGroups();
-		const refresh = () =>
-			product &&
-			queryClient.invalidateQueries({ queryKey: getProductsByProductIdOptionGroupsQueryKey(product.id) });
-
 		const normalizeGroups = (): OptionGroup[] =>
 			(groups.data ?? []).map(group => ({
 				...group,
@@ -130,7 +123,6 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 				},
 				productId,
 			});
-			await refresh();
 			showToast(t("admin.products.options.saved"), "positive");
 		}
 
