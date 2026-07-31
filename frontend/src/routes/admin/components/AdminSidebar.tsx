@@ -104,6 +104,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 					onNavigate={onNavigate}
 					to="/admin/orders"
 				/>
+				<NavItem icon={LuLandmark} label="Financeiro" onNavigate={onNavigate} to="/admin/finance" />
 				<NavItem
 					icon={LuPackageOpen}
 					label={t("admin.inventory.title")}
