@@ -39,68 +39,67 @@ function FinancePage() {
 		...periods.map(value => [value, t(`admin.reports.period.${value}`)]),
 	]) as Record<DashboardPeriod | "custom", string>;
 
-	if (isPending)
-		return (
-			<Container className="space-y-6 py-8">
-				<Skeleton className="h-16 w-80" />
-				<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-					<Skeleton className="h-28" />
-					<Skeleton className="h-28" />
-					<Skeleton className="h-28" />
-					<Skeleton className="h-28" />
-					<Skeleton className="h-28" />
-					<Skeleton className="h-28" />
-				</div>
-				<Skeleton className="h-64" />
-			</Container>
-		);
-	if (isError || !report)
+	if (isError || (!isPending && !report))
 		return (
 			<Container className="py-8">
 				<ErrorState title={t("admin.reports.loadError")} />
 			</Container>
 		);
 
-	const { summary } = report;
-	const cards = [
-		{
-			change: report.comparison.netRevenuePercent,
-			label: "Receita líquida",
-			value: formatCents(Number(summary.netRevenueCents)),
-		},
-		{
-			change: report.comparison.grossProfitPercent,
-			label: "Lucro bruto parcial",
-			value: formatCents(Number(summary.grossProfitCents)),
-		},
-		{
-			change: report.comparison.grossMarginPercent,
-			label: "Margem bruta parcial",
-			value: summary.grossMarginPercent === null ? "—" : `${Number(summary.grossMarginPercent).toFixed(1)}%`,
-		},
-		{
-			change: report.comparison.orderCountPercent,
-			label: "Pedidos concluídos",
-			value: Number(summary.orderCount),
-		},
-		{
-			change: report.comparison.averageOrderValuePercent,
-			label: "Ticket médio",
-			value: formatCents(Number(summary.averageOrderValue)),
-		},
-		{ change: null, label: "Frete", value: formatCents(Number(summary.deliveryFeeCents)) },
-	];
-	const trend = report.trend.map(row => ({ ...row, netRevenueCents: Number(row.netRevenueCents) }));
-	const payment = report.distribution.payment.map(row => ({
-		...row,
-		netRevenueCents: Number(row.netRevenueCents),
-		orderCount: Number(row.orderCount),
-	}));
-	const delivery = report.distribution.delivery.map(row => ({
-		...row,
-		netRevenueCents: Number(row.netRevenueCents),
-		orderCount: Number(row.orderCount),
-	}));
+	const loadingValue = <Skeleton className="mt-2 h-6 w-24" />;
+	const cards = report
+		? [
+				{
+					change: report.comparison.netRevenuePercent,
+					label: "Receita líquida",
+					value: formatCents(Number(report.summary.netRevenueCents)),
+				},
+				{
+					change: report.comparison.grossProfitPercent,
+					label: "Lucro bruto parcial",
+					value: formatCents(Number(report.summary.grossProfitCents)),
+				},
+				{
+					change: report.comparison.grossMarginPercent,
+					label: "Margem bruta parcial",
+					value:
+						report.summary.grossMarginPercent === null
+							? "—"
+							: `${Number(report.summary.grossMarginPercent).toFixed(1)}%`,
+				},
+				{
+					change: report.comparison.orderCountPercent,
+					label: "Pedidos concluídos",
+					value: Number(report.summary.orderCount),
+				},
+				{
+					change: report.comparison.averageOrderValuePercent,
+					label: "Ticket médio",
+					value: formatCents(Number(report.summary.averageOrderValue)),
+				},
+				{ change: null, label: "Frete", value: formatCents(Number(report.summary.deliveryFeeCents)) },
+			]
+		: [
+				{ change: null, label: "Receita líquida", value: loadingValue },
+				{ change: null, label: "Lucro bruto parcial", value: loadingValue },
+				{ change: null, label: "Margem bruta parcial", value: loadingValue },
+				{ change: null, label: "Pedidos concluídos", value: loadingValue },
+				{ change: null, label: "Ticket médio", value: loadingValue },
+				{ change: null, label: "Frete", value: loadingValue },
+			];
+	const trend = report?.trend.map(row => ({ ...row, netRevenueCents: Number(row.netRevenueCents) })) ?? [];
+	const payment =
+		report?.distribution.payment.map(row => ({
+			...row,
+			netRevenueCents: Number(row.netRevenueCents),
+			orderCount: Number(row.orderCount),
+		})) ?? [];
+	const delivery =
+		report?.distribution.delivery.map(row => ({
+			...row,
+			netRevenueCents: Number(row.netRevenueCents),
+			orderCount: Number(row.orderCount),
+		})) ?? [];
 
 	return (
 		<Container className="space-y-6 py-8">
@@ -130,11 +129,12 @@ function FinancePage() {
 					/>
 				))}
 			</div>
-			<FinancialTrend formatCents={formatCents} rows={trend} title="Tendência financeira" />
+			<FinancialTrend formatCents={formatCents} isPending={isPending} rows={trend} title="Tendência financeira" />
 			<div className="grid gap-6 lg:grid-cols-2">
 				<FinancialDistribution
 					empty="Sem dados no período."
 					formatCents={formatCents}
+					isPending={isPending}
 					rows={payment}
 					title="Receita por forma de pagamento"
 					unreported="Não informado"
@@ -142,21 +142,26 @@ function FinancePage() {
 				<FinancialDistribution
 					empty="Sem dados no período."
 					formatCents={formatCents}
+					isPending={isPending}
 					rows={delivery}
 					title="Receita por modalidade de entrega"
 					unreported="Não informado"
 				/>
 			</div>
 			<div className="grid gap-4 sm:grid-cols-3">
-				<StatCard label="Faturamento bruto" value={formatCents(Number(summary.grossRevenueCents))} />
+				<StatCard label="Faturamento bruto" value={report ? formatCents(Number(report.summary.grossRevenueCents)) : loadingValue} />
 				<StatCard
 					label="Descontos e cashback"
-					value={formatCents(Number(summary.discountCents) + Number(summary.cashbackRedeemedCents))}
+					value={
+						report
+							? formatCents(Number(report.summary.discountCents) + Number(report.summary.cashbackRedeemedCents))
+							: loadingValue
+					}
 				/>
 				<StatCard
 					hint="Lucro considera somente itens com custo conhecido."
 					label="Receita sem custo conhecido"
-					value={formatCents(Number(summary.unknownCostRevenueCents))}
+					value={report ? formatCents(Number(report.summary.unknownCostRevenueCents)) : loadingValue}
 				/>
 			</div>
 		</Container>
