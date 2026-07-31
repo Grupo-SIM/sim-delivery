@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { LuArrowLeft, LuBell, LuLayoutDashboard, LuLogOut, LuReceiptText, LuUser } from "react-icons/lu";
 import { getStaffAreaPath, isOperationalStaff, isStaff } from "@/lib/staff-guard";
@@ -10,6 +11,11 @@ interface ProfileMenuProps {
 	logoutTo?: "/" | "/identify";
 	onlyLogout?: boolean;
 	showBackToCustomerArea?: boolean;
+}
+
+interface MenuPosition {
+	right: number;
+	top: number;
 }
 
 function initials(name: string): string {
@@ -32,12 +38,33 @@ export function ProfileMenu({
 	const role = useAuthStore(state => state.role);
 	const logout = useAuthStore(state => state.logout);
 	const [open, setOpen] = useState(false);
+	const [menuPosition, setMenuPosition] = useState<MenuPosition>({ right: 0, top: 0 });
+	const triggerRef = useRef<HTMLButtonElement>(null);
 	const menuRef = useRef<HTMLDivElement>(null);
+
+	useLayoutEffect(() => {
+		if (!open || !triggerRef.current) return;
+
+		function positionMenu() {
+			if (!triggerRef.current) return;
+			const rect = triggerRef.current.getBoundingClientRect();
+			setMenuPosition({ right: window.innerWidth - rect.right, top: rect.bottom + 8 });
+		}
+
+		positionMenu();
+		window.addEventListener("resize", positionMenu);
+		window.addEventListener("scroll", positionMenu, true);
+		return () => {
+			window.removeEventListener("resize", positionMenu);
+			window.removeEventListener("scroll", positionMenu, true);
+		};
+	}, [open]);
 
 	useEffect(() => {
 		if (!open) return;
 		function onPointerDown(event: MouseEvent) {
-			if (menuRef.current && !menuRef.current.contains(event.target as Node)) setOpen(false);
+			const target = event.target as Node;
+			if (!triggerRef.current?.contains(target) && !menuRef.current?.contains(target)) setOpen(false);
 		}
 		document.addEventListener("mousedown", onPointerDown);
 		return () => document.removeEventListener("mousedown", onPointerDown);
@@ -63,12 +90,13 @@ export function ProfileMenu({
 	}
 
 	return (
-		<div className="relative" ref={menuRef}>
+		<div className="relative">
 			<button
 				aria-expanded={open}
 				aria-haspopup="menu"
 				className="flex cursor-pointer items-center gap-2 rounded-full p-0.5 transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 				onClick={() => setOpen(value => !value)}
+				ref={triggerRef}
 				type="button"
 			>
 				{user.image ? (
@@ -80,84 +108,89 @@ export function ProfileMenu({
 				)}
 			</button>
 
-			{open && (
-				<div
-					className="absolute right-0 z-50 mt-2 w-60 overflow-hidden rounded-xl border border-border bg-popover shadow-lg"
-					role="menu"
-				>
-					<div className="border-border border-b px-4 py-3">
-						<p className="truncate font-semibold text-sm">{user.name}</p>
-						<p className="truncate text-muted-foreground text-xs">{user.email}</p>
-					</div>
-					{!onlyLogout && (
-						<Link
-							className="flex cursor-pointer items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-muted"
-							onClick={() => setOpen(false)}
-							role="menuitem"
-							to="/profile"
-						>
-							<LuUser aria-hidden className="size-4 text-muted-foreground" />
-							{t("store.account.myProfile")}
-						</Link>
-					)}
-					{!onlyLogout && (
-						<Link
-							className="flex cursor-pointer items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-muted"
-							onClick={() => setOpen(false)}
-							role="menuitem"
-							to="/preferences"
-						>
-							<LuBell aria-hidden className="size-4 text-muted-foreground" />
-							{t("store.account.preferences.title")}
-						</Link>
-					)}
-					{!onlyLogout && (
-						<Link
-							className="flex cursor-pointer items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-muted"
-							onClick={() => setOpen(false)}
-							role="menuitem"
-							to="/orders"
-						>
-							<LuReceiptText aria-hidden className="size-4 text-muted-foreground" />
-							{t("store.account.myOrders")}
-						</Link>
-					)}
-					{!onlyLogout && isStaff(role) && (
-						<Link
-							className="flex cursor-pointer items-center gap-2.5 border-border border-t px-4 py-2.5 text-sm transition hover:bg-muted sm:hidden"
-							onClick={() => setOpen(false)}
-							role="menuitem"
-							to={getStaffAreaPath(role)}
-						>
-							<LuLayoutDashboard aria-hidden className="size-4 text-muted-foreground" />
-							{t(isOperationalStaff(role) ? "store.account.staffOrders" : "store.account.staffAdmin")}
-						</Link>
-					)}
-					{showBackToCustomerArea && isStaff(role) && (
-						<Link
-							className="flex cursor-pointer items-center gap-2.5 border-border border-t px-4 py-2.5 text-sm transition hover:bg-muted"
-							onClick={() => setOpen(false)}
-							role="menuitem"
-							to="/"
-						>
-							<LuArrowLeft aria-hidden className="size-4 text-muted-foreground" />
-							{t("store.account.backToCustomerArea")}
-						</Link>
-					)}
-					<button
-						className={cn(
-							"flex w-full cursor-pointer items-center gap-2.5 px-4 py-2.5 text-destructive text-sm transition hover:bg-muted",
-							!isStaff(role) && "border-border border-t",
-						)}
-						onClick={handleLogout}
-						role="menuitem"
-						type="button"
+			{open &&
+				typeof document !== "undefined" &&
+				createPortal(
+					<div
+						className="fixed z-[9999] w-60 overflow-hidden rounded-xl border border-border bg-popover shadow-lg"
+						ref={menuRef}
+						role="menu"
+						style={{ right: menuPosition.right, top: menuPosition.top }}
 					>
-						<LuLogOut aria-hidden className="size-4" />
-						{t("store.account.signOut")}
-					</button>
-				</div>
-			)}
+						<div className="border-border border-b px-4 py-3">
+							<p className="truncate font-semibold text-sm">{user.name}</p>
+							<p className="truncate text-muted-foreground text-xs">{user.email}</p>
+						</div>
+						{!onlyLogout && (
+							<Link
+								className="flex cursor-pointer items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-muted"
+								onClick={() => setOpen(false)}
+								role="menuitem"
+								to="/profile"
+							>
+								<LuUser aria-hidden className="size-4 text-muted-foreground" />
+								{t("store.account.myProfile")}
+							</Link>
+						)}
+						{!onlyLogout && (
+							<Link
+								className="flex cursor-pointer items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-muted"
+								onClick={() => setOpen(false)}
+								role="menuitem"
+								to="/preferences"
+							>
+								<LuBell aria-hidden className="size-4 text-muted-foreground" />
+								{t("store.account.preferences.title")}
+							</Link>
+						)}
+						{!onlyLogout && (
+							<Link
+								className="flex cursor-pointer items-center gap-2.5 px-4 py-2.5 text-sm transition hover:bg-muted"
+								onClick={() => setOpen(false)}
+								role="menuitem"
+								to="/orders"
+							>
+								<LuReceiptText aria-hidden className="size-4 text-muted-foreground" />
+								{t("store.account.myOrders")}
+							</Link>
+						)}
+						{!onlyLogout && isStaff(role) && (
+							<Link
+								className="flex cursor-pointer items-center gap-2.5 border-border border-t px-4 py-2.5 text-sm transition hover:bg-muted sm:hidden"
+								onClick={() => setOpen(false)}
+								role="menuitem"
+								to={getStaffAreaPath(role)}
+							>
+								<LuLayoutDashboard aria-hidden className="size-4 text-muted-foreground" />
+								{t(isOperationalStaff(role) ? "store.account.staffOrders" : "store.account.staffAdmin")}
+							</Link>
+						)}
+						{showBackToCustomerArea && isStaff(role) && (
+							<Link
+								className="flex cursor-pointer items-center gap-2.5 border-border border-t px-4 py-2.5 text-sm transition hover:bg-muted"
+								onClick={() => setOpen(false)}
+								role="menuitem"
+								to="/"
+							>
+								<LuArrowLeft aria-hidden className="size-4 text-muted-foreground" />
+								{t("store.account.backToCustomerArea")}
+							</Link>
+						)}
+						<button
+							className={cn(
+								"flex w-full cursor-pointer items-center gap-2.5 px-4 py-2.5 text-destructive text-sm transition hover:bg-muted",
+								!isStaff(role) && "border-border border-t",
+							)}
+							onClick={handleLogout}
+							role="menuitem"
+							type="button"
+						>
+							<LuLogOut aria-hidden className="size-4" />
+							{t("store.account.signOut")}
+						</button>
+					</div>,
+					document.body,
+				)}
 		</div>
 	);
 }
