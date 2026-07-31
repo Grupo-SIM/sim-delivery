@@ -61,7 +61,7 @@ export function ProductRow({ product }: ProductRowProps) {
 					</div>
 				</td>
 				<td className="px-4 py-3 text-muted-foreground">
-					{money.format(Number(product.basePriceCents) / 100)}
+					{Number(product.basePriceCents) === 0 ? "—" : money.format(Number(product.basePriceCents) / 100)}
 				</td>
 				<td className="px-4 py-3 text-muted-foreground">
 					{product.cashbackPercentOverride === null

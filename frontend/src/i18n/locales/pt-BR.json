@@ -606,7 +606,7 @@
 					"deleteError": "Não foi possível excluir o produto.",
 					"deleteSuccess": "Produto excluído.",
 					"none": "Nenhuma",
-					"unitDefault": "Padrão da unidade"
+					"unitDefault": "Padrão"
 				},
 				"tabs": {
 					"categories": "Categorias",
