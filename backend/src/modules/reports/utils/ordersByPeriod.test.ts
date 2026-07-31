@@ -78,6 +78,26 @@ describe("getOrdersByPeriod", () => {
 		]);
 	});
 
+	it("limits monthly buckets to the requested quarter or semester", () => {
+		const quarter = getOrdersByPeriod(
+			orders,
+			"month",
+			new Date(2026, 3, 1),
+			now,
+			new Date(2026, 6, 1),
+		);
+		expect(quarter.map(item => item.label)).toEqual(["Abr", "Mai", "Jun"]);
+
+		const semester = getOrdersByPeriod(
+			orders,
+			"month",
+			new Date(2026, 6, 1),
+			now,
+			new Date(2027, 0, 1),
+		);
+		expect(semester.map(item => item.label)).toEqual(["Jul", "Ago", "Set", "Out", "Nov", "Dez"]);
+	});
+
 	it("creates chronological annual buckets", () => {
 		const result = getOrdersByPeriod(orders, "year", new Date(2024, 0, 1), now);
 		expect(result.map(item => item.label)).toEqual(["2024", "2025", "2026"]);

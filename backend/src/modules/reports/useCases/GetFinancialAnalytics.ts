@@ -99,7 +99,11 @@ function financialTrendKey(date: Date, groupBy: ReportGroupBy): string {
 export class GetFinancialAnalytics {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(companyId: string | null, query: Query, permittedUnitIds?: string[]): Promise<FinancialAnalyticsReturn> {
+	async execute(
+		companyId: string | null,
+		query: Query,
+		permittedUnitIds?: string[],
+	): Promise<FinancialAnalyticsReturn> {
 		const now = new Date();
 		const { since, until } = getReportDateRange(query.period, query.startDate, query.endDate, now);
 		const duration = since && until ? until.getTime() - since.getTime() : undefined;
@@ -107,7 +111,7 @@ export class GetFinancialAnalytics {
 		const previousUntil = since;
 		const groupBy = query.groupBy ?? "dayOfMonth";
 		const unitIds = permittedUnitIds?.length ? permittedUnitIds : undefined;
-		if (query.unitId && unitIds && !unitIds.includes(query.unitId)) return this.empty(groupBy, since, now);
+		if (query.unitId && unitIds && !unitIds.includes(query.unitId)) return this.empty(groupBy, since, now, until);
 		const where = {
 			...(companyId ? { companyId } : {}),
 			status: { in: COMPLETED },
@@ -118,12 +122,16 @@ export class GetFinancialAnalytics {
 			where,
 		});
 		const dated = orders.map(order => ({ ...order, competenceAt: competenceDate(order) }));
-		const current = dated.filter(order => (!since || order.competenceAt >= since) && (!until || order.competenceAt < until));
-		const previous = dated.filter(order => previousSince && previousUntil && order.competenceAt >= previousSince && order.competenceAt < previousUntil);
+		const current = dated.filter(
+			order => (!since || order.competenceAt >= since) && (!until || order.competenceAt < until),
+		);
+		const previous = dated.filter(
+			order => previousSince && previousUntil && order.competenceAt >= previousSince && order.competenceAt < previousUntil,
+		);
 		const summary = summarize(current);
 		const previousSummary = summarize(previous);
 		const trend = new Map(
-			getOrdersByPeriod([], groupBy, since, now).map(bucket => [
+			getOrdersByPeriod([], groupBy, since, now, until).map(bucket => [
 				bucket.key,
 				{ grossProfitCents: 0, label: bucket.label, netRevenueCents: 0, orderCount: 0 },
 			]),
@@ -140,7 +148,10 @@ export class GetFinancialAnalytics {
 		const byPayment = new Map<string, { method: string; netRevenueCents: number; orderCount: number }>();
 		const byDelivery = new Map<string, { method: string; netRevenueCents: number; orderCount: number }>();
 		for (const order of current) {
-			for (const [map, method] of [[byPayment, order.payment?.method ?? "unreported"], [byDelivery, order.deliveryMethod]] as const) {
+			for (const [map, method] of [
+				[byPayment, order.payment?.method ?? "unreported"],
+				[byDelivery, order.deliveryMethod],
+			] as const) {
 				const row = map.get(method) ?? { method, netRevenueCents: 0, orderCount: 0 };
 				row.orderCount += 1;
 				row.netRevenueCents += order.total;
@@ -150,7 +161,10 @@ export class GetFinancialAnalytics {
 		return {
 			comparison: {
 				averageOrderValuePercent: amountChange(summary.averageOrderValue, previousSummary.averageOrderValue),
-				grossMarginPercent: summary.grossMarginPercent === null || previousSummary.grossMarginPercent === null ? null : summary.grossMarginPercent - previousSummary.grossMarginPercent,
+				grossMarginPercent:
+					summary.grossMarginPercent === null || previousSummary.grossMarginPercent === null
+						? null
+						: summary.grossMarginPercent - previousSummary.grossMarginPercent,
 				grossProfitPercent: amountChange(summary.grossProfitCents, previousSummary.grossProfitCents),
 				netRevenuePercent: amountChange(summary.netRevenueCents, previousSummary.netRevenueCents),
 				orderCountPercent: amountChange(summary.orderCount, previousSummary.orderCount),
@@ -162,7 +176,12 @@ export class GetFinancialAnalytics {
 		};
 	}
 
-	private empty(groupBy: ReportGroupBy, since: Date | undefined, now: Date): FinancialAnalyticsReturn {
+	private empty(
+		groupBy: ReportGroupBy,
+		since: Date | undefined,
+		now: Date,
+		until?: Date,
+	): FinancialAnalyticsReturn {
 		return {
 			comparison: {
 				averageOrderValuePercent: null,
@@ -174,7 +193,7 @@ export class GetFinancialAnalytics {
 			distribution: { delivery: [], payment: [] },
 			groupBy,
 			summary: emptySummary(),
-			trend: getOrdersByPeriod([], groupBy, since, now).map(bucket => ({
+			trend: getOrdersByPeriod([], groupBy, since, now, until).map(bucket => ({
 				grossProfitCents: 0,
 				label: bucket.label,
 				netRevenueCents: 0,

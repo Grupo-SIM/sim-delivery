@@ -14,8 +14,9 @@ export function getOrdersByPeriod(
 	groupBy: ReportGroupBy,
 	since: Date | undefined,
 	now = new Date(),
+	until?: Date,
 ): OrdersByPeriodItem[] {
-	const buckets = createBuckets(groupBy, since, now);
+	const buckets = createBuckets(groupBy, since, now, until);
 	const bucketsByKey = new Map(buckets.map(bucket => [bucket.key, bucket]));
 
 	for (const order of orders) {
@@ -26,11 +27,29 @@ export function getOrdersByPeriod(
 	return buckets;
 }
 
-function createBuckets(groupBy: ReportGroupBy, since: Date | undefined, now: Date): OrdersByPeriodItem[] {
+function createBuckets(
+	groupBy: ReportGroupBy,
+	since: Date | undefined,
+	now: Date,
+	until: Date | undefined,
+): OrdersByPeriodItem[] {
 	if (groupBy === "hourOfDay") return range(24).map(hour => bucket(String(hour), String(hour)));
 	if (groupBy === "dayOfWeek") return WEEKDAYS.map((label, index) => bucket(String(index), label));
 	if (groupBy === "dayOfMonth") return range(31).map(index => bucket(String(index + 1), String(index + 1)));
-	if (groupBy === "month") return MONTHS.map((label, index) => bucket(String(index), label));
+	if (groupBy === "month") {
+		if (!since || !until) return MONTHS.map((label, index) => bucket(String(index), label));
+
+		const monthCount =
+			(until.getFullYear() - since.getFullYear()) * 12 + until.getMonth() - since.getMonth();
+		if (monthCount <= 0 || monthCount > 12) {
+			return MONTHS.map((label, index) => bucket(String(index), label));
+		}
+
+		return range(monthCount).map(index => {
+			const month = new Date(since.getFullYear(), since.getMonth() + index, 1).getMonth();
+			return bucket(String(month), MONTHS[month]);
+		});
+	}
 	if (groupBy === "quarter") return range(4).map(index => bucket(String(index), `T${index + 1}`));
 
 	const firstYear = since?.getFullYear() ?? now.getFullYear();
