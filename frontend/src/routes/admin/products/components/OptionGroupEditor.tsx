@@ -213,53 +213,68 @@ export function OptionGroupEditor({
 							</div>
 						)}
 					</div>
-					<ConfirmActionButton
-						confirmation={t("admin.products.options.deleteGroupConfirm")}
-						confirmLabel={t("admin.products.options.delete")}
-						onConfirm={onDelete}
-						type="button"
-						variant="outline"
-					>
-						{t("admin.products.options.delete")}
-					</ConfirmActionButton>
-					<div className="flex items-center justify-between border-border border-t pt-4">
-						<p className="font-medium text-sm">{t("admin.products.options.optionList")}</p>
-						<Button onClick={() => setIsOptionsExpanded(current => !current)} type="button" variant="outline">
-							{isOptionsExpanded ? (
-								<LuChevronUp className="h-4 w-4" />
-							) : (
-								<LuChevronDown className="h-4 w-4" />
+					{group.options.length > 0 && (
+						<>
+							<div className="flex items-center justify-between border-border border-t pt-4">
+								<p className="font-medium text-sm">{t("admin.products.options.optionList")}</p>
+								<Button
+									onClick={() => setIsOptionsExpanded(current => !current)}
+									type="button"
+									variant="outline"
+								>
+									{isOptionsExpanded ? (
+										<LuChevronUp className="h-4 w-4" />
+									) : (
+										<LuChevronDown className="h-4 w-4" />
+									)}
+									{isOptionsExpanded
+										? t("admin.products.options.minimize")
+										: t("admin.products.options.expand")}
+								</Button>
+							</div>
+							{isOptionsExpanded && (
+								<div className="max-h-[30rem] space-y-2 overflow-y-auto pr-1">
+									{group.options.map(option => (
+										<OptionEditor
+											key={option.id}
+											onChange={value =>
+												onChange({
+													...group,
+													options: group.options.map(item =>
+														item.id === option.id ? value : item,
+													),
+												})
+											}
+											onDelete={() =>
+												onChange({
+													...group,
+													options: group.options.filter(item => item.id !== option.id),
+												})
+											}
+											onDragEnd={() => setDraggedOptionId(null)}
+											onDragOver={event => event.preventDefault()}
+											onDragStart={() => setDraggedOptionId(option.id)}
+											onDrop={() => moveOption(option.id)}
+											option={option}
+										/>
+									))}
+								</div>
 							)}
-							{isOptionsExpanded ? t("admin.products.options.minimize") : t("admin.products.options.expand")}
-						</Button>
-					</div>
-					{isOptionsExpanded && (
-						<div className="max-h-[30rem] space-y-2 overflow-y-auto pr-1">
-							{group.options.map(option => (
-								<OptionEditor
-									key={option.id}
-									onChange={value =>
-										onChange({
-											...group,
-											options: group.options.map(item => (item.id === option.id ? value : item)),
-										})
-									}
-									onDelete={() =>
-										onChange({ ...group, options: group.options.filter(item => item.id !== option.id) })
-									}
-									onDragEnd={() => setDraggedOptionId(null)}
-									onDragOver={event => event.preventDefault()}
-									onDragStart={() => setDraggedOptionId(option.id)}
-									onDrop={() => moveOption(option.id)}
-									option={option}
-								/>
-							))}
-						</div>
+						</>
 					)}
 					<div className="border-border border-t pt-4">
 						<AddOptionModal onAdd={addOption} />
 					</div>
 					<div className="flex justify-end gap-2 border-border border-t pt-4">
+						<ConfirmActionButton
+							confirmation={t("admin.products.options.deleteGroupConfirm")}
+							confirmLabel={t("admin.products.options.delete")}
+							onConfirm={onDelete}
+							type="button"
+							variant="outline"
+						>
+							{t("admin.products.options.delete")}
+						</ConfirmActionButton>
 						<Button
 							onClick={() => {
 								if (originalGroup) onChange(originalGroup);
