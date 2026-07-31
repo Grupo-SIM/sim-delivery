@@ -28,6 +28,7 @@ import { Modal } from "@/components/ui/Modal";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { ScrollArea } from "@/components/ui/ScrollArea";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { verticalListModifiers } from "@/lib/dnd-modifiers";
 import { AddOptionModal } from "./AddOptionModal";
 import { type EditableOption, OptionEditor } from "./OptionEditor";
 import { OptionGroupCard } from "./OptionGroupCard";
@@ -204,9 +205,14 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 								</Button>
 							</div>
 							{isOptionsExpanded && (
-								<DndContext collisionDetection={closestCenter} onDragEnd={moveOption} sensors={optionSensors}>
+								<DndContext
+									collisionDetection={closestCenter}
+									modifiers={verticalListModifiers}
+									onDragEnd={moveOption}
+									sensors={optionSensors}
+								>
 									<SortableContext items={group.options} strategy={verticalListSortingStrategy}>
-										<ScrollArea className="max-h-[30rem] space-y-2 overflow-y-auto pr-1">
+										<ScrollArea className="max-h-[30rem] space-y-2 overflow-x-hidden overflow-y-auto pr-1">
 											{group.options.map(option => (
 												<OptionEditor
 													key={option.id}

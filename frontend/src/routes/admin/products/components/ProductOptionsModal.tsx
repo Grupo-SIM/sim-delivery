@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { verticalListModifiers } from "@/lib/dnd-modifiers";
 import {
 	useGetProductsByProductIdOptionGroups,
 	usePutProductsByProductIdOptionGroups,
@@ -179,7 +180,12 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 								{t("admin.products.options.addGroup")}
 							</Button>
 						</div>
-						<DndContext collisionDetection={closestCenter} onDragEnd={moveGroup} sensors={groupSensors}>
+						<DndContext
+							collisionDetection={closestCenter}
+							modifiers={verticalListModifiers}
+							onDragEnd={moveGroup}
+							sensors={groupSensors}
+						>
 							<SortableContext items={draftGroups} strategy={verticalListSortingStrategy}>
 								{draftGroups.map(group => (
 									<OptionGroupEditor
