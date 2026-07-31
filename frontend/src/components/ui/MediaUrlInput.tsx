@@ -37,7 +37,7 @@ export function MediaUrlInput({
 	onUploadingChange,
 	onValueChange,
 	placeholder = "Envie um arquivo ou cole uma URL",
-	preview = true,
+	preview = false,
 	previewClassName,
 	uploadLabel,
 	value,
