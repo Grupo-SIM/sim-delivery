@@ -1,4 +1,6 @@
-import { type DragEvent, useState } from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuGripVertical, LuPencil, LuTrash2 } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
@@ -20,39 +22,29 @@ interface OptionEditorProps {
 	onChange: (option: EditableOption) => void;
 	onDelete: () => void;
 	option: EditableOption;
-	onDragEnd: () => void;
-	onDragOver: (event: DragEvent<HTMLElement>) => void;
-	onDragStart: () => void;
-	onDrop: () => void;
 }
 
-export function OptionEditor({
-	onChange,
-	onDelete,
-	onDragEnd,
-	onDragOver,
-	onDragStart,
-	onDrop,
-	option,
-}: OptionEditorProps) {
+export function OptionEditor({ onChange, onDelete, option }: OptionEditorProps) {
 	const { t } = useTranslation();
 	const [isEditing, setIsEditing] = useState(false);
 	const [originalOption, setOriginalOption] = useState<EditableOption | null>(null);
+	const { attributes, isDragging, listeners, setNodeRef, transform, transition } = useSortable({
+		id: option.id,
+	});
 
 	return (
-		<div className="rounded border border-border bg-muted/20" onDragOver={onDragOver} onDrop={onDrop}>
+		<div
+			className={`rounded border border-border bg-muted/20 transition-opacity ${isDragging ? "opacity-40" : "opacity-100"}`}
+			ref={setNodeRef}
+			style={{ transform: CSS.Transform.toString(transform), transition }}
+		>
 			<div className="flex min-w-0 items-center gap-3 p-3">
 				<button
 					aria-label={t("admin.products.options.reorder")}
-					className="cursor-grab rounded p-1 text-muted-foreground active:cursor-grabbing"
-					draggable
-					onDragEnd={onDragEnd}
-					onDragStart={event => {
-						event.dataTransfer.effectAllowed = "move";
-						event.dataTransfer.setData("text/plain", option.id);
-						onDragStart();
-					}}
+					className="cursor-grab touch-none rounded p-1 text-muted-foreground active:cursor-grabbing"
 					type="button"
+					{...attributes}
+					{...listeners}
 				>
 					<LuGripVertical className="h-5 w-5" />
 				</button>

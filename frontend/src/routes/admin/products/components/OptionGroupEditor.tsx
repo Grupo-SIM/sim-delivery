@@ -1,3 +1,18 @@
+import {
+	closestCenter,
+	DndContext,
+	type DragEndEvent,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors,
+} from "@dnd-kit/core";
+import {
+	arrayMove,
+	SortableContext,
+	sortableKeyboardCoordinates,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { type DragEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown, LuChevronUp, LuGripVertical, LuPencil } from "react-icons/lu";
@@ -49,10 +64,13 @@ export function OptionGroupEditor({
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [originalGroup, setOriginalGroup] = useState<OptionGroup | null>(null);
 	const [isOptionsExpanded, setIsOptionsExpanded] = useState(true);
-	const [draggedOptionId, setDraggedOptionId] = useState<string | null>(null);
 	const [wasExpandedBeforeDrag, setWasExpandedBeforeDrag] = useState(false);
 	const [name, setName] = useState(group.name);
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
+	const optionSensors = useSensors(
+		useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+		useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+	);
 
 	function addOption(option: EditableOption) {
 		onChange({
@@ -67,16 +85,13 @@ export function OptionGroupEditor({
 		});
 	}
 
-	function moveOption(targetId: string) {
-		if (!draggedOptionId || draggedOptionId === targetId) return;
-		const sourceIndex = group.options.findIndex(option => option.id === draggedOptionId);
-		const targetIndex = group.options.findIndex(option => option.id === targetId);
+	function moveOption({ active, over }: DragEndEvent) {
+		if (!over || active.id === over.id) return;
+		const sourceIndex = group.options.findIndex(option => option.id === active.id);
+		const targetIndex = group.options.findIndex(option => option.id === over.id);
 		if (sourceIndex < 0 || targetIndex < 0) return;
-		const options = [...group.options];
-		const [moved] = options.splice(sourceIndex, 1);
-		options.splice(targetIndex, 0, moved);
+		const options = arrayMove(group.options, sourceIndex, targetIndex);
 		onChange({ ...group, options: options.map((option, index) => ({ ...option, sortOrder: index })) });
-		setDraggedOptionId(null);
 	}
 
 	return (
@@ -234,32 +249,36 @@ export function OptionGroupEditor({
 								</Button>
 							</div>
 							{isOptionsExpanded && (
-								<ScrollArea className="max-h-[30rem] space-y-2 overflow-y-auto pr-1">
-									{group.options.map(option => (
-										<OptionEditor
-											key={option.id}
-											onChange={value =>
-												onChange({
-													...group,
-													options: group.options.map(item =>
-														item.id === option.id ? value : item,
-													),
-												})
-											}
-											onDelete={() =>
-												onChange({
-													...group,
-													options: group.options.filter(item => item.id !== option.id),
-												})
-											}
-											onDragEnd={() => setDraggedOptionId(null)}
-											onDragOver={event => event.preventDefault()}
-											onDragStart={() => setDraggedOptionId(option.id)}
-											onDrop={() => moveOption(option.id)}
-											option={option}
-										/>
-									))}
-								</ScrollArea>
+								<DndContext
+									collisionDetection={closestCenter}
+									onDragEnd={moveOption}
+									sensors={optionSensors}
+								>
+									<SortableContext items={group.options} strategy={verticalListSortingStrategy}>
+										<ScrollArea className="max-h-[30rem] space-y-2 overflow-y-auto pr-1">
+											{group.options.map(option => (
+												<OptionEditor
+													key={option.id}
+													onChange={value =>
+														onChange({
+															...group,
+															options: group.options.map(item =>
+																item.id === option.id ? value : item,
+															),
+														})
+													}
+													onDelete={() =>
+														onChange({
+															...group,
+															options: group.options.filter(item => item.id !== option.id),
+														})
+													}
+													option={option}
+												/>
+											))}
+										</ScrollArea>
+									</SortableContext>
+								</DndContext>
 							)}
 						</>
 					)}
