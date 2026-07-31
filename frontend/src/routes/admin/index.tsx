@@ -23,6 +23,7 @@ import {
 	DashboardDeliveryRadiusTable,
 	DashboardOrdersByPeriodChart,
 	type DashboardPeriodSelection,
+	DashboardUnitPicker,
 } from "./components";
 
 function formatCents(cents: number): string {
@@ -34,6 +35,7 @@ function AdminDashboardPage() {
 	const [period, setPeriod] = useState<DashboardPeriodSelection>("month");
 	const [groupBy, setGroupBy] = useState<GetReportsDashboardAnalytics200GroupByEnumKey | "auto">("auto");
 	const [dateRange, setDateRange] = useState<{ endDate: string; startDate: string } | null>(null);
+	const [unitId, setUnitId] = useState("");
 	const [isExporting, setIsExporting] = useState(false);
 
 	const periodLabels: Record<DashboardPeriodSelection, string> = {
@@ -63,12 +65,12 @@ function AdminDashboardPage() {
 		data: summary,
 		isError: summaryError,
 		isPending: summaryPending,
-	} = useGetReportsSummary({ ...dateRange, period: queryPeriod });
+	} = useGetReportsSummary({ ...dateRange, ...(unitId ? { unitId } : {}), period: queryPeriod });
 	const {
 		data: bestSellers,
 		isError: bsError,
 		isPending: bsPending,
-	} = useGetReportsBestSellers({ ...dateRange, period: queryPeriod });
+	} = useGetReportsBestSellers({ ...dateRange, ...(unitId ? { unitId } : {}), period: queryPeriod });
 	const {
 		data: analytics,
 		isError: analyticsError,
@@ -76,11 +78,21 @@ function AdminDashboardPage() {
 	} = useGetReportsDashboardAnalytics({
 		...dateRange,
 		...(groupBy === "auto" ? {} : { groupBy }),
+		...(unitId ? { unitId } : {}),
 		period: queryPeriod,
 	});
-	const { data: allOrders, isError: ordersError, isPending: ordersPending } = useGetOrders(
-		dateRange
-			? { from: `${dateRange.startDate}T00:00:00`, to: `${dateRange.endDate}T23:59:59.999` }
+	const {
+		data: allOrders,
+		isError: ordersError,
+		isPending: ordersPending,
+	} = useGetOrders(
+		dateRange || unitId
+			? {
+					...(dateRange
+						? { from: `${dateRange.startDate}T00:00:00`, to: `${dateRange.endDate}T23:59:59.999` }
+						: {}),
+					...(unitId ? { unitId } : {}),
+				}
 			: undefined,
 	);
 
@@ -91,7 +103,7 @@ function AdminDashboardPage() {
 		setIsExporting(true);
 
 		try {
-			await exportReports({ ...dateRange, period: queryPeriod });
+			await exportReports({ ...dateRange, ...(unitId ? { unitId } : {}), period: queryPeriod });
 			showToast(t("admin.reports.export.success"), "positive");
 		} catch {
 			showToast(t("admin.reports.export.error"), "negative");
@@ -122,6 +134,7 @@ function AdminDashboardPage() {
 						presetValue={period}
 						value={dateRange}
 					/>
+					<DashboardUnitPicker onChange={setUnitId} value={unitId} />
 					<Button disabled={isExporting} onClick={handleExport} type="button" variant="outline">
 						{isExporting ? t("admin.reports.export.pending") : t("admin.reports.export.button")}
 					</Button>
@@ -151,7 +164,11 @@ function AdminDashboardPage() {
 					/>
 					<StatCard
 						label={t("admin.reports.summary.grossMargin")}
-						value={summary.grossMarginPercent == null ? t("admin.reports.summary.noKnownCost") : `${Number(summary.grossMarginPercent).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`}
+						value={
+							summary.grossMarginPercent == null
+								? t("admin.reports.summary.noKnownCost")
+								: `${Number(summary.grossMarginPercent).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`
+						}
 					/>
 				</div>
 			)}
@@ -242,7 +259,9 @@ function AdminDashboardPage() {
 											{formatCents(Number(item.totalRevenue))}
 										</td>
 										<td className="py-3 pr-4 pl-2 text-right text-sm">
-											{item.grossMarginPercent == null ? t("admin.reports.summary.noKnownCost") : `${Number(item.grossMarginPercent).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`}
+											{item.grossMarginPercent == null
+												? t("admin.reports.summary.noKnownCost")
+												: `${Number(item.grossMarginPercent).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`}
 										</td>
 									</tr>
 								))}

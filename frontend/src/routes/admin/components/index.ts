@@ -4,4 +4,5 @@ export * from "./DashboardDateRangePicker";
 export * from "./DashboardDeliveryRadiusTable";
 export * from "./DashboardOrdersByPeriodChart";
 export * from "./DashboardPeriodPicker";
+export * from "./DashboardUnitPicker";
 export * from "./OperationalNavbar";

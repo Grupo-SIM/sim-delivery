@@ -10,34 +10,54 @@ import { StatCard } from "@/components/ui/StatCard";
 import {
 	exportReports,
 	type GetReportsFinancialQueryParamsGroupByEnumKey,
-	type GetReportsFinancialQueryParamsPeriodEnumKey,
 	useGetReportsFinancial,
 } from "@/lib/api";
-import { type DashboardPeriod, DashboardPeriodPicker } from "@/routes/admin/components";
+import {
+	DashboardDateRangePicker,
+	type DashboardPeriodSelection,
+	DashboardUnitPicker,
+} from "@/routes/admin/components";
 import { FinancialDistribution, FinancialTrend } from "./components";
 
 const formatCents = (cents: number) =>
 	(cents / 100).toLocaleString("pt-BR", { currency: "BRL", style: "currency" });
-const periods: DashboardPeriod[] = [
-	"today",
-	"yesterday",
-	"week",
-	"month",
-	"lastMonth",
-	"quarter",
-	"semester",
-	"year",
-];
-
 function FinancePage() {
 	const { t } = useTranslation();
-	const [period, setPeriod] = useState<GetReportsFinancialQueryParamsPeriodEnumKey>("month");
-	const groupBy: GetReportsFinancialQueryParamsGroupByEnumKey = period === "today" || period === "yesterday" ? "hourOfDay" : period === "week" ? "dayOfWeek" : period === "month" || period === "lastMonth" ? "dayOfMonth" : period === "quarter" || period === "semester" ? "month" : "quarter";
-	const { data: report, isError, isPending } = useGetReportsFinancial({ groupBy, period });
-	const labels = Object.fromEntries([
-		["custom", t("admin.reports.period.custom")],
-		...periods.map(value => [value, t(`admin.reports.period.${value}`)]),
-	]) as Record<DashboardPeriod | "custom", string>;
+	const [period, setPeriod] = useState<DashboardPeriodSelection>("month");
+	const [dateRange, setDateRange] = useState<{ endDate: string; startDate: string } | null>(null);
+	const [unitId, setUnitId] = useState("");
+	const queryPeriod = period === "custom" ? undefined : period;
+	const groupBy: GetReportsFinancialQueryParamsGroupByEnumKey =
+		queryPeriod === "today" || queryPeriod === "yesterday"
+			? "hourOfDay"
+			: queryPeriod === "week"
+				? "dayOfWeek"
+				: queryPeriod === "month" || queryPeriod === "lastMonth" || !queryPeriod
+					? "dayOfMonth"
+					: queryPeriod === "quarter" || queryPeriod === "semester"
+						? "month"
+						: "quarter";
+	const {
+		data: report,
+		isError,
+		isPending,
+	} = useGetReportsFinancial({
+		...dateRange,
+		groupBy,
+		...(unitId ? { unitId } : {}),
+		period: queryPeriod,
+	});
+	const labels: Record<DashboardPeriodSelection, string> = {
+		custom: t("admin.reports.period.custom"),
+		lastMonth: t("admin.reports.period.lastMonth"),
+		month: t("admin.reports.period.month"),
+		quarter: t("admin.reports.period.quarter"),
+		semester: t("admin.reports.period.semester"),
+		today: t("admin.reports.period.today"),
+		week: t("admin.reports.period.week"),
+		year: t("admin.reports.period.year"),
+		yesterday: t("admin.reports.period.yesterday"),
+	};
 	const translatePaymentMethod = (method: string) =>
 		t(`admin.reports.finance.paymentMethod.${method}`, { defaultValue: method });
 	const translateDeliveryMethod = (method: string) =>
@@ -114,8 +134,27 @@ function FinancePage() {
 					title="Relatório financeiro"
 				/>
 				<div className="flex items-center gap-2">
-					<DashboardPeriodPicker labels={labels} onChange={setPeriod} period={period} />
-					<Button onClick={() => void exportReports({ period })} variant="outline">
+					<DashboardDateRangePicker
+						onChange={range => {
+							setDateRange(range);
+							setPeriod("custom");
+						}}
+						onPresetChange={nextPeriod => {
+							setDateRange(null);
+							setPeriod(nextPeriod as DashboardPeriodSelection);
+						}}
+						placeholder={t("admin.reports.period.customPlaceholder")}
+						presetOptions={Object.entries(labels).map(([value, label]) => ({ label, value }))}
+						presetValue={period}
+						value={dateRange}
+					/>
+					<DashboardUnitPicker onChange={setUnitId} value={unitId} />
+					<Button
+						onClick={() =>
+							void exportReports({ ...dateRange, ...(unitId ? { unitId } : {}), period: queryPeriod })
+						}
+						variant="outline"
+					>
 						{t("admin.reports.export.button")}
 					</Button>
 				</div>
@@ -134,7 +173,12 @@ function FinancePage() {
 					/>
 				))}
 			</div>
-			<FinancialTrend formatCents={formatCents} isPending={isPending} rows={trend} title="Tendência financeira" />
+			<FinancialTrend
+				formatCents={formatCents}
+				isPending={isPending}
+				rows={trend}
+				title="Tendência financeira"
+			/>
 			<div className="grid gap-6 lg:grid-cols-2">
 				<FinancialDistribution
 					empty="Sem dados no período."
@@ -156,12 +200,17 @@ function FinancePage() {
 				/>
 			</div>
 			<div className="grid gap-4 sm:grid-cols-3">
-				<StatCard label="Faturamento bruto" value={report ? formatCents(Number(report.summary.grossRevenueCents)) : loadingValue} />
+				<StatCard
+					label="Faturamento bruto"
+					value={report ? formatCents(Number(report.summary.grossRevenueCents)) : loadingValue}
+				/>
 				<StatCard
 					label="Descontos e cashback"
 					value={
 						report
-							? formatCents(Number(report.summary.discountCents) + Number(report.summary.cashbackRedeemedCents))
+							? formatCents(
+									Number(report.summary.discountCents) + Number(report.summary.cashbackRedeemedCents),
+								)
 							: loadingValue
 					}
 				/>
