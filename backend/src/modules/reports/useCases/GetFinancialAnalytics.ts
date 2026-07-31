@@ -1,5 +1,6 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { FinancialAnalyticsReturn, GetDashboardAnalyticsQuery } from "../dtos";
+import { getOrdersByPeriod } from "../utils/ordersByPeriod";
 import { getReportDateRange, type ReportGroupBy } from "../utils/reportPeriod";
 
 const COMPLETED = ["entregue", "retirado"];
@@ -85,13 +86,14 @@ function summarize(orders: FinancialOrder[]) {
 	return summary;
 }
 
-function bucket(date: Date, groupBy: ReportGroupBy) {
-	if (groupBy === "hourOfDay") return `${date.getHours()}`;
-	if (groupBy === "dayOfWeek") return `${(date.getDay() + 6) % 7}`;
-	if (groupBy === "dayOfMonth") return `${date.getDate()}`;
-	if (groupBy === "month") return `${date.getMonth()}`;
-	if (groupBy === "quarter") return `${Math.floor(date.getMonth() / 3)}`;
-	return `${date.getFullYear()}`;
+
+function financialTrendKey(date: Date, groupBy: ReportGroupBy): string {
+	if (groupBy === "hourOfDay") return String(date.getHours());
+	if (groupBy === "dayOfWeek") return String((date.getDay() + 6) % 7);
+	if (groupBy === "dayOfMonth") return String(date.getDate());
+	if (groupBy === "month") return String(date.getMonth());
+	if (groupBy === "quarter") return String(Math.floor(date.getMonth() / 3));
+	return String(date.getFullYear());
 }
 
 export class GetFinancialAnalytics {
@@ -120,15 +122,20 @@ export class GetFinancialAnalytics {
 		const summary = summarize(current);
 		const previousSummary = summarize(previous);
 		const groupBy = query.groupBy ?? "dayOfMonth";
-		const trend = new Map<string, { grossProfitCents: number; label: string; netRevenueCents: number; orderCount: number }>();
+		const trend = new Map(
+			getOrdersByPeriod([], groupBy, since, now).map(bucket => [
+				bucket.key,
+				{ grossProfitCents: 0, label: bucket.label, netRevenueCents: 0, orderCount: 0 },
+			]),
+		);
 		for (const order of current) {
-			const key = bucket(order.competenceAt, groupBy);
-			const row = trend.get(key) ?? { grossProfitCents: 0, label: key, netRevenueCents: 0, orderCount: 0 };
+			const key = financialTrendKey(order.competenceAt, groupBy);
+			const row = trend.get(key);
+			if (!row) continue;
 			const orderSummary = summarize([order]);
 			row.orderCount += 1;
 			row.netRevenueCents += order.total;
 			row.grossProfitCents += orderSummary.grossProfitCents;
-			trend.set(key, row);
 		}
 		const byPayment = new Map<string, { method: string; netRevenueCents: number; orderCount: number }>();
 		const byDelivery = new Map<string, { method: string; netRevenueCents: number; orderCount: number }>();
@@ -151,7 +158,7 @@ export class GetFinancialAnalytics {
 			distribution: { delivery: [...byDelivery.values()], payment: [...byPayment.values()] },
 			groupBy,
 			summary,
-			trend: [...trend.values()].sort((a, b) => Number(a.label) - Number(b.label)),
+			trend: [...trend.values()],
 		};
 	}
 
