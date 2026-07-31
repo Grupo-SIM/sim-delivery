@@ -63,17 +63,19 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 		setError(null);
 		setIsSaving(true);
 		try {
-			await mutateAsync({
-				data: {
-					basePriceCents: Math.round(priceReais * 100),
-					cashbackPercentOverride: cashbackEnabled ? cashback : null,
-					description: localDescription,
-					imageUrl: localImageUrl,
-					title: localTitle,
-				},
-				productId: product.id,
-			});
-			await optionsRef.current?.save();
+			await Promise.all([
+				mutateAsync({
+					data: {
+						basePriceCents: Math.round(priceReais * 100),
+						cashbackPercentOverride: cashbackEnabled ? cashback : null,
+						description: localDescription,
+						imageUrl: localImageUrl,
+						title: localTitle,
+					},
+					productId: product.id,
+				}),
+				optionsRef.current?.save(),
+			]);
 			await queryClient.invalidateQueries({ queryKey: getProductsQueryKey() });
 			onClose();
 		} catch {
