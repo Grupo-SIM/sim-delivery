@@ -7,12 +7,20 @@ import type { ProductReturn } from "../dtos";
 export const productTaxonomyInclude = {
 	_count: { select: { optionGroups: true } },
 	categories: { include: { category: true } },
+	optionGroups: {
+		orderBy: { sortOrder: "asc" },
+		select: { _count: { select: { options: true } }, id: true, name: true },
+	},
 	tags: { include: { tag: true } },
 } as const;
 
-type ProductTaxonomySource = Omit<ProductReturn, "categories" | "optionGroupCount" | "tags"> & {
+type ProductTaxonomySource = Omit<
+	ProductReturn,
+	"categories" | "optionGroupCount" | "optionGroups" | "tags"
+> & {
 	_count?: { optionGroups: number };
 	categories?: { category: ProductReturn["categories"][number] }[];
+	optionGroups?: { _count: { options: number }; id: string; name: string }[];
 	tags?: { tag: ProductReturn["tags"][number] }[];
 };
 
@@ -22,6 +30,13 @@ export function mapProductTaxonomy(product: ProductTaxonomySource): ProductRetur
 		...rest,
 		categories: Array.isArray(product.categories) ? product.categories.map(item => item.category) : [],
 		optionGroupCount: _count?.optionGroups ?? 0,
+		optionGroups: Array.isArray(product.optionGroups)
+			? product.optionGroups.map(group => ({
+					id: group.id,
+					name: group.name,
+					optionCount: group._count.options,
+				}))
+			: [],
 		tags: Array.isArray(product.tags) ? product.tags.map(item => item.tag) : [],
 	};
 }

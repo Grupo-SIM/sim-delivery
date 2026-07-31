@@ -8,10 +8,12 @@ import {
 	usePutProductsByProductIdOptionGroups,
 } from "@/lib/api";
 import { showToast } from "@/stores";
+import { OptionGroupPreviews } from "./OptionGroupPreviews";
 import { type OptionGroup, OptionGroupEditor } from "./OptionGroupEditor";
 import type { Product } from "./types";
 
 interface ProductOptionsEditorProps {
+	onReadyChange: (ready: boolean) => void;
 	product: Product | null;
 }
 
@@ -20,7 +22,7 @@ export interface ProductOptionsEditorHandle {
 }
 
 export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, ProductOptionsEditorProps>(
-	function ProductOptionsEditor({ product }, ref) {
+	function ProductOptionsEditor({ onReadyChange, product }, ref) {
 		const { t } = useTranslation();
 		const [name, setName] = useState("");
 		const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
@@ -43,8 +45,12 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 				sortOrder: Number(group.sortOrder),
 			}));
 		useEffect(() => {
+			onReadyChange(groups.data !== undefined && !groups.isError);
+		}, [groups.data, groups.isError, onReadyChange]);
+		useEffect(() => {
+			if (!groups.data) return;
 			setDraftGroups(
-				(groups.data ?? []).map(group => ({
+				groups.data.map(group => ({
 					...group,
 					maxSelect: Number(group.maxSelect),
 					options: group.options.map(option => ({
@@ -94,7 +100,7 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 		}
 
 		async function save() {
-			if (!product) return;
+			if (!product || !groups.data) throw new Error("Option groups are not loaded");
 			const productId = product.id;
 			const originals = normalizeGroups();
 			await saveOptionGroups.mutateAsync({
@@ -133,6 +139,15 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 		return (
 			<div className="space-y-4 border-border border-t pt-4">
 				<h3 className="font-semibold">{t("admin.products.options.title")}</h3>
+				{groups.isPending ? (
+					<OptionGroupPreviews groups={product.optionGroups} pending />
+				) : groups.isError ? (
+					<div className="space-y-3">
+						<OptionGroupPreviews groups={product.optionGroups} />
+						<p className="text-destructive text-xs">{t("admin.products.options.loadError")}</p>
+					</div>
+				) : (
+					<>
 				<div className="flex gap-2">
 					<Input
 						onBlur={flushName}
@@ -163,6 +178,8 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 						onDrop={() => moveGroup(group.id)}
 					/>
 				))}
+					</>
+				)}
 			</div>
 		);
 	},

@@ -36,6 +36,7 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 	const [error, setError] = useState<string | null>(null);
 	const [isUploadingImage, setIsUploadingImage] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
+	const [optionsReady, setOptionsReady] = useState(false);
 	const optionsRef = useRef<ProductOptionsEditorHandle>(null);
 
 	const { mutateAsync } = usePatchProductsByProductId();
@@ -51,6 +52,7 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 		setCashbackEnabled(product.cashbackPercentOverride !== null);
 		setCashback(product.cashbackPercentOverride ?? 0);
 		setError(null);
+		setOptionsReady(false);
 	}, [product]);
 
 	async function save() {
@@ -161,7 +163,7 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 					/>
 				</Label>
 
-				<ProductOptionsEditor product={product} ref={optionsRef} />
+				<ProductOptionsEditor onReadyChange={setOptionsReady} product={product} ref={optionsRef} />
 
 				{error && <p className="text-destructive text-xs">{error}</p>}
 				<div className="flex justify-end gap-2">
@@ -169,7 +171,7 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 						{t("admin.products.edit.cancel")}
 					</Button>
 					<Button
-						disabled={isSaving || isUploadingImage || !localTitle}
+						disabled={isSaving || isUploadingImage || !localTitle || !optionsReady}
 						onClick={() => void save()}
 						type="button"
 					>

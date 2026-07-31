@@ -5,7 +5,7 @@ import { DeleteProduct } from "./DeleteProduct";
 import { ListProducts } from "./ListProducts";
 import { UpdateProduct } from "./UpdateProduct";
 
-function prismaWith(products: Array<{ id: string; companyId: string }>) {
+function prismaWith(products: Array<{ id: string; companyId: string; [key: string]: unknown }>) {
 	const created: unknown[] = [];
 	const deleted: string[] = [];
 	const productCategory = {
@@ -114,6 +114,32 @@ describe("products use-cases", () => {
 		const { prisma } = prismaWith([{ companyId: "cmp_1", id: "prod1" }]);
 		expect(await new ListProducts(prisma).execute(null)).toHaveLength(1);
 		expect(await new ListProducts(prisma).execute("cmp_1")).toHaveLength(1);
+	});
+
+	it("ListProducts returns ordered option group previews", async () => {
+		const { prisma } = prismaWith([
+			{
+				_count: { optionGroups: 2 },
+				categories: [],
+				companyId: "cmp_1",
+				id: "prod1",
+				optionGroups: [
+					{ _count: { options: 3 }, id: "group_1", name: "Sabores" },
+					{ _count: { options: 1 }, id: "group_2", name: "Tamanho" },
+				],
+				tags: [],
+			},
+		]);
+
+		const [product] = await new ListProducts(prisma).execute("cmp_1");
+
+		expect(product).toMatchObject({
+			optionGroupCount: 2,
+			optionGroups: [
+				{ id: "group_1", name: "Sabores", optionCount: 3 },
+				{ id: "group_2", name: "Tamanho", optionCount: 1 },
+			],
+		});
 	});
 
 	it("UpdateProduct rejects a product from another company", async () => {

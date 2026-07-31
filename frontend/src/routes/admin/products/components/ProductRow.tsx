@@ -6,7 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Tooltip } from "@/components/ui/Tooltip";
-import { getProductsQueryKey, useDeleteProductsByProductId } from "@/lib/api";
+import {
+	getProductsByProductIdOptionGroupsQueryOptions,
+	getProductsQueryKey,
+	useDeleteProductsByProductId,
+} from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 import { ProductEditModal } from "./ProductEditModal";
 import { ProductRecipeModal } from "./ProductRecipeModal";
@@ -40,6 +44,10 @@ export function ProductRow({ product }: ProductRowProps) {
 				},
 			},
 		);
+	}
+
+	function prefetchOptionGroups() {
+		void queryClient.prefetchQuery(getProductsByProductIdOptionGroupsQueryOptions(product.id));
 	}
 
 	return (
@@ -111,7 +119,9 @@ export function ProductRow({ product }: ProductRowProps) {
 						<Tooltip content={t("admin.products.edit.action")}>
 							<Button
 								aria-label={t("admin.products.edit.action")}
+								onFocus={prefetchOptionGroups}
 								onClick={() => setEditing(true)}
+								onPointerEnter={prefetchOptionGroups}
 								size="icon"
 								type="button"
 								variant="outline"

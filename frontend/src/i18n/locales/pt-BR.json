@@ -555,6 +555,7 @@
 					"groupName": "Nome",
 					"groupPlaceholder": "Ex: Escolha o sabor",
 					"highest": "Maior preço",
+					"loadError": "Não foi possível carregar os detalhes das customizações.",
 					"max": "Máximo",
 					"maxSelect": "Máximo de escolhas",
 					"minimize": "Minimizar",
