@@ -707,6 +707,16 @@
 					"pending": "Gerando…",
 					"success": "Planilha baixada."
 				},
+				"finance": {
+					"deliveryMethod": {
+						"delivery": "Entrega",
+						"pickup": "Retirada"
+					},
+					"paymentMethod": {
+						"credit_card": "Cartão de crédito",
+						"pix": "PIX"
+					}
+				},
 				"groupBy": {
 					"dayOfMonth": "Dias do mês",
 					"dayOfWeek": "Dias da semana",

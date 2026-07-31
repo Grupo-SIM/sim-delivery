@@ -105,8 +105,9 @@ export class GetFinancialAnalytics {
 		const duration = since && until ? until.getTime() - since.getTime() : undefined;
 		const previousSince = since && duration ? new Date(since.getTime() - duration) : undefined;
 		const previousUntil = since;
+		const groupBy = query.groupBy ?? "dayOfMonth";
 		const unitIds = permittedUnitIds?.length ? permittedUnitIds : undefined;
-		if (query.unitId && unitIds && !unitIds.includes(query.unitId)) return this.empty(query.groupBy ?? "dayOfMonth");
+		if (query.unitId && unitIds && !unitIds.includes(query.unitId)) return this.empty(groupBy, since, now);
 		const where = {
 			...(companyId ? { companyId } : {}),
 			status: { in: COMPLETED },
@@ -121,7 +122,6 @@ export class GetFinancialAnalytics {
 		const previous = dated.filter(order => previousSince && previousUntil && order.competenceAt >= previousSince && order.competenceAt < previousUntil);
 		const summary = summarize(current);
 		const previousSummary = summarize(previous);
-		const groupBy = query.groupBy ?? "dayOfMonth";
 		const trend = new Map(
 			getOrdersByPeriod([], groupBy, since, now).map(bucket => [
 				bucket.key,
@@ -162,7 +162,24 @@ export class GetFinancialAnalytics {
 		};
 	}
 
-	private empty(groupBy: ReportGroupBy): FinancialAnalyticsReturn {
-		return { comparison: { averageOrderValuePercent: null, grossMarginPercent: null, grossProfitPercent: null, netRevenuePercent: null, orderCountPercent: null }, distribution: { delivery: [], payment: [] }, groupBy, summary: emptySummary(), trend: [] };
+	private empty(groupBy: ReportGroupBy, since: Date | undefined, now: Date): FinancialAnalyticsReturn {
+		return {
+			comparison: {
+				averageOrderValuePercent: null,
+				grossMarginPercent: null,
+				grossProfitPercent: null,
+				netRevenuePercent: null,
+				orderCountPercent: null,
+			},
+			distribution: { delivery: [], payment: [] },
+			groupBy,
+			summary: emptySummary(),
+			trend: getOrdersByPeriod([], groupBy, since, now).map(bucket => ({
+				grossProfitCents: 0,
+				label: bucket.label,
+				netRevenueCents: 0,
+				orderCount: 0,
+			})),
+		};
 	}
 }

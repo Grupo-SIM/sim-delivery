@@ -6,6 +6,7 @@ interface FinancialDistributionProps {
 	formatCents: (value: number) => string;
 	isPending: boolean;
 	rows: { method: string; netRevenueCents: number; orderCount: number }[];
+	translateMethod: (method: string) => string;
 	title: string;
 	unreported: string;
 }
@@ -16,6 +17,7 @@ export function FinancialDistribution({
 	isPending,
 	rows,
 	title,
+	translateMethod,
 	unreported,
 }: FinancialDistributionProps) {
 	return (
@@ -43,7 +45,7 @@ export function FinancialDistribution({
 					) : (
 						rows.map(row => (
 							<tr className="border-border/60 border-b last:border-0" key={row.method}>
-								<td className="p-3">{row.method === "unreported" ? unreported : row.method}</td>
+								<td className="p-3">{row.method === "unreported" ? unreported : translateMethod(row.method)}</td>
 								<td className="p-3 text-right">{row.orderCount}</td>
 								<td className="p-3 text-right font-medium">{formatCents(row.netRevenueCents)}</td>
 							</tr>
