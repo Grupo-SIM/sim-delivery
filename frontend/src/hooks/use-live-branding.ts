@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useGetBranding } from "@/lib/api";
+import { type GetBrandingQueryResponse, useGetBranding } from "@/lib/api";
 import { type Branding, branding as staticBranding } from "@/lib/branding";
 import { resolveThemeColors } from "@/lib/theme-colors";
 import { slug } from "@/lib/variant";
@@ -10,31 +10,37 @@ import { slug } from "@/lib/variant";
  * (footer text, logo, colors, tracking ids) reach the storefront without a rebuild+redeploy.
  * apiUrl/packageName/siteUrl stay build-only — they're needed before any request can be made.
  */
+export function mergeLiveBranding(
+	staticValues: Branding,
+	data: GetBrandingQueryResponse | undefined,
+): Branding {
+	if (!data) return { ...staticValues, themeColors: resolveThemeColors(staticValues.themeColors) };
+
+	return {
+		...staticValues,
+		allowThemeToggle: data.allowThemeToggle,
+		companyName: data.companyName ?? staticValues.companyName,
+		defaultTheme: data.defaultTheme,
+		fontDisplay: data.fontDisplay?.trim() || staticValues.fontDisplay,
+		fontDisplayUrl: data.fontDisplayUrl ?? staticValues.fontDisplayUrl,
+		fontFamily: data.fontFamily?.trim() || staticValues.fontFamily,
+		fontFamilyUrl: data.fontFamilyUrl ?? staticValues.fontFamilyUrl,
+		footerFacebookUrl: data.footerFacebookUrl,
+		footerInstagramUrl: data.footerInstagramUrl,
+		footerPaymentMethods: data.footerPaymentMethods,
+		footerSupportEmail: data.footerSupportEmail,
+		footerText: data.footerText,
+		footerWhatsApp: data.footerWhatsApp,
+		ga4Id: data.ga4Id,
+		gtmId: data.gtmId,
+		logoUrl: data.logoUrl ?? staticValues.logoUrl,
+		metaPixelId: data.metaPixelId,
+		themeColors: resolveThemeColors(data.themeColors ?? staticValues.themeColors),
+	};
+}
+
 export function useLiveBranding(): Branding {
 	const { data } = useGetBranding({ slug }, { query: { staleTime: 5 * 60 * 1000 } });
 
-	return useMemo<Branding>(() => {
-		if (!data) return { ...staticBranding, themeColors: resolveThemeColors(staticBranding.themeColors) };
-
-		return {
-			...staticBranding,
-			allowThemeToggle: data.allowThemeToggle,
-			companyName: data.companyName ?? staticBranding.companyName,
-			fontDisplay: data.fontDisplay?.trim() || staticBranding.fontDisplay,
-			fontDisplayUrl: data.fontDisplayUrl ?? staticBranding.fontDisplayUrl,
-			fontFamily: data.fontFamily?.trim() || staticBranding.fontFamily,
-			fontFamilyUrl: data.fontFamilyUrl ?? staticBranding.fontFamilyUrl,
-			footerFacebookUrl: data.footerFacebookUrl,
-			footerInstagramUrl: data.footerInstagramUrl,
-			footerPaymentMethods: data.footerPaymentMethods,
-			footerSupportEmail: data.footerSupportEmail,
-			footerText: data.footerText,
-			footerWhatsApp: data.footerWhatsApp,
-			ga4Id: data.ga4Id,
-			gtmId: data.gtmId,
-			logoUrl: data.logoUrl ?? staticBranding.logoUrl,
-			metaPixelId: data.metaPixelId,
-			themeColors: resolveThemeColors(data.themeColors ?? staticBranding.themeColors),
-		};
-	}, [data]);
+	return useMemo(() => mergeLiveBranding(staticBranding, data), [data]);
 }

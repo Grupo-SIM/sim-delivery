@@ -58,6 +58,7 @@ const DEFAULT_FONT_FAMILY = "Outfit";
 const DEFAULT_FONT_DISPLAY = "Luckiest Guy";
 
 interface CompanyBranding {
+	allowThemeToggle: boolean;
 	apiUrl: string | null;
 	defaultTheme: string | null;
 	fontDisplay: string | null;
@@ -120,6 +121,7 @@ let company: CompanyBranding | null;
 try {
 	company = await prisma.company.findUnique({
 		select: {
+			allowThemeToggle: true,
 			apiUrl: true,
 			defaultTheme: true,
 			fontDisplay: true,
@@ -168,9 +170,9 @@ await writeFile(join(publicDir, "branding.css"), createBrandingCss(themeColors, 
 
 await writeFile(
 	brandingPath,
-	`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tallowThemeToggle: boolean;\n\tdefaultTheme: "dark" | "light";\n\tapiUrl: string;\n\tcompanyName: string;\n\tfontDisplay: string;\n\tfontDisplayUrl: string | null;\n\tfontFamily: string;\n\tfontFamilyUrl: string | null;\n\tfooterText: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n}\n\nexport const branding: Branding = ${JSON.stringify(
+	`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tallowThemeToggle: boolean;\n\tdefaultTheme: "dark" | "light";\n\tapiUrl: string;\n\tcompanyName: string;\n\tfontDisplay: string;\n\tfontDisplayUrl: string | null;\n\tfontFamily: string;\n\tfontFamilyUrl: string | null;\n\tfooterFacebookUrl?: string | null;\n\tfooterInstagramUrl?: string | null;\n\tfooterPaymentMethods?: string[];\n\tfooterSupportEmail?: string | null;\n\tfooterText: string | null;\n\tfooterWhatsApp?: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n}\n\nexport const branding: Branding = ${JSON.stringify(
 		{
-			allowThemeToggle: true,
+			allowThemeToggle: company.allowThemeToggle,
 			apiUrl,
 			companyName: company.name,
 			defaultTheme: company.defaultTheme === "dark" ? "dark" : "light",
