@@ -1,3 +1,18 @@
+import {
+	closestCenter,
+	DndContext,
+	type DragEndEvent,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors,
+} from "@dnd-kit/core";
+import {
+	arrayMove,
+	SortableContext,
+	sortableKeyboardCoordinates,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -27,7 +42,10 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 		const [name, setName] = useState("");
 		const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
 		const [draftGroups, setDraftGroups] = useState<OptionGroup[]>([]);
-		const [draggedGroupId, setDraggedGroupId] = useState<string | null>(null);
+		const groupSensors = useSensors(
+			useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+			useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+		);
 		const groups = useGetProductsByProductIdOptionGroups(product?.id);
 		const saveOptionGroups = usePutProductsByProductIdOptionGroups();
 		const normalizeGroups = (): OptionGroup[] =>
@@ -85,18 +103,15 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 			setLocalName("");
 		}
 
-		function moveGroup(targetId: string) {
-			if (!draggedGroupId || draggedGroupId === targetId) return;
+		function moveGroup({ active, over }: DragEndEvent) {
+			if (!over || active.id === over.id) return;
 			setDraftGroups(current => {
-				const sourceIndex = current.findIndex(group => group.id === draggedGroupId);
-				const targetIndex = current.findIndex(group => group.id === targetId);
+				const sourceIndex = current.findIndex(group => group.id === active.id);
+				const targetIndex = current.findIndex(group => group.id === over.id);
 				if (sourceIndex < 0 || targetIndex < 0) return current;
-				const next = [...current];
-				const [moved] = next.splice(sourceIndex, 1);
-				next.splice(targetIndex, 0, moved);
+				const next = arrayMove(current, sourceIndex, targetIndex);
 				return next.map((group, index) => ({ ...group, sortOrder: index }));
 			});
-			setDraggedGroupId(null);
 		}
 
 		async function save() {
@@ -148,36 +163,40 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 					</div>
 				) : (
 					<>
-				<div className="flex gap-2">
-					<Input
-						onBlur={flushName}
-						onChange={event => setLocalName(event.currentTarget.value)}
-						placeholder={t("admin.products.options.groupPlaceholder")}
-						value={localName}
-					/>
-					<Button
-						className="shrink-0 px-4"
-						disabled={saveOptionGroups.isPending || !localName.trim()}
-						onClick={addGroup}
-						type="button"
-					>
-						{t("admin.products.options.addGroup")}
-					</Button>
-				</div>
-				{draftGroups.map(group => (
-					<OptionGroupEditor
-						group={group}
-						key={group.id}
-						onChange={value =>
-							setDraftGroups(current => current.map(item => (item.id === value.id ? value : item)))
-						}
-						onDelete={() => setDraftGroups(current => current.filter(item => item.id !== group.id))}
-						onDragEnd={() => setDraggedGroupId(null)}
-						onDragOver={event => event.preventDefault()}
-						onDragStart={() => setDraggedGroupId(group.id)}
-						onDrop={() => moveGroup(group.id)}
-					/>
-				))}
+						<div className="flex gap-2">
+							<Input
+								onBlur={flushName}
+								onChange={event => setLocalName(event.currentTarget.value)}
+								placeholder={t("admin.products.options.groupPlaceholder")}
+								value={localName}
+							/>
+							<Button
+								className="shrink-0 px-4"
+								disabled={saveOptionGroups.isPending || !localName.trim()}
+								onClick={addGroup}
+								type="button"
+							>
+								{t("admin.products.options.addGroup")}
+							</Button>
+						</div>
+						<DndContext collisionDetection={closestCenter} onDragEnd={moveGroup} sensors={groupSensors}>
+							<SortableContext items={draftGroups} strategy={verticalListSortingStrategy}>
+								{draftGroups.map(group => (
+									<OptionGroupEditor
+										group={group}
+										key={group.id}
+										onChange={value =>
+											setDraftGroups(current =>
+												current.map(item => (item.id === value.id ? value : item)),
+											)
+										}
+										onDelete={() =>
+											setDraftGroups(current => current.filter(item => item.id !== group.id))
+										}
+									/>
+								))}
+							</SortableContext>
+						</DndContext>
 					</>
 				)}
 			</div>

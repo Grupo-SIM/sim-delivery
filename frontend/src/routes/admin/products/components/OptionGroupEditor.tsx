@@ -11,9 +11,11 @@ import {
 	arrayMove,
 	SortableContext,
 	sortableKeyboardCoordinates,
+	useSortable,
 	verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { type DragEvent, useState } from "react";
+import { CSS } from "@dnd-kit/utilities";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
@@ -45,28 +47,18 @@ interface OptionGroupEditorProps {
 	group: OptionGroup;
 	onChange: (group: OptionGroup) => void;
 	onDelete: () => void;
-	onDragEnd: () => void;
-	onDragOver: (event: DragEvent<HTMLElement>) => void;
-	onDragStart: () => void;
-	onDrop: () => void;
 }
 
-export function OptionGroupEditor({
-	group,
-	onChange,
-	onDelete,
-	onDragEnd,
-	onDragOver,
-	onDragStart,
-	onDrop,
-}: OptionGroupEditorProps) {
+export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEditorProps) {
 	const { t } = useTranslation();
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [originalGroup, setOriginalGroup] = useState<OptionGroup | null>(null);
 	const [isOptionsExpanded, setIsOptionsExpanded] = useState(true);
-	const [wasExpandedBeforeDrag, setWasExpandedBeforeDrag] = useState(false);
 	const [name, setName] = useState(group.name);
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
+	const { attributes, isDragging, listeners, setNodeRef, transform, transition } = useSortable({
+		id: group.id,
+	});
 	const optionSensors = useSensors(
 		useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
 		useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -95,23 +87,14 @@ export function OptionGroupEditor({
 	}
 
 	return (
-		<>
+		<div
+			className={`transition-opacity ${isDragging ? "opacity-40" : "opacity-100"}`}
+			ref={setNodeRef}
+			style={{ transform: CSS.Transform.toString(transform), transition }}
+		>
 			<OptionGroupCard
+				dragHandleProps={{ ...attributes, ...listeners }}
 				name={group.name}
-				onDragEnd={() => {
-					if (wasExpandedBeforeDrag) setIsExpanded(true);
-					setWasExpandedBeforeDrag(false);
-					onDragEnd();
-				}}
-				onDragOver={onDragOver}
-				onDragStart={event => {
-					event.dataTransfer.effectAllowed = "move";
-					event.dataTransfer.setData("text/plain", group.id);
-					setWasExpandedBeforeDrag(isExpanded);
-					setIsExpanded(false);
-					onDragStart();
-				}}
-				onDrop={onDrop}
 				onEdit={() => {
 					setOriginalGroup(structuredClone(group));
 					setIsExpanded(true);
@@ -277,6 +260,6 @@ export function OptionGroupEditor({
 					</div>
 				</div>
 			</Modal>
-		</>
+		</div>
 	);
 }
