@@ -42,8 +42,12 @@ export const OrderStatusWhatsAppTemplates = t.Object({
 });
 export type OrderStatusWhatsAppTemplates = typeof OrderStatusWhatsAppTemplates.static;
 
+export const ThemeMode = t.Union([t.Literal("dark"), t.Literal("light")]);
+export type ThemeMode = typeof ThemeMode.static;
+
 export const UpdateBrandingBody = t.Object({
 	allowThemeToggle: t.Optional(t.Boolean()),
+	defaultTheme: t.Optional(ThemeMode),
 	fontDisplay: t.Optional(t.String({ maxLength: 100 })),
 	fontDisplayUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
 	fontFamily: t.Optional(t.String({ maxLength: 100 })),

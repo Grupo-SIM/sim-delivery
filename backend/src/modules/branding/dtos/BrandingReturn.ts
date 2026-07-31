@@ -1,10 +1,11 @@
 import { t } from "elysia";
 import { __nullable__ } from "sql/typebox";
-import { OrderStatusWhatsAppTemplates, ThemeColors } from "./BrandingInput";
+import { OrderStatusWhatsAppTemplates, ThemeColors, ThemeMode } from "./BrandingInput";
 
 export const BrandingReturn = t.Object({
 	allowThemeToggle: t.Boolean(),
 	companyName: __nullable__(t.String()),
+	defaultTheme: ThemeMode,
 	fontDisplay: __nullable__(t.String()),
 	fontDisplayUrl: __nullable__(t.String()),
 	fontFamily: __nullable__(t.String()),

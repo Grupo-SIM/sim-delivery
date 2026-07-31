@@ -12,6 +12,7 @@ export const authClient = createAuthClient({
 			user: {
 				companyId: { required: false, type: "string" },
 				role: { required: false, type: "string" },
+				themePreference: { required: false, type: "string" },
 			},
 		}),
 		phoneNumberClient(),

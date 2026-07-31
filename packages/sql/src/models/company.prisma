@@ -22,6 +22,7 @@ model Company {
     fontFamilyUrl String?
     fontDisplayUrl String?
     themeColors Json?
+    defaultTheme String @default("light")
     allowThemeToggle Boolean @default(true)
     /// Per-company WhatsApp messages keyed by order status.
     orderStatusWhatsAppTemplates Json?

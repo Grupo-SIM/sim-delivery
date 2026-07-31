@@ -1,9 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { AddressValue } from "@/components/address";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useLiveBranding } from "@/hooks/use-live-branding";
+import { useThemePreference } from "@/hooks/use-theme-preference";
 import {
 	setPassword,
 	useDeleteCustomersMeAddressesByAddressId,
@@ -17,12 +20,12 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { slug } from "@/lib/variant";
 import { mapSessionUser, showToast, useAuthStore } from "@/stores";
-import type { AddressValue } from "@/components/address";
 import {
 	ProfileAddressSection,
 	ProfileDetailsForm,
 	ProfileSecurityForm,
 	ProfileSummaryCard,
+	ThemePreferenceForm,
 } from "./components";
 
 function ProfileSkeleton() {
@@ -78,12 +81,21 @@ function ProfilePage() {
 	const updateAddress = usePatchCustomersMeAddressesByAddressId();
 	const deleteAddress = useDeleteCustomersMeAddressesByAddressId();
 	const [savingPassword, setSavingPassword] = useState(false);
+	const [savingTheme, setSavingTheme] = useState(false);
+	const { allowThemeToggle, defaultTheme } = useLiveBranding();
+	const { mode, saveThemePreference } = useThemePreference(allowThemeToggle, defaultTheme);
 
 	useEffect(() => {
 		if (hydrated && !isAuthenticated) void navigate({ to: "/identify" });
 	}, [hydrated, isAuthenticated, navigate]);
 
-	if (!hydrated || (isAuthenticated && !user) || customerQuery.isPending || cashbackQuery.isPending || loyaltyQuery.isPending) {
+	if (
+		!hydrated ||
+		(isAuthenticated && !user) ||
+		customerQuery.isPending ||
+		cashbackQuery.isPending ||
+		loyaltyQuery.isPending
+	) {
 		return <ProfileSkeleton />;
 	}
 	if (!user) return null;
@@ -96,14 +108,17 @@ function ProfilePage() {
 	async function handleDetailsSave(value: { cpf: string | null; name: string; phone: string | null }) {
 		try {
 			const changedName = value.name !== authenticatedUser.name;
-			const changedCustomer = value.cpf !== (customerQuery.data?.cpf ?? null) || value.phone !== (customerQuery.data?.phone ?? null);
+			const changedCustomer =
+				value.cpf !== (customerQuery.data?.cpf ?? null) ||
+				value.phone !== (customerQuery.data?.phone ?? null);
 			if (changedName) {
 				const { error } = await authClient.updateUser({ name: value.name });
 				if (error) throw error;
 				const session = await authClient.getSession();
 				if (session.data?.user) setUser(mapSessionUser(session.data.user));
 			}
-			if (changedCustomer) await updateCustomer.mutateAsync({ data: { cpf: value.cpf, phone: value.phone, slug: slug ?? "" } });
+			if (changedCustomer)
+				await updateCustomer.mutateAsync({ data: { cpf: value.cpf, phone: value.phone, slug: slug ?? "" } });
 			await refreshCustomer();
 			showToast(t("store.account.profile.saved"), "positive");
 		} catch {
@@ -111,7 +126,11 @@ function ProfilePage() {
 		}
 	}
 
-	async function handlePasswordSave(value: { confirmPassword: string; currentPassword: string; password: string }) {
+	async function handlePasswordSave(value: {
+		confirmPassword: string;
+		currentPassword: string;
+		password: string;
+	}) {
 		if (!value.password || value.password !== value.confirmPassword) {
 			showToast(t("store.account.profile.passwordMismatch"), "negative");
 			return;
@@ -126,6 +145,18 @@ function ProfilePage() {
 			showToast(t("store.account.profile.passwordSaved"), "positive");
 		} finally {
 			setSavingPassword(false);
+		}
+	}
+
+	async function handleThemeChange(nextMode: "dark" | "light") {
+		setSavingTheme(true);
+		try {
+			await saveThemePreference(nextMode);
+			showToast(t("store.account.profile.themeSaved"), "positive");
+		} catch {
+			showToast(t("store.account.profile.themeSaveError"), "negative");
+		} finally {
+			setSavingTheme(false);
 		}
 	}
 
@@ -172,13 +203,21 @@ function ProfilePage() {
 	const addressSaving = createAddress.isPending || updateAddress.isPending || deleteAddress.isPending;
 	return (
 		<Container className="max-w-xl space-y-6 py-8">
-			<SectionHeading subtitle={t("store.account.profile.subtitle")} title={t("store.account.profile.title")} />
+			<SectionHeading
+				subtitle={t("store.account.profile.subtitle")}
+				title={t("store.account.profile.title")}
+			/>
 			<ProfileSummaryCard
 				cashbackBalanceCents={Number(cashbackQuery.data?.balanceCents ?? 0)}
 				loyaltyBalancePoints={Number(loyaltyQuery.data?.balancePoints ?? 0)}
 				user={user}
 			/>
-			<ProfileDetailsForm customer={customerQuery.data} isSaving={updateCustomer.isPending} onSave={handleDetailsSave} user={user} />
+			<ProfileDetailsForm
+				customer={customerQuery.data}
+				isSaving={updateCustomer.isPending}
+				onSave={handleDetailsSave}
+				user={user}
+			/>
 			<ProfileAddressSection
 				addresses={customerQuery.data?.addresses ?? []}
 				isSaving={addressSaving}
@@ -186,6 +225,12 @@ function ProfilePage() {
 				onDelete={handleDeleteAddress}
 				onSetDefault={handleSetDefault}
 				onUpdate={handleUpdateAddress}
+			/>
+			<ThemePreferenceForm
+				disabled={!allowThemeToggle}
+				isSaving={savingTheme}
+				mode={mode}
+				onChange={handleThemeChange}
 			/>
 			<ProfileSecurityForm isSaving={savingPassword} onSave={handlePasswordSave} />
 		</Container>

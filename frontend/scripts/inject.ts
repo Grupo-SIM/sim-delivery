@@ -171,6 +171,7 @@ await writeFile(
 			allowThemeToggle: true,
 			apiUrl,
 			companyName: company.name,
+			defaultTheme: "light",
 			fontDisplay,
 			fontDisplayUrl: company.fontDisplayUrl,
 			fontFamily,

@@ -8,6 +8,7 @@ export class GetBranding {
 		const company = await this.prisma.company.findUnique({
 			select: {
 				allowThemeToggle: true,
+				defaultTheme: true,
 				fontDisplay: true,
 				fontDisplayUrl: true,
 				fontFamily: true,
@@ -33,6 +34,7 @@ export class GetBranding {
 		return {
 			allowThemeToggle: company?.allowThemeToggle ?? true,
 			companyName: company?.name ?? null,
+			defaultTheme: company?.defaultTheme === "dark" ? "dark" : "light",
 			fontDisplay: company?.fontDisplay ?? null,
 			fontDisplayUrl: company?.fontDisplayUrl ?? null,
 			fontFamily: company?.fontFamily ?? null,

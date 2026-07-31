@@ -16,6 +16,7 @@ interface SessionUser {
 	phoneNumber?: string | null;
 	phoneNumberVerified?: boolean | null;
 	role?: string | null;
+	themePreference?: string | null;
 }
 
 /** Maps a Better Auth session user (with tenant additionalFields) to the store shape. */
@@ -32,6 +33,8 @@ export function mapSessionUser(sessionUser: unknown): AuthUser {
 		phoneNumber: user.phoneNumber ?? null,
 		phoneNumberVerified: user.phoneNumberVerified ?? false,
 		role: user.role ?? "customer",
+		themePreference:
+			user.themePreference === "dark" || user.themePreference === "light" ? user.themePreference : null,
 	};
 }
 
@@ -46,6 +49,7 @@ export interface AuthUser {
 	phoneNumber: string | null;
 	phoneNumberVerified: boolean;
 	role: string;
+	themePreference: "dark" | "light" | null;
 }
 
 export interface AuthState {

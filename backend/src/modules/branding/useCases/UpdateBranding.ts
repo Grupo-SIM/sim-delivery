@@ -9,6 +9,7 @@ export class UpdateBranding {
 	async execute({
 		allowThemeToggle,
 		companyId,
+		defaultTheme,
 		footerFacebookUrl,
 		footerInstagramUrl,
 		footerPaymentMethods,
@@ -32,6 +33,7 @@ export class UpdateBranding {
 		const company = await this.prisma.company.update({
 			data: {
 				allowThemeToggle,
+				defaultTheme,
 				fontDisplay,
 				fontDisplayUrl,
 				fontFamily,
@@ -52,6 +54,7 @@ export class UpdateBranding {
 			},
 			select: {
 				allowThemeToggle: true,
+				defaultTheme: true,
 				fontDisplay: true,
 				fontDisplayUrl: true,
 				fontFamily: true,
@@ -77,6 +80,7 @@ export class UpdateBranding {
 		return {
 			allowThemeToggle: company.allowThemeToggle,
 			companyName: company.name,
+			defaultTheme: company.defaultTheme === "dark" ? "dark" : "light",
 			fontDisplay: company.fontDisplay ?? null,
 			fontDisplayUrl: company.fontDisplayUrl ?? null,
 			fontFamily: company.fontFamily ?? null,

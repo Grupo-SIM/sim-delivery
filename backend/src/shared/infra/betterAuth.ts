@@ -78,6 +78,7 @@ export const auth = betterAuth({
 		additionalFields: {
 			companyId: { input: false, required: false, type: "string" },
 			role: { defaultValue: "customer", input: false, required: false, type: "string" },
+			themePreference: { input: true, required: false, type: "string" },
 		},
 	},
 });
