@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Button, buttonClassName } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { buttonClassName } from "@/components/ui/button-styles";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import {
 	type GetDeliveries200,

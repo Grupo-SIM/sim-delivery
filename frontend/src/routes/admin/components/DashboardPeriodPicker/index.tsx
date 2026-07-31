@@ -2,20 +2,7 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 import { LuChevronDown } from "react-icons/lu";
 import { ScrollArea } from "@/components/ui/ScrollArea";
 import { cn } from "@/lib/utils";
-
-export const dashboardPeriodValues = [
-	"today",
-	"yesterday",
-	"week",
-	"month",
-	"lastMonth",
-	"quarter",
-	"semester",
-	"year",
-] as const;
-
-export type DashboardPeriod = (typeof dashboardPeriodValues)[number];
-export type DashboardPeriodSelection = DashboardPeriod | "custom";
+import { type DashboardPeriod, type DashboardPeriodSelection, dashboardPeriodValues } from "./types";
 
 interface DashboardPeriodPickerProps {
 	datePicker?: ReactNode;

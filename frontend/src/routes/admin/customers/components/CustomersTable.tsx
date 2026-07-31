@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { LuEye } from "react-icons/lu";
-import { buttonClassName } from "@/components/ui/button";
+import { buttonClassName } from "@/components/ui/button-styles";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { GetCustomers200 } from "@/lib/api";

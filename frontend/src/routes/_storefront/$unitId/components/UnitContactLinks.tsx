@@ -32,7 +32,7 @@ export function UnitContactLinks({ unit }: UnitContactLinksProps) {
 	if (!links.length) return null;
 
 	return (
-		<div aria-label="Contato e redes sociais" className="flex flex-wrap items-center gap-2">
+		<fieldset aria-label="Contato e redes sociais" className="flex flex-wrap items-center gap-2">
 			{links.map(({ external, href, icon: Icon, label }) => (
 				<Tooltip content={label} key={href}>
 					<a
@@ -46,6 +46,6 @@ export function UnitContactLinks({ unit }: UnitContactLinksProps) {
 					</a>
 				</Tooltip>
 			))}
-		</div>
+		</fieldset>
 	);
 }

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { LuArrowLeft } from "react-icons/lu";
-import { buttonClassName } from "@/components/ui/button";
+import { buttonClassName } from "@/components/ui/button-styles";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";

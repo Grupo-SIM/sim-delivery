@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LuCalendarDays, LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { cn } from "@/lib/utils";
@@ -105,11 +105,11 @@ export function DashboardDateRangePicker({
 	const selectionStartDate = draftStartDate ?? committedRange?.startDate ?? null;
 	const selectionEndDate = draftStartDate ? draftEndDate : (committedRange?.endDate ?? null);
 
-	function resetDraft() {
+	const resetDraft = useCallback(() => {
 		setDraftStartDate(null);
 		setDraftEndDate(null);
 		setHoveredDate(null);
-	}
+	}, []);
 
 	function openCalendar() {
 		const initialDate = committedRange?.startDate;
@@ -121,10 +121,10 @@ export function DashboardDateRangePicker({
 		setOpen(true);
 	}
 
-	function closeCalendar() {
+	const closeCalendar = useCallback(() => {
 		resetDraft();
 		setOpen(false);
-	}
+	}, [resetDraft]);
 
 	useEffect(() => {
 		if (!open || inline) return;
@@ -143,7 +143,7 @@ export function DashboardDateRangePicker({
 			document.removeEventListener("mousedown", closeOnOutsideClick);
 			document.removeEventListener("keydown", closeOnEscape);
 		};
-	}, [open, inline]);
+	}, [open, inline, closeCalendar]);
 
 	function selectDay(date: Date) {
 		const nextDate = formatDate(date);
