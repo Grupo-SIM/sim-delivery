@@ -35,7 +35,7 @@ export function CartBar({ deliveryFee, minOrderCents, sections, unitId, unitSlug
 		<>
 			<div className="fixed bottom-4 left-1/2 z-20 w-[92%] max-w-3xl -translate-x-1/2 space-y-1.5">
 				{belowMin && (
-					<div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-center text-amber-800 text-xs">
+					<div className="rounded-lg border border-warning/30 bg-warning/10 px-3 py-1.5 text-center text-foreground text-xs">
 						{t("store.cart.minOrderProgress", { amount: money.format((minOrderCents - total) / 100) })}
 					</div>
 				)}

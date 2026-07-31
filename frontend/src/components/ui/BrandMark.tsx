@@ -23,13 +23,13 @@ export function BrandMark({ className, showWordmark = true, variant = "default" 
 				aria-hidden
 				className={cn(
 					"inline-flex h-8 w-8 items-center justify-center rounded-full font-display text-sm",
-					inverse ? "bg-white text-black" : "bg-black text-white",
+					inverse ? "bg-primary-foreground text-primary" : "bg-primary text-primary-foreground",
 				)}
 			>
 				{initials}
 			</span>
 			{showWordmark && (
-				<span className={cn("font-display text-lg tracking-wide", inverse && "text-white")}>
+				<span className={cn("font-display text-lg tracking-wide", inverse && "text-primary-foreground")}>
 					{companyName}
 				</span>
 			)}

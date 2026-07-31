@@ -28,16 +28,16 @@
 	--color-input: var(--input);
 	--color-ring: var(--ring);
 
-	/* Legacy aliases remain monochrome for existing component classes. */
-	--color-brand-blue: #000000;
-	--color-brand-blue-light: #262626;
-	--color-brand-yellow: #ffffff;
-	--color-brand-yellow-dark: #e5e5e5;
-	--color-brand-cyan: #f5f5f5;
-	--color-brand-cyan-deep: #d4d4d4;
-	--color-brand-red: #000000;
-	--color-brand-ink: #000000;
-	--color-whatsapp: #000000;
+	/* Legacy aliases resolve through live company theme tokens. */
+	--color-brand-blue: var(--primary);
+	--color-brand-blue-light: var(--secondary);
+	--color-brand-yellow: var(--accent);
+	--color-brand-yellow-dark: var(--accent);
+	--color-brand-cyan: var(--secondary);
+	--color-brand-cyan-deep: var(--secondary);
+	--color-brand-red: var(--destructive);
+	--color-brand-ink: var(--foreground);
+	--color-whatsapp: var(--success);
 	--color-success: var(--success);
 	--color-warning: var(--warning);
 

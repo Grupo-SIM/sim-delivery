@@ -9,12 +9,12 @@ interface BadgeProps extends ComponentPropsWithoutRef<"span"> {
 }
 
 const toneClassName: Record<BadgeTone, string> = {
-	accent: "border-brand-yellow-dark/40 bg-brand-yellow/20 text-brand-blue",
-	cyan: "border-brand-cyan-deep/40 bg-brand-cyan/15 text-brand-cyan-deep",
+	accent: "border-accent/40 bg-accent/20 text-accent",
+	cyan: "border-secondary/40 bg-secondary/15 text-secondary",
 	danger: "border-destructive/30 bg-destructive/10 text-destructive",
 	neutral: "border-border bg-muted text-muted-foreground",
 	primary: "border-primary/30 bg-primary/10 text-primary",
-	success: "border-whatsapp/40 bg-whatsapp/15 text-whatsapp",
+	success: "border-success/40 bg-success/15 text-success",
 };
 
 export function Badge({ children, className, tone = "primary", ...props }: BadgeProps) {

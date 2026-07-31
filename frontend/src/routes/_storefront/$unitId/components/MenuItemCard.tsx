@@ -73,11 +73,11 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 						)}
 						<span className="font-bold text-lg">{displayPrice}</span>
 						{isPromotional && (
-							<Badge className="ml-2 border-green-500/30 bg-green-500/10 text-green-600">Oferta</Badge>
+							<Badge className="ml-2 border-success/30 bg-success/10 text-success">Oferta</Badge>
 						)}
 					</div>
 					{item.cashbackPercent != null && (
-						<Badge className="border-green-500/30 bg-green-500/10 text-green-500">
+						<Badge className="border-success/30 bg-success/10 text-success">
 							{item.cashbackPercent}%
 						</Badge>
 					)}

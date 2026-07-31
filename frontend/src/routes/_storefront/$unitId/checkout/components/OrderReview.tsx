@@ -197,8 +197,8 @@ export function OrderReview({
 			<section className="space-y-2">
 				<span className="font-semibold text-sm">{t("store.checkout.order.coupon")}</span>
 				{appliedCoupon ? (
-					<div className="flex items-center justify-between rounded-md border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm">
-						<span className="font-mono font-semibold text-green-700">{appliedCoupon.code}</span>
+					<div className="flex items-center justify-between rounded-md border border-success/30 bg-success/10 px-3 py-2 text-sm">
+						<span className="font-mono font-semibold text-success">{appliedCoupon.code}</span>
 						<Button
 							onClick={() => {
 								onSetCoupon(null);
@@ -288,19 +288,19 @@ export function OrderReview({
 					</div>
 				)}
 				{discountCents > 0 && (
-					<div className="flex justify-between text-green-700">
+					<div className="flex justify-between text-success">
 						<span>{t("store.checkout.order.discount")}</span>
 						<span>−{formatMoney(discountCents / 100)}</span>
 					</div>
 				)}
 				{cashbackRedeemCents > 0 && (
-					<div className="flex justify-between text-green-700">
+					<div className="flex justify-between text-success">
 						<span>{t("store.checkout.order.cashbackRedeemed")}</span>
 						<span>−{formatMoney(cashbackRedeemCents / 100)}</span>
 					</div>
 				)}
 				{loyaltyRedeemPoints > 0 && (
-					<div className="flex justify-between text-green-700">
+					<div className="flex justify-between text-success">
 						<span>{t("store.checkout.order.loyaltyRedeemed")}</span>
 						<span>−{formatMoney(loyaltyRedeemPoints / 100)}</span>
 					</div>

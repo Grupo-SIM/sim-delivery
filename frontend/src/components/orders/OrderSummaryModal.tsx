@@ -154,7 +154,7 @@ export function OrderSummaryModal({ onClose, order, view }: OrderSummaryModalPro
 								</div>
 							)}
 							{discount > 0 && (
-								<div className="flex justify-between text-green-700">
+								<div className="flex justify-between text-success">
 									<span>
 										{couponDetail
 											? `${t("store.checkout.order.discount")} (${couponDetail})`
@@ -164,13 +164,13 @@ export function OrderSummaryModal({ onClose, order, view }: OrderSummaryModalPro
 								</div>
 							)}
 							{cashbackRedeemed > 0 && (
-								<div className="flex justify-between text-green-700">
+								<div className="flex justify-between text-success">
 									<span>{t("store.checkout.order.cashbackRedeemed")}</span>
 									<span>−{formatMoney(cashbackRedeemed / 100)}</span>
 								</div>
 							)}
 							{loyaltyRedeemed > 0 && (
-								<div className="flex justify-between text-green-700">
+								<div className="flex justify-between text-success">
 									<span>{t("store.checkout.order.loyaltyRedeemed")}</span>
 									<span>−{formatMoney(loyaltyRedeemed / 100)}</span>
 								</div>

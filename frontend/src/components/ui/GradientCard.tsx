@@ -13,11 +13,11 @@ interface GradientCardProps extends ComponentPropsWithoutRef<"div"> {
  * lifts on hover. Mirrors the storefront hero cards (blue / yellow / cyan).
  */
 const toneClassName: Record<GradientCardTone, string> = {
-	blue: "bg-linear-135 from-brand-blue to-brand-blue-light text-white",
-	cyan: "bg-linear-135 from-brand-cyan to-brand-cyan-deep text-white",
-	ink: "bg-linear-135 from-brand-ink to-[#2a2a4a] text-white",
-	instagram: "bg-linear-45 from-[#f09433] via-[#dc2743] to-[#bc1888] text-white",
-	yellow: "bg-linear-135 from-brand-yellow to-brand-yellow-dark text-brand-blue",
+	blue: "bg-linear-135 from-primary to-primary/75 text-primary-foreground",
+	cyan: "bg-linear-135 from-secondary to-secondary/75 text-secondary-foreground",
+	ink: "bg-linear-135 from-foreground to-foreground/75 text-background",
+	instagram: "bg-linear-45 from-primary via-primary/85 to-accent text-primary-foreground",
+	yellow: "bg-linear-135 from-accent to-accent/75 text-accent-foreground",
 };
 
 export function GradientCard({ children, className, tone = "blue", ...props }: GradientCardProps) {

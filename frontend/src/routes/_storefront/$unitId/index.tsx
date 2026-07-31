@@ -65,7 +65,7 @@ function UnitStorePage() {
 						<Badge
 							className={
 								unit.isOpenNow
-									? "border-green-500/30 bg-green-500/10 text-green-500"
+									? "border-success/30 bg-success/10 text-success"
 									: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
 							}
 						>

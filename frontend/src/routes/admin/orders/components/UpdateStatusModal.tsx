@@ -140,7 +140,7 @@ export function UpdateStatusModal({
 						))}
 					</div>
 				) : (
-					<div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-amber-950 text-sm leading-5">
+					<div className="rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 text-foreground text-sm leading-5">
 						{currentStatus === "awaiting_payment"
 							? t("admin.orders.updateStatus.noOptions.awaitingPayment", {
 									defaultValue:

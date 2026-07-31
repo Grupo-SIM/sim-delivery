@@ -77,7 +77,7 @@ export function CartModal({
 						</div>
 
 						{belowMin && (
-							<p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-amber-800 text-xs">
+							<p className="rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-foreground text-xs">
 								{t("store.cart.minOrderProgress", { amount: money.format((minOrderCents - total) / 100) })}
 							</p>
 						)}

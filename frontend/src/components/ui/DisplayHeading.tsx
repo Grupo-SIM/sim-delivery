@@ -28,7 +28,7 @@ export function DisplayHeading({
 	...props
 }: DisplayHeadingProps) {
 	return (
-		<Tag className={cn("font-display text-brand-blue", sizeClassName[size], className)} {...props}>
+		<Tag className={cn("font-display text-primary", sizeClassName[size], className)} {...props}>
 			{children}
 		</Tag>
 	);

@@ -46,14 +46,14 @@ export function UnitCard({ unit }: UnitCardProps) {
 				<Badge
 					className={
 						unit.isOpenNow
-							? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600"
+							? "border-success/30 bg-success/10 text-success"
 							: "border-muted-foreground/30 bg-muted text-muted-foreground"
 					}
 				>
 					<span
 						className={
 							unit.isOpenNow
-								? "mr-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500"
+								? "mr-1.5 h-1.5 w-1.5 rounded-full bg-success"
 								: "mr-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground"
 						}
 					/>

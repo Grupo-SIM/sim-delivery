@@ -12,7 +12,7 @@ interface ButtonProps extends ComponentPropsWithoutRef<"button"> {
 
 const variantClassName: Record<ButtonVariant, string> = {
 	default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/90",
-	destructive: "border-transparent bg-destructive text-white hover:bg-destructive/90",
+	destructive: "border-transparent bg-destructive text-background hover:bg-destructive/90",
 	ghost: "border-border bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground",
 	outline: "border-border bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground",
 	secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/90",

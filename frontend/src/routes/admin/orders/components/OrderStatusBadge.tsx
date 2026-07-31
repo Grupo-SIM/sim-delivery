@@ -3,15 +3,15 @@ import { LuInfo } from "react-icons/lu";
 import { Tooltip } from "@/components/ui/Tooltip";
 
 const STATUS_CLASS_NAMES: Record<string, string> = {
-	awaiting_payment: "border-amber-200 bg-amber-50 text-amber-800",
-	cancelado: "border-red-200 bg-red-50 text-red-700",
-	em_preparo: "border-sky-200 bg-sky-50 text-sky-800",
-	entregue: "border-emerald-200 bg-emerald-50 text-emerald-800",
-	problema: "border-rose-300 bg-rose-50 text-rose-800",
-	pronto: "border-violet-200 bg-violet-50 text-violet-800",
-	recebido: "border-blue-200 bg-blue-50 text-blue-800",
-	retirado: "border-slate-200 bg-slate-50 text-slate-700",
-	saiu_para_entrega: "border-orange-200 bg-orange-50 text-orange-800",
+	awaiting_payment: "border-warning/30 bg-warning/10 text-warning",
+	cancelado: "border-destructive/30 bg-destructive/10 text-destructive",
+	em_preparo: "border-primary/30 bg-primary/10 text-primary",
+	entregue: "border-success/30 bg-success/10 text-success",
+	problema: "border-destructive/30 bg-destructive/10 text-destructive",
+	pronto: "border-accent/30 bg-accent/10 text-accent",
+	recebido: "border-secondary/30 bg-secondary/10 text-secondary",
+	retirado: "border-muted-foreground/30 bg-muted text-muted-foreground",
+	saiu_para_entrega: "border-primary/30 bg-primary/10 text-primary",
 };
 
 const STATUS_DESCRIPTIONS: Record<string, string> = {
@@ -45,7 +45,7 @@ export function OrderStatusBadge({ showHelp = false, status }: OrderStatusBadgeP
 			<span className="truncate">{t(`admin.orders.status.${status}`, { defaultValue: status })}</span>
 			{showHelp && description && (
 				<Tooltip content={t(`admin.orders.statusHelp.${status}`, { defaultValue: description })}>
-					<span className="grid size-4 shrink-0 place-items-center rounded-full border border-current/20 bg-white/40 text-current/80">
+					<span className="grid size-4 shrink-0 place-items-center rounded-full border border-current/20 bg-background/40 text-current/80">
 						<LuInfo aria-hidden className="size-3" />
 					</span>
 				</Tooltip>

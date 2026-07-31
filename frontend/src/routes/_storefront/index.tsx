@@ -13,10 +13,10 @@ function StorePage() {
 	const { data: units, isError, isPending } = useGetPublicUnits({ slug });
 
 	return (
-		<div className="bg-[#f6f7fb]">
+		<div className="bg-background">
 			<section className="mx-auto max-w-6xl px-5 pt-12 pb-8 sm:pt-16">
 				<p className="font-semibold text-primary text-sm">ZERO GRAU</p>
-				<h1 className="mt-2 max-w-2xl font-display text-4xl text-brand-ink sm:text-5xl">
+				<h1 className="mt-2 max-w-2xl font-display text-4xl text-foreground sm:text-5xl">
 					{t("store.chooseUnit.title")}
 				</h1>
 				<p className="mt-3 max-w-xl text-lg text-muted-foreground">{t("store.chooseUnit.subtitle")}</p>

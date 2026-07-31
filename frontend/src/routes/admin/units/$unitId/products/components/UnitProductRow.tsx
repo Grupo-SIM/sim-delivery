@@ -90,7 +90,7 @@ export function UnitProductRow({ association, categories, products, tags, unitId
 				<td className="px-4 py-3 text-muted-foreground">
 					{money.format(priceCents / 100)}
 					{association.promotionalPriceCents !== null && (
-						<Badge className="ml-2 border-green-500/30 bg-green-500/10 text-green-600">Promoção</Badge>
+						<Badge className="ml-2 border-success/30 bg-success/10 text-success">Promoção</Badge>
 					)}
 					{association.priceCentsOverride !== null && (
 						<span className="ml-1 text-xs">{t("admin.unitProducts.row.overridden")}</span>
@@ -100,7 +100,7 @@ export function UnitProductRow({ association, categories, products, tags, unitId
 					<Badge
 						className={
 							association.available
-								? "border-green-500/30 bg-green-500/10 text-green-500"
+								? "border-success/30 bg-success/10 text-success"
 								: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
 						}
 					>

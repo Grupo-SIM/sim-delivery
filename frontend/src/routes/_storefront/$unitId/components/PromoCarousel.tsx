@@ -39,7 +39,7 @@ export function PromoCarousel({ sections }: PromoCarouselProps) {
 							<p className="truncate font-medium text-sm">{item.title}</p>
 							<div className="mt-auto flex items-center gap-2 pt-1">
 								<span className="font-semibold text-sm">{money.format(Number(item.priceCents) / 100)}</span>
-								<Badge className="border-green-500/30 bg-green-500/10 text-green-500">
+								<Badge className="border-success/30 bg-success/10 text-success">
 									{item.cashbackPercent}%
 								</Badge>
 							</div>

@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { LuArrowRight, LuClock3, LuMapPin } from "react-icons/lu";
+import { cn } from "@/lib/utils";
 import type { PublicUnit } from "../../components/storefront/types";
 
 interface UnitHeroCardProps {
@@ -18,7 +19,10 @@ export function UnitHeroCard({ fallbackImageUrl, openLabel, unit }: UnitHeroCard
 
 	return (
 		<Link
-			className="group relative min-h-80 overflow-hidden rounded-lg bg-[#2f3559] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+			className={cn(
+				"group relative min-h-80 overflow-hidden rounded-lg bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+				imageUrl ? "text-white" : "text-primary-foreground",
+			)}
 			params={{ unitId: unit.slug }}
 			to="/$unitId"
 		>
@@ -32,7 +36,7 @@ export function UnitHeroCard({ fallbackImageUrl, openLabel, unit }: UnitHeroCard
 			{imageUrl && <div className="absolute inset-0 bg-black/50" />}
 			<div className="relative flex min-h-80 flex-col justify-between p-6">
 				<div className="flex items-start justify-between gap-4">
-					<span className="rounded-full bg-white/90 px-3 py-1.5 font-semibold text-brand-ink text-xs">
+					<span className="rounded-full bg-background/90 px-3 py-1.5 font-semibold text-foreground text-xs">
 						{unit.isOpenNow ? openLabel : "Fechado"}
 					</span>
 					<LuArrowRight aria-hidden className="size-6 transition-transform group-hover:translate-x-1" />
