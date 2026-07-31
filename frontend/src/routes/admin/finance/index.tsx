@@ -32,12 +32,16 @@ const periods: DashboardPeriod[] = [
 function FinancePage() {
 	const { t } = useTranslation();
 	const [period, setPeriod] = useState<GetReportsFinancialQueryParamsPeriodEnumKey>("month");
-	const groupBy: GetReportsFinancialQueryParamsGroupByEnumKey = "dayOfMonth";
+	const groupBy: GetReportsFinancialQueryParamsGroupByEnumKey = period === "today" || period === "yesterday" ? "hourOfDay" : period === "week" ? "dayOfWeek" : period === "month" || period === "lastMonth" ? "dayOfMonth" : period === "quarter" || period === "semester" ? "month" : "quarter";
 	const { data: report, isError, isPending } = useGetReportsFinancial({ groupBy, period });
 	const labels = Object.fromEntries([
 		["custom", t("admin.reports.period.custom")],
 		...periods.map(value => [value, t(`admin.reports.period.${value}`)]),
 	]) as Record<DashboardPeriod | "custom", string>;
+	const translatePaymentMethod = (method: string) =>
+		t(`admin.reports.finance.paymentMethod.${method}`, { defaultValue: method });
+	const translateDeliveryMethod = (method: string) =>
+		t(`admin.reports.finance.deliveryMethod.${method}`, { defaultValue: method });
 
 	if (isError || (!isPending && !report))
 		return (
@@ -46,7 +50,8 @@ function FinancePage() {
 			</Container>
 		);
 
-	const loadingValue = <Skeleton className="mt-2 h-6 w-24" />;
+	const loadingValue = <Skeleton className="h-6 w-36" />;
+	const loadingHint = <Skeleton className="h-[11px] w-32" />;
 	const cards = report
 		? [
 				{
@@ -80,11 +85,11 @@ function FinancePage() {
 				{ change: null, label: "Frete", value: formatCents(Number(report.summary.deliveryFeeCents)) },
 			]
 		: [
-				{ change: null, label: "Receita líquida", value: loadingValue },
-				{ change: null, label: "Lucro bruto parcial", value: loadingValue },
-				{ change: null, label: "Margem bruta parcial", value: loadingValue },
-				{ change: null, label: "Pedidos concluídos", value: loadingValue },
-				{ change: null, label: "Ticket médio", value: loadingValue },
+				{ change: loadingHint, label: "Receita líquida", value: loadingValue },
+				{ change: loadingHint, label: "Lucro bruto parcial", value: loadingValue },
+				{ change: loadingHint, label: "Margem bruta parcial", value: loadingValue },
+				{ change: loadingHint, label: "Pedidos concluídos", value: loadingValue },
+				{ change: loadingHint, label: "Ticket médio", value: loadingValue },
 				{ change: null, label: "Frete", value: loadingValue },
 			];
 	const trend = report?.trend.map(row => ({ ...row, netRevenueCents: Number(row.netRevenueCents) })) ?? [];
@@ -121,7 +126,7 @@ function FinancePage() {
 						hint={
 							typeof card.change === "number"
 								? `${card.change >= 0 ? "+" : ""}${card.change.toFixed(1)}% vs. período anterior`
-								: undefined
+								: card.change
 						}
 						key={card.label}
 						label={card.label}
@@ -137,6 +142,7 @@ function FinancePage() {
 					isPending={isPending}
 					rows={payment}
 					title="Receita por forma de pagamento"
+					translateMethod={translatePaymentMethod}
 					unreported="Não informado"
 				/>
 				<FinancialDistribution
@@ -145,6 +151,7 @@ function FinancePage() {
 					isPending={isPending}
 					rows={delivery}
 					title="Receita por modalidade de entrega"
+					translateMethod={translateDeliveryMethod}
 					unreported="Não informado"
 				/>
 			</div>
@@ -159,7 +166,7 @@ function FinancePage() {
 					}
 				/>
 				<StatCard
-					hint="Lucro considera somente itens com custo conhecido."
+					hint={report ? "Lucro considera somente itens com custo conhecido." : loadingHint}
 					label="Receita sem custo conhecido"
 					value={report ? formatCents(Number(report.summary.unknownCostRevenueCents)) : loadingValue}
 				/>
