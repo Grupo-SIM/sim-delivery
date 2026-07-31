@@ -170,7 +170,7 @@ export function MediaUrlInput({
 			{preview && isImageAsset && localValue && (
 				<img
 					alt=""
-					className={cn("mx-auto size-12 h-auto w-auto rounded object-contain", previewClassName)}
+					className={cn("mx-auto size-20 rounded object-contain", previewClassName)}
 					src={localValue}
 				/>
 			)}
