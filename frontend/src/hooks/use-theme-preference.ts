@@ -13,21 +13,19 @@ export function useThemePreference(allowThemeToggle: boolean, defaultTheme: Them
 	const user = useAuthStore(state => state.user);
 	const setUser = useAuthStore(state => state.setUser);
 	const savedInitialPreferenceForUserId = useRef<string | null>(null);
-	const [mode, setMode] = useState<ThemeMode>(defaultTheme);
+	const [userMode, setUserMode] = useState<ThemeMode>(defaultTheme);
+	const mode = allowThemeToggle ? userMode : defaultTheme;
 
 	useEffect(() => {
 		const preferred = user?.themePreference;
-		if (!allowThemeToggle) {
-			setMode(defaultTheme);
-			return;
-		}
+		if (!allowThemeToggle) return;
 		if (preferred) {
-			setMode(preferred);
+			setUserMode(preferred);
 			return;
 		}
 
 		const inferredMode = deviceTheme();
-		setMode(inferredMode);
+		setUserMode(inferredMode);
 		if (!user || savedInitialPreferenceForUserId.current === user.id) return;
 
 		savedInitialPreferenceForUserId.current = user.id;
@@ -47,7 +45,7 @@ export function useThemePreference(allowThemeToggle: boolean, defaultTheme: Them
 			if (error) throw error;
 			const session = await authClient.getSession();
 			if (session.data?.user) setUser(mapSessionUser(session.data.user));
-			setMode(preference);
+			setUserMode(preference);
 		},
 		[setUser],
 	);
