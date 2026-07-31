@@ -175,7 +175,16 @@ function InventoryPage() {
 			) : itemGroups.length === 0 ? (
 				<EmptyState title={t("admin.inventory.empty")} />
 			) : (
-				<DataTable>
+				<DataTable tableClassName="table-fixed">
+					<colgroup>
+						<col className="w-[19%]" />
+						<col className="w-[15%]" />
+						<col className="w-[15%]" />
+						<col className="w-[14%]" />
+						<col className="w-[15%]" />
+						<col className="w-[16%]" />
+						<col className="w-[6%]" />
+					</colgroup>
 					<thead>
 						<tr className="border-b text-left">
 							<th className="px-4 py-3">{t("admin.inventory.columns.item")}</th>
