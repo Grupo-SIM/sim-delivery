@@ -17,9 +17,9 @@ export function FinancialTrend({ formatCents, isPending, rows, title }: Financia
 				{isPending ? (
 					<Skeleton className="h-52 min-w-[36rem]" />
 				) : (
-					<div aria-label={title} className="flex h-52 min-w-max items-end gap-2" role="img">
+					<div aria-label={title} className="flex h-52 min-w-max items-end gap-3" role="img">
 						{rows.map(row => (
-							<div className="flex h-full min-w-8 flex-1 flex-col justify-end" key={row.label}>
+							<div className="flex h-full min-w-10 flex-1 flex-col justify-end" key={row.label}>
 								<span className="mb-1 text-center text-[10px] text-muted-foreground">
 									{formatCents(row.netRevenueCents)}
 								</span>
