@@ -100,7 +100,6 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 						<span>{t("admin.products.create.image")}</span>
 						<MediaUrlInput
 							asset="product"
-					preview
 							onUploadError={() => setError(t("admin.products.create.uploadError"))}
 							onUploadingChange={setIsUploadingImage}
 							onValueChange={setImageUrl}

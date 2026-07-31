@@ -358,6 +358,7 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 					<h2 className="font-semibold text-lg">{t("admin.units.image.title")}</h2>
 					<MediaUrlInput
 						asset="unit"
+						preview
 						onUploadError={() => void showAlert(t("admin.units.image.uploadError"))}
 						onValueChange={setImageUrl}
 						previewClassName="h-60"
@@ -370,6 +371,7 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 					<h2 className="font-semibold text-lg">{t("admin.units.banner.title")}</h2>
 					<MediaUrlInput
 						asset="banner"
+						preview
 						onUploadError={() => void showAlert(t("admin.units.banner.uploadError"))}
 						onValueChange={setBannerUrl}
 						previewClassName="h-48"
