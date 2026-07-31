@@ -80,4 +80,64 @@ describe("ProductOptions", () => {
 		await new ProductOptions(prisma).deleteOption("cmp_1", "product_1", "group_1", "option_1");
 		expect(deleted).toEqual(["option_1"]);
 	});
+
+	it("saves groups without an interactive transaction", async () => {
+		const calls: Array<{ action: string; data?: unknown }> = [];
+		const prisma = {
+			optionGroup: {
+				create: async ({ data }: { data: object }) => {
+					calls.push({ action: "create", data });
+					return { id: "created_group" };
+				},
+				deleteMany: async ({ where }: { where: object }) => {
+					calls.push({ action: "deleteMany", data: where });
+					return { count: 0 };
+				},
+				findMany: async ({ include }: { include?: object }) => {
+					if (include) return [];
+					return [];
+				},
+				update: async ({ data }: { data: object }) => {
+					calls.push({ action: "update", data });
+					return { id: "group_1" };
+				},
+			},
+			product: {
+				findFirst: async () => ({ id: "product_1" }),
+			},
+		} as unknown as PrismaInstance;
+
+		await new ProductOptions(prisma).save("cmp_1", "product_1", {
+			groups: [
+				{
+					maxSelect: 1,
+					name: "Adicionais",
+					options: [{ name: "Queijo", priceDeltaCents: 200 }],
+					priceRule: "sum",
+					selectionType: "single",
+				},
+			],
+		});
+
+		expect(calls).toEqual([
+			{
+				action: "create",
+				data: {
+					maxSelect: 1,
+					name: "Adicionais",
+					options: {
+						create: [
+							{
+								name: "Queijo",
+								priceDeltaCents: 200,
+							},
+						],
+					},
+					priceRule: "sum",
+					productId: "product_1",
+					selectionType: "single",
+				},
+			},
+		]);
+	});
 });
