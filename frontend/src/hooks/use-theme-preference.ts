@@ -41,11 +41,6 @@ export function useThemePreference(allowThemeToggle: boolean, defaultTheme: Them
 		});
 	}, [allowThemeToggle, defaultTheme, setUser, user]);
 
-	useEffect(() => {
-		document.documentElement.classList.toggle("dark", mode === "dark");
-		document.documentElement.classList.toggle("light", mode === "light");
-	}, [mode]);
-
 	const saveThemePreference = useCallback(
 		async (preference: ThemeMode) => {
 			const { error } = await authClient.updateUser({ themePreference: preference });

@@ -216,10 +216,16 @@ if (existsSync(tauriConfPath)) {
 }
 
 const indexHtml = await readFile(indexHtmlPath, "utf8");
-const updatedIndexHtml = indexHtml.replace(
-	/https:\/\/fonts\.googleapis\.com\/css2\?[^"]+/,
-	googleFontsUrl([fontDisplay, fontFamily]),
-);
+const initialTheme = company.defaultTheme === "dark" ? "dark" : "light";
+const updatedIndexHtml = indexHtml
+	.replace(
+		/document\.documentElement\.classList\.add\("(?:dark|light)"\)/,
+		`document.documentElement.classList.add("${initialTheme}")`,
+	)
+	.replace(
+		/https:\/\/fonts\.googleapis\.com\/css2\?[^"]+/,
+		googleFontsUrl([fontDisplay, fontFamily]),
+	);
 await writeFile(indexHtmlPath, updatedIndexHtml);
 
 console.log(`Injected branding for ${company.name} (${slug}).`);

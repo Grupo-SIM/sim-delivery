@@ -72,9 +72,10 @@
 				"VITE_APP_URL",
 				"VITE_COMPANY_SLUG"
 			],
-			"inputs": ["scripts/inject.ts", ".env*"],
+			"inputs": ["index.html", "scripts/inject.ts", ".env*"],
 			"outputLogs": "new-only",
 			"outputs": [
+				"index.html",
 				"public/apple-touch-icon.png",
 				"public/branding.css",
 				"public/favicon.png",

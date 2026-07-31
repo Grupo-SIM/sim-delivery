@@ -1,5 +1,5 @@
 import { QueryClientProvider } from "@tanstack/react-query";
-import { type ReactNode, useEffect } from "react";
+import { type ReactNode, useEffect, useLayoutEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ConfirmDialog } from "./components/ui/ConfirmDialog";
@@ -27,6 +27,10 @@ function BrandedProviders({ children }: { children: ReactNode }) {
 		themeColors,
 	} = useLiveBranding();
 	const { mode } = useThemePreference(allowThemeToggle, defaultTheme);
+	useLayoutEffect(() => {
+		document.documentElement.classList.toggle("dark", mode === "dark");
+		document.documentElement.classList.toggle("light", mode === "light");
+	}, [mode]);
 	useEffect(() => {
 		let style = document.getElementById("live-branding-theme") as HTMLStyleElement | null;
 		if (!style) {
