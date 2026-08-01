@@ -36,7 +36,7 @@
 	},
 	"devDependencies": {
 		"@elysiajs/cors": "^1.4.2",
-		"@hyoretsu/configs": "^1.2.35",
+		"@hyoretsu/configs": "^1.2.37",
 		"@types/bun": "^1.3.14",
 		"@types/http-status-codes": "^1.2.0",
 		"@types/node": "^26.1.1",

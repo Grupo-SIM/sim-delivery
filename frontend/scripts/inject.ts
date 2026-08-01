@@ -7,8 +7,10 @@
 
 import { existsSync } from "node:fs";
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import sharp from "sharp";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const FRONTEND = join(ROOT, "frontend");
@@ -194,9 +196,36 @@ await writeFile(
 	)} as Branding;\n`,
 );
 
+/**
+ * The Tauri icon generator requires a square source image, but a branding logo is free-form
+ * (e.g. a wide wordmark). Pads it onto a transparent square canvas sized to the longer side so
+ * icon generation never fails on the logo's actual aspect ratio.
+ */
+async function squareIconSource(sourcePath: string): Promise<string> {
+	const image = sharp(sourcePath);
+	const { height = 0, width = 0 } = await image.metadata();
+	if (width === height && width > 0) return sourcePath;
+
+	const size = Math.max(width, height);
+	const squaredPath = join(tmpdir(), `branding-icon-source-${Date.now()}.png`);
+	await image
+		.resize(width, height)
+		.extend({
+			background: { alpha: 0, b: 0, g: 0, r: 0 },
+			bottom: Math.ceil((size - height) / 2),
+			left: Math.floor((size - width) / 2),
+			right: Math.ceil((size - width) / 2),
+			top: Math.floor((size - height) / 2),
+		})
+		.png()
+		.toFile(squaredPath);
+	return squaredPath;
+}
+
 const tauriConfPath = join(FRONTEND, "src-tauri", "tauri.conf.json");
 if (existsSync(tauriConfPath)) {
-	const proc = Bun.spawnSync(["bunx", "@tauri-apps/cli", "icon", logoPath], {
+	const iconSourcePath = await squareIconSource(logoPath);
+	const proc = Bun.spawnSync(["bunx", "@tauri-apps/cli", "icon", iconSourcePath], {
 		cwd: FRONTEND,
 		stderr: "inherit",
 		stdout: "inherit",
