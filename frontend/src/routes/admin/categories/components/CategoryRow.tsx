@@ -1,11 +1,14 @@
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuArrowDown, LuArrowUp, LuPencil, LuTrash2 } from "react-icons/lu";
+import { LuGripVertical, LuPencil, LuTrash2 } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Input } from "@/components/ui/input";
+import { Modal } from "@/components/ui/Modal";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import {
@@ -18,21 +21,23 @@ import { showAlert, showToast } from "@/stores";
 
 interface CategoryRowProps {
 	category: GetCategories200[number];
-	isFirst: boolean;
-	isLast: boolean;
-	onMove: (categoryId: string, direction: -1 | 1) => void;
-	reordering: boolean;
+	dragDisabled: boolean;
 }
 
-export function CategoryRow({ category, isFirst, isLast, onMove, reordering }: CategoryRowProps) {
+export function CategoryRow({ category, dragDisabled }: CategoryRowProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [editing, setEditing] = useState(false);
+	const [productsOpen, setProductsOpen] = useState(false);
 	const [name, setName] = useState(category.name);
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
 	const { isPending, mutate } = usePatchCategoriesByCategoryId();
 	const remove = useDeleteCategoriesByCategoryId();
 	const invalidate = () => queryClient.invalidateQueries({ queryKey: getCategoriesQueryKey() });
+	const { attributes, isDragging, listeners, setNodeRef, transform, transition } = useSortable({
+		disabled: dragDisabled,
+		id: category.id,
+	});
 
 	function cancel() {
 		setName(category.name);
@@ -67,7 +72,25 @@ export function CategoryRow({ category, isFirst, isLast, onMove, reordering }: C
 	}
 
 	return (
-		<tr className="border-border/60 border-b last:border-0">
+		<tr
+			className={`border-border/60 border-b last:border-0 ${isDragging ? "opacity-40" : "opacity-100"}`}
+			ref={setNodeRef}
+			style={{ transform: CSS.Transform.toString(transform), transition }}
+		>
+			<td className="w-10 px-2 py-3">
+				<Tooltip content={t("admin.categories.order.reorder")}>
+					<button
+						{...attributes}
+						{...listeners}
+						aria-label={t("admin.categories.order.reorder")}
+						className="grid size-9 cursor-grab touch-none place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-40"
+						disabled={dragDisabled}
+						type="button"
+					>
+						<LuGripVertical className="size-4" />
+					</button>
+				</Tooltip>
+			</td>
 			<td className="w-56 px-4 py-3 font-medium">
 				{editing ? (
 					<div className="grid">
@@ -86,47 +109,36 @@ export function CategoryRow({ category, isFirst, isLast, onMove, reordering }: C
 					category.name
 				)}
 			</td>
-			<td className="w-40 px-4 py-3 text-muted-foreground">
-				<div className="flex items-center gap-2">
-					<span className="w-6 text-center tabular-nums">{category.position}</span>
-					<Tooltip content={t("admin.categories.order.up")}>
+			<td className="w-56 px-4 py-3">
+				{category.products.length === 0 ? (
+					<span className="text-muted-foreground text-sm">{t("admin.categories.products.empty")}</span>
+				) : (
+					<>
 						<Button
-							aria-label={t("admin.categories.order.up")}
-							disabled={isFirst || reordering}
-							onClick={() => onMove(category.id, -1)}
-							size="icon"
+							className="cursor-pointer"
+							onClick={() => setProductsOpen(true)}
+							size="sm"
 							type="button"
-							variant="ghost"
+							variant="outline"
 						>
-							<LuArrowUp className="size-4" />
+							{t("admin.categories.products.viewButton", { count: category.products.length })}
 						</Button>
-					</Tooltip>
-					<Tooltip content={t("admin.categories.order.down")}>
-						<Button
-							aria-label={t("admin.categories.order.down")}
-							disabled={isLast || reordering}
-							onClick={() => onMove(category.id, 1)}
-							size="icon"
-							type="button"
-							variant="ghost"
+						<Modal
+							isOpen={productsOpen}
+							maxWidth="480px"
+							onClose={() => setProductsOpen(false)}
+							title={t("admin.categories.products.modalTitle", { name: category.name })}
 						>
-							<LuArrowDown className="size-4" />
-						</Button>
-					</Tooltip>
-				</div>
-			</td>
-			<td className="px-4 py-3">
-				<div className="flex max-w-80 flex-wrap gap-1.5">
-					{category.products.length === 0 ? (
-						<span className="text-muted-foreground text-sm">{t("admin.categories.products.empty")}</span>
-					) : (
-						category.products.map(product => (
-							<Badge key={product.id} tone="neutral">
-								{product.title}
-							</Badge>
-						))
-					)}
-				</div>
+							<div className="flex flex-wrap gap-1.5">
+								{category.products.map(product => (
+									<Badge key={product.id} tone="neutral">
+										{product.title}
+									</Badge>
+								))}
+							</div>
+						</Modal>
+					</>
+				)}
 			</td>
 			<td className="w-56 px-4 py-3 text-right">
 				<div className="flex justify-end gap-2">

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -10,6 +11,18 @@ import { CategoriesTable, CreateCategoryForm } from "./components";
 function CategoriesPage() {
 	const { t } = useTranslation();
 	const { data: categories, isError, isPending } = useGetCategories();
+	const [search, setSearch] = useState("");
+
+	const filteredCategories = useMemo(() => {
+		if (!categories) return categories;
+		const query = search.trim().toLowerCase();
+		if (!query) return categories;
+		return categories.filter(
+			category =>
+				category.name.toLowerCase().includes(query) ||
+				category.products.some(product => product.title.toLowerCase().includes(query)),
+		);
+	}, [categories, search]);
 
 	return (
 		<Container className="space-y-6 py-6 sm:py-8">
@@ -22,7 +35,12 @@ function CategoriesPage() {
 			) : isError ? (
 				<ErrorState title={t("admin.categories.loadError")} />
 			) : (
-				<CategoriesTable categories={categories} />
+				<CategoriesTable
+					categories={categories}
+					onSearchChange={setSearch}
+					search={search}
+					visibleCategories={filteredCategories}
+				/>
 			)}
 		</Container>
 	);
