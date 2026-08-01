@@ -555,7 +555,7 @@
 				"options": {
 					"addGroup": "Adicionar",
 					"addOption": "Adicionar opção",
-					"allowRepeatSelection": "Permitir repetir a mesma opção",
+					"allowRepeatSelection": "Permitir mais de 1 unidade da mesma opção",
 					"available": "Disponível",
 					"average": "Média",
 					"delete": "Excluir",
