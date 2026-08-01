@@ -6,10 +6,12 @@ model OptionGroup {
     name          String
     /// Whether the customer must pick at least one option (effective min = 1; false = optional, min = 0).
     required      Boolean  @default(false)
-    /// Maximum number of selections allowed.
-    maxSelect     Int      @default(1)
-    /// "single" = radio; "multi" = stepper (customer can pick multiple options).
-    selectionType String   @default("single")
+    /// Maximum number of distinct options selectable; null = unlimited. 1 behaves like a radio
+    /// group (picking a new option replaces the previous one).
+    maxSelect     Int?
+    /// Whether the customer may pick the same option more than once (stepper). Ignored when
+    /// maxSelect is 1.
+    allowRepeatSelection Boolean @default(false)
     /// How to calculate the group's price contribution when multiple options are selected.
     /// "sum" = add all deltas; "highest" = use the highest-priced option (half-and-half pizza);
     /// "average" = average of selected deltas.

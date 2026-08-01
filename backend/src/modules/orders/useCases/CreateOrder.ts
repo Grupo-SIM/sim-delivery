@@ -79,10 +79,10 @@ export class CreateOrder {
 				title: string;
 				optionGroups: Array<{
 					id: string;
-					maxSelect: number;
+					maxSelect: number | null;
 					required: boolean;
 					priceRule: string;
-					selectionType: string;
+					allowRepeatSelection: boolean;
 					name: string;
 					options: Array<{
 						available: boolean;
@@ -156,15 +156,17 @@ export class CreateOrder {
 					}))
 					.filter(selection => selection.option);
 				const selectedQuantity = selected.reduce((sum, selection) => sum + selection.quantity, 0);
-				if ((group.required && selectedQuantity < 1) || selectedQuantity > group.maxSelect)
-					throw new DomainError(OrderErrors.INVALID_OPTIONS);
-				if (group.selectionType === "single" && selectedQuantity > 1)
+				if (
+					(group.required && selectedQuantity < 1) ||
+					(group.maxSelect != null && selectedQuantity > group.maxSelect)
+				)
 					throw new DomainError(OrderErrors.INVALID_OPTIONS);
 				for (const selection of selected) {
 					const option = selection.option!;
 					if (
 						option.available === false ||
 						excludedOptionIds.has(option.id) ||
+						(!group.allowRepeatSelection && selection.quantity > 1) ||
 						(option.maxPerItem !== null && selection.quantity > option.maxPerItem)
 					)
 						throw new DomainError(OrderErrors.INVALID_OPTIONS);

@@ -10,11 +10,6 @@ import type {
 } from "../dtos";
 import { ProductErrors } from "../errors";
 
-function validateGroup(data: { maxSelect?: number; selectionType?: string }) {
-	if (data.selectionType === "single" && data.maxSelect !== undefined && data.maxSelect !== 1)
-		throw new DomainError(ProductErrors.INVALID_OPTION_RULES);
-}
-
 export class ProductOptions {
 	constructor(private readonly prisma: PrismaInstance) {}
 
@@ -44,7 +39,6 @@ export class ProductOptions {
 
 	async createGroup(companyId: string | null, productId: string, data: CreateOptionGroupBody) {
 		await this.product(companyId, productId);
-		validateGroup(data);
 		return this.prisma.optionGroup.create({ data: { ...data, productId } });
 	}
 
@@ -54,8 +48,7 @@ export class ProductOptions {
 		groupId: string,
 		data: UpdateOptionGroupBody,
 	) {
-		const group = await this.group(companyId, productId, groupId);
-		validateGroup({ ...group, ...data });
+		await this.group(companyId, productId, groupId);
 		return this.prisma.optionGroup.update({ data, where: { id: groupId } });
 	}
 
@@ -71,7 +64,6 @@ export class ProductOptions {
 
 	async save(companyId: string | null, productId: string, data: SaveProductOptionGroupsBody) {
 		await this.product(companyId, productId);
-		for (const group of data.groups) validateGroup(group);
 
 		const existingGroups = await this.prisma.optionGroup.findMany({
 			include: { options: true },
@@ -103,11 +95,11 @@ export class ProductOptions {
 
 		for (const group of data.groups) {
 			const groupData = {
+				allowRepeatSelection: group.allowRepeatSelection,
 				maxSelect: group.maxSelect,
 				name: group.name,
 				priceRule: group.priceRule,
 				required: group.required,
-				selectionType: group.selectionType,
 				sortOrder: group.sortOrder,
 			};
 			const optionData = (option: (typeof group.options)[number]) => ({

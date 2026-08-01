@@ -12,13 +12,13 @@ export const PublicOptionReturn = t.Object({
 export type PublicOptionReturn = typeof PublicOptionReturn.static;
 
 export const PublicOptionGroupReturn = t.Object({
+	allowRepeatSelection: t.Boolean(),
 	id: t.String(),
-	maxSelect: t.Integer(),
+	maxSelect: t.Nullable(t.Integer()),
 	name: t.String(),
 	options: t.Array(PublicOptionReturn),
 	priceRule: t.String(),
 	required: t.Boolean(),
-	selectionType: t.String(),
 	sortOrder: t.Integer(),
 });
 export type PublicOptionGroupReturn = typeof PublicOptionGroupReturn.static;

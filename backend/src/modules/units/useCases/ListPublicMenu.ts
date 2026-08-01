@@ -127,7 +127,7 @@ export class ListPublicMenu {
 			const isOrderable = optionGroups.every(group => {
 				if (!group.required) return true;
 				const capacity = group.options.reduce(
-					(sum, option) => sum + (option.maxPerItem ?? group.maxSelect),
+					(sum, option) => sum + (option.maxPerItem ?? group.maxSelect ?? Number.POSITIVE_INFINITY),
 					0,
 				);
 				return capacity >= 1;
@@ -174,6 +174,7 @@ export class ListPublicMenu {
 					id: association.id,
 					imageUrl: product.imageUrl,
 					optionGroups: optionGroups.map(g => ({
+						allowRepeatSelection: g.allowRepeatSelection,
 						id: g.id,
 						maxSelect: g.maxSelect,
 						name: g.name,
@@ -188,7 +189,6 @@ export class ListPublicMenu {
 						})),
 						priceRule: g.priceRule,
 						required: g.required,
-						selectionType: g.selectionType,
 						sortOrder: g.sortOrder,
 					})),
 					popularity: product.popularity,

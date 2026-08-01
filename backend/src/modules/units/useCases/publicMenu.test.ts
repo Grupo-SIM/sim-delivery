@@ -21,8 +21,9 @@ interface Assoc {
 		categories: { category: { id: string; name: string; position: number } }[];
 		tags: { tag: { color: string; id: string; name: string } }[];
 		optionGroups: {
+			allowRepeatSelection: boolean;
 			id: string;
-			maxSelect: number;
+			maxSelect: number | null;
 			required: boolean;
 			name: string;
 			options: {
@@ -35,7 +36,6 @@ interface Assoc {
 				priceDeltaCents: number;
 			}[];
 			priceRule: string;
-			selectionType: string;
 			sortOrder: number;
 		}[];
 		popularity: number;
@@ -185,6 +185,7 @@ describe("ListPublicMenu", () => {
 
 	it("computes fromPriceCents as base + min required option deltas", async () => {
 		const optionGroup = (required: boolean, options: { priceDeltaCents: number }[]) => ({
+			allowRepeatSelection: false,
 			id: "g1",
 			maxSelect: 1,
 			name: "Sabor",
@@ -199,7 +200,6 @@ describe("ListPublicMenu", () => {
 			})),
 			priceRule: "highest",
 			required,
-			selectionType: "single",
 			sortOrder: 0,
 		});
 
@@ -246,6 +246,7 @@ describe("ListPublicMenu", () => {
 
 	it("hides excluded options and omits products with impossible required groups", async () => {
 		const group = (id: string, required: boolean, options: { id: string; priceDeltaCents: number }[]) => ({
+			allowRepeatSelection: false,
 			id,
 			maxSelect: 1,
 			name: id,
@@ -259,7 +260,6 @@ describe("ListPublicMenu", () => {
 			})),
 			priceRule: "sum",
 			required,
-			selectionType: "single",
 			sortOrder: 0,
 		});
 		const prisma = prismaWith({ id: "u1", slug: "ipês" }, [

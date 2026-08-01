@@ -3,7 +3,7 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import { ProductOptions } from "./ProductOptions";
 
 function prismaWith(companyId = "cmp_1") {
-	const groups = [{ id: "group_1", maxSelect: 1, productId: "product_1", selectionType: "single" }];
+	const groups = [{ allowRepeatSelection: false, id: "group_1", maxSelect: 1, productId: "product_1" }];
 	const deleted: string[] = [];
 	return {
 		deleted,
@@ -51,28 +51,18 @@ describe("ProductOptions", () => {
 				maxSelect: 1,
 				name: "Sabor",
 				priceRule: "sum",
-				selectionType: "single",
 			}),
 		).rejects.toThrow("PRODUCT_NOT_FOUND");
 	});
 
-	it("rejects multi-value max on single selection groups at creation", async () => {
+	it("accepts an unlimited (null) maxSelect on creation", async () => {
 		const { prisma } = prismaWith();
-		await expect(
-			new ProductOptions(prisma).createGroup("cmp_1", "product_1", {
-				maxSelect: 2,
-				name: "Sabor",
-				priceRule: "sum",
-				selectionType: "single",
-			}),
-		).rejects.toThrow("INVALID_OPTION_RULES");
-	});
-
-	it("rejects multi-value limits on single selection groups", async () => {
-		const { prisma } = prismaWith();
-		await expect(
-			new ProductOptions(prisma).updateGroup("cmp_1", "product_1", "group_1", { maxSelect: 2 }),
-		).rejects.toThrow("INVALID_OPTION_RULES");
+		const group = await new ProductOptions(prisma).createGroup("cmp_1", "product_1", {
+			maxSelect: null,
+			name: "Adicionais",
+			priceRule: "sum",
+		});
+		expect(group).toMatchObject({ maxSelect: null });
 	});
 
 	it("cascades option deletion through its owned group", async () => {
@@ -110,11 +100,11 @@ describe("ProductOptions", () => {
 		await new ProductOptions(prisma).save("cmp_1", "product_1", {
 			groups: [
 				{
-					maxSelect: 1,
+					allowRepeatSelection: false,
+					maxSelect: null,
 					name: "Adicionais",
 					options: [{ name: "Queijo", priceDeltaCents: 200 }],
 					priceRule: "sum",
-					selectionType: "single",
 				},
 			],
 		});
@@ -123,7 +113,8 @@ describe("ProductOptions", () => {
 			{
 				action: "create",
 				data: {
-					maxSelect: 1,
+					allowRepeatSelection: false,
+					maxSelect: null,
 					name: "Adicionais",
 					options: {
 						createMany: {
@@ -142,7 +133,6 @@ describe("ProductOptions", () => {
 					},
 					priceRule: "sum",
 					productId: "product_1",
-					selectionType: "single",
 				},
 			},
 		]);
