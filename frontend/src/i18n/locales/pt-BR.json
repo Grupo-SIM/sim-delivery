@@ -96,7 +96,6 @@
 			"categories": {
 				"columns": {
 					"name": "Nome",
-					"position": "Ordem",
 					"products": "Produtos associados"
 				},
 				"create": {
@@ -124,13 +123,15 @@
 				"empty": "Nenhuma categoria ainda.",
 				"loadError": "Não foi possível carregar as categorias.",
 				"order": {
-					"down": "Mover para baixo",
 					"error": "Não foi possível alterar a ordem das categorias.",
-					"success": "Ordem das categorias atualizada.",
-					"up": "Mover para cima"
+					"reorder": "Arrastar para reordenar",
+					"success": "Ordem das categorias atualizada."
 				},
 				"products": {
-					"empty": "Nenhum produto associado"
+					"empty": "Nenhum produto associado",
+					"modalTitle": "Produtos de {{name}}",
+					"viewButton_one": "{{count}} produto",
+					"viewButton_other": "{{count}} produtos"
 				},
 				"row": {
 					"delete": "Excluir",
@@ -138,6 +139,11 @@
 					"deleteError": "Não foi possível excluir a categoria.",
 					"deleteSuccess": "Categoria excluída."
 				},
+				"search": {
+					"label": "Buscar categorias",
+					"placeholder": "Nome da categoria"
+				},
+				"searchEmpty": "Nenhuma categoria encontrada.",
 				"subtitle": "Grupos do cardápio para esta empresa.",
 				"title": "Categorias"
 			},
@@ -173,6 +179,10 @@
 					"deleteConfirm": "Excluir empresa {{name}}?",
 					"deleteError": "Não foi possível excluir a empresa.",
 					"deleteSuccess": "Empresa excluída."
+				},
+				"search": {
+					"label": "Buscar empresas",
+					"placeholder": "Nome ou slug"
 				},
 				"subtitle": "Clientes atendidos pela plataforma.",
 				"title": "Empresas"
@@ -222,6 +232,10 @@
 					"deleteError": "Não foi possível excluir o cupom.",
 					"deleteSuccess": "Cupom excluído.",
 					"never": "Sem validade"
+				},
+				"search": {
+					"label": "Buscar cupons",
+					"placeholder": "Código do cupom"
 				},
 				"subtitle": "Crie e gerencie descontos para suas unidades.",
 				"title": "Cupons",
@@ -541,9 +555,9 @@
 				"options": {
 					"addGroup": "Adicionar",
 					"addOption": "Adicionar opção",
+					"allowRepeatSelection": "Permitir repetir a mesma opção",
 					"available": "Disponível",
 					"average": "Média",
-					"choices": "Escolhas",
 					"delete": "Excluir",
 					"deleteGroupConfirm": "Excluir grupo e suas opções?",
 					"deleteOptionConfirm": "Excluir opção?",
@@ -557,10 +571,10 @@
 					"highest": "Maior preço",
 					"loadError": "Não foi possível carregar os detalhes das customizações.",
 					"max": "Máximo",
+					"maxHelp": "Deixe em branco para não limitar a quantidade de escolhas. Com máximo 1, funciona como escolha única.",
 					"maxSelect": "Máximo de escolhas",
 					"minimize": "Minimizar",
 					"minSelect": "Mínimo de escolhas",
-					"multi": "Múltipla escolha",
 					"optionCount_one": "{{count}} opção",
 					"optionCount_other": "{{count}} opções",
 					"optionCreated": "Opção criada",
@@ -574,11 +588,10 @@
 					"reorder": "Arraste para ordenar",
 					"required": "Obrigatório",
 					"saved": "Customização salva",
-					"selectionType": "Tipo",
-					"single": "Escolha única",
 					"sum": "Somar preços",
 					"title": "Customizações",
-					"unavailable": "Indisponível"
+					"unavailable": "Indisponível",
+					"unlimited": "Sem limite"
 				},
 				"recipe": {
 					"action": "Ingredientes",
@@ -608,6 +621,10 @@
 					"deleteSuccess": "Produto excluído.",
 					"none": "Nenhuma",
 					"unitDefault": "Padrão"
+				},
+				"search": {
+					"label": "Buscar produtos",
+					"placeholder": "Nome do produto"
 				},
 				"tabs": {
 					"categories": "Categorias",
@@ -670,6 +687,10 @@
 					"titlePlaceholder": "Ex: Promoção de fim de semana"
 				},
 				"loadError": "Não foi possível carregar as imagens promocionais.",
+				"search": {
+					"label": "Buscar imagens promocionais",
+					"placeholder": "Título da imagem"
+				},
 				"subtitle": "Banners promocionais reutilizáveis entre unidades.",
 				"title": "Imagens promocionais",
 				"units": {
@@ -769,6 +790,10 @@
 				},
 				"productEmpty": "Nenhuma avaliação de produto ainda.",
 				"productLoadError": "Não foi possível carregar as avaliações de produtos.",
+				"search": {
+					"label": "Buscar avaliações",
+					"placeholder": "Cliente ou produto"
+				},
 				"subtitle": "Avaliações de clientes desta empresa.",
 				"tabs": {
 					"products": "Produtos",
@@ -813,6 +838,10 @@
 					"updateError": "Não foi possível atualizar o funcionário.",
 					"updateSuccess": "Funcionário atualizado."
 				},
+				"search": {
+					"label": "Buscar equipe",
+					"placeholder": "Nome ou e-mail"
+				},
 				"subtitle": "Pessoas que gerenciam esta empresa.",
 				"title": "Equipe"
 			},
@@ -847,6 +876,10 @@
 					"deleteConfirm": "Excluir etiqueta {{name}}?",
 					"deleteError": "Não foi possível excluir a etiqueta.",
 					"deleteSuccess": "Etiqueta excluída."
+				},
+				"search": {
+					"label": "Buscar etiquetas",
+					"placeholder": "Nome da etiqueta"
 				},
 				"subtitle": "Rótulos para produtos desta empresa.",
 				"title": "Etiquetas"
@@ -1057,6 +1090,10 @@
 					"deleteError": "Não foi possível desativar a unidade.",
 					"deleteSuccess": "Unidade desativada.",
 					"statusError": "Não foi possível atualizar o status da unidade."
+				},
+				"search": {
+					"label": "Buscar unidades",
+					"placeholder": "Nome ou cidade"
 				},
 				"status": {
 					"active": "Ativa",
@@ -1429,6 +1466,8 @@
 			},
 			"product": {
 				"addedTitle": "{{title}} adicionado!",
+				"chooseAny": "Escolha quantos quiser",
+				"chooseAtLeast": "Escolha pelo menos 1",
 				"chooseExact": "Escolha {{count}}",
 				"chooseGroup": "Escolha {{group}}",
 				"chooseRange": "Escolha de {{min}} a {{max}}",
@@ -1436,7 +1475,6 @@
 				"continueShopping": "Continuar comprando",
 				"from": "A partir de",
 				"goToCart": "Avançar para o carrinho",
-				"included": "Incluso",
 				"noteLabel": "Observações",
 				"notePlaceholder": "Ex: sem cebola, ovo…",
 				"notFound": "Produto não encontrado.",

@@ -34,13 +34,13 @@ import { type EditableOption, OptionEditor } from "./OptionEditor";
 import { OptionGroupCard } from "./OptionGroupCard";
 
 export interface OptionGroup {
+	allowRepeatSelection: boolean;
 	id: string;
-	maxSelect: number;
+	maxSelect: number | null;
 	name: string;
 	options: EditableOption[];
 	priceRule: "sum" | "highest" | "average";
 	required: boolean;
-	selectionType: "single" | "multi";
 	sortOrder: number;
 }
 
@@ -96,6 +96,7 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 			<OptionGroupCard
 				dragHandleProps={{ ...attributes, ...listeners }}
 				name={group.name}
+				onDelete={onDelete}
 				onEdit={() => {
 					setOriginalGroup(structuredClone(group));
 					setIsExpanded(true);
@@ -126,23 +127,6 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 								value={localName}
 							/>
 						</Label>
-						<Label>
-							<span>{t("admin.products.options.selectionType")}</span>
-							<CustomSelect
-								onChange={selectionType =>
-									onChange({
-										...group,
-										maxSelect: selectionType === "single" ? 1 : group.maxSelect,
-										selectionType: selectionType as OptionGroup["selectionType"],
-									})
-								}
-								options={[
-									{ label: t("admin.products.options.single"), value: "single" },
-									{ label: t("admin.products.options.multi"), value: "multi" },
-								]}
-								value={group.selectionType}
-							/>
-						</Label>
 						<div className="flex items-center gap-2 md:col-span-2">
 							<Checkbox
 								aria-label={t("admin.products.options.required")}
@@ -151,39 +135,51 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 							/>
 							<span>{t("admin.products.options.required")}</span>
 						</div>
-						{group.selectionType === "multi" && (
-							<div className="flex flex-wrap items-end gap-3 md:col-span-2">
-								<div className="space-y-1">
-									<p className="font-medium text-sm">{t("admin.products.options.choices")}</p>
-									<div className="flex gap-2">
-										<Label>
-											<span className="text-muted-foreground">{t("admin.products.options.max")}</span>
-											<NumericInput
-												className="w-20"
-												decimalScale={0}
-												onValueChange={({ floatValue }) => onChange({ ...group, maxSelect: floatValue ?? 1 })}
-												placeholder="1"
-												value={group.maxSelect}
-											/>
-										</Label>
-									</div>
-								</div>
-								<Label className="w-52">
-									<span>{t("admin.products.options.priceRule")}</span>
-									<CustomSelect
-										onChange={priceRule =>
-											onChange({ ...group, priceRule: priceRule as OptionGroup["priceRule"] })
+						<div className="space-y-3 md:col-span-2">
+							<div className="flex flex-wrap items-end gap-4">
+								<Label>
+									<span className="text-muted-foreground">{t("admin.products.options.max")}</span>
+									<NumericInput
+										className="w-20"
+										decimalScale={0}
+										onValueChange={({ floatValue }) =>
+											onChange({ ...group, maxSelect: floatValue ?? null })
 										}
-										options={[
-											{ label: t("admin.products.options.sum"), value: "sum" },
-											{ label: t("admin.products.options.highest"), value: "highest" },
-											{ label: t("admin.products.options.average"), value: "average" },
-										]}
-										value={group.priceRule}
+										placeholder={t("admin.products.options.unlimited")}
+										value={group.maxSelect}
 									/>
 								</Label>
+								{group.maxSelect !== 1 && (
+									<>
+										<div className="flex items-center gap-2 pb-2">
+											<Checkbox
+												aria-label={t("admin.products.options.allowRepeatSelection")}
+												checked={group.allowRepeatSelection}
+												onChange={() =>
+													onChange({ ...group, allowRepeatSelection: !group.allowRepeatSelection })
+												}
+											/>
+											<span>{t("admin.products.options.allowRepeatSelection")}</span>
+										</div>
+										<Label className="w-52">
+											<span>{t("admin.products.options.priceRule")}</span>
+											<CustomSelect
+												onChange={priceRule =>
+													onChange({ ...group, priceRule: priceRule as OptionGroup["priceRule"] })
+												}
+												options={[
+													{ label: t("admin.products.options.sum"), value: "sum" },
+													{ label: t("admin.products.options.highest"), value: "highest" },
+													{ label: t("admin.products.options.average"), value: "average" },
+												]}
+												value={group.priceRule}
+											/>
+										</Label>
+									</>
+								)}
 							</div>
-						)}
+							<p className="text-muted-foreground text-xs">{t("admin.products.options.maxHelp")}</p>
+						</div>
 					</div>
 					{group.options.length > 0 && (
 						<>
@@ -240,7 +236,7 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 					<div className="border-border border-t pt-4">
 						<AddOptionModal onAdd={addOption} />
 					</div>
-					<div className="flex justify-end gap-2 border-border border-t pt-4">
+					<div className="flex justify-end gap-2">
 						<ConfirmActionButton
 							confirmation={t("admin.products.options.deleteGroupConfirm")}
 							confirmLabel={t("admin.products.options.delete")}
