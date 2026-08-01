@@ -3,6 +3,7 @@ import { LuImageOff } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { StarRating } from "@/components/ui/StarRating";
+import { hasPriceVariation } from "./product-options";
 import { type MenuItem, money } from "./types";
 
 interface MenuItemCardProps {
@@ -12,9 +13,9 @@ interface MenuItemCardProps {
 
 export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 	const { t } = useTranslation();
-	const hasGroups = item.optionGroups.length > 0;
+	const showFromPrice = hasPriceVariation(item.optionGroups);
 
-	const displayPrice = money.format(Number(hasGroups ? item.fromPriceCents : item.priceCents) / 100);
+	const displayPrice = money.format(Number(item.fromPriceCents) / 100);
 	const isPromotional = Number(item.priceCents) < Number(item.regularPriceCents);
 
 	return (
@@ -68,7 +69,7 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 								{money.format(Number(item.regularPriceCents) / 100)}
 							</span>
 						)}
-						{hasGroups && (
+						{showFromPrice && (
 							<span className="block text-[11px] text-muted-foreground">{t("store.product.from")}</span>
 						)}
 						<span className="font-bold text-lg">{displayPrice}</span>

@@ -1,17 +1,25 @@
 import type { ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
-import { LuGripVertical, LuPencil } from "react-icons/lu";
+import { LuGripVertical, LuPencil, LuTrash2 } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
+import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Tooltip } from "@/components/ui/Tooltip";
 
 interface OptionGroupCardProps {
 	dragHandleProps?: ComponentProps<"button">;
 	name: string;
+	onDelete?: () => void;
 	onEdit?: () => void;
 	optionCount: number;
 }
 
-export function OptionGroupCard({ dragHandleProps, name, onEdit, optionCount }: OptionGroupCardProps) {
+export function OptionGroupCard({
+	dragHandleProps,
+	name,
+	onDelete,
+	onEdit,
+	optionCount,
+}: OptionGroupCardProps) {
 	const { t } = useTranslation();
 	const canDrag = Boolean(dragHandleProps);
 
@@ -35,19 +43,35 @@ export function OptionGroupCard({ dragHandleProps, name, onEdit, optionCount }: 
 						</p>
 					</div>
 				</div>
-				<Tooltip content={t("admin.products.options.edit")}>
-					<Button
-						aria-label={t("admin.products.options.edit")}
+				<div className="flex items-center gap-2">
+					<Tooltip content={t("admin.products.options.edit")}>
+						<Button
+							aria-label={t("admin.products.options.edit")}
+							className="disabled:opacity-100"
+							disabled={!onEdit}
+							onClick={onEdit}
+							size="icon"
+							type="button"
+							variant="outline"
+						>
+							<LuPencil className="size-4" />
+						</Button>
+					</Tooltip>
+					<ConfirmActionButton
+						aria-label={t("admin.products.options.delete")}
 						className="disabled:opacity-100"
-						disabled={!onEdit}
-						onClick={onEdit}
+						confirmation={t("admin.products.options.deleteGroupConfirm")}
+						confirmLabel={t("admin.products.options.delete")}
+						disabled={!onDelete}
+						idleIcon={<LuTrash2 className="size-4" />}
+						onConfirm={() => onDelete?.()}
 						size="icon"
 						type="button"
 						variant="outline"
 					>
-						<LuPencil className="size-4" />
-					</Button>
-				</Tooltip>
+						{null}
+					</ConfirmActionButton>
+				</div>
 			</div>
 		</div>
 	);

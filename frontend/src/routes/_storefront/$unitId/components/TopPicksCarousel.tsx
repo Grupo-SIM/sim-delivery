@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/ScrollArea";
+import { hasPriceVariation } from "./product-options";
 import { type MenuItem, type MenuSection, money } from "./types";
 
 interface TopPicksCarouselProps {
@@ -63,9 +64,9 @@ export function TopPicksCarousel({ onSelect, sections }: TopPicksCarouselProps) 
 								<p className="truncate font-medium text-sm">{item.title}</p>
 								<div className="mt-auto flex items-center gap-2 pt-1">
 									<span className="font-semibold text-sm">
-										{item.optionGroups.length > 0
+										{hasPriceVariation(item.optionGroups)
 											? `${t("store.product.from")} ${money.format(Number(item.fromPriceCents) / 100)}`
-											: money.format(Number(item.priceCents) / 100)}
+											: money.format(Number(item.fromPriceCents) / 100)}
 									</span>
 									{item.cashbackPercent != null && (
 										<Badge className="shrink-0 border-success/30 bg-success/10 text-success">

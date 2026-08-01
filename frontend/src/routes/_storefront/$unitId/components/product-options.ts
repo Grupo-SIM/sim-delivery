@@ -37,6 +37,38 @@ export function lineTotal(item: MenuItem, options: SelectedOption[], quantity: n
 	return (Number(item.priceCents) + optionsPriceDelta(item.optionGroups, options)) * quantity;
 }
 
+/**
+ * Whether any combination of option picks can change the item's total price. False when every
+ * group is either empty, a required single-choice with one option, or a required group whose
+ * options all share the same price delta — in those cases the price is fixed regardless of what
+ * the customer picks, so "A partir de" would be misleading.
+ */
+export function hasPriceVariation(optionGroups: OptionGroup[]): boolean {
+	return optionGroups.some(group => {
+		const prices = group.options.map(option => Number(option.priceDeltaCents));
+		if (prices.length === 0) return false;
+
+		if (!group.required) return prices.some(price => price !== 0);
+
+		if (group.selectionType !== "single" && group.priceRule === "sum" && Number(group.maxSelect) > 1) {
+			return prices.some(price => price !== 0);
+		}
+
+		return new Set(prices).size > 1;
+	});
+}
+
+/**
+ * Whether a group has been filled out to the point it should collapse into a summary:
+ * single-choice groups complete as soon as one option is picked, multi-choice groups only
+ * once every selectable unit (`maxSelect`) has been used.
+ */
+export function isGroupComplete(group: OptionGroup, options: SelectedOption[]): boolean {
+	const count = groupQuantity(options, group.id);
+
+	return group.selectionType === "single" ? count > 0 : count >= Number(group.maxSelect);
+}
+
 /** First group whose selection count falls outside its min/max, or undefined when all are valid. */
 export function findInvalidGroup(
 	optionGroups: OptionGroup[],

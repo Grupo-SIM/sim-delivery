@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaCartShopping } from "react-icons/fa6";
+import { LuChevronDown } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Modal } from "@/components/ui/Modal";
@@ -9,7 +10,7 @@ import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import type { CartItem, SelectedOption } from "@/stores";
 import { useCartStore } from "@/stores";
 import { OptionImagePreviewModal } from "./OptionImagePreviewModal";
-import { applyOptionQuantity, findInvalidGroup, optionsPriceDelta } from "./product-options";
+import { applyOptionQuantity, findInvalidGroup, isGroupComplete, optionsPriceDelta } from "./product-options";
 import { type MenuItem, money } from "./types";
 
 interface ProductDetailsModalProps {
@@ -28,13 +29,27 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 	const [quantity, setQuantity] = useState(1);
 	const [options, setOptions] = useState<SelectedOption[]>([]);
 	const [imagePreview, setImagePreview] = useState<{ alt: string; imageUrl: string } | null>(null);
+	const [expandedGroupIds, setExpandedGroupIds] = useState<Set<string>>(new Set());
 
 	useEffect(() => {
 		if (!item) return;
 		setNote(editingItem?.note ?? "");
 		setLocalNote(editingItem?.note ?? "");
-		setOptions(editingItem?.options ?? []);
 		setQuantity(editingItem?.quantity ?? 1);
+		setExpandedGroupIds(new Set());
+
+		if (editingItem) {
+			setOptions(editingItem.options ?? []);
+			return;
+		}
+		setOptions(
+			item.optionGroups
+				.filter(group => group.required && group.selectionType === "single" && group.options.length === 1)
+				.reduce(
+					(current, group) => applyOptionQuantity(group, group.options[0], 1, current),
+					[] as SelectedOption[],
+				),
+		);
 	}, [editingItem, item, setLocalNote]);
 
 	if (!item) return null;
@@ -55,7 +70,27 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 	) {
 		const group = selectedItem.optionGroups.find(value => value.id === groupId);
 		if (!group) return;
-		setOptions(current => applyOptionQuantity(group, option, nextQuantity, current));
+		setOptions(current => {
+			const next = applyOptionQuantity(group, option, nextQuantity, current);
+			if (isGroupComplete(group, next)) {
+				setExpandedGroupIds(expanded => {
+					if (!expanded.has(groupId)) return expanded;
+					const withoutGroup = new Set(expanded);
+					withoutGroup.delete(groupId);
+					return withoutGroup;
+				});
+			}
+			return next;
+		});
+	}
+
+	function toggleGroupExpanded(groupId: string) {
+		setExpandedGroupIds(current => {
+			const next = new Set(current);
+			if (next.has(groupId)) next.delete(groupId);
+			else next.add(groupId);
+			return next;
+		});
 	}
 
 	function add() {
@@ -76,18 +111,18 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 		<>
 			<Modal isOpen maxWidth="1100px" onClose={onClose} scrollable={false}>
 				<div className="flex h-full min-h-0 min-w-0 flex-col gap-6">
-					<div className="grid min-h-0 min-w-0 flex-1 gap-6 overflow-hidden lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)]">
-						<div className="aspect-[4/3] w-full shrink-0 self-start overflow-hidden rounded-brand bg-muted lg:aspect-square">
-							{selectedItem.imageUrl ? (
+					<div
+						className={`grid min-h-0 min-w-0 flex-1 gap-6 overflow-hidden ${selectedItem.imageUrl ? "lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)]" : "lg:grid-cols-1"}`}
+					>
+						{selectedItem.imageUrl && (
+							<div className="aspect-[4/3] w-full shrink-0 self-start overflow-hidden rounded-brand bg-muted lg:aspect-square">
 								<img
 									alt={selectedItem.title}
 									className="size-full object-cover"
 									src={selectedItem.imageUrl}
 								/>
-							) : (
-								<div className="size-full" />
-							)}
-						</div>
+							</div>
+						)}
 						<div className="flex min-h-0 min-w-0 flex-col gap-5">
 							<div className="shrink-0 space-y-2 sm:pr-8">
 								<h2 className="font-bold text-2xl text-foreground">{selectedItem.title}</h2>
@@ -99,109 +134,147 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 							</div>
 
 							<ScrollArea className="h-0 min-h-0 flex-1 space-y-5 overflow-y-auto pr-2">
-								{selectedItem.optionGroups.map(group => {
-									const groupSelected = options.filter(value => value.groupId === group.id);
-									const groupQuantity = groupSelected.reduce((sum, value) => sum + value.quantity, 0);
-									const groupIsValid = !group.required || groupQuantity >= 1;
-									return (
-										<section
-											className="min-w-0 overflow-hidden rounded-brand border border-border"
-											key={group.id}
-										>
-											<div className="flex min-w-0 items-center justify-between gap-3 bg-muted px-4 py-3">
-												<div className="min-w-0">
-													<h3 className="font-semibold text-foreground">{group.name}</h3>
-													<p className="text-muted-foreground text-sm">
-														{chooseLabel(group.required, Number(group.maxSelect))}
-													</p>
-												</div>
-												{group.required ? (
-													<span className="shrink-0 rounded bg-foreground px-2 py-1 font-semibold text-[10px] text-background uppercase">
-														{t("store.product.required")}
-													</span>
-												) : groupIsValid ? (
-													<span className="font-bold text-primary" title={t("store.product.optional")}>
-														✓
-													</span>
-												) : null}
-											</div>
-											<div className="divide-y divide-border">
-												{group.options.map(option => {
-													const selected = options.find(value => value.optionId === option.id);
-													const optionLimit = Number(option.maxPerItem ?? group.maxSelect);
-													const atLimit =
-														(selected?.quantity ?? 0) >= optionLimit ||
-														groupQuantity >= Number(group.maxSelect);
-													return (
-														<div className="flex min-w-0 items-center gap-3 px-4 py-3" key={option.id}>
-															{option.imageUrl ? (
-																<button
-																	aria-label={`Ampliar imagem de ${option.name}`}
-																	className="size-14 shrink-0 cursor-pointer overflow-hidden rounded border border-border"
-																	onClick={() =>
-																		setImagePreview({ alt: option.name, imageUrl: option.imageUrl as string })
-																	}
-																	type="button"
-																>
-																	<img alt="" className="size-full object-cover" src={option.imageUrl} />
-																</button>
-															) : (
-																<div className="size-14 shrink-0 rounded bg-muted" />
-															)}
-															<div className="min-w-0 flex-1">
-																<p className="font-medium text-foreground">{option.name}</p>
-																{option.description && (
-																	<p className="truncate text-muted-foreground text-sm">
-																		{option.description}
-																	</p>
-																)}
-																<p className="text-muted-foreground text-sm">
-																	{Number(option.priceDeltaCents) > 0
-																		? `+ ${money.format(Number(option.priceDeltaCents) / 100)}`
-																		: t("store.product.included")}
-																</p>
-															</div>
-															{group.selectionType === "single" ? (
-																<Checkbox
-																	checked={Boolean(selected)}
-																	id={`option-${option.id}`}
-																	onChange={() => setOptionQuantity(group.id, option, selected ? 0 : 1)}
-																	onClick={event => event.stopPropagation()}
-																/>
-															) : (
-																<div className="flex items-center gap-2">
-																	<Button
-																		disabled={!selected}
-																		onClick={() =>
-																			setOptionQuantity(group.id, option, (selected?.quantity ?? 0) - 1)
-																		}
-																		size="sm"
-																		type="button"
-																		variant="outline"
-																	>
-																		−
-																	</Button>
-																	<span className="w-4 text-center">{selected?.quantity ?? 0}</span>
-																	<Button
-																		disabled={atLimit}
-																		onClick={() =>
-																			setOptionQuantity(group.id, option, (selected?.quantity ?? 0) + 1)
-																		}
-																		size="sm"
-																		type="button"
-																		variant="outline"
-																	>
-																		+
-																	</Button>
-																</div>
-															)}
+								{selectedItem.optionGroups
+									.filter(group => group.options.length > 0)
+									.map(group => {
+										const groupSelected = options.filter(value => value.groupId === group.id);
+										const groupQuantity = groupSelected.reduce((sum, value) => sum + value.quantity, 0);
+										const complete = isGroupComplete(group, options);
+										const collapsed = complete && !expandedGroupIds.has(group.id);
+										const summary =
+											group.selectionType === "single"
+												? groupSelected[0]?.optionName
+												: groupSelected
+														.filter(value => value.quantity > 0)
+														.map(value => `${value.quantity}x ${value.optionName}`)
+														.join(", ");
+										const selectedImageUrl =
+											group.selectionType === "single"
+												? group.options.find(option => option.id === groupSelected[0]?.optionId)?.imageUrl
+												: null;
+										return (
+											<section
+												className="min-w-0 overflow-hidden rounded-brand border border-border"
+												key={group.id}
+											>
+												<button
+													className={`flex w-full min-w-0 items-center justify-between gap-3 bg-muted px-4 py-3 text-left ${complete ? "cursor-pointer" : "cursor-default"}`}
+													onClick={() => complete && toggleGroupExpanded(group.id)}
+													type="button"
+												>
+													<div className="flex min-w-0 items-center gap-3">
+														{collapsed && selectedImageUrl && (
+															<img
+																alt=""
+																className="size-10 shrink-0 rounded object-cover"
+																src={selectedImageUrl}
+															/>
+														)}
+														<div className="min-w-0">
+															<h3 className="font-semibold text-foreground">{group.name}</h3>
+															<p className="truncate text-muted-foreground text-sm">
+																{collapsed ? summary : chooseLabel(group.required, Number(group.maxSelect))}
+															</p>
 														</div>
-													);
-												})}
-											</div>
-										</section>
-									);
-								})}
+													</div>
+													<div className="flex shrink-0 items-center gap-2">
+														{complete ? (
+															<span className="font-bold text-primary" title={t("store.product.optional")}>
+																✓
+															</span>
+														) : group.required ? (
+															<span className="rounded bg-foreground px-2 py-1 font-semibold text-[10px] text-background uppercase">
+																{t("store.product.required")}
+															</span>
+														) : null}
+														{complete && (
+															<LuChevronDown
+																aria-hidden="true"
+																className={`text-muted-foreground transition-transform ${collapsed ? "" : "rotate-180"}`}
+															/>
+														)}
+													</div>
+												</button>
+												{!collapsed && (
+													<div className="divide-y divide-border">
+														{group.options.map(option => {
+															const selected = options.find(value => value.optionId === option.id);
+															const optionLimit = Number(option.maxPerItem ?? group.maxSelect);
+															const atLimit =
+																(selected?.quantity ?? 0) >= optionLimit ||
+																groupQuantity >= Number(group.maxSelect);
+															return (
+																<div className="flex min-w-0 items-center gap-3 px-4 py-3" key={option.id}>
+																	{option.imageUrl ? (
+																		<button
+																			aria-label={`Ampliar imagem de ${option.name}`}
+																			className="size-14 shrink-0 cursor-pointer overflow-hidden rounded border border-border"
+																			onClick={() =>
+																				setImagePreview({
+																					alt: option.name,
+																					imageUrl: option.imageUrl as string,
+																				})
+																			}
+																			type="button"
+																		>
+																			<img alt="" className="size-full object-cover" src={option.imageUrl} />
+																		</button>
+																	) : null}
+																	<div className="flex min-w-0 flex-1 flex-col justify-center">
+																		<p className="font-medium text-foreground">{option.name}</p>
+																		{option.description && (
+																			<p className="truncate text-muted-foreground text-sm">
+																				{option.description}
+																			</p>
+																		)}
+																		{Number(option.priceDeltaCents) > 0 && (
+																			<p className="text-muted-foreground text-sm">
+																				{`+ ${money.format(Number(option.priceDeltaCents) / 100)}`}
+																			</p>
+																		)}
+																	</div>
+																	{group.selectionType === "single" ? (
+																		<Checkbox
+																			checked={Boolean(selected)}
+																			id={`option-${option.id}`}
+																			onChange={() => setOptionQuantity(group.id, option, selected ? 0 : 1)}
+																			onClick={event => event.stopPropagation()}
+																		/>
+																	) : (
+																		<div className="flex items-center gap-2">
+																			<Button
+																				disabled={!selected}
+																				onClick={() =>
+																					setOptionQuantity(group.id, option, (selected?.quantity ?? 0) - 1)
+																				}
+																				size="sm"
+																				type="button"
+																				variant="outline"
+																			>
+																				−
+																			</Button>
+																			<span className="w-4 text-center">{selected?.quantity ?? 0}</span>
+																			<Button
+																				disabled={atLimit}
+																				onClick={() =>
+																					setOptionQuantity(group.id, option, (selected?.quantity ?? 0) + 1)
+																				}
+																				size="sm"
+																				type="button"
+																				variant="outline"
+																			>
+																				+
+																			</Button>
+																		</div>
+																	)}
+																</div>
+															);
+														})}
+													</div>
+												)}
+											</section>
+										);
+									})}
 							</ScrollArea>
 						</div>
 					</div>
