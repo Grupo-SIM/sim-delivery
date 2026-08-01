@@ -1,8 +1,8 @@
 import { CashbackErrors } from "@/modules/cashback/errors";
 import { GetCashbackBalance } from "@/modules/cashback/useCases";
 import { ValidateCoupon } from "@/modules/coupons/useCases";
-import { LoyaltyErrors } from "@/modules/loyalty/errors";
 import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
+import { LoyaltyErrors } from "@/modules/loyalty/errors";
 import { GetLoyaltyBalance } from "@/modules/loyalty/useCases";
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
@@ -209,16 +209,16 @@ export class CreateOrder {
 				(assoc.promotionalPriceCents ?? assoc.priceCentsOverride ?? assoc.product.basePriceCents) +
 				optionDelta;
 			return {
+				legacyStock: assoc.stock,
 				note: item.note ?? null,
 				options: snapshots,
 				productId: assoc.product.id,
 				productName: assoc.product.title,
-				unitProductId: assoc.id,
-				legacyStock: assoc.stock,
-				selectedOptions: selections,
 				quantity: item.quantity,
+				selectedOptions: selections,
 				total: unitPrice * item.quantity,
 				unitPrice,
+				unitProductId: assoc.id,
 			};
 		});
 
@@ -314,7 +314,13 @@ export class CreateOrder {
 			const createdItems: Array<{ id: string; item: (typeof resolvedItems)[number] }> = [];
 			for (const item of resolvedItems) {
 				const orderItem = await tx.orderItem.create({
-					data: { ...item, legacyStock: undefined, options: undefined, orderId: created.id, selectedOptions: undefined } as never,
+					data: {
+						...item,
+						legacyStock: undefined,
+						options: undefined,
+						orderId: created.id,
+						selectedOptions: undefined,
+					} as never,
 				});
 				createdItems.push({ id: orderItem.id, item });
 				if (item.options.length > 0) {
@@ -323,13 +329,34 @@ export class CreateOrder {
 					});
 				}
 			}
-			const costs = await InventoryLifecycle.reserve(tx, created.id, unitId, createdItems.map(({ id, item }) => ({ legacyStock: item.legacyStock, options: item.selectedOptions, orderItemId: id, productId: item.productId, quantity: item.quantity, unitProductId: item.unitProductId })));
+			const costs = await InventoryLifecycle.reserve(
+				tx,
+				created.id,
+				unitId,
+				createdItems.map(({ id, item }) => ({
+					legacyStock: item.legacyStock,
+					options: item.selectedOptions,
+					orderItemId: id,
+					productId: item.productId,
+					quantity: item.quantity,
+					unitProductId: item.unitProductId,
+				})),
+			);
 			const itemDiscount = Math.min(subtotal, discountCents + cashbackCentsRedeemed + loyaltyPointsRedeemed);
 			let distributed = 0;
 			for (const [index, { id, item }] of createdItems.entries()) {
-				const share = index === createdItems.length - 1 ? itemDiscount - distributed : Math.floor(itemDiscount * item.total / subtotal);
+				const share =
+					index === createdItems.length - 1
+						? itemDiscount - distributed
+						: Math.floor((itemDiscount * item.total) / subtotal);
 				distributed += share;
-				await tx.orderItem.update({ data: { costCents: costs.has(id) ? Math.round(costs.get(id)!) : null, netRevenueCents: item.total - share }, where: { id } });
+				await tx.orderItem.update({
+					data: {
+						costCents: costs.has(id) ? Math.round(costs.get(id)!) : null,
+						netRevenueCents: item.total - share,
+					},
+					where: { id },
+				});
 			}
 
 			return tx.order.findUniqueOrThrow({

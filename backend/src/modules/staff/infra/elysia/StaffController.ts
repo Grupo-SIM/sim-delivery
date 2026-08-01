@@ -6,16 +6,16 @@ import {
 	InviteStaffBody,
 	StaffListReturn,
 	StaffReturn,
-	UpdateStaffUnitsBody,
 	UpdateStaffRoleBody,
+	UpdateStaffUnitsBody,
 } from "../../dtos";
 import {
 	InviteStaff,
 	ListCouriers,
 	ListStaff,
 	RemoveStaff,
-	UpdateStaffUnits,
 	UpdateStaffRole,
+	UpdateStaffUnits,
 } from "../../useCases";
 
 export const StaffController = new Elysia({
@@ -37,8 +37,8 @@ export const StaffController = new Elysia({
 				listStaff: new ListStaff(prisma),
 				prisma,
 				removeStaff: new RemoveStaff(prisma),
-				updateStaffUnits: new UpdateStaffUnits(prisma),
 				updateStaffRole: new UpdateStaffRole(prisma),
+				updateStaffUnits: new UpdateStaffUnits(prisma),
 			}))
 			.get(
 				"/",

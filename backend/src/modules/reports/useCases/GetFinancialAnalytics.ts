@@ -6,7 +6,7 @@ import { getReportDateRange, type ReportGroupBy } from "../utils/reportPeriod";
 const COMPLETED = ["entregue", "retirado"];
 
 type Query = GetDashboardAnalyticsQuery;
-type FinancialOrder = {
+interface FinancialOrder {
 	cashbackCentsRedeemed: number;
 	createdAt: Date;
 	deliveryFee: number;
@@ -17,7 +17,7 @@ type FinancialOrder = {
 	statusEvents: { createdAt: Date; status: string }[];
 	total: number;
 	updatedAt: Date;
-};
+}
 
 function competenceDate(order: FinancialOrder) {
 	if (order.payment?.confirmedAt) return order.payment.confirmedAt;
@@ -49,9 +49,9 @@ function emptySummary(): {
 		cashbackRedeemedCents: 0,
 		deliveryFeeCents: 0,
 		discountCents: 0,
+		grossMarginPercent: null,
 		grossProfitCents: 0,
 		grossRevenueCents: 0,
-		grossMarginPercent: null,
 		knownCostCents: 0,
 		knownItemNetRevenueCents: 0,
 		netRevenueCents: 0,
@@ -78,14 +78,15 @@ function summarize(orders: FinancialOrder[]) {
 			}
 		}
 	}
-	summary.averageOrderValue = summary.orderCount ? Math.round(summary.netRevenueCents / summary.orderCount) : 0;
+	summary.averageOrderValue = summary.orderCount
+		? Math.round(summary.netRevenueCents / summary.orderCount)
+		: 0;
 	summary.grossProfitCents = summary.knownItemNetRevenueCents - summary.knownCostCents;
 	summary.grossMarginPercent = summary.knownItemNetRevenueCents
 		? (summary.grossProfitCents / summary.knownItemNetRevenueCents) * 100
 		: null;
 	return summary;
 }
-
 
 function financialTrendKey(date: Date, groupBy: ReportGroupBy): string {
 	if (groupBy === "hourOfDay") return String(date.getHours());
@@ -111,7 +112,8 @@ export class GetFinancialAnalytics {
 		const previousUntil = since;
 		const groupBy = query.groupBy ?? "dayOfMonth";
 		const unitIds = permittedUnitIds?.length ? permittedUnitIds : undefined;
-		if (query.unitId && unitIds && !unitIds.includes(query.unitId)) return this.empty(groupBy, since, now, until);
+		if (query.unitId && unitIds && !unitIds.includes(query.unitId))
+			return this.empty(groupBy, since, now, until);
 		const where = {
 			...(companyId ? { companyId } : {}),
 			status: { in: COMPLETED },
@@ -126,7 +128,11 @@ export class GetFinancialAnalytics {
 			order => (!since || order.competenceAt >= since) && (!until || order.competenceAt < until),
 		);
 		const previous = dated.filter(
-			order => previousSince && previousUntil && order.competenceAt >= previousSince && order.competenceAt < previousUntil,
+			order =>
+				previousSince &&
+				previousUntil &&
+				order.competenceAt >= previousSince &&
+				order.competenceAt < previousUntil,
 		);
 		const summary = summarize(current);
 		const previousSummary = summarize(previous);

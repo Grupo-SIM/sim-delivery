@@ -16,8 +16,8 @@ describe("WahaWhatsAppProvider", () => {
 			expect.objectContaining({
 				body: JSON.stringify({
 					chatId: "5511999999999@c.us",
-					text: "Pedido pronto",
 					session: "delivery",
+					text: "Pedido pronto",
 				}),
 				headers: { "Content-Type": "application/json", "X-Api-Key": "secret" },
 				method: "POST",
@@ -43,7 +43,9 @@ describe("WahaWhatsAppProvider", () => {
 	it("throws when WAHA rejects the message", async () => {
 		const provider = new WahaWhatsAppProvider(
 			{ baseUrl: "http://localhost:3000", session: "default" },
-			mock(() => Promise.resolve(new Response("invalid", { status: 400 }))) as unknown as typeof globalThis.fetch,
+			mock(() =>
+				Promise.resolve(new Response("invalid", { status: 400 })),
+			) as unknown as typeof globalThis.fetch,
 		);
 
 		await expect(provider.sendOrderStatus("5511999999999", "em_preparo", "ord_1")).rejects.toThrow(

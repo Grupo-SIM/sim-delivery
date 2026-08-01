@@ -17,8 +17,8 @@ export const OrderErrors = createEnumFromArray([
 export const OrderErrorsStatusCodes: Record<keyof typeof OrderErrors, StatusCodes> = {
 	CANCEL_REASON_REQUIRED: StatusCodes.BAD_REQUEST,
 	COMPANY_NOT_FOUND: StatusCodes.NOT_FOUND,
-	DELIVERY_ADDRESS_REQUIRED: StatusCodes.BAD_REQUEST,
 	CUSTOMER_NOT_FOUND: StatusCodes.NOT_FOUND,
+	DELIVERY_ADDRESS_REQUIRED: StatusCodes.BAD_REQUEST,
 	EMPTY_ORDER: StatusCodes.BAD_REQUEST,
 	INVALID_ITEM: StatusCodes.BAD_REQUEST,
 	INVALID_OPTIONS: StatusCodes.UNPROCESSABLE_ENTITY,

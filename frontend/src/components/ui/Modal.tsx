@@ -40,9 +40,7 @@ export function Modal({
 				>
 					<div
 						className={`scrollbar-none max-h-[calc(100dvh-2rem)] overflow-x-hidden p-4 pr-7 sm:p-7 sm:pr-10 ${
-							scrollable
-								? "overflow-y-auto"
-								: "flex h-[calc(100dvh-2rem)] flex-col overflow-y-hidden"
+							scrollable ? "overflow-y-auto" : "flex h-[calc(100dvh-2rem)] flex-col overflow-y-hidden"
 						}`}
 						ref={setContent}
 					>
@@ -55,9 +53,7 @@ export function Modal({
 							</Dialog.Close>
 						</div>
 						{title && <Dialog.Title className="shrink-0 font-bold text-xl">{title}</Dialog.Title>}
-						<div
-							className={`${title ? "pt-4" : ""} min-w-0 ${scrollable ? "" : "min-h-0 flex-1"}`}
-						>
+						<div className={`${title ? "pt-4" : ""} min-w-0 ${scrollable ? "" : "min-h-0 flex-1"}`}>
 							{children}
 						</div>
 					</div>

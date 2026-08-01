@@ -141,7 +141,7 @@ export function OrderReview({
 				</section>
 			)}
 
-			{(
+			{
 				<section className="space-y-2">
 					<span className="font-semibold text-sm">
 						{t("store.checkout.order.deliveryAddress")} <span className="text-destructive">*</span>
@@ -192,7 +192,7 @@ export function OrderReview({
 						</>
 					)}
 				</section>
-			)}
+			}
 
 			<section className="space-y-2">
 				<span className="font-semibold text-sm">{t("store.checkout.order.coupon")}</span>

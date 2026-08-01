@@ -52,17 +52,15 @@ function prismaWith(unit: { id: string; slug: string } | null, associations: Ass
 			findUnique: async ({ where }: { where: { slug: string } }) =>
 				where.slug === "demo" ? { id: "c1" } : null,
 		},
+		productRecipeIngredient: { findMany: async () => [] },
 		productReview: {
 			groupBy: async () => [],
 		},
-		productRecipeIngredient: { findMany: async () => [] },
 		unit: {
-			findFirst: async ({
-				where,
-			}: {
-				where: { active: boolean; companyId: string; slug: string };
-			}) => (unit && where.active && where.companyId === "c1" && unit.slug === where.slug ? unit : null),
+			findFirst: async ({ where }: { where: { active: boolean; companyId: string; slug: string } }) =>
+				unit && where.active && where.companyId === "c1" && unit.slug === where.slug ? unit : null,
 		},
+		unitInventoryBalance: { findMany: async () => [] },
 		unitProduct: {
 			findMany: async ({ where }: { where: { available: boolean; unitId: string } }) =>
 				associations.filter(a => a.unitId === where.unitId && a.available === where.available),
@@ -78,7 +76,6 @@ function prismaWith(unit: { id: string; slug: string } | null, associations: Ass
 					)
 					.filter(exclusion => where.unitProductId.in.includes(exclusion.unitProductId)),
 		},
-		unitInventoryBalance: { findMany: async () => [] },
 	} as unknown as PrismaInstance;
 }
 

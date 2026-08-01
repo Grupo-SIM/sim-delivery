@@ -72,11 +72,7 @@ export function UnitsTable({ units }: UnitsTableProps) {
 								<td className="px-4 py-3 font-medium">
 									<div className="flex items-center gap-3">
 										{unit.imageUrl && (
-											<img
-												alt=""
-												className="h-10 w-10 shrink-0 rounded object-cover"
-												src={unit.imageUrl}
-											/>
+											<img alt="" className="h-10 w-10 shrink-0 rounded object-cover" src={unit.imageUrl} />
 										)}
 										<span>{unit.name}</span>
 									</div>
@@ -89,7 +85,7 @@ export function UnitsTable({ units }: UnitsTableProps) {
 											<Badge
 												className={
 													unit.isOpenNow
-												? "border-success/30 bg-success/10 text-success"
+														? "border-success/30 bg-success/10 text-success"
 														: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
 												}
 											>
@@ -154,9 +150,13 @@ export function UnitsTable({ units }: UnitsTableProps) {
 												<LuTruck className="h-4 w-4" />
 											</Button>
 										</Tooltip>
-										<Tooltip content={t(unit.active ? "admin.units.row.deactivate" : "admin.units.row.activate")}>
+										<Tooltip
+											content={t(unit.active ? "admin.units.row.deactivate" : "admin.units.row.activate")}
+										>
 											<Button
-												aria-label={t(unit.active ? "admin.units.row.deactivate" : "admin.units.row.activate")}
+												aria-label={t(
+													unit.active ? "admin.units.row.deactivate" : "admin.units.row.activate",
+												)}
 												disabled={update.isPending}
 												onClick={() => updateUnitStatus(unit)}
 												size="icon"
@@ -164,13 +164,13 @@ export function UnitsTable({ units }: UnitsTableProps) {
 												variant="outline"
 											>
 												{unit.active ? (
-												<span className="relative block h-4 w-4">
+													<span className="relative block h-4 w-4">
+														<LuDoorClosed className="h-4 w-4" />
+														<LuSlash className="absolute inset-0 h-4 w-4" />
+													</span>
+												) : (
 													<LuDoorClosed className="h-4 w-4" />
-													<LuSlash className="absolute inset-0 h-4 w-4" />
-												</span>
-											) : (
-												<LuDoorClosed className="h-4 w-4" />
-											)}
+												)}
 											</Button>
 										</Tooltip>
 									</div>

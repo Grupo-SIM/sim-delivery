@@ -74,7 +74,8 @@ export function MediaUrlInput({
 			setLocalValue("");
 			onValueChange("");
 		} catch {
-			onDeleteError?.() ?? onUploadError();
+			if (onDeleteError) onDeleteError();
+			else onUploadError();
 		} finally {
 			setIsDeleting(false);
 		}

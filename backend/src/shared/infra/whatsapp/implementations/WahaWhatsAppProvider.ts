@@ -21,8 +21,8 @@ export class WahaWhatsAppProvider extends WhatsAppProvider {
 		const response = await this.fetchImpl(`${this.options.baseUrl.replace(/\/$/, "")}/api/sendText`, {
 			body: JSON.stringify({
 				chatId: `${phone.replace(/\D/g, "")}@c.us`,
-				text: message ?? "Atualização do pedido.",
 				session: this.options.session,
+				text: message ?? "Atualização do pedido.",
 			}),
 			headers: {
 				...(this.options.apiKey ? { "X-Api-Key": this.options.apiKey } : {}),

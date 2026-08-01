@@ -77,9 +77,7 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 						)}
 					</div>
 					{item.cashbackPercent != null && (
-						<Badge className="border-success/30 bg-success/10 text-success">
-							{item.cashbackPercent}%
-						</Badge>
+						<Badge className="border-success/30 bg-success/10 text-success">{item.cashbackPercent}%</Badge>
 					)}
 				</div>
 			</div>

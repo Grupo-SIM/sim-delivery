@@ -72,7 +72,7 @@ export function StaffRow({ member }: StaffRowProps) {
 			? member.unitIds.filter(id => id !== unitId)
 			: [...member.unitIds, unitId];
 		updateUnits.mutate(
-			{ staffId: member.id, data: { unitIds } },
+			{ data: { unitIds }, staffId: member.id },
 			{
 				onError: () => void showAlert(t("admin.staff.row.updateError")),
 				onSuccess: () => {

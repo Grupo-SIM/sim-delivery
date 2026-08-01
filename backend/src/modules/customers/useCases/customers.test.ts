@@ -1,9 +1,9 @@
 import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
+import { CreateCustomerAddress } from "./CreateCustomerAddress";
 import { GetCustomer } from "./GetCustomer";
 import { GetMyCustomer } from "./GetMyCustomer";
 import { ListCustomers } from "./ListCustomers";
-import { CreateCustomerAddress } from "./CreateCustomerAddress";
 import { UpdateCustomerAddress } from "./UpdateCustomerAddress";
 import { UpdateMyCustomer } from "./UpdateMyCustomer";
 import { UpsertCustomer } from "./UpsertCustomer";
@@ -31,21 +31,21 @@ function makePrisma(
 		} | null;
 	} = {},
 ) {
-	type AddressRecord = {
+	interface AddressRecord {
 		createdAt?: Date;
 		customerId: string;
 		deletedAt?: Date | null;
 		id: string;
 		isDefault: boolean;
 		[key: string]: unknown;
-	};
-	type CustomerRecord = {
+	}
+	interface CustomerRecord {
 		companyId: string;
 		cpf: string | null;
 		id: string;
 		phone: string | null;
 		userId: string;
-	};
+	}
 
 	const { company = { id: "cmp_1", slug: "demo" }, customer = null } = opts;
 	const users: Record<string, object> = {};
@@ -76,7 +76,10 @@ function makePrisma(
 							(!where.customerId || address.customerId === where.customerId) &&
 							(!where.id || address.id === where.id) &&
 							(!where.deletedAt || !address.deletedAt) &&
-							(!where.customer || customers.some(customer => customer.id === address.customerId && customer.userId === where.customer.userId)),
+							(!where.customer ||
+								customers.some(
+									customer => customer.id === address.customerId && customer.userId === where.customer.userId,
+								)),
 					) ?? null,
 				update: async ({ data, where }: { data: object; where: { id: string } }) => {
 					const address = addresses.find(address => address.id === where.id);
@@ -84,7 +87,13 @@ function makePrisma(
 					Object.assign(address, data);
 					return address;
 				},
-				updateMany: async ({ data, where }: { data: { isDefault: boolean }; where: { customerId: string } }) => {
+				updateMany: async ({
+					data,
+					where,
+				}: {
+					data: { isDefault: boolean };
+					where: { customerId: string };
+				}) => {
 					let count = 0;
 					for (const address of addresses) {
 						if (
@@ -104,18 +113,30 @@ function makePrisma(
 			},
 			customer: {
 				findFirst: async ({ where }: { where: any }) =>
-					customers.find(customer =>
-						(!where.companyId || customer.companyId === where.companyId) &&
-						(!where.userId || customer.userId === where.userId),
+					customers.find(
+						customer =>
+							(!where.companyId || customer.companyId === where.companyId) &&
+							(!where.userId || customer.userId === where.userId),
 					) ?? null,
 				findUnique: async ({ where }: { where: { userId: string } }) =>
 					customers.find(customer => customer.userId === where.userId) ?? null,
 				findUniqueOrThrow: async ({ where }: { where: { id: string } }) => {
 					const found = customers.find(customer => customer.id === where.id);
 					if (!found) throw new Error("CUSTOMER_NOT_FOUND");
-					return { ...found, addresses: addresses.filter(address => address.customerId === found.id && !address.deletedAt) };
+					return {
+						...found,
+						addresses: addresses.filter(address => address.customerId === found.id && !address.deletedAt),
+					};
 				},
-				upsert: async ({ create, update, where }: { create: object; update: object; where: { userId: string } }) => {
+				upsert: async ({
+					create,
+					update,
+					where,
+				}: {
+					create: object;
+					update: object;
+					where: { userId: string };
+				}) => {
 					const existing = customers.find(customer => customer.userId === where.userId);
 					if (existing) {
 						Object.assign(existing, update);
@@ -240,7 +261,6 @@ describe("customers use-cases", () => {
 		});
 	});
 });
-
 
 describe("customer profile mutations", () => {
 	it("upserts CPF and phone without creating an address", async () => {

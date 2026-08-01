@@ -1,11 +1,7 @@
 import { t } from "elysia";
 
 export const InventoryUnit = t.Union([t.Literal("unit"), t.Literal("gram"), t.Literal("milliliter")]);
-export const MovementType = t.Union([
-	t.Literal("entry"),
-	t.Literal("adjustment"),
-	t.Literal("loss"),
-]);
+export const MovementType = t.Union([t.Literal("entry"), t.Literal("adjustment"), t.Literal("loss")]);
 
 export const ListInventoryItemsQuery = t.Object({
 	active: t.Optional(t.BooleanString()),
@@ -15,7 +11,9 @@ export type ListInventoryItemsQuery = typeof ListInventoryItemsQuery.static;
 
 export const CreateInventoryItemBody = t.Object({ name: t.String({ minLength: 1 }), unit: InventoryUnit });
 export type CreateInventoryItemBody = typeof CreateInventoryItemBody.static;
-export const UpdateInventoryItemBody = t.Partial(t.Object({ active: t.Boolean(), name: t.String({ minLength: 1 }) }));
+export const UpdateInventoryItemBody = t.Partial(
+	t.Object({ active: t.Boolean(), name: t.String({ minLength: 1 }) }),
+);
 export type UpdateInventoryItemBody = typeof UpdateInventoryItemBody.static;
 
 export const InventoryItemReturn = t.Object({
@@ -74,8 +72,10 @@ export const InventoryMovementReturn = t.Object({
 export const InventoryMovementsReturn = t.Array(InventoryMovementReturn);
 
 export const InventoryOverviewQuery = t.Object({
-	status: t.Optional(t.Union([t.Literal("all"), t.Literal("low"), t.Literal("negative"), t.Literal("no_history")])),
 	search: t.Optional(t.String()),
+	status: t.Optional(
+		t.Union([t.Literal("all"), t.Literal("low"), t.Literal("negative"), t.Literal("no_history")]),
+	),
 	unitId: t.Optional(t.String()),
 });
 export type InventoryOverviewQuery = typeof InventoryOverviewQuery.static;
@@ -99,7 +99,10 @@ export const InventoryOverviewReturn = t.Object({
 	settings: InventorySettingsReturn,
 });
 
-export const RecipeIngredientInput = t.Object({ inventoryItemId: t.String(), quantity: t.Number({ minimum: 0 }) });
+export const RecipeIngredientInput = t.Object({
+	inventoryItemId: t.String(),
+	quantity: t.Number({ minimum: 0 }),
+});
 export const RecipeDeltaInput = t.Object({ inventoryItemId: t.String(), quantityDelta: t.Number() });
 export const PutProductRecipeBody = t.Object({
 	ingredients: t.Array(RecipeIngredientInput),

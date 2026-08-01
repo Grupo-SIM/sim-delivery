@@ -127,4 +127,4 @@ export const CustomersController = new Elysia({
 					response: t.Object({ ok: t.Boolean() }),
 				},
 			),
-	);;
+	);

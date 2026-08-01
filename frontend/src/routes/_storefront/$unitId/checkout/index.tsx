@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { AddressCreateModal, type AddressValue } from "@/components/address";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -18,16 +19,15 @@ import {
 } from "@/lib/api";
 import { slug } from "@/lib/variant";
 import {
-	cartTotalCents,
-	showAlert,
 	type AppliedCoupon,
+	cartTotalCents,
 	type DeliveryMethod,
+	showAlert,
 	useAuthStore,
 	useCartStore,
 	useCouponStore,
 	useDeliveryMethodStore,
 } from "@/stores";
-import { AddressCreateModal, type AddressValue } from "@/components/address";
 import { ProductDetailsModal } from "../components";
 import {
 	AddressSelectorModal,

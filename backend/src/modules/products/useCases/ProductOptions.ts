@@ -140,9 +140,7 @@ export class ProductOptions {
 					throw new DomainError(ProductErrors.INVALID_OPTION_GROUP);
 			}
 
-			const submittedOptionIds = new Set(
-				group.options.flatMap(option => (option.id ? [option.id] : [])),
-			);
+			const submittedOptionIds = new Set(group.options.flatMap(option => (option.id ? [option.id] : [])));
 			const removedOptionIds = existingGroup.options
 				.map(option => option.id)
 				.filter(optionId => !submittedOptionIds.has(optionId));

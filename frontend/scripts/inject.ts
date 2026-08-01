@@ -222,10 +222,7 @@ const updatedIndexHtml = indexHtml
 		/document\.documentElement\.classList\.add\("(?:dark|light)"\)/,
 		`document.documentElement.classList.add("${initialTheme}")`,
 	)
-	.replace(
-		/https:\/\/fonts\.googleapis\.com\/css2\?[^"]+/,
-		googleFontsUrl([fontDisplay, fontFamily]),
-	);
+	.replace(/https:\/\/fonts\.googleapis\.com\/css2\?[^"]+/, googleFontsUrl([fontDisplay, fontFamily]));
 await writeFile(indexHtmlPath, updatedIndexHtml);
 
 console.log(`Injected branding for ${company.name} (${slug}).`);

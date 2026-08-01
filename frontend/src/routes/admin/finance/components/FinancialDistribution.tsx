@@ -34,18 +34,28 @@ export function FinancialDistribution({
 				<tbody>
 					{isPending ? (
 						<tr>
-							<td className="p-3"><Skeleton className="h-4 w-24" /></td>
-							<td className="p-3 text-right"><Skeleton className="ml-auto h-4 w-8" /></td>
-							<td className="p-3 text-right"><Skeleton className="ml-auto h-4 w-20" /></td>
+							<td className="p-3">
+								<Skeleton className="h-4 w-24" />
+							</td>
+							<td className="p-3 text-right">
+								<Skeleton className="ml-auto h-4 w-8" />
+							</td>
+							<td className="p-3 text-right">
+								<Skeleton className="ml-auto h-4 w-20" />
+							</td>
 						</tr>
 					) : rows.length === 0 ? (
 						<tr>
-							<td className="p-8 text-center text-muted-foreground" colSpan={3}>{empty}</td>
+							<td className="p-8 text-center text-muted-foreground" colSpan={3}>
+								{empty}
+							</td>
 						</tr>
 					) : (
 						rows.map(row => (
 							<tr className="border-border/60 border-b last:border-0" key={row.method}>
-								<td className="p-3">{row.method === "unreported" ? unreported : translateMethod(row.method)}</td>
+								<td className="p-3">
+									{row.method === "unreported" ? unreported : translateMethod(row.method)}
+								</td>
 								<td className="p-3 text-right">{row.orderCount}</td>
 								<td className="p-3 text-right font-medium">{formatCents(row.netRevenueCents)}</td>
 							</tr>

@@ -39,16 +39,16 @@ export class GetBestSellers {
 			const knownNetRevenueCents = r._sum.netRevenueCents ?? 0;
 			const grossProfitCents = knownNetRevenueCents - knownCostCents;
 			return {
-			productId: r.productId,
-			productName: r.productName,
-			grossMarginPercent: knownNetRevenueCents > 0 ? grossProfitCents / knownNetRevenueCents * 100 : null,
-			grossProfitCents,
-			knownCostCents,
-			knownNetRevenueCents,
-			totalQuantity: r._sum.quantity ?? 0,
-			totalRevenue: r._sum.total ?? 0,
-			unknownCostRevenueCents: (r._sum.total ?? 0) - knownNetRevenueCents,
-		};
+				grossMarginPercent: knownNetRevenueCents > 0 ? (grossProfitCents / knownNetRevenueCents) * 100 : null,
+				grossProfitCents,
+				knownCostCents,
+				knownNetRevenueCents,
+				productId: r.productId,
+				productName: r.productName,
+				totalQuantity: r._sum.quantity ?? 0,
+				totalRevenue: r._sum.total ?? 0,
+				unknownCostRevenueCents: (r._sum.total ?? 0) - knownNetRevenueCents,
+			};
 		});
 	}
 }

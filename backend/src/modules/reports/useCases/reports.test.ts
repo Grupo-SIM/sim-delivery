@@ -179,7 +179,12 @@ describe("GetRevenueSummary", () => {
 });
 
 interface BestSellerRow {
-	_sum: { costCents?: number | null; netRevenueCents?: number | null; quantity: number | null; total: number | null };
+	_sum: {
+		costCents?: number | null;
+		netRevenueCents?: number | null;
+		quantity: number | null;
+		total: number | null;
+	};
 	productId: string;
 	productName: string;
 }

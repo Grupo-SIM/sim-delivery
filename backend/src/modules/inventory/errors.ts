@@ -12,9 +12,9 @@ export const InventoryErrors = createEnumFromArray([
 
 export const InventoryErrorsStatusCodes: Record<keyof typeof InventoryErrors, StatusCodes> = {
 	INSUFFICIENT_STOCK: StatusCodes.CONFLICT,
+	INVALID_RECIPE_OPTION: StatusCodes.UNPROCESSABLE_ENTITY,
 	INVENTORY_ENTRY_COST_REQUIRED: StatusCodes.UNPROCESSABLE_ENTITY,
 	INVENTORY_ITEM_NOT_FOUND: StatusCodes.NOT_FOUND,
 	INVENTORY_SCOPE_INVALID: StatusCodes.NOT_FOUND,
-	INVALID_RECIPE_OPTION: StatusCodes.UNPROCESSABLE_ENTITY,
 	LOCAL_OPTION_NOT_FOUND: StatusCodes.NOT_FOUND,
 };

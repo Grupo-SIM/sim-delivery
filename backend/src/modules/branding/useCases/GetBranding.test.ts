@@ -59,9 +59,7 @@ describe("GetBranding", () => {
 	it("resolves the company through the supplied build slug", async () => {
 		const { prisma } = makePrisma();
 
-		expect((await new GetBranding(prisma).execute({ slug: "zero-grau" })).companyName).toBe(
-			"Zero Grau",
-		);
+		expect((await new GetBranding(prisma).execute({ slug: "zero-grau" })).companyName).toBe("Zero Grau");
 	});
 
 	it("uses only the supplied static build slug", async () => {

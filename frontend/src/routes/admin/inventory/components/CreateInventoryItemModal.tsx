@@ -20,15 +20,49 @@ export function CreateInventoryItemModal({ isOpen, onClose }: { isOpen: boolean;
 		onClose();
 	}
 	function submit() {
-		mutation.mutate({ data: { name, unit } }, {
-			onError: () => void showAlert(t("admin.inventory.item.error")),
-			onSuccess: () => {
-				void client.invalidateQueries({ queryKey: getInventoryItemsQueryKey() });
-				void client.invalidateQueries({ queryKey: getInventoryOverviewQueryKey() });
-				showToast(t("admin.inventory.item.success"), "positive");
-				close();
+		mutation.mutate(
+			{ data: { name, unit } },
+			{
+				onError: () => void showAlert(t("admin.inventory.item.error")),
+				onSuccess: () => {
+					void client.invalidateQueries({ queryKey: getInventoryItemsQueryKey() });
+					void client.invalidateQueries({ queryKey: getInventoryOverviewQueryKey() });
+					showToast(t("admin.inventory.item.success"), "positive");
+					close();
+				},
 			},
-		});
+		);
 	}
-	return <Modal isOpen={isOpen} onClose={close} title={t("admin.inventory.item.title")}><div className="space-y-4"><TextField label={t("admin.inventory.fields.name")} onValueChange={setName} placeholder="Ex: Farinha de trigo" value={name} /><div><span className="mb-1 block font-medium text-sm">{t("admin.inventory.fields.measureUnit")}</span><CustomSelect onChange={value => setUnit(value as typeof unit)} options={[{ label: t("admin.inventory.units.unit"), value: "unit" }, { label: t("admin.inventory.units.gram"), value: "gram" }, { label: t("admin.inventory.units.milliliter"), value: "milliliter" }]} value={unit} /></div><div className="flex justify-end gap-2"><Button onClick={close} type="button" variant="outline">{t("actions.cancel")}</Button><Button disabled={!name.trim() || mutation.isPending} onClick={submit} type="button">{t("admin.inventory.actions.save")}</Button></div></div></Modal>;
+	return (
+		<Modal isOpen={isOpen} onClose={close} title={t("admin.inventory.item.title")}>
+			<div className="space-y-4">
+				<TextField
+					label={t("admin.inventory.fields.name")}
+					onValueChange={setName}
+					placeholder="Ex: Farinha de trigo"
+					value={name}
+				/>
+				<div>
+					<span className="mb-1 block font-medium text-sm">{t("admin.inventory.fields.measureUnit")}</span>
+					<CustomSelect
+						onChange={value => setUnit(value as typeof unit)}
+						options={[
+							{ label: t("admin.inventory.units.unit"), value: "unit" },
+							{ label: t("admin.inventory.units.gram"), value: "gram" },
+							{ label: t("admin.inventory.units.milliliter"), value: "milliliter" },
+						]}
+						value={unit}
+					/>
+				</div>
+				<div className="flex justify-end gap-2">
+					<Button onClick={close} type="button" variant="outline">
+						{t("actions.cancel")}
+					</Button>
+					<Button disabled={!name.trim() || mutation.isPending} onClick={submit} type="button">
+						{t("admin.inventory.actions.save")}
+					</Button>
+				</div>
+			</div>
+		</Modal>
+	);
 }

@@ -69,15 +69,15 @@ export function createPermissions(role: Role) {
 			read: mgmt || isCourier,
 			updateStatus: mgmt || isCourier,
 		},
+		inventory: {
+			create: mgmt,
+			read: mgmt,
+			update: mgmt,
+		},
 		menu: {
 			create: mgmt,
 			delete: mgmt,
 			read: staffRead || isCustomer,
-			update: mgmt,
-		},
-		inventory: {
-			create: mgmt,
-			read: mgmt,
 			update: mgmt,
 		},
 		orders: {

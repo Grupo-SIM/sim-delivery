@@ -17,7 +17,11 @@ function initials(name: string): string {
 	return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-export function ProfileSummaryCard({ cashbackBalanceCents, loyaltyBalancePoints, user }: ProfileSummaryCardProps) {
+export function ProfileSummaryCard({
+	cashbackBalanceCents,
+	loyaltyBalancePoints,
+	user,
+}: ProfileSummaryCardProps) {
 	const { t } = useTranslation();
 	return (
 		<section className="space-y-4 rounded-xl border border-border bg-card p-5">

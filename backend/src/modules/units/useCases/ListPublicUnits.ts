@@ -62,6 +62,7 @@ export class ListPublicUnits {
 				city: unit.city,
 				deliveryFee: unit.deliveryFee,
 				deliveryMethods: unit.deliveryMethods,
+				facebookUrl: unit.facebookUrl,
 				hours: hours.map(({ closed, closesAt, opensAt, weekday }) => ({
 					closed,
 					closesAt,
@@ -70,21 +71,20 @@ export class ListPublicUnits {
 				})),
 				id: unit.id,
 				imageUrl: unit.imageUrl,
+				instagramUrl: unit.instagramUrl,
 				isOpenNow: isUnitOpen(hours, unit.isOpenManual),
 				minOrderCents: unit.minOrderCents,
 				name: unit.name,
 				neighborhood: unit.neighborhood,
 				phone: unit.phone,
-				whatsApp: unit.whatsApp,
-				xUrl: unit.xUrl,
-				instagramUrl: unit.instagramUrl,
-				facebookUrl: unit.facebookUrl,
 				prepTimeMaxMinutes: unit.prepTimeMaxMinutes,
 				prepTimeMinMinutes: unit.prepTimeMinMinutes,
 				promotionalImages: promotionalImages.map(row => row.promotionalImage),
 				ratingAverage: rating ? rating.sum / rating.count : null,
 				ratingCount: rating?.count ?? 0,
 				slug: unit.slug,
+				whatsApp: unit.whatsApp,
+				xUrl: unit.xUrl,
 			};
 		});
 	}

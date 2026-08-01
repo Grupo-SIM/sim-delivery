@@ -11,12 +11,12 @@ function fakePrisma(unitCount: number) {
 		prisma: {
 			$transaction: async (operations: unknown[]) => Promise.all(operations as Promise<unknown>[]),
 			staffUnit: {
-		createMany: async ({ data }: { data: Array<{ userId: string; unitId: string }> }) => {
+				createMany: async ({ data }: { data: Array<{ userId: string; unitId: string }> }) => {
 					created.push(...data);
 					return { count: data.length };
 				},
 				deleteMany: async ({ where }: { where: { userId: string } }) => {
-			deleted.push(where.userId);
+					deleted.push(where.userId);
 					return { count: 1 };
 				},
 			},
@@ -48,8 +48,8 @@ describe("UpdateStaffUnits", () => {
 		expect(courier.unitIds).toEqual(["unit_1", "unit_2"]);
 		expect(deleted).toEqual(["courier_1"]);
 		expect(created).toEqual([
-			{ userId: "courier_1", unitId: "unit_1" },
-			{ userId: "courier_1", unitId: "unit_2" },
+			{ unitId: "unit_1", userId: "courier_1" },
+			{ unitId: "unit_2", userId: "courier_1" },
 		]);
 	});
 

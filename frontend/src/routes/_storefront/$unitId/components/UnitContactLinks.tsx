@@ -1,5 +1,5 @@
-import { FaFacebookF, FaInstagram, FaWhatsapp, FaXTwitter } from "react-icons/fa6";
 import type { IconType } from "react-icons";
+import { FaFacebookF, FaInstagram, FaWhatsapp, FaXTwitter } from "react-icons/fa6";
 import { LuPhone } from "react-icons/lu";
 import { Tooltip } from "@/components/ui/Tooltip";
 import type { PublicUnit } from "../../../components/storefront/types";

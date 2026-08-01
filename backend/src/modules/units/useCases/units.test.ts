@@ -12,10 +12,10 @@ function prismaWith(units: Array<{ id: string; companyId: string }>, orderUnitId
 	return {
 		created,
 		deleted,
-		updated,
 		prisma: {
 			order: {
-				count: async ({ where }: { where: { unitId: string } }) => orderUnitIds.filter(id => id === where.unitId).length,
+				count: async ({ where }: { where: { unitId: string } }) =>
+					orderUnitIds.filter(id => id === where.unitId).length,
 			},
 			unit: {
 				create: async ({ data }: { data: unknown }) => {
@@ -36,6 +36,7 @@ function prismaWith(units: Array<{ id: string; companyId: string }>, orderUnitId
 				},
 			},
 		} as unknown as PrismaInstance,
+		updated,
 	};
 }
 

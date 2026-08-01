@@ -8,12 +8,12 @@ export class ListStaff {
 		const staff = await this.prisma.user.findMany({
 			orderBy: { createdAt: "asc" },
 			select: {
-				staffUnits: { select: { unitId: true } },
 				createdAt: true,
 				email: true,
 				id: true,
 				name: true,
 				role: true,
+				staffUnits: { select: { unitId: true } },
 			},
 			where: {
 				...(companyId ? { companyId } : {}),

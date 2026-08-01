@@ -41,6 +41,7 @@ function makeOrderPrisma(
 			const tx = {
 				inventoryReservation: { createMany: async () => ({ count: 0 }) },
 				localOptionRecipeIngredient: { findMany: async () => [] },
+				optionRecipeIngredient: { findMany: async () => [] },
 				order: {
 					create: async ({ data }: { data: object }) => {
 						const o = {
@@ -80,7 +81,6 @@ function makeOrderPrisma(
 						return { count: data.length };
 					},
 				},
-				optionRecipeIngredient: { findMany: async () => [] },
 				productRecipeIngredient: { findMany: async () => [] },
 				unitProduct: { updateMany: async () => ({ count: 1 }) },
 			};
@@ -88,7 +88,9 @@ function makeOrderPrisma(
 		},
 		address: {
 			findFirst: async ({ where }: { where: { customerId: string; deletedAt: null; id: string } }) =>
-				address?.customerId === where.customerId && address?.deletedAt === where.deletedAt && address?.id === where.id
+				address?.customerId === where.customerId &&
+				address?.deletedAt === where.deletedAt &&
+				address?.id === where.id
 					? address
 					: null,
 		},
@@ -195,7 +197,9 @@ describe("CreateOrder", () => {
 
 	it("requires an address for every order", async () => {
 		const { prisma } = makeOrderPrisma({ address: null });
-		await expect(new CreateOrder(prisma).execute("user_1", baseBody)).rejects.toThrow("DELIVERY_ADDRESS_REQUIRED");
+		await expect(new CreateOrder(prisma).execute("user_1", baseBody)).rejects.toThrow(
+			"DELIVERY_ADDRESS_REQUIRED",
+		);
 	});
 
 	it("sets deliveryFee to 0 for pickup", async () => {

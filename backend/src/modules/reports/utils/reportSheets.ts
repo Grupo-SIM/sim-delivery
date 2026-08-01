@@ -1,6 +1,6 @@
 import type { Row, Sheet, SheetData } from "write-excel-file/node";
-import { getOrdersByPeriod } from "./ordersByPeriod";
 import type { FinancialAnalyticsReturn } from "../dtos";
+import { getOrdersByPeriod } from "./ordersByPeriod";
 import type { ReportGroupBy } from "./reportPeriod";
 
 /** Same statuses the dashboard counts as revenue. The "Pedidos" sheet deliberately ignores this. */
@@ -92,7 +92,10 @@ function buildFinancialSheet(financial: FinancialAnalyticsReturn): SheetData {
 		["Ticket médio", money(summary.averageOrderValue)],
 		["Custos conhecidos", money(summary.knownCostCents)],
 		["Lucro bruto parcial", money(summary.grossProfitCents)],
-		["Margem bruta parcial", summary.grossMarginPercent === null ? "—" : `${summary.grossMarginPercent.toFixed(2)}%`],
+		[
+			"Margem bruta parcial",
+			summary.grossMarginPercent === null ? "—" : `${summary.grossMarginPercent.toFixed(2)}%`,
+		],
 		["Receita sem custo conhecido", money(summary.unknownCostRevenueCents)],
 	];
 }

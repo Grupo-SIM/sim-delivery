@@ -101,7 +101,8 @@ export function DashboardDateRangePicker({
 		});
 	}, [calendarMonth]);
 
-	const committedRange = value ?? (presetValue && presetValue !== "custom" ? getPresetRange(presetValue) : null);
+	const committedRange =
+		value ?? (presetValue && presetValue !== "custom" ? getPresetRange(presetValue) : null);
 	const selectionStartDate = draftStartDate ?? committedRange?.startDate ?? null;
 	const selectionEndDate = draftStartDate ? draftEndDate : (committedRange?.endDate ?? null);
 
@@ -155,7 +156,9 @@ export function DashboardDateRangePicker({
 		}
 
 		const range =
-			nextDate < draftStartDate ? { endDate: draftStartDate, startDate: nextDate } : { endDate: nextDate, startDate: draftStartDate };
+			nextDate < draftStartDate
+				? { endDate: draftStartDate, startDate: nextDate }
+				: { endDate: nextDate, startDate: draftStartDate };
 		onChange(range);
 		closeCalendar();
 	}
@@ -215,7 +218,8 @@ export function DashboardDateRangePicker({
 					const isHoveredEndDate = Boolean(draftStartDate && !draftEndDate && dateValue === hoveredDate);
 					const rangeEndDate = draftStartDate && !draftEndDate ? hoveredDate : selectionEndDate;
 					const withinRange = Boolean(
-						selectionStartDate && rangeEndDate &&
+						selectionStartDate &&
+							rangeEndDate &&
 							dateValue > (selectionStartDate < rangeEndDate ? selectionStartDate : rangeEndDate) &&
 							dateValue < (selectionStartDate < rangeEndDate ? rangeEndDate : selectionStartDate),
 					);
@@ -227,7 +231,9 @@ export function DashboardDateRangePicker({
 								!inMonth && "text-muted-foreground",
 								withinRange && "bg-primary/10",
 								isStartDate && "bg-warning font-semibold text-warning-foreground hover:bg-warning",
-								isEndDate && !draftStartDate && "bg-primary font-semibold text-primary-foreground hover:bg-primary",
+								isEndDate &&
+									!draftStartDate &&
+									"bg-primary font-semibold text-primary-foreground hover:bg-primary",
 								isHoveredEndDate && "bg-primary font-semibold text-primary-foreground hover:bg-primary",
 							)}
 							key={dateValue}

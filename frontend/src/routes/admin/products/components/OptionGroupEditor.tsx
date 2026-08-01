@@ -212,7 +212,7 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 									sensors={optionSensors}
 								>
 									<SortableContext items={group.options} strategy={verticalListSortingStrategy}>
-										<ScrollArea className="max-h-[30rem] space-y-2 overflow-x-hidden overflow-y-auto pr-1">
+										<ScrollArea className="max-h-[30rem] space-y-2 overflow-y-auto overflow-x-hidden pr-1">
 											{group.options.map(option => (
 												<OptionEditor
 													key={option.id}

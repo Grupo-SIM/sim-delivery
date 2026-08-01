@@ -6,11 +6,7 @@ import { CustomerErrors } from "../errors";
 export class UpdateCustomerAddress {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(
-		userId: string,
-		addressId: string,
-		data: UpdateCustomerAddressBody,
-	): Promise<CustomerReturn> {
+	async execute(userId: string, addressId: string, data: UpdateCustomerAddressBody): Promise<CustomerReturn> {
 		const address = await this.prisma.address.findFirst({
 			where: { customer: { userId }, deletedAt: null, id: addressId },
 		});

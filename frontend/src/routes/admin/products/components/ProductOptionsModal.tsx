@@ -18,14 +18,11 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { useGetProductsByProductIdOptionGroups, usePutProductsByProductIdOptionGroups } from "@/lib/api";
 import { verticalListModifiers } from "@/lib/dnd-modifiers";
-import {
-	useGetProductsByProductIdOptionGroups,
-	usePutProductsByProductIdOptionGroups,
-} from "@/lib/api";
 import { showToast } from "@/stores";
-import { OptionGroupPreviews } from "./OptionGroupPreviews";
 import { type OptionGroup, OptionGroupEditor } from "./OptionGroupEditor";
+import { OptionGroupPreviews } from "./OptionGroupPreviews";
 import type { Product } from "./types";
 
 interface ProductOptionsEditorProps {
@@ -192,13 +189,9 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 										group={group}
 										key={group.id}
 										onChange={value =>
-											setDraftGroups(current =>
-												current.map(item => (item.id === value.id ? value : item)),
-											)
+											setDraftGroups(current => current.map(item => (item.id === value.id ? value : item)))
 										}
-										onDelete={() =>
-											setDraftGroups(current => current.filter(item => item.id !== group.id))
-										}
+										onDelete={() => setDraftGroups(current => current.filter(item => item.id !== group.id))}
 									/>
 								))}
 							</SortableContext>

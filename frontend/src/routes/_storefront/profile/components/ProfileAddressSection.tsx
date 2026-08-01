@@ -56,7 +56,8 @@ export function ProfileAddressSection({
 	const { t } = useTranslation();
 	const [modal, setModal] = useState<"create" | ProfileAddress | null>(null);
 	const editing = typeof modal === "object" ? modal : null;
-	const title = modal === "create" ? t("store.account.profile.addAddress") : t("store.account.profile.editAddress");
+	const title =
+		modal === "create" ? t("store.account.profile.addAddress") : t("store.account.profile.editAddress");
 
 	function handleSubmit(value: AddressValue) {
 		if (editing) onUpdate(editing.id, value);
@@ -86,10 +87,18 @@ export function ProfileAddressSection({
 									<p className="text-muted-foreground text-sm">
 										{[address.neighborhood, address.city, address.state].filter(Boolean).join(", ")}
 									</p>
-									{address.isDefault && <span className="text-primary text-xs">{t("store.account.profile.defaultAddress")}</span>}
+									{address.isDefault && (
+										<span className="text-primary text-xs">{t("store.account.profile.defaultAddress")}</span>
+									)}
 								</div>
 								<div className="flex gap-2">
-									<Button aria-label={t("store.account.profile.editAddress")} onClick={() => setModal(address)} size="icon" type="button" variant="outline">
+									<Button
+										aria-label={t("store.account.profile.editAddress")}
+										onClick={() => setModal(address)}
+										size="icon"
+										type="button"
+										variant="outline"
+									>
 										<LuPencil className="size-4" />
 									</Button>
 									<ConfirmActionButton
@@ -107,7 +116,14 @@ export function ProfileAddressSection({
 								</div>
 							</div>
 							{!address.isDefault && (
-								<Button className="mt-3" disabled={isSaving} onClick={() => onSetDefault(address.id)} size="sm" type="button" variant="outline">
+								<Button
+									className="mt-3"
+									disabled={isSaving}
+									onClick={() => onSetDefault(address.id)}
+									size="sm"
+									type="button"
+									variant="outline"
+								>
 									{t("store.account.profile.setDefault")}
 								</Button>
 							)}
@@ -117,10 +133,7 @@ export function ProfileAddressSection({
 			)}
 			<Modal isOpen={modal !== null} onClose={() => setModal(null)} title={title}>
 				<AddressForm
-					key={editing?.id ?? "create"}
 					disabled={isSaving}
-					initialValue={editing ? toAddressValue(editing) : undefined}
-					onSubmit={handleSubmit}
 					footer={({ canSubmit, isSubmitting }) => (
 						<div className="flex justify-end gap-3 border-border border-t pt-4">
 							<Button onClick={() => setModal(null)} type="button" variant="outline">
@@ -131,6 +144,9 @@ export function ProfileAddressSection({
 							</Button>
 						</div>
 					)}
+					initialValue={editing ? toAddressValue(editing) : undefined}
+					key={editing?.id ?? "create"}
+					onSubmit={handleSubmit}
 				/>
 			</Modal>
 		</section>

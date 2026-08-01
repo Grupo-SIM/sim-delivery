@@ -37,7 +37,7 @@ export function useThemePreference(allowThemeToggle: boolean, defaultTheme: Them
 			const session = await authClient.getSession();
 			if (session.data?.user) setUser(mapSessionUser(session.data.user));
 		});
-	}, [allowThemeToggle, defaultTheme, setUser, user]);
+	}, [allowThemeToggle, setUser, user]);
 
 	const saveThemePreference = useCallback(
 		async (preference: ThemeMode) => {

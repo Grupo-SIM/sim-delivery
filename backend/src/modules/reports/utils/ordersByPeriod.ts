@@ -39,8 +39,7 @@ function createBuckets(
 	if (groupBy === "month") {
 		if (!since || !until) return MONTHS.map((label, index) => bucket(String(index), label));
 
-		const monthCount =
-			(until.getFullYear() - since.getFullYear()) * 12 + until.getMonth() - since.getMonth();
+		const monthCount = (until.getFullYear() - since.getFullYear()) * 12 + until.getMonth() - since.getMonth();
 		if (monthCount <= 0 || monthCount > 12) {
 			return MONTHS.map((label, index) => bucket(String(index), label));
 		}

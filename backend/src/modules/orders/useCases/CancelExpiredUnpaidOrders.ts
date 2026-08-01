@@ -1,6 +1,6 @@
+import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
 import { OrderStatusEmail } from "@/shared/infra/emails";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
 import type { WhatsAppProvider } from "@/shared/infra/whatsapp";
 
 const CANCELLATION_REASON = "Pagamento não confirmado em até 1 hora.";
@@ -35,13 +35,13 @@ export class CancelExpiredUnpaidOrders {
 			try {
 				const result = await this.prisma.$transaction(async tx => {
 					const changed = await tx.order.updateMany({
-					data: { cancelReason: CANCELLATION_REASON, status: "cancelado" },
-					where: {
-						createdAt: { lt: expiresAt },
-						id: order.id,
-						OR: [{ payment: { is: null } }, { payment: { is: { status: { not: "confirmed" } } } }],
-						status: "awaiting_payment",
-					},
+						data: { cancelReason: CANCELLATION_REASON, status: "cancelado" },
+						where: {
+							createdAt: { lt: expiresAt },
+							id: order.id,
+							OR: [{ payment: { is: null } }, { payment: { is: { status: { not: "confirmed" } } } }],
+							status: "awaiting_payment",
+						},
 					});
 					if (changed.count > 0) {
 						await InventoryLifecycle.release(tx, order.id);

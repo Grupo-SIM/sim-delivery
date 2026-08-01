@@ -50,7 +50,11 @@ export function ProfileSecurityForm({ isSaving, onSave }: ProfileSecurityFormPro
 				/>
 			</Label>
 			<p className="text-muted-foreground text-xs">{t("store.account.profile.passwordHint")}</p>
-			<Button disabled={!dirty || isSaving} onClick={() => onSave({ confirmPassword, currentPassword, password })} type="button">
+			<Button
+				disabled={!dirty || isSaving}
+				onClick={() => onSave({ confirmPassword, currentPassword, password })}
+				type="button"
+			>
 				{isSaving ? t("store.account.profile.passwordSaving") : t("store.account.profile.passwordSave")}
 			</Button>
 		</section>

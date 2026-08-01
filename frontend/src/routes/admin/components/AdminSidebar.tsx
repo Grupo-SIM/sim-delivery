@@ -7,8 +7,8 @@ import {
 	LuChartBar,
 	LuClipboardList,
 	LuFolderTree,
-	LuLandmark,
 	LuImages,
+	LuLandmark,
 	LuLogOut,
 	LuPackage,
 	LuPackageOpen,
@@ -19,8 +19,8 @@ import {
 	LuTicket,
 	LuUsers,
 } from "react-icons/lu";
-import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/ScrollArea";
+import { cn } from "@/lib/utils";
 import { isSuperAdmin, useAuthStore } from "@/stores/auth";
 
 interface NavItemProps {

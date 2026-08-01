@@ -7,8 +7,8 @@ import { CouponErrors, CouponErrorsStatusCodes } from "@/modules/coupons/errors"
 import { CustomerErrors, CustomerErrorsStatusCodes } from "@/modules/customers/errors";
 import { DeliveryErrors, DeliveryErrorsStatusCodes } from "@/modules/deliveries/errors";
 import { ExampleErrors, ExampleErrorsStatusCodes } from "@/modules/example/errors";
-import { LoyaltyErrors, LoyaltyErrorsStatusCodes } from "@/modules/loyalty/errors";
 import { InventoryErrors, InventoryErrorsStatusCodes } from "@/modules/inventory/errors";
+import { LoyaltyErrors, LoyaltyErrorsStatusCodes } from "@/modules/loyalty/errors";
 import { OrderErrors, OrderErrorsStatusCodes } from "@/modules/orders/errors";
 import { PaymentErrors, PaymentErrorsStatusCodes } from "@/modules/payments/errors";
 import { ProductReviewErrors, ProductReviewErrorsStatusCodes } from "@/modules/productReviews/errors";

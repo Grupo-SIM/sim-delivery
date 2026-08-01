@@ -11,12 +11,7 @@ interface OptionGroupCardProps {
 	optionCount: number;
 }
 
-export function OptionGroupCard({
-	dragHandleProps,
-	name,
-	onEdit,
-	optionCount,
-}: OptionGroupCardProps) {
+export function OptionGroupCard({ dragHandleProps, name, onEdit, optionCount }: OptionGroupCardProps) {
 	const { t } = useTranslation();
 	const canDrag = Boolean(dragHandleProps);
 

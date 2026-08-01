@@ -11,12 +11,12 @@ interface UserRow {
 function fakePrisma(existing: UserRow[] = []) {
 	const updates: Array<{ id: string; data: unknown }> = [];
 	return {
-	prisma: {
-		company: {
-			findUnique: async ({ where }: { where: { slug: string | undefined } }) =>
-				where.slug === "zero-grau" ? { id: "cmp_1" } : null,
-		},
-		user: {
+		prisma: {
+			company: {
+				findUnique: async ({ where }: { where: { slug: string | undefined } }) =>
+					where.slug === "zero-grau" ? { id: "cmp_1" } : null,
+			},
+			user: {
 				findUnique: async ({ where }: { where: { email: string } }) =>
 					existing.find(user => user.email === where.email) ?? null,
 				update: async ({ data, where }: { data: unknown; where: { id: string } }) => {

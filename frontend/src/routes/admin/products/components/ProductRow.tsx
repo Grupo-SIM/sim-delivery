@@ -119,8 +119,8 @@ export function ProductRow({ product }: ProductRowProps) {
 						<Tooltip content={t("admin.products.edit.action")}>
 							<Button
 								aria-label={t("admin.products.edit.action")}
-								onFocus={prefetchOptionGroups}
 								onClick={() => setEditing(true)}
+								onFocus={prefetchOptionGroups}
 								onPointerEnter={prefetchOptionGroups}
 								size="icon"
 								type="button"
@@ -130,7 +130,15 @@ export function ProductRow({ product }: ProductRowProps) {
 							</Button>
 						</Tooltip>
 						<Tooltip content={t("admin.products.recipe.action")}>
-							<Button aria-label={t("admin.products.recipe.action")} onClick={() => setManagingRecipe(true)} size="icon" type="button" variant="outline"><LuClipboardList className="h-4 w-4" /></Button>
+							<Button
+								aria-label={t("admin.products.recipe.action")}
+								onClick={() => setManagingRecipe(true)}
+								size="icon"
+								type="button"
+								variant="outline"
+							>
+								<LuClipboardList className="h-4 w-4" />
+							</Button>
 						</Tooltip>
 						<Tooltip content={t("admin.products.taxonomy.action")}>
 							<Button
@@ -160,7 +168,10 @@ export function ProductRow({ product }: ProductRowProps) {
 				</td>
 			</tr>
 			<ProductEditModal onClose={() => setEditing(false)} product={editing ? product : null} />
-			<ProductRecipeModal onClose={() => setManagingRecipe(false)} product={managingRecipe ? product : null} />
+			<ProductRecipeModal
+				onClose={() => setManagingRecipe(false)}
+				product={managingRecipe ? product : null}
+			/>
 			<ProductUnitsModal onClose={() => setManagingUnits(false)} product={managingUnits ? product : null} />
 			<ProductTaxonomyModal
 				onClose={() => setManagingTaxonomy(false)}

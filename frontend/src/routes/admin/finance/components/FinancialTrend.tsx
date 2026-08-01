@@ -1,5 +1,5 @@
-import { Skeleton } from "@/components/ui/Skeleton";
 import { ScrollArea } from "@/components/ui/ScrollArea";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 interface FinancialTrendProps {
 	formatCents: (value: number) => string;

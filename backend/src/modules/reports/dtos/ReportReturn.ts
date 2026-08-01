@@ -2,8 +2,8 @@ import { t } from "elysia";
 
 export const RevenueSummaryReturn = t.Object({
 	averageOrderValue: t.Integer(),
-	grossProfitCents: t.Optional(t.Integer()),
 	grossMarginPercent: t.Optional(t.Nullable(t.Number())),
+	grossProfitCents: t.Optional(t.Integer()),
 	knownCostCents: t.Optional(t.Integer()),
 	knownNetRevenueCents: t.Optional(t.Integer()),
 	orderCount: t.Integer(),
@@ -13,12 +13,12 @@ export const RevenueSummaryReturn = t.Object({
 export type RevenueSummaryReturn = typeof RevenueSummaryReturn.static;
 
 export const BestSellerItem = t.Object({
-	productId: t.String(),
-	productName: t.String(),
-	grossProfitCents: t.Optional(t.Integer()),
 	grossMarginPercent: t.Optional(t.Nullable(t.Number())),
+	grossProfitCents: t.Optional(t.Integer()),
 	knownCostCents: t.Optional(t.Integer()),
 	knownNetRevenueCents: t.Optional(t.Integer()),
+	productId: t.String(),
+	productName: t.String(),
 	totalQuantity: t.Integer(),
 	totalRevenue: t.Integer(),
 	unknownCostRevenueCents: t.Optional(t.Integer()),
@@ -74,7 +74,11 @@ const FinancialSummary = t.Object({
 	unknownCostRevenueCents: t.Integer(),
 });
 
-const FinancialDistributionItem = t.Object({ method: t.String(), netRevenueCents: t.Integer(), orderCount: t.Integer() });
+const FinancialDistributionItem = t.Object({
+	method: t.String(),
+	netRevenueCents: t.Integer(),
+	orderCount: t.Integer(),
+});
 const FinancialTrendItem = t.Object({
 	grossProfitCents: t.Integer(),
 	label: t.String(),
@@ -90,8 +94,18 @@ export const FinancialAnalyticsReturn = t.Object({
 		netRevenuePercent: t.Nullable(t.Number()),
 		orderCountPercent: t.Nullable(t.Number()),
 	}),
-	distribution: t.Object({ delivery: t.Array(FinancialDistributionItem), payment: t.Array(FinancialDistributionItem) }),
-	groupBy: t.Union([t.Literal("hourOfDay"), t.Literal("dayOfWeek"), t.Literal("dayOfMonth"), t.Literal("month"), t.Literal("quarter"), t.Literal("year")]),
+	distribution: t.Object({
+		delivery: t.Array(FinancialDistributionItem),
+		payment: t.Array(FinancialDistributionItem),
+	}),
+	groupBy: t.Union([
+		t.Literal("hourOfDay"),
+		t.Literal("dayOfWeek"),
+		t.Literal("dayOfMonth"),
+		t.Literal("month"),
+		t.Literal("quarter"),
+		t.Literal("year"),
+	]),
 	summary: FinancialSummary,
 	trend: t.Array(FinancialTrendItem),
 });

@@ -111,10 +111,10 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 				createPortal(
 					<ScrollArea
 						className="max-h-[260px] overflow-y-auto overflow-x-hidden rounded-md border border-border bg-card text-card-foreground shadow-medium"
-							onMouseDown={event => {
-								event.preventDefault();
-								event.stopPropagation();
-							}}
+						onMouseDown={event => {
+							event.preventDefault();
+							event.stopPropagation();
+						}}
 						ref={dropdownRef}
 						role="listbox"
 						style={{

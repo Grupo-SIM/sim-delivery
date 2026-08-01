@@ -25,7 +25,7 @@ export class UpdateStaffUnits {
 		await this.prisma.$transaction([
 			this.prisma.staffUnit.deleteMany({ where: { userId: staffId } }),
 			this.prisma.staffUnit.createMany({
-				data: uniqueUnitIds.map(unitId => ({ userId: staffId, unitId })),
+				data: uniqueUnitIds.map(unitId => ({ unitId, userId: staffId })),
 			}),
 		]);
 

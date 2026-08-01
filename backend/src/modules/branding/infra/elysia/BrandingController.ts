@@ -10,11 +10,10 @@ const updateBranding = new UpdateBranding(prisma);
 
 export const BrandingController = new Elysia({ prefix: "/branding" })
 	.use(GlobalPlugin)
-	.get(
-		"/",
-		async ({ query }) => getBranding.execute(query),
-		{ query: GetBrandingQuery, response: BrandingReturn },
-	)
+	.get("/", async ({ query }) => getBranding.execute(query), {
+		query: GetBrandingQuery,
+		response: BrandingReturn,
+	})
 	.put(
 		"/",
 		async ({ body, request }) => {

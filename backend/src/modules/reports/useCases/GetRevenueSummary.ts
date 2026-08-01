@@ -30,18 +30,36 @@ export class GetRevenueSummary {
 		const averageOrderValue = orderCount > 0 ? Math.round(totalRevenue / orderCount) : 0;
 		const items = await this.prisma.orderItem.findMany({
 			select: { costCents: true, netRevenueCents: true, total: true },
-			where: { order: {
-				...(companyId ? { companyId } : {}), status: { in: COMPLETED }, ...(unitId ? { unitId } : {}),
-				...(since || until ? { createdAt: { ...(since ? { gte: since } : {}), ...(until ? { lt: until } : {}) } } : {}),
-			} },
+			where: {
+				order: {
+					...(companyId ? { companyId } : {}),
+					status: { in: COMPLETED },
+					...(unitId ? { unitId } : {}),
+					...(since || until
+						? { createdAt: { ...(since ? { gte: since } : {}), ...(until ? { lt: until } : {}) } }
+						: {}),
+				},
+			},
 		});
 		const known = items.filter(item => item.costCents !== null);
 		const knownCostCents = known.reduce((sum, item) => sum + item.costCents!, 0);
 		const knownNetRevenueCents = known.reduce((sum, item) => sum + (item.netRevenueCents ?? item.total), 0);
-		const unknownCostRevenueCents = items.filter(item => item.costCents === null).reduce((sum, item) => sum + (item.netRevenueCents ?? item.total), 0);
+		const unknownCostRevenueCents = items
+			.filter(item => item.costCents === null)
+			.reduce((sum, item) => sum + (item.netRevenueCents ?? item.total), 0);
 		const grossProfitCents = knownNetRevenueCents - knownCostCents;
-		const grossMarginPercent = knownNetRevenueCents > 0 ? grossProfitCents / knownNetRevenueCents * 100 : null;
+		const grossMarginPercent =
+			knownNetRevenueCents > 0 ? (grossProfitCents / knownNetRevenueCents) * 100 : null;
 
-		return { averageOrderValue, grossMarginPercent, grossProfitCents, knownCostCents, knownNetRevenueCents, orderCount, totalRevenue, unknownCostRevenueCents };
+		return {
+			averageOrderValue,
+			grossMarginPercent,
+			grossProfitCents,
+			knownCostCents,
+			knownNetRevenueCents,
+			orderCount,
+			totalRevenue,
+			unknownCostRevenueCents,
+		};
 	}
 }

@@ -23,7 +23,8 @@ export class InviteStaff {
 		if (!companyId) {
 			throw new DomainError(StaffErrors.NO_COMPANY);
 		}
-		if (["courier", "manager"].includes(role) && role === "courier" && unitIds.length === 0) throw new DomainError(StaffErrors.COURIER_UNIT_REQUIRED);
+		if (["courier", "manager"].includes(role) && role === "courier" && unitIds.length === 0)
+			throw new DomainError(StaffErrors.COURIER_UNIT_REQUIRED);
 		if (["courier", "manager"].includes(role)) await this.ensureCompanyUnits(companyId, unitIds);
 
 		const existing = await this.prisma.user.findUnique({ where: { email } });
@@ -40,7 +41,7 @@ export class InviteStaff {
 		});
 		if (["courier", "manager"].includes(role) && unitIds.length > 0) {
 			await this.prisma.staffUnit.createMany({
-				data: unitIds.map(unitId => ({ userId: staff.id, unitId })),
+				data: unitIds.map(unitId => ({ unitId, userId: staff.id })),
 			});
 		}
 
