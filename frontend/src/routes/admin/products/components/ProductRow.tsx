@@ -105,17 +105,6 @@ export function ProductRow({ product }: ProductRowProps) {
 				</td>
 				<td className="px-4 py-3 text-right">
 					<div className="flex justify-end gap-2">
-						<Tooltip content={t("admin.products.units.action")}>
-							<Button
-								aria-label={t("admin.products.units.action")}
-								onClick={() => setManagingUnits(true)}
-								size="icon"
-								type="button"
-								variant="outline"
-							>
-								<LuStore className="h-4 w-4" />
-							</Button>
-						</Tooltip>
 						<Tooltip content={t("admin.products.edit.action")}>
 							<Button
 								aria-label={t("admin.products.edit.action")}
@@ -127,6 +116,17 @@ export function ProductRow({ product }: ProductRowProps) {
 								variant="outline"
 							>
 								<LuPencil className="h-4 w-4" />
+							</Button>
+						</Tooltip>
+						<Tooltip content={t("admin.products.units.action")}>
+							<Button
+								aria-label={t("admin.products.units.action")}
+								onClick={() => setManagingUnits(true)}
+								size="icon"
+								type="button"
+								variant="outline"
+							>
+								<LuStore className="h-4 w-4" />
 							</Button>
 						</Tooltip>
 						<Tooltip content={t("admin.products.recipe.action")}>
