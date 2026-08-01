@@ -11,6 +11,12 @@ export class CreateCategory {
 			throw new DomainError(CategoryErrors.NO_COMPANY);
 		}
 
-		return { ...(await this.prisma.category.create({ data: { ...data, companyId } })), products: [] };
+		const existing = await this.prisma.category.findMany({ where: { companyId } });
+		const position = existing.reduce((max, category) => Math.max(max, category.position), -1) + 1;
+
+		return {
+			...(await this.prisma.category.create({ data: { ...data, companyId, position } })),
+			products: [],
+		};
 	}
 }
