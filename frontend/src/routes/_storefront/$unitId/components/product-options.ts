@@ -39,9 +39,9 @@ export function lineTotal(item: MenuItem, options: SelectedOption[], quantity: n
 
 /**
  * Whether any combination of option picks can change the item's total price. False when every
- * group is either empty, a required single-choice with one option, or a required group whose
- * options all share the same price delta — in those cases the price is fixed regardless of what
- * the customer picks, so "A partir de" would be misleading.
+ * group is either empty, a required group whose max is 1 with a single option, or a required
+ * group whose options all share the same price delta — in those cases the price is fixed
+ * regardless of what the customer picks, so "A partir de" would be misleading.
  */
 export function hasPriceVariation(optionGroups: OptionGroup[]): boolean {
 	return optionGroups.some(group => {
@@ -50,7 +50,7 @@ export function hasPriceVariation(optionGroups: OptionGroup[]): boolean {
 
 		if (!group.required) return prices.some(price => price !== 0);
 
-		if (group.selectionType !== "single" && group.priceRule === "sum" && Number(group.maxSelect) > 1) {
+		if (group.priceRule === "sum" && (group.maxSelect == null || Number(group.maxSelect) > 1)) {
 			return prices.some(price => price !== 0);
 		}
 
@@ -59,14 +59,15 @@ export function hasPriceVariation(optionGroups: OptionGroup[]): boolean {
 }
 
 /**
- * Whether a group has been filled out to the point it should collapse into a summary:
- * single-choice groups complete as soon as one option is picked, multi-choice groups only
- * once every selectable unit (`maxSelect`) has been used.
+ * Whether a group has been filled out to the point it should collapse into a summary. A group
+ * with no cap (`maxSelect` null) completes as soon as one option is picked; a capped group
+ * (including max 1, which behaves like a radio) completes once every selectable unit has been
+ * used.
  */
 export function isGroupComplete(group: OptionGroup, options: SelectedOption[]): boolean {
 	const count = groupQuantity(options, group.id);
 
-	return group.selectionType === "single" ? count > 0 : count >= Number(group.maxSelect);
+	return group.maxSelect == null ? count > 0 : count >= Number(group.maxSelect);
 }
 
 /** First group whose selection count falls outside its min/max, or undefined when all are valid. */
@@ -77,14 +78,18 @@ export function findInvalidGroup(
 	return optionGroups.find(group => {
 		const count = groupQuantity(options, group.id);
 
-		return count < (group.required ? 1 : 0) || count > Number(group.maxSelect);
+		return (
+			count < (group.required ? 1 : 0) || (group.maxSelect != null && count > Number(group.maxSelect))
+		);
 	});
 }
 
 /**
  * Returns the selection after setting `option` to `nextQuantity`, or the unchanged selection
- * when the change would break a limit. Single-choice groups replace whatever was picked;
- * multi-choice groups respect both the option's own `maxPerItem` and the group's `maxSelect`.
+ * when the change would break a limit. A group whose `maxSelect` is 1 behaves like a radio:
+ * picking a new option replaces whatever was picked. Otherwise, unless `allowRepeatSelection` is
+ * set, each option is a simple toggle (0 or 1); with it set, the option can be picked repeatedly
+ * up to its own `maxPerItem` and the group's `maxSelect`.
  */
 export function applyOptionQuantity(
 	group: OptionGroup,
@@ -101,18 +106,22 @@ export function applyOptionQuantity(
 		quantity: nextQuantity,
 	};
 
-	if (group.selectionType === "single") {
+	if (nextQuantity < 0) return current;
+
+	if (group.maxSelect === 1) {
 		const withoutGroup = current.filter(value => value.groupId !== group.id);
 
 		return nextQuantity === 0 ? withoutGroup : [...withoutGroup, { ...selection, quantity: 1 }];
 	}
 
-	if (nextQuantity < 0 || nextQuantity > Number(option.maxPerItem ?? group.maxSelect)) return current;
+	const perOptionCap = group.allowRepeatSelection ? Number(option.maxPerItem ?? Infinity) : 1;
+	if (nextQuantity > perOptionCap) return current;
 
 	const quantityFromOtherOptions = current
 		.filter(value => value.groupId === group.id && value.optionId !== option.id)
 		.reduce((sum, value) => sum + value.quantity, 0);
-	if (quantityFromOtherOptions + nextQuantity > Number(group.maxSelect)) return current;
+	const groupCap = group.maxSelect == null ? Infinity : Number(group.maxSelect);
+	if (quantityFromOtherOptions + nextQuantity > groupCap) return current;
 
 	if (nextQuantity === 0) return current.filter(value => value.optionId !== option.id);
 

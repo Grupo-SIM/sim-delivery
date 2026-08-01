@@ -4,6 +4,8 @@ import {
 	applyOptionQuantity,
 	findInvalidGroup,
 	groupQuantity,
+	hasPriceVariation,
+	isGroupComplete,
 	lineTotal,
 	optionsPriceDelta,
 } from "./product-options";
@@ -18,12 +20,12 @@ function makeOption(overrides: Partial<Option> & { id: string }): Option {
 
 function makeGroup(overrides: Partial<OptionGroup> & { id: string }): OptionGroup {
 	return {
+		allowRepeatSelection: false,
 		maxSelect: 1,
 		name: `Grupo ${overrides.id}`,
 		options: [],
 		priceRule: "sum",
 		required: false,
-		selectionType: "single",
 		...overrides,
 	} as OptionGroup;
 }
@@ -75,7 +77,7 @@ describe("optionsPriceDelta", () => {
 	});
 
 	it("sums every chosen option by default", () => {
-		const groups = [makeGroup({ id: "g1", maxSelect: 3, priceRule: "sum", selectionType: "multiple" })];
+		const groups = [makeGroup({ allowRepeatSelection: true, id: "g1", maxSelect: 3, priceRule: "sum" })];
 		const selection = [
 			makeSelection({ optionId: "o1", priceDeltaCents: 300 }),
 			makeSelection({ optionId: "o2", priceDeltaCents: 500 }),
@@ -85,14 +87,14 @@ describe("optionsPriceDelta", () => {
 	});
 
 	it("charges each unit when an option is chosen more than once", () => {
-		const groups = [makeGroup({ id: "g1", maxSelect: 3, priceRule: "sum", selectionType: "multiple" })];
+		const groups = [makeGroup({ allowRepeatSelection: true, id: "g1", maxSelect: 3, priceRule: "sum" })];
 		const selection = [makeSelection({ optionId: "o1", priceDeltaCents: 300, quantity: 3 })];
 
 		expect(optionsPriceDelta(groups, selection)).toBe(900);
 	});
 
 	it("charges only the dearest pick under the highest rule", () => {
-		const groups = [makeGroup({ id: "g1", maxSelect: 2, priceRule: "highest", selectionType: "multiple" })];
+		const groups = [makeGroup({ id: "g1", maxSelect: 2, priceRule: "highest" })];
 		const selection = [
 			makeSelection({ optionId: "o1", priceDeltaCents: 300 }),
 			makeSelection({ optionId: "o2", priceDeltaCents: 900 }),
@@ -102,7 +104,7 @@ describe("optionsPriceDelta", () => {
 	});
 
 	it("charges the mean under the average rule", () => {
-		const groups = [makeGroup({ id: "g1", maxSelect: 2, priceRule: "average", selectionType: "multiple" })];
+		const groups = [makeGroup({ id: "g1", maxSelect: 2, priceRule: "average" })];
 		const selection = [
 			makeSelection({ optionId: "o1", priceDeltaCents: 300 }),
 			makeSelection({ optionId: "o2", priceDeltaCents: 900 }),
@@ -112,7 +114,7 @@ describe("optionsPriceDelta", () => {
 	});
 
 	it("rounds the average to whole cents", () => {
-		const groups = [makeGroup({ id: "g1", maxSelect: 3, priceRule: "average", selectionType: "multiple" })];
+		const groups = [makeGroup({ id: "g1", maxSelect: 3, priceRule: "average" })];
 		const selection = [
 			makeSelection({ optionId: "o1", priceDeltaCents: 100 }),
 			makeSelection({ optionId: "o2", priceDeltaCents: 100 }),
@@ -124,8 +126,8 @@ describe("optionsPriceDelta", () => {
 
 	it("applies each group's rule independently", () => {
 		const groups = [
-			makeGroup({ id: "g1", maxSelect: 2, priceRule: "highest", selectionType: "multiple" }),
-			makeGroup({ id: "g2", maxSelect: 2, priceRule: "sum", selectionType: "multiple" }),
+			makeGroup({ id: "g1", maxSelect: 2, priceRule: "highest" }),
+			makeGroup({ id: "g2", maxSelect: 2, priceRule: "sum" }),
 		];
 		const selection = [
 			makeSelection({ optionId: "o1", priceDeltaCents: 300 }),
@@ -148,7 +150,7 @@ describe("optionsPriceDelta", () => {
 
 describe("lineTotal", () => {
 	const item = {
-		optionGroups: [makeGroup({ id: "g1", maxSelect: 2, priceRule: "sum", selectionType: "multiple" })],
+		optionGroups: [makeGroup({ id: "g1", maxSelect: 2, priceRule: "sum" })],
 		priceCents: 2000,
 	} as MenuItem;
 
@@ -169,9 +171,70 @@ describe("lineTotal", () => {
 	});
 });
 
+describe("hasPriceVariation", () => {
+	it("is false for an empty group", () => {
+		expect(hasPriceVariation([makeGroup({ id: "g1" })])).toBe(false);
+	});
+
+	it("is true for an optional group with varying prices", () => {
+		const group = makeGroup({
+			id: "g1",
+			options: [makeOption({ id: "o1", priceDeltaCents: 0 }), makeOption({ id: "o2", priceDeltaCents: 200 })],
+			required: false,
+		});
+
+		expect(hasPriceVariation([group])).toBe(true);
+	});
+
+	it("is true for a required unlimited (null maxSelect) sum group with priced options", () => {
+		const group = makeGroup({
+			id: "g1",
+			maxSelect: null,
+			options: [makeOption({ id: "o1", priceDeltaCents: 200 })],
+			priceRule: "sum",
+			required: true,
+		});
+
+		expect(hasPriceVariation([group])).toBe(true);
+	});
+
+	it("is false for a required max-1 group whose options share the same price", () => {
+		const group = makeGroup({
+			id: "g1",
+			maxSelect: 1,
+			options: [makeOption({ id: "o1", priceDeltaCents: 200 }), makeOption({ id: "o2", priceDeltaCents: 200 })],
+			required: true,
+		});
+
+		expect(hasPriceVariation([group])).toBe(false);
+	});
+});
+
+describe("isGroupComplete", () => {
+	it("completes an unlimited group as soon as one option is picked", () => {
+		const group = makeGroup({ id: "g1", maxSelect: null });
+
+		expect(isGroupComplete(group, [])).toBe(false);
+		expect(isGroupComplete(group, [makeSelection({ optionId: "o1" })])).toBe(true);
+	});
+
+	it("completes a max-1 group as soon as one option is picked", () => {
+		const group = makeGroup({ id: "g1", maxSelect: 1 });
+
+		expect(isGroupComplete(group, [makeSelection({ optionId: "o1" })])).toBe(true);
+	});
+
+	it("only completes a capped group once the cap is reached", () => {
+		const group = makeGroup({ id: "g1", maxSelect: 3 });
+
+		expect(isGroupComplete(group, [makeSelection({ optionId: "o1", quantity: 2 })])).toBe(false);
+		expect(isGroupComplete(group, [makeSelection({ optionId: "o1", quantity: 3 })])).toBe(true);
+	});
+});
+
 describe("findInvalidGroup", () => {
 	it("accepts a selection inside the limits", () => {
-		const groups = [makeGroup({ id: "g1", maxSelect: 2, required: true, selectionType: "multiple" })];
+		const groups = [makeGroup({ id: "g1", maxSelect: 2, required: true })];
 
 		expect(findInvalidGroup(groups, [makeSelection({ optionId: "o1" })])).toBeUndefined();
 	});
@@ -189,15 +252,21 @@ describe("findInvalidGroup", () => {
 	});
 
 	it("flags a group with more picks than allowed", () => {
-		const groups = [makeGroup({ id: "g1", maxSelect: 1, required: false, selectionType: "multiple" })];
+		const groups = [makeGroup({ id: "g1", maxSelect: 1, required: false })];
 
 		expect(findInvalidGroup(groups, [makeSelection({ optionId: "o1", quantity: 2 })])?.id).toBe("g1");
 	});
 
 	it("counts repeats of one option against the group maximum", () => {
-		const groups = [makeGroup({ id: "g1", maxSelect: 2, required: false, selectionType: "multiple" })];
+		const groups = [makeGroup({ id: "g1", maxSelect: 2, required: false })];
 
 		expect(findInvalidGroup(groups, [makeSelection({ optionId: "o1", quantity: 3 })])?.id).toBe("g1");
+	});
+
+	it("never flags an unlimited (null maxSelect) group for having too many picks", () => {
+		const groups = [makeGroup({ id: "g1", maxSelect: null, required: false })];
+
+		expect(findInvalidGroup(groups, [makeSelection({ optionId: "o1", quantity: 50 })])).toBeUndefined();
 	});
 
 	it("returns the first offending group when several are invalid", () => {
@@ -212,8 +281,8 @@ describe("findInvalidGroup", () => {
 });
 
 describe("applyOptionQuantity", () => {
-	describe("single-choice groups", () => {
-		const group = makeGroup({ id: "g1", maxSelect: 1, selectionType: "single" });
+	describe("max-1 groups (radio behavior)", () => {
+		const group = makeGroup({ id: "g1", maxSelect: 1 });
 
 		it("selects an option", () => {
 			const result = applyOptionQuantity(group, makeOption({ id: "o1", priceDeltaCents: 300 }), 1, []);
@@ -257,8 +326,63 @@ describe("applyOptionQuantity", () => {
 		});
 	});
 
-	describe("multi-choice groups", () => {
-		const group = makeGroup({ id: "g1", maxSelect: 3, selectionType: "multiple" });
+	describe("toggle groups (allowRepeatSelection: false)", () => {
+		const group = makeGroup({ allowRepeatSelection: false, id: "g1", maxSelect: 3 });
+
+		it("adds an option regardless of its own maxPerItem", () => {
+			const option = makeOption({ id: "o1", maxPerItem: 5, priceDeltaCents: 250 });
+			const result = applyOptionQuantity(group, option, 1, []);
+
+			expect(result).toEqual([
+				{
+					groupId: "g1",
+					groupName: "Grupo g1",
+					optionId: "o1",
+					optionName: "Opção o1",
+					priceDeltaCents: 250,
+					quantity: 1,
+				},
+			]);
+		});
+
+		it("refuses to pick the same option twice even with a high maxPerItem", () => {
+			const current = [makeSelection({ optionId: "o1", quantity: 1 })];
+			const option = makeOption({ id: "o1", maxPerItem: 5 });
+
+			expect(applyOptionQuantity(group, option, 2, current)).toBe(current);
+		});
+
+		it("removes the option at quantity zero", () => {
+			const current = [makeSelection({ optionId: "o1" }), makeSelection({ optionId: "o2" })];
+			const result = applyOptionQuantity(group, makeOption({ id: "o1" }), 0, current);
+
+			expect(result.map(option => option.optionId)).toEqual(["o2"]);
+		});
+
+		it("refuses another distinct option once the group cap is reached", () => {
+			const current = [
+				makeSelection({ optionId: "o1" }),
+				makeSelection({ optionId: "o2" }),
+				makeSelection({ optionId: "o3" }),
+			];
+
+			expect(applyOptionQuantity(group, makeOption({ id: "o4" }), 1, current)).toBe(current);
+		});
+
+		it("has no group cap when maxSelect is null", () => {
+			const unlimited = makeGroup({ allowRepeatSelection: false, id: "g1", maxSelect: null });
+			const current = Array.from({ length: 10 }, (_, index) =>
+				makeSelection({ optionId: `o${index}` }),
+			);
+
+			const result = applyOptionQuantity(unlimited, makeOption({ id: "o10" }), 1, current);
+
+			expect(result).toHaveLength(11);
+		});
+	});
+
+	describe("repeat-enabled groups (allowRepeatSelection: true)", () => {
+		const group = makeGroup({ allowRepeatSelection: true, id: "g1", maxSelect: 3 });
 
 		it("adds an option with the requested quantity", () => {
 			const result = applyOptionQuantity(group, makeOption({ id: "o1", priceDeltaCents: 250 }), 2, []);
@@ -338,6 +462,13 @@ describe("applyOptionQuantity", () => {
 			const result = applyOptionQuantity(group, makeOption({ id: "o1", maxPerItem: null }), 3, []);
 
 			expect(result[0].quantity).toBe(3);
+		});
+
+		it("has no per-option cap when the option's maxPerItem and the group maxSelect are both null", () => {
+			const unlimited = makeGroup({ allowRepeatSelection: true, id: "g1", maxSelect: null });
+			const result = applyOptionQuantity(unlimited, makeOption({ id: "o1", maxPerItem: null }), 20, []);
+
+			expect(result[0].quantity).toBe(20);
 		});
 	});
 });

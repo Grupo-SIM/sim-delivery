@@ -44,7 +44,7 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 		}
 		setOptions(
 			item.optionGroups
-				.filter(group => group.required && group.selectionType === "single" && group.options.length === 1)
+				.filter(group => group.required && group.maxSelect === 1 && group.options.length === 1)
 				.reduce(
 					(current, group) => applyOptionQuantity(group, group.options[0], 1, current),
 					[] as SelectedOption[],
@@ -57,7 +57,8 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 	const delta = optionsPriceDelta(selectedItem.optionGroups, options);
 	const totalCents = (Number(selectedItem.priceCents) + delta) * quantity;
 	const invalidGroup = findInvalidGroup(selectedItem.optionGroups, options);
-	const chooseLabel = (required: boolean, maxSelect: number) => {
+	const chooseLabel = (required: boolean, maxSelect: number | null) => {
+		if (maxSelect == null) return t(required ? "store.product.chooseAtLeast" : "store.product.chooseAny");
 		if (required && maxSelect === 1) return t("store.product.chooseExact", { count: 1 });
 		if (!required) return t("store.product.chooseUpTo", { count: maxSelect });
 		return t("store.product.chooseRange", { max: maxSelect, min: 1 });
@@ -142,14 +143,14 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 										const complete = isGroupComplete(group, options);
 										const collapsed = complete && !expandedGroupIds.has(group.id);
 										const summary =
-											group.selectionType === "single"
+											group.maxSelect === 1
 												? groupSelected[0]?.optionName
 												: groupSelected
 														.filter(value => value.quantity > 0)
 														.map(value => `${value.quantity}x ${value.optionName}`)
 														.join(", ");
 										const selectedImageUrl =
-											group.selectionType === "single"
+											group.maxSelect === 1
 												? group.options.find(option => option.id === groupSelected[0]?.optionId)?.imageUrl
 												: null;
 										return (
@@ -173,7 +174,12 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 														<div className="min-w-0">
 															<h3 className="font-semibold text-foreground">{group.name}</h3>
 															<p className="truncate text-muted-foreground text-sm">
-																{collapsed ? summary : chooseLabel(group.required, Number(group.maxSelect))}
+																{collapsed
+																	? summary
+																	: chooseLabel(
+																			group.required,
+																			group.maxSelect == null ? null : Number(group.maxSelect),
+																		)}
 															</p>
 														</div>
 													</div>
@@ -199,10 +205,16 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 													<div className="divide-y divide-border">
 														{group.options.map(option => {
 															const selected = options.find(value => value.optionId === option.id);
-															const optionLimit = Number(option.maxPerItem ?? group.maxSelect);
-															const atLimit =
-																(selected?.quantity ?? 0) >= optionLimit ||
+															const isToggle = group.maxSelect === 1 || !group.allowRepeatSelection;
+															const optionLimit = group.allowRepeatSelection
+																? Number(option.maxPerItem ?? Number.POSITIVE_INFINITY)
+																: 1;
+															const atOptionLimit = (selected?.quantity ?? 0) >= optionLimit;
+															const atGroupLimit =
+																group.maxSelect != null &&
+																group.maxSelect !== 1 &&
 																groupQuantity >= Number(group.maxSelect);
+															const atLimit = atOptionLimit || atGroupLimit;
 															return (
 																<div className="flex min-w-0 items-center gap-3 px-4 py-3" key={option.id}>
 																	{option.imageUrl ? (
@@ -233,9 +245,10 @@ export function ProductDetailsModal({ editingItem = null, item, onClose, unitId 
 																			</p>
 																		)}
 																	</div>
-																	{group.selectionType === "single" ? (
+																	{isToggle ? (
 																		<Checkbox
 																			checked={Boolean(selected)}
+																			disabled={!selected && atLimit}
 																			id={`option-${option.id}`}
 																			onChange={() => setOptionQuantity(group.id, option, selected ? 0 : 1)}
 																			onClick={event => event.stopPropagation()}

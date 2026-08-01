@@ -49,7 +49,8 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 		const normalizeGroups = (): OptionGroup[] =>
 			(groups.data ?? []).map(group => ({
 				...group,
-				maxSelect: Number(group.maxSelect),
+				allowRepeatSelection: group.allowRepeatSelection,
+				maxSelect: group.maxSelect == null ? null : Number(group.maxSelect),
 				options: group.options.map(option => ({
 					...option,
 					priceDeltaCents: Number(option.priceDeltaCents),
@@ -57,7 +58,6 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 				})),
 				priceRule: group.priceRule as OptionGroup["priceRule"],
 				required: group.required,
-				selectionType: group.selectionType as OptionGroup["selectionType"],
 				sortOrder: Number(group.sortOrder),
 			}));
 		useEffect(() => {
@@ -68,7 +68,8 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 			setDraftGroups(
 				groups.data.map(group => ({
 					...group,
-					maxSelect: Number(group.maxSelect),
+					allowRepeatSelection: group.allowRepeatSelection,
+					maxSelect: group.maxSelect == null ? null : Number(group.maxSelect),
 					options: group.options.map(option => ({
 						...option,
 						priceDeltaCents: Number(option.priceDeltaCents),
@@ -76,7 +77,6 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 					})),
 					priceRule: group.priceRule as OptionGroup["priceRule"],
 					required: group.required,
-					selectionType: group.selectionType as OptionGroup["selectionType"],
 					sortOrder: Number(group.sortOrder),
 				})),
 			);
@@ -88,13 +88,13 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 			setDraftGroups(current => [
 				...current,
 				{
+					allowRepeatSelection: false,
 					id: crypto.randomUUID(),
-					maxSelect: 1,
+					maxSelect: null,
 					name: name.trim(),
 					options: [],
 					priceRule: "sum",
 					required: false,
-					selectionType: "single",
 					sortOrder: current.length,
 				},
 			]);
@@ -122,6 +122,7 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 						const original = originals.find(item => item.id === group.id);
 						return {
 							...(original ? { id: group.id } : {}),
+							allowRepeatSelection: group.allowRepeatSelection,
 							maxSelect: group.maxSelect,
 							name: group.name,
 							options: group.options.map(option => ({
@@ -135,7 +136,6 @@ export const ProductOptionsEditor = forwardRef<ProductOptionsEditorHandle, Produ
 							})),
 							priceRule: group.priceRule,
 							required: group.required,
-							selectionType: group.selectionType,
 							sortOrder: group.sortOrder,
 						};
 					}),
