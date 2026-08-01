@@ -71,7 +71,7 @@ export const MediaController = new Elysia({ prefix: "/media" })
 				filename,
 			});
 
-			return { url: new URL(`/media/${filename}`, request.url).href };
+			return { url: new URL(`/media/${filename}`, process.env.API_URL).href };
 		},
 		{
 			body: t.Object({ file: t.File({ maxSize: "10m" }) }),
