@@ -11,7 +11,7 @@ export function DataTable({ children, className, tableClassName, ...props }: Dat
 	return (
 		<ScrollArea
 			className={cn(
-				"overflow-x-auto overscroll-x-contain rounded-md border border-border bg-card [-webkit-overflow-scrolling:touch]",
+				"max-h-[65vh] overflow-x-auto overflow-y-auto overscroll-contain rounded-md border border-border bg-card [-webkit-overflow-scrolling:touch] [&_thead]:sticky [&_thead]:top-0 [&_thead]:z-10 [&_thead]:bg-card",
 				className,
 			)}
 			{...props}
