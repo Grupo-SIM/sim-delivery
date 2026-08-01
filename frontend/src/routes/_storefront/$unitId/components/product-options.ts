@@ -78,9 +78,7 @@ export function findInvalidGroup(
 	return optionGroups.find(group => {
 		const count = groupQuantity(options, group.id);
 
-		return (
-			count < (group.required ? 1 : 0) || (group.maxSelect != null && count > Number(group.maxSelect))
-		);
+		return count < (group.required ? 1 : 0) || (group.maxSelect != null && count > Number(group.maxSelect));
 	});
 }
 
@@ -114,13 +112,13 @@ export function applyOptionQuantity(
 		return nextQuantity === 0 ? withoutGroup : [...withoutGroup, { ...selection, quantity: 1 }];
 	}
 
-	const perOptionCap = group.allowRepeatSelection ? Number(option.maxPerItem ?? Infinity) : 1;
+	const perOptionCap = group.allowRepeatSelection ? Number(option.maxPerItem ?? Number.POSITIVE_INFINITY) : 1;
 	if (nextQuantity > perOptionCap) return current;
 
 	const quantityFromOtherOptions = current
 		.filter(value => value.groupId === group.id && value.optionId !== option.id)
 		.reduce((sum, value) => sum + value.quantity, 0);
-	const groupCap = group.maxSelect == null ? Infinity : Number(group.maxSelect);
+	const groupCap = group.maxSelect == null ? Number.POSITIVE_INFINITY : Number(group.maxSelect);
 	if (quantityFromOtherOptions + nextQuantity > groupCap) return current;
 
 	if (nextQuantity === 0) return current.filter(value => value.optionId !== option.id);

@@ -202,7 +202,10 @@ describe("hasPriceVariation", () => {
 		const group = makeGroup({
 			id: "g1",
 			maxSelect: 1,
-			options: [makeOption({ id: "o1", priceDeltaCents: 200 }), makeOption({ id: "o2", priceDeltaCents: 200 })],
+			options: [
+				makeOption({ id: "o1", priceDeltaCents: 200 }),
+				makeOption({ id: "o2", priceDeltaCents: 200 }),
+			],
 			required: true,
 		});
 
@@ -371,9 +374,7 @@ describe("applyOptionQuantity", () => {
 
 		it("has no group cap when maxSelect is null", () => {
 			const unlimited = makeGroup({ allowRepeatSelection: false, id: "g1", maxSelect: null });
-			const current = Array.from({ length: 10 }, (_, index) =>
-				makeSelection({ optionId: `o${index}` }),
-			);
+			const current = Array.from({ length: 10 }, (_, index) => makeSelection({ optionId: `o${index}` }));
 
 			const result = applyOptionQuantity(unlimited, makeOption({ id: "o10" }), 1, current);
 

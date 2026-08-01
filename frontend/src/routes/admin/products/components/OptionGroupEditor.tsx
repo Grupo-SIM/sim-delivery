@@ -142,9 +142,7 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 									<NumericInput
 										className="w-20"
 										decimalScale={0}
-										onValueChange={({ floatValue }) =>
-											onChange({ ...group, maxSelect: floatValue ?? null })
-										}
+										onValueChange={({ floatValue }) => onChange({ ...group, maxSelect: floatValue ?? null })}
 										placeholder={t("admin.products.options.unlimited")}
 										value={group.maxSelect}
 									/>
