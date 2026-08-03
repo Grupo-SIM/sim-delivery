@@ -69,6 +69,8 @@ export function OrderRow({ order }: OrderRowProps) {
 				isOpen={modalOpen}
 				onClose={() => setModalOpen(false)}
 				orderId={order.id}
+				orderTotal={Number(order.total)}
+				paymentStatus={order.payment?.status ?? null}
 			/>
 
 			<AssignCourierModal isOpen={assignOpen} onClose={() => setAssignOpen(false)} orderId={order.id} />

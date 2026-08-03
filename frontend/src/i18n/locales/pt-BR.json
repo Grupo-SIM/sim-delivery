@@ -471,6 +471,18 @@
 					"emptyColumn": "Sem pedidos"
 				},
 				"loadError": "Não foi possível carregar os pedidos.",
+				"refund": {
+					"method": {
+						"cashback": "Cashback",
+						"gateway": "Gateway de pagamento",
+						"manual": "Manual (fora do sistema)"
+					},
+					"status": {
+						"completed": "Concluído",
+						"failed": "Falhou",
+						"pending": "Pendente"
+					}
+				},
 				"status": {
 					"all": "Todos",
 					"awaiting_payment": "Aguardando pagamento",
@@ -498,6 +510,11 @@
 						"recebido": "Voltar para recebido",
 						"retirado": "Marcar como retirado",
 						"saiu_para_entrega": "Saiu para entrega"
+					},
+					"refund": {
+						"amount": "Valor do estorno",
+						"method": "Forma de estorno",
+						"register": "Registrar estorno"
 					},
 					"save": "Atualizar",
 					"saving": "Atualizando...",
@@ -730,14 +747,98 @@
 					"success": "Planilha baixada."
 				},
 				"finance": {
+					"cancellation": {
+						"averageTicket": "Ticket médio cancelado",
+						"byStage": "Cancelamentos por etapa",
+						"byStageEmpty": "Nenhum cancelamento no período.",
+						"count": "Pedidos cancelados",
+						"lostRevenue": "Receita perdida",
+						"pendingHint": "Pagamento confirmado, ainda sem estorno registrado.",
+						"pendingRefund": "Estorno pendente",
+						"rate": "Taxa de cancelamento",
+						"refunded": "Valor estornado",
+						"title": "Cancelamentos",
+						"wasted": "Insumo desperdiçado",
+						"wastedHint": "Custo de insumos já consumidos em pedidos cancelados."
+					},
+					"cancelStage": {
+						"awaiting_payment": "Aguardando pagamento",
+						"em_preparo": "Em preparo",
+						"entregue": "Entregue",
+						"pronto": "Pronto",
+						"recebido": "Recebido",
+						"retirado": "Retirado",
+						"saiu_para_entrega": "Saiu para entrega"
+					},
+					"customers": {
+						"new": "Clientes novos",
+						"ordersPerCustomer": "Pedidos por cliente",
+						"repeatRate": "Taxa de recompra",
+						"returning": "Clientes recorrentes",
+						"revenuePerCustomer": "Receita por cliente",
+						"title": "Clientes"
+					},
 					"deliveryMethod": {
 						"delivery": "Entrega",
 						"pickup": "Retirada"
 					},
+					"discounts": {
+						"cashback": "Cashback resgatado",
+						"columns": {
+							"code": "Cupom",
+							"discount": "Desconto concedido",
+							"orders": "Pedidos"
+						},
+						"discounts": "Descontos concedidos",
+						"loyaltyPoints": "Pontos de fidelidade resgatados",
+						"shareOfGross": "% do faturamento bruto",
+						"title": "Descontos e cupons",
+						"topCoupons": "Cupons mais usados"
+					},
+					"operations": {
+						"byHour": "Pedidos por hora do dia",
+						"byWeekday": "Pedidos por dia da semana",
+						"deliveryTime": "Tempo médio de entrega",
+						"fulfillmentTime": "Tempo médio total",
+						"prepTime": "Tempo médio de preparo",
+						"problemRate": "Taxa de pedidos com problema",
+						"title": "Operação"
+					},
 					"paymentMethod": {
 						"credit_card": "Cartão de crédito",
 						"pix": "PIX"
-					}
+					},
+					"products": {
+						"columns": {
+							"cost": "Custo",
+							"details": "Detalhes",
+							"ingredient": "Insumo",
+							"quantity": "Quantidade",
+							"share": "% do custo"
+						},
+						"currentPrice": "Preço vigente",
+						"ingredients": "Composição de custo",
+						"link": "Lucro por produto",
+						"noRecipe": "Sem ficha técnica",
+						"noRecipeHint": "Configure a ficha técnica deste produto para calcular a margem teórica.",
+						"realizedMargin": "Margem realizada",
+						"subtitle": "Lucro realizado e teórico por produto, com custo de insumos.",
+						"theoreticalMargin": "Margem teórica",
+						"title": "Lucro por produto",
+						"viewBreakdown": "Ver composição de custo"
+					},
+					"units": {
+						"columns": {
+							"averageOrderValue": "Ticket médio",
+							"cancelRate": "Cancelamento",
+							"grossMargin": "Margem bruta",
+							"orders": "Pedidos",
+							"revenue": "Receita",
+							"unit": "Unidade"
+						},
+						"title": "Comparativo por unidade"
+					},
+					"vsPreviousPeriod": "vs. período anterior"
 				},
 				"groupBy": {
 					"dayOfMonth": "Dias do mês",
