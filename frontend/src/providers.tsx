@@ -6,6 +6,7 @@ import { ConfirmDialog } from "./components/ui/ConfirmDialog";
 import { useLiveBranding } from "./hooks/use-live-branding";
 import { useThemePreference } from "./hooks/use-theme-preference";
 import { fontsToCss, loadGoogleFont } from "./lib/google-fonts";
+import { syncStatusBarAppearance } from "./lib/native-statusbar";
 import { reactQueryClient } from "./lib/tanstack";
 import { themeColorsToCss } from "./lib/theme-colors";
 
@@ -30,6 +31,7 @@ function BrandedProviders({ children }: { children: ReactNode }) {
 	useLayoutEffect(() => {
 		document.documentElement.classList.toggle("dark", mode === "dark");
 		document.documentElement.classList.toggle("light", mode === "light");
+		syncStatusBarAppearance(mode);
 	}, [mode]);
 	useEffect(() => {
 		let style = document.getElementById("live-branding-theme") as HTMLStyleElement | null;
