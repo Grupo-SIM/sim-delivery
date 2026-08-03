@@ -1,17 +1,22 @@
 /// A payment record tied to one order. Created by POST /payments/pix or /payments/card.
-/// Status lifecycle: pending → confirmed | failed.
+/// Status lifecycle: pending → confirmed | failed. A confirmed payment may later move to
+/// partially_refunded | refunded via `Refund` records (see RefundPayment use case).
 model Payment {
     id              String   @id @default(cuid())
     orderId         String   @unique
     /// One-time opaque token used by the storefront to poll payment status.
     token           String   @unique @default(cuid())
-    /// "pending" | "confirmed" | "failed"
+    /// "pending" | "confirmed" | "failed" | "partially_refunded" | "refunded"
     status          String   @default("pending")
     confirmedAt DateTime?
     /// "pix" | "credit_card"
     method          String   @default("pix")
     /// Amount in cents, mirrors order total at intent creation time.
     amount          Int
+    /// Cents refunded so far across all `Refund` records; never exceeds `amount`.
+    refundedAmount  Int      @default(0)
+    /// Set when the first refund completes.
+    refundedAt      DateTime?
     /// DOM payment id returned by the Simpay backend; used for status polling.
     simpayPaymentId String?
     /// PIX QR code image (data URL) and copy-paste payload, present when method = "pix".
@@ -20,9 +25,42 @@ model Payment {
     createdAt       DateTime @default(now())
     updatedAt       DateTime @updatedAt
 
-    order Order @relation(fields: [orderId], references: [id])
+    order   Order    @relation(fields: [orderId], references: [id])
+    refunds Refund[]
 
     @@map("payment")
+}
+
+/// A single refund event against a `Payment`, supporting partial and repeated refunds.
+/// The system is the accounting source of truth; actual bank settlement may still be
+/// manual until the gateway exposes a refund API (see SimpayClient.refundPayment).
+model Refund {
+    id          String   @id @default(cuid())
+    companyId   String
+    orderId     String
+    paymentId   String
+    /// Cents refunded by this event.
+    amount      Int
+    reason      String?
+    /// "gateway" | "manual" | "cashback"
+    method      String
+    /// "pending" | "completed" | "failed"
+    status      String   @default("pending")
+    /// Gateway-side refund id, present when method = "gateway" and it succeeds.
+    externalId  String?
+    /// Staff member who authorized the refund.
+    userId      String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    order   Order   @relation(fields: [orderId], references: [id])
+    payment Payment @relation(fields: [paymentId], references: [id])
+    user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+    @@index([companyId, createdAt])
+    @@index([orderId])
+    @@map("refund")
 }
 
 /// A tokenized credit card saved by a customer for reuse at checkout.

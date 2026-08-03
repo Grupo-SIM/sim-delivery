@@ -20,6 +20,8 @@ model Order {
     deliveryMethod String
     cancelReason   String?
     problemReason  String?
+    /// Cents refunded so far across all `Refund` records for this order's payment.
+    refundedCents  Int      @default(0)
     createdAt      DateTime @default(now())
     updatedAt      DateTime @updatedAt
 
@@ -35,12 +37,14 @@ model Order {
     items           OrderItem[]
     payment         Payment?
     productReviews  ProductReview[]
+    refunds         Refund[]
     review          Review?
     statusEvents    OrderStatusEvent[]
     inventoryMovements InventoryMovement[]
     inventoryReservations InventoryReservation[]
 
     @@index([companyId, status])
+    @@index([companyId, status, createdAt])
     @@index([customerId])
     @@index([preparedById])
     @@map("order")
@@ -69,7 +73,13 @@ model OrderItem {
     quantity    Int
     note        String?
     total       Int
+    /// Cost currently incurred: reduced when a reservation is released on cancel, restored
+    /// on reopen, and left untouched for reservations already `consumed` (real waste).
     costCents   Int?
+    /// Immutable snapshot of `costCents` at order creation — the cost of the sale itself.
+    costCentsAtSale Int?
+    /// Set the first time `costCents` is adjusted by a cancel/reopen transition.
+    costRecalculatedAt DateTime?
     netRevenueCents Int?
 
     order           Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)

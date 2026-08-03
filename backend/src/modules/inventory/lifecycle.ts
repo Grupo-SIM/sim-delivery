@@ -108,8 +108,15 @@ export class InventoryLifecycle {
 		return costByOrderItem;
 	}
 
+	/**
+	 * Releases the still-`reserved` reservations for a cancelled order and returns, per
+	 * `orderItemId`, the cost that should come back out of `OrderItem.costCents` — the
+	 * reservation's cost at the time it was made. Reservations already `consumed` are left
+	 * untouched (and out of the returned map): that cost is real waste, not reversible.
+	 */
 	static async release(tx: Transaction, orderId: string) {
 		const reservations = await tx.inventoryReservation.findMany({ where: { orderId, status: "reserved" } });
+		const costByOrderItem = new Map<string, number>();
 		for (const reservation of reservations) {
 			await tx.unitInventoryBalance.update({
 				data: { reservedQuantity: { decrement: reservation.quantity } },
@@ -120,6 +127,14 @@ export class InventoryLifecycle {
 					},
 				},
 			});
+			if (reservation.orderItemId) {
+				const { orderItemId } = reservation;
+				costByOrderItem.set(
+					orderItemId,
+					(costByOrderItem.get(orderItemId) ?? 0) +
+						number(reservation.quantity) * number(reservation.unitCostCents),
+				);
+			}
 		}
 		await tx.inventoryReservation.updateMany({
 			data: { status: "released" },
@@ -133,16 +148,28 @@ export class InventoryLifecycle {
 				data: { stock: { increment: item.quantity } },
 				where: { id: item.unitProductId!, stock: { not: null } },
 			});
+		return costByOrderItem;
 	}
 
+	/** Mirror of `release`: restores reservations on reopen and returns the cost to add back. */
 	static async restore(tx: Transaction, orderId: string, unitId: string) {
 		const reservations = await tx.inventoryReservation.findMany({ where: { orderId, status: "released" } });
 		const totals = new Map<string, number>();
-		for (const reservation of reservations)
+		const costByOrderItem = new Map<string, number>();
+		for (const reservation of reservations) {
 			totals.set(
 				reservation.inventoryItemId,
 				(totals.get(reservation.inventoryItemId) ?? 0) + number(reservation.quantity),
 			);
+			if (reservation.orderItemId) {
+				const { orderItemId } = reservation;
+				costByOrderItem.set(
+					orderItemId,
+					(costByOrderItem.get(orderItemId) ?? 0) +
+						number(reservation.quantity) * number(reservation.unitCostCents),
+				);
+			}
+		}
 		for (const [inventoryItemId, quantity] of [...totals].sort(([a], [b]) => a.localeCompare(b))) {
 			const updated = await tx.$executeRawUnsafe(
 				`UPDATE "unit_inventory_balance" SET "reservedQuantity" = "reservedQuantity" + $1::decimal, "updatedAt" = CURRENT_TIMESTAMP WHERE "unitId" = $2 AND "inventoryItemId" = $3 AND "quantity" - "reservedQuantity" >= $1::decimal`,
@@ -166,6 +193,7 @@ export class InventoryLifecycle {
 			});
 			if (result.count !== 1) throw new DomainError("INSUFFICIENT_STOCK");
 		}
+		return costByOrderItem;
 	}
 
 	static async consume(tx: Transaction, orderId: string, userId?: string) {

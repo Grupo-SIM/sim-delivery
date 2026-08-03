@@ -352,11 +352,9 @@ export class CreateOrder {
 						? itemDiscount - distributed
 						: Math.floor((itemDiscount * item.total) / subtotal);
 				distributed += share;
+				const costCents = costs.has(id) ? Math.round(costs.get(id)!) : null;
 				await tx.orderItem.update({
-					data: {
-						costCents: costs.has(id) ? Math.round(costs.get(id)!) : null,
-						netRevenueCents: item.total - share,
-					},
+					data: { costCents, costCentsAtSale: costCents, netRevenueCents: item.total - share },
 					where: { id },
 				});
 			}

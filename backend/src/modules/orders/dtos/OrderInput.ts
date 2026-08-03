@@ -1,9 +1,19 @@
 import { t } from "elysia";
 
+export const CancelOrderRefundBody = t.Object({
+	/** Cents to refund; omit for a full refund of whatever hasn't been refunded yet. */
+	amount: t.Optional(t.Integer({ minimum: 1 })),
+	method: t.Union([t.Literal("gateway"), t.Literal("manual"), t.Literal("cashback")]),
+	reason: t.Optional(t.String({ maxLength: 240 })),
+});
+export type CancelOrderRefundBody = typeof CancelOrderRefundBody.static;
+
 export const UpdateOrderStatusBody = t.Object({
 	cancelReason: t.Optional(t.String({ minLength: 1 })),
 	preparedById: t.Optional(t.Nullable(t.String({ minLength: 1 }))),
 	problemReason: t.Optional(t.String({ minLength: 1 })),
+	/** Only applied when transitioning to "cancelado" against a confirmed payment. */
+	refund: t.Optional(CancelOrderRefundBody),
 	status: t.Union([
 		t.Literal("recebido"),
 		t.Literal("em_preparo"),

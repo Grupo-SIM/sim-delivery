@@ -137,6 +137,16 @@ export class SimpayClient {
 		if (!response.ok) return { status: "UNKNOWN" };
 		return (await response.json()) as { status: string };
 	}
+
+	/**
+	 * Single integration point for gateway-side refunds. back-simpay has no documented
+	 * refund endpoint yet, so this always fails until that API is known — callers must
+	 * treat the rejection as "not supported" rather than a transient error, and fall back
+	 * to a manual refund. Replace the body once the endpoint is confirmed.
+	 */
+	async refundPayment(_simpayPaymentId: string, _amountCents: number): Promise<{ externalId: string }> {
+		throw new Error("REFUND_NOT_SUPPORTED");
+	}
 }
 
 export const simpay = new SimpayClient();

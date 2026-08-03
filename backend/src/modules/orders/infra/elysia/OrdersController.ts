@@ -1,6 +1,8 @@
 import Elysia, { t } from "elysia";
+import { RefundPayment } from "@/modules/payments/useCases";
 import { AuthGuard, CompanyScopeGuard } from "@/modules/users/guards";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
+import { simpay } from "@/shared/infra/simpay";
 import { createWhatsAppProvider } from "@/shared/infra/whatsapp";
 import {
 	AdminOrderListReturn,
@@ -35,7 +37,7 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 				listCustomerOrders: new ListCustomerOrders(prisma),
 				listOrders: new ListOrders(prisma),
 				prisma,
-				updateOrderStatus: new UpdateOrderStatus(prisma, whatsApp),
+				updateOrderStatus: new UpdateOrderStatus(prisma, whatsApp, new RefundPayment(prisma, simpay)),
 			}))
 			.get(
 				"/",
@@ -88,7 +90,7 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 				async ({ body, params, request, updateOrderStatus }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "orders", "updateStatus");
-					return updateOrderStatus.execute(scope.companyId, params.orderId, body, scope.role);
+					return updateOrderStatus.execute(scope.companyId, params.orderId, body, scope.role, scope.userId);
 				},
 				{ body: UpdateOrderStatusBody, response: OrderReturn },
 			),

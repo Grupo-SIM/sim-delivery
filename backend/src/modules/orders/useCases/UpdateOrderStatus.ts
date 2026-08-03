@@ -1,4 +1,5 @@
 import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
+import type { RefundPayment } from "@/modules/payments/useCases";
 import { UserErrors } from "@/modules/users/errors";
 import { DomainError } from "@/shared/errors";
 import { OrderStatusEmail } from "@/shared/infra/emails";
@@ -66,6 +67,7 @@ export class UpdateOrderStatus {
 	constructor(
 		private readonly prisma: PrismaInstance,
 		private readonly whatsApp: WhatsAppProvider,
+		private readonly refundPayment?: RefundPayment,
 	) {}
 
 	async execute(
@@ -73,13 +75,15 @@ export class UpdateOrderStatus {
 		orderId: string,
 		data: UpdateOrderStatusBody,
 		role?: Role,
+		userId?: string,
 	): Promise<OrderReturn> {
-		const { status, cancelReason, preparedById, problemReason } = data;
+		const { status, cancelReason, preparedById, problemReason, refund } = data;
 
 		const order = await this.prisma.order.findFirst({
 			include: {
 				company: { select: { orderStatusWhatsAppTemplates: true } },
 				customer: { include: { user: { select: { email: true, phoneNumber: true } } } },
+				payment: { select: { status: true } },
 			},
 			where: { ...(companyId ? { companyId } : {}), id: orderId },
 		});
@@ -102,9 +106,29 @@ export class UpdateOrderStatus {
 		}
 
 		const updated = await this.prisma.$transaction(async tx => {
-			if (order.status !== status && status === "cancelado") await InventoryLifecycle.release(tx, orderId);
-			if (order.status === "cancelado" && status !== "cancelado")
-				await InventoryLifecycle.restore(tx, orderId, order.unitId);
+			if (order.status !== status && status === "cancelado") {
+				const releasedCost = await InventoryLifecycle.release(tx, orderId);
+				for (const [orderItemId, costCents] of releasedCost) {
+					const item = await tx.orderItem.findUniqueOrThrow({ where: { id: orderItemId } });
+					await tx.orderItem.update({
+						data: {
+							costCents: Math.max(0, (item.costCents ?? 0) - costCents),
+							costRecalculatedAt: new Date(),
+						},
+						where: { id: orderItemId },
+					});
+				}
+			}
+			if (order.status === "cancelado" && status !== "cancelado") {
+				const restoredCost = await InventoryLifecycle.restore(tx, orderId, order.unitId);
+				for (const [orderItemId, costCents] of restoredCost) {
+					const item = await tx.orderItem.findUniqueOrThrow({ where: { id: orderItemId } });
+					await tx.orderItem.update({
+						data: { costCents: (item.costCents ?? 0) + costCents, costRecalculatedAt: new Date() },
+						where: { id: orderItemId },
+					});
+				}
+			}
 			if (order.status !== status && status === "em_preparo")
 				await InventoryLifecycle.consume(tx, orderId, preparedById ?? undefined);
 			const result = await tx.order.update({
@@ -123,6 +147,16 @@ export class UpdateOrderStatus {
 				});
 			return result;
 		});
+
+		if (
+			refund &&
+			this.refundPayment &&
+			order.status !== "cancelado" &&
+			status === "cancelado" &&
+			order.payment?.status === "confirmed"
+		) {
+			await this.refundPayment.execute(order.companyId, orderId, refund, userId);
+		}
 
 		if (shouldNotify(order.status, status, order.deliveryMethod)) {
 			const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;

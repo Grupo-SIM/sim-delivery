@@ -1,5 +1,5 @@
 import Elysia, { t } from "elysia";
-import { AuthGuard } from "@/modules/users/guards";
+import { AuthGuard, CompanyScopeGuard } from "@/modules/users/guards";
 import { domPagamentos } from "@/shared/infra/domPagamentos";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
 import { simpay } from "@/shared/infra/simpay";
@@ -10,6 +10,8 @@ import {
 	ListSavedCardsQuery,
 	PaymentStatusReturn,
 	PixPaymentReturn,
+	RefundPaymentBody,
+	RefundReturn,
 	SavedCardsReturn,
 	WebhookBody,
 } from "../../dtos";
@@ -19,6 +21,7 @@ import {
 	CreatePixPayment,
 	GetPaymentStatus,
 	ListSavedCards,
+	RefundPayment,
 } from "../../useCases";
 
 export const PaymentsController = new Elysia({ detail: { tags: ["Payments"] } })
@@ -33,6 +36,7 @@ export const PaymentsController = new Elysia({ detail: { tags: ["Payments"] } })
 				getPaymentStatus: new GetPaymentStatus(prisma, simpay),
 				listSavedCards: new ListSavedCards(prisma),
 				prisma,
+				refundPayment: new RefundPayment(prisma, simpay),
 			}))
 			.post(
 				"/pix",
@@ -65,6 +69,19 @@ export const PaymentsController = new Elysia({ detail: { tags: ["Payments"] } })
 					return listSavedCards.execute(userId, query.slug);
 				},
 				{ query: ListSavedCardsQuery, response: SavedCardsReturn },
+			)
+			.post(
+				"/:orderId/refund",
+				async ({ body, params, refundPayment, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "orders", "updateStatus");
+					return refundPayment.execute(scope.companyId, params.orderId, body, scope.userId);
+				},
+				{
+					body: RefundPaymentBody,
+					params: t.Object({ orderId: t.String({ minLength: 1 }) }),
+					response: RefundReturn,
+				},
 			)
 			.post(
 				"/webhook",

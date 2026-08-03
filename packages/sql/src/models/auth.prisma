@@ -67,6 +67,7 @@ model User {
     staffUnits StaffUnit[]
     sessions   Session[]
     inventoryMovements InventoryMovement[]
+    refunds    Refund[]
 
     @@index([companyId])
     @@map("user")

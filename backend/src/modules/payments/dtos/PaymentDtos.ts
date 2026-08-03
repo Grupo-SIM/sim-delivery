@@ -73,3 +73,29 @@ export const WebhookBody = t.Object({
 	token: t.String({ minLength: 1 }),
 });
 export type WebhookBody = typeof WebhookBody.static;
+
+export const RefundMethod = t.Union([t.Literal("gateway"), t.Literal("manual"), t.Literal("cashback")]);
+export type RefundMethod = typeof RefundMethod.static;
+
+export const RefundPaymentBody = t.Object({
+	/** Cents to refund; omit for a full refund of whatever hasn't been refunded yet. */
+	amount: t.Optional(t.Integer({ minimum: 1 })),
+	method: RefundMethod,
+	reason: t.Optional(t.String({ maxLength: 240 })),
+});
+export type RefundPaymentBody = typeof RefundPaymentBody.static;
+
+export const RefundReturn = t.Object({
+	amount: t.Integer(),
+	createdAt: t.String(),
+	externalId: t.Nullable(t.String()),
+	id: t.String(),
+	method: RefundMethod,
+	reason: t.Nullable(t.String()),
+	/** "pending" | "completed" | "failed" */
+	status: t.String(),
+});
+export type RefundReturn = typeof RefundReturn.static;
+
+export const ListRefundsReturn = t.Array(RefundReturn);
+export type ListRefundsReturn = typeof ListRefundsReturn.static;
