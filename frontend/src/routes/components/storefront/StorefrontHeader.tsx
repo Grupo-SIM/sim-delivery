@@ -29,7 +29,7 @@ export function StorefrontHeader({
 	const staffAreaPath = getStaffAreaPath(role);
 
 	return (
-		<header className="relative z-30 border-border/70 border-b bg-background/95 backdrop-blur">
+		<header className="relative z-30 border-border/70 border-b bg-background/95 pt-safe pr-safe pl-safe backdrop-blur">
 			<div className="mx-auto flex min-h-20 max-w-6xl items-center justify-between gap-5 px-5 py-3">
 				<Link aria-label={companyName} className="flex min-w-0 items-center gap-3" to="/">
 					{branding?.logoUrl ? (

@@ -23,7 +23,7 @@ export function StorefrontFooter({ branding }: StorefrontFooterProps) {
 	].filter((item): item is { href: string; label: string } => Boolean(item));
 
 	return (
-		<footer className="mt-auto border-border/70 border-t bg-muted/35">
+		<footer className="mt-auto border-border/70 border-t bg-muted/35 pb-safe pr-safe pl-safe">
 			<div className="mx-auto max-w-6xl px-5 py-9">
 				<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 					<div className="space-y-3">

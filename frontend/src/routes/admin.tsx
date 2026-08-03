@@ -25,7 +25,7 @@ function AdminLayout() {
 
 	return (
 		<div className="flex min-h-screen overflow-x-hidden">
-			<aside className="fixed inset-y-0 left-0 z-20 hidden w-60 flex-col border-border border-r bg-card md:flex">
+			<aside className="fixed inset-y-0 left-0 z-20 hidden w-60 flex-col border-border border-r bg-card pt-safe pb-safe pl-safe md:flex">
 				<AdminSidebar />
 			</aside>
 
@@ -39,7 +39,7 @@ function AdminLayout() {
 
 			<aside
 				aria-hidden={!mobileOpen}
-				className={`fixed inset-y-0 left-0 z-40 w-60 flex-col border-border border-r bg-card transition-transform duration-300 md:hidden ${
+				className={`fixed inset-y-0 left-0 z-40 w-60 flex-col border-border border-r bg-card pt-safe pb-safe pl-safe transition-transform duration-300 md:hidden ${
 					mobileOpen ? "flex translate-x-0" : "flex -translate-x-full"
 				}`}
 			>
@@ -57,7 +57,7 @@ function AdminLayout() {
 			</aside>
 
 			<div className="flex min-w-0 flex-1 flex-col md:pl-60">
-				<header className="sticky top-0 z-20 flex items-center gap-3 border-border border-b bg-card px-4 py-3 md:hidden">
+				<header className="sticky top-0 z-20 flex items-center gap-3 border-border border-b bg-card px-4 pt-[calc(0.75rem+env(safe-area-inset-top,0px))] pb-3 md:hidden">
 					<button
 						aria-label="Abrir menu"
 						className="cursor-pointer rounded-md border border-transparent p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
