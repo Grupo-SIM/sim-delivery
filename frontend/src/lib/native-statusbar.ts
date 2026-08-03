@@ -7,7 +7,7 @@ import { invoke, isTauri } from "@tauri-apps/api/core";
  */
 export function syncStatusBarAppearance(mode: "dark" | "light") {
 	if (!isTauri()) return;
-	invoke("plugin:statusbar-style|set_appearance", { light: mode === "light" }).catch(() => {
-		// Best-effort — desktop/dev environments may not have the plugin wired up.
+	invoke("plugin:statusbar-style|set_appearance", { light: mode === "light" }).catch(error => {
+		console.error("Failed to sync status bar appearance", error);
 	});
 }
