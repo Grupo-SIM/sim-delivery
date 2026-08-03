@@ -3,23 +3,29 @@ import { CompanyScopeGuard } from "@/modules/users/guards";
 import { prisma } from "@/shared/infra/sql";
 import {
 	BestSellersReturn,
+	BusinessMetricsReturn,
 	DashboardAnalyticsReturn,
 	FinancialAnalyticsReturn,
 	GetDashboardAnalyticsQuery,
 	GetReportsQuery,
+	ProductProfitabilityReturn,
 	RevenueSummaryReturn,
 } from "../../dtos";
 import {
 	ExportReports,
 	GetBestSellers,
+	GetBusinessMetrics,
 	GetDashboardAnalytics,
 	GetFinancialAnalytics,
+	GetProductProfitability,
 	GetRevenueSummary,
 } from "../../useCases";
 
 const getBestSellers = new GetBestSellers(prisma);
+const getBusinessMetrics = new GetBusinessMetrics(prisma);
 const getDashboardAnalytics = new GetDashboardAnalytics(prisma);
 const getFinancialAnalytics = new GetFinancialAnalytics(prisma);
+const getProductProfitability = new GetProductProfitability(prisma);
 const getRevenueSummary = new GetRevenueSummary(prisma);
 const exportReports = new ExportReports(
 	prisma,
@@ -56,6 +62,24 @@ export const ReportsController = new Elysia({ prefix: "/reports" })
 			return getFinancialAnalytics.execute(scope.companyId, query);
 		},
 		{ query: GetDashboardAnalyticsQuery, response: FinancialAnalyticsReturn },
+	)
+	.get(
+		"/business",
+		async ({ query, request }) => {
+			const scope = await CompanyScopeGuard.execute(request.headers);
+			CompanyScopeGuard.authorize(scope, "reports", "read");
+			return getBusinessMetrics.execute(scope.companyId, query);
+		},
+		{ query: GetDashboardAnalyticsQuery, response: BusinessMetricsReturn },
+	)
+	.get(
+		"/product-profitability",
+		async ({ query, request }) => {
+			const scope = await CompanyScopeGuard.execute(request.headers);
+			CompanyScopeGuard.authorize(scope, "reports", "read");
+			return getProductProfitability.execute(scope.companyId, query);
+		},
+		{ query: GetReportsQuery, response: ProductProfitabilityReturn },
 	)
 	.get(
 		"/best-sellers",

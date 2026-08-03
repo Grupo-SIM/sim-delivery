@@ -2,7 +2,9 @@ import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { GetBestSellers } from "./GetBestSellers";
 import { GetDashboardAnalytics } from "./GetDashboardAnalytics";
+import { GetBusinessMetrics } from "./GetBusinessMetrics";
 import { GetFinancialAnalytics } from "./GetFinancialAnalytics";
+import { GetProductProfitability } from "./GetProductProfitability";
 import { GetRevenueSummary } from "./GetRevenueSummary";
 
 type Where = Record<string, unknown>;
@@ -456,5 +458,134 @@ describe("GetFinancialAnalytics", () => {
 		expect(result.cancellation.pendingRefundCents).toBe(0);
 		expect(result.cancellation.refundedCents).toBe(3000);
 		expect(result.cancellation.refundedOrderCount).toBe(1);
+	});
+});
+
+describe("GetBusinessMetrics", () => {
+	it("splits new vs returning customers and computes the repeat rate", async () => {
+		const orderA = {
+			cashbackCentsRedeemed: 0,
+			companyId: "cmp_1",
+			coupon: null,
+			couponId: null,
+			createdAt: daysAgo(2),
+			customerId: "cust_1",
+			deliveryMethod: "delivery",
+			discountCents: 0,
+			items: [],
+			loyaltyPointsRedeemed: 0,
+			status: "entregue",
+			statusEvents: [],
+			total: 1000,
+			unit: { name: "Centro" },
+			unitId: "unit_1",
+		};
+		const orderB = { ...orderA, createdAt: daysAgo(1), customerId: "cust_2", total: 2000 };
+
+		const prisma = {
+			order: {
+				findMany: async () => [orderA, orderB],
+				groupBy: async () => [
+					{ _min: { createdAt: daysAgo(2) }, customerId: "cust_1" },
+					{ _min: { createdAt: daysAgo(30) }, customerId: "cust_2" },
+				],
+			},
+		} as unknown as PrismaInstance;
+
+		const result = await new GetBusinessMetrics(prisma).execute("cmp_1", {});
+
+		expect(result.customers).toMatchObject({
+			newCustomers: 1,
+			ordersPerCustomer: 1,
+			repeatRatePercent: 50,
+			returningCustomers: 1,
+			revenuePerCustomer: 1500,
+		});
+	});
+});
+
+describe("GetProductProfitability", () => {
+	it("flags products with no recipe instead of a misleading zero cost", async () => {
+		const prisma = {
+			order: {},
+			orderItem: {
+				groupBy: async ({ where }: { where: { order: Where } }) =>
+					typeof where.order.status === "string"
+						? []
+						: [
+								{
+									_sum: { costCents: 400, netRevenueCents: 1000, quantity: 2, total: 1200 },
+									productId: "prod_1",
+									productName: "Pizza",
+								},
+							],
+			},
+			product: {
+				findMany: async () => [
+					{ basePriceCents: 1500, id: "prod_1", recipeIngredients: [], title: "Pizza" },
+				],
+			},
+			unitInventoryBalance: { groupBy: async () => [] },
+		} as unknown as PrismaInstance;
+
+		const result = await new GetProductProfitability(prisma).execute("cmp_1", {});
+
+		expect(result).toEqual([
+			expect.objectContaining({
+				hasRecipe: false,
+				priceCents: 1500,
+				productId: "prod_1",
+				theoreticalCostCents: null,
+				theoreticalMarginPercent: null,
+				theoreticalProfitCents: null,
+				totalQuantity: 2,
+				wastedCostCents: 0,
+			}),
+		]);
+	});
+
+	it("computes theoretical margin from the recipe and average inventory cost", async () => {
+		const prisma = {
+			order: {},
+			orderItem: { groupBy: async () => [] },
+			product: {
+				findMany: async () => [
+					{
+						basePriceCents: 2000,
+						id: "prod_1",
+						recipeIngredients: [
+							{
+								inventoryItem: { id: "item_1", name: "Queijo", unit: "gram" },
+								quantity: 2,
+							},
+						],
+						title: "Pizza",
+					},
+				],
+			},
+			unitInventoryBalance: {
+				groupBy: async () => [{ _avg: { averageCostCents: 300 }, inventoryItemId: "item_1" }],
+			},
+		} as unknown as PrismaInstance;
+
+		const result = await new GetProductProfitability(prisma).execute("cmp_1", {});
+
+		expect(result[0]).toMatchObject({
+			hasRecipe: true,
+			theoreticalCostCents: 600,
+			theoreticalMarginPercent: 70,
+			theoreticalProfitCents: 1400,
+		});
+		expect(result[0]?.ingredients).toEqual([
+			{
+				costCents: 600,
+				costSharePercent: 100,
+				inventoryItemId: "item_1",
+				name: "Queijo",
+				quantity: 2,
+				unit: "gram",
+				unitCostCents: 300,
+			},
+		]);
 	});
 });

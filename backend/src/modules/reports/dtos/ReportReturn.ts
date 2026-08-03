@@ -137,3 +137,91 @@ export const FinancialAnalyticsReturn = t.Object({
 	trend: t.Array(FinancialTrendItem),
 });
 export type FinancialAnalyticsReturn = typeof FinancialAnalyticsReturn.static;
+
+const BusinessCustomerMetrics = t.Object({
+	newCustomers: t.Integer(),
+	ordersPerCustomer: t.Number(),
+	repeatRatePercent: t.Number(),
+	returningCustomers: t.Integer(),
+	revenuePerCustomer: t.Integer(),
+});
+
+const TopCouponItem = t.Object({
+	code: t.String(),
+	discountCents: t.Integer(),
+	orderCount: t.Integer(),
+	revenueCents: t.Integer(),
+	type: t.String(),
+});
+
+const BusinessDiscountMetrics = t.Object({
+	cashbackRedeemedCents: t.Integer(),
+	couponOrderCount: t.Integer(),
+	discountCents: t.Integer(),
+	discountShareOfGrossPercent: t.Number(),
+	loyaltyPointsRedeemed: t.Integer(),
+	topCoupons: t.Array(TopCouponItem),
+});
+
+const PeakItem = t.Object({ key: t.String(), label: t.String(), orderCount: t.Integer(), revenueCents: t.Integer() });
+
+const BusinessOperationsMetrics = t.Object({
+	averageDeliveryMinutes: t.Nullable(t.Number()),
+	averageFulfillmentMinutes: t.Nullable(t.Number()),
+	averagePrepMinutes: t.Nullable(t.Number()),
+	peaks: t.Object({ byDayOfWeek: t.Array(PeakItem), byHourOfDay: t.Array(PeakItem) }),
+	problemRatePercent: t.Number(),
+});
+
+const BusinessUnitMetrics = t.Object({
+	averageOrderValue: t.Integer(),
+	cancelRatePercent: t.Number(),
+	canceledOrderCount: t.Integer(),
+	grossMarginPercent: t.Nullable(t.Number()),
+	grossProfitCents: t.Integer(),
+	knownCostCents: t.Integer(),
+	netRevenueCents: t.Integer(),
+	orderCount: t.Integer(),
+	unitId: t.String(),
+	unitName: t.String(),
+});
+
+export const BusinessMetricsReturn = t.Object({
+	customers: BusinessCustomerMetrics,
+	discounts: BusinessDiscountMetrics,
+	operations: BusinessOperationsMetrics,
+	units: t.Array(BusinessUnitMetrics),
+});
+export type BusinessMetricsReturn = typeof BusinessMetricsReturn.static;
+
+const ProductIngredientBreakdown = t.Object({
+	costCents: t.Integer(),
+	costSharePercent: t.Number(),
+	inventoryItemId: t.String(),
+	name: t.String(),
+	quantity: t.Number(),
+	unit: t.String(),
+	unitCostCents: t.Integer(),
+});
+
+export const ProductProfitabilityItem = t.Object({
+	grossMarginPercent: t.Optional(t.Nullable(t.Number())),
+	grossProfitCents: t.Optional(t.Integer()),
+	hasRecipe: t.Boolean(),
+	ingredients: t.Array(ProductIngredientBreakdown),
+	knownCostCents: t.Optional(t.Integer()),
+	knownNetRevenueCents: t.Optional(t.Integer()),
+	priceCents: t.Nullable(t.Integer()),
+	productId: t.String(),
+	productName: t.String(),
+	theoreticalCostCents: t.Nullable(t.Integer()),
+	theoreticalMarginPercent: t.Nullable(t.Number()),
+	theoreticalProfitCents: t.Nullable(t.Integer()),
+	totalQuantity: t.Integer(),
+	totalRevenue: t.Integer(),
+	wastedCostCents: t.Integer(),
+});
+export type ProductProfitabilityItem = typeof ProductProfitabilityItem.static;
+
+export const ProductProfitabilityReturn = t.Array(ProductProfitabilityItem);
+export type ProductProfitabilityReturn = typeof ProductProfitabilityReturn.static;
