@@ -57,9 +57,23 @@ A cada mudança de status relevante, o cliente é **notificado por WhatsApp** (r
 em preparo, saiu para entrega, entregue). Ao concluir o pedido no app, a tela de obrigado
 informa que o acompanhamento será por WhatsApp (ver [08](08-app-cliente.md)).
 
+## Reembolso em cancelamento
+
+Cancelar um pedido com pagamento `confirmed` pode registrar um estorno (`Refund`), opcional
+e informado junto com a transição para `cancelado`:
+
+- **Forma**: `gateway` (via Simpay — atualmente indisponível, ver abaixo), `manual` (fora do
+  sistema, apenas registrado) ou `cashback` (crédito ao cliente).
+- **Valor**: total por padrão; aceita estorno parcial.
+- **Fidelidade**: um estorno **total** reverte o cashback/pontos de fidelidade acumulados
+  naquele pedido e devolve o cashback/pontos que o cliente havia resgatado na compra.
+- O sistema é a fonte de verdade contábil do estorno; a liquidação bancária real ainda pode
+  ser manual até a Simpay documentar um endpoint de estorno — nesse caso o registro fica com
+  `status: "failed"` sem bloquear o cancelamento do pedido.
+
 ## Pontos em aberto
 
 - Provedor de WhatsApp (API oficial vs gateway).
 - Aceite manual da loja vs auto-aceite ao pagar.
 - Agendamento de pedidos e KDS de cozinha (roadmap — ver [12](12-referencias-e-benchmark.md)).
-- Política e reembolso em cancelamento (estorno de pagamento/cashback).
+- Endpoint de estorno da Simpay (hoje sem API documentada).
