@@ -13,7 +13,7 @@ export function MenuSectionBlock({ onSelect, section }: MenuSectionBlockProps) {
 	return (
 		<section className="scroll-mt-16 space-y-3" id={sectionAnchor(section.categoryId)}>
 			<h2 className="font-semibold text-lg">{section.categoryName ?? t("store.menu.loose")}</h2>
-			<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+			<div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
 				{section.items.map(item => (
 					<MenuItemCard item={item} key={item.id} onSelect={onSelect} />
 				))}

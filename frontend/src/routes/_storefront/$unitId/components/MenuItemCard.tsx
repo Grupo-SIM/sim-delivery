@@ -45,7 +45,7 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 					</div>
 				)}
 			</div>
-			<div className="flex min-w-0 flex-1 flex-col gap-2 p-4">
+			<div className="flex min-w-0 flex-1 flex-col gap-2 p-3 sm:p-4">
 				<p className="font-semibold leading-tight">{item.title}</p>
 				{Number(item.ratingCount) > 0 && (
 					<StarRating average={item.ratingAverage} count={Number(item.ratingCount)} />
@@ -60,7 +60,9 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 					</div>
 				)}
 				{item.description && (
-					<p className="line-clamp-3 text-muted-foreground text-sm leading-relaxed">{item.description}</p>
+					<p className="line-clamp-2 text-muted-foreground text-sm leading-relaxed sm:line-clamp-3">
+						{item.description}
+					</p>
 				)}
 				<div className="mt-auto flex items-end gap-2 pt-2">
 					<div>
