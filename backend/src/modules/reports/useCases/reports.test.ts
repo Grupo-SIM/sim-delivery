@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { GetBestSellers } from "./GetBestSellers";
 import { GetDashboardAnalytics } from "./GetDashboardAnalytics";
+import { GetFinancialAnalytics } from "./GetFinancialAnalytics";
 import { GetRevenueSummary } from "./GetRevenueSummary";
 
 type Where = Record<string, unknown>;
@@ -326,5 +327,134 @@ describe("GetDashboardAnalytics", () => {
 				unitName: "Centro",
 			},
 		]);
+	});
+});
+
+interface FinancialOrderRow {
+	cashbackCentsRedeemed?: number;
+	deliveryFee?: number;
+	discountCents?: number;
+	deliveryMethod?: string;
+	items: { costCents: number | null; netRevenueCents?: number | null; total: number }[];
+	payment: { confirmedAt?: Date | null; method?: string; status: string } | null;
+	refundedCents?: number;
+	statusEvents?: { createdAt: Date; status: string }[];
+	total: number;
+	updatedAt?: Date;
+}
+
+function makeFinancialPrisma(completed: FinancialOrderRow[], cancelled: FinancialOrderRow[]) {
+	const fill = (row: FinancialOrderRow) => ({
+		cashbackCentsRedeemed: 0,
+		createdAt: now,
+		deliveryFee: 0,
+		deliveryMethod: "delivery",
+		discountCents: 0,
+		refundedCents: 0,
+		statusEvents: [],
+		updatedAt: now,
+		...row,
+	});
+
+	const prisma = {
+		order: {
+			findMany: async ({ where }: { where: Where }) => {
+				const isCancelled = typeof where.status === "string";
+				return (isCancelled ? cancelled : completed).map(fill);
+			},
+		},
+	} as unknown as PrismaInstance;
+
+	return prisma;
+}
+
+describe("GetFinancialAnalytics", () => {
+	it("computes the cancellation rate, stage breakdown, waste and pending refunds", async () => {
+		const prisma = makeFinancialPrisma(
+			[{ items: [{ costCents: 1000, netRevenueCents: 4000, total: 5000 }], payment: null, total: 5000 }],
+			[
+				{
+					// Cancelled before preparation: the reservation was released, so no cost remains.
+					items: [{ costCents: 0, total: 2000 }],
+					payment: null,
+					statusEvents: [
+						{ createdAt: daysAgo(1), status: "awaiting_payment" },
+						{ createdAt: now, status: "cancelado" },
+					],
+					total: 2000,
+				},
+				{
+					// Cancelled after preparation: the consumed reservation's cost stays as waste.
+					items: [{ costCents: 300, total: 3000 }],
+					payment: { status: "confirmed" },
+					statusEvents: [
+						{ createdAt: daysAgo(1), status: "awaiting_payment" },
+						{ createdAt: daysAgo(1), status: "recebido" },
+						{ createdAt: daysAgo(1), status: "em_preparo" },
+						{ createdAt: now, status: "cancelado" },
+					],
+					total: 3000,
+				},
+			],
+		);
+
+		const result = await new GetFinancialAnalytics(prisma).execute("cmp_1", {});
+
+		expect(result.cancellation).toMatchObject({
+			averageCanceledTicket: 2500,
+			cancelRatePercent: (2 / 3) * 100,
+			canceledOrderCount: 2,
+			lostRevenueCents: 5000,
+			pendingRefundCents: 3000,
+			refundedCents: 0,
+			wastedCostCents: 300,
+		});
+		expect(result.cancellation.byStage).toEqual(
+			expect.arrayContaining([
+				{ lostRevenueCents: 2000, orderCount: 1, stage: "awaiting_payment" },
+				{ lostRevenueCents: 3000, orderCount: 1, stage: "em_preparo" },
+			]),
+		);
+	});
+
+	it("subtracts refunds from net revenue and gross profit", async () => {
+		const prisma = makeFinancialPrisma(
+			[
+				{
+					items: [{ costCents: 1000, netRevenueCents: 4000, total: 5000 }],
+					payment: { status: "confirmed" },
+					refundedCents: 1500,
+					total: 5000,
+				},
+			],
+			[],
+		);
+
+		const result = await new GetFinancialAnalytics(prisma).execute("cmp_1", {});
+
+		expect(result.summary.refundedCents).toBe(1500);
+		expect(result.summary.netRevenueCents).toBe(3500);
+		expect(result.summary.grossProfitCents).toBe(4000 - 1000 - 1500);
+	});
+
+	it("does not count a refunded cancelled order as pending", async () => {
+		const prisma = makeFinancialPrisma(
+			[],
+			[
+				{
+					items: [{ costCents: 300, total: 3000 }],
+					payment: { status: "confirmed" },
+					refundedCents: 3000,
+					statusEvents: [{ createdAt: now, status: "cancelado" }],
+					total: 3000,
+				},
+			],
+		);
+
+		const result = await new GetFinancialAnalytics(prisma).execute("cmp_1", {});
+
+		expect(result.cancellation.pendingRefundCents).toBe(0);
+		expect(result.cancellation.refundedCents).toBe(3000);
+		expect(result.cancellation.refundedOrderCount).toBe(1);
 	});
 });

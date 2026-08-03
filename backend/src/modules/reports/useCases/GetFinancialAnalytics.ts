@@ -1,9 +1,8 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { FinancialAnalyticsReturn, GetDashboardAnalyticsQuery } from "../dtos";
 import { getOrdersByPeriod } from "../utils/ordersByPeriod";
+import { CANCELLED, COMPLETED } from "../utils/orderStatus";
 import { getReportDateRange, type ReportGroupBy } from "../utils/reportPeriod";
-
-const COMPLETED = ["entregue", "retirado"];
 
 type Query = GetDashboardAnalyticsQuery;
 interface FinancialOrder {
@@ -14,6 +13,16 @@ interface FinancialOrder {
 	discountCents: number;
 	items: { costCents: number | null; netRevenueCents: number | null; total: number }[];
 	payment: { confirmedAt: Date | null; method: string; status: string } | null;
+	refundedCents: number;
+	statusEvents: { createdAt: Date; status: string }[];
+	total: number;
+	updatedAt: Date;
+}
+
+interface CancelledOrder {
+	items: { costCents: number | null }[];
+	payment: { status: string } | null;
+	refundedCents: number;
 	statusEvents: { createdAt: Date; status: string }[];
 	total: number;
 	updatedAt: Date;
@@ -23,6 +32,15 @@ function competenceDate(order: FinancialOrder) {
 	if (order.payment?.confirmedAt) return order.payment.confirmedAt;
 	const completion = order.statusEvents.findLast(event => COMPLETED.includes(event.status));
 	return completion?.createdAt ?? order.updatedAt;
+}
+
+/** The event right before the one that cancelled the order — "awaiting_payment" if there is none. */
+function cancellationStage(order: CancelledOrder): { at: Date; stage: string } {
+	const events = order.statusEvents;
+	const cancelIndex = events.findLastIndex(event => event.status === CANCELLED);
+	const previous = cancelIndex > 0 ? events[cancelIndex - 1] : undefined;
+	const cancelledAt = events[cancelIndex]?.createdAt ?? order.updatedAt;
+	return { at: cancelledAt, stage: previous?.status ?? "awaiting_payment" };
 }
 
 function amountChange(current: number, previous: number) {
@@ -42,6 +60,7 @@ function emptySummary(): {
 	knownItemNetRevenueCents: number;
 	netRevenueCents: number;
 	orderCount: number;
+	refundedCents: number;
 	unknownCostRevenueCents: number;
 } {
 	return {
@@ -56,7 +75,32 @@ function emptySummary(): {
 		knownItemNetRevenueCents: 0,
 		netRevenueCents: 0,
 		orderCount: 0,
+		refundedCents: 0,
 		unknownCostRevenueCents: 0,
+	};
+}
+
+function emptyCancellation(): {
+	averageCanceledTicket: number;
+	byStage: { lostRevenueCents: number; orderCount: number; stage: string }[];
+	cancelRatePercent: number;
+	canceledOrderCount: number;
+	lostRevenueCents: number;
+	pendingRefundCents: number;
+	refundedCents: number;
+	refundedOrderCount: number;
+	wastedCostCents: number;
+} {
+	return {
+		averageCanceledTicket: 0,
+		byStage: [],
+		cancelRatePercent: 0,
+		canceledOrderCount: 0,
+		lostRevenueCents: 0,
+		pendingRefundCents: 0,
+		refundedCents: 0,
+		refundedOrderCount: 0,
+		wastedCostCents: 0,
 	};
 }
 
@@ -69,6 +113,7 @@ function summarize(orders: FinancialOrder[]) {
 		summary.discountCents += order.discountCents;
 		summary.cashbackRedeemedCents += order.cashbackCentsRedeemed;
 		summary.grossRevenueCents += order.total + order.discountCents + order.cashbackCentsRedeemed;
+		summary.refundedCents += order.refundedCents;
 		for (const item of order.items) {
 			const revenue = item.netRevenueCents ?? item.total;
 			if (item.costCents === null) summary.unknownCostRevenueCents += revenue;
@@ -81,11 +126,41 @@ function summarize(orders: FinancialOrder[]) {
 	summary.averageOrderValue = summary.orderCount
 		? Math.round(summary.netRevenueCents / summary.orderCount)
 		: 0;
-	summary.grossProfitCents = summary.knownItemNetRevenueCents - summary.knownCostCents;
+	// Refunds reduce what was actually collected; the cost side already happened, so a refund is
+	// treated as a straight reduction of profit rather than being re-attributed across items.
+	summary.netRevenueCents -= summary.refundedCents;
+	summary.grossProfitCents = summary.knownItemNetRevenueCents - summary.knownCostCents - summary.refundedCents;
 	summary.grossMarginPercent = summary.knownItemNetRevenueCents
 		? (summary.grossProfitCents / summary.knownItemNetRevenueCents) * 100
 		: null;
 	return summary;
+}
+
+function summarizeCancellations(orders: CancelledOrder[]) {
+	const cancellation = emptyCancellation();
+	const byStage = new Map<string, { lostRevenueCents: number; orderCount: number }>();
+	for (const order of orders) {
+		cancellation.canceledOrderCount += 1;
+		cancellation.lostRevenueCents += order.total;
+		cancellation.refundedCents += order.refundedCents;
+		if (order.refundedCents > 0) cancellation.refundedOrderCount += 1;
+		if (order.payment?.status === "confirmed" && order.refundedCents === 0)
+			cancellation.pendingRefundCents += order.total;
+		for (const item of order.items) cancellation.wastedCostCents += item.costCents ?? 0;
+
+		const { stage } = cancellationStage(order);
+		const row = byStage.get(stage) ?? { lostRevenueCents: 0, orderCount: 0 };
+		row.orderCount += 1;
+		row.lostRevenueCents += order.total;
+		byStage.set(stage, row);
+	}
+	cancellation.averageCanceledTicket = cancellation.canceledOrderCount
+		? Math.round(cancellation.lostRevenueCents / cancellation.canceledOrderCount)
+		: 0;
+	cancellation.byStage = [...byStage.entries()]
+		.map(([stage, row]) => ({ stage, ...row }))
+		.sort((a, b) => b.orderCount - a.orderCount);
+	return cancellation;
 }
 
 function financialTrendKey(date: Date, groupBy: ReportGroupBy): string {
@@ -114,15 +189,38 @@ export class GetFinancialAnalytics {
 		const unitIds = permittedUnitIds?.length ? permittedUnitIds : undefined;
 		if (query.unitId && unitIds && !unitIds.includes(query.unitId))
 			return this.empty(groupBy, since, now, until);
-		const where = {
-			...(companyId ? { companyId } : {}),
-			status: { in: COMPLETED },
-			...(query.unitId ? { unitId: query.unitId } : unitIds ? { unitId: { in: unitIds } } : {}),
-		};
+		const unitFilter = query.unitId ? { unitId: query.unitId } : unitIds ? { unitId: { in: unitIds } } : {};
+		// Competence can differ from creation date, so the window is padded on both ends; the fine
+		// filter by competenceAt below still enforces the exact period.
+		const paddingMs = 7 * 24 * 60 * 60 * 1000;
+		const createdAtFilter =
+			previousSince || until
+				? {
+						createdAt: {
+							...(previousSince ? { gte: new Date(previousSince.getTime() - paddingMs) } : {}),
+							...(until ? { lt: new Date(until.getTime() + paddingMs) } : {}),
+						},
+					}
+				: {};
+
 		const orders = await this.prisma.order.findMany({
 			include: { items: true, payment: true, statusEvents: { orderBy: { createdAt: "asc" } } },
-			where,
+			where: {
+				...(companyId ? { companyId } : {}),
+				status: { in: COMPLETED },
+				...unitFilter,
+				...createdAtFilter,
+			},
 		});
+		const cancelledOrders = await this.prisma.order.findMany({
+			include: {
+				items: { select: { costCents: true } },
+				payment: { select: { status: true } },
+				statusEvents: { orderBy: { createdAt: "asc" } },
+			},
+			where: { ...(companyId ? { companyId } : {}), status: CANCELLED, ...unitFilter, ...createdAtFilter },
+		});
+
 		const dated = orders.map(order => ({ ...order, competenceAt: competenceDate(order) }));
 		const current = dated.filter(
 			order => (!since || order.competenceAt >= since) && (!until || order.competenceAt < until),
@@ -134,8 +232,29 @@ export class GetFinancialAnalytics {
 				order.competenceAt >= previousSince &&
 				order.competenceAt < previousUntil,
 		);
+		const currentCancelled = cancelledOrders.filter(order => {
+			const { at } = cancellationStage(order);
+			return (!since || at >= since) && (!until || at < until);
+		});
+		const previousCancelled = cancelledOrders.filter(order => {
+			const { at } = cancellationStage(order);
+			return previousSince && previousUntil && at >= previousSince && at < previousUntil;
+		});
+
 		const summary = summarize(current);
 		const previousSummary = summarize(previous);
+		const cancellation = summarizeCancellations(currentCancelled);
+		const previousCancellation = summarizeCancellations(previousCancelled);
+		cancellation.cancelRatePercent = cancellation.canceledOrderCount + summary.orderCount
+			? (cancellation.canceledOrderCount / (cancellation.canceledOrderCount + summary.orderCount)) * 100
+			: 0;
+		previousCancellation.cancelRatePercent =
+			previousCancellation.canceledOrderCount + previousSummary.orderCount
+				? (previousCancellation.canceledOrderCount /
+						(previousCancellation.canceledOrderCount + previousSummary.orderCount)) *
+					100
+				: 0;
+
 		const trend = new Map(
 			getOrdersByPeriod([], groupBy, since, now, until).map(bucket => [
 				bucket.key,
@@ -148,7 +267,7 @@ export class GetFinancialAnalytics {
 			if (!row) continue;
 			const orderSummary = summarize([order]);
 			row.orderCount += 1;
-			row.netRevenueCents += order.total;
+			row.netRevenueCents += order.total - order.refundedCents;
 			row.grossProfitCents += orderSummary.grossProfitCents;
 		}
 		const byPayment = new Map<string, { method: string; netRevenueCents: number; orderCount: number }>();
@@ -165,15 +284,22 @@ export class GetFinancialAnalytics {
 			}
 		}
 		return {
+			cancellation,
 			comparison: {
 				averageOrderValuePercent: amountChange(summary.averageOrderValue, previousSummary.averageOrderValue),
+				cancelRatePercentPoints:
+					previous.length + previousCancelled.length === 0
+						? null
+						: cancellation.cancelRatePercent - previousCancellation.cancelRatePercent,
 				grossMarginPercent:
 					summary.grossMarginPercent === null || previousSummary.grossMarginPercent === null
 						? null
 						: summary.grossMarginPercent - previousSummary.grossMarginPercent,
 				grossProfitPercent: amountChange(summary.grossProfitCents, previousSummary.grossProfitCents),
+				lostRevenuePercent: amountChange(cancellation.lostRevenueCents, previousCancellation.lostRevenueCents),
 				netRevenuePercent: amountChange(summary.netRevenueCents, previousSummary.netRevenueCents),
 				orderCountPercent: amountChange(summary.orderCount, previousSummary.orderCount),
+				refundedPercent: amountChange(summary.refundedCents, previousSummary.refundedCents),
 			},
 			distribution: { delivery: [...byDelivery.values()], payment: [...byPayment.values()] },
 			groupBy,
@@ -189,12 +315,16 @@ export class GetFinancialAnalytics {
 		until?: Date,
 	): FinancialAnalyticsReturn {
 		return {
+			cancellation: emptyCancellation(),
 			comparison: {
 				averageOrderValuePercent: null,
+				cancelRatePercentPoints: null,
 				grossMarginPercent: null,
 				grossProfitPercent: null,
+				lostRevenuePercent: null,
 				netRevenuePercent: null,
 				orderCountPercent: null,
+				refundedPercent: null,
 			},
 			distribution: { delivery: [], payment: [] },
 			groupBy,

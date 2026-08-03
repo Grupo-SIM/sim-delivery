@@ -71,6 +71,8 @@ const FinancialSummary = t.Object({
 	knownItemNetRevenueCents: t.Integer(),
 	netRevenueCents: t.Integer(),
 	orderCount: t.Integer(),
+	/** Cents refunded on completed orders in the period; already subtracted from netRevenueCents/grossProfitCents. */
+	refundedCents: t.Integer(),
 	unknownCostRevenueCents: t.Integer(),
 });
 
@@ -86,13 +88,38 @@ const FinancialTrendItem = t.Object({
 	orderCount: t.Integer(),
 });
 
+const CancellationByStageItem = t.Object({
+	lostRevenueCents: t.Integer(),
+	orderCount: t.Integer(),
+	/** Status the order was in right before being cancelled; "awaiting_payment" if it never left it. */
+	stage: t.String(),
+});
+
+const CancellationSummary = t.Object({
+	averageCanceledTicket: t.Integer(),
+	byStage: t.Array(CancellationByStageItem),
+	cancelRatePercent: t.Number(),
+	canceledOrderCount: t.Integer(),
+	lostRevenueCents: t.Integer(),
+	/** Cancelled, paid orders with no refund registered yet. */
+	pendingRefundCents: t.Integer(),
+	refundedCents: t.Integer(),
+	refundedOrderCount: t.Integer(),
+	/** Cost of reservations already consumed before cancellation — real ingredient waste. */
+	wastedCostCents: t.Integer(),
+});
+
 export const FinancialAnalyticsReturn = t.Object({
+	cancellation: CancellationSummary,
 	comparison: t.Object({
 		averageOrderValuePercent: t.Nullable(t.Number()),
+		cancelRatePercentPoints: t.Nullable(t.Number()),
 		grossMarginPercent: t.Nullable(t.Number()),
 		grossProfitPercent: t.Nullable(t.Number()),
+		lostRevenuePercent: t.Nullable(t.Number()),
 		netRevenuePercent: t.Nullable(t.Number()),
 		orderCountPercent: t.Nullable(t.Number()),
+		refundedPercent: t.Nullable(t.Number()),
 	}),
 	distribution: t.Object({
 		delivery: t.Array(FinancialDistributionItem),

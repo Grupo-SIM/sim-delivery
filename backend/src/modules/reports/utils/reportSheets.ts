@@ -1,10 +1,8 @@
 import type { Row, Sheet, SheetData } from "write-excel-file/node";
 import type { FinancialAnalyticsReturn } from "../dtos";
 import { getOrdersByPeriod } from "./ordersByPeriod";
+import { COMPLETED } from "./orderStatus";
 import type { ReportGroupBy } from "./reportPeriod";
-
-/** Same statuses the dashboard counts as revenue. The "Pedidos" sheet deliberately ignores this. */
-export const COMPLETED = ["entregue", "retirado"];
 
 /** Brazilian Real, so totals stay summable in the spreadsheet instead of being pre-formatted text. */
 const CURRENCY_FORMAT = "[$R$-416]#,##0.00";

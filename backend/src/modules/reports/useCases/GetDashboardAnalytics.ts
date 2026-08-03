@@ -1,9 +1,8 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { DashboardAnalyticsReturn, GetDashboardAnalyticsQuery } from "../dtos";
 import { getOrdersByPeriod } from "../utils/ordersByPeriod";
+import { COMPLETED } from "../utils/orderStatus";
 import { getDefaultReportGroupBy, getReportDateRange } from "../utils/reportPeriod";
-
-const COMPLETED = ["entregue", "retirado"];
 
 export class GetDashboardAnalytics {
 	constructor(private readonly prisma: PrismaInstance) {}

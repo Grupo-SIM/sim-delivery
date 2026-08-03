@@ -1,8 +1,7 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { BestSellersReturn, GetReportsQuery } from "../dtos";
+import { COMPLETED } from "../utils/orderStatus";
 import { getReportDateRange } from "../utils/reportPeriod";
-
-const COMPLETED = ["entregue", "retirado"];
 
 export class GetBestSellers {
 	constructor(private readonly prisma: PrismaInstance) {}
