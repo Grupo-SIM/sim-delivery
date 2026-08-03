@@ -43,8 +43,15 @@ export const AdminOrderReturn = t.Object({
 		}),
 	),
 	loyaltyPointsRedeemed: t.Integer(),
+	payment: __nullable__(
+		t.Object({
+			/** "pending" | "confirmed" | "failed" | "partially_refunded" | "refunded" */
+			status: t.String(),
+		}),
+	),
 	preparedBy: __nullable__(t.Object({ id: t.String(), name: t.String() })),
 	problemReason: __nullable__(t.String()),
+	refundedCents: t.Integer(),
 	status: t.String(),
 	subtotal: t.Integer(),
 	total: t.Integer(),
