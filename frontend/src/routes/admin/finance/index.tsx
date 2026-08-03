@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { buttonClassName } from "@/components/ui/button-styles";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -10,6 +11,7 @@ import { StatCard } from "@/components/ui/StatCard";
 import {
 	exportReports,
 	type GetReportsFinancialQueryParamsGroupByEnumKey,
+	useGetReportsBusiness,
 	useGetReportsFinancial,
 } from "@/lib/api";
 import {
@@ -17,7 +19,16 @@ import {
 	type DashboardPeriodSelection,
 	DashboardUnitPicker,
 } from "@/routes/admin/components";
-import { FinancialDistribution, FinancialTrend } from "./components";
+import {
+	CancellationByStage,
+	CancellationSummary,
+	CustomerMetrics,
+	DiscountMetrics,
+	FinancialDistribution,
+	FinancialTrend,
+	OperationsMetrics,
+	UnitComparisonTable,
+} from "./components";
 
 const formatCents = (cents: number) =>
 	(cents / 100).toLocaleString("pt-BR", { currency: "BRL", style: "currency" });
@@ -44,6 +55,11 @@ function FinancePage() {
 	} = useGetReportsFinancial({
 		...dateRange,
 		groupBy,
+		...(unitId ? { unitId } : {}),
+		period: queryPeriod,
+	});
+	const { data: business, isPending: businessPending } = useGetReportsBusiness({
+		...dateRange,
 		...(unitId ? { unitId } : {}),
 		period: queryPeriod,
 	});
@@ -149,6 +165,9 @@ function FinancePage() {
 						value={dateRange}
 					/>
 					<DashboardUnitPicker onChange={setUnitId} value={unitId} />
+					<Link className={buttonClassName({ variant: "outline" })} to="/admin/finance/products">
+						{t("admin.reports.finance.products.link")}
+					</Link>
 					<Button
 						onClick={() =>
 							void exportReports({ ...dateRange, ...(unitId ? { unitId } : {}), period: queryPeriod })
@@ -220,6 +239,96 @@ function FinancePage() {
 					value={report ? formatCents(Number(report.summary.unknownCostRevenueCents)) : loadingValue}
 				/>
 			</div>
+			<CancellationSummary
+				cancellation={
+					report && {
+						...report.cancellation,
+						averageCanceledTicket: Number(report.cancellation.averageCanceledTicket),
+						canceledOrderCount: Number(report.cancellation.canceledOrderCount),
+						lostRevenueCents: Number(report.cancellation.lostRevenueCents),
+						pendingRefundCents: Number(report.cancellation.pendingRefundCents),
+						refundedCents: Number(report.cancellation.refundedCents),
+						wastedCostCents: Number(report.cancellation.wastedCostCents),
+					}
+				}
+				cancelRatePercentPoints={report?.comparison.cancelRatePercentPoints ?? null}
+				formatCents={formatCents}
+				isPending={isPending}
+			/>
+			<CancellationByStage
+				formatCents={formatCents}
+				isPending={isPending}
+				rows={
+					report?.cancellation.byStage.map(row => ({
+						...row,
+						lostRevenueCents: Number(row.lostRevenueCents),
+						orderCount: Number(row.orderCount),
+					})) ?? []
+				}
+			/>
+			<CustomerMetrics
+				customers={
+					business && {
+						...business.customers,
+						newCustomers: Number(business.customers.newCustomers),
+						returningCustomers: Number(business.customers.returningCustomers),
+						revenuePerCustomer: Number(business.customers.revenuePerCustomer),
+					}
+				}
+				formatCents={formatCents}
+				isPending={businessPending}
+			/>
+			<DiscountMetrics
+				discounts={
+					business && {
+						...business.discounts,
+						cashbackRedeemedCents: Number(business.discounts.cashbackRedeemedCents),
+						couponOrderCount: Number(business.discounts.couponOrderCount),
+						discountCents: Number(business.discounts.discountCents),
+						loyaltyPointsRedeemed: Number(business.discounts.loyaltyPointsRedeemed),
+						topCoupons: business.discounts.topCoupons.map(coupon => ({
+							...coupon,
+							discountCents: Number(coupon.discountCents),
+							orderCount: Number(coupon.orderCount),
+							revenueCents: Number(coupon.revenueCents),
+						})),
+					}
+				}
+				formatCents={formatCents}
+				isPending={businessPending}
+			/>
+			<OperationsMetrics
+				isPending={businessPending}
+				operations={
+					business && {
+						...business.operations,
+						peaks: {
+							byDayOfWeek: business.operations.peaks.byDayOfWeek.map(row => ({
+								...row,
+								orderCount: Number(row.orderCount),
+							})),
+							byHourOfDay: business.operations.peaks.byHourOfDay.map(row => ({
+								...row,
+								orderCount: Number(row.orderCount),
+							})),
+						},
+					}
+				}
+			/>
+			<UnitComparisonTable
+				formatCents={formatCents}
+				isPending={businessPending}
+				rows={
+					business?.units.map(row => ({
+						...row,
+						averageOrderValue: Number(row.averageOrderValue),
+						cancelRatePercent: Number(row.cancelRatePercent),
+						grossMarginPercent: row.grossMarginPercent === null ? null : Number(row.grossMarginPercent),
+						netRevenueCents: Number(row.netRevenueCents),
+						orderCount: Number(row.orderCount),
+					})) ?? []
+				}
+			/>
 		</Container>
 	);
 }
