@@ -45,9 +45,7 @@ export function MenuBrowser({ header, search, sections, unitId, unitSlug }: Menu
 						<EmptyState title={query ? t("store.menu.noResults") : t("store.menu.empty")} />
 					) : (
 						<>
-							<div className="lg:hidden">
-								<CategoryNav sections={filtered} />
-							</div>
+							<CategoryNav sections={filtered} />
 							{filtered.map(section => (
 								<MenuSectionBlock
 									key={section.categoryId ?? "loose"}
