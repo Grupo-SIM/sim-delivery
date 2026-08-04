@@ -5,17 +5,16 @@
 	"type": "module",
 	"scripts": {
 		"build": "bun ./scripts/build.ts",
+		"build:tauri": "tauri build",
 		"check-types": "tsc --noEmit",
 		"dev": "vite --host",
+		"dev:android": "tauri android dev",
+		"dev:desktop": "tauri dev",
+		"dev:ios": "tauri ios dev",
 		"generate": "kubb generate",
 		"inject": "bun ./scripts/inject.ts",
 		"preview": "vite preview",
 		"start": "vite preview",
-		"tauri": "tauri",
-		"tauri:android": "tauri android dev",
-		"tauri:build": "tauri build",
-		"tauri:dev": "tauri dev",
-		"tauri:ios": "tauri ios dev",
 		"test:unit": "bun test --coverage"
 	},
 	"dependencies": {
