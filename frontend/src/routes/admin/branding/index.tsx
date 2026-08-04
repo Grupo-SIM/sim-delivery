@@ -36,6 +36,7 @@ function BrandingPage() {
 	const put = usePutBranding();
 
 	const [logoUrl, setLogoUrl] = useState("");
+	const [mobileIconUrl, setMobileIconUrl] = useState("");
 	const [unitFallbackImageUrl, setUnitFallbackImageUrl] = useState("");
 	const [allowThemeToggle, setAllowThemeToggle] = useState(true);
 	const [defaultTheme, setDefaultTheme] = useState<"dark" | "light">("light");
@@ -61,6 +62,7 @@ function BrandingPage() {
 			setAllowThemeToggle(branding.allowThemeToggle);
 			setDefaultTheme(branding.defaultTheme);
 			setLogoUrl(branding.logoUrl ?? "");
+			setMobileIconUrl(branding.mobileIconUrl ?? "");
 			setUnitFallbackImageUrl(branding.unitFallbackImageUrl ?? "");
 			setFontFamily(branding.fontFamily ?? "");
 			setFontFamilyUrl(branding.fontFamilyUrl ?? "");
@@ -133,6 +135,7 @@ function BrandingPage() {
 					gtmId: gtmId.trim() || undefined,
 					logoUrl: logoUrl.trim() || undefined,
 					metaPixelId: metaPixelId.trim() || undefined,
+					mobileIconUrl: mobileIconUrl.trim() || undefined,
 					orderStatusWhatsAppTemplates: Object.fromEntries(
 						ORDER_STATUS_TEMPLATE_KEYS.flatMap(status => {
 							const template = orderStatusTemplates[status].trim();
@@ -249,6 +252,19 @@ function BrandingPage() {
 								uploadLabel={t("admin.branding.logoUpload")}
 								value={logoUrl}
 							/>
+						</Label>
+
+						<Label>
+							{t("admin.branding.mobileIconUrl")}
+							<MediaUrlInput
+								asset="mobile-icon"
+								onUploadError={() => showToast(t("admin.branding.uploadError"), "negative")}
+								onValueChange={setMobileIconUrl}
+								preview
+								uploadLabel={t("admin.branding.mobileIconUpload")}
+								value={mobileIconUrl}
+							/>
+							<p className="text-muted-foreground text-sm">{t("admin.branding.mobileIconHint")}</p>
 						</Label>
 
 						<Label>

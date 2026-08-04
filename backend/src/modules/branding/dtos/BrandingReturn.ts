@@ -20,6 +20,7 @@ export const BrandingReturn = t.Object({
 	gtmId: __nullable__(t.String()),
 	logoUrl: __nullable__(t.String()),
 	metaPixelId: __nullable__(t.String()),
+	mobileIconUrl: __nullable__(t.String()),
 	orderStatusWhatsAppTemplates: __nullable__(OrderStatusWhatsAppTemplates),
 	themeColors: __nullable__(ThemeColors),
 	unitFallbackImageUrl: __nullable__(t.String()),

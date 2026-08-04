@@ -10,6 +10,7 @@ const acceptByAsset: Record<MediaAsset, string> = {
 	"font-display": ".otf,.ttf,.woff,.woff2,font/otf,font/ttf,font/woff,font/woff2",
 	"font-family": ".otf,.ttf,.woff,.woff2,font/otf,font/ttf,font/woff,font/woff2",
 	logo: "image/avif,image/jpeg,image/png,image/webp",
+	"mobile-icon": "image/avif,image/jpeg,image/png,image/webp",
 	product: "image/avif,image/jpeg,image/png,image/webp",
 	promotion: "image/avif,image/jpeg,image/png,image/webp",
 	unit: "image/avif,image/jpeg,image/png,image/webp",

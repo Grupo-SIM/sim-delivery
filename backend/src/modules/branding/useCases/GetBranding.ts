@@ -23,6 +23,7 @@ export class GetBranding {
 				gtmId: true,
 				logoUrl: true,
 				metaPixelId: true,
+				mobileIconUrl: true,
 				name: true,
 				orderStatusWhatsAppTemplates: true,
 				themeColors: true,
@@ -49,6 +50,7 @@ export class GetBranding {
 			gtmId: company?.gtmId ?? null,
 			logoUrl: company?.logoUrl ?? null,
 			metaPixelId: company?.metaPixelId ?? null,
+			mobileIconUrl: company?.mobileIconUrl ?? null,
 			orderStatusWhatsAppTemplates:
 				(company?.orderStatusWhatsAppTemplates as BrandingReturn["orderStatusWhatsAppTemplates"]) ?? null,
 			themeColors: (company?.themeColors as BrandingReturn["themeColors"]) ?? null,

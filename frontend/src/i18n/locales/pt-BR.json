@@ -68,6 +68,9 @@
 				"logoUpload": "Enviar logotipo",
 				"logoUrl": "URL do logotipo",
 				"metaPixelId": "ID do Meta Pixel",
+				"mobileIconHint": "Se não for enviado, o logotipo será usado com uma margem de segurança automática.",
+				"mobileIconUpload": "Enviar ícone mobile",
+				"mobileIconUrl": "URL do ícone do app mobile",
 				"notificationPlaceholder": "Ex: Seu pedido {{orderId}} está em preparo.",
 				"notificationsHelp": "Use {{orderId}} para inserir o código do pedido. Deixe um campo vazio para usar mensagem padrão.",
 				"orderStatus": {

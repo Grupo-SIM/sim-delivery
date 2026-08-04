@@ -72,6 +72,7 @@ interface CompanyBranding {
 	gtmId: string | null;
 	logoUrl: string | null;
 	metaPixelId: string | null;
+	mobileIconUrl: string | null;
 	name: string;
 	packageName: string | null;
 	siteUrl: string | null;
@@ -135,6 +136,7 @@ try {
 			gtmId: true,
 			logoUrl: true,
 			metaPixelId: true,
+			mobileIconUrl: true,
 			name: true,
 			packageName: true,
 			siteUrl: true,
@@ -197,16 +199,24 @@ await writeFile(
 );
 
 /**
- * The Tauri icon generator requires a square source image, but a branding logo is free-form
- * (e.g. a wide wordmark). Pads it onto a transparent square canvas sized to the longer side so
- * icon generation never fails on the logo's actual aspect ratio.
+ * Matches Android's adaptive icon safe zone (66dp visible circle inside a 108dp canvas), so the
+ * mark stays clear of circular/rounded masks applied by OS launchers and app stores without
+ * looking artificially shrunk.
  */
-async function squareIconSource(sourcePath: string): Promise<string> {
+const LOGO_FALLBACK_ICON_PADDING = 0.19;
+
+/**
+ * The Tauri icon generator requires a square source image, but a branding logo is free-form
+ * (e.g. a wide wordmark). Pads it onto a transparent square canvas sized to the longer side
+ * (plus optional extra margin) so icon generation never fails on the logo's actual aspect ratio
+ * and the mark isn't flush against the edge once masked into a circle/rounded shape.
+ */
+async function squareIconSource(sourcePath: string, extraPadding = 0): Promise<string> {
 	const image = sharp(sourcePath);
 	const { height = 0, width = 0 } = await image.metadata();
-	if (width === height && width > 0) return sourcePath;
+	if (width === height && width > 0 && extraPadding === 0) return sourcePath;
 
-	const size = Math.max(width, height);
+	const size = Math.ceil(Math.max(width, height) * (1 + extraPadding * 2));
 	const squaredPath = join(tmpdir(), `branding-icon-source-${Date.now()}.png`);
 	await image
 		.resize(width, height)
@@ -224,13 +234,28 @@ async function squareIconSource(sourcePath: string): Promise<string> {
 
 const tauriConfPath = join(FRONTEND, "src-tauri", "tauri.conf.json");
 if (existsSync(tauriConfPath)) {
-	const iconSourcePath = await squareIconSource(logoPath);
+	// A dedicated mobile icon is assumed to already be composed/padded by whoever uploaded it, so
+	// it's used as-is (only squared, never re-padded). Without one, fall back to the general logo
+	// and add safe padding automatically so it doesn't look flush against circular/rounded masks.
+	let iconSourcePath: string;
+	if (company.mobileIconUrl) {
+		const mobileIconResponse = await fetch(company.mobileIconUrl);
+		if (!mobileIconResponse.ok) {
+			throw new Error(`Could not download mobile icon: HTTP ${mobileIconResponse.status}.`);
+		}
+		const mobileIconFilename = `mobile-icon.${extensionFrom(mobileIconResponse.headers.get("content-type"), company.mobileIconUrl)}`;
+		const mobileIconPath = join(publicDir, mobileIconFilename);
+		await writeFile(mobileIconPath, await mobileIconResponse.arrayBuffer());
+		iconSourcePath = await squareIconSource(mobileIconPath);
+	} else {
+		iconSourcePath = await squareIconSource(logoPath, LOGO_FALLBACK_ICON_PADDING);
+	}
 	const proc = Bun.spawnSync(["bunx", "@tauri-apps/cli", "icon", iconSourcePath], {
 		cwd: FRONTEND,
 		stderr: "inherit",
 		stdout: "inherit",
 	});
-	if (proc.exitCode !== 0) throw new Error("Could not generate native app icons from branding logo.");
+	if (proc.exitCode !== 0) throw new Error("Could not generate native app icons.");
 
 	const iconPath = join(FRONTEND, "src-tauri", "icons", "128x128.png");
 	if (!existsSync(iconPath)) throw new Error("Tauri icon generator did not produce 128x128.png.");
