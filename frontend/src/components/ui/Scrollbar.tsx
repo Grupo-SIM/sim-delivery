@@ -1,89 +1,124 @@
 import { type CSSProperties, type PointerEvent, useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+
+type Orientation = "horizontal" | "vertical";
 
 interface ScrollbarProps {
 	container: HTMLElement | null;
+	/** Extra classes for the track — use to override the default insets. */
+	className?: string;
+	orientation?: Orientation;
 }
 
-export function Scrollbar({ container }: ScrollbarProps) {
+const MIN_THUMB = 32;
+
+export function Scrollbar({ className, container, orientation = "vertical" }: ScrollbarProps) {
+	const isVertical = orientation === "vertical";
 	const trackRef = useRef<HTMLDivElement>(null);
 	const dragOffsetRef = useRef(0);
-	const [metrics, setMetrics] = useState({ thumbHeight: 0, thumbTop: 0 });
+	const [metrics, setMetrics] = useState({ thumbSize: 0, thumbOffset: 0 });
 
 	useEffect(() => {
 		if (!container) return;
 		const scrollContainer = container;
 
 		function sync() {
-			const { clientHeight, scrollHeight, scrollTop } = scrollContainer;
-			const trackHeight = trackRef.current?.clientHeight ?? Math.max(clientHeight - 32, 0);
-			if (scrollHeight <= clientHeight || trackHeight === 0) {
-				setMetrics({ thumbHeight: 0, thumbTop: 0 });
+			const clientSize = isVertical ? scrollContainer.clientHeight : scrollContainer.clientWidth;
+			const scrollSize = isVertical ? scrollContainer.scrollHeight : scrollContainer.scrollWidth;
+			const scrollOffset = isVertical ? scrollContainer.scrollTop : scrollContainer.scrollLeft;
+			const track = trackRef.current;
+			const trackSize = (isVertical ? track?.clientHeight : track?.clientWidth) ?? 0;
+			if (scrollSize <= clientSize || trackSize === 0) {
+				setMetrics({ thumbOffset: 0, thumbSize: 0 });
 				return;
 			}
 
-			const thumbHeight = Math.min(Math.max((clientHeight / scrollHeight) * trackHeight, 32), trackHeight);
-			const thumbTop = (scrollTop / (scrollHeight - clientHeight)) * (trackHeight - thumbHeight);
-			setMetrics({ thumbHeight, thumbTop });
+			const thumbSize = Math.min(Math.max((clientSize / scrollSize) * trackSize, MIN_THUMB), trackSize);
+			const thumbOffset = (scrollOffset / (scrollSize - clientSize)) * (trackSize - thumbSize);
+			setMetrics({ thumbOffset, thumbSize });
 		}
 
 		sync();
 		scrollContainer.addEventListener("scroll", sync, { passive: true });
 		const observer = new ResizeObserver(sync);
 		observer.observe(scrollContainer);
+		if (scrollContainer.firstElementChild) observer.observe(scrollContainer.firstElementChild);
 		return () => {
 			scrollContainer.removeEventListener("scroll", sync);
 			observer.disconnect();
 		};
-	}, [container]);
+	}, [container, isVertical]);
 
-	function scrollTo(clientY: number) {
-		if (!container || !trackRef.current || metrics.thumbHeight === 0) return;
+	function scrollTo(clientPosition: number) {
+		if (!container || !trackRef.current || metrics.thumbSize === 0) return;
 
 		const track = trackRef.current;
-		const { top } = track.getBoundingClientRect();
-		const thumbTop = Math.max(
+		const rect = track.getBoundingClientRect();
+		const trackStart = isVertical ? rect.top : rect.left;
+		const trackSize = isVertical ? track.clientHeight : track.clientWidth;
+		const thumbOffset = Math.max(
 			0,
-			Math.min(clientY - top - dragOffsetRef.current, track.clientHeight - metrics.thumbHeight),
+			Math.min(clientPosition - trackStart - dragOffsetRef.current, trackSize - metrics.thumbSize),
 		);
-		container.scrollTop =
-			(thumbTop / (track.clientHeight - metrics.thumbHeight)) *
-			(container.scrollHeight - container.clientHeight);
+		const ratio = thumbOffset / (trackSize - metrics.thumbSize);
+		if (isVertical) {
+			container.scrollTop = ratio * (container.scrollHeight - container.clientHeight);
+		} else {
+			container.scrollLeft = ratio * (container.scrollWidth - container.clientWidth);
+		}
+	}
+
+	function positionOf(event: PointerEvent<HTMLDivElement>) {
+		return isVertical ? event.clientY : event.clientX;
 	}
 
 	function onTrackPointerDown(event: PointerEvent<HTMLDivElement>) {
 		if (event.target !== event.currentTarget) return;
-		dragOffsetRef.current = metrics.thumbHeight / 2;
-		scrollTo(event.clientY);
+		dragOffsetRef.current = metrics.thumbSize / 2;
+		scrollTo(positionOf(event));
 	}
 
 	function onThumbPointerDown(event: PointerEvent<HTMLDivElement>) {
-		dragOffsetRef.current = event.clientY - event.currentTarget.getBoundingClientRect().top;
+		const rect = event.currentTarget.getBoundingClientRect();
+		dragOffsetRef.current = positionOf(event) - (isVertical ? rect.top : rect.left);
 		event.currentTarget.setPointerCapture(event.pointerId);
 	}
 
 	function onThumbPointerMove(event: PointerEvent<HTMLDivElement>) {
-		if (event.currentTarget.hasPointerCapture(event.pointerId)) scrollTo(event.clientY);
+		if (event.currentTarget.hasPointerCapture(event.pointerId)) scrollTo(positionOf(event));
 	}
 
-	if (metrics.thumbHeight === 0) return null;
-
-	const style: CSSProperties = {
-		height: Math.max(metrics.thumbHeight, 32),
-		transform: `translateY(${metrics.thumbTop}px)`,
-	};
+	// The track must stay mounted even when idle — its measured size is what the thumb is derived from.
+	const isActive = metrics.thumbSize > 0;
+	const size = Math.max(metrics.thumbSize, MIN_THUMB);
+	const style: CSSProperties = isVertical
+		? { height: size, transform: `translateY(${metrics.thumbOffset}px)` }
+		: { transform: `translateX(${metrics.thumbOffset}px)`, width: size };
 	return (
 		<div
 			aria-hidden="true"
-			className="absolute top-4 right-3 bottom-4 z-10 w-1.5 rounded-full bg-muted/70 sm:top-7 sm:right-4 sm:bottom-7"
+			className={cn(
+				"absolute z-10 rounded-full",
+				isActive ? "bg-muted/70" : "pointer-events-none bg-transparent",
+				isVertical
+					? "top-4 right-3 bottom-4 w-1.5 sm:top-7 sm:right-4 sm:bottom-7"
+					: "right-4 bottom-3 left-4 h-1.5 sm:right-7 sm:bottom-4 sm:left-7",
+				className,
+			)}
 			onPointerDown={onTrackPointerDown}
 			ref={trackRef}
 		>
-			<div
-				className="w-full cursor-grab rounded-full bg-muted-foreground/60 transition-colors hover:bg-muted-foreground active:cursor-grabbing"
-				onPointerDown={onThumbPointerDown}
-				onPointerMove={onThumbPointerMove}
-				style={style}
-			/>
+			{isActive && (
+				<div
+					className={cn(
+						"cursor-grab rounded-full bg-muted-foreground/60 transition-colors hover:bg-muted-foreground active:cursor-grabbing",
+						isVertical ? "w-full" : "h-full",
+					)}
+					onPointerDown={onThumbPointerDown}
+					onPointerMove={onThumbPointerMove}
+					style={style}
+				/>
+			)}
 		</div>
 	);
 }
