@@ -50,7 +50,7 @@ function CompaniesPage() {
 	);
 }
 
-export const Route = createFileRoute("/admin/companies/")({
+export const Route = createFileRoute("/admin/platform/companies/")({
 	beforeLoad: requireSuperAdminBeforeLoad,
 	component: CompaniesPage,
 });

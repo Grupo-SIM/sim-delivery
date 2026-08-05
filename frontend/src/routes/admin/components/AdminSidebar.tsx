@@ -138,7 +138,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 					icon={LuSettings}
 					label={t("admin.branding.navTitle")}
 					onNavigate={onNavigate}
-					to="/admin/branding"
+					to="/admin/company"
 				/>
 				<NavItem icon={LuStore} label={t("admin.units.title")} onNavigate={onNavigate} to="/admin/units" />
 				<NavItem icon={LuUsers} label={t("admin.staff.title")} onNavigate={onNavigate} to="/admin/staff" />
@@ -150,7 +150,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 						icon={LuBuilding2}
 						label={t("admin.companies.title")}
 						onNavigate={onNavigate}
-						to="/admin/companies"
+						to="/admin/platform/companies"
 					/>
 				</NavGroup>
 			)}

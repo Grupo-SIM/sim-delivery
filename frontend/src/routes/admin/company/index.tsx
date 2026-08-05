@@ -184,6 +184,6 @@ function BrandingPage() {
 	);
 }
 
-export const Route = createFileRoute("/admin/branding/")({
+export const Route = createFileRoute("/admin/company/")({
 	component: BrandingPage,
 });

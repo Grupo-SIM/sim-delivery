@@ -27,14 +27,14 @@ import { Route as AdminInventoryIndexRouteImport } from './routes/admin/inventor
 import { Route as AdminFinanceIndexRouteImport } from './routes/admin/finance/index'
 import { Route as AdminCustomersIndexRouteImport } from './routes/admin/customers/index'
 import { Route as AdminCouponsIndexRouteImport } from './routes/admin/coupons/index'
-import { Route as AdminCompaniesIndexRouteImport } from './routes/admin/companies/index'
+import { Route as AdminCompanyIndexRouteImport } from './routes/admin/company/index'
 import { Route as AdminCategoriesIndexRouteImport } from './routes/admin/categories/index'
-import { Route as AdminBrandingIndexRouteImport } from './routes/admin/branding/index'
 import { Route as StorefrontProfileIndexRouteImport } from './routes/_storefront/profile/index'
 import { Route as StorefrontPreferencesIndexRouteImport } from './routes/_storefront/preferences/index'
 import { Route as StorefrontOrdersIndexRouteImport } from './routes/_storefront/orders/index'
 import { Route as StorefrontIdentifyIndexRouteImport } from './routes/_storefront/identify/index'
 import { Route as StorefrontUnitIdIndexRouteImport } from './routes/_storefront/$unitId/index'
+import { Route as AdminPlatformCompaniesIndexRouteImport } from './routes/admin/platform/companies/index'
 import { Route as AdminInventoryMovementsIndexRouteImport } from './routes/admin/inventory/movements/index'
 import { Route as AdminFinanceProductsIndexRouteImport } from './routes/admin/finance/products/index'
 import { Route as AdminCustomersCustomerIdIndexRouteImport } from './routes/admin/customers/$customerId/index'
@@ -135,19 +135,14 @@ const AdminCouponsIndexRoute = AdminCouponsIndexRouteImport.update({
   path: '/coupons/',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminCompaniesIndexRoute = AdminCompaniesIndexRouteImport.update({
-  id: '/companies/',
-  path: '/companies/',
+const AdminCompanyIndexRoute = AdminCompanyIndexRouteImport.update({
+  id: '/company/',
+  path: '/company/',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminCategoriesIndexRoute = AdminCategoriesIndexRouteImport.update({
   id: '/categories/',
   path: '/categories/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminBrandingIndexRoute = AdminBrandingIndexRouteImport.update({
-  id: '/branding/',
-  path: '/branding/',
   getParentRoute: () => AdminRoute,
 } as any)
 const StorefrontProfileIndexRoute = StorefrontProfileIndexRouteImport.update({
@@ -176,6 +171,12 @@ const StorefrontUnitIdIndexRoute = StorefrontUnitIdIndexRouteImport.update({
   path: '/$unitId/',
   getParentRoute: () => StorefrontRoute,
 } as any)
+const AdminPlatformCompaniesIndexRoute =
+  AdminPlatformCompaniesIndexRouteImport.update({
+    id: '/platform/companies/',
+    path: '/platform/companies/',
+    getParentRoute: () => AdminRoute,
+  } as any)
 const AdminInventoryMovementsIndexRoute =
   AdminInventoryMovementsIndexRouteImport.update({
     id: '/inventory/movements/',
@@ -243,9 +244,8 @@ export interface FileRoutesByFullPath {
   '/orders/': typeof StorefrontOrdersIndexRoute
   '/preferences/': typeof StorefrontPreferencesIndexRoute
   '/profile/': typeof StorefrontProfileIndexRoute
-  '/admin/branding/': typeof AdminBrandingIndexRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
-  '/admin/companies/': typeof AdminCompaniesIndexRoute
+  '/admin/company/': typeof AdminCompanyIndexRoute
   '/admin/coupons/': typeof AdminCouponsIndexRoute
   '/admin/customers/': typeof AdminCustomersIndexRoute
   '/admin/finance/': typeof AdminFinanceIndexRoute
@@ -263,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/admin/customers/$customerId/': typeof AdminCustomersCustomerIdIndexRoute
   '/admin/finance/products/': typeof AdminFinanceProductsIndexRoute
   '/admin/inventory/movements/': typeof AdminInventoryMovementsIndexRoute
+  '/admin/platform/companies/': typeof AdminPlatformCompaniesIndexRoute
   '/$unitId/checkout/thank-you/': typeof StorefrontUnitIdCheckoutThankYouIndexRoute
   '/$unitId/orders/$orderId/': typeof StorefrontUnitIdOrdersOrderIdIndexRoute
   '/admin/units/$unitId/products/': typeof AdminUnitsUnitIdProductsIndexRoute
@@ -278,9 +279,8 @@ export interface FileRoutesByTo {
   '/orders': typeof StorefrontOrdersIndexRoute
   '/preferences': typeof StorefrontPreferencesIndexRoute
   '/profile': typeof StorefrontProfileIndexRoute
-  '/admin/branding': typeof AdminBrandingIndexRoute
   '/admin/categories': typeof AdminCategoriesIndexRoute
-  '/admin/companies': typeof AdminCompaniesIndexRoute
+  '/admin/company': typeof AdminCompanyIndexRoute
   '/admin/coupons': typeof AdminCouponsIndexRoute
   '/admin/customers': typeof AdminCustomersIndexRoute
   '/admin/finance': typeof AdminFinanceIndexRoute
@@ -298,6 +298,7 @@ export interface FileRoutesByTo {
   '/admin/customers/$customerId': typeof AdminCustomersCustomerIdIndexRoute
   '/admin/finance/products': typeof AdminFinanceProductsIndexRoute
   '/admin/inventory/movements': typeof AdminInventoryMovementsIndexRoute
+  '/admin/platform/companies': typeof AdminPlatformCompaniesIndexRoute
   '/$unitId/checkout/thank-you': typeof StorefrontUnitIdCheckoutThankYouIndexRoute
   '/$unitId/orders/$orderId': typeof StorefrontUnitIdOrdersOrderIdIndexRoute
   '/admin/units/$unitId/products': typeof AdminUnitsUnitIdProductsIndexRoute
@@ -316,9 +317,8 @@ export interface FileRoutesById {
   '/_storefront/orders/': typeof StorefrontOrdersIndexRoute
   '/_storefront/preferences/': typeof StorefrontPreferencesIndexRoute
   '/_storefront/profile/': typeof StorefrontProfileIndexRoute
-  '/admin/branding/': typeof AdminBrandingIndexRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
-  '/admin/companies/': typeof AdminCompaniesIndexRoute
+  '/admin/company/': typeof AdminCompanyIndexRoute
   '/admin/coupons/': typeof AdminCouponsIndexRoute
   '/admin/customers/': typeof AdminCustomersIndexRoute
   '/admin/finance/': typeof AdminFinanceIndexRoute
@@ -336,6 +336,7 @@ export interface FileRoutesById {
   '/admin/customers/$customerId/': typeof AdminCustomersCustomerIdIndexRoute
   '/admin/finance/products/': typeof AdminFinanceProductsIndexRoute
   '/admin/inventory/movements/': typeof AdminInventoryMovementsIndexRoute
+  '/admin/platform/companies/': typeof AdminPlatformCompaniesIndexRoute
   '/_storefront/$unitId/checkout/thank-you/': typeof StorefrontUnitIdCheckoutThankYouIndexRoute
   '/_storefront/$unitId/orders/$orderId/': typeof StorefrontUnitIdOrdersOrderIdIndexRoute
   '/admin/units/$unitId/products/': typeof AdminUnitsUnitIdProductsIndexRoute
@@ -354,9 +355,8 @@ export interface FileRouteTypes {
     | '/orders/'
     | '/preferences/'
     | '/profile/'
-    | '/admin/branding/'
     | '/admin/categories/'
-    | '/admin/companies/'
+    | '/admin/company/'
     | '/admin/coupons/'
     | '/admin/customers/'
     | '/admin/finance/'
@@ -374,6 +374,7 @@ export interface FileRouteTypes {
     | '/admin/customers/$customerId/'
     | '/admin/finance/products/'
     | '/admin/inventory/movements/'
+    | '/admin/platform/companies/'
     | '/$unitId/checkout/thank-you/'
     | '/$unitId/orders/$orderId/'
     | '/admin/units/$unitId/products/'
@@ -389,9 +390,8 @@ export interface FileRouteTypes {
     | '/orders'
     | '/preferences'
     | '/profile'
-    | '/admin/branding'
     | '/admin/categories'
-    | '/admin/companies'
+    | '/admin/company'
     | '/admin/coupons'
     | '/admin/customers'
     | '/admin/finance'
@@ -409,6 +409,7 @@ export interface FileRouteTypes {
     | '/admin/customers/$customerId'
     | '/admin/finance/products'
     | '/admin/inventory/movements'
+    | '/admin/platform/companies'
     | '/$unitId/checkout/thank-you'
     | '/$unitId/orders/$orderId'
     | '/admin/units/$unitId/products'
@@ -426,9 +427,8 @@ export interface FileRouteTypes {
     | '/_storefront/orders/'
     | '/_storefront/preferences/'
     | '/_storefront/profile/'
-    | '/admin/branding/'
     | '/admin/categories/'
-    | '/admin/companies/'
+    | '/admin/company/'
     | '/admin/coupons/'
     | '/admin/customers/'
     | '/admin/finance/'
@@ -446,6 +446,7 @@ export interface FileRouteTypes {
     | '/admin/customers/$customerId/'
     | '/admin/finance/products/'
     | '/admin/inventory/movements/'
+    | '/admin/platform/companies/'
     | '/_storefront/$unitId/checkout/thank-you/'
     | '/_storefront/$unitId/orders/$orderId/'
     | '/admin/units/$unitId/products/'
@@ -587,11 +588,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCouponsIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/companies/': {
-      id: '/admin/companies/'
-      path: '/companies'
-      fullPath: '/admin/companies/'
-      preLoaderRoute: typeof AdminCompaniesIndexRouteImport
+    '/admin/company/': {
+      id: '/admin/company/'
+      path: '/company'
+      fullPath: '/admin/company/'
+      preLoaderRoute: typeof AdminCompanyIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/categories/': {
@@ -599,13 +600,6 @@ declare module '@tanstack/react-router' {
       path: '/categories'
       fullPath: '/admin/categories/'
       preLoaderRoute: typeof AdminCategoriesIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/branding/': {
-      id: '/admin/branding/'
-      path: '/branding'
-      fullPath: '/admin/branding/'
-      preLoaderRoute: typeof AdminBrandingIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/_storefront/profile/': {
@@ -642,6 +636,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/$unitId/'
       preLoaderRoute: typeof StorefrontUnitIdIndexRouteImport
       parentRoute: typeof StorefrontRoute
+    }
+    '/admin/platform/companies/': {
+      id: '/admin/platform/companies/'
+      path: '/platform/companies'
+      fullPath: '/admin/platform/companies/'
+      preLoaderRoute: typeof AdminPlatformCompaniesIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/inventory/movements/': {
       id: '/admin/inventory/movements/'
@@ -745,9 +746,8 @@ const StorefrontRouteWithChildren = StorefrontRoute._addFileChildren(
 
 interface AdminRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
-  AdminBrandingIndexRoute: typeof AdminBrandingIndexRoute
   AdminCategoriesIndexRoute: typeof AdminCategoriesIndexRoute
-  AdminCompaniesIndexRoute: typeof AdminCompaniesIndexRoute
+  AdminCompanyIndexRoute: typeof AdminCompanyIndexRoute
   AdminCouponsIndexRoute: typeof AdminCouponsIndexRoute
   AdminCustomersIndexRoute: typeof AdminCustomersIndexRoute
   AdminFinanceIndexRoute: typeof AdminFinanceIndexRoute
@@ -762,14 +762,14 @@ interface AdminRouteChildren {
   AdminCustomersCustomerIdIndexRoute: typeof AdminCustomersCustomerIdIndexRoute
   AdminFinanceProductsIndexRoute: typeof AdminFinanceProductsIndexRoute
   AdminInventoryMovementsIndexRoute: typeof AdminInventoryMovementsIndexRoute
+  AdminPlatformCompaniesIndexRoute: typeof AdminPlatformCompaniesIndexRoute
   AdminUnitsUnitIdProductsIndexRoute: typeof AdminUnitsUnitIdProductsIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
-  AdminBrandingIndexRoute: AdminBrandingIndexRoute,
   AdminCategoriesIndexRoute: AdminCategoriesIndexRoute,
-  AdminCompaniesIndexRoute: AdminCompaniesIndexRoute,
+  AdminCompanyIndexRoute: AdminCompanyIndexRoute,
   AdminCouponsIndexRoute: AdminCouponsIndexRoute,
   AdminCustomersIndexRoute: AdminCustomersIndexRoute,
   AdminFinanceIndexRoute: AdminFinanceIndexRoute,
@@ -784,6 +784,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCustomersCustomerIdIndexRoute: AdminCustomersCustomerIdIndexRoute,
   AdminFinanceProductsIndexRoute: AdminFinanceProductsIndexRoute,
   AdminInventoryMovementsIndexRoute: AdminInventoryMovementsIndexRoute,
+  AdminPlatformCompaniesIndexRoute: AdminPlatformCompaniesIndexRoute,
   AdminUnitsUnitIdProductsIndexRoute: AdminUnitsUnitIdProductsIndexRoute,
 }
 
