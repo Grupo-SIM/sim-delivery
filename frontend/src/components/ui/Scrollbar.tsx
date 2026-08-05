@@ -100,9 +100,7 @@ export function Scrollbar({ className, container, orientation = "vertical" }: Sc
 			className={cn(
 				"absolute z-10 rounded-full",
 				isActive ? "bg-muted/70" : "pointer-events-none bg-transparent",
-				isVertical
-					? "top-4 right-3 bottom-4 w-1.5 sm:top-7 sm:right-4 sm:bottom-7"
-					: "right-4 bottom-3 left-4 h-1.5 sm:right-7 sm:bottom-4 sm:left-7",
+				isVertical ? "top-4 right-3 bottom-4 w-1.5" : "right-4 bottom-3 left-4 h-1.5",
 				className,
 			)}
 			onPointerDown={onTrackPointerDown}

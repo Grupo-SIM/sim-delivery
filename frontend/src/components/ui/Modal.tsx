@@ -57,7 +57,9 @@ export function Modal({
 							{children}
 						</div>
 					</div>
-					{scrollable && <Scrollbar container={content} />}
+					{scrollable && (
+						<Scrollbar className="sm:top-7 sm:right-4 sm:bottom-7" container={content} />
+					)}
 				</Dialog.Content>
 			</Dialog.Portal>
 		</Dialog.Root>
