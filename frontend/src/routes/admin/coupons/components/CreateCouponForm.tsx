@@ -23,12 +23,14 @@ export function CreateCouponForm() {
 	const { isPending, mutate } = usePostCoupons();
 	const hasData = useMemo(
 		() =>
+			localCode.trim() !== "" ||
+			form.type !== emptyCouponForm.type ||
 			form.value > 0 ||
 			form.unitId !== null ||
 			form.minOrderCents > 0 ||
 			form.maxUses !== null ||
 			form.expiresAt !== "",
-		[form],
+		[form, localCode],
 	);
 
 	function update(next: Partial<CouponFormState>) {
@@ -89,19 +91,21 @@ export function CreateCouponForm() {
 						value={localCode}
 					/>
 				</label>
-				<div className="grid gap-2 font-medium text-sm">
-					<span>
-						{t("admin.coupons.form.type")} <RequiredMark />
-					</span>
-					<CustomSelect
-						onChange={type => update({ type: type as CouponFormState["type"], value: 0 })}
-						options={[
-							{ label: t("admin.coupons.types.percent"), value: "percent" },
-							{ label: t("admin.coupons.types.fixed"), value: "fixed" },
-						]}
-						value={form.type}
-					/>
-				</div>
+				<CollapsibleFormSection expanded={hasData} visibleFrom="md">
+					<div className="grid gap-2 font-medium text-sm">
+						<span>
+							{t("admin.coupons.form.type")} <RequiredMark />
+						</span>
+						<CustomSelect
+							onChange={type => update({ type: type as CouponFormState["type"], value: 0 })}
+							options={[
+								{ label: t("admin.coupons.types.percent"), value: "percent" },
+								{ label: t("admin.coupons.types.fixed"), value: "fixed" },
+							]}
+							value={form.type}
+						/>
+					</div>
+				</CollapsibleFormSection>
 			</div>
 			<CollapsibleFormSection expanded={hasData}>
 				<CouponFormFields

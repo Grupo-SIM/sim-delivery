@@ -134,17 +134,19 @@ export function CreateProductForm() {
 					/>
 				</Label>
 
-				<Label>
-					<span>{t("admin.products.create.image")}</span>
-					<MediaUrlInput
-						asset="product"
-						onUploadError={() => setError(t("admin.products.create.uploadError"))}
-						onUploadingChange={setIsUploadingImage}
-						onValueChange={setImageUrl}
-						uploadLabel={t("admin.products.create.imageUpload")}
-						value={imageUrl}
-					/>
-				</Label>
+				<CollapsibleFormSection expanded={hasData} visibleFrom="md">
+					<Label>
+						<span>{t("admin.products.create.image")}</span>
+						<MediaUrlInput
+							asset="product"
+							onUploadError={() => setError(t("admin.products.create.uploadError"))}
+							onUploadingChange={setIsUploadingImage}
+							onValueChange={setImageUrl}
+							uploadLabel={t("admin.products.create.imageUpload")}
+							value={imageUrl}
+						/>
+					</Label>
+				</CollapsibleFormSection>
 			</div>
 
 			<CollapsibleFormSection expanded={hasData}>

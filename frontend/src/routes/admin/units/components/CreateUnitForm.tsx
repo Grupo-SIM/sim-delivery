@@ -112,17 +112,19 @@ export function CreateUnitForm() {
 						value={name}
 					/>
 				</Label>
-				<Label>
-					{t("admin.units.create.phone")}
-					<MaskedInput
-						format="(##) #####-####"
-						inputMode="numeric"
-						mask="_"
-						onValueChange={({ value: digits }) => setPhone(digits)}
-						placeholder={t("admin.units.create.phonePlaceholder")}
-						value={phone}
-					/>
-				</Label>
+				<CollapsibleFormSection expanded={hasData} visibleFrom="sm">
+					<Label>
+						{t("admin.units.create.phone")}
+						<MaskedInput
+							format="(##) #####-####"
+							inputMode="numeric"
+							mask="_"
+							onValueChange={({ value: digits }) => setPhone(digits)}
+							placeholder={t("admin.units.create.phonePlaceholder")}
+							value={phone}
+						/>
+					</Label>
+				</CollapsibleFormSection>
 			</div>
 
 			<CollapsibleFormSection expanded={hasData}>
