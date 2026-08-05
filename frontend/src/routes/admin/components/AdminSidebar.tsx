@@ -12,7 +12,7 @@ import {
 	LuLogOut,
 	LuPackage,
 	LuPackageOpen,
-	LuPalette,
+	LuSettings,
 	LuStar,
 	LuStore,
 	LuTag,
@@ -135,8 +135,8 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 
 			<NavGroup label={t("admin.dashboard.nav.settings")}>
 				<NavItem
-					icon={LuPalette}
-					label={t("admin.branding.title")}
+					icon={LuSettings}
+					label={t("admin.branding.navTitle")}
 					onNavigate={onNavigate}
 					to="/admin/branding"
 				/>

@@ -3,31 +3,36 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/Checkbox";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { FormSectionHeading } from "@/components/ui/FormSectionHeading";
-import { Label } from "@/components/ui/label";
-import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { TextField } from "@/components/ui/TextField";
 import { getBrandingQueryKey, useGetBranding, usePutBranding } from "@/lib/api";
 import { defaultThemeColors, resolveThemeColors, type ThemeColors } from "@/lib/theme-colors";
 import { slug } from "@/lib/variant";
 import { showToast } from "@/stores";
-import { FontField, ThemeEditor } from "./components";
+import {
+	BrandAssetsSection,
+	type BrandAssetsState,
+	defaultOrderStatusTemplates,
+	emptyBrandAssets,
+	emptyFonts,
+	emptyFooter,
+	emptyTracking,
+	type FontsState,
+	FooterSection,
+	type FooterState,
+	NotificationTemplatesSection,
+	ORDER_STATUS_TEMPLATE_KEYS,
+	type OrderStatusTemplates,
+	ThemeSection,
+	TrackingSection,
+	type TrackingState,
+	TypographySection,
+} from "./components";
 
-const ORDER_STATUS_TEMPLATE_KEYS = ["em_preparo", "saiu_para_entrega", "entregue", "retirado"] as const;
-type OrderStatusTemplateKey = (typeof ORDER_STATUS_TEMPLATE_KEYS)[number];
-type OrderStatusTemplates = Record<OrderStatusTemplateKey, string>;
-
-const defaultOrderStatusTemplates: OrderStatusTemplates = {
-	em_preparo: "Seu pedido {{orderId}} está em preparo.",
-	entregue: "Seu pedido {{orderId}} foi entregue. Bom apetite!",
-	retirado: "Seu pedido {{orderId}} está pronto para retirada.",
-	saiu_para_entrega: "Seu pedido {{orderId}} saiu para entrega.",
-};
+/** One skeleton per collapsed section card, so the loading state mirrors the settled layout. */
+const sectionSkeletonKeys = ["theme", "assets", "typography", "footer", "notifications", "tracking"] as const;
 
 function BrandingPage() {
 	const { t } = useTranslation();
@@ -35,25 +40,13 @@ function BrandingPage() {
 	const { data: branding, isError, isPending } = useGetBranding(slug ? { slug } : undefined);
 	const put = usePutBranding();
 
-	const [logoUrl, setLogoUrl] = useState("");
-	const [mobileIconUrl, setMobileIconUrl] = useState("");
-	const [unitFallbackImageUrl, setUnitFallbackImageUrl] = useState("");
 	const [allowThemeToggle, setAllowThemeToggle] = useState(true);
-	const [defaultTheme, setDefaultTheme] = useState<"dark" | "light">("light");
-	const [fontFamily, setFontFamily] = useState("");
-	const [fontFamilyUrl, setFontFamilyUrl] = useState("");
-	const [fontDisplay, setFontDisplay] = useState("");
-	const [fontDisplayUrl, setFontDisplayUrl] = useState("");
+	const [defaultTheme, setDefaultTheme] = useState<keyof ThemeColors>("light");
 	const [themeColors, setThemeColors] = useState<ThemeColors>(defaultThemeColors);
-	const [footerText, setFooterText] = useState("");
-	const [footerPaymentMethods, setFooterPaymentMethods] = useState("");
-	const [footerInstagramUrl, setFooterInstagramUrl] = useState("");
-	const [footerFacebookUrl, setFooterFacebookUrl] = useState("");
-	const [footerWhatsApp, setFooterWhatsApp] = useState("");
-	const [footerSupportEmail, setFooterSupportEmail] = useState("");
-	const [metaPixelId, setMetaPixelId] = useState("");
-	const [ga4Id, setGa4Id] = useState("");
-	const [gtmId, setGtmId] = useState("");
+	const [assets, setAssets] = useState<BrandAssetsState>(emptyBrandAssets);
+	const [fonts, setFonts] = useState<FontsState>(emptyFonts);
+	const [footer, setFooter] = useState<FooterState>(emptyFooter);
+	const [tracking, setTracking] = useState<TrackingState>(emptyTracking);
 	const [orderStatusTemplates, setOrderStatusTemplates] =
 		useState<OrderStatusTemplates>(defaultOrderStatusTemplates);
 
@@ -61,56 +54,34 @@ function BrandingPage() {
 		if (branding) {
 			setAllowThemeToggle(branding.allowThemeToggle);
 			setDefaultTheme(branding.defaultTheme);
-			setLogoUrl(branding.logoUrl ?? "");
-			setMobileIconUrl(branding.mobileIconUrl ?? "");
-			setUnitFallbackImageUrl(branding.unitFallbackImageUrl ?? "");
-			setFontFamily(branding.fontFamily ?? "");
-			setFontFamilyUrl(branding.fontFamilyUrl ?? "");
-			setFontDisplay(branding.fontDisplay ?? "");
-			setFontDisplayUrl(branding.fontDisplayUrl ?? "");
 			setThemeColors(resolveThemeColors(branding.themeColors));
-			setFooterText(branding.footerText ?? "");
-			setFooterPaymentMethods(branding.footerPaymentMethods.join(", "));
-			setFooterInstagramUrl(branding.footerInstagramUrl ?? "");
-			setFooterFacebookUrl(branding.footerFacebookUrl ?? "");
-			setFooterWhatsApp(branding.footerWhatsApp ?? "");
-			setFooterSupportEmail(branding.footerSupportEmail ?? "");
-			setMetaPixelId(branding.metaPixelId ?? "");
-			setGa4Id(branding.ga4Id ?? "");
-			setGtmId(branding.gtmId ?? "");
+			setAssets({
+				logoUrl: branding.logoUrl ?? "",
+				mobileIconUrl: branding.mobileIconUrl ?? "",
+				unitFallbackImageUrl: branding.unitFallbackImageUrl ?? "",
+			});
+			setFonts({
+				display: branding.fontDisplay ?? "",
+				displayUrl: branding.fontDisplayUrl ?? "",
+				family: branding.fontFamily ?? "",
+				familyUrl: branding.fontFamilyUrl ?? "",
+			});
+			setFooter({
+				facebookUrl: branding.footerFacebookUrl ?? "",
+				instagramUrl: branding.footerInstagramUrl ?? "",
+				paymentMethods: branding.footerPaymentMethods.join(", "),
+				supportEmail: branding.footerSupportEmail ?? "",
+				text: branding.footerText ?? "",
+				whatsApp: branding.footerWhatsApp ?? "",
+			});
+			setTracking({
+				ga4Id: branding.ga4Id ?? "",
+				gtmId: branding.gtmId ?? "",
+				metaPixelId: branding.metaPixelId ?? "",
+			});
 			setOrderStatusTemplates({ ...defaultOrderStatusTemplates, ...branding.orderStatusWhatsAppTemplates });
 		}
 	}, [branding]);
-
-	function setThemeColor(mode: keyof ThemeColors, name: keyof ThemeColors["light"], value: string) {
-		setThemeColors(current => ({ ...current, [mode]: { ...current[mode], [name]: value } }));
-	}
-
-	function copyThemeColor(mode: keyof ThemeColors, name: keyof ThemeColors["light"]) {
-		const sourceMode = mode === "light" ? "dark" : "light";
-		setThemeColor(mode, name, themeColors[sourceMode][name]);
-		showToast(t("admin.branding.colorCopied", { mode: t(`admin.branding.${sourceMode}Theme`) }), "info");
-	}
-
-	function resetThemeColor(mode: keyof ThemeColors, name: keyof ThemeColors["light"]) {
-		setThemeColor(mode, name, defaultThemeColors[mode][name]);
-		showToast(t("admin.branding.colorReset"), "info");
-	}
-
-	function copyAllThemeColors(mode: keyof ThemeColors) {
-		const sourceMode = mode === "light" ? "dark" : "light";
-		setThemeColors(current => ({ ...current, [mode]: current[sourceMode] }));
-		showToast(t("admin.branding.allColorsCopied", { mode: t(`admin.branding.${sourceMode}Theme`) }), "info");
-	}
-
-	function resetAllThemeColors(mode: keyof ThemeColors) {
-		setThemeColors(current => ({ ...current, [mode]: { ...defaultThemeColors[mode] } }));
-		showToast(t("admin.branding.allColorsReset"), "info");
-	}
-
-	function setOrderStatusTemplate(status: OrderStatusTemplateKey, value: string) {
-		setOrderStatusTemplates(current => ({ ...current, [status]: value }));
-	}
 
 	function save() {
 		put.mutate(
@@ -118,24 +89,24 @@ function BrandingPage() {
 				data: {
 					allowThemeToggle,
 					defaultTheme,
-					fontDisplay: fontDisplay.trim() || undefined,
-					fontDisplayUrl: fontDisplayUrl.trim() || undefined,
-					fontFamily: fontFamily.trim() || undefined,
-					fontFamilyUrl: fontFamilyUrl.trim() || undefined,
-					footerFacebookUrl: footerFacebookUrl.trim() || undefined,
-					footerInstagramUrl: footerInstagramUrl.trim() || undefined,
-					footerPaymentMethods: footerPaymentMethods
+					fontDisplay: fonts.display.trim() || undefined,
+					fontDisplayUrl: fonts.displayUrl.trim() || undefined,
+					fontFamily: fonts.family.trim() || undefined,
+					fontFamilyUrl: fonts.familyUrl.trim() || undefined,
+					footerFacebookUrl: footer.facebookUrl.trim() || undefined,
+					footerInstagramUrl: footer.instagramUrl.trim() || undefined,
+					footerPaymentMethods: footer.paymentMethods
 						.split(",")
 						.map(method => method.trim())
 						.filter(Boolean),
-					footerSupportEmail: footerSupportEmail.trim() || undefined,
-					footerText: footerText.trim() || undefined,
-					footerWhatsApp: footerWhatsApp.trim() || undefined,
-					ga4Id: ga4Id.trim() || undefined,
-					gtmId: gtmId.trim() || undefined,
-					logoUrl: logoUrl.trim() || undefined,
-					metaPixelId: metaPixelId.trim() || undefined,
-					mobileIconUrl: mobileIconUrl.trim() || undefined,
+					footerSupportEmail: footer.supportEmail.trim() || undefined,
+					footerText: footer.text.trim() || undefined,
+					footerWhatsApp: footer.whatsApp.trim() || undefined,
+					ga4Id: tracking.ga4Id.trim() || undefined,
+					gtmId: tracking.gtmId.trim() || undefined,
+					logoUrl: assets.logoUrl.trim() || undefined,
+					metaPixelId: tracking.metaPixelId.trim() || undefined,
+					mobileIconUrl: assets.mobileIconUrl.trim() || undefined,
 					orderStatusWhatsAppTemplates: Object.fromEntries(
 						ORDER_STATUS_TEMPLATE_KEYS.flatMap(status => {
 							const template = orderStatusTemplates[status].trim();
@@ -143,7 +114,7 @@ function BrandingPage() {
 						}),
 					),
 					themeColors,
-					unitFallbackImageUrl: unitFallbackImageUrl.trim() || undefined,
+					unitFallbackImageUrl: assets.unitFallbackImageUrl.trim() || undefined,
 				},
 			},
 			{
@@ -157,205 +128,54 @@ function BrandingPage() {
 	}
 
 	return (
-		<Container className="max-w-5xl space-y-6 py-8">
+		<Container className="space-y-6 py-8" size="md">
 			<SectionHeading subtitle={t("admin.branding.subtitle")} title={t("admin.branding.title")} />
-			{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
-			<label className="flex cursor-pointer items-center gap-2 rounded-lg border border-border p-4">
-				<Checkbox
-					checked={allowThemeToggle}
-					onChange={event => setAllowThemeToggle(event.currentTarget.checked)}
-				/>
-				<span>Permitir que cada usuário escolha o tema nas configurações.</span>
-			</label>
-			<div className="space-y-2 rounded-lg border border-border p-4">
-				<p className="font-medium text-sm">Tema padrão da empresa</p>
-				<div className="flex gap-2">
-					<Button
-						aria-pressed={defaultTheme === "light"}
-						onClick={() => setDefaultTheme("light")}
-						type="button"
-						variant={defaultTheme === "light" ? "default" : "outline"}
-					>
-						Tema claro
-					</Button>
-					<Button
-						aria-pressed={defaultTheme === "dark"}
-						onClick={() => setDefaultTheme("dark")}
-						type="button"
-						variant={defaultTheme === "dark" ? "default" : "outline"}
-					>
-						Tema escuro
-					</Button>
-				</div>
-				<p className="text-muted-foreground text-sm">Usado para todos quando a troca estiver desabilitada.</p>
-			</div>
 
 			{isPending ? (
-				<div className="space-y-4">
-					<Skeleton className="h-12 w-full" />
-					<Skeleton className="h-12 w-full" />
-					<Skeleton className="h-12 w-full" />
-					<Skeleton className="h-12 w-full" />
-					<Skeleton className="h-12 w-full" />
-					<Skeleton className="h-12 w-full" />
+				<div className="space-y-3">
+					{sectionSkeletonKeys.map(key => (
+						<Skeleton className="h-20 w-full rounded-lg" key={key} />
+					))}
 				</div>
 			) : isError ? (
 				<ErrorState title={t("admin.branding.loadError")} />
 			) : (
-				<div className="space-y-6">
-					<div className="space-y-4">
-						<FormSectionHeading>{t("admin.branding.sectionAppearance")}</FormSectionHeading>
+				<div className="space-y-3">
+					<ThemeSection
+						allowThemeToggle={allowThemeToggle}
+						defaultTheme={defaultTheme}
+						onAllowThemeToggleChange={setAllowThemeToggle}
+						onDefaultThemeChange={setDefaultTheme}
+						onThemeColorsChange={setThemeColors}
+						themeColors={themeColors}
+					/>
 
-						<TextField
-							label={t("admin.branding.footerText")}
-							onValueChange={setFooterText}
-							placeholder={t("admin.branding.footerTextPlaceholder")}
-							value={footerText}
-						/>
-						<FormSectionHeading>{t("admin.branding.sectionFooter")}</FormSectionHeading>
-						<TextField
-							label={t("admin.branding.footerPaymentMethods")}
-							onValueChange={setFooterPaymentMethods}
-							placeholder={t("admin.branding.footerPaymentMethodsPlaceholder")}
-							value={footerPaymentMethods}
-						/>
-						<TextField
-							label={t("admin.branding.footerWhatsApp")}
-							onValueChange={setFooterWhatsApp}
-							placeholder={t("admin.branding.footerWhatsAppPlaceholder")}
-							value={footerWhatsApp}
-						/>
-						<TextField
-							label={t("admin.branding.footerSupportEmail")}
-							onValueChange={setFooterSupportEmail}
-							placeholder="contato@minhaloja.com"
-							value={footerSupportEmail}
-						/>
-						<TextField
-							label={t("admin.branding.footerInstagramUrl")}
-							onValueChange={setFooterInstagramUrl}
-							placeholder="https://instagram.com/minhaloja"
-							value={footerInstagramUrl}
-						/>
-						<TextField
-							label={t("admin.branding.footerFacebookUrl")}
-							onValueChange={setFooterFacebookUrl}
-							placeholder="https://facebook.com/minhaloja"
-							value={footerFacebookUrl}
-						/>
-						<Label>
-							{t("admin.branding.logoUrl")}
-							<MediaUrlInput
-								asset="logo"
-								onUploadError={() => showToast(t("admin.branding.uploadError"), "negative")}
-								onValueChange={setLogoUrl}
-								uploadLabel={t("admin.branding.logoUpload")}
-								value={logoUrl}
-							/>
-						</Label>
+					<BrandAssetsSection
+						assets={assets}
+						onChange={changes => setAssets(current => ({ ...current, ...changes }))}
+					/>
 
-						<Label>
-							{t("admin.branding.mobileIconUrl")}
-							<MediaUrlInput
-								asset="mobile-icon"
-								onUploadError={() => showToast(t("admin.branding.uploadError"), "negative")}
-								onValueChange={setMobileIconUrl}
-								preview
-								uploadLabel={t("admin.branding.mobileIconUpload")}
-								value={mobileIconUrl}
-							/>
-							<p className="text-muted-foreground text-sm">{t("admin.branding.mobileIconHint")}</p>
-						</Label>
+					<TypographySection
+						fonts={fonts}
+						onChange={changes => setFonts(current => ({ ...current, ...changes }))}
+					/>
 
-						<Label>
-							{t("admin.branding.unitFallbackImageUrl")}
-							<MediaUrlInput
-								asset="unit"
-								onUploadError={() => showToast(t("admin.branding.uploadError"), "negative")}
-								onValueChange={setUnitFallbackImageUrl}
-								uploadLabel={t("admin.branding.unitFallbackImageUpload")}
-								value={unitFallbackImageUrl}
-							/>
-						</Label>
+					<FooterSection
+						footer={footer}
+						onChange={changes => setFooter(current => ({ ...current, ...changes }))}
+					/>
 
-						<FontField
-							family={fontFamily}
-							label={t("admin.branding.fontFamily")}
-							onUploadError={() => showToast(t("admin.branding.uploadError"), "negative")}
-							onUrlChange={url => {
-								setFontFamilyUrl(url);
-								if (url) setFontFamily("Brand Text");
-							}}
-							previewLabel={t("admin.branding.fontFamilyPreview")}
-							sampleClassName="text-lg"
-							sampleText="Aa Bb Cc 123"
-							uploadAsset="font-family"
-							url={fontFamilyUrl}
-						/>
+					<NotificationTemplatesSection
+						onChange={changes => setOrderStatusTemplates(current => ({ ...current, ...changes }))}
+						templates={orderStatusTemplates}
+					/>
 
-						<FontField
-							family={fontDisplay}
-							label={t("admin.branding.fontDisplay")}
-							onUploadError={() => showToast(t("admin.branding.uploadError"), "negative")}
-							onUrlChange={url => {
-								setFontDisplayUrl(url);
-								if (url) setFontDisplay("Brand Display");
-							}}
-							previewLabel={t("admin.branding.fontDisplayPreview")}
-							sampleClassName="text-2xl"
-							sampleText="Aa Bb Cc 123"
-							uploadAsset="font-display"
-							url={fontDisplayUrl}
-						/>
+					<TrackingSection
+						onChange={changes => setTracking(current => ({ ...current, ...changes }))}
+						tracking={tracking}
+					/>
 
-						<FormSectionHeading>{t("admin.branding.themeColors")}</FormSectionHeading>
-						<ThemeEditor
-							colors={themeColors}
-							onChange={setThemeColor}
-							onCopyAll={copyAllThemeColors}
-							onCopyColor={copyThemeColor}
-							onResetAll={resetAllThemeColors}
-							onResetColor={resetThemeColor}
-						/>
-					</div>
-
-					<div className="space-y-4">
-						<FormSectionHeading>{t("admin.branding.sectionNotifications")}</FormSectionHeading>
-						<p className="text-muted-foreground text-sm">{t("admin.branding.notificationsHelp")}</p>
-						{ORDER_STATUS_TEMPLATE_KEYS.map(status => (
-							<TextField
-								key={status}
-								label={t(`admin.branding.orderStatus.${status}`)}
-								onValueChange={value => setOrderStatusTemplate(status, value)}
-								placeholder={t("admin.branding.notificationPlaceholder")}
-								value={orderStatusTemplates[status]}
-							/>
-						))}
-					</div>
-
-					<div className="space-y-4">
-						<FormSectionHeading>{t("admin.branding.sectionTracking")}</FormSectionHeading>
-						<TextField
-							label={t("admin.branding.metaPixelId")}
-							onValueChange={setMetaPixelId}
-							placeholder="1234567890"
-							value={metaPixelId}
-						/>
-						<TextField
-							label={t("admin.branding.ga4Id")}
-							onValueChange={setGa4Id}
-							placeholder="G-XXXXXXXXXX"
-							value={ga4Id}
-						/>
-						<TextField
-							label={t("admin.branding.gtmId")}
-							onValueChange={setGtmId}
-							placeholder="GTM-XXXXXXX"
-							value={gtmId}
-						/>
-					</div>
-
-					<Button disabled={put.isPending} onClick={save} type="button">
+					<Button className="ml-auto flex w-fit" disabled={put.isPending} onClick={save} type="button">
 						{put.isPending ? t("admin.branding.saving") : t("admin.branding.save")}
 					</Button>
 				</div>
