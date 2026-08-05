@@ -53,25 +53,25 @@ export function ProductRow({ product }: ProductRowProps) {
 	return (
 		<>
 			<tr className="border-border/60 border-b last:border-0">
-				<td className="px-4 py-3">
+				<td className="min-w-56 px-4 py-3">
 					<div className="flex items-center gap-3">
 						{product.imageUrl && (
 							<img
 								alt=""
-								className="h-12 w-12 rounded border border-border object-cover"
+								className="h-12 w-12 shrink-0 rounded border border-border object-cover"
 								src={product.imageUrl}
 							/>
 						)}
-						<div>
+						<div className="min-w-0">
 							<p className="font-medium">{product.title}</p>
 							<p className="line-clamp-1 text-muted-foreground text-xs">{product.description}</p>
 						</div>
 					</div>
 				</td>
-				<td className="px-4 py-3 text-muted-foreground">
+				<td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
 					{Number(product.basePriceCents) === 0 ? "—" : money.format(Number(product.basePriceCents) / 100)}
 				</td>
-				<td className="px-4 py-3 text-muted-foreground">
+				<td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
 					{product.cashbackPercentOverride === null
 						? t("admin.products.row.unitDefault")
 						: t("admin.products.row.cashbackPercent", { value: product.cashbackPercentOverride })}
@@ -103,7 +103,7 @@ export function ProductRow({ product }: ProductRowProps) {
 						)}
 					</div>
 				</td>
-				<td className="px-4 py-3 text-right">
+				<td className="whitespace-nowrap px-4 py-3 text-right">
 					<div className="flex justify-end gap-2">
 						<Tooltip content={t("admin.products.edit.action")}>
 							<Button

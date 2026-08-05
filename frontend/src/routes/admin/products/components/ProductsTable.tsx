@@ -19,14 +19,18 @@ export function ProductsTable({ products }: ProductsTableProps) {
 		<DataTable>
 			<thead>
 				<tr className="border-border border-b text-left text-muted-foreground">
-					<th className="px-4 py-3 font-medium">{t("admin.products.columns.product")}</th>
-					<th className="px-4 py-3 font-medium">
-						<span className="inline-block w-min text-center">{t("admin.products.columns.price")}</span>
+					<th className="min-w-56 px-4 py-3 font-medium">{t("admin.products.columns.product")}</th>
+					<th className="whitespace-nowrap px-4 py-3 font-medium">{t("admin.products.columns.price")}</th>
+					<th className="whitespace-nowrap px-4 py-3 font-medium">
+						{t("admin.products.columns.cashback")}
 					</th>
-					<th className="px-4 py-3 font-medium">{t("admin.products.columns.cashback")}</th>
-					<th className="px-4 py-3 text-center font-medium">{t("admin.products.columns.customizations")}</th>
-					<th className="px-4 py-3 font-medium">{t("admin.products.columns.categories")}</th>
-					<th className="px-4 py-3 font-medium">{t("admin.products.columns.tags")}</th>
+					<th className="whitespace-nowrap px-4 py-3 text-center font-medium">
+						{t("admin.products.columns.customizations")}
+					</th>
+					<th className="whitespace-nowrap px-4 py-3 font-medium">
+						{t("admin.products.columns.categories")}
+					</th>
+					<th className="whitespace-nowrap px-4 py-3 font-medium">{t("admin.products.columns.tags")}</th>
 					<th className="px-4 py-3" />
 				</tr>
 			</thead>
