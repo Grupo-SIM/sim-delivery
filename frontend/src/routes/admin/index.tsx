@@ -116,7 +116,7 @@ function AdminDashboardPage() {
 		<Container className="space-y-8 py-8">
 			<div className="flex flex-wrap items-center justify-between gap-4">
 				<SectionHeading subtitle={t("admin.dashboard.subtitle")} title={t("admin.dashboard.title")} />
-				<div className="flex items-center gap-3">
+				<div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
 					<span className="font-medium text-sm">{t("admin.reports.period.title")}</span>
 					<DashboardDateRangePicker
 						onChange={range => {

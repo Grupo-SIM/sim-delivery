@@ -149,7 +149,7 @@ function FinancePage() {
 					subtitle="Resultado consolidado por competência financeira."
 					title="Relatório financeiro"
 				/>
-				<div className="flex items-center gap-2">
+				<div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
 					<DashboardDateRangePicker
 						onChange={range => {
 							setDateRange(range);
