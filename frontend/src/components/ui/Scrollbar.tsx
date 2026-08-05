@@ -1,4 +1,11 @@
-import { type CSSProperties, type PointerEvent, useEffect, useRef, useState } from "react";
+import {
+	type CSSProperties,
+	type PointerEvent,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { cn } from "@/lib/utils";
 
 type Orientation = "horizontal" | "vertical";
@@ -11,12 +18,53 @@ interface ScrollbarProps {
 }
 
 const MIN_THUMB = 32;
+const HIDE_DELAY = 600;
 
 export function Scrollbar({ className, container, orientation = "vertical" }: ScrollbarProps) {
 	const isVertical = orientation === "vertical";
 	const trackRef = useRef<HTMLDivElement>(null);
 	const dragOffsetRef = useRef(0);
+	const hideTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+	const holdingRef = useRef(false);
 	const [metrics, setMetrics] = useState({ thumbSize: 0, thumbOffset: 0 });
+	const [visible, setVisible] = useState(false);
+
+	// Overlay scrollbars fade out once the pointer settles; dragging or hovering the track holds them open.
+	const scheduleHide = useCallback(() => {
+		clearTimeout(hideTimerRef.current);
+		if (holdingRef.current) return;
+		hideTimerRef.current = setTimeout(() => setVisible(false), HIDE_DELAY);
+	}, []);
+
+	const reveal = useCallback(() => {
+		setVisible(true);
+		scheduleHide();
+	}, [scheduleHide]);
+
+	function hold() {
+		holdingRef.current = true;
+		reveal();
+	}
+
+	function release() {
+		holdingRef.current = false;
+		scheduleHide();
+	}
+
+	useEffect(() => () => clearTimeout(hideTimerRef.current), []);
+
+	useEffect(() => {
+		if (!container) return;
+
+		container.addEventListener("scroll", reveal, { passive: true });
+		container.addEventListener("pointermove", reveal, { passive: true });
+		container.addEventListener("pointerleave", scheduleHide);
+		return () => {
+			container.removeEventListener("scroll", reveal);
+			container.removeEventListener("pointermove", reveal);
+			container.removeEventListener("pointerleave", scheduleHide);
+		};
+	}, [container, reveal, scheduleHide]);
 
 	useEffect(() => {
 		if (!container) return;
@@ -82,10 +130,16 @@ export function Scrollbar({ className, container, orientation = "vertical" }: Sc
 		const rect = event.currentTarget.getBoundingClientRect();
 		dragOffsetRef.current = positionOf(event) - (isVertical ? rect.top : rect.left);
 		event.currentTarget.setPointerCapture(event.pointerId);
+		hold();
 	}
 
 	function onThumbPointerMove(event: PointerEvent<HTMLDivElement>) {
 		if (event.currentTarget.hasPointerCapture(event.pointerId)) scrollTo(positionOf(event));
+	}
+
+	function onThumbPointerUp(event: PointerEvent<HTMLDivElement>) {
+		event.currentTarget.releasePointerCapture(event.pointerId);
+		release();
 	}
 
 	// The track must stay mounted even when idle — its measured size is what the thumb is derived from.
@@ -98,12 +152,15 @@ export function Scrollbar({ className, container, orientation = "vertical" }: Sc
 		<div
 			aria-hidden="true"
 			className={cn(
-				"absolute z-10 rounded-full",
+				"absolute z-10 rounded-full transition-opacity duration-150",
 				isActive ? "bg-muted/70" : "pointer-events-none bg-transparent",
+				isActive && visible ? "opacity-100" : "opacity-0",
 				isVertical ? "top-4 right-3 bottom-4 w-1.5" : "right-4 bottom-3 left-4 h-1.5",
 				className,
 			)}
 			onPointerDown={onTrackPointerDown}
+			onPointerEnter={hold}
+			onPointerLeave={release}
 			ref={trackRef}
 		>
 			{isActive && (
@@ -114,6 +171,7 @@ export function Scrollbar({ className, container, orientation = "vertical" }: Sc
 					)}
 					onPointerDown={onThumbPointerDown}
 					onPointerMove={onThumbPointerMove}
+					onPointerUp={onThumbPointerUp}
 					style={style}
 				/>
 			)}
