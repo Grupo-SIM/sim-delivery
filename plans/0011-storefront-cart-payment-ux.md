@@ -22,7 +22,7 @@ incluindo CPF do titular, erros reais do provedor e gestão de cartões salvos.
 - [x] 4. Integrar sugestões ao submodal e inverter ações finais do carrinho.
 - [x] 5. Adicionar documento do titular, exclusão de cartão e erros tipados no backend.
 - [x] 6. Exportar OpenAPI, regenerar SDK e atualizar formulário/perfil no frontend.
-- [ ] 7. Cobrir regras críticas, verificar viewports e concluir builds/commits.
+- [x] 7. Cobrir regras críticas, verificar viewports e concluir builds/commits.
 
 ## Verification Criteria
 
@@ -56,4 +56,4 @@ incluindo CPF do titular, erros reais do provedor e gestão de cartões salvos.
 - Concluído: sugestões com opções usam submodal; adição direta ficou restrita a produtos simples; CTAs invertidas.
 - Concluído: backend separa CPF do titular, persiste documento no cartão salvo, normaliza erros e permite exclusão escopada.
 - Concluído: OpenAPI/SDK regenerados; formulário suporta autofill, CPF do titular e erros detalhados; perfil gerencia cartões.
-- Próximo: validação visual final e fechamento.
+- Concluído: testes backend/frontend, type-checks e builds passaram; fluxos visíveis conferidos em 375, 768 e 1440 px.
