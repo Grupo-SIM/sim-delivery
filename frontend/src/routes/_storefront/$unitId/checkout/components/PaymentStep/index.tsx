@@ -24,8 +24,6 @@ export function PaymentStep({ amountCents, customerCpf, onConfirmed, orderId, sl
 	const { t } = useTranslation();
 	const [method, setMethod] = useState<PaymentMethod>("card");
 
-	const cpfRequired = !customerCpf;
-
 	const { data: savedCards, isPending: savedCardsPending } = useQuery(getPaymentsCardsQueryOptions({ slug }));
 	const { isPending: isPayingCard, mutate: payWithCard } = usePostPaymentsCard();
 
@@ -33,7 +31,14 @@ export function PaymentStep({ amountCents, customerCpf, onConfirmed, orderId, sl
 		payWithCard(
 			{ data: { ...value, orderId, slug } },
 			{
-				onError: () => void showAlert(t("store.checkout.payment.card.error")),
+				onError: error => {
+					const message =
+						error.data.description ??
+						t(`store.checkout.payment.card.errors.${error.data.error}`, {
+							defaultValue: t("store.checkout.payment.card.error"),
+						});
+					void showAlert(message);
+				},
 				onSuccess: () => onConfirmed(),
 			},
 		);
@@ -74,7 +79,7 @@ export function PaymentStep({ amountCents, customerCpf, onConfirmed, orderId, sl
 				method === "card" && (
 					<CardPaymentForm
 						amountCents={amountCents}
-						cpfRequired={cpfRequired}
+						customerCpf={customerCpf}
 						isPending={isPayingCard}
 						onSubmit={handleCardSubmit}
 						savedCards={savedCards ?? []}

@@ -25,6 +25,7 @@ import {
 	ProfileSecurityForm,
 	ProfileSkeleton,
 	ProfileSummaryCard,
+	SavedCardsSection,
 	ThemePreferenceForm,
 } from "./components";
 
@@ -212,6 +213,7 @@ function ProfilePage() {
 				onSetDefault={handleSetDefault}
 				onUpdate={handleUpdateAddress}
 			/>
+			<SavedCardsSection />
 			<ThemePreferenceForm
 				disabled={!allowThemeToggle}
 				isSaving={savingTheme}

@@ -5,7 +5,7 @@ import { LuEye, LuEyeOff } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Label, RequiredMark } from "@/components/ui/label";
 import { MaskedInput } from "@/components/ui/MaskedInput";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
@@ -21,15 +21,14 @@ export interface CardPaymentValue {
 		number: string;
 	};
 	cardNickname?: string;
-	cpf?: string;
+	holderCpf?: string;
 	saveCard?: boolean;
 	savedCardId?: string;
 }
 
 interface CardPaymentFormProps {
 	amountCents: number;
-	/** Customer profile still misses a CPF, so the form must collect one. */
-	cpfRequired: boolean;
+	customerCpf: string | null;
 	isPending: boolean;
 	onSubmit: (value: CardPaymentValue) => void;
 	savedCards: GetPaymentsCards200;
@@ -52,23 +51,25 @@ function brandIcon(brand: string) {
 
 export function CardPaymentForm({
 	amountCents,
-	cpfRequired,
+	customerCpf,
 	isPending,
 	onSubmit,
 	savedCards,
 }: CardPaymentFormProps) {
 	const { t } = useTranslation();
 	const [selected, setSelected] = useState<string>(savedCards[0]?.id ?? "new");
-	const [holderName, setHolderName] = useState("");
+	const [holderName, setHolderName] = useDebouncedInput("", () => undefined);
 	const [number, setNumber] = useState("");
 	const [expiry, setExpiry] = useState("");
 	const [cvv, setCvv] = useState("");
 	const [cvcVisible, setCvcVisible] = useState(false);
-	const [cpf, setCpf] = useState("");
-	const [saveCard, setSaveCard] = useState(true);
+	const [holderCpf, setHolderCpf] = useState(customerCpf?.replace(/\D/g, "") ?? "");
+	const [saveCard, setSaveCard] = useState(false);
 	const [cardNickname, setCardNickname] = useDebouncedInput("", () => undefined);
 
 	const usingSavedCard = selected !== "new";
+	const selectedSavedCard = savedCards.find(card => card.id === selected);
+	const holderCpfRequired = !usingSavedCard || selectedSavedCard?.holderCpfRequired === true;
 
 	const [expMonth, expYear] =
 		expiry.length === 4 ? [Number(expiry.slice(0, 2)), 2000 + Number(expiry.slice(2))] : [0, 0];
@@ -79,18 +80,18 @@ export function CardPaymentForm({
 		expMonth <= 12 &&
 		expYear >= new Date().getFullYear() &&
 		cvv.length >= 3;
-	const validCpf = !cpfRequired || cpf.length === 11;
+	const validCpf = !holderCpfRequired || holderCpf.length === 11;
 	const canSubmit = validCpf && (usingSavedCard || validNewCard);
 
 	function handleSubmit() {
 		if (!canSubmit) return;
 		onSubmit(
 			usingSavedCard
-				? { cpf: cpf || undefined, savedCardId: selected }
+				? { holderCpf: holderCpfRequired ? holderCpf : undefined, savedCardId: selected }
 				: {
 						card: { cvv, expMonth, expYear, holderName: holderName.trim(), number },
 						cardNickname: saveCard ? cardNickname.trim() || undefined : undefined,
-						cpf: cpf || undefined,
+						holderCpf,
 						saveCard,
 					},
 		);
@@ -98,6 +99,7 @@ export function CardPaymentForm({
 
 	return (
 		<form
+			autoComplete="on"
 			className="space-y-4"
 			onSubmit={event => {
 				event.preventDefault();
@@ -124,7 +126,7 @@ export function CardPaymentForm({
 								/>
 								<Icon className="size-6 text-muted-foreground" />
 								<span className="flex-1 text-sm">
-									{card.nickname ?? `•••• ${card.last4}`}
+									{card.nickname ?? `${card.brand} •••• ${card.last4}`}
 									<span className="ml-2 text-muted-foreground text-xs">
 										{card.expiryMonth}/{card.expiryYear.slice(-2)}
 									</span>
@@ -153,8 +155,12 @@ export function CardPaymentForm({
 			{!usingSavedCard && (
 				<>
 					<Label>
-						{t("store.checkout.payment.card.holder")}
+						<span>
+							{t("store.checkout.payment.card.holder")} <RequiredMark />
+						</span>
 						<Input
+							autoComplete="cc-name"
+							name="cc-name"
 							onChange={event => setHolderName(event.currentTarget.value)}
 							placeholder={t("store.checkout.payment.card.holderPlaceholder")}
 							value={holderName}
@@ -162,11 +168,16 @@ export function CardPaymentForm({
 					</Label>
 
 					<Label>
-						{t("store.checkout.payment.card.number")}
+						<span>
+							{t("store.checkout.payment.card.number")} <RequiredMark />
+						</span>
 						<div className="relative">
 							<MaskedInput
+								autoComplete="cc-number"
+								className="pr-24"
 								format="#### #### #### ####"
 								inputMode="numeric"
+								name="cc-number"
 								onValueChange={({ value: digits }) => setNumber(digits)}
 								placeholder="0000 0000 0000 0000"
 								value={number}
@@ -180,44 +191,55 @@ export function CardPaymentForm({
 
 					<div className="grid grid-cols-2 gap-4">
 						<Label>
-							{t("store.checkout.payment.card.cvc")}
-							<div className="relative">
-								<MaskedInput
-									className="pr-10"
-									format="####"
-									inputMode="numeric"
-									onValueChange={({ value: digits }) => setCvv(digits)}
-									placeholder="123"
-									type={cvcVisible ? "text" : "password"}
-									value={cvv}
-								/>
-								<Tooltip content={t(`store.checkout.payment.card.${cvcVisible ? "hideCvc" : "showCvc"}`)}>
-									<button
-										aria-label={t(`store.checkout.payment.card.${cvcVisible ? "hideCvc" : "showCvc"}`)}
-										className="absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-muted-foreground transition-colors hover:text-foreground"
-										onClick={() => setCvcVisible(visible => !visible)}
-										type="button"
-									>
-										{cvcVisible ? <LuEyeOff className="size-4" /> : <LuEye className="size-4" />}
-									</button>
-								</Tooltip>
-							</div>
-						</Label>
-						<Label>
-							{t("store.checkout.payment.card.expiry")}
+							<span>
+								{t("store.checkout.payment.card.expiry")} <RequiredMark />
+							</span>
 							<MaskedInput
+								autoComplete="cc-exp"
 								format="##/##"
 								inputMode="numeric"
 								mask="_"
+								name="cc-exp"
 								onValueChange={({ value: digits }) => setExpiry(digits)}
 								placeholder="MM/AA"
 								value={expiry}
 							/>
 						</Label>
+						<Label>
+							<span>
+								{t("store.checkout.payment.card.cvc")} <RequiredMark />
+							</span>
+							<div className="relative">
+								<MaskedInput
+									autoComplete="cc-csc"
+									className="pr-12"
+									format="####"
+									inputMode="numeric"
+									name="cc-csc"
+									onValueChange={({ value: digits }) => setCvv(digits)}
+									placeholder="123"
+									type={cvcVisible ? "text" : "password"}
+									value={cvv}
+								/>
+								<div className="absolute top-1/2 right-1.5 -translate-y-1/2">
+									<Tooltip content={t(`store.checkout.payment.card.${cvcVisible ? "hideCvc" : "showCvc"}`)}>
+										<Button
+											aria-label={t(`store.checkout.payment.card.${cvcVisible ? "hideCvc" : "showCvc"}`)}
+											className="size-8 p-0 text-muted-foreground"
+											onClick={() => setCvcVisible(visible => !visible)}
+											size="icon"
+											type="button"
+											variant="outline"
+										>
+											{cvcVisible ? <LuEyeOff className="size-4" /> : <LuEye className="size-4" />}
+										</Button>
+									</Tooltip>
+								</div>
+							</div>
+						</Label>
 					</div>
 
-					{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
-					<label className="flex items-center gap-2 font-medium text-sm">
+					<label className="flex cursor-pointer items-center gap-2 font-medium text-sm">
 						<Checkbox checked={saveCard} onChange={event => setSaveCard(event.currentTarget.checked)} />
 						{t("store.checkout.payment.card.save")}
 					</label>
@@ -225,6 +247,8 @@ export function CardPaymentForm({
 						<Label>
 							{t("store.checkout.payment.card.nickname")}
 							<Input
+								autoComplete="off"
+								name="card-nickname"
 								onChange={event => setCardNickname(event.currentTarget.value)}
 								placeholder={t("store.checkout.payment.card.nicknamePlaceholder")}
 								value={cardNickname}
@@ -234,16 +258,19 @@ export function CardPaymentForm({
 				</>
 			)}
 
-			{cpfRequired && (
+			{holderCpfRequired && (
 				<Label>
-					{t("store.checkout.payment.cpf")}
+					<span>
+						{t("store.checkout.payment.card.holderCpf")} <RequiredMark />
+					</span>
 					<MaskedInput
 						format="###.###.###-##"
 						inputMode="numeric"
 						mask="_"
-						onValueChange={({ value: digits }) => setCpf(digits)}
+						name="card-holder-cpf"
+						onValueChange={({ value: digits }) => setHolderCpf(digits)}
 						placeholder={t("store.checkout.payment.cpfPlaceholder")}
-						value={cpf}
+						value={holderCpf}
 					/>
 				</Label>
 			)}
