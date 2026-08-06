@@ -8,6 +8,12 @@ Regras financeiras aplicadas no checkout e no pedido.
 - Exemplos: Pix, cartão (crédito/débito), dinheiro (na entrega), cashback.
 - Exibidas no checkout #2 (ver [08](08-app-cliente.md)).
 - Roadmap: pagamento online integrado (Pix/Mercado Pago/Cielo) — ver [12](12-referencias-e-benchmark.md).
+- Pagamento com cartão sempre identifica explicitamente o **CPF do titular**; ele não substitui o
+  CPF cadastral do cliente quando o cartão pertence a terceiro.
+- Salvar cartão é opt-in. O sistema guarda somente token, metadados de exibição e CPF do titular;
+  nunca armazena PAN ou CVC. Cliente pode listar e excluir os próprios cartões no perfil.
+- Erros de tokenização e cobrança mostram a mensagem segura fornecida pelo provedor quando
+  disponível, mantendo código de erro estável como fallback.
 
 ## Cashback
 

@@ -25,7 +25,10 @@ direto na escolha de unidade.
 
 - Lista de itens: nome, **valor unitário**, **quantidade editável**, valor total, campo
   de **observação** e botões editar/excluir item.
-- **Sugestões de produtos** (forma de configurar = ponto em aberto — ver [05](05-cardapio.md)).
+- **Sugestões de produtos**: até 6 produtos da unidade que ainda não estejam no carrinho;
+  produtos com cashback aparecem primeiro e os demais preservam a ordem do cardápio.
+- Ao adicionar uma sugestão com customizações obrigatórias ou opcionais, abrir o mesmo modal de
+  produto usado no cardápio. Somente produto sem opções pode ser adicionado diretamente.
 - **Simulação de frete** (ver [09](09-pagamentos-cashback-cupons-frete.md)).
 - **Cupom de desconto** (quando houver).
 - Botão **concluir pedido** → checkout #1.
