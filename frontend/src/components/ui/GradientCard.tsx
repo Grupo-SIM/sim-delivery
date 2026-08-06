@@ -24,7 +24,7 @@ export function GradientCard({ children, className, tone = "blue", ...props }: G
 	return (
 		<div
 			className={cn(
-				"group relative flex overflow-hidden rounded-[var(--radius-brand)] shadow-soft transition-[box-shadow,transform] duration-300 ease-[var(--ease-smooth)] hover:-translate-y-1 hover:shadow-medium",
+				"group relative flex overflow-hidden rounded-[var(--radius-brand)] transition-transform duration-300 ease-[var(--ease-smooth)] hover:-translate-y-1",
 				toneClassName[tone],
 				className,
 			)}

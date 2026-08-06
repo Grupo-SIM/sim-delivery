@@ -13,7 +13,7 @@ export function Panel({ active, as: Component = "div", children, className, ...p
 	return (
 		<Component
 			className={cn(
-				"rounded-brand border border-border bg-card text-card-foreground shadow-soft",
+				"rounded-brand border border-border bg-card text-card-foreground",
 				active && "border-primary/60 ring-2 ring-primary/15",
 				className,
 			)}

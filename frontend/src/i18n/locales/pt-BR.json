@@ -1379,6 +1379,7 @@
 			},
 			"cart": {
 				"add": "Adicionar",
+				"added": "Produto adicionado ao carrinho!",
 				"checkout": "Finalizar pedido",
 				"clear": "Limpar carrinho",
 				"clearConfirm": "Remover todos os itens do carrinho?",
@@ -1390,7 +1391,8 @@
 				"remove": "Remover",
 				"subtotal": "Subtotal",
 				"suggestions": "Você também pode gostar",
-				"title": "Seu carrinho"
+				"title": "Seu carrinho",
+				"updated": "Produto atualizado no carrinho!"
 			},
 			"checkout": {
 				"address": {
@@ -1614,6 +1616,8 @@
 				"optional": "Opcional",
 				"popularOptions": "Itens mais pedidos",
 				"priceFromOptions": "Preço definido pelas opções",
+				"priceRuleAverage": "Preço por média: os adicionais exibidos não são somados; cobraremos a média dos valores selecionados.",
+				"priceRuleHighest": "Preço pelo maior valor: cobraremos somente o maior adicional selecionado.",
 				"quantity": "Quantidade",
 				"required": "Obrigatório",
 				"reviews": {

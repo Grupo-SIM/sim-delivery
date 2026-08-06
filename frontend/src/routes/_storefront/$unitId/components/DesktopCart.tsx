@@ -27,7 +27,7 @@ export function DesktopCart({ deliveryFee, minOrderCents, unitId, unitSlug }: De
 
 	return (
 		<aside className="hidden lg:block">
-			<div className="sticky top-4 overflow-hidden rounded-brand border border-border bg-card shadow-soft">
+			<div className="sticky top-4 overflow-hidden rounded-brand border border-border bg-card">
 				<div className="border-border border-b px-5 py-5">
 					<h2 className="font-bold text-lg">{t("store.cart.title")}</h2>
 					<p className="text-muted-foreground text-sm">

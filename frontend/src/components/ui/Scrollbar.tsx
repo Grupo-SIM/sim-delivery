@@ -15,12 +15,20 @@ interface ScrollbarProps {
 	/** Extra classes for the track — use to override the default insets. */
 	className?: string;
 	orientation?: Orientation;
+	persistent?: boolean;
+	variant?: "overlay" | "prominent";
 }
 
 const MIN_THUMB = 32;
 const HIDE_DELAY = 600;
 
-export function Scrollbar({ className, container, orientation = "vertical" }: ScrollbarProps) {
+export function Scrollbar({
+	className,
+	container,
+	orientation = "vertical",
+	persistent = false,
+	variant = "overlay",
+}: ScrollbarProps) {
 	const isVertical = orientation === "vertical";
 	const trackRef = useRef<HTMLDivElement>(null);
 	const dragOffsetRef = useRef(0);
@@ -153,9 +161,19 @@ export function Scrollbar({ className, container, orientation = "vertical" }: Sc
 			aria-hidden="true"
 			className={cn(
 				"absolute z-10 rounded-full transition-opacity duration-150",
-				isActive ? "bg-muted/70" : "pointer-events-none bg-transparent",
-				isActive && visible ? "opacity-100" : "opacity-0",
-				isVertical ? "top-4 right-3 bottom-4 w-1.5" : "right-4 bottom-3 left-4 h-1.5",
+					isActive
+						? variant === "prominent"
+							? "bg-muted"
+							: "bg-muted/70"
+						: "pointer-events-none bg-transparent",
+					isActive && (persistent || visible) ? "opacity-100" : "opacity-0",
+					isVertical
+						? variant === "prominent"
+							? "top-1 right-0.5 bottom-1 w-2.5"
+							: "top-4 right-3 bottom-4 w-1.5"
+						: variant === "prominent"
+							? "right-1 bottom-0.5 left-1 h-2.5"
+							: "right-4 bottom-3 left-4 h-1.5",
 				className,
 			)}
 			onPointerDown={onTrackPointerDown}
@@ -166,7 +184,10 @@ export function Scrollbar({ className, container, orientation = "vertical" }: Sc
 			{isActive && (
 				<div
 					className={cn(
-						"cursor-grab rounded-full bg-muted-foreground/60 transition-colors hover:bg-muted-foreground active:cursor-grabbing",
+							"cursor-grab rounded-full transition-colors active:cursor-grabbing",
+							variant === "prominent"
+								? "bg-muted-foreground hover:bg-foreground"
+								: "bg-muted-foreground/60 hover:bg-muted-foreground",
 						isVertical ? "w-full" : "h-full",
 					)}
 					onPointerDown={onThumbPointerDown}

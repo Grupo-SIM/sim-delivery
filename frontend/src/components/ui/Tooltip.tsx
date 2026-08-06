@@ -30,6 +30,10 @@ export function Tooltip({ children, content, open, placement = "top" }: TooltipP
 		});
 	}, [isVisible, placement]);
 
+	function canHover() {
+		return typeof window !== "undefined" && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+	}
+
 	const tooltip =
 		typeof document === "undefined"
 			? null
@@ -54,12 +58,20 @@ export function Tooltip({ children, content, open, placement = "top" }: TooltipP
 				);
 
 	return (
-		<span
-			className="relative inline-flex"
-			onBlur={() => setVisible(false)}
-			onFocus={() => setVisible(true)}
-			onMouseEnter={() => setVisible(true)}
-			onMouseLeave={() => setVisible(false)}
+			<span
+				className="relative inline-flex"
+				onBlur={() => setVisible(false)}
+				onFocus={event => {
+					if (open !== undefined || !canHover()) return;
+					if (event.target instanceof HTMLElement && event.target.matches(":focus-visible")) setVisible(true);
+				}}
+				onMouseEnter={() => {
+					if (open === undefined && canHover()) setVisible(true);
+				}}
+				onMouseLeave={() => setVisible(false)}
+				onPointerDown={() => {
+					if (open === undefined) setVisible(false);
+				}}
 			ref={triggerRef}
 		>
 			{children}

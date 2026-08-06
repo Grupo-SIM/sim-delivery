@@ -8,7 +8,7 @@ interface CardProps extends ComponentPropsWithoutRef<"div"> {
 export function Card({ children, className, ...props }: CardProps) {
 	return (
 		<div
-			className={cn("rounded-brand border bg-card text-card-foreground shadow-soft", className)}
+			className={cn("rounded-brand border bg-card text-card-foreground", className)}
 			{...props}
 		>
 			{children}

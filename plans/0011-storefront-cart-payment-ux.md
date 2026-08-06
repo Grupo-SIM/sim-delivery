@@ -17,8 +17,8 @@ incluindo CPF do titular, erros reais do provedor e gestão de cartões salvos.
 ## Implementation Plan
 
 - [x] 1. Registrar regras de sugestão, cartões salvos e autofill na documentação do projeto.
-- [ ] 2. Ajustar sombras, categorias, tooltips, scrollbar do produto e barra do carrinho.
-- [ ] 3. Componentizar as opções do modal, tornar linhas clicáveis e explicar regras de preço.
+- [x] 2. Ajustar sombras, categorias, tooltips, scrollbar do produto e barra do carrinho.
+- [x] 3. Componentizar as opções do modal, tornar linhas clicáveis e explicar regras de preço.
 - [ ] 4. Integrar sugestões ao submodal e inverter ações finais do carrinho.
 - [ ] 5. Adicionar documento do titular, exclusão de cartão e erros tipados no backend.
 - [ ] 6. Exportar OpenAPI, regenerar SDK e atualizar formulário/perfil no frontend.
@@ -51,4 +51,6 @@ incluindo CPF do titular, erros reais do provedor e gestão de cartões salvos.
 ## Progress
 
 - Concluído: plano versionado; regras de sugestão, cartão salvo, CPF do titular e autofill registradas.
-- Próximo: primitives visuais e fluxos de produto/carrinho.
+- Concluído: sombras de superfícies removidas; tooltip respeita modalidade; categorias, barra e scrollbar ajustadas.
+- Concluído: modal componentizado; linhas clicáveis e regras `average`/`highest` explicadas.
+- Próximo: concluir sugestões/submodal e backend de pagamentos.

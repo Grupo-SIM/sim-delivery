@@ -29,7 +29,7 @@ function IdentifyPage() {
 					subtitle={t("store.account.identify.subtitle")}
 					title={t("store.account.identify.title")}
 				/>
-				<div className="rounded-brand border border-border bg-card p-4 shadow-soft sm:p-7">
+				<div className="rounded-brand border border-border bg-card p-4 sm:p-7">
 					<IdentifyForm />
 				</div>
 			</Container>
