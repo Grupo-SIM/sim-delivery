@@ -74,6 +74,8 @@ model SavedCard {
     expiryMonth String
     expiryYear  String
     holderName  String
+    /// CPF of the card holder, digits only. Null only for cards saved before this field existed.
+    holderDocument String?
     nickname    String?
     isDefault   Boolean  @default(false)
     createdAt   DateTime @default(now())

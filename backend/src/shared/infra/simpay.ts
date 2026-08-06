@@ -9,6 +9,8 @@
  *   GET  /zero-grau/payments/pix-status/:id — status straight from DOM (no webhook wait)
  */
 
+import { extractPaymentProviderMessage, PaymentProviderError } from "./paymentProviderError";
+
 export interface SimpayCardPaymentParams {
 	price: number;
 	document: string;
@@ -69,14 +71,6 @@ function resolveBaseUrl(): string {
 	return raw.replace(/\/+$/, "");
 }
 
-function formatErrorMessage(data: unknown): string | undefined {
-	if (!data || typeof data !== "object") return undefined;
-	const message = (data as { message?: unknown }).message;
-	if (typeof message === "string") return message;
-	if (Array.isArray(message) && message.every(part => typeof part === "string")) return message.join(" ");
-	return undefined;
-}
-
 const headers = { Accept: "application/json", "Content-Type": "application/json" };
 
 export class SimpayClient {
@@ -86,11 +80,13 @@ export class SimpayClient {
 			headers,
 			method: "POST",
 		});
-		const data = await response.json();
+		const data = await response.json().catch(() => null);
 
 		if (!response.ok) {
-			throw new Error(
-				formatErrorMessage(data) || `Erro ao processar pagamento via Simpay (HTTP ${response.status})`,
+			throw new PaymentProviderError(
+				"Simpay",
+				extractPaymentProviderMessage(data) || `Erro ao processar pagamento via Simpay (HTTP ${response.status})`,
+				response.status,
 			);
 		}
 
@@ -108,11 +104,19 @@ export class SimpayClient {
 		try {
 			data = await response.json();
 		} catch {
-			throw new Error(`Resposta PIX inválida (HTTP ${response.status}). Confira SIMPAY_API_URL.`);
+			throw new PaymentProviderError(
+				"Simpay",
+				`Resposta PIX inválida (HTTP ${response.status}). Confira SIMPAY_API_URL.`,
+				response.status,
+			);
 		}
 
 		if (!response.ok) {
-			throw new Error(formatErrorMessage(data) || `Erro ao gerar PIX via Simpay (HTTP ${response.status})`);
+			throw new PaymentProviderError(
+				"Simpay",
+				extractPaymentProviderMessage(data) || `Erro ao gerar PIX via Simpay (HTTP ${response.status})`,
+				response.status,
+			);
 		}
 
 		return data as SimpayPixCreateResponse;

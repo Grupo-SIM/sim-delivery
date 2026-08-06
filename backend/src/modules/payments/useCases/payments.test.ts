@@ -1,10 +1,12 @@
 import { describe, expect, it } from "bun:test";
 import type { DomPagamentosClient } from "@/shared/infra/domPagamentos";
+import { PaymentProviderError } from "@/shared/infra/paymentProviderError";
 import type { SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { ConfirmPayment } from "./ConfirmPayment";
 import { CreateCardPayment } from "./CreateCardPayment";
 import { CreatePixPayment } from "./CreatePixPayment";
+import { DeleteSavedCard } from "./DeleteSavedCard";
 import { GetPaymentStatus } from "./GetPaymentStatus";
 import { ListSavedCards } from "./ListSavedCards";
 import { buildPaymentDescription, resolvePayingCustomer } from "./resolvePayingCustomer";
@@ -54,6 +56,7 @@ interface SavedCardRow {
 	expiryMonth: string;
 	expiryYear: string;
 	holderName: string;
+	holderDocument?: string | null;
 	id: string;
 	isDefault: boolean;
 	last4: string;
@@ -199,20 +202,37 @@ function makeWorld(opts: WorldOptions = {}) {
 			count: async ({ where }: { where: { customerId: string } }) =>
 				savedCards.filter(card => card.customerId === where.customerId).length,
 			create: async ({ data }: { data: Record<string, unknown> }) => {
-				const card = { ...data, id: `card_${savedCards.length + 1}` } as unknown as SavedCardRow;
+				const card = {
+					...data,
+					createdAt: new Date(),
+					id: `card_${savedCards.length + 1}`,
+				} as unknown as SavedCardRow;
 				savedCards.push(card);
 
 				return card;
 			},
-			findFirst: async ({ where }: { where: { customerId: string; id: string } }) =>
-				savedCards.find(card => card.customerId === where.customerId && card.id === where.id) ?? null,
+			delete: async ({ where }: { where: { id: string } }) => {
+				const index = savedCards.findIndex(card => card.id === where.id);
+				if (index < 0) throw new Error(`unknown card ${where.id}`);
+				return savedCards.splice(index, 1)[0];
+			},
+			findFirst: async ({ where }: { where: { customerId: string; id?: string } }) =>
+				savedCards
+					.filter(card => card.customerId === where.customerId && (!where.id || card.id === where.id))
+					.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0] ?? null,
 			findMany: async ({ where }: { where: { customerId: string } }) =>
 				savedCards
 					.filter(card => card.customerId === where.customerId)
 					.sort(
 						(a, b) =>
 							Number(b.isDefault) - Number(a.isDefault) || b.createdAt.getTime() - a.createdAt.getTime(),
-					),
+						),
+			update: async ({ data, where }: { data: Record<string, unknown>; where: { id: string } }) => {
+				const card = savedCards.find(row => row.id === where.id);
+				if (!card) throw new Error(`unknown card ${where.id}`);
+				Object.assign(card, data);
+				return card;
+			},
 		},
 	} as unknown as PrismaInstance;
 
@@ -715,6 +735,7 @@ describe("ListSavedCards", () => {
 				brand: "visa",
 				expiryMonth: "12",
 				expiryYear: "2030",
+				holderCpfRequired: true,
 				holderName: "MARIA S",
 				id: "card_1",
 				isDefault: false,
@@ -722,6 +743,14 @@ describe("ListSavedCards", () => {
 				nickname: null,
 			},
 		]);
+	});
+
+	it("marks cards with a stored holder document as ready for reuse", async () => {
+		const { prisma } = makeWorld({ savedCards: [makeCard({ holderDocument: "98765432100" })] });
+
+		expect((await new ListSavedCards(prisma).execute("user_1", "zero-grau"))[0]?.holderCpfRequired).toBe(
+			false,
+		);
 	});
 
 	it("puts the default card first", async () => {
@@ -762,7 +791,7 @@ describe("CreateCardPayment", () => {
 		holderName: "MARIA S",
 		number: "4242 4242 4242 4242",
 	};
-	const body = { card, orderId: "order_1", slug: "zero-grau" };
+	const body = { card, holderCpf: "98765432100", orderId: "order_1", slug: "zero-grau" };
 
 	it("tokenizes a new card, charges it and confirms right away", async () => {
 		const { cashbackLedger, payments, prisma } = makeWorld();
@@ -785,6 +814,20 @@ describe("CreateCardPayment", () => {
 		await new CreateCardPayment(prisma, simpay, dom).execute("user_1", body);
 
 		expect((calls.tokens[0] as { payload: { number: string } }).payload.number).toBe("4242424242424242");
+	});
+
+	it("uses the explicit holder CPF without changing the customer's CPF", async () => {
+		const { customers, prisma } = makeWorld();
+		const { calls: simpayCalls, simpay } = makeSimpay();
+		const { calls: domCalls, dom } = makeDom();
+
+		await new CreateCardPayment(prisma, simpay, dom).execute("user_1", body);
+
+		expect((domCalls.tokens[0] as { payload: { holder_document: string } }).payload.holder_document).toBe(
+			"98765432100",
+		);
+		expect((simpayCalls.card[0] as { document: string }).document).toBe("98765432100");
+		expect(customers[0]?.cpf).toBe("12345678901");
 	});
 
 	it("creates a DOM customer once and reuses the stored id", async () => {
@@ -821,7 +864,12 @@ describe("CreateCardPayment", () => {
 		});
 
 		expect(savedCards).toHaveLength(1);
-		expect(savedCards[0]).toMatchObject({ isDefault: true, last4: "4242", nickname: "Cartão pessoal" });
+		expect(savedCards[0]).toMatchObject({
+			holderDocument: "98765432100",
+			isDefault: true,
+			last4: "4242",
+			nickname: "Cartão pessoal",
+		});
 	});
 
 	it("does not mark a later saved card as default", async () => {
@@ -864,6 +912,7 @@ describe("CreateCardPayment", () => {
 			customerId: "cust_1",
 			expiryMonth: "12",
 			expiryYear: "2030",
+			holderDocument: "98765432100",
 			holderName: "MARIA SILVA",
 			id: "card_1",
 			isDefault: true,
@@ -886,6 +935,35 @@ describe("CreateCardPayment", () => {
 			holder_name: "MARIA SILVA",
 			token: "tok_saved",
 		});
+	});
+
+	it("uses a saved holder CPF and backfills a legacy card after a successful charge", async () => {
+		const saved: SavedCardRow = {
+			brand: "visa",
+			cardToken: "tok_saved",
+			createdAt: new Date("2026-01-01T00:00:00Z"),
+			customerId: "cust_1",
+			expiryMonth: "12",
+			expiryYear: "2030",
+			holderDocument: null,
+			holderName: "OUTRA PESSOA",
+			id: "card_legacy",
+			isDefault: true,
+			last4: "4242",
+		};
+		const { prisma, savedCards } = makeWorld({ savedCards: [saved] });
+		const { calls, simpay } = makeSimpay();
+		const { dom } = makeDom();
+
+		await new CreateCardPayment(prisma, simpay, dom).execute("user_1", {
+			holderCpf: "98765432100",
+			orderId: "order_1",
+			savedCardId: "card_legacy",
+			slug: "zero-grau",
+		});
+
+		expect((calls.card[0] as { document: string }).document).toBe("98765432100");
+		expect(savedCards[0]?.holderDocument).toBe("98765432100");
 	});
 
 	it("refuses a saved card that belongs to someone else", async () => {
@@ -992,14 +1070,51 @@ describe("CreateCardPayment", () => {
 		expect(payments).toHaveLength(0);
 	});
 
-	it("requires a document", async () => {
+	it("preserves a safe gateway rejection description", async () => {
+		const { prisma } = makeWorld();
+		const { simpay } = makeSimpay({
+			createCardPayment: async () => {
+				throw new PaymentProviderError("Simpay", "Saldo insuficiente", 422);
+			},
+		});
+		const { dom } = makeDom();
+
+		try {
+			await new CreateCardPayment(prisma, simpay, dom).execute("user_1", body);
+			throw new Error("expected payment to fail");
+		} catch (error) {
+			expect(error).toMatchObject({ description: "Saldo insuficiente", message: "CARD_DECLINED" });
+		}
+	});
+
+	it("maps DOM tokenization details to a typed domain error", async () => {
+		const { prisma } = makeWorld({ customers: [{ ...baseCustomer, domId: "dom_1" }] });
+		const { simpay } = makeSimpay();
+		const { dom } = makeDom({
+			createCardToken: async () => {
+				throw new PaymentProviderError("DOM", "CPF do portador do cartão de crédito é inválido!", 400);
+			},
+		});
+
+		try {
+			await new CreateCardPayment(prisma, simpay, dom).execute("user_1", body);
+			throw new Error("expected tokenization to fail");
+		} catch (error) {
+			expect(error).toMatchObject({
+				description: "CPF do portador do cartão de crédito é inválido!",
+				message: "CARD_TOKENIZATION_FAILED",
+			});
+		}
+	});
+
+	it("requires an explicit holder document for a new card", async () => {
 		const { prisma } = makeWorld({ customers: [{ ...baseCustomer, cpf: null }] });
 		const { simpay } = makeSimpay();
 		const { dom } = makeDom();
 
-		await expect(new CreateCardPayment(prisma, simpay, dom).execute("user_1", body)).rejects.toThrow(
-			"DOCUMENT_REQUIRED",
-		);
+		await expect(
+			new CreateCardPayment(prisma, simpay, dom).execute("user_1", { ...body, holderCpf: undefined }),
+		).rejects.toThrow("DOCUMENT_REQUIRED");
 	});
 
 	it("does not charge an order belonging to another customer", async () => {
@@ -1011,5 +1126,42 @@ describe("CreateCardPayment", () => {
 			"UNAUTHORIZED_ORDER",
 		);
 		expect(calls.card).toHaveLength(0);
+	});
+});
+
+describe("DeleteSavedCard", () => {
+	function savedCard(id: string, isDefault: boolean, customerId = "cust_1"): SavedCardRow {
+		return {
+			brand: "visa",
+			cardToken: `tok_${id}`,
+			createdAt: new Date(id === "card_1" ? "2026-01-01" : "2026-02-01"),
+			customerId,
+			expiryMonth: "12",
+			expiryYear: "2030",
+			holderDocument: "98765432100",
+			holderName: "MARIA",
+			id,
+			isDefault,
+			last4: "4242",
+		};
+	}
+
+	it("deletes an owned card and promotes the newest remaining card", async () => {
+		const { prisma, savedCards } = makeWorld({ savedCards: [savedCard("card_1", true), savedCard("card_2", false)] });
+
+		expect(await new DeleteSavedCard(prisma).execute("user_1", "zero-grau", "card_1")).toEqual({
+			id: "card_1",
+		});
+		expect(savedCards).toHaveLength(1);
+		expect(savedCards[0]).toMatchObject({ id: "card_2", isDefault: true });
+	});
+
+	it("does not delete another customer's card", async () => {
+		const { prisma, savedCards } = makeWorld({ savedCards: [savedCard("card_1", true, "cust_2")] });
+
+		await expect(new DeleteSavedCard(prisma).execute("user_1", "zero-grau", "card_1")).rejects.toThrow(
+			"SAVED_CARD_NOT_FOUND",
+		);
+		expect(savedCards).toHaveLength(1);
 	});
 });

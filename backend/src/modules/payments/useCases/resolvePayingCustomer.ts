@@ -9,8 +9,8 @@ export interface PayingCustomerContext {
 		domId: string | null;
 		phone: string | null;
 	};
-	/** Customer document digits. */
-	document: string;
+	/** Customer document digits, when required by the payment method. */
+	document: string | null;
 	order: { id: string; total: number; unitName: string };
 	user: { email: string; id: string; name: string; phoneNumber: string | null };
 }
@@ -32,6 +32,7 @@ export async function resolvePayingCustomer(
 	prisma: PrismaInstance,
 	userId: string,
 	data: { cpf?: string; orderId: string; slug: string },
+	options: { requireDocument?: boolean } = {},
 ): Promise<PayingCustomerContext> {
 	const company = await prisma.company.findUnique({ where: { slug: data.slug } });
 
@@ -53,8 +54,8 @@ export async function resolvePayingCustomer(
 	}
 
 	const bodyCpf = data.cpf?.replace(/\D/g, "");
-	let document = customer.cpf?.replace(/\D/g, "") || bodyCpf;
-	if (!document) throw new DomainError(PaymentErrors.DOCUMENT_REQUIRED);
+	let document = customer.cpf?.replace(/\D/g, "") || bodyCpf || null;
+	if (!document && options.requireDocument !== false) throw new DomainError(PaymentErrors.DOCUMENT_REQUIRED);
 
 	if (!customer.cpf && bodyCpf) {
 		await prisma.customer.update({ data: { cpf: bodyCpf }, where: { id: customer.id } });

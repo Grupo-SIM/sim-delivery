@@ -28,8 +28,10 @@ export type NewCardInput = typeof NewCardInput.static;
 export const CreateCardPaymentBody = t.Object({
 	card: t.Optional(NewCardInput),
 	cardNickname: t.Optional(t.String({ maxLength: 60, minLength: 1 })),
-	/** CPF digits; required when the customer profile has none yet. */
+	/** Deprecated buyer CPF fallback kept for older app builds. */
 	cpf: t.Optional(t.String({ maxLength: 14, minLength: 11 })),
+	/** Card-holder CPF digits. New clients always send it for a new or legacy saved card. */
+	holderCpf: t.Optional(t.String({ maxLength: 11, minLength: 11 })),
 	orderId: t.String({ minLength: 1 }),
 	saveCard: t.Optional(t.Boolean()),
 	savedCardId: t.Optional(t.String()),
@@ -43,6 +45,12 @@ export const CardPaymentReturn = t.Object({
 });
 export type CardPaymentReturn = typeof CardPaymentReturn.static;
 
+export const PaymentErrorReturn = t.Object({
+	description: t.Optional(t.String()),
+	error: t.String(),
+});
+export type PaymentErrorReturn = typeof PaymentErrorReturn.static;
+
 export const PaymentStatusReturn = t.Object({
 	/** "pending" | "confirmed" | "failed" */
 	status: t.String(),
@@ -54,6 +62,7 @@ export const SavedCardReturn = t.Object({
 	expiryMonth: t.String(),
 	expiryYear: t.String(),
 	holderName: t.String(),
+	holderCpfRequired: t.Boolean(),
 	id: t.String(),
 	isDefault: t.Boolean(),
 	last4: t.String(),
@@ -68,6 +77,9 @@ export const ListSavedCardsQuery = t.Object({
 	slug: t.String({ minLength: 1 }),
 });
 export type ListSavedCardsQuery = typeof ListSavedCardsQuery.static;
+
+export const DeleteSavedCardReturn = t.Object({ id: t.String() });
+export type DeleteSavedCardReturn = typeof DeleteSavedCardReturn.static;
 
 export const WebhookBody = t.Object({
 	token: t.String({ minLength: 1 }),

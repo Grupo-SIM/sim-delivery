@@ -4,6 +4,7 @@ import { StatusCodes } from "http-status-codes";
 export const PaymentErrors = createEnumFromArray([
 	"CARD_DECLINED",
 	"CARD_REQUIRED",
+	"CARD_TOKENIZATION_FAILED",
 	"DOCUMENT_REQUIRED",
 	"INVALID_DOCUMENT",
 	"ORDER_NOT_FOUND",
@@ -20,6 +21,7 @@ export const PaymentErrors = createEnumFromArray([
 export const PaymentErrorsStatusCodes: Record<keyof typeof PaymentErrors, StatusCodes> = {
 	CARD_DECLINED: StatusCodes.UNPROCESSABLE_ENTITY,
 	CARD_REQUIRED: StatusCodes.BAD_REQUEST,
+	CARD_TOKENIZATION_FAILED: StatusCodes.UNPROCESSABLE_ENTITY,
 	DOCUMENT_REQUIRED: StatusCodes.BAD_REQUEST,
 	INVALID_DOCUMENT: StatusCodes.UNPROCESSABLE_ENTITY,
 	ORDER_NOT_FOUND: StatusCodes.NOT_FOUND,

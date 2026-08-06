@@ -1,5 +1,6 @@
 import { DomainError } from "@/shared/errors";
-import type { DomPagamentosClient } from "@/shared/infra/domPagamentos";
+import type { DomCardTokenResult, DomPagamentosClient } from "@/shared/infra/domPagamentos";
+import { PaymentProviderError, paymentProviderErrorDescription } from "@/shared/infra/paymentProviderError";
 import type { SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CardPaymentReturn, CreateCardPaymentBody } from "../dtos";
@@ -15,15 +16,20 @@ export class CreateCardPayment {
 	) {}
 
 	async execute(userId: string, data: CreateCardPaymentBody): Promise<CardPaymentReturn> {
-		const context = await resolvePayingCustomer(this.prisma, userId, data);
-		const { customer, document, order, user } = context;
-
-		// Card charges require the holder's document (tokenization + gateway validation).
-		if (!document) throw new DomainError(PaymentErrors.DOCUMENT_REQUIRED);
+		const context = await resolvePayingCustomer(
+			this.prisma,
+			userId,
+			{ orderId: data.orderId, slug: data.slug },
+			{ requireDocument: false },
+		);
+		const { customer, order, user } = context;
 
 		let cardToken: string;
 		let brand = "unknown";
 		let holderName = user.name;
+		let holderDocument = (data.holderCpf ?? data.cpf)?.replace(/\D/g, "") ?? null;
+		let tokenizedForSave: DomCardTokenResult | null = null;
+		let savedCardToBackfillId: string | null = null;
 
 		if (data.savedCardId) {
 			const savedCard = await this.prisma.savedCard.findFirst({
@@ -34,41 +40,36 @@ export class CreateCardPayment {
 			cardToken = savedCard.cardToken;
 			brand = savedCard.brand;
 			holderName = savedCard.holderName;
+			holderDocument = savedCard.holderDocument ?? holderDocument;
+			if (!savedCard.holderDocument) savedCardToBackfillId = savedCard.id;
 		} else if (data.card) {
-			const domId = customer.domId ?? (await this.createDomCustomer(context, document));
-
-			const tokenized = await this.dom.createCardToken(domId, {
-				cvv: data.card.cvv,
-				exp_month: data.card.expMonth,
-				exp_year: data.card.expYear,
-				holder_document: document,
-				holder_name: data.card.holderName,
-				number: data.card.number.replace(/\D/g, ""),
-			});
+			if (!holderDocument) throw new DomainError(PaymentErrors.DOCUMENT_REQUIRED);
+			let tokenized: DomCardTokenResult;
+			try {
+				const domId = customer.domId ?? (await this.createDomCustomer(context, holderDocument));
+				tokenized = await this.dom.createCardToken(domId, {
+					cvv: data.card.cvv,
+					exp_month: data.card.expMonth,
+					exp_year: data.card.expYear,
+					holder_document: holderDocument,
+					holder_name: data.card.holderName,
+					number: data.card.number.replace(/\D/g, ""),
+				});
+			} catch (error) {
+				if (error instanceof PaymentProviderError) {
+					throw new DomainError(PaymentErrors.CARD_TOKENIZATION_FAILED, error.message);
+				}
+				throw error;
+			}
 
 			cardToken = tokenized.token;
 			brand = tokenized.brand;
 			holderName = tokenized.holderName;
-
-			if (data.saveCard) {
-				const existingCards = await this.prisma.savedCard.count({ where: { customerId: customer.id } });
-				await this.prisma.savedCard.create({
-					data: {
-						brand: tokenized.brand,
-						cardToken: tokenized.token,
-						customerId: customer.id,
-						expiryMonth: tokenized.expiryMonth,
-						expiryYear: tokenized.expiryYear,
-						holderName: tokenized.holderName,
-						isDefault: existingCards === 0,
-						last4: tokenized.last4,
-						nickname: data.cardNickname?.trim() || null,
-					},
-				});
-			}
+			if (data.saveCard) tokenizedForSave = tokenized;
 		} else {
 			throw new DomainError(PaymentErrors.CARD_REQUIRED);
 		}
+		if (!holderDocument) throw new DomainError(PaymentErrors.DOCUMENT_REQUIRED);
 
 		const existing = await this.prisma.payment.findUnique({ where: { orderId: order.id } });
 		if (existing?.status === "confirmed") throw new DomainError(PaymentErrors.PAYMENT_ALREADY_CONFIRMED);
@@ -81,8 +82,8 @@ export class CreateCardPayment {
 				bin: cardToken.substring(0, 6),
 				brand,
 				description: buildPaymentDescription(order),
-				document,
-				document_type: document.length === 11 ? "CPF" : "CNPJ",
+				document: holderDocument,
+				document_type: holderDocument.length === 11 ? "CPF" : "CNPJ",
 				email: user.email,
 				holder_name: holderName,
 				installments: 1,
@@ -92,8 +93,32 @@ export class CreateCardPayment {
 				token: cardToken,
 			});
 			simpayPaymentId = result.paymentId ?? result.id ?? null;
-		} catch {
-			throw new DomainError(PaymentErrors.CARD_DECLINED);
+		} catch (error) {
+			throw new DomainError(PaymentErrors.CARD_DECLINED, paymentProviderErrorDescription(error));
+		}
+
+		if (tokenizedForSave) {
+			const existingCards = await this.prisma.savedCard.count({ where: { customerId: customer.id } });
+			await this.prisma.savedCard.create({
+				data: {
+					brand: tokenizedForSave.brand,
+					cardToken: tokenizedForSave.token,
+					customerId: customer.id,
+					expiryMonth: tokenizedForSave.expiryMonth,
+					expiryYear: tokenizedForSave.expiryYear,
+					holderDocument,
+					holderName: tokenizedForSave.holderName,
+					isDefault: existingCards === 0,
+					last4: tokenizedForSave.last4,
+					nickname: data.cardNickname?.trim() || null,
+				},
+			});
+		}
+		if (savedCardToBackfillId) {
+			await this.prisma.savedCard.update({
+				data: { holderDocument },
+				where: { id: savedCardToBackfillId },
+			});
 		}
 
 		const payment = existing

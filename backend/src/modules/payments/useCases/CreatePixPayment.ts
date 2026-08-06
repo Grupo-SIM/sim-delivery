@@ -13,6 +13,7 @@ export class CreatePixPayment {
 
 	async execute(userId: string, data: CreatePixPaymentBody): Promise<PixPaymentReturn> {
 		const { customer, document, order, user } = await resolvePayingCustomer(this.prisma, userId, data);
+		if (!document) throw new DomainError(PaymentErrors.DOCUMENT_REQUIRED);
 
 		// Re-poll the same charge instead of creating a duplicate when the customer
 		// refreshes the payment step with a PIX already pending.

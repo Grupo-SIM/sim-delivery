@@ -7,7 +7,9 @@ import {
 	CardPaymentReturn,
 	CreateCardPaymentBody,
 	CreatePixPaymentBody,
+	DeleteSavedCardReturn,
 	ListSavedCardsQuery,
+	PaymentErrorReturn,
 	PaymentStatusReturn,
 	PixPaymentReturn,
 	RefundPaymentBody,
@@ -19,6 +21,7 @@ import {
 	ConfirmPayment,
 	CreateCardPayment,
 	CreatePixPayment,
+	DeleteSavedCard,
 	GetPaymentStatus,
 	ListSavedCards,
 	RefundPayment,
@@ -33,6 +36,7 @@ export const PaymentsController = new Elysia({ detail: { tags: ["Payments"] } })
 				confirmPayment: new ConfirmPayment(prisma),
 				createCardPayment: new CreateCardPayment(prisma, simpay, domPagamentos),
 				createPixPayment: new CreatePixPayment(prisma, simpay),
+				deleteSavedCard: new DeleteSavedCard(prisma),
 				getPaymentStatus: new GetPaymentStatus(prisma, simpay),
 				listSavedCards: new ListSavedCards(prisma),
 				prisma,
@@ -52,7 +56,18 @@ export const PaymentsController = new Elysia({ detail: { tags: ["Payments"] } })
 					const { userId } = await AuthGuard.execute(request.headers);
 					return createCardPayment.execute(userId, body);
 				},
-				{ body: CreateCardPaymentBody, response: CardPaymentReturn },
+				{
+					body: CreateCardPaymentBody,
+					response: {
+						200: CardPaymentReturn,
+						400: PaymentErrorReturn,
+						401: PaymentErrorReturn,
+						403: PaymentErrorReturn,
+						404: PaymentErrorReturn,
+						409: PaymentErrorReturn,
+						422: PaymentErrorReturn,
+					},
+				},
 			)
 			.get(
 				"/status/:token",
@@ -69,6 +84,21 @@ export const PaymentsController = new Elysia({ detail: { tags: ["Payments"] } })
 					return listSavedCards.execute(userId, query.slug);
 				},
 				{ query: ListSavedCardsQuery, response: SavedCardsReturn },
+			)
+			.delete(
+				"/cards/:cardId",
+				async ({ deleteSavedCard, params, query, request }) => {
+					const { userId } = await AuthGuard.execute(request.headers);
+					return deleteSavedCard.execute(userId, query.slug, params.cardId);
+				},
+				{
+					params: t.Object({ cardId: t.String({ minLength: 1 }) }),
+					query: ListSavedCardsQuery,
+					response: {
+						200: DeleteSavedCardReturn,
+						404: PaymentErrorReturn,
+					},
+				},
 			)
 			.post(
 				"/:orderId/refund",

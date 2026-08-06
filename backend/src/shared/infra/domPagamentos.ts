@@ -3,6 +3,8 @@
  * Charges themselves go through back-simpay (see simpay.ts), mirroring Atlas.
  */
 
+import { extractPaymentProviderMessage, PaymentProviderError } from "./paymentProviderError";
+
 const BASE_URL = "https://apiv3.dompagamentos.com.br/checkout/production";
 
 export interface DomCustomerParams {
@@ -84,13 +86,17 @@ export class DomPagamentosClient {
 			headers: buildHeaders(),
 			method: "POST",
 		});
-		const data = (await response.json()) as { id?: string; message?: string };
+		const data = (await response.json().catch(() => null)) as { id?: string } | null;
 
 		// DOM answers an error payload carrying the existing id when the customer already exists.
 		if (!response.ok && !data?.id) {
-			throw new Error(data?.message || `Erro ao criar cliente DOM (HTTP ${response.status})`);
+			throw new PaymentProviderError(
+				"DOM",
+				extractPaymentProviderMessage(data) || `Erro ao criar cliente DOM (HTTP ${response.status})`,
+				response.status,
+			);
 		}
-		if (!data.id) throw new Error("Resposta DOM sem id de cliente.");
+		if (!data?.id) throw new PaymentProviderError("DOM", "Resposta DOM sem id de cliente.", response.status);
 
 		return data.id;
 	}
@@ -101,10 +107,14 @@ export class DomPagamentosClient {
 			headers: buildHeaders(),
 			method: "POST",
 		});
-		const data = (await response.json()) as { token?: string; message?: string };
+		const data = (await response.json().catch(() => null)) as { token?: string } | null;
 
-		if (!response.ok || !data.token) {
-			throw new Error(data?.message || `Erro ao tokenizar cartão (HTTP ${response.status})`);
+		if (!response.ok || !data?.token) {
+			throw new PaymentProviderError(
+				"DOM",
+				extractPaymentProviderMessage(data) || `Erro ao tokenizar cartão (HTTP ${response.status})`,
+				response.status,
+			);
 		}
 
 		return {

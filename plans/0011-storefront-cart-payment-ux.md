@@ -20,7 +20,7 @@ incluindo CPF do titular, erros reais do provedor e gestão de cartões salvos.
 - [x] 2. Ajustar sombras, categorias, tooltips, scrollbar do produto e barra do carrinho.
 - [x] 3. Componentizar as opções do modal, tornar linhas clicáveis e explicar regras de preço.
 - [x] 4. Integrar sugestões ao submodal e inverter ações finais do carrinho.
-- [ ] 5. Adicionar documento do titular, exclusão de cartão e erros tipados no backend.
+- [x] 5. Adicionar documento do titular, exclusão de cartão e erros tipados no backend.
 - [ ] 6. Exportar OpenAPI, regenerar SDK e atualizar formulário/perfil no frontend.
 - [ ] 7. Cobrir regras críticas, verificar viewports e concluir builds/commits.
 
@@ -54,4 +54,5 @@ incluindo CPF do titular, erros reais do provedor e gestão de cartões salvos.
 - Concluído: sombras de superfícies removidas; tooltip respeita modalidade; categorias, barra e scrollbar ajustadas.
 - Concluído: modal componentizado; linhas clicáveis e regras `average`/`highest` explicadas.
 - Concluído: sugestões com opções usam submodal; adição direta ficou restrita a produtos simples; CTAs invertidas.
-- Próximo: backend de pagamentos e SDK.
+- Concluído: backend separa CPF do titular, persiste documento no cartão salvo, normaliza erros e permite exclusão escopada.
+- Próximo: OpenAPI, SDK, formulário e perfil.
