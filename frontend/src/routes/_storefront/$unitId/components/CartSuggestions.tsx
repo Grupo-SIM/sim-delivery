@@ -2,10 +2,11 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/ScrollArea";
-import { useCartStore } from "@/stores";
+import { showToast, useCartStore } from "@/stores";
 import { type MenuItem, type MenuSection, money } from "./types";
 
 interface CartSuggestionsProps {
+	onSelect: (item: MenuItem) => void;
 	sections: MenuSection[];
 	unitId: string;
 }
@@ -13,23 +14,43 @@ interface CartSuggestionsProps {
 const MAX_SUGGESTIONS = 6;
 
 /** Suggests menu items not yet in the cart, prioritizing cashback deals (docs/08). */
-export function CartSuggestions({ sections, unitId }: CartSuggestionsProps) {
+export function hasEffectiveOptions(item: MenuItem): boolean {
+	return item.optionGroups.some(group => group.options.length > 0);
+}
+
+export function getCartSuggestions(sections: MenuSection[], itemIds: string[]): MenuItem[] {
+	const inCart = new Set(itemIds);
+	const candidates: MenuItem[] = [];
+	for (const section of sections) {
+		for (const item of section.items) {
+			if (!inCart.has(item.id)) candidates.push(item);
+		}
+	}
+	candidates.sort((a, b) => Number(b.cashbackPercent != null) - Number(a.cashbackPercent != null));
+	return candidates.slice(0, MAX_SUGGESTIONS);
+}
+
+export function CartSuggestions({ onSelect, sections, unitId }: CartSuggestionsProps) {
 	const { t } = useTranslation();
 	const items = useCartStore(state => state.items);
 	const addItem = useCartStore(state => state.addItem);
 
-	const inCart = new Set(items.map(line => line.id));
-	const candidates: MenuItem[] = [];
-	for (const section of sections) {
-		for (const item of section.items) {
-			if (!inCart.has(item.id)) {
-				candidates.push(item);
-			}
-		}
+	const suggestions = getCartSuggestions(
+		sections,
+		items.map(line => line.id),
+	);
+
+	function addDirectly(item: MenuItem) {
+		addItem(unitId, {
+			id: item.id,
+			imageUrl: item.imageUrl,
+			options: [],
+			priceCents: Number(item.priceCents),
+			productId: item.productId,
+			title: item.title,
+		});
+		showToast(t("store.cart.added"), "positive");
 	}
-	// Cashback deals first, otherwise menu order.
-	candidates.sort((a, b) => Number(b.cashbackPercent != null) - Number(a.cashbackPercent != null));
-	const suggestions = candidates.slice(0, MAX_SUGGESTIONS);
 
 	if (suggestions.length === 0) {
 		return null;
@@ -51,16 +72,7 @@ export function CartSuggestions({ sections, unitId }: CartSuggestionsProps) {
 							</span>
 							<Button
 								className="mt-1 w-full"
-								onClick={() =>
-									addItem(unitId, {
-										id: item.id,
-										imageUrl: item.imageUrl,
-										options: [],
-										priceCents: Number(item.priceCents),
-										productId: item.productId,
-										title: item.title,
-									})
-								}
+								onClick={() => (hasEffectiveOptions(item) ? onSelect(item) : addDirectly(item))}
 								size="sm"
 								type="button"
 								variant="outline"

@@ -19,7 +19,7 @@ incluindo CPF do titular, erros reais do provedor e gestão de cartões salvos.
 - [x] 1. Registrar regras de sugestão, cartões salvos e autofill na documentação do projeto.
 - [x] 2. Ajustar sombras, categorias, tooltips, scrollbar do produto e barra do carrinho.
 - [x] 3. Componentizar as opções do modal, tornar linhas clicáveis e explicar regras de preço.
-- [ ] 4. Integrar sugestões ao submodal e inverter ações finais do carrinho.
+- [x] 4. Integrar sugestões ao submodal e inverter ações finais do carrinho.
 - [ ] 5. Adicionar documento do titular, exclusão de cartão e erros tipados no backend.
 - [ ] 6. Exportar OpenAPI, regenerar SDK e atualizar formulário/perfil no frontend.
 - [ ] 7. Cobrir regras críticas, verificar viewports e concluir builds/commits.
@@ -53,4 +53,5 @@ incluindo CPF do titular, erros reais do provedor e gestão de cartões salvos.
 - Concluído: plano versionado; regras de sugestão, cartão salvo, CPF do titular e autofill registradas.
 - Concluído: sombras de superfícies removidas; tooltip respeita modalidade; categorias, barra e scrollbar ajustadas.
 - Concluído: modal componentizado; linhas clicáveis e regras `average`/`highest` explicadas.
-- Próximo: concluir sugestões/submodal e backend de pagamentos.
+- Concluído: sugestões com opções usam submodal; adição direta ficou restrita a produtos simples; CTAs invertidas.
+- Próximo: backend de pagamentos e SDK.

@@ -8,7 +8,7 @@ import { cartTotalCents, showToast, useCartStore } from "@/stores";
 import { CartItemRow } from "./CartItemRow";
 import { CartSuggestions } from "./CartSuggestions";
 import { ProductDetailsModal } from "./ProductDetailsModal";
-import { type MenuSection, money } from "./types";
+import { type MenuItem, type MenuSection, money } from "./types";
 
 interface CartModalProps {
 	deliveryFee: number;
@@ -34,8 +34,9 @@ export function CartModal({
 	const items = useCartStore(state => state.items);
 	const clear = useCartStore(state => state.clear);
 	const [editingLineKey, setEditingLineKey] = useState<string | null>(null);
+	const [suggestionItem, setSuggestionItem] = useState<MenuItem | null>(null);
 	const editingItem = items.find(item => item.lineKey === editingLineKey) ?? null;
-	const menuItem = editingItem
+	const editingMenuItem = editingItem
 		? (sections.flatMap(section => section.items).find(item => item.id === editingItem.id) ?? null)
 		: null;
 
@@ -61,7 +62,7 @@ export function CartModal({
 							))}
 						</div>
 
-						<CartSuggestions sections={sections} unitId={unitId} />
+						<CartSuggestions onSelect={setSuggestionItem} sections={sections} unitId={unitId} />
 
 						<div className="space-y-1 border-border border-t pt-3">
 							<div className="flex items-center justify-between">
@@ -82,6 +83,17 @@ export function CartModal({
 							</p>
 						)}
 
+						<ConfirmActionButton
+							className="w-full"
+							confirmation={t("store.cart.clearConfirm")}
+							confirmLabel={t("store.cart.clear")}
+							onConfirm={handleClear}
+							type="button"
+							variant="outline"
+						>
+							{t("store.cart.clear")}
+						</ConfirmActionButton>
+
 						<Button
 							className="w-full"
 							disabled={belowMin}
@@ -93,24 +105,17 @@ export function CartModal({
 						>
 							{t("store.cart.checkout")}
 						</Button>
-
-						<ConfirmActionButton
-							className="w-full"
-							confirmation={t("store.cart.clearConfirm")}
-							confirmLabel={t("store.cart.clear")}
-							onConfirm={handleClear}
-							type="button"
-							variant="outline"
-						>
-							{t("store.cart.clear")}
-						</ConfirmActionButton>
 					</div>
 				)}
 			</Modal>
 			<ProductDetailsModal
 				editingItem={editingItem}
-				item={menuItem}
-				onClose={() => setEditingLineKey(null)}
+				item={editingMenuItem ?? suggestionItem}
+				layer="submodal"
+				onClose={() => {
+					setEditingLineKey(null);
+					setSuggestionItem(null);
+				}}
 				unitId={unitId}
 			/>
 		</>
