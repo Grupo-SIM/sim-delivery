@@ -2,3 +2,4 @@
 !gen/
 /gen/schemas
 /target/
+.gradle
