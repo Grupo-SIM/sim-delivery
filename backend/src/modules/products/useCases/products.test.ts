@@ -5,7 +5,10 @@ import { DeleteProduct } from "./DeleteProduct";
 import { ListProducts } from "./ListProducts";
 import { UpdateProduct } from "./UpdateProduct";
 
-function prismaWith(products: Array<{ id: string; companyId: string; [key: string]: unknown }>) {
+function prismaWith(
+	products: Array<{ id: string; companyId: string; [key: string]: unknown }>,
+	createError?: unknown,
+) {
 	const created: unknown[] = [];
 	const deleted: string[] = [];
 	const productCategory = {
@@ -20,6 +23,7 @@ function prismaWith(products: Array<{ id: string; companyId: string; [key: strin
 	const units = [{ companyId: "cmp_1", id: "unit_1" }];
 	const product = {
 		create: async ({ data }: { data: unknown }) => {
+			if (createError) throw createError;
 			created.push(data);
 			return { id: "new", ...(data as object) };
 		},
@@ -108,6 +112,14 @@ describe("products use-cases", () => {
 		const { created, prisma } = prismaWith([]);
 		await new CreateProduct(prisma).execute("cmp_1", { title: "Composed" });
 		expect(created[0]).toMatchObject({ basePriceCents: 0, title: "Composed" });
+	});
+
+	it("CreateProduct maps a duplicate slug to PRODUCT_ALREADY_EXISTS", async () => {
+		const { prisma } = prismaWith([], { code: "P2002", meta: { target: ["companyId", "slug"] } });
+
+		await expect(new CreateProduct(prisma).execute("cmp_1", { title: "Cheese bread" })).rejects.toThrow(
+			"PRODUCT_ALREADY_EXISTS",
+		);
 	});
 
 	it("ListProducts lists across companies without a company and scopes otherwise", async () => {

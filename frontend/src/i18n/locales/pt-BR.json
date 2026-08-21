@@ -564,6 +564,7 @@
 					"tags": "Etiquetas"
 				},
 				"create": {
+					"alreadyExists": "Produto já existente",
 					"cashbackOverride": "Substituir cashback da unidade",
 					"categories": "Categorias",
 					"categoriesEmpty": "Nenhuma categoria cadastrada.",

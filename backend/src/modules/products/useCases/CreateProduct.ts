@@ -26,24 +26,35 @@ export class CreateProduct {
 			});
 			if (unitsCount !== selectedUnitIds.length) throw new DomainError(ProductErrors.PRODUCT_NOT_FOUND);
 		}
-		const product = await this.prisma.product.create({
-			data: {
-				...fields,
-				basePriceCents: fields.basePriceCents ?? 0,
-				categories: {
-					create: (categoryIds ?? []).map(categoryId => ({
-						categoryId,
-					})),
+		try {
+			const product = await this.prisma.product.create({
+				data: {
+					...fields,
+					basePriceCents: fields.basePriceCents ?? 0,
+					categories: {
+						create: (categoryIds ?? []).map(categoryId => ({
+							categoryId,
+						})),
+					},
+					companyId,
+					slug: slugify(data.title, "produto"),
+					tags: { create: (tagIds ?? []).map(tagId => ({ tagId })) },
+					unitProducts: {
+						create: selectedUnitIds.map(unitId => ({ unitId })),
+					},
 				},
-				companyId,
-				slug: slugify(data.title, "produto"),
-				tags: { create: (tagIds ?? []).map(tagId => ({ tagId })) },
-				unitProducts: {
-					create: selectedUnitIds.map(unitId => ({ unitId })),
-				},
-			},
-			include: productTaxonomyInclude,
-		});
-		return mapProductTaxonomy(product);
+				include: productTaxonomyInclude,
+			});
+			return mapProductTaxonomy(product);
+		} catch (error) {
+			if (isUniqueProductSlugError(error)) throw new DomainError(ProductErrors.PRODUCT_ALREADY_EXISTS);
+			throw error;
+		}
 	}
+}
+
+function isUniqueProductSlugError(error: unknown): boolean {
+	if (typeof error !== "object" || error === null || !("code" in error) || !("meta" in error)) return false;
+	const target = (error.meta as { target?: unknown }).target;
+	return error.code === "P2002" && Array.isArray(target) && target.includes("companyId") && target.includes("slug");
 }

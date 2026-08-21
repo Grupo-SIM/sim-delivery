@@ -101,7 +101,14 @@ export function CreateProductForm() {
 						},
 					},
 					{
-						onError: () => setError(t("admin.products.create.error")),
+						onError: caught => {
+							const code = (caught as { data?: { error?: string } } | undefined)?.data?.error;
+							setError(
+								code === "PRODUCT_ALREADY_EXISTS"
+									? t("admin.products.create.alreadyExists")
+									: t("admin.products.create.error"),
+							);
+						},
 						onSuccess: async () => {
 							setTitle("");
 							setImageUrl("");
