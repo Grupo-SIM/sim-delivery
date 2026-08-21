@@ -1,4 +1,5 @@
 import { type DragEvent, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { LuImageUp, LuLoaderCircle, LuTrash2, LuUpload } from "react-icons/lu";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { deleteMedia, type MediaAsset, uploadMedia } from "@/lib/api";
@@ -23,9 +24,9 @@ interface MediaUrlInputProps {
 	onUploadingChange?: (isUploading: boolean) => void;
 	onValueChange: (value: string) => void;
 	placeholder?: string;
-	/** Renders a small image preview below the field. Ignored for font assets. */
+	/** Renders an image preview below the field. Ignored for font assets. */
 	preview?: boolean;
-	/** Overrides the preview size, e.g. `"size-36"`. */
+	/** Overrides the preview dimensions, e.g. `"h-36 max-w-md"`. */
 	previewClassName?: string;
 	uploadLabel: string;
 	value: string;
@@ -38,11 +39,12 @@ export function MediaUrlInput({
 	onUploadingChange,
 	onValueChange,
 	placeholder = "Envie um arquivo ou cole uma URL",
-	preview = false,
+	preview = true,
 	previewClassName,
 	uploadLabel,
 	value,
 }: MediaUrlInputProps) {
+	const { t } = useTranslation();
 	const dragDepthRef = useRef(0);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [isDragging, setIsDragging] = useState(false);
@@ -104,6 +106,9 @@ export function MediaUrlInput({
 
 	return (
 		<div className="grid justify-items-start gap-2">
+			<span aria-live="polite" className="sr-only">
+				{isUploading ? t("media.uploading") : ""}
+			</span>
 			<div
 				className={cn(
 					"relative w-full",
@@ -170,11 +175,17 @@ export function MediaUrlInput({
 				</button>
 			</div>
 			{preview && isImageAsset && localValue && (
-				<img
-					alt=""
-					className={cn("mx-auto size-20 rounded object-contain", previewClassName)}
-					src={localValue}
-				/>
+				<figure
+					className={cn(
+						"relative flex min-h-30 w-full max-w-sm flex-col overflow-hidden rounded-md border border-border bg-muted/30",
+						previewClassName,
+					)}
+				>
+					<img alt="" className="h-24 min-h-0 w-full flex-1 object-contain" src={localValue} />
+					<figcaption className="border-border border-t bg-card/90 px-2 py-1 text-muted-foreground text-xs">
+						{t("media.preview")}
+					</figcaption>
+				</figure>
 			)}
 		</div>
 	);

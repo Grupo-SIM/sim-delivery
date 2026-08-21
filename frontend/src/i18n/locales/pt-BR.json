@@ -1280,6 +1280,10 @@
 			"subtitle": "Suas entregas ativas.",
 			"title": "Entregas"
 		},
+		"media": {
+			"preview": "Prévia da imagem",
+			"uploading": "Enviando imagem"
+		},
 		"rating": {
 			"count": "{{count}} avaliação",
 			"count_other": "{{count}} avaliações",
