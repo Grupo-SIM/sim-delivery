@@ -53,12 +53,15 @@ export function AddOptionModal({ onAdd }: AddOptionModalProps) {
 			>
 				<div className="grid gap-3 md:grid-cols-2">
 					<OptionFormFields draftRef={draftRef} onChange={setOption} option={option} />
+					<p className="text-muted-foreground text-xs md:col-span-2">
+						{t("admin.products.options.draftChangesHint")}
+					</p>
 					<div className="flex justify-end gap-2 md:col-span-2">
 						<Button onClick={() => setIsOpen(false)} type="button" variant="outline">
-							Descartar
+							{t("admin.products.options.discardChanges")}
 						</Button>
 						<Button onClick={add} type="button">
-							Salvar
+							{t("admin.products.options.addOption")}
 						</Button>
 					</div>
 				</div>

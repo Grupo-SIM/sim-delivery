@@ -234,6 +234,7 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 					<div className="border-border border-t pt-4">
 						<AddOptionModal onAdd={addOption} />
 					</div>
+					<p className="text-muted-foreground text-xs">{t("admin.products.options.draftChangesHint")}</p>
 					<div className="flex justify-end gap-2">
 						<ConfirmActionButton
 							confirmation={t("admin.products.options.deleteGroupConfirm")}
@@ -252,10 +253,10 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 							type="button"
 							variant="outline"
 						>
-							Descartar
+							{t("admin.products.options.discardChanges")}
 						</Button>
 						<Button onClick={() => setIsExpanded(false)} type="button">
-							Salvar
+							{t("admin.products.options.finishEditing")}
 						</Button>
 					</div>
 				</div>
