@@ -14,8 +14,9 @@ jobs:
       # {"build":["backend","frontend",...]} — only packages with a build script are included.
       # The web (GHCR) job fans out over this list; the Tauri jobs gate on whether
       # "frontend" is in it. A push that touches neither builds nothing.
-      # An empty base-sha (workflow_dispatch / first push) plans every service.
-      tasks: ${{ steps.affected.outputs.tasks }}
+      # Manual runs use the repository's resolver with no base, planning every service.
+      # Pushes use affected detection; a first push plans every service via its zero SHA.
+      tasks: ${{ steps.all.outputs.tasks || steps.affected.outputs.tasks }}
       # JSON arrays parsed from newline-separated slug@url GitHub variables.
       slugs: ${{ steps.slugs.outputs.values }}
       variants: ${{ steps.slugs.outputs.variants }}
@@ -26,8 +27,22 @@ jobs:
           # Need history present so Turbo's --affected can diff against the base.
           fetch-depth: 0
 
+      - name: Set up Bun for manual run
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies for manual run
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: bun install
+
+      - name: Plan all services
+        id: all
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: echo "tasks=$(bun scripts/affected-packages.ts '' build)" >> "$GITHUB_OUTPUT"
+
       - name: Compute affected services
         id: affected
+        if: ${{ github.event_name == 'push' }}
         uses: hyoretsu/gh-actions/detect-affected@main
         with:
           tasks: build
