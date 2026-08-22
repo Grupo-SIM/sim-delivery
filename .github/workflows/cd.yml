@@ -85,16 +85,18 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Build and publish image
-        uses: hyoretsu/gh-actions/ghcr@main
+        uses: hyoretsu/gh-actions/containers@main
         with:
-          image: ghcr.io/${{ github.repository }}_backend_${{ matrix.slug }}
-          dockerfile: backend/Dockerfile
           build-args: |
             COMPANY_SLUG=${{ matrix.slug }}
             NODE_ENV=production
-          secrets: DATABASE_URL=${{ secrets.DATABASE_URL }}
           cache-scope: backend_${{ matrix.slug }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          dockerfile: backend/Dockerfile
+          image: jbmidia/sim-delivery_backend_${{ matrix.slug }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: docker.io
+          secrets: DATABASE_URL=${{ secrets.DATABASE_URL }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
 
   ghcr-frontend:
     name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Build and publish frontend image
@@ -116,20 +118,22 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Build and publish image
-        uses: hyoretsu/gh-actions/ghcr@main
+        uses: hyoretsu/gh-actions/containers@main
         with:
-          # Each company gets its own tagged image: frontend-zero-grau, frontend-acai-top, …
-          image: ghcr.io/${{ github.repository }}_frontend_${{ matrix.slug }}
-          dockerfile: frontend/Dockerfile
           build-args: |
             COMPANY_SLUG=${{ matrix.slug }}
             NODE_ENV=production
             VITE_API_URL=${{ matrix.apiUrl }}
             VITE_APP_URL=${{ matrix.appUrl }}
             VITE_COMPANY_SLUG=${{ matrix.slug }}
-          secrets: DATABASE_URL=${{ secrets.DATABASE_URL }}
           cache-scope: frontend_${{ matrix.slug }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          dockerfile: frontend/Dockerfile
+          # Each company gets its own tagged image: frontend-zero-grau, frontend-acai-top, …
+          image: jbmidia/sim-delivery_frontend_${{ matrix.slug }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: docker.io
+          secrets: DATABASE_URL=${{ secrets.DATABASE_URL }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
 
   # desktop:
   #   name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Build & release ${{ matrix.platform }} app
