@@ -5,7 +5,7 @@ import { ListPublicUnits } from "./ListPublicUnits";
 function prismaWith(
 	company: { id: string; slug: string } | null,
 	units: Array<{
-		bannerUrl?: string | null;
+		bannerUrls?: string[];
 		companyId: string;
 		id: string;
 		imageUrl?: string | null;
@@ -53,7 +53,7 @@ describe("ListPublicUnits", () => {
 	it("returns only the matched company's units with computed status", async () => {
 		const prisma = prismaWith({ id: "c1", slug: "bliss" }, [
 			{
-				bannerUrl: "https://example.com/ipes.png",
+				bannerUrls: ["https://example.com/ipes.png", "https://example.com/ipes-2.png"],
 				companyId: "c1",
 				hours: [{ closed: false, closesAt: "18:00", opensAt: "09:00", weekday: 5 }],
 				id: "u1",
@@ -66,7 +66,7 @@ describe("ListPublicUnits", () => {
 		const result = await new ListPublicUnits(prisma).execute("bliss");
 		expect(result).toHaveLength(1);
 		expect(result[0]).toMatchObject({
-			bannerUrl: "https://example.com/ipes.png",
+			bannerUrls: ["https://example.com/ipes.png", "https://example.com/ipes-2.png"],
 			hours: [{ closed: false, closesAt: "18:00", opensAt: "09:00", weekday: 5 }],
 			id: "u1",
 			imageUrl: "https://example.com/ipes-unit.png",

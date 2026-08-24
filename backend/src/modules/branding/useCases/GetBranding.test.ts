@@ -4,6 +4,7 @@ import { GetBranding } from "./GetBranding";
 
 interface CompanyRow {
 	footerPaymentMethods: string[];
+	homepageBannerUrl: string | null;
 	id: string;
 	logoUrl: string | null;
 	name: string;
@@ -14,6 +15,7 @@ interface CompanyRow {
 
 const baseCompany: CompanyRow = {
 	footerPaymentMethods: ["Pix"],
+	homepageBannerUrl: "https://cdn.zero-grau.com/homepage-banner.png",
 	id: "cmp_1",
 	logoUrl: "https://cdn.zero-grau.com/logo.png",
 	name: "Zero Grau",
@@ -50,6 +52,7 @@ describe("GetBranding", () => {
 		expect(result).toMatchObject({
 			companyName: "Zero Grau",
 			footerPaymentMethods: ["Pix"],
+			homepageBannerUrl: "https://cdn.zero-grau.com/homepage-banner.png",
 			logoUrl: "https://cdn.zero-grau.com/logo.png",
 			themeColors: { primary: "#ff0000" },
 			unitFallbackImageUrl: "https://cdn.zero-grau.com/unit-fallback.png",

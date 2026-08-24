@@ -15,12 +15,14 @@ export const defaultOrderStatusTemplates: OrderStatusTemplates = {
 };
 
 export interface BrandAssetsState {
+	homepageBannerUrl: string;
 	logoUrl: string;
 	mobileIconUrl: string;
 	unitFallbackImageUrl: string;
 }
 
 export const emptyBrandAssets: BrandAssetsState = {
+	homepageBannerUrl: "",
 	logoUrl: "",
 	mobileIconUrl: "",
 	unitFallbackImageUrl: "",

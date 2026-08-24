@@ -1,7 +1,8 @@
-import type { GetPublicUnitsByUnitSlugMenu200 } from "@/lib/api";
+import type { GetPublicUnits200, GetPublicUnitsByUnitSlugMenu200 } from "@/lib/api";
 
 export type MenuSection = GetPublicUnitsByUnitSlugMenu200[number];
 export type MenuItem = MenuSection["items"][number];
+export type PromotionalImage = GetPublicUnits200[number]["promotionalImages"][number];
 
 export const money = new Intl.NumberFormat("pt-BR", { currency: "BRL", style: "currency" });
 

@@ -18,6 +18,7 @@ export const BrandingReturn = t.Object({
 	footerWhatsApp: __nullable__(t.String()),
 	ga4Id: __nullable__(t.String()),
 	gtmId: __nullable__(t.String()),
+	homepageBannerUrl: __nullable__(t.String()),
 	logoUrl: __nullable__(t.String()),
 	metaPixelId: __nullable__(t.String()),
 	mobileIconUrl: __nullable__(t.String()),

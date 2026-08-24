@@ -18,6 +18,7 @@ restrita a `owner`/`manager` (ver [03-papeis-e-permissoes.md](03-papeis-e-permis
   - **Automático** por horário (calcula de acordo com o funcionamento).
   - **Manual** (override: fechar mesmo dentro do horário, ou abrir excepcionalmente).
 - **Formas de pagamento** aceitas (por unidade — ver [09](09-pagamentos-cashback-cupons-frete.md)).
+- **Banners do cardápio**: até 10 imagens ordenadas, exibidas em carrossel na página da unidade.
 
 ## Regras objetivas
 

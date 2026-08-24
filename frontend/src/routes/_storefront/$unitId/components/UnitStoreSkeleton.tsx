@@ -1,10 +1,11 @@
 import { Container } from "@/components/ui/Container";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { StorefrontBannerSkeleton } from "../../../components/storefront";
 
 export function UnitStoreSkeleton() {
 	return (
 		<>
-			<Skeleton className="h-40 w-full rounded-none sm:h-56" />
+			<StorefrontBannerSkeleton />
 			<Container className="space-y-6 py-8">
 				<div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
 					<div className="space-y-2">

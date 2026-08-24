@@ -29,8 +29,8 @@ export function DeliveryMethodSelector({ deliveryMethods, unitId }: DeliveryMeth
 					<button
 						className={
 							current === method
-								? "flex-1 bg-primary px-3 py-1.5 font-semibold text-primary-foreground transition-colors"
-								: "flex-1 px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
+								? "flex-1 cursor-pointer bg-primary px-3 py-1.5 font-semibold text-primary-foreground transition-colors"
+								: "flex-1 cursor-pointer px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
 						}
 						key={method}
 						onClick={() => setMethod(unitId, method)}

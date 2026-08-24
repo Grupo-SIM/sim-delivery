@@ -3,7 +3,7 @@ import { t } from "elysia";
 /** Editable unit fields shared by create (required name) and update (all optional). */
 const fields = {
 	addressLine: t.Optional(t.Nullable(t.String())),
-	bannerUrl: t.Optional(t.Nullable(t.String({ format: "uri", maxLength: 1000 }))),
+	bannerUrls: t.Optional(t.Array(t.String({ format: "uri", maxLength: 1000 }), { maxItems: 10 })),
 	cashbackPercent: t.Optional(t.Number({ minimum: 0 })),
 	city: t.Optional(t.Nullable(t.String())),
 	complement: t.Optional(t.Nullable(t.String())),

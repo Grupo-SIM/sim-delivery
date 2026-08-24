@@ -20,7 +20,7 @@ export function UnitHeroCard({ fallbackImageUrl, openLabel, unit }: UnitHeroCard
 	return (
 		<Link
 			className={cn(
-				"group relative min-h-80 overflow-hidden rounded-lg bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+				"group relative min-h-80 overflow-hidden rounded-lg bg-primary shadow-md transition-shadow duration-300 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
 				imageUrl ? "text-white" : "text-primary-foreground",
 			)}
 			params={{ unitId: unit.slug }}

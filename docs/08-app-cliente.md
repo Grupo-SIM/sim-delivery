@@ -8,12 +8,13 @@ direto na escolha de unidade.
 - **Tela inicial**, sem landing page.
 - Lista as unidades da empresa (da variante) com disponibilidade (aberto/fechado — ver
   [04](04-unidades.md)).
+- Pode exibir um banner configurável da empresa acima da seleção de unidades.
 - Selecionar unidade leva ao cardápio dela.
 
 ## 2. Tela de cardápio
 
 - **Barra de pesquisa**.
-- **Carrossel de promoções** em imagem.
+- **Carrossel de banners da unidade** no topo e **carrossel de promoções** junto ao cardápio.
 - **Categoria de destaques (invisível)**: "peça novamente" (por usuário) + destaques
   configurados (ver [05](05-cardapio.md)).
 - **Card de produto**: título, imagem, descrição, indicador de promoção e **botões

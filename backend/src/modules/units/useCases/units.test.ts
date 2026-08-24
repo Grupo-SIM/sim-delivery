@@ -71,6 +71,15 @@ describe("units use-cases", () => {
 		expect(unit).toMatchObject({ id: "u1", name: "Y" });
 	});
 
+	it("UpdateUnit preserves the configured banner order", async () => {
+		const { prisma, updated } = prismaWith([{ companyId: "cmp_1", id: "u1" }]);
+		const bannerUrls = ["https://example.com/first.png", "https://example.com/second.png"];
+
+		await new UpdateUnit(prisma).execute("cmp_1", "u1", { bannerUrls });
+
+		expect(updated).toContainEqual({ data: { bannerUrls }, where: { id: "u1" } });
+	});
+
 	it("DeleteUnit removes a unit without orders", async () => {
 		const { deleted, prisma } = prismaWith([{ companyId: "cmp_1", id: "u1" }]);
 		await new DeleteUnit(prisma).execute("cmp_1", "u1");

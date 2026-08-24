@@ -20,7 +20,7 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 
 	return (
 		<Card
-			className="group flex h-full cursor-pointer flex-col overflow-hidden p-0 transition-transform duration-300 hover:-translate-y-0.5"
+			className="group flex h-full cursor-pointer flex-col overflow-hidden p-0 shadow-md transition duration-300 hover:-translate-y-0.5 hover:shadow-lg"
 			onClick={() => onSelect(item)}
 			onKeyDown={event => {
 				if (event.key === "Enter" || event.key === " ") {

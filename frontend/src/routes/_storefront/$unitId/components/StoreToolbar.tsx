@@ -34,7 +34,7 @@ export function StoreToolbar({
 	const todayHours =
 		today && !today.closed && today.opensAt && today.closesAt ? `${today.opensAt}–${today.closesAt}` : null;
 	return (
-		<div className="grid gap-3 rounded-xl border border-border bg-muted/70 p-3 shadow-sm md:grid-cols-[1fr_1.2fr_1fr_minmax(15rem,1.4fr)] md:items-center">
+		<div className="grid grid-cols-2 gap-3 rounded-xl border border-border bg-muted/70 p-3 shadow-sm md:grid-cols-[1fr_1.2fr_1fr_minmax(15rem,1.4fr)] md:items-center">
 			<div className="flex items-center gap-3 px-2">
 				<LuTruck className="size-5 text-primary" />
 				<div>
@@ -49,7 +49,7 @@ export function StoreToolbar({
 				<DeliveryMethodSelector deliveryMethods={deliveryMethods} unitId={unitId} />
 			</div>
 			<button
-				className="flex items-center gap-3 rounded-lg border border-border px-2 py-1.5 text-left transition-colors hover:bg-muted"
+				className="col-span-2 flex cursor-pointer items-center gap-3 rounded-lg border border-border px-2 py-1.5 text-left transition-colors hover:bg-muted md:col-span-1"
 				onClick={onHoursClick}
 				type="button"
 			>
@@ -64,7 +64,7 @@ export function StoreToolbar({
 					)}
 				</div>
 			</button>
-			<label className="relative block">
+			<label className="relative col-span-2 block md:col-span-1">
 				<span className="sr-only">{t("store.menu.searchPlaceholder")}</span>
 				<input
 					className="h-12 w-full rounded-lg border border-input bg-surface pr-11 pl-4 text-sm placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"

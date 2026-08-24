@@ -16,6 +16,7 @@ export function BrandAssetsSection({ assets, onChange }: BrandAssetsSectionProps
 	const uploadError = () => showToast(t("admin.branding.uploadError"), "negative");
 
 	const configured = [
+		assets.homepageBannerUrl && t("admin.branding.homepageBannerShort"),
 		assets.logoUrl && t("admin.branding.logoShort"),
 		assets.mobileIconUrl && t("admin.branding.mobileIconShort"),
 		assets.unitFallbackImageUrl && t("admin.branding.unitFallbackImageShort"),
@@ -32,6 +33,19 @@ export function BrandAssetsSection({ assets, onChange }: BrandAssetsSectionProps
 			summary={configured.length ? configured.join(" · ") : t("admin.branding.assetsSummaryEmpty")}
 			title={t("admin.branding.sectionAssets")}
 		>
+			<Label>
+				{t("admin.branding.homepageBannerUrl")}
+				<MediaUrlInput
+					asset="banner"
+					onUploadError={uploadError}
+					onValueChange={homepageBannerUrl => onChange({ homepageBannerUrl })}
+					preview
+					previewClassName="h-48"
+					uploadLabel={t("admin.branding.homepageBannerUpload")}
+					value={assets.homepageBannerUrl}
+				/>
+			</Label>
+
 			<Label>
 				{t("admin.branding.logoUrl")}
 				<MediaUrlInput

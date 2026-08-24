@@ -75,6 +75,9 @@
 				"ga4Short": "GA4",
 				"gtmId": "ID do Google Tag Manager",
 				"gtmShort": "GTM",
+				"homepageBannerShort": "Banner da página inicial",
+				"homepageBannerUpload": "Enviar banner da página inicial",
+				"homepageBannerUrl": "URL do banner da página inicial",
 				"lightTheme": "Tema claro",
 				"loadError": "Não foi possível carregar as configurações da empresa.",
 				"logoShort": "Logotipo",
@@ -1104,11 +1107,15 @@
 				},
 				"banner": {
 					"action": "Banner",
+					"add": "Adicionar outro banner",
+					"added": "Novo espaço de banner adicionado.",
 					"cancel": "Cancelar",
 					"error": "Não foi possível salvar o banner.",
+					"item": "Banner {{number}}",
+					"limitHint": "Até 10 imagens, exibidas nesta ordem.",
 					"save": "Salvar banner",
 					"saving": "Salvando...",
-					"title": "Banner da unidade",
+					"title": "Banners da unidade",
 					"upload": "Enviar banner",
 					"uploadError": "Não foi possível enviar o banner.",
 					"url": "URL do banner"
@@ -1608,6 +1615,8 @@
 			},
 			"chooseUnit": {
 				"available": "Disponível",
+				"bannerAlt": "Banner da página inicial",
+				"bannerCarousel": "Destaque da página inicial",
 				"delivery": "Entrega",
 				"empty": "Nenhuma unidade disponível ainda.",
 				"loadError": "Não foi possível carregar as unidades.",
@@ -1685,6 +1694,7 @@
 				"open": "Aberto"
 			},
 			"unit": {
+				"bannerCarousel": "Banners da unidade",
 				"change": "Trocar unidade",
 				"deliveryMethods": "Formas de entrega",
 				"etaRange": "{{min}}–{{max}} min",

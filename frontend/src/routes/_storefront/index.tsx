@@ -5,6 +5,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetBranding, useGetPublicUnits } from "@/lib/api";
 import { slug } from "@/lib/variant";
+import { StorefrontBannerCarousel, StorefrontBannerSkeleton } from "../components/storefront";
 import { UnitHeroCard } from "./components";
 
 function StorePage() {
@@ -14,8 +15,16 @@ function StorePage() {
 
 	return (
 		<div className="bg-background">
+			{isBrandingPending ? (
+				<StorefrontBannerSkeleton />
+			) : branding?.homepageBannerUrl ? (
+				<StorefrontBannerCarousel
+					images={[{ alt: t("store.chooseUnit.bannerAlt"), src: branding.homepageBannerUrl }]}
+					label={t("store.chooseUnit.bannerCarousel")}
+				/>
+			) : null}
 			<section className="mx-auto max-w-6xl px-5 pt-12 pb-8 sm:pt-16">
-				<p className="font-semibold text-primary text-sm">ZERO GRAU</p>
+				<p className="font-semibold text-primary text-sm">{branding?.companyName ?? "JB DELIVERY"}</p>
 				<h1 className="mt-2 max-w-2xl font-display text-4xl text-foreground sm:text-5xl">
 					{t("store.chooseUnit.title")}
 				</h1>

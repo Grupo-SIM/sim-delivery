@@ -58,7 +58,7 @@ export class ListPublicUnits {
 			const rating = ratingsByUnit.get(unit.id);
 			return {
 				addressLine: unit.addressLine,
-				bannerUrl: unit.bannerUrl,
+				bannerUrls: unit.bannerUrls,
 				city: unit.city,
 				deliveryFee: unit.deliveryFee,
 				deliveryMethods: unit.deliveryMethods,

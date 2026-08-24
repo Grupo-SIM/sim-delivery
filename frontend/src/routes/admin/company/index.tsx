@@ -56,6 +56,7 @@ function BrandingPage() {
 			setDefaultTheme(branding.defaultTheme);
 			setThemeColors(resolveThemeColors(branding.themeColors));
 			setAssets({
+				homepageBannerUrl: branding.homepageBannerUrl ?? "",
 				logoUrl: branding.logoUrl ?? "",
 				mobileIconUrl: branding.mobileIconUrl ?? "",
 				unitFallbackImageUrl: branding.unitFallbackImageUrl ?? "",
@@ -104,6 +105,7 @@ function BrandingPage() {
 					footerWhatsApp: footer.whatsApp.trim() || undefined,
 					ga4Id: tracking.ga4Id.trim() || undefined,
 					gtmId: tracking.gtmId.trim() || undefined,
+					homepageBannerUrl: assets.homepageBannerUrl.trim() || null,
 					logoUrl: assets.logoUrl.trim() || undefined,
 					metaPixelId: tracking.metaPixelId.trim() || undefined,
 					mobileIconUrl: assets.mobileIconUrl.trim() || undefined,

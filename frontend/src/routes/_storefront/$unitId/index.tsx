@@ -1,15 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { StarRating } from "@/components/ui/StarRating";
 import { useGetPublicUnits, useGetPublicUnitsByUnitSlugMenu } from "@/lib/api";
 import { slug } from "@/lib/variant";
 import { useSelectedUnitStore } from "@/stores";
+import { StorefrontBannerCarousel } from "../../components/storefront";
 import {
 	CartBar,
 	InfoPill,
@@ -17,11 +15,9 @@ import {
 	PromotionalCarousel,
 	StoreHoursModal,
 	StoreToolbar,
-	UnitBanner,
-	UnitContactLinks,
 	UnitReviews,
+	UnitStoreHeader,
 	UnitStoreSkeleton,
-	UnitSwitcher,
 } from "./components";
 import { money } from "./components/types";
 
@@ -49,7 +45,6 @@ function UnitStorePage() {
 			</Container>
 		);
 
-	const address = [unit.addressLine, unit.neighborhood, unit.city].filter(Boolean).join(", ");
 	const minOrder = Number(unit.minOrderCents);
 	const fee = Number(unit.deliveryFee);
 	const prepMin = unit.prepTimeMinMinutes != null ? Number(unit.prepTimeMinMinutes) : null;
@@ -57,29 +52,12 @@ function UnitStorePage() {
 
 	return (
 		<>
-			<UnitBanner bannerUrl={unit.bannerUrl} />
+			<StorefrontBannerCarousel
+				images={unit.bannerUrls.map((src, index) => ({ alt: `${unit.name} — banner ${index + 1}`, src }))}
+				label={t("store.unit.bannerCarousel")}
+			/>
 			<Container className="space-y-6 py-8">
-				<div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-					<div className="flex items-center gap-3">
-						<SectionHeading subtitle={address || t("store.chooseUnit.noAddress")} title={unit.name} />
-						<Badge
-							className={
-								unit.isOpenNow
-									? "border-success/30 bg-success/10 text-success"
-									: "border-muted-foreground/30 bg-muted-foreground/10 text-muted-foreground"
-							}
-						>
-							{unit.isOpenNow ? t("store.status.open") : t("store.status.closed")}
-						</Badge>
-						{Number(unit.ratingCount) > 0 && (
-							<StarRating average={unit.ratingAverage} count={Number(unit.ratingCount)} />
-						)}
-					</div>
-					<div className="flex flex-wrap items-center justify-end gap-3">
-						<UnitContactLinks unit={unit} />
-						{units && <UnitSwitcher unitId={unitSlug} units={units} />}
-					</div>
-				</div>
+				<UnitStoreHeader unit={unit} unitSlug={unitSlug} units={units} />
 
 				{menu.isPending ? (
 					<Skeleton className="h-64 w-full" />
