@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { LuImageOff } from "react-icons/lu";
+import { LuImageOff, LuPlus } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { StarRating } from "@/components/ui/StarRating";
@@ -82,6 +82,12 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 					{item.cashbackPercent != null && (
 						<Badge className="border-success/30 bg-success/10 text-success">{item.cashbackPercent}%</Badge>
 					)}
+					<span
+						aria-hidden
+						className="ml-auto grid size-10 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground shadow-md transition-transform group-hover:scale-105"
+					>
+						<LuPlus className="size-5" />
+					</span>
 				</div>
 			</div>
 		</Card>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LuChevronLeft, LuChevronRight, LuPause, LuPlay } from "react-icons/lu";
+import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 
 const AUTO_ADVANCE_MS = 4_000;
@@ -17,18 +17,17 @@ interface StorefrontBannerCarouselProps {
 
 export function StorefrontBannerCarousel({ className, images, label }: StorefrontBannerCarouselProps) {
 	const [activeIndex, setActiveIndex] = useState(0);
-	const [isPlaying, setIsPlaying] = useState(true);
 	const currentIndex = Math.min(activeIndex, Math.max(images.length - 1, 0));
 
 	useEffect(() => {
-		if (!isPlaying || images.length < 2) return;
+		if (images.length < 2) return;
 
 		const timeout = window.setTimeout(() => {
 			setActiveIndex((currentIndex + 1) % images.length);
 		}, AUTO_ADVANCE_MS);
 
 		return () => window.clearTimeout(timeout);
-	}, [currentIndex, images.length, isPlaying]);
+	}, [currentIndex, images.length]);
 
 	if (images.length === 0) return null;
 
@@ -65,19 +64,6 @@ export function StorefrontBannerCarousel({ className, images, label }: Storefron
 
 				{images.length > 1 && (
 					<>
-						<button
-							aria-label={isPlaying ? "Pausar banners" : "Reproduzir banners"}
-							className="absolute top-3 right-3 grid size-9 cursor-pointer place-items-center rounded-full border border-white/60 bg-black/35 text-white shadow-md backdrop-blur-sm transition hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-							onClick={() => setIsPlaying(playing => !playing)}
-							title={isPlaying ? "Pausar banners" : "Reproduzir banners"}
-							type="button"
-						>
-							{isPlaying ? (
-								<LuPause aria-hidden className="size-4" />
-							) : (
-								<LuPlay aria-hidden className="size-4" />
-							)}
-						</button>
 						<button
 							aria-label="Banner anterior"
 							className="absolute top-1/2 left-3 grid size-9 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-white/60 bg-black/35 text-white shadow-md backdrop-blur-sm transition hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
