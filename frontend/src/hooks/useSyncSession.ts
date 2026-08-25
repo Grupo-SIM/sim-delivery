@@ -8,15 +8,15 @@ import { mapSessionUser, useAuthStore } from "@/stores/auth";
  */
 export function useSyncSession() {
 	const setUser = useAuthStore(state => state.setUser);
-	const { data, isPending } = authClient.useSession();
+	const { data, error, isPending } = authClient.useSession();
 
 	useEffect(() => {
-		if (isPending) {
+		if (isPending || error) {
 			return;
 		}
 
 		setUser(data?.user ? mapSessionUser(data.user) : null);
-	}, [data, isPending, setUser]);
+	}, [data, error, isPending, setUser]);
 
 	return { user: data?.user ?? null };
 }

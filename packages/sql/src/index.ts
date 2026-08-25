@@ -15,9 +15,15 @@ const databaseUrl = env?.DATABASE_URL || "postgresql://postgres:postgres@localho
 
 export const adapter = new PrismaPg({
 	connectionString: databaseUrl,
+	connectionTimeoutMillis: Number(env?.PRISMA_POOL_CONNECTION_TIMEOUT_MS || 5000),
 	idleTimeoutMillis: Number(env?.PRISMA_POOL_IDLE_TIMEOUT_MS || 30000),
+	keepAlive: true,
+	keepAliveInitialDelayMillis: Number(env?.PRISMA_POOL_KEEP_ALIVE_DELAY_MS || 10000),
 	max: Number(env?.PRISMA_POOL_MAX || 20),
-	min: Number(env?.PRISMA_POOL_MIN || 2),
+	maxLifetimeSeconds: Number(env?.PRISMA_POOL_MAX_LIFETIME_SECONDS || 300),
+	// Keeping a minimum idle pool defeats idleTimeoutMillis: stale sockets can survive
+	// indefinitely and fail the next query after the database or network closes them.
+	min: Number(env?.PRISMA_POOL_MIN || 0),
 });
 
 export const prismaExtensionKysely = () =>

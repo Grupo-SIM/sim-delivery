@@ -60,6 +60,15 @@ describe("requireSuperAdminBeforeLoad", () => {
 		expect(toasts[0].kind).toBe("warning");
 	});
 
+	it("does not treat a database failure as unauthenticated", async () => {
+		session = { data: null, error: { status: 500 } };
+
+		expect(await requireSuperAdminBeforeLoad()).toBeUndefined();
+		expect(toasts).toEqual([
+			{ kind: "warning", message: "Não foi possível validar sua sessão. Tentando novamente." },
+		]);
+	});
+
 	it("still redirects when the session fetch fails with 403", async () => {
 		session = { data: null, error: { status: 403 } };
 

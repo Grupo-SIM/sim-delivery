@@ -6,9 +6,14 @@ import { isSuperAdmin } from "@/stores/auth";
 /** Route `beforeLoad` gate: only the platform operator (superAdmin) may proceed (docs/03). */
 export async function requireSuperAdminBeforeLoad() {
 	const session = await authClient.getSession();
-	// A rate-limited session fetch is not "unauthenticated" — don't kick the user to /identify for it.
-	if (session.error?.status === 429) {
-		showToast("Muitas requisições. Tente novamente em instantes.", "warning");
+	// Transport/server failures are not "unauthenticated". Preserve the current route and session.
+	if (session.error && session.error.status !== 401 && session.error.status !== 403) {
+		showToast(
+			session.error.status === 429
+				? "Muitas requisições. Tente novamente em instantes."
+				: "Não foi possível validar sua sessão. Tentando novamente.",
+			"warning",
+		);
 		return;
 	}
 	const role = (session.data?.user as { role?: string } | null)?.role ?? null;

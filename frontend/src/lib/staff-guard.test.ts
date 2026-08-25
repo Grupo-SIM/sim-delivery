@@ -110,6 +110,15 @@ describe("requireStaffBeforeLoad", () => {
 		expect(toasts[0].kind).toBe("warning");
 	});
 
+	it("does not treat a database failure as unauthenticated", async () => {
+		session = { data: null, error: { status: 500 } };
+
+		expect(await requireStaffBeforeLoad()).toBeUndefined();
+		expect(toasts).toEqual([
+			{ kind: "warning", message: "Não foi possível validar sua sessão. Tentando novamente." },
+		]);
+	});
+
 	it("still redirects when the session fetch fails with 401", async () => {
 		session = { data: null, error: { status: 401 } };
 
