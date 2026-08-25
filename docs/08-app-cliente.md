@@ -8,7 +8,7 @@ direto na escolha de unidade.
 - **Tela inicial**, sem landing page.
 - Lista as unidades da empresa (da variante) com disponibilidade (aberto/fechado — ver
   [04](04-unidades.md)).
-- Pode exibir um banner configurável da empresa acima da seleção de unidades.
+- Pode exibir banners configuráveis da empresa em carrossel acima da seleção de unidades.
 - Selecionar unidade leva ao cardápio dela.
 
 ## 2. Tela de cardápio

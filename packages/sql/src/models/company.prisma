@@ -13,8 +13,8 @@ model Company {
     mobileIconUrl String?
     /// Image used when a storefront unit has no listing image of its own.
     unitFallbackImageUrl String?
-    /// Wide artwork shown above the unit selection on the storefront homepage.
-    homepageBannerUrl String?
+    /// Ordered wide artwork shown as a carousel above the storefront unit selection.
+    homepageBannerUrls String[] @default([])
     footerText  String?
     footerPaymentMethods String[] @default([])
     footerInstagramUrl String?

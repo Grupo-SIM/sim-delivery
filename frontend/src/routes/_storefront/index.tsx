@@ -17,9 +17,12 @@ function StorePage() {
 		<div className="bg-background">
 			{isBrandingPending ? (
 				<StorefrontBannerSkeleton />
-			) : branding?.homepageBannerUrl ? (
+			) : branding?.homepageBannerUrls.length ? (
 				<StorefrontBannerCarousel
-					images={[{ alt: t("store.chooseUnit.bannerAlt"), src: branding.homepageBannerUrl }]}
+					images={branding.homepageBannerUrls.map((src, index) => ({
+						alt: `${t("store.chooseUnit.bannerAlt")} ${index + 1}`,
+						src,
+					}))}
 					label={t("store.chooseUnit.bannerCarousel")}
 				/>
 			) : null}

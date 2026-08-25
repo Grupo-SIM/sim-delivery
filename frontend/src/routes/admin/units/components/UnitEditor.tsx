@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { BannerImagesEditor } from "@/components/storefront";
 import { Button } from "@/components/ui/button";
 import { CollapsibleModalSection } from "@/components/ui/CollapsibleModalSection";
 import { CustomSelect } from "@/components/ui/CustomSelect";
@@ -13,7 +14,6 @@ import { NumericInput } from "@/components/ui/NumericInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { type GetUnits200, getCepByCep, getUnitsQueryKey, usePatchUnitsByUnitId } from "@/lib/api";
 import { showAlert } from "@/stores";
-import { BannerImagesEditor } from "./BannerImagesEditor";
 
 type Unit = GetUnits200[number];
 type Availability = "auto" | "closed" | "open";

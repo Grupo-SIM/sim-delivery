@@ -60,7 +60,7 @@ export const UpdateBrandingBody = t.Object({
 	footerWhatsApp: t.Optional(t.String({ maxLength: 30 })),
 	ga4Id: t.Optional(t.String({ maxLength: 50 })),
 	gtmId: t.Optional(t.String({ maxLength: 50 })),
-	homepageBannerUrl: t.Optional(t.Nullable(t.String({ format: "uri", maxLength: 1000 }))),
+	homepageBannerUrls: t.Optional(t.Array(t.String({ format: "uri", maxLength: 1000 }), { maxItems: 10 })),
 	logoUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
 	metaPixelId: t.Optional(t.String({ maxLength: 50 })),
 	mobileIconUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),

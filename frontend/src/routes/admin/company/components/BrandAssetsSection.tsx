@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { LuImage } from "react-icons/lu";
+import { BannerImagesEditor } from "@/components/storefront";
 import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
 import { Label } from "@/components/ui/label";
 import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
@@ -16,7 +17,7 @@ export function BrandAssetsSection({ assets, onChange }: BrandAssetsSectionProps
 	const uploadError = () => showToast(t("admin.branding.uploadError"), "negative");
 
 	const configured = [
-		assets.homepageBannerUrl && t("admin.branding.homepageBannerShort"),
+		assets.homepageBannerUrls.some(Boolean) && t("admin.branding.homepageBannerShort"),
 		assets.logoUrl && t("admin.branding.logoShort"),
 		assets.mobileIconUrl && t("admin.branding.mobileIconShort"),
 		assets.unitFallbackImageUrl && t("admin.branding.unitFallbackImageShort"),
@@ -33,18 +34,14 @@ export function BrandAssetsSection({ assets, onChange }: BrandAssetsSectionProps
 			summary={configured.length ? configured.join(" · ") : t("admin.branding.assetsSummaryEmpty")}
 			title={t("admin.branding.sectionAssets")}
 		>
-			<Label>
-				{t("admin.branding.homepageBannerUrl")}
-				<MediaUrlInput
-					asset="banner"
+			<div className="space-y-2">
+				<p className="font-medium text-sm">{t("admin.branding.homepageBannerUrls")}</p>
+				<BannerImagesEditor
+					bannerUrls={assets.homepageBannerUrls}
+					onChange={homepageBannerUrls => onChange({ homepageBannerUrls })}
 					onUploadError={uploadError}
-					onValueChange={homepageBannerUrl => onChange({ homepageBannerUrl })}
-					preview
-					previewClassName="h-48"
-					uploadLabel={t("admin.branding.homepageBannerUpload")}
-					value={assets.homepageBannerUrl}
 				/>
-			</Label>
+			</div>
 
 			<Label>
 				{t("admin.branding.logoUrl")}
