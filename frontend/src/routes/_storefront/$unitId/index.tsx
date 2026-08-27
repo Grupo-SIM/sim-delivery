@@ -46,6 +46,7 @@ function UnitStorePage() {
 		openedProductModalRef.current = true;
 		void navigate({
 			params: { unitId: unitSlug },
+			resetScroll: false,
 			search: current => ({ ...current, note: undefined, options: undefined, product: productId }),
 			to: "/$unitId",
 		});
@@ -55,6 +56,7 @@ function UnitStorePage() {
 		void navigate({
 			params: { unitId: unitSlug },
 			replace: true,
+			resetScroll: false,
 			search: current => ({ ...current, note: note || undefined, options, product: current.product }),
 			to: "/$unitId",
 		});
@@ -70,6 +72,7 @@ function UnitStorePage() {
 		void navigate({
 			params: { unitId: unitSlug },
 			replace: true,
+			resetScroll: false,
 			search: current => ({ ...current, note: undefined, options: undefined, product: undefined }),
 			to: "/$unitId",
 		});
