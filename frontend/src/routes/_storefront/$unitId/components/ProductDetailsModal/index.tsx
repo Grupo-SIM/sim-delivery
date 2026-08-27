@@ -17,16 +17,62 @@ import type { OptionImagePreview, ProductOption } from "./types";
 interface ProductDetailsModalProps {
 	item: MenuItem | null;
 	editingItem?: CartItem | null;
+	initialNote?: string;
+	initialOptions?: string;
 	layer?: "modal" | "submodal";
 	onClose: () => void;
+	onStateChange?: (options: SelectedOption[], note: string) => void;
 	unitId: string;
+}
+
+function defaultOptions(item: MenuItem): SelectedOption[] {
+	return item.optionGroups
+		.filter(group => group.required && group.maxSelect === 1 && group.options.length === 1)
+		.reduce(
+			(current, group) => applyOptionQuantity(group, group.options[0], 1, current),
+			[] as SelectedOption[],
+		);
+}
+
+function optionsFromSearch(item: MenuItem, serializedOptions?: string): SelectedOption[] {
+	if (!serializedOptions) return defaultOptions(item);
+
+	try {
+		const parsed: unknown = JSON.parse(serializedOptions);
+		if (!Array.isArray(parsed)) return defaultOptions(item);
+
+		return parsed.reduce<SelectedOption[]>((selected, value) => {
+			if (
+				typeof value !== "object" ||
+				value === null ||
+				!("optionId" in value) ||
+				!("quantity" in value) ||
+				typeof value.optionId !== "string" ||
+				typeof value.quantity !== "number" ||
+				!Number.isInteger(value.quantity) ||
+				value.quantity < 1
+			)
+				return selected;
+
+			const group = item.optionGroups.find(candidate =>
+				candidate.options.some(option => option.id === value.optionId),
+			);
+			const option = group?.options.find(candidate => candidate.id === value.optionId);
+			return group && option ? applyOptionQuantity(group, option, value.quantity, selected) : selected;
+		}, []);
+	} catch {
+		return defaultOptions(item);
+	}
 }
 
 export function ProductDetailsModal({
 	editingItem = null,
+	initialNote,
+	initialOptions,
 	item,
 	layer = "modal",
 	onClose,
+	onStateChange,
 	unitId,
 }: ProductDetailsModalProps) {
 	const { t } = useTranslation();
@@ -39,27 +85,29 @@ export function ProductDetailsModal({
 	const [imagePreview, setImagePreview] = useState<OptionImagePreview | null>(null);
 	const [expandedGroupIds, setExpandedGroupIds] = useState<Set<string>>(new Set());
 	const [optionsViewport, setOptionsViewport] = useState<HTMLDivElement | null>(null);
+	const [initializedModalKey, setInitializedModalKey] = useState<string | null>(null);
+	const modalKey = item ? `${item.id}:${editingItem?.lineKey ?? "new"}` : null;
 
 	useEffect(() => {
-		if (!item) return;
-		setNote(editingItem?.note ?? "");
-		setLocalNote(editingItem?.note ?? "");
-		setQuantity(editingItem?.quantity ?? 1);
-		setExpandedGroupIds(new Set());
-
-		if (editingItem) {
-			setOptions(editingItem.options ?? []);
+		if (!item) {
+			setInitializedModalKey(null);
 			return;
 		}
-		setOptions(
-			item.optionGroups
-				.filter(group => group.required && group.maxSelect === 1 && group.options.length === 1)
-				.reduce(
-					(current, group) => applyOptionQuantity(group, group.options[0], 1, current),
-					[] as SelectedOption[],
-				),
-		);
-	}, [editingItem, item, setLocalNote]);
+		if (initializedModalKey === modalKey) return;
+
+		const nextNote = editingItem?.note ?? initialNote ?? "";
+		setNote(nextNote);
+		setLocalNote(nextNote);
+		setQuantity(editingItem?.quantity ?? 1);
+		setExpandedGroupIds(new Set());
+		setOptions(editingItem?.options ?? optionsFromSearch(item, initialOptions));
+		setInitializedModalKey(modalKey);
+	}, [editingItem, initialNote, initialOptions, initializedModalKey, item, modalKey, setLocalNote]);
+
+	useEffect(() => {
+		if (!item || initializedModalKey !== modalKey || !onStateChange) return;
+		onStateChange(options, note);
+	}, [initializedModalKey, item, modalKey, note, onStateChange, options]);
 
 	if (!item) return null;
 	const selectedItem = item;
@@ -111,9 +159,9 @@ export function ProductDetailsModal({
 	return (
 		<>
 			<Modal isOpen layer={layer} maxWidth="1100px" onClose={onClose} scrollable={false}>
-				<div className="flex h-full min-h-0 min-w-0 flex-col gap-6">
+				<div className="flex h-full min-h-0 min-w-0 flex-col gap-4 sm:gap-6">
 					<div
-						className={`grid min-h-0 min-w-0 flex-1 gap-6 overflow-hidden ${
+						className={`grid min-h-0 min-w-0 flex-1 gap-4 overflow-hidden sm:gap-6 ${
 							selectedItem.imageUrl ? "lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)]" : "lg:grid-cols-1"
 						}`}
 					>
@@ -132,41 +180,44 @@ export function ProductDetailsModal({
 
 							<div className="relative h-0 min-h-0 flex-1">
 								<ScrollArea
-									className="scrollbar-none h-full space-y-5 overflow-y-auto pr-5"
+									className="scrollbar-none h-full overflow-y-auto"
 									ref={setOptionsViewport}
 								>
-									{selectedItem.optionGroups
-										.filter(group => group.options.length > 0)
-										.map(group => (
-											<ProductOptionGroup
-												expanded={expandedGroupIds.has(group.id)}
-												group={group}
-												key={group.id}
-												onImagePreview={setImagePreview}
-												onQuantityChange={(option, nextQuantity) =>
-													setOptionQuantity(group.id, option, nextQuantity)
-												}
-												onToggleExpanded={() => toggleGroupExpanded(group.id)}
-												options={options}
+									<div className="space-y-5 pr-5">
+										{selectedItem.optionGroups
+											.filter(group => group.options.length > 0)
+											.map(group => (
+												<ProductOptionGroup
+													expanded={expandedGroupIds.has(group.id)}
+													group={group}
+													key={group.id}
+													onImagePreview={setImagePreview}
+													onQuantityChange={(option, nextQuantity) =>
+														setOptionQuantity(group.id, option, nextQuantity)
+													}
+													onToggleExpanded={() => toggleGroupExpanded(group.id)}
+													options={options}
+												/>
+											))}
+
+										<div className="space-y-2">
+											<label className="font-semibold text-sm" htmlFor="product-note">
+												{t("store.product.noteLabel")}
+											</label>
+											<textarea
+												className="min-h-20 w-full rounded border border-input bg-surface p-3 placeholder:text-muted-foreground"
+												id="product-note"
+												name="note"
+												onChange={event => setLocalNote(event.currentTarget.value)}
+												placeholder={t("store.product.notePlaceholder")}
+												value={localNote}
 											/>
-										))}
+										</div>
+									</div>
 								</ScrollArea>
 								<Scrollbar container={optionsViewport} persistent variant="prominent" />
 							</div>
 						</div>
-					</div>
-
-					<div className="space-y-2">
-						<label className="font-semibold text-sm" htmlFor="product-note">
-							{t("store.product.noteLabel")}
-						</label>
-						<textarea
-							className="min-h-20 w-full rounded border border-input bg-surface p-3 placeholder:text-muted-foreground"
-							id="product-note"
-							onChange={event => setLocalNote(event.currentTarget.value)}
-							placeholder={t("store.product.notePlaceholder")}
-							value={localNote}
-						/>
 					</div>
 
 					<div className="flex items-center justify-between gap-4 border-border border-t pt-4">

@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { z } from "zod";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -21,16 +22,58 @@ import {
 } from "./components";
 import { money } from "./components/types";
 
+const searchSchema = z.object({
+	note: z.string().optional(),
+	options: z.string().optional(),
+	product: z.string().optional(),
+});
+
 function UnitStorePage() {
 	const { t } = useTranslation();
 	const { unitId: unitSlug } = Route.useParams();
+	const productModal = Route.useSearch();
+	const navigate = useNavigate({ from: Route.fullPath });
 	const unitsQuery = useGetPublicUnits({ slug });
 	const menu = useGetPublicUnitsByUnitSlugMenu(unitSlug, { slug });
 	const units = unitsQuery.data;
 	const unit = units?.find(item => item.slug === unitSlug);
 	const [hoursOpen, setHoursOpen] = useState(false);
 	const [search, setSearch] = useState("");
+	const openedProductModalRef = useRef(false);
 	const setSelectedUnit = useSelectedUnitStore(state => state.setUnit);
+
+	const openProductModal = useCallback((productId: string) => {
+		openedProductModalRef.current = true;
+		void navigate({
+			params: { unitId: unitSlug },
+			search: current => ({ ...current, note: undefined, options: undefined, product: productId }),
+			to: "/$unitId",
+		});
+	}, [navigate, unitSlug]);
+
+	const updateProductModal = useCallback((options: string | undefined, note: string) => {
+		void navigate({
+			params: { unitId: unitSlug },
+			replace: true,
+			search: current => ({ ...current, note: note || undefined, options, product: current.product }),
+			to: "/$unitId",
+		});
+	}, [navigate, unitSlug]);
+
+	const closeProductModal = useCallback(() => {
+		if (openedProductModalRef.current) {
+			openedProductModalRef.current = false;
+			window.history.back();
+			return;
+		}
+
+		void navigate({
+			params: { unitId: unitSlug },
+			replace: true,
+			search: current => ({ ...current, note: undefined, options: undefined, product: undefined }),
+			to: "/$unitId",
+		});
+	}, [navigate, unitSlug]);
 
 	useEffect(() => {
 		if (unit) setSelectedUnit({ id: unit.id, name: unit.name, slug: unit.slug });
@@ -86,6 +129,12 @@ function UnitStorePage() {
 								<PromotionalCarousel images={unit.promotionalImages} />
 							</div>
 						}
+						modalNote={productModal.note}
+						modalOptions={productModal.options}
+						modalProductId={productModal.product}
+						onCloseProductModal={closeProductModal}
+						onOpenProductModal={openProductModal}
+						onUpdateProductModal={updateProductModal}
 						search={search}
 						sections={menu.data}
 						unitId={unit.id}
@@ -108,4 +157,4 @@ function UnitStorePage() {
 	);
 }
 
-export const Route = createFileRoute("/_storefront/$unitId/")({ component: UnitStorePage });
+export const Route = createFileRoute("/_storefront/$unitId/")({ component: UnitStorePage, validateSearch: searchSchema });

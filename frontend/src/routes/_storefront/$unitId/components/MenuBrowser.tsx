@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { CategoryNav } from "./CategoryNav";
@@ -10,15 +10,45 @@ import type { MenuItem, MenuSection } from "./types";
 
 interface MenuBrowserProps {
 	header: ReactNode;
+	modalNote?: string;
+	modalOptions?: string;
+	modalProductId?: string;
+	onCloseProductModal: () => void;
+	onOpenProductModal: (productId: string) => void;
+	onUpdateProductModal: (options: string | undefined, note: string) => void;
 	sections: MenuSection[];
 	unitId: string;
 	unitSlug: string;
 	search: string;
 }
 
-export function MenuBrowser({ header, search, sections, unitId, unitSlug }: MenuBrowserProps) {
+export function MenuBrowser({
+	header,
+	modalNote,
+	modalOptions,
+	modalProductId,
+	onCloseProductModal,
+	onOpenProductModal,
+	onUpdateProductModal,
+	search,
+	sections,
+	unitId,
+	unitSlug,
+}: MenuBrowserProps) {
 	const { t } = useTranslation();
-	const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+	const selectedItem = modalProductId
+		? (sections.flatMap(section => section.items).find(item => item.id === modalProductId) ?? null)
+		: null;
+	const updateProductModal = useCallback(
+		(options: { optionId: string; quantity: number }[], note: string) => {
+			const serializedOptions =
+				options.length > 0
+					? JSON.stringify(options.map(({ optionId, quantity }) => ({ optionId, quantity })))
+					: undefined;
+			onUpdateProductModal(serializedOptions, note);
+		},
+		[onUpdateProductModal],
+	);
 
 	const query = search.trim().toLowerCase();
 	const filtered = query
@@ -39,7 +69,7 @@ export function MenuBrowser({ header, search, sections, unitId, unitSlug }: Menu
 				{hasCategories && <CategorySummary sections={filtered} />}
 				<div className="min-w-0 space-y-6">
 					{header}
-					{!query && <TopPicksCarousel onSelect={setSelectedItem} sections={sections} />}
+					{!query && <TopPicksCarousel onSelect={item => onOpenProductModal(item.id)} sections={sections} />}
 
 					{filtered.length === 0 ? (
 						<EmptyState title={query ? t("store.menu.noResults") : t("store.menu.empty")} />
@@ -49,7 +79,7 @@ export function MenuBrowser({ header, search, sections, unitId, unitSlug }: Menu
 							{filtered.map(section => (
 								<MenuSectionBlock
 									key={section.categoryId ?? "loose"}
-									onSelect={setSelectedItem}
+									onSelect={item => onOpenProductModal(item.id)}
 									section={section}
 								/>
 							))}
@@ -57,7 +87,14 @@ export function MenuBrowser({ header, search, sections, unitId, unitSlug }: Menu
 					)}
 				</div>
 			</div>
-			<ProductDetailsModal item={selectedItem} onClose={() => setSelectedItem(null)} unitId={unitId} />
+			<ProductDetailsModal
+				initialNote={modalNote}
+				initialOptions={modalOptions}
+				item={selectedItem}
+				onClose={onCloseProductModal}
+				onStateChange={updateProductModal}
+				unitId={unitId}
+			/>
 		</>
 	);
 }
