@@ -128,6 +128,8 @@ export function CategoryRow({ category, dragDisabled }: CategoryRowProps) {
 							maxWidth="480px"
 							onClose={() => setProductsOpen(false)}
 							title={t("admin.categories.products.modalTitle", { name: category.name })}
+							urlKey="category-products"
+							urlState={category.id}
 						>
 							<div className="flex flex-wrap gap-1.5">
 								{category.products.map(product => (

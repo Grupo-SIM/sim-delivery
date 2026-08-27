@@ -88,7 +88,13 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 	}
 
 	return (
-		<Modal isOpen={product !== null} onClose={onClose} title={t("admin.products.edit.title")}>
+		<Modal
+			isOpen={product !== null}
+			onClose={onClose}
+			title={t("admin.products.edit.title")}
+			urlKey="product-edit"
+			urlState={product?.id}
+		>
 			<div className="space-y-4">
 				<div className="grid gap-4 md:grid-cols-2">
 					<Label>

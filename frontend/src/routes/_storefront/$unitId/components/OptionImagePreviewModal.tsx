@@ -1,5 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { LuX } from "react-icons/lu";
+import { useModalHistory } from "@/hooks/use-modal-history";
 
 interface OptionImagePreviewModalProps {
 	alt: string;
@@ -8,8 +9,15 @@ interface OptionImagePreviewModalProps {
 }
 
 export function OptionImagePreviewModal({ alt, imageUrl, onClose }: OptionImagePreviewModalProps) {
+	const closeWithHistory = useModalHistory({
+		isOpen: imageUrl !== null,
+		onClose,
+		urlKey: "option-image-preview",
+		urlState: imageUrl ?? undefined,
+	});
+
 	return (
-		<Dialog.Root onOpenChange={open => !open && onClose()} open={imageUrl !== null}>
+		<Dialog.Root onOpenChange={open => !open && closeWithHistory()} open={imageUrl !== null}>
 			<Dialog.Portal>
 				<Dialog.Overlay className="fixed inset-0 z-[60] bg-black/55 backdrop-blur-sm" />
 				<Dialog.Content className="fixed top-1/2 left-1/2 z-[60] flex aspect-square h-[75dvh] w-[75dvh] max-w-[calc(100vw-1rem)] -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-hidden rounded-2xl bg-card p-1 shadow-2xl focus:outline-none">

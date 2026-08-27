@@ -64,6 +64,7 @@ export function AddressSelectorModal({
 			maxWidth="640px"
 			onClose={handleClose}
 			title={t("store.checkout.address.selectTitle")}
+			urlKey="address-select"
 		>
 			<div className="space-y-4">
 				<Input

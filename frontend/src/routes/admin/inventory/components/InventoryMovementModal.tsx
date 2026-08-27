@@ -83,6 +83,7 @@ export function InventoryMovementModal({
 			isOpen={isOpen}
 			onClose={close}
 			title={t(itemIsKnown ? "admin.inventory.movement.quickTitle" : "admin.inventory.movement.title")}
+			urlKey="inventory-movement"
 		>
 			<div className="space-y-4">
 				{!unitIsKnown && (

@@ -110,6 +110,8 @@ export function ProductRecipeModal({ onClose, product }: ProductRecipeModalProps
 			maxWidth="720px"
 			onClose={close}
 			title={t("admin.products.recipe.title", { name: product?.title ?? "" })}
+			urlKey="product-recipe"
+			urlState={product?.id}
 		>
 			{isPending ? (
 				<Skeleton className="h-40" />

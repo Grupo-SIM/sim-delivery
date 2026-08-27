@@ -123,6 +123,8 @@ export function ProductTaxonomyModal({ onClose, product }: ProductTaxonomyModalP
 			maxWidth="760px"
 			onClose={onClose}
 			title={t("admin.products.taxonomy.title", { title: product?.title })}
+			urlKey="product-taxonomy"
+			urlState={product?.id}
 		>
 			<div className="space-y-5">
 				{pending ? (

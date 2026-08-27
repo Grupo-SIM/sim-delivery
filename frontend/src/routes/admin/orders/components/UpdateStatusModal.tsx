@@ -119,6 +119,7 @@ export function UpdateStatusModal({
 			maxWidth="520px"
 			onClose={handleClose}
 			title={t("admin.orders.updateStatus.title")}
+			urlKey="order-status-update"
 		>
 			<div className="space-y-5">
 				<div className="rounded-lg border border-border bg-muted/35 p-4">

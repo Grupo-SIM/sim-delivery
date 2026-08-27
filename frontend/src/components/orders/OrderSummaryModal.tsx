@@ -41,6 +41,8 @@ export function OrderSummaryModal({ onClose, order, view }: OrderSummaryModalPro
 			maxWidth="600px"
 			onClose={onClose}
 			title={t("admin.customers.orderDetails.title")}
+			urlKey="order-summary"
+			urlState={order?.id}
 		>
 			{order && (
 				<div className="space-y-5">

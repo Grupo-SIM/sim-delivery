@@ -14,6 +14,7 @@ export function ConfirmDialog() {
 		<Modal
 			isOpen
 			onClose={() => close(false)}
+			urlKey={confirm ? "confirm" : "alert"}
 			title={
 				<span className="flex items-center gap-3">
 					<span className="grid size-9 place-items-center rounded-full bg-primary/10 text-primary">

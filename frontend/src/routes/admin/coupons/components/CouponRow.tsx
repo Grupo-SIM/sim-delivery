@@ -162,7 +162,14 @@ export function CouponRow({ coupon, units }: CouponRowProps) {
 					</div>
 				</td>
 			</tr>
-			<Modal isOpen={editing} maxWidth="760px" onClose={cancel} title={t("admin.coupons.edit.action")}>
+			<Modal
+				isOpen={editing}
+				maxWidth="760px"
+				onClose={cancel}
+				title={t("admin.coupons.edit.action")}
+				urlKey="coupon-edit"
+				urlState={coupon.id}
+			>
 				<div className="space-y-4">
 					<CouponFormFields
 						code={localCode}

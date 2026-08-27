@@ -56,6 +56,7 @@ export function AssignKitchenModal({
 			maxWidth="420px"
 			onClose={handleClose}
 			title={t("admin.orders.assignment.kitchenTitle")}
+			urlKey="order-kitchen-assign"
 		>
 			<div className="space-y-4">
 				{isPending ? (

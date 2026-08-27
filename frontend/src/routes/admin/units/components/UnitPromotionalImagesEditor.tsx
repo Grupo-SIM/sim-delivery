@@ -52,6 +52,8 @@ export function UnitPromotionalImagesEditor({ onClose, unit }: UnitPromotionalIm
 			maxWidth="760px"
 			onClose={onClose}
 			title={t("admin.units.promotionalImages.title")}
+			urlKey="unit-promotional-images"
+			urlState={unit?.id}
 		>
 			<div className="space-y-4">
 				{imagesPending || assignedPending ? (

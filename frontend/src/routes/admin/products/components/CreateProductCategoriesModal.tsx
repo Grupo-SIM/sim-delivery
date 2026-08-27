@@ -35,7 +35,12 @@ export function CreateProductCategoriesModal({
 	}
 
 	return (
-		<Modal isOpen={isOpen} onClose={onClose} title={t("admin.products.create.categoriesModalTitle")}>
+		<Modal
+			isOpen={isOpen}
+			onClose={onClose}
+			title={t("admin.products.create.categoriesModalTitle")}
+			urlKey="product-create-categories"
+		>
 			<div className="space-y-4">
 				{isPending ? (
 					<div className="space-y-2">

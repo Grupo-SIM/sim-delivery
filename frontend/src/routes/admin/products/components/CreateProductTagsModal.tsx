@@ -33,7 +33,12 @@ export function CreateProductTagsModal({
 	}
 
 	return (
-		<Modal isOpen={isOpen} onClose={onClose} title={t("admin.products.create.tagsModalTitle")}>
+		<Modal
+			isOpen={isOpen}
+			onClose={onClose}
+			title={t("admin.products.create.tagsModalTitle")}
+			urlKey="product-create-tags"
+		>
 			<div className="space-y-4">
 				{isPending ? (
 					<div className="space-y-2">

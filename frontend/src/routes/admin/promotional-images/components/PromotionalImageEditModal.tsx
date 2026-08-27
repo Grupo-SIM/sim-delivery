@@ -52,7 +52,13 @@ export function PromotionalImageEditModal({ image, onClose }: PromotionalImageEd
 	}
 
 	return (
-		<Modal isOpen={image !== null} onClose={onClose} title={t("admin.promotionalImages.edit.title")}>
+		<Modal
+			isOpen={image !== null}
+			onClose={onClose}
+			title={t("admin.promotionalImages.edit.title")}
+			urlKey="promotional-image-edit"
+			urlState={image?.id}
+		>
 			<div className="space-y-4">
 				<Label>
 					<span>

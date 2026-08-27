@@ -60,7 +60,13 @@ export function ProductUnitsModal({ onClose, product }: ProductUnitsModalProps) 
 	}
 
 	return (
-		<Modal isOpen={product !== null} onClose={onClose} title={t("admin.products.units.title")}>
+		<Modal
+			isOpen={product !== null}
+			onClose={onClose}
+			title={t("admin.products.units.title")}
+			urlKey="product-units"
+			urlState={product?.id}
+		>
 			<div className="space-y-4">
 				{unitsPending || productUnitsPending ? (
 					<div className="space-y-2">

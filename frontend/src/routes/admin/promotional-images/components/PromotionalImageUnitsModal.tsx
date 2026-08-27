@@ -55,7 +55,13 @@ export function PromotionalImageUnitsModal({ image, onClose }: PromotionalImageU
 	}
 
 	return (
-		<Modal isOpen={image !== null} onClose={onClose} title={t("admin.promotionalImages.units.title")}>
+		<Modal
+			isOpen={image !== null}
+			onClose={onClose}
+			title={t("admin.promotionalImages.units.title")}
+			urlKey="promotional-image-units"
+			urlState={image?.id}
+		>
 			<div className="space-y-4">
 				<ScrollArea className="max-h-72 space-y-2 overflow-y-auto">
 					{unitsPending || assignedPending ? (

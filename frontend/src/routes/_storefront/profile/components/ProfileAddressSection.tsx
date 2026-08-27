@@ -131,7 +131,13 @@ export function ProfileAddressSection({
 					))}
 				</div>
 			)}
-			<Modal isOpen={modal !== null} onClose={() => setModal(null)} title={title}>
+			<Modal
+				isOpen={modal !== null}
+				onClose={() => setModal(null)}
+				title={title}
+				urlKey={modal === "create" ? "profile-address-create" : "profile-address-edit"}
+				urlState={modal && typeof modal === "object" ? modal.id : undefined}
+			>
 				<AddressForm
 					disabled={isSaving}
 					footer={({ canSubmit, isSubmitting }) => (

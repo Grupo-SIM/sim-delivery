@@ -55,7 +55,13 @@ export function ThemePaletteModal({ colors, isOpen, onClose, onSave }: ThemePale
 	}
 
 	return (
-		<Modal isOpen={isOpen} maxWidth="960px" onClose={onClose} title={t("admin.branding.themeColors")}>
+		<Modal
+			isOpen={isOpen}
+			maxWidth="960px"
+			onClose={onClose}
+			title={t("admin.branding.themeColors")}
+			urlKey="theme-palette"
+		>
 			<div className="space-y-4">
 				<p className="text-muted-foreground text-sm">{t("admin.branding.paletteHint")}</p>
 

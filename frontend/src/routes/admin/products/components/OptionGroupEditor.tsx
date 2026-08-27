@@ -111,6 +111,8 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 					setIsExpanded(false);
 				}}
 				title={t("admin.products.options.editGroup")}
+				urlKey="product-option-group-edit"
+				urlState={group.id}
 			>
 				<div className="space-y-4">
 					<div className="grid gap-3 md:grid-cols-2">

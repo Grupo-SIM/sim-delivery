@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Modal } from "@/components/ui/Modal";
+import { closeActiveModalHistory } from "@/hooks/use-modal-history";
 import { cartTotalCents, showToast, useCartStore } from "@/stores";
 import { CartItemRow } from "./CartItemRow";
 import { CartSuggestions } from "./CartSuggestions";
@@ -51,7 +52,7 @@ export function CartModal({
 
 	return (
 		<>
-			<Modal isOpen={open} onClose={onClose} title={t("store.cart.title")}>
+			<Modal isOpen={open} onClose={onClose} title={t("store.cart.title")} urlKey="cart">
 				{items.length === 0 ? (
 					<p className="py-6 text-center text-muted-foreground text-sm">{t("store.cart.empty")}</p>
 				) : (
@@ -97,10 +98,11 @@ export function CartModal({
 						<Button
 							className="w-full"
 							disabled={belowMin}
-							onClick={() => {
-								onClose();
-								void navigate({ params: { unitId: unitSlug }, to: "/$unitId/checkout" });
-							}}
+							onClick={() =>
+								closeActiveModalHistory(() => {
+									void navigate({ params: { unitId: unitSlug }, to: "/$unitId/checkout" });
+								})
+							}
 							type="button"
 						>
 							{t("store.cart.checkout")}

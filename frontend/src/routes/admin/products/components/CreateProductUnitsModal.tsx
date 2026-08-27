@@ -33,7 +33,12 @@ export function CreateProductUnitsModal({
 	}
 
 	return (
-		<Modal isOpen={isOpen} onClose={onClose} title={t("admin.products.create.unitsModalTitle")}>
+		<Modal
+			isOpen={isOpen}
+			onClose={onClose}
+			title={t("admin.products.create.unitsModalTitle")}
+			urlKey="product-create-units"
+		>
 			<div className="space-y-4">
 				{isPending ? (
 					<div className="space-y-2">

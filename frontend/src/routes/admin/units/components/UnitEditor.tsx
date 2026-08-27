@@ -178,7 +178,14 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 	}
 
 	return (
-		<Modal isOpen={unit !== null} maxWidth="760px" onClose={onClose} title={t("admin.units.config.title")}>
+		<Modal
+			isOpen={unit !== null}
+			maxWidth="760px"
+			onClose={onClose}
+			title={t("admin.units.config.title")}
+			urlKey="unit-edit"
+			urlState={unit?.id}
+		>
 			<div className="space-y-6">
 				<section className="space-y-4">
 					<Label>

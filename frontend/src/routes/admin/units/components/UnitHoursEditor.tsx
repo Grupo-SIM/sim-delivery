@@ -108,7 +108,13 @@ export function UnitHoursEditor({ onClose, unitId }: UnitHoursEditorProps) {
 	}
 
 	return (
-		<Modal isOpen={unitId !== null} onClose={onClose} title={t("admin.units.hours.title")}>
+		<Modal
+			isOpen={unitId !== null}
+			onClose={onClose}
+			title={t("admin.units.hours.title")}
+			urlKey="unit-hours"
+			urlState={unitId ?? undefined}
+		>
 			{isPending ? (
 				<Skeleton className="h-64 w-full" />
 			) : (

@@ -122,7 +122,13 @@ export function UnitDeliveryZonesEditor({ onClose, unit }: UnitDeliveryZonesEdit
 	}
 
 	return (
-		<Modal isOpen={unitId !== null} onClose={onClose} title={t("admin.units.deliveryZones.title")}>
+		<Modal
+			isOpen={unitId !== null}
+			onClose={onClose}
+			title={t("admin.units.deliveryZones.title")}
+			urlKey="unit-delivery-zones"
+			urlState={unitId ?? undefined}
+		>
 			{isPending ? (
 				<Skeleton className="h-64 w-full" />
 			) : (

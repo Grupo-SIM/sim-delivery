@@ -1,9 +1,11 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { type ReactNode, useState } from "react";
 import { LuX } from "react-icons/lu";
+import { useModalHistory } from "@/hooks/use-modal-history";
 import { Scrollbar } from "./Scrollbar";
 
 interface ModalProps {
+	historyMode?: "push" | "replace";
 	layer?: "modal" | "submodal";
 	isOpen: boolean;
 	onClose: () => void;
@@ -11,24 +13,30 @@ interface ModalProps {
 	children: ReactNode;
 	maxWidth?: string;
 	scrollable?: boolean;
+	urlKey: string;
+	urlState?: string;
 }
 
 export function Modal({
 	children,
+	historyMode = "push",
 	isOpen,
 	layer = "modal",
 	maxWidth = "640px",
 	onClose,
 	scrollable = true,
 	title,
+	urlKey,
+	urlState,
 }: ModalProps) {
 	const zIndexClass = layer === "submodal" ? "z-[60]" : "z-50";
 	const [content, setContent] = useState<HTMLDivElement | null>(null);
+	const closeWithHistory = useModalHistory({ historyMode, isOpen, onClose, urlKey, urlState });
 
 	return (
 		<Dialog.Root
 			onOpenChange={open => {
-				if (!open) onClose();
+				if (!open) closeWithHistory();
 			}}
 			open={isOpen}
 		>

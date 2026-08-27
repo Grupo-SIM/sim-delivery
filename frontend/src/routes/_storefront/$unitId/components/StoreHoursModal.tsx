@@ -14,7 +14,7 @@ export function StoreHoursModal({ hours, isOpen, onClose }: StoreHoursModalProps
 	const { t } = useTranslation();
 
 	return (
-		<Modal isOpen={isOpen} onClose={onClose} title={t("store.unit.hoursTitle")}>
+		<Modal isOpen={isOpen} onClose={onClose} title={t("store.unit.hoursTitle")} urlKey="store-hours">
 			<ul className="divide-y divide-border text-sm">
 				{WEEKDAYS.map((weekday, index) => {
 					const day = hours.find(item => Number(item.weekday) === index);

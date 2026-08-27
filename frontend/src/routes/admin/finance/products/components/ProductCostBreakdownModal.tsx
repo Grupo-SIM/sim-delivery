@@ -29,7 +29,13 @@ export function ProductCostBreakdownModal({ formatCents, onClose, product }: Pro
 	const { t } = useTranslation();
 
 	return (
-		<Modal isOpen={product !== null} onClose={onClose} title={product?.productName}>
+		<Modal
+			isOpen={product !== null}
+			onClose={onClose}
+			title={product?.productName}
+			urlKey="product-cost-breakdown"
+			urlState={product?.productName}
+		>
 			{product && (
 				<div className="space-y-4">
 					<div className="grid gap-4 sm:grid-cols-3">

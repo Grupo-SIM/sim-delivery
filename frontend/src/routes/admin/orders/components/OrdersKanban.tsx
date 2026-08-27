@@ -335,6 +335,8 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 				maxWidth="520px"
 				onClose={() => setProblemOrderId(null)}
 				title="Registrar pendência"
+				urlKey="order-problem-create"
+				urlState={problemOrderId ?? undefined}
 			>
 				<div className="space-y-4">
 					<label className="space-y-1">

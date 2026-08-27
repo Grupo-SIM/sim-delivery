@@ -50,6 +50,7 @@ export function AddOptionModal({ onAdd }: AddOptionModalProps) {
 				maxWidth="640px"
 				onClose={() => setIsOpen(false)}
 				title={t("admin.products.options.addOption")}
+				urlKey="product-option-add"
 			>
 				<div className="grid gap-3 md:grid-cols-2">
 					<OptionFormFields draftRef={draftRef} onChange={setOption} option={option} />

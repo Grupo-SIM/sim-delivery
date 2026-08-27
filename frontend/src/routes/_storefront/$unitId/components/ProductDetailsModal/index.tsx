@@ -17,6 +17,7 @@ import type { OptionImagePreview, ProductOption } from "./types";
 interface ProductDetailsModalProps {
 	item: MenuItem | null;
 	editingItem?: CartItem | null;
+	historyMode?: "push" | "replace";
 	initialNote?: string;
 	initialOptions?: string;
 	layer?: "modal" | "submodal";
@@ -67,6 +68,7 @@ function optionsFromSearch(item: MenuItem, serializedOptions?: string): Selected
 
 export function ProductDetailsModal({
 	editingItem = null,
+	historyMode = "push",
 	initialNote,
 	initialOptions,
 	item,
@@ -158,7 +160,16 @@ export function ProductDetailsModal({
 
 	return (
 		<>
-			<Modal isOpen layer={layer} maxWidth="1100px" onClose={onClose} scrollable={false}>
+			<Modal
+				historyMode={historyMode}
+				isOpen
+				layer={layer}
+				maxWidth="1100px"
+				onClose={onClose}
+				scrollable={false}
+				urlKey="product-details"
+				urlState={selectedItem.id}
+			>
 				<div className="flex h-full min-h-0 min-w-0 flex-col gap-4 sm:gap-6">
 					<div
 						className={`grid min-h-0 min-w-0 flex-1 gap-4 overflow-hidden sm:gap-6 ${

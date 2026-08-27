@@ -34,7 +34,7 @@ export function CreateInventoryItemModal({ isOpen, onClose }: { isOpen: boolean;
 		);
 	}
 	return (
-		<Modal isOpen={isOpen} onClose={close} title={t("admin.inventory.item.title")}>
+		<Modal isOpen={isOpen} onClose={close} title={t("admin.inventory.item.title")} urlKey="inventory-item-create">
 			<div className="space-y-4">
 				<TextField
 					label={t("admin.inventory.fields.name")}

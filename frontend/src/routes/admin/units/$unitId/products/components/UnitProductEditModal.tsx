@@ -126,7 +126,13 @@ export function UnitProductEditModal({
 	}
 
 	return (
-		<Modal isOpen={association !== null} onClose={onClose} title={t("admin.unitProducts.edit.title")}>
+		<Modal
+			isOpen={association !== null}
+			onClose={onClose}
+			title={t("admin.unitProducts.edit.title")}
+			urlKey="unit-product-edit"
+			urlState={association?.id}
+		>
 			<div className="space-y-4">
 				<div className="grid gap-4 md:grid-cols-2">
 					<UnitProductFormFields

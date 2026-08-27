@@ -112,6 +112,8 @@ export function OptionEditor({ onChange, onDelete, option }: OptionEditorProps) 
 					setIsEditing(false);
 				}}
 				title={option.name}
+				urlKey="product-option-edit"
+				urlState={option.id}
 			>
 				<div className="grid gap-3 md:grid-cols-2">
 					<OptionFormFields onChange={onChange} option={option} />

@@ -65,7 +65,14 @@ export function AssignCourierModal({ isOpen, onClose, orderId }: AssignCourierMo
 	}
 
 	return (
-		<Modal isOpen={isOpen} maxWidth="420px" onClose={handleClose} title={t("admin.deliveries.assign.title")}>
+		<Modal
+			isOpen={isOpen}
+			maxWidth="420px"
+			onClose={handleClose}
+			title={t("admin.deliveries.assign.title")}
+			urlKey="order-courier-assign"
+			urlState={orderId ?? undefined}
+		>
 			<div className="space-y-4">
 				{deliveriesPending || couriersPending ? (
 					<Skeleton className="h-10 w-full" />

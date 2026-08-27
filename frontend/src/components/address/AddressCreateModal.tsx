@@ -27,6 +27,7 @@ export function AddressCreateModal({
 			maxWidth="640px"
 			onClose={onClose}
 			title={t("store.checkout.address.addTitle")}
+			urlKey="address-create"
 		>
 			<AddressForm
 				disabled={isSaving}
