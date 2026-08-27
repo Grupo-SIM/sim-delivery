@@ -162,11 +162,11 @@ export function ProductDetailsModal({
 				<div className="flex h-full min-h-0 min-w-0 flex-col gap-4 sm:gap-6">
 					<div
 						className={`grid min-h-0 min-w-0 flex-1 gap-4 overflow-hidden sm:gap-6 ${
-							selectedItem.imageUrl ? "lg:grid-cols-[minmax(0,3fr)_minmax(0,1fr)]" : "lg:grid-cols-1"
+							selectedItem.imageUrl ? "lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)]" : "lg:grid-cols-1"
 						}`}
 					>
 						{selectedItem.imageUrl && (
-							<div className="mx-auto aspect-square w-40 shrink-0 self-start overflow-hidden rounded-brand bg-muted sm:mx-0 sm:aspect-[4/3] sm:w-full lg:aspect-square">
+							<div className="mx-auto aspect-square w-3/4 shrink-0 self-start overflow-hidden rounded-brand bg-muted sm:mx-0 sm:aspect-[4/3] sm:w-full lg:aspect-square">
 								<img alt={selectedItem.title} className="size-full object-cover" src={selectedItem.imageUrl} />
 							</div>
 						)}
