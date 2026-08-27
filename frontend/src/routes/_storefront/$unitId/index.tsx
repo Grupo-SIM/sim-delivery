@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { Container } from "@/components/ui/Container";
@@ -39,11 +39,9 @@ function UnitStorePage() {
 	const unit = units?.find(item => item.slug === unitSlug);
 	const [hoursOpen, setHoursOpen] = useState(false);
 	const [search, setSearch] = useState("");
-	const openedProductModalRef = useRef(false);
 	const setSelectedUnit = useSelectedUnitStore(state => state.setUnit);
 
 	const openProductModal = useCallback((productId: string) => {
-		openedProductModalRef.current = true;
 		void navigate({
 			params: { unitId: unitSlug },
 			resetScroll: false,
@@ -63,12 +61,6 @@ function UnitStorePage() {
 	}, [navigate, unitSlug]);
 
 	const closeProductModal = useCallback(() => {
-		if (openedProductModalRef.current) {
-			openedProductModalRef.current = false;
-			window.history.back();
-			return;
-		}
-
 		void navigate({
 			params: { unitId: unitSlug },
 			replace: true,
