@@ -33,13 +33,17 @@ export function CartBar({ deliveryFee, minOrderCents, sections, unitId, unitSlug
 
 	return (
 		<>
-			<div className="fixed bottom-4 left-1/2 z-20 w-[92%] max-w-lg -translate-x-1/2 space-y-1.5">
+			<div className="fixed right-4 bottom-4 z-20 flex max-w-[calc(100%-2rem)] flex-col items-end gap-1.5">
 				{belowMin && (
 					<div className="rounded-lg border border-warning/30 bg-warning/10 px-3 py-1.5 text-center text-foreground text-xs">
 						{t("store.cart.minOrderProgress", { amount: money.format((minOrderCents - total) / 100) })}
 					</div>
 				)}
-				<Button className="w-full justify-between shadow-lg" onClick={() => setOpen(true)} type="button">
+				<Button
+					className="h-10 max-w-full gap-3 rounded-full px-4 text-sm shadow-lg"
+					onClick={() => setOpen(true)}
+					type="button"
+				>
 					<span>{t("store.cart.open", { count })}</span>
 					<span>{money.format(total / 100)}</span>
 				</Button>
