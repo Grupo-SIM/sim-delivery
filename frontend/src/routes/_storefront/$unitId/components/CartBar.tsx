@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { cartCount, cartTotalCents, useCartStore, useDeliveryMethodStore } from "@/stores";
 import { CartModal } from "./CartModal";
 import { type MenuSection, money } from "./types";
@@ -8,13 +9,14 @@ import { type MenuSection, money } from "./types";
 interface CartBarProps {
 	deliveryFee: number;
 	minOrderCents: number;
+	categoryNavDocked: boolean;
 	sections: MenuSection[];
 	unitId: string;
 	unitSlug: string;
 }
 
 /** Sticky bottom bar summarizing the current unit's cart; opens the cart modal. */
-export function CartBar({ deliveryFee, minOrderCents, sections, unitId, unitSlug }: CartBarProps) {
+export function CartBar({ categoryNavDocked, deliveryFee, minOrderCents, sections, unitId, unitSlug }: CartBarProps) {
 	const { t } = useTranslation();
 	const [open, setOpen] = useState(false);
 	const cartUnitId = useCartStore(state => state.unitId);
@@ -33,7 +35,12 @@ export function CartBar({ deliveryFee, minOrderCents, sections, unitId, unitSlug
 
 	return (
 		<>
-			<div className="fixed right-4 bottom-4 z-20 flex max-w-[calc(100%-2rem)] flex-col items-end gap-1.5">
+			<div
+				className={cn(
+					"fixed right-4 bottom-4 z-20 flex max-w-[calc(100%-2rem)] flex-col items-end gap-1.5 transition-[bottom] duration-200",
+					categoryNavDocked && "bottom-[calc(5rem+env(safe-area-inset-bottom))] lg:bottom-4",
+				)}
+			>
 				{belowMin && (
 					<div className="rounded-lg border border-warning/30 bg-warning/10 px-3 py-1.5 text-center text-foreground text-xs">
 						{t("store.cart.minOrderProgress", { amount: money.format((minOrderCents - total) / 100) })}

@@ -38,6 +38,7 @@ function UnitStorePage() {
 	const units = unitsQuery.data;
 	const unit = units?.find(item => item.slug === unitSlug);
 	const [hoursOpen, setHoursOpen] = useState(false);
+	const [categoryNavDocked, setCategoryNavDocked] = useState(false);
 	const [search, setSearch] = useState("");
 	const setSelectedUnit = useSelectedUnitStore(state => state.setUnit);
 
@@ -128,6 +129,7 @@ function UnitStorePage() {
 						modalOptions={productModal.options}
 						modalProductId={productModal.product}
 						onCloseProductModal={closeProductModal}
+						onCategoryNavDockedChange={setCategoryNavDocked}
 						onOpenProductModal={openProductModal}
 						onUpdateProductModal={updateProductModal}
 						search={search}
@@ -140,6 +142,7 @@ function UnitStorePage() {
 				<UnitReviews unitId={unit.id} />
 
 				<CartBar
+					categoryNavDocked={categoryNavDocked}
 					deliveryFee={fee}
 					minOrderCents={minOrder}
 					sections={menu.data ?? []}

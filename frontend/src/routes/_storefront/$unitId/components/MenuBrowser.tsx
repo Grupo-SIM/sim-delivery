@@ -14,6 +14,7 @@ interface MenuBrowserProps {
 	modalOptions?: string;
 	modalProductId?: string;
 	onCloseProductModal: () => void;
+	onCategoryNavDockedChange: (docked: boolean) => void;
 	onOpenProductModal: (productId: string) => void;
 	onUpdateProductModal: (options: string | undefined, note: string) => void;
 	sections: MenuSection[];
@@ -28,6 +29,7 @@ export function MenuBrowser({
 	modalOptions,
 	modalProductId,
 	onCloseProductModal,
+	onCategoryNavDockedChange,
 	onOpenProductModal,
 	onUpdateProductModal,
 	search,
@@ -75,7 +77,7 @@ export function MenuBrowser({
 						<EmptyState title={query ? t("store.menu.noResults") : t("store.menu.empty")} />
 					) : (
 						<>
-							<CategoryNav sections={filtered} />
+							<CategoryNav onDockedChange={onCategoryNavDockedChange} sections={filtered} />
 							{filtered.map(section => (
 								<MenuSectionBlock
 									key={section.categoryId ?? "loose"}
