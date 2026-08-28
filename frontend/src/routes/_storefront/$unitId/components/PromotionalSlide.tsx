@@ -16,7 +16,13 @@ export function PromotionalSlide({ image }: PromotionalSlideProps) {
 	return (
 		<article className="group aspect-square w-full shrink-0 snap-center overflow-hidden rounded-xl border border-border bg-muted shadow-sm sm:w-[47%] lg:w-[31%]">
 			{image.linkUrl ? (
-				<a aria-label={image.title} className="block h-full w-full" href={image.linkUrl}>
+				<a
+					aria-label={image.title}
+					className="block h-full w-full"
+					href={image.linkUrl}
+					rel="noopener noreferrer"
+					target="_blank"
+				>
 					{content}
 				</a>
 			) : (
