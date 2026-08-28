@@ -54,10 +54,11 @@ export function ProductOptionGroup({
 	}
 
 	return (
-		<section className="min-w-0 rounded-brand border border-border">
+		<section className="relative min-w-0">
 			<button
-				className={`sticky top-0 z-10 block w-full min-w-0 rounded-t-brand bg-muted px-4 py-3 text-left shadow-sm ${
-					complete ? "cursor-pointer" : "cursor-default"
+				className={`sticky top-0 z-10 block w-full min-w-0 border border-border bg-muted px-4 py-3 text-left shadow-sm ${
+					collapsed ? "rounded-brand" : "rounded-t-brand"
+				} ${complete ? "cursor-pointer" : "cursor-default"}
 				}`}
 				onClick={() => complete && onToggleExpanded()}
 				type="button"
@@ -100,7 +101,7 @@ export function ProductOptionGroup({
 				)}
 			</button>
 			{!collapsed && (
-				<div className="divide-y divide-border">
+				<div className="divide-y divide-border overflow-hidden rounded-b-brand border-x border-b border-border">
 					{group.options.map(option => (
 						<ProductOptionRow
 							group={group}

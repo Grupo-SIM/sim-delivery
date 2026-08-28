@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaCartShopping } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
@@ -88,7 +88,9 @@ export function ProductDetailsModal({
 	const [expandedGroupIds, setExpandedGroupIds] = useState<Set<string>>(new Set());
 	const [contentViewport, setContentViewport] = useState<HTMLDivElement | null>(null);
 	const [optionsViewport, setOptionsViewport] = useState<HTMLDivElement | null>(null);
+	const [groupToScroll, setGroupToScroll] = useState<string | null>(null);
 	const [initializedModalKey, setInitializedModalKey] = useState<string | null>(null);
+	const optionGroupRefs = useRef(new Map<string, HTMLDivElement>());
 	const modalKey = item ? `${item.id}:${editingItem?.lineKey ?? "new"}` : null;
 
 	useEffect(() => {
@@ -112,6 +114,23 @@ export function ProductDetailsModal({
 		onStateChange(options, note);
 	}, [initializedModalKey, item, modalKey, note, onStateChange, options]);
 
+	useEffect(() => {
+		if (!item || !groupToScroll) return;
+		const groups = item.optionGroups.filter(group => group.options.length > 0);
+		const currentIndex = groups.findIndex(group => group.id === groupToScroll);
+		const nextGroup = groups[currentIndex + 1];
+		if (!nextGroup) {
+			setGroupToScroll(null);
+			return;
+		}
+
+		const frame = requestAnimationFrame(() => {
+			optionGroupRefs.current.get(nextGroup.id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+			setGroupToScroll(null);
+		});
+		return () => cancelAnimationFrame(frame);
+	}, [groupToScroll, item]);
+
 	if (!item) return null;
 	const selectedItem = item;
 	const delta = optionsPriceDelta(selectedItem.optionGroups, options);
@@ -123,13 +142,14 @@ export function ProductDetailsModal({
 		if (!group) return;
 		setOptions(current => {
 			const next = applyOptionQuantity(group, option, nextQuantity, current);
-			if (isGroupComplete(group, next)) {
+			if (!isGroupComplete(group, current) && isGroupComplete(group, next)) {
 				setExpandedGroupIds(expanded => {
 					if (!expanded.has(groupId)) return expanded;
 					const withoutGroup = new Set(expanded);
 					withoutGroup.delete(groupId);
 					return withoutGroup;
 				});
+				setGroupToScroll(groupId);
 			}
 			return next;
 		});
@@ -203,17 +223,24 @@ export function ProductDetailsModal({
 										{selectedItem.optionGroups
 											.filter(group => group.options.length > 0)
 											.map(group => (
-												<ProductOptionGroup
-													expanded={expandedGroupIds.has(group.id)}
-													group={group}
+												<div
 													key={group.id}
-													onImagePreview={setImagePreview}
-													onQuantityChange={(option, nextQuantity) =>
-														setOptionQuantity(group.id, option, nextQuantity)
-													}
-													onToggleExpanded={() => toggleGroupExpanded(group.id)}
-													options={options}
-												/>
+													ref={element => {
+														if (element) optionGroupRefs.current.set(group.id, element);
+														else optionGroupRefs.current.delete(group.id);
+													}}
+												>
+													<ProductOptionGroup
+														expanded={expandedGroupIds.has(group.id)}
+														group={group}
+														onImagePreview={setImagePreview}
+														onQuantityChange={(option, nextQuantity) =>
+															setOptionQuantity(group.id, option, nextQuantity)
+														}
+														onToggleExpanded={() => toggleGroupExpanded(group.id)}
+														options={options}
+													/>
+												</div>
 											))}
 
 										<div className="space-y-2">
