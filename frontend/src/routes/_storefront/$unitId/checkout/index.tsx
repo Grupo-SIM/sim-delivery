@@ -212,8 +212,8 @@ function CheckoutPage() {
 		clearCart();
 		if (!placedOrder) return;
 		void navigate({
-			params: { orderId: placedOrder.id, unitId: unitSlug },
-			to: "/$unitId/orders/$orderId",
+			params: { orderId: placedOrder.id },
+			to: "/orders/$orderId",
 		});
 	}
 

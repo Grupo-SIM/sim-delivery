@@ -494,6 +494,7 @@ function makeCustomerOrderPrisma(order: object | null) {
 	const prisma = {
 		company: { findUnique: async () => ({ id: "cmp_1", slug: "demo" }) },
 		order: { findFirst: async () => order },
+		product: { findMany: async () => [{ id: "prod_1", imageUrl: "https://example.com/pao-de-queijo.jpg" }] },
 	} as unknown as PrismaInstance;
 
 	return prisma;
@@ -510,11 +511,11 @@ describe("GetCustomerOrder", () => {
 				items: [],
 				status: "em_preparo",
 				total: 2500,
-				unit: { name: "Centro" },
-			}),
+			unit: { name: "Centro", slug: "centro" },
+		}),
 		).execute("user_1", "ord_1", "demo");
 
-		expect(result).toMatchObject({ id: "ord_1", status: "em_preparo", unitName: "Centro" });
+		expect(result).toMatchObject({ id: "ord_1", status: "em_preparo", unitName: "Centro", unitSlug: "centro" });
 	});
 
 	it("hides orders that do not belong to the authenticated customer", async () => {

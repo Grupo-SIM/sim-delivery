@@ -124,12 +124,18 @@ export const CustomerOrderTrackingReturn = t.Object({
 	createdAt: t.Date(),
 	deliveryMethod: t.String(),
 	id: t.String(),
-	items: t.Array(OrderItemReturn),
+	items: t.Array(
+		t.Object({
+			...OrderItemReturn.properties,
+			imageUrl: __nullable__(t.String()),
+		}),
+	),
 	problemReason: __nullable__(t.String()),
 	status: t.String(),
 	statusEvents: t.Array(OrderStatusEventReturn),
 	total: t.Integer(),
 	unitName: t.String(),
+	unitSlug: t.String(),
 });
 export type CustomerOrderTrackingReturn = typeof CustomerOrderTrackingReturn.static;
 

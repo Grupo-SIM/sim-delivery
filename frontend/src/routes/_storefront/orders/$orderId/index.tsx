@@ -63,7 +63,7 @@ const STATUS_COPY = {
 
 function OrderTrackingPage() {
 	const { t } = useTranslation();
-	const { orderId, unitId } = Route.useParams();
+	const { orderId } = Route.useParams();
 	const { data: order, isError, isPending } = useGetCustomerOrder(orderId, slug ?? "");
 
 	if (isPending) {
@@ -79,7 +79,7 @@ function OrderTrackingPage() {
 		return (
 			<Container className="max-w-lg space-y-6 py-10">
 				<ErrorState title={t("store.checkout.tracking.empty")} />
-				<Link className="block text-center text-primary text-sm underline" params={{ unitId }} to="/$unitId">
+				<Link className="block text-center text-primary text-sm underline" to="/orders">
 					{t("store.checkout.tracking.back")}
 				</Link>
 			</Container>
@@ -103,10 +103,7 @@ function OrderTrackingPage() {
 
 	return (
 		<Container className="max-w-lg space-y-6 py-8">
-			<SectionHeading
-				subtitle={t("store.checkout.tracking.subtitle")}
-				title={t("store.checkout.tracking.title")}
-			/>
+			<SectionHeading subtitle={t("store.checkout.tracking.subtitle")} title={t("store.checkout.tracking.title")} />
 
 			{order.status === "cancelado" ? (
 				<div className="space-y-2 rounded-lg border border-destructive/40 bg-destructive/5 p-5">
@@ -151,9 +148,7 @@ function OrderTrackingPage() {
 										)}
 									</div>
 									<div className="pt-0.5 pb-4">
-										<p
-											className={`font-medium text-sm ${complete ? "text-foreground" : "text-muted-foreground"}`}
-										>
+										<p className={`font-medium text-sm ${complete ? "text-foreground" : "text-muted-foreground"}`}>
 											{t(copy.title)}
 										</p>
 										{statusTime && <p className="mt-1 text-muted-foreground text-xs">{statusTime}</p>}
@@ -168,7 +163,7 @@ function OrderTrackingPage() {
 			{(order.status === "entregue" || order.status === "retirado") && (
 				<Link
 					className="block rounded-lg border border-primary/30 bg-primary/5 p-4 text-center font-medium text-primary text-sm"
-					params={{ unitId }}
+					params={{ unitId: order.unitSlug }}
 					search={{ orderId }}
 					to="/$unitId/rate"
 				>
@@ -184,11 +179,27 @@ function OrderTrackingPage() {
 					<span className="font-semibold">{formatMoney(order.total / 100)}</span>
 				</div>
 				<p className="font-medium text-sm">{t("store.checkout.tracking.items")}</p>
-				<ul className="space-y-2 text-muted-foreground text-sm">
+				<ul className="space-y-3 text-muted-foreground text-sm">
 					{order.items.map(item => (
-						<li className="[overflow-wrap:anywhere]" key={item.id}>
-							{item.quantity}x {item.productName}
-							{item.note ? ` - ${item.note}` : ""}
+						<li className="flex items-center gap-3 [overflow-wrap:anywhere]" key={item.id}>
+							{item.imageUrl ? (
+								<img
+									alt={item.productName}
+									className="size-12 shrink-0 rounded-lg object-cover"
+									loading="lazy"
+									src={item.imageUrl}
+								/>
+							) : (
+								<div aria-hidden className="grid size-12 shrink-0 place-items-center rounded-lg bg-muted">
+									<LuShoppingBag className="size-5 text-muted-foreground" />
+								</div>
+							)}
+							<div className="min-w-0">
+								<p className="text-foreground">
+									{item.quantity}x {item.productName}
+								</p>
+								{item.note && <p className="mt-0.5 text-xs">{item.note}</p>}
+							</div>
 						</li>
 					))}
 				</ul>
@@ -201,6 +212,6 @@ function OrderTrackingPage() {
 	);
 }
 
-export const Route = createFileRoute("/_storefront/$unitId/orders/$orderId/")({
+export const Route = createFileRoute("/_storefront/orders/$orderId/")({
 	component: OrderTrackingPage,
 });

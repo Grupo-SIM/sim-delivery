@@ -8,6 +8,7 @@ export interface CustomerOrderTracking {
 	id: string;
 	items: {
 		id: string;
+		imageUrl: string | null;
 		note: string | null;
 		productId: string;
 		productName: string;
@@ -21,6 +22,7 @@ export interface CustomerOrderTracking {
 	}[];
 	total: number;
 	unitName: string;
+	unitSlug: string;
 }
 
 function getCustomerOrderQueryKey(orderId: string, slug: string) {

@@ -74,8 +74,8 @@ function OrdersPage() {
 							<li key={order.id}>
 								<Link
 									className="group flex items-center gap-3 rounded-lg border border-border bg-card p-3 transition hover:border-primary/40 hover:shadow-sm"
-									params={{ orderId: order.id, unitId: order.unitSlug }}
-									to="/$unitId/orders/$orderId"
+									params={{ orderId: order.id }}
+									to="/orders/$orderId"
 								>
 									<span className="grid size-10 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground">
 										<LuReceiptText className="size-5" />
