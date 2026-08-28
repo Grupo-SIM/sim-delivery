@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuBike, LuChefHat, LuShoppingBag, LuUserRound } from "react-icons/lu";
+import { LuBike, LuChefHat, LuShoppingBag } from "react-icons/lu";
 import { OrderSummaryModal } from "@/components/orders";
 import { Button } from "@/components/ui/button";
 import type { GetOrders200 } from "@/lib/api";
@@ -101,18 +101,6 @@ export function OrderKanbanCard({
 							</li>
 						)}
 					</ul>
-					{order.preparedBy?.name && (
-						<div className="flex items-center gap-2 text-muted-foreground">
-							<LuUserRound className="size-4 shrink-0" />
-							<span>{order.preparedBy.name}</span>
-						</div>
-					)}
-					{order.delivery?.courierName && (
-						<div className="flex items-center gap-2 text-muted-foreground">
-							<LuUserRound className="size-4 shrink-0" />
-							<span>{order.delivery.courierName}</span>
-						</div>
-					)}
 				</div>
 			</button>
 
