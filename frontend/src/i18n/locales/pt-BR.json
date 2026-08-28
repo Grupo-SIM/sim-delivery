@@ -951,6 +951,7 @@
 				},
 				"empty": "Nenhum funcionário ainda.",
 				"invite": {
+					"allUnits": "Todas as unidades",
 					"email": "E-mail",
 					"emailPlaceholder": "pessoa@empresa.com",
 					"emailSent": "E-mail para definição de senha enviado.",
@@ -972,10 +973,17 @@
 					"owner": "Proprietário"
 				},
 				"row": {
+					"allUnits": "Todas as unidades",
+					"cancel": "Descartar",
+					"edit": "Editar",
+					"editTitle": "Editar funcionário",
+					"noUnits": "Nenhuma unidade",
 					"remove": "Remover",
 					"removeConfirm": "Remover {{name}} da equipe?",
 					"removeError": "Não foi possível remover o funcionário.",
 					"removeSuccess": "Funcionário removido.",
+					"save": "Salvar",
+					"saving": "Salvando...",
 					"updateError": "Não foi possível atualizar o funcionário.",
 					"updateSuccess": "Funcionário atualizado."
 				},

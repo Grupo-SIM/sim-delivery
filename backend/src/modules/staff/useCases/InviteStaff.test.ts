@@ -8,9 +8,20 @@ interface UserRow {
 }
 
 function fakePrisma(existingEmails: string[] = []) {
+	const unitLinks: Array<{ unitId: string; userId: string }> = [];
 	const updates: Array<{ id: string; data: unknown }> = [];
 	return {
 		prisma: {
+			staffUnit: {
+				createMany: async ({ data }: { data: Array<{ unitId: string; userId: string }> }) => {
+					unitLinks.push(...data);
+					return { count: data.length };
+				},
+			},
+			unit: {
+				findMany: async ({ where }: { where: { id: { in: string[] } } }) =>
+					where.id.in.map(id => ({ id })),
+			},
 			user: {
 				findUnique: async ({ where }: { where: { email: string } }) =>
 					existingEmails.includes(where.email) ? { id: "existing" } : null,
@@ -37,6 +48,7 @@ const baseInput = {
 	email: "new@staff.com",
 	name: "New Staff",
 	role: "manager" as const,
+	unitIds: ["unit_1"],
 };
 
 describe("InviteStaff", () => {
@@ -70,13 +82,13 @@ describe("InviteStaff", () => {
 		).rejects.toThrow("NO_COMPANY");
 	});
 
-	it("requires at least one unit for a courier", async () => {
+	it("requires at least one unit for every non-owner", async () => {
 		const { prisma } = fakePrisma();
 		await expect(
 			new InviteStaff(prisma, signUp, requestPasswordReset).execute({
 				...baseInput,
 				companyId: "cmp_1",
-				role: "courier",
+				role: "attendant",
 				unitIds: [],
 			}),
 		).rejects.toThrow("COURIER_UNIT_REQUIRED");

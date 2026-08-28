@@ -2,13 +2,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/Checkbox";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { getStaffQueryKey, useGetUnits, usePostStaff } from "@/lib/api";
 import { showToast, useAuthStore } from "@/stores";
+import { StaffUnitSelector } from "./StaffUnitSelector";
 
 type Role = "owner" | "manager" | "attendant" | "kitchen" | "courier";
 
@@ -36,6 +36,7 @@ export function InviteStaffForm() {
 		{ label: t("admin.staff.roles.kitchen"), value: "kitchen" },
 		{ label: t("admin.staff.roles.courier"), value: "courier" },
 	];
+	const needsUnits = role !== "owner";
 
 	return (
 		<form
@@ -44,7 +45,7 @@ export function InviteStaffForm() {
 				event.preventDefault();
 				setError(null);
 				mutate(
-					{ data: { email, name, role, ...(["courier", "manager"].includes(role) ? { unitIds } : {}) } },
+					{ data: { email, name, role, ...(needsUnits ? { unitIds } : {}) } },
 					{
 						onError: caught =>
 							setError(
@@ -97,33 +98,19 @@ export function InviteStaffForm() {
 				/>
 			</div>
 
-			{["courier", "manager"].includes(role) && (
+			{needsUnits && (
 				<fieldset className="sm:col-span-2 lg:col-span-4">
 					<legend className="font-medium text-sm">{t("admin.staff.invite.units")}</legend>
 					{unitsQuery.isPending ? (
 						<div className="mt-2 h-11 animate-pulse rounded-md bg-muted" />
 					) : (
-						<div className="mt-2 flex flex-wrap gap-3">
-							{unitsQuery.data?.map(unit => (
-								<label
-									className="flex cursor-pointer items-center gap-2 text-sm"
-									htmlFor={`unit-${unit.id}`}
-									key={unit.id}
-								>
-									<Checkbox
-										checked={unitIds.includes(unit.id)}
-										id={`unit-${unit.id}`}
-										onChange={event => {
-											const checked = event.currentTarget.checked;
-											setUnitIds(current =>
-												checked ? [...current, unit.id] : current.filter(unitId => unitId !== unit.id),
-											);
-										}}
-									/>
-									{unit.name}
-								</label>
-							))}
-						</div>
+						<StaffUnitSelector
+							allUnitsLabel={t("admin.staff.invite.allUnits")}
+							idPrefix="invite-staff-unit"
+							onChange={setUnitIds}
+							unitIds={unitIds}
+							units={unitsQuery.data ?? []}
+						/>
 					)}
 				</fieldset>
 			)}
@@ -131,11 +118,7 @@ export function InviteStaffForm() {
 			<div className="sm:col-span-2 lg:col-span-4">
 				<Button
 					disabled={
-						isPending ||
-						unitsQuery.isPending ||
-						!name ||
-						!email ||
-						(role === "courier" && unitIds.length === 0)
+						isPending || unitsQuery.isPending || !name || !email || (needsUnits && unitIds.length === 0)
 					}
 					type="submit"
 				>

@@ -6,7 +6,7 @@ export class ListStaff {
 
 	async execute(companyId: string | null): Promise<StaffListReturn> {
 		const staff = await this.prisma.user.findMany({
-			orderBy: { createdAt: "asc" },
+			orderBy: { name: "asc" },
 			select: {
 				createdAt: true,
 				email: true,

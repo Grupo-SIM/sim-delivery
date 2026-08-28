@@ -17,9 +17,13 @@ function StaffPage() {
 	const filteredStaff = useMemo(() => {
 		if (!staff) return staff;
 		const query = search.trim().toLowerCase();
-		if (!query) return staff;
-		return staff.filter(
-			member => member.name.toLowerCase().includes(query) || member.email.toLowerCase().includes(query),
+		const filtered = !query
+			? staff
+			: staff.filter(
+					member => member.name.toLowerCase().includes(query) || member.email.toLowerCase().includes(query),
+				);
+		return [...filtered].sort((left, right) =>
+			left.name.localeCompare(right.name, "pt-BR", { sensitivity: "base" }),
 		);
 	}, [staff, search]);
 

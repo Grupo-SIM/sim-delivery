@@ -9,11 +9,11 @@ export class UpdateStaffUnits {
 	async execute({ companyId, staffId, unitIds }: UpdateStaffUnitsDTO): Promise<StaffReturn> {
 		if (!companyId) throw new DomainError(StaffErrors.NO_COMPANY);
 
-		const courier = await this.prisma.user.findFirst({
+		const staff = await this.prisma.user.findFirst({
 			select: { createdAt: true, email: true, id: true, name: true, role: true },
-			where: { companyId, id: staffId, role: { in: ["courier", "kitchen", "manager"] } },
+			where: { companyId, id: staffId, role: { in: ["manager", "attendant", "kitchen", "courier"] } },
 		});
-		if (!courier) throw new DomainError(StaffErrors.STAFF_NOT_FOUND);
+		if (!staff) throw new DomainError(StaffErrors.STAFF_NOT_FOUND);
 
 		const uniqueUnitIds = [...new Set(unitIds)];
 		const units = await this.prisma.unit.findMany({
@@ -29,6 +29,6 @@ export class UpdateStaffUnits {
 			}),
 		]);
 
-		return { ...courier, unitIds: uniqueUnitIds } as StaffReturn;
+		return { ...staff, unitIds: uniqueUnitIds } as StaffReturn;
 	}
 }

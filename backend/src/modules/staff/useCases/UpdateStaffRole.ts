@@ -17,11 +17,18 @@ export class UpdateStaffRole {
 
 		const staff = await this.prisma.user.update({
 			data: { role },
-			select: { createdAt: true, email: true, id: true, name: true, role: true },
+			select: {
+				createdAt: true,
+				email: true,
+				id: true,
+				name: true,
+				role: true,
+				staffUnits: { select: { unitId: true } },
+			},
 			where: { id: staffId },
 		});
-		await this.prisma.staffUnit.deleteMany({ where: { userId: staffId } });
 
-		return { ...staff, unitIds: [] } as StaffReturn;
+		const { staffUnits, ...member } = staff;
+		return { ...member, unitIds: staffUnits.map(({ unitId }) => unitId) } as StaffReturn;
 	}
 }

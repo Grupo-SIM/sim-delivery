@@ -4,9 +4,6 @@ import { UpdateStaffRole } from "./UpdateStaffRole";
 
 function fakePrisma(target: { id: string; companyId: string } | null) {
 	return {
-		staffUnit: {
-			deleteMany: async () => ({ count: 0 }),
-		},
 		user: {
 			findFirst: async ({ where }: { where: { companyId: string | null; id: string; role: unknown } }) =>
 				target && where.companyId === target.companyId && where.id === target.id ? target : null,
@@ -16,6 +13,7 @@ function fakePrisma(target: { id: string; companyId: string } | null) {
 				id: where.id,
 				name: "Staff",
 				role: data.role,
+				staffUnits: [{ unitId: "unit_1" }],
 			}),
 		},
 	} as unknown as PrismaInstance;
@@ -31,6 +29,7 @@ describe("UpdateStaffRole", () => {
 		});
 
 		expect(staff.role).toBe("kitchen");
+		expect(staff.unitIds).toEqual(["unit_1"]);
 	});
 
 	it("throws STAFF_NOT_FOUND for another company's user", async () => {
