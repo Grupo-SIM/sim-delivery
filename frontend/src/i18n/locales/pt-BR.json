@@ -968,7 +968,7 @@
 				"roles": {
 					"attendant": "Atendente",
 					"courier": "Entregador",
-					"kitchen": "Cozinha",
+					"kitchen": "Cozinheiro",
 					"manager": "Gerente",
 					"owner": "Proprietário"
 				},
