@@ -56,7 +56,11 @@ describe("email classes", () => {
 		expect(magic.messages[0]).toMatchObject({ subject: "Seu link de acesso", to: "maria@example.com" });
 		expect(status.messages[0]).toMatchObject({
 			subject: "Atualização do pedido order_1",
-			text: "Seu pedido foi cancelado.\n\nStatus: cancelado",
+			text: "Seu pedido foi cancelado.\n\nStatus: Cancelado",
 		});
+		expect(status.messages[0]?.html).toContain("Atualização do pedido");
+		expect(status.messages[0]?.html).toContain("Status:");
+		expect(status.messages[0]?.html).toContain("Cancelado");
+		expect(status.messages[0]?.html).toContain("Zero Grau");
 	});
 });
