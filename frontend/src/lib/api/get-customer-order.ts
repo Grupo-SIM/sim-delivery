@@ -5,6 +5,7 @@ export interface CustomerOrderTracking {
 	cancelReason: string | null;
 	createdAt: string;
 	deliveryMethod: "delivery" | "pickup";
+	displayNumber: number;
 	id: string;
 	items: {
 		id: string;

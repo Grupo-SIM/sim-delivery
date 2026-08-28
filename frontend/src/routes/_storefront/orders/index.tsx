@@ -83,6 +83,9 @@ function OrdersPage() {
 									<div className="min-w-0 flex-1">
 										<div className="flex items-center gap-2">
 											<p className="truncate font-semibold text-sm">{order.unitName}</p>
+											<span className="shrink-0 text-muted-foreground text-xs">
+												{t("store.account.orders.identifier", { number: order.displayNumber })}
+											</span>
 											<span
 												className={`shrink-0 rounded-full px-2 py-0.5 font-semibold text-xs ${statusToneClass(visibleStatus)}`}
 											>

@@ -4,6 +4,7 @@ import fetch from "./client-api";
 export interface CustomerOrderSummary {
 	createdAt: string;
 	deliveryMethod: "delivery" | "pickup";
+	displayNumber: number;
 	id: string;
 	itemsCount: number;
 	status: string;

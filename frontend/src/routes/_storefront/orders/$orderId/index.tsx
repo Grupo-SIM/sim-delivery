@@ -103,7 +103,10 @@ function OrderTrackingPage() {
 
 	return (
 		<Container className="max-w-lg space-y-6 py-8">
-			<SectionHeading subtitle={t("store.checkout.tracking.subtitle")} title={t("store.checkout.tracking.title")} />
+			<SectionHeading
+				subtitle={t("store.checkout.tracking.identifier", { number: order.displayNumber })}
+				title={t("store.checkout.tracking.title")}
+			/>
 
 			{order.status === "cancelado" ? (
 				<div className="space-y-2 rounded-lg border border-destructive/40 bg-destructive/5 p-5">

@@ -43,24 +43,38 @@ describe("email classes", () => {
 		const magicEmail = new MagicLinkEmail({ to: "maria@example.com", url: "https://example.com/magic" });
 		const statusEmail = new OrderStatusEmail({
 			message: "Seu pedido foi cancelado.",
-			orderId: "order_1",
+			orderNumber: 154,
 			status: "cancelado",
+			to: "maria@example.com",
+		});
+		const reviewEmail = new OrderStatusEmail({
+			message: "Seu pedido #154 foi entregue. Bom apetite!",
+			orderNumber: 154,
+			reviewUrl: "https://example.com/centro/rate?orderId=order_1",
+			status: "entregue",
 			to: "maria@example.com",
 		});
 
 		Object.defineProperty(magicEmail, "transport", { value: magic.transport });
 		Object.defineProperty(statusEmail, "transport", { value: status.transport });
+		Object.defineProperty(reviewEmail, "transport", { value: status.transport });
 		await magicEmail.send();
 		await statusEmail.send();
+		await reviewEmail.send();
 
 		expect(magic.messages[0]).toMatchObject({ subject: "Seu link de acesso", to: "maria@example.com" });
 		expect(status.messages[0]).toMatchObject({
-			subject: "Atualização do pedido order_1",
+			subject: "Atualização do pedido #154",
 			text: "Seu pedido foi cancelado.\n\nStatus: Cancelado",
 		});
 		expect(status.messages[0]?.html).toContain("Atualização do pedido");
 		expect(status.messages[0]?.html).toContain("Status:");
 		expect(status.messages[0]?.html).toContain("Cancelado");
 		expect(status.messages[0]?.html).toContain("Zero Grau");
+		expect(status.messages[1]).toMatchObject({
+			text: "Seu pedido #154 foi entregue. Bom apetite!\n\nStatus: Entregue\n\nAvalie seu pedido: https://example.com/centro/rate?orderId=order_1",
+		});
+		expect(status.messages[1]?.html).toContain("Avaliar pedido");
+		expect(status.messages[1]?.html).toContain("https://example.com/centro/rate?orderId=order_1");
 	});
 });

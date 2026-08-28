@@ -2,6 +2,7 @@
 /// `subtotal`, `deliveryFee` and `total` are integer cents (never floats).
 model Order {
     id             String   @id @default(cuid())
+    displayNumber  Int      @unique @default(autoincrement())
     companyId      String
     unitId         String
     customerId     String

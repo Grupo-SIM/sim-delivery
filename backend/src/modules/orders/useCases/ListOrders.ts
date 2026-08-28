@@ -85,6 +85,7 @@ export class ListOrders {
 				: null,
 			deliveryFee: o.deliveryFee,
 			deliveryMethod: o.deliveryMethod,
+			displayNumber: o.displayNumber,
 			discountCents: o.discountCents,
 			id: o.id,
 			items: o.items.map(item => ({

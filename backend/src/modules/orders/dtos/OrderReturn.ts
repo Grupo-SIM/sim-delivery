@@ -17,6 +17,7 @@ export const AdminOrderReturn = t.Object({
 	delivery: __nullable__(t.Object({ courierId: t.String(), courierName: t.String(), id: t.String() })),
 	deliveryFee: t.Integer(),
 	deliveryMethod: t.String(),
+	displayNumber: t.Integer(),
 	discountCents: t.Integer(),
 	id: t.String(),
 	items: t.Array(
@@ -98,6 +99,7 @@ export const OrderReturn = t.Object({
 	customerId: t.String(),
 	deliveryFee: t.Integer(),
 	deliveryMethod: t.String(),
+	displayNumber: t.Integer(),
 	discountCents: t.Integer(),
 	id: t.String(),
 	items: t.Array(OrderItemReturn),
@@ -123,6 +125,7 @@ export const CustomerOrderTrackingReturn = t.Object({
 	cancelReason: __nullable__(t.String()),
 	createdAt: t.Date(),
 	deliveryMethod: t.String(),
+	displayNumber: t.Integer(),
 	id: t.String(),
 	items: t.Array(
 		t.Object({
@@ -142,6 +145,7 @@ export type CustomerOrderTrackingReturn = typeof CustomerOrderTrackingReturn.sta
 export const CustomerOrderSummaryReturn = t.Object({
 	createdAt: t.Date(),
 	deliveryMethod: t.String(),
+	displayNumber: t.Integer(),
 	id: t.String(),
 	itemsCount: t.Integer(),
 	status: t.String(),

@@ -49,6 +49,12 @@ function shouldNotify(current: string, next: string, deliveryMethod: string): bo
 	return NOTIFIABLE.has(next) && flow.indexOf(next) > flow.indexOf(current);
 }
 
+function getReviewUrl(unitSlug: string, orderId: string): string {
+	const url = new URL(`/${unitSlug}/rate`, process.env.APP_URL);
+	url.searchParams.set("orderId", orderId);
+	return url.toString();
+}
+
 export class UpdateOrderStatus {
 	constructor(
 		private readonly prisma: PrismaInstance,
@@ -70,6 +76,7 @@ export class UpdateOrderStatus {
 				company: { select: { orderStatusWhatsAppTemplates: true } },
 				customer: { include: { user: { select: { email: true, phoneNumber: true } } } },
 				payment: { select: { status: true } },
+				unit: { select: { slug: true } },
 			},
 			where: { ...(companyId ? { companyId } : {}), id: orderId },
 		});
@@ -146,13 +153,21 @@ export class UpdateOrderStatus {
 
 		if (shouldNotify(order.status, status, order.deliveryMethod)) {
 			const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
-			const message = formatOrderStatusMessage(templates?.[status]?.trim() || undefined, status, orderId);
+			const message = formatOrderStatusMessage(templates?.[status]?.trim() || undefined, status, order.displayNumber);
 			const phone = order.customer.phone ?? order.customer.user.phoneNumber;
 			if (order.customer.notificationWhatsApp !== false && phone) {
 				await this.whatsApp.sendOrderStatus(phone, status, orderId, message).catch(() => {});
 			}
 			if (order.customer.notificationEmail !== false && order.customer.user.email) {
-				await new OrderStatusEmail({ message, orderId, status, to: order.customer.user.email })
+				const reviewUrl =
+					status === "entregue" || status === "retirado" ? getReviewUrl(order.unit.slug, orderId) : undefined;
+				await new OrderStatusEmail({
+					message,
+					orderNumber: order.displayNumber,
+					reviewUrl,
+					status,
+					to: order.customer.user.email,
+				})
 					.send()
 					.catch(() => {});
 			}

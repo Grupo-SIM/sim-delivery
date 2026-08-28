@@ -1,16 +1,17 @@
 import { Heading, Hr, Text } from "@react-email/components";
 import { emailBranding } from "@/shared/infra/branding";
-import { EmailLayout, emailColors } from "@/modules/users/emails/components";
+import { EmailButton, EmailLayout, emailColors } from "@/modules/users/emails/components";
 
 interface OrderStatusEmailProps {
 	message: string;
-	orderId: string;
+	orderNumber: number;
+	reviewUrl?: string;
 	status: string;
 }
 
-export function OrderStatusEmailTemplate({ message, orderId, status }: OrderStatusEmailProps) {
+export function OrderStatusEmailTemplate({ message, orderNumber, reviewUrl, status }: OrderStatusEmailProps) {
 	return (
-		<EmailLayout preview={`Atualização do pedido ${orderId}`}>
+		<EmailLayout preview={`Atualização do pedido #${orderNumber}`}>
 			<Heading
 				style={{
 					color: emailColors.foreground,
@@ -19,7 +20,7 @@ export function OrderStatusEmailTemplate({ message, orderId, status }: OrderStat
 					margin: "0 0 8px",
 				}}
 			>
-				Atualização do pedido
+				Atualização do pedido #{orderNumber}
 			</Heading>
 
 			<Text
@@ -43,6 +44,8 @@ export function OrderStatusEmailTemplate({ message, orderId, status }: OrderStat
 			>
 				Status: {status}
 			</Text>
+
+			{reviewUrl && <EmailButton href={reviewUrl}>Avaliar pedido</EmailButton>}
 
 			<Hr style={{ borderColor: emailColors.border, margin: "32px 0 24px" }} />
 

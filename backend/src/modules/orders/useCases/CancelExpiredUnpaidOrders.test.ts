@@ -14,8 +14,9 @@ describe("CancelExpiredUnpaidOrders", () => {
 				findMany: async () => [
 					{
 						company: { orderStatusWhatsAppTemplates: null },
-						customer: { phone: "5511999999999" },
-						id: "ord_1",
+					customer: { phone: "5511999999999" },
+					displayNumber: 154,
+					id: "ord_1",
 					},
 				],
 				updateMany: async (args: unknown) => {
@@ -52,7 +53,7 @@ describe("CancelExpiredUnpaidOrders", () => {
 				"5511999999999",
 				"cancelado",
 				"ord_1",
-				"Seu pedido ord_1 foi cancelado porque o pagamento não foi confirmado em até 1 hora.",
+				"Seu pedido #154 foi cancelado porque o pagamento não foi confirmado em até 1 hora.",
 			],
 		]);
 	});
@@ -66,7 +67,8 @@ describe("CancelExpiredUnpaidOrders", () => {
 				findMany: async () => [
 					{
 						company: { orderStatusWhatsAppTemplates: null },
-						customer: { phone: "5511999999999" },
+					customer: { phone: "5511999999999" },
+					displayNumber: 154,
 						id: "ord_1",
 					},
 				],

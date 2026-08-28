@@ -31,6 +31,7 @@ export class GetCustomerOrder {
 			cancelReason: order.cancelReason,
 			createdAt: order.createdAt,
 			deliveryMethod: order.deliveryMethod,
+			displayNumber: order.displayNumber,
 			id: order.id,
 			items: order.items.map(item => ({
 				...item,

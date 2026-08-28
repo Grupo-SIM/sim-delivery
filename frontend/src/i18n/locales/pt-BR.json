@@ -1311,6 +1311,7 @@
 					"empty": "Você ainda não fez nenhum pedido.",
 					"itemsCount_one": "{{count}} item",
 					"itemsCount_other": "{{count}} itens",
+					"identifier": "Pedido #{{number}}",
 					"loadError": "Não foi possível carregar seus pedidos.",
 					"rate": "Avaliar pedido",
 					"signInPrompt": "Entre para ver seus pedidos.",
@@ -1602,6 +1603,7 @@
 					"empty": "Não encontramos este pedido.",
 					"items": "Itens do pedido",
 					"note": "Observação",
+					"identifier": "Pedido #{{number}}",
 					"rate": "Avaliar este pedido",
 					"refreshing": "Atualização automática ativa",
 					"status": {

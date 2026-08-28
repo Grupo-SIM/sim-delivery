@@ -57,7 +57,7 @@ export class CancelExpiredUnpaidOrders {
 				const message = (
 					templates?.cancelado?.trim() ||
 					"Seu pedido {{orderId}} foi cancelado porque o pagamento não foi confirmado em até 1 hora."
-				).replaceAll("{{orderId}}", order.id);
+				).replaceAll("{{orderId}}", `#${order.displayNumber}`);
 				const phone = order.customer.phone ?? order.customer.user?.phoneNumber;
 				if (order.customer.notificationWhatsApp !== false && phone) {
 					await this.whatsApp.sendOrderStatus(phone, "cancelado", order.id, message).catch(() => {});
@@ -65,7 +65,7 @@ export class CancelExpiredUnpaidOrders {
 				if (order.customer.notificationEmail !== false && order.customer.user?.email) {
 					await new OrderStatusEmail({
 						message,
-						orderId: order.id,
+						orderNumber: order.displayNumber,
 						status: "cancelado",
 						to: order.customer.user.email,
 					})

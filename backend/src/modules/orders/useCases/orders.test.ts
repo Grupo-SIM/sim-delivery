@@ -218,6 +218,7 @@ function makeUpdateStatusPrisma(order: {
 	templates?: Record<string, string> | null;
 }) {
 	const stored: {
+		displayNumber: number;
 		id: string;
 		companyId: string;
 		status: string;
@@ -234,6 +235,7 @@ function makeUpdateStatusPrisma(order: {
 	} = {
 		...order,
 		cancelReason: null,
+		displayNumber: 154,
 		company: { orderStatusWhatsAppTemplates: order.templates ?? null },
 		customer: {
 			notificationEmail: false,
@@ -344,7 +346,7 @@ describe("UpdateOrderStatus", () => {
 
 		await new UpdateOrderStatus(prisma, whatsApp).execute("cmp_1", "ord_1", { status: "em_preparo" });
 
-		expect(messages).toEqual(["Pedido ord_1 em produção."]);
+		expect(messages).toEqual(["Pedido #154 em produção."]);
 	});
 
 	it("notifies the customer when the order is ready", async () => {
@@ -360,7 +362,7 @@ describe("UpdateOrderStatus", () => {
 			sendOrderStatus: async (_phone, _status, _orderId, message) => void messages.push(message ?? ""),
 		}).execute("cmp_1", "ord_1", { status: "pronto" });
 
-		expect(messages).toEqual(["Seu pedido ord_1 está pronto e logo seguirá para você."]);
+		expect(messages).toEqual(["Seu pedido #154 está pronto e logo seguirá para você."]);
 	});
 
 	it("does not send WhatsApp when customer opted out", async () => {

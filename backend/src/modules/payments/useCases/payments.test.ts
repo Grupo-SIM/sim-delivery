@@ -31,6 +31,7 @@ interface CustomerRow {
 interface OrderRow {
 	cashbackPercent: number;
 	customerId: string;
+	displayNumber: number;
 	id: string;
 	loyaltyPointsRate: number;
 	total: number;
@@ -80,6 +81,7 @@ const baseCustomer: CustomerRow = {
 const baseOrder: OrderRow = {
 	cashbackPercent: 10,
 	customerId: "cust_1",
+	displayNumber: 154,
 	id: "order_1",
 	loyaltyPointsRate: 5,
 	total: 5000,
@@ -556,7 +558,7 @@ describe("ConfirmPayment", () => {
 	});
 
 	it("emails the customer when the order is received", async () => {
-		const sent: Record<string, string>[] = [];
+		const sent: Record<string, string | number>[] = [];
 		const { prisma } = makeWorld({
 			customers: [{ ...baseCustomer, notificationEmail: true }],
 			payments: [
@@ -578,8 +580,8 @@ describe("ConfirmPayment", () => {
 
 		expect(sent).toEqual([
 			{
-				message: "Recebemos seu pedido order_1. Em breve começaremos o preparo.",
-				orderId: "order_1",
+				message: "Recebemos seu pedido #154. Em breve começaremos o preparo.",
+				orderNumber: 154,
 				status: "recebido",
 				to: "maria@example.com",
 			},

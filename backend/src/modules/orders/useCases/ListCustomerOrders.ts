@@ -22,6 +22,7 @@ export class ListCustomerOrders {
 		return orders.map(order => ({
 			createdAt: order.createdAt,
 			deliveryMethod: order.deliveryMethod,
+			displayNumber: order.displayNumber,
 			id: order.id,
 			itemsCount: order._count.items,
 			status: order.status,

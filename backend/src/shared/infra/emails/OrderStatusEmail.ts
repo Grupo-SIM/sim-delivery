@@ -16,34 +16,42 @@ const ORDER_STATUS_LABELS: Record<string, string> = {
 
 interface OrderStatusEmailInput {
 	message: string;
-	orderId: string;
+	orderNumber: number;
+	reviewUrl?: string;
 	status: string;
 	to: string;
 }
 
 export class OrderStatusEmail extends BaseEmail {
 	private readonly message: string;
-	private readonly orderId: string;
+	private readonly orderNumber: number;
+	private readonly reviewUrl?: string;
 	private readonly status: string;
 
-	constructor({ message, orderId, status, to }: OrderStatusEmailInput) {
+	constructor({ message, orderNumber, reviewUrl, status, to }: OrderStatusEmailInput) {
 		super(to);
 		this.message = message;
-		this.orderId = orderId;
+		this.orderNumber = orderNumber;
+		this.reviewUrl = reviewUrl;
 		this.status = status;
 	}
 
 	protected get subject(): string {
-		return `Atualização do pedido ${this.orderId}`;
+		return `Atualização do pedido #${this.orderNumber}`;
 	}
 
 	protected get text(): string {
-		return `${this.message}\n\nStatus: ${this.statusLabel}`;
+		return `${this.message}\n\nStatus: ${this.statusLabel}${this.reviewUrl ? `\n\nAvalie seu pedido: ${this.reviewUrl}` : ""}`;
 	}
 
 	protected override get html(): Promise<string> {
 		return render(
-			OrderStatusEmailTemplate({ message: this.message, orderId: this.orderId, status: this.statusLabel }),
+			OrderStatusEmailTemplate({
+				message: this.message,
+				orderNumber: this.orderNumber,
+				reviewUrl: this.reviewUrl,
+				status: this.statusLabel,
+			}),
 		);
 	}
 
