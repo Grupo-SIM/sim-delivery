@@ -172,7 +172,7 @@ export function ProductDetailsModal({
 			>
 				<div className="flex h-full min-h-0 min-w-0 flex-col gap-4 sm:gap-6">
 					<div
-						className={`grid min-h-0 min-w-0 flex-1 gap-4 overflow-hidden sm:gap-6 ${
+						className={`grid min-h-0 min-w-0 flex-1 grid-rows-[auto_minmax(0,1fr)] gap-4 overflow-hidden sm:gap-6 lg:grid-rows-1 ${
 							selectedItem.imageUrl ? "lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)]" : "lg:grid-cols-1"
 						}`}
 					>
