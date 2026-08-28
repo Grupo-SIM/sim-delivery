@@ -1,7 +1,8 @@
 import cors from "@elysiajs/cors";
 import staticPlugin from "@elysiajs/static";
 import { timeConversion } from "@hyoretsu/utils";
-import Elysia from "elysia";
+import Elysia, { t } from "elysia";
+import { RequestMagicLink } from "@/modules/users/useCases/RequestMagicLink";
 import { envSchema } from "@/env";
 import { DomainError } from "@/shared/errors/DomainError";
 import { auth } from "@/shared/infra/betterAuth";
@@ -37,6 +38,26 @@ export const app = new Elysia({ normalize: "typebox" })
 		}),
 		GlobalPlugin,
 	])
+	.post(
+		"/auth/request-magic-link",
+		async ({ body, request }) => {
+			const requestMagicLink = new RequestMagicLink(prisma.user, async input => {
+				await auth.api.signInMagicLink({ body: input, headers: request.headers });
+			});
+
+			await requestMagicLink.execute(body);
+			return { status: true };
+		},
+		{
+			body: t.Object({
+				email: t.String({ format: "email", maxLength: 320 }),
+				intent: t.Union([t.Literal("sign-in"), t.Literal("sign-up")]),
+				metadata: t.Optional(t.Record(t.String(), t.Unknown())),
+				name: t.Optional(t.String({ maxLength: 120, minLength: 2 })),
+			}),
+			response: t.Object({ status: t.Boolean() }),
+		},
+	)
 	.post("/auth/set-password", async ({ request, set }) => {
 		const body = await request.json().catch(() => null);
 		if (

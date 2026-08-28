@@ -2,43 +2,52 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCopy, LuCopyCheck, LuLoaderCircle } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
+import { Label, RequiredMark } from "@/components/ui/label";
+import { MaskedInput } from "@/components/ui/MaskedInput";
 import { type PostPaymentsPix200, useGetPaymentsStatusByToken, usePostPaymentsPix } from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
 import { showAlert } from "@/stores";
 import { usePaymentStatusEvents } from "./usePaymentStatusEvents";
 
 interface PixPanelProps {
+	customerCpf: string | null;
 	onConfirmed: () => void;
+	onCpfSaved: (cpf: string) => void;
 	orderId: string;
 	slug: string;
 }
 
-export function PixPanel({ onConfirmed, orderId, slug }: PixPanelProps) {
+export function PixPanel({ customerCpf, onConfirmed, onCpfSaved, orderId, slug }: PixPanelProps) {
 	const { t } = useTranslation();
 	const [pix, setPix] = useState<PostPaymentsPix200 | null>(null);
 	const [copied, setCopied] = useState(false);
 	const [failed, setFailed] = useState(false);
+	const [cpf, setCpf] = useState(customerCpf ?? "");
 	const confirmedRef = useRef(false);
 	const requestedRef = useRef(false);
 
 	const { isPending, mutateAsync: createPix } = usePostPaymentsPix();
+	const cpfDigits = cpf.replace(/\D/g, "");
+	const needsCpf = !customerCpf;
 
 	const generate = useCallback(async () => {
-		confirmedRef.current = false;
 		setFailed(false);
+		confirmedRef.current = false;
 		try {
-			setPix(await createPix({ data: { orderId, slug } }));
+			const payment = await createPix({ data: { cpf: cpfDigits || undefined, orderId, slug } });
+			setPix(payment);
+			if (cpfDigits) onCpfSaved(cpfDigits);
 		} catch {
 			setFailed(true);
 			void showAlert(t("store.checkout.payment.pix.error"));
 		}
-	}, [createPix, orderId, slug, t]);
+	}, [cpfDigits, createPix, onCpfSaved, orderId, slug, t]);
 
 	useEffect(() => {
-		if (requestedRef.current) return;
+		if (needsCpf || requestedRef.current) return;
 		requestedRef.current = true;
 		void generate();
-	}, [generate]);
+	}, [generate, needsCpf]);
 
 	const notifyConfirmed = useCallback(() => {
 		if (confirmedRef.current) return;
@@ -63,12 +72,53 @@ export function PixPanel({ onConfirmed, orderId, slug }: PixPanelProps) {
 	useEffect(() => {
 		if (status?.status === "confirmed") notifyConfirmed();
 	}, [notifyConfirmed, status?.status]);
+
 	function copyContent() {
 		if (!pix) return;
 		void navigator.clipboard.writeText(pix.pixContent).then(() => {
 			setCopied(true);
 			setTimeout(() => setCopied(false), 2500);
 		});
+	}
+
+	if (needsCpf && !pix) {
+		return (
+			<form
+				className="space-y-4 rounded-xl border border-border bg-card p-4"
+				onSubmit={event => {
+					event.preventDefault();
+					if (cpfDigits.length !== 11) return;
+					requestedRef.current = true;
+					void generate();
+				}}
+			>
+				<div className="space-y-1">
+					<p className="font-semibold">{t("store.checkout.payment.pix.cpfTitle")}</p>
+					<p className="text-muted-foreground text-sm">{t("store.checkout.payment.pix.cpfHint")}</p>
+				</div>
+				<Label>
+					<span>
+						{t("store.checkout.payment.cpf")} <RequiredMark />
+					</span>
+					<MaskedInput
+						format="###.###.###-##"
+						inputMode="numeric"
+						mask="_"
+						name="pix-cpf"
+						onValueChange={({ formattedValue }) => {
+							setCpf(formattedValue);
+							setFailed(false);
+						}}
+						placeholder={t("store.checkout.payment.cpfPlaceholder")}
+						value={cpf}
+					/>
+				</Label>
+				{failed && <p className="text-destructive text-sm">{t("store.checkout.payment.pix.failedRetry")}</p>}
+				<Button className="w-full" disabled={isPending || cpfDigits.length !== 11} type="submit">
+					{isPending ? t("store.checkout.payment.pix.generating") : t("store.checkout.payment.pix.generate")}
+				</Button>
+			</form>
+		);
 	}
 
 	if (!pix && failed) {

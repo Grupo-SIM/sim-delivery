@@ -23,6 +23,7 @@ interface PaymentStepProps {
 export function PaymentStep({ amountCents, customerCpf, onConfirmed, orderId, slug }: PaymentStepProps) {
 	const { t } = useTranslation();
 	const [method, setMethod] = useState<PaymentMethod>("card");
+	const [pixCpf, setPixCpf] = useState(customerCpf);
 
 	const { data: savedCards, isPending: savedCardsPending } = useQuery(getPaymentsCardsQueryOptions({ slug }));
 	const { isPending: isPayingCard, mutate: payWithCard } = usePostPaymentsCard();
@@ -54,7 +55,7 @@ export function PaymentStep({ amountCents, customerCpf, onConfirmed, orderId, sl
 			<div className="grid grid-cols-2 gap-3">
 				{methods.map(option => (
 					<button
-						className={`flex flex-col items-start gap-1 rounded-xl border p-4 text-left transition-colors ${
+						className={`flex cursor-pointer flex-col items-start gap-1 rounded-xl border p-4 text-left transition-colors ${
 							method === option.key
 								? "border-primary bg-primary/5 text-foreground"
 								: "border-border text-muted-foreground hover:border-primary/40"
@@ -87,7 +88,15 @@ export function PaymentStep({ amountCents, customerCpf, onConfirmed, orderId, sl
 				)
 			)}
 
-			{method === "pix" && <PixPanel onConfirmed={onConfirmed} orderId={orderId} slug={slug} />}
+			{method === "pix" && (
+				<PixPanel
+					customerCpf={pixCpf}
+					onConfirmed={onConfirmed}
+					onCpfSaved={setPixCpf}
+					orderId={orderId}
+					slug={slug}
+				/>
+			)}
 		</div>
 	);
 }
