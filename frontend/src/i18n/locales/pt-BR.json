@@ -1606,6 +1606,7 @@
 					"refreshing": "Atualização automática ativa",
 					"status": {
 						"awaiting_payment": "Aguardando pagamento",
+						"cancelado": "Cancelado",
 						"em_preparo": "Em preparo",
 						"em_preparoDescription": "A cozinha já está preparando seu pedido.",
 						"entregue": "Pedido entregue",
