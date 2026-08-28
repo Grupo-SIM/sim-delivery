@@ -4,12 +4,14 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Modal } from "@/components/ui/Modal";
-import { Skeleton } from "@/components/ui/Skeleton";
 import { getOrdersQueryKey, useGetStaff, usePatchOrdersByOrderIdStatus } from "@/lib/api";
-import { showAlert } from "@/stores";
+import { showAlert, showToast } from "@/stores";
+
+const REMOVE_ASSIGNMENT_VALUE = "__remove_assignment__";
 
 interface AssignKitchenModalProps {
 	currentAssigneeId: string | null;
+	currentAssigneeName: string | null;
 	isOpen: boolean;
 	onClose: () => void;
 	orderId: string;
@@ -18,6 +20,7 @@ interface AssignKitchenModalProps {
 
 export function AssignKitchenModal({
 	currentAssigneeId,
+	currentAssigneeName,
 	isOpen,
 	onClose,
 	orderId,
@@ -31,6 +34,12 @@ export function AssignKitchenModal({
 	const kitchenOptions = (staff ?? [])
 		.filter(member => member.role === "kitchen")
 		.map(member => ({ label: member.name, value: member.id }));
+	if (currentAssigneeId) {
+		if (!kitchenOptions.some(option => option.value === currentAssigneeId) && currentAssigneeName) {
+			kitchenOptions.unshift({ label: currentAssigneeName, value: currentAssigneeId });
+		}
+		kitchenOptions.unshift({ label: t("admin.orders.assignment.remove"), value: REMOVE_ASSIGNMENT_VALUE });
+	}
 
 	function handleClose() {
 		setPreparedById(currentAssigneeId ?? "");
@@ -39,11 +48,25 @@ export function AssignKitchenModal({
 
 	function submit() {
 		assign.mutate(
-			{ data: { preparedById: preparedById || null, status }, orderId },
+			{
+				data: {
+					preparedById: preparedById === REMOVE_ASSIGNMENT_VALUE ? null : preparedById || null,
+					status,
+				},
+				orderId,
+			},
 			{
 				onError: () => void showAlert(t("admin.orders.assignment.error")),
 				onSuccess: () => {
 					queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() });
+					showToast(
+						t(
+							preparedById === REMOVE_ASSIGNMENT_VALUE
+								? "admin.orders.assignment.removed"
+								: "admin.orders.assignment.saved",
+						),
+						"positive",
+					);
 					handleClose();
 				},
 			},
@@ -59,15 +82,14 @@ export function AssignKitchenModal({
 			urlKey="order-kitchen-assign"
 		>
 			<div className="space-y-4">
-				{isPending ? (
-					<Skeleton className="h-10 w-full" />
-				) : kitchenOptions.length === 0 ? (
+				{!isPending && kitchenOptions.length === 0 ? (
 					<p className="text-muted-foreground text-sm">{t("admin.orders.assignment.noKitchen")}</p>
 				) : (
 					<>
 						<p className="font-medium text-sm">{t("admin.orders.assignment.preparedBy")}</p>
 						<CustomSelect
 							className="w-full"
+							disabled={isPending}
 							onChange={setPreparedById}
 							options={kitchenOptions}
 							value={preparedById}

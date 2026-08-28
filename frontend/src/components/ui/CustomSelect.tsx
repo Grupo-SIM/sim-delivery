@@ -17,6 +17,7 @@ export interface SelectGroup {
 
 interface CustomSelectProps {
 	className?: string;
+	disabled?: boolean;
 	groups?: SelectGroup[];
 	onChange: (value: string) => void;
 	options?: SelectOption[];
@@ -29,7 +30,14 @@ interface DropdownPos {
 	width: number;
 }
 
-export function CustomSelect({ className, groups, onChange, options, value }: CustomSelectProps) {
+export function CustomSelect({
+	className,
+	disabled = false,
+	groups,
+	onChange,
+	options,
+	value,
+}: CustomSelectProps) {
 	const [open, setOpen] = useState(false);
 	const [pos, setPos] = useState<DropdownPos>({ left: 0, top: 0, width: 0 });
 	const triggerRef = useRef<HTMLButtonElement>(null);
@@ -79,6 +87,10 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 		};
 	}, [open]);
 
+	useEffect(() => {
+		if (disabled) setOpen(false);
+	}, [disabled]);
+
 	return (
 		<>
 			<button
@@ -87,8 +99,10 @@ export function CustomSelect({ className, groups, onChange, options, value }: Cu
 				className={cn(
 					"flex h-11 w-full cursor-pointer items-center justify-between rounded-md border border-border bg-surface px-3 text-foreground text-sm transition-[border-color,box-shadow] duration-300",
 					"hover:border-foreground/40 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
+					"disabled:cursor-not-allowed disabled:border-border disabled:bg-muted disabled:text-muted-foreground disabled:opacity-70 disabled:hover:border-border",
 					className,
 				)}
+				disabled={disabled}
 				onClick={toggleDropdown}
 				ref={triggerRef}
 				type="button"

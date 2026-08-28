@@ -13,7 +13,7 @@ import {
 	useGetStaffCouriers,
 	usePostDeliveries,
 } from "@/lib/api";
-import { showAlert } from "@/stores";
+import { showAlert, showToast } from "@/stores";
 
 const BUSY_DELIVERY_STATUSES = new Set(["atribuida", "pendente", "aceita", "a_caminho"]);
 
@@ -71,6 +71,7 @@ export function AssignCourierModal({ currentCourierId, isOpen, onAssigned, onClo
 				onSuccess: () => {
 					queryClient.invalidateQueries({ queryKey: getDeliveriesQueryKey() });
 					queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() });
+					showToast(t("admin.deliveries.assign.assigned"), "positive");
 					handleClose();
 					onAssigned?.();
 				},

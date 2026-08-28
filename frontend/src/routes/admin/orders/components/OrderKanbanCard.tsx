@@ -109,13 +109,17 @@ export function OrderKanbanCard({
 					{canAssignKitchen && (
 						<Button onClick={() => setAssignKitchenOpen(true)} size="sm" type="button" variant="outline">
 							<LuChefHat aria-hidden className="size-4" />
-							{t("admin.orders.assignment.assign")}
+							<span className="max-w-32 truncate">
+								{order.preparedBy?.name ?? t("admin.orders.assignment.assign")}
+							</span>
 						</Button>
 					)}
 					{canAssignCourier && (
 						<Button onClick={() => setAssignOpen(true)} size="sm" type="button" variant="outline">
 							<LuBike aria-hidden className="size-4" />
-							{t("admin.orders.assignment.assign")}
+							<span className="max-w-32 truncate">
+								{order.delivery?.courierName ?? t("admin.orders.assignment.assign")}
+							</span>
 						</Button>
 					)}
 				</div>
@@ -129,6 +133,7 @@ export function OrderKanbanCard({
 			/>
 			<AssignKitchenModal
 				currentAssigneeId={order.preparedBy?.id ?? null}
+				currentAssigneeName={order.preparedBy?.name ?? null}
 				isOpen={assignKitchenOpen}
 				onClose={() => setAssignKitchenOpen(false)}
 				orderId={order.id}
