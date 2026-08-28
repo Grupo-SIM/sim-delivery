@@ -15,6 +15,7 @@ import {
 } from "@/lib/api";
 import { showAlert } from "@/stores";
 import { OrderKanbanCard } from "./OrderKanbanCard";
+import { AssignCourierModal } from "./AssignCourierModal";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 
 const KANBAN_STATUSES = [
@@ -29,7 +30,13 @@ const KANBAN_STATUSES = [
 	"cancelado",
 ] as const;
 
+const FINALIZED_STATUSES = ["entregue", "retirado", "cancelado"] as const;
+
 type KanbanStatus = (typeof KANBAN_STATUSES)[number];
+type FinalizedStatus = (typeof FINALIZED_STATUSES)[number];
+type KanbanColumn =
+	| { kind: "status"; orders: GetOrders200; status: KanbanStatus }
+	| { kind: "finalized"; orders: GetOrders200; status: "finalizado" };
 
 const MOVABLE_STATUSES: readonly PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey[] = [
 	"recebido",
@@ -57,6 +64,14 @@ function getFlow(deliveryMethod: string) {
 		: ["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue"];
 }
 
+function isFinalizedStatus(status: KanbanStatus): status is FinalizedStatus {
+	return FINALIZED_STATUSES.includes(status as FinalizedStatus);
+}
+
+function getFinalizedStatus(order: GetOrders200[number]): FinalizedStatus {
+	return order.deliveryMethod === "pickup" ? "retirado" : "entregue";
+}
+
 interface OrdersKanbanProps {
 	orders: GetOrders200;
 	role: string | null;
@@ -72,14 +87,30 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 	const scrollSpeedRef = useRef(0);
 	const [draggedOrderId, setDraggedOrderId] = useState<string | null>(null);
 	const [dragOverStatus, setDragOverStatus] = useState<string | null>(null);
+	const [courierAssignmentOrderId, setCourierAssignmentOrderId] = useState<string | null>(null);
 	const [problemOrderId, setProblemOrderId] = useState<string | null>(null);
 	const [problemReason, setProblemReason] = useDebouncedInput("", () => undefined);
-	const ordersByStatus = useMemo(
-		() =>
-			statuses.map(status => ({
-				orders: orders.filter(order => order.status === status),
-				status,
-			})),
+	const columns = useMemo<KanbanColumn[]>(
+		() => {
+			const regularColumns = statuses
+				.filter(status => !isFinalizedStatus(status))
+				.map(status => ({
+					kind: "status" as const,
+					orders: orders.filter(order => order.status === status),
+					status,
+				}));
+			const canShowFinalized = statuses.some(isFinalizedStatus);
+			if (!canShowFinalized) return regularColumns;
+
+			return [
+				...regularColumns,
+				{
+					kind: "finalized" as const,
+					orders: orders.filter(order => FINALIZED_STATUSES.includes(order.status as FinalizedStatus)),
+					status: "finalizado" as const,
+				},
+			];
+		},
 		[orders, statuses],
 	);
 
@@ -212,6 +243,10 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 	function moveOrder(orderId: string, status: KanbanStatus) {
 		const order = orders.find(candidate => candidate.id === orderId);
 		if (!order) return;
+		if (order.status === "pronto" && status === "saiu_para_entrega" && !order.delivery && role !== "courier") {
+			setCourierAssignmentOrderId(orderId);
+			return;
+		}
 
 		const blockReason = getMoveBlockReason(order, status);
 		if (blockReason) {
@@ -224,9 +259,12 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 			return;
 		}
 
-		const nextStatus = status as PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey;
+		updateOrderStatus(orderId, status as PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey);
+	}
+
+	function updateOrderStatus(orderId: string, status: PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey) {
 		patchStatus.mutate(
-			{ data: { status: nextStatus }, orderId },
+			{ data: { status }, orderId },
 			{
 				onError: () =>
 					void showAlert(
@@ -270,8 +308,15 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 				ref={scrollContainerRef}
 			>
 				<div className="flex min-w-max gap-3">
-					{ordersByStatus.map(column => {
+					{columns.map(column => {
 						const isDropTarget = dragOverStatus === column.status;
+						const finalizedCounts =
+							column.kind === "finalized"
+								? FINALIZED_STATUSES.map(status => ({
+									count: column.orders.filter(order => order.status === status).length,
+									status,
+								}))
+								: [];
 						return (
 							<section
 								className={`min-h-[36rem] w-[280px] shrink-0 rounded-2xl border bg-muted/35 transition ${
@@ -292,11 +337,32 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 									event.preventDefault();
 									const orderId = event.dataTransfer.getData("text/plain") || draggedOrderId;
 									finishDrag();
-									if (orderId) moveOrder(orderId, column.status);
+									const order = orders.find(candidate => candidate.id === orderId);
+									if (order)
+										moveOrder(
+											order.id,
+											column.kind === "finalized" ? getFinalizedStatus(order) : column.status,
+										);
 								}}
 							>
 								<header className="relative z-20 flex items-center justify-between gap-2 px-4 py-3">
-									<OrderStatusBadge showHelp status={column.status} />
+									{column.kind === "finalized" ? (
+										<div>
+											<p className="font-semibold text-foreground text-sm">
+												{t("admin.orders.kanban.finalized")}
+											</p>
+											<p className="text-muted-foreground text-xs">
+												{finalizedCounts
+													.filter(({ count }) => count > 0)
+													.map(
+														({ count, status }) => `${t(`admin.orders.status.${status}`)}: ${count}`,
+													)
+													.join(" · ") || t("admin.orders.kanban.emptyColumn")}
+											</p>
+										</div>
+									) : (
+										<OrderStatusBadge showHelp status={column.status} />
+									)}
 									<span className="rounded-md bg-background px-2 py-1 font-semibold text-foreground text-sm shadow-sm">
 										{column.orders.length}
 									</span>
@@ -317,10 +383,11 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 															: order.status === "pronto" || order.status === "saiu_para_entrega"
 												}
 												canManageAssignments={role !== "kitchen" && role !== "courier"}
-												key={order.id}
-												onDragEnd={finishDrag}
-												onDragStart={setDraggedOrderId}
-												order={order}
+															key={order.id}
+															onDragEnd={finishDrag}
+															onDragStart={setDraggedOrderId}
+															order={order}
+															showStatus={column.kind === "finalized"}
 											/>
 										))
 									)}
@@ -362,6 +429,14 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 					</div>
 				</div>
 			</Modal>
+			<AssignCourierModal
+				isOpen={courierAssignmentOrderId !== null}
+				onAssigned={() => {
+					if (courierAssignmentOrderId) updateOrderStatus(courierAssignmentOrderId, "saiu_para_entrega");
+				}}
+				onClose={() => setCourierAssignmentOrderId(null)}
+				orderId={courierAssignmentOrderId ?? ""}
+			/>
 		</>
 	);
 }

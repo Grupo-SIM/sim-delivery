@@ -48,7 +48,7 @@ export const UnitsController = new Elysia({
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "units", "read");
 
-					return listUnits.execute(scope.companyId);
+					return listUnits.execute(scope.companyId, scope.role, scope.userId);
 				},
 				{ response: UnitWithStatusListReturn },
 			)

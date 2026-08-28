@@ -40,7 +40,7 @@ export function createPermissions(role: Role) {
 	// Company management (owner + manager). "mgmt" = operational management access.
 	const mgmt = isOwner || isManager;
 	// Anyone who works a store and may read catalog/units.
-	const staffRead = mgmt || isAttendant || isKitchen;
+	const staffRead = mgmt || isAttendant || isKitchen || isCourier;
 
 	permix.setup({
 		branding: {

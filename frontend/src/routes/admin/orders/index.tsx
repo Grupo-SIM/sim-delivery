@@ -1,8 +1,6 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Container } from "@/components/ui/Container";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -10,9 +8,8 @@ import { Input } from "@/components/ui/input";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
-import { getOrdersQueryKey, useGetOrders, useGetUnits, usePostOrdersCloseDay } from "@/lib/api";
-import { isOperationalStaff } from "@/lib/staff-guard";
-import { showToast, useAuthStore } from "@/stores";
+import { useGetOrders, useGetUnits } from "@/lib/api";
+import { useAuthStore } from "@/stores";
 import { OrdersKanban } from "./components";
 
 const KANBAN_STATUSES = [
@@ -38,15 +35,12 @@ function getAvailableStatuses(role: string | null): readonly (typeof KANBAN_STAT
 
 function OrdersPage() {
 	const { t } = useTranslation();
-	const queryClient = useQueryClient();
 	const role = useAuthStore(state => state.role);
-	const hasOperationalAccess = isOperationalStaff(role);
 	const [search, setSearch] = useState("");
 	const [date, setDate] = useState("");
 	const [unitId, setUnitId] = useState("");
 	const unitsQuery = useGetUnits();
 
-	const closeDay = usePostOrdersCloseDay();
 	const {
 		data: orders,
 		isError,
@@ -63,36 +57,13 @@ function OrdersPage() {
 	});
 	const availableStatuses = getAvailableStatuses(role);
 
-	function closeCurrentDay() {
-		closeDay.mutate(undefined, {
-			onError: () => showToast("Não foi possível encerrar o dia.", "negative"),
-			onSuccess: () => {
-				queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() });
-				showToast("Dia encerrado. O kanban está pronto para novos pedidos.", "positive");
-			},
-		});
-	}
-
 	return (
 		<Container className="space-y-6 py-6 sm:py-8">
 			<div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 				<SectionHeading subtitle={t("admin.orders.subtitle")} title={t("admin.orders.title")} />
-				{!hasOperationalAccess && (
-					<ConfirmActionButton
-						confirmation="Pedidos atuais sairão do kanban, mas continuarão disponíveis no histórico."
-						confirmLabel="Confirmar"
-						disabled={closeDay.isPending || Boolean(date)}
-						onConfirm={closeCurrentDay}
-						tooltip="Encerrar dia"
-						type="button"
-						variant="outline"
-					>
-						{closeDay.isPending ? "Encerrando..." : "Encerrar dia"}
-					</ConfirmActionButton>
-				)}
 			</div>
 
-			<div className="grid gap-4 sm:grid-cols-[minmax(0,15rem)_11rem_minmax(0,15rem)] sm:items-end">
+			<div className="grid gap-4 sm:grid-cols-[minmax(0,15rem)_11rem_minmax(0,15rem)] sm:items-start">
 				<TextField
 					label={t("admin.orders.filter.search")}
 					onValueChange={setSearch}

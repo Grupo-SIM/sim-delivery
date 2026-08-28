@@ -488,6 +488,9 @@ function makeListOrdersPrisma() {
 		product: {
 			findMany: async () => [],
 		},
+		unit: {
+			findMany: async () => [{ hours: [], id: "unit_1" }],
+		},
 	} as unknown as PrismaInstance;
 
 	return { order1, prisma };

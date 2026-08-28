@@ -58,6 +58,27 @@ describe("units use-cases", () => {
 		expect(await new ListUnits(prisma).execute("cmp_1")).toHaveLength(1);
 	});
 
+	it("ListUnits exposes every assigned unit to a multi-unit staff member", async () => {
+		const units = [
+			{ companyId: "cmp_1", hours: [], id: "u1", isOpenManual: null, staffUserIds: ["staff_1"] },
+			{ companyId: "cmp_1", hours: [], id: "u2", isOpenManual: null, staffUserIds: ["staff_1"] },
+			{ companyId: "cmp_1", hours: [], id: "u3", isOpenManual: null, staffUserIds: ["staff_2"] },
+		];
+		const prisma = {
+			unit: {
+				findMany: async ({ where }: { where: { companyId: string; staffUnits?: { some: { userId: string } } } }) =>
+					units.filter(
+						unit =>
+							unit.companyId === where.companyId &&
+							(!where.staffUnits || unit.staffUserIds.includes(where.staffUnits.some.userId)),
+					),
+			},
+		} as unknown as PrismaInstance;
+
+		const result = await new ListUnits(prisma).execute("cmp_1", "kitchen", "staff_1");
+		expect(result.map(unit => unit.id)).toEqual(["u1", "u2"]);
+	});
+
 	it("UpdateUnit rejects a unit from another company", async () => {
 		const { prisma } = prismaWith([{ companyId: "cmp_1", id: "u1" }]);
 		await expect(new UpdateUnit(prisma).execute("cmp_2", "u1", { name: "Y" })).rejects.toThrow(

@@ -3,7 +3,7 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import { AssignDelivery } from "./AssignDelivery";
 import { UpdateDeliveryStatus } from "./UpdateDeliveryStatus";
 
-const baseOrder = { companyId: "cmp_1", deliveryMethod: "delivery", id: "ord_1", unitId: "unit_1" };
+const baseOrder = { companyId: "cmp_1", deliveryMethod: "delivery", id: "ord_1", status: "pronto", unitId: "unit_1" };
 const baseDelivery = {
 	companyId: "cmp_1",
 	courierId: "courier_1",
@@ -26,6 +26,7 @@ function makeAssignPrisma(opts: {
 		existing = null,
 	} = opts;
 	const created: object[] = [];
+	const updated: object[] = [];
 
 	const prisma = {
 		delivery: {
@@ -42,6 +43,11 @@ function makeAssignPrisma(opts: {
 				return d;
 			},
 			findUnique: async () => existing,
+			update: async ({ data, where }: { data: object; where: { id: string } }) => {
+				const delivery = { ...existing, ...data, id: where.id };
+				updated.push(delivery);
+				return delivery;
+			},
 		},
 		order: {
 			findFirst: async ({ where }: { where: { companyId: string; id: string } }) =>
@@ -55,7 +61,7 @@ function makeAssignPrisma(opts: {
 		},
 	} as unknown as PrismaInstance;
 
-	return { created, prisma };
+	return { created, prisma, updated };
 }
 
 describe("AssignDelivery", () => {
@@ -81,6 +87,13 @@ describe("AssignDelivery", () => {
 		).rejects.toThrow("ORDER_NOT_DELIVERY");
 	});
 
+	it("throws INVALID_TRANSITION before the order is ready", async () => {
+		const { prisma } = makeAssignPrisma({ order: { ...baseOrder, status: "em_preparo" } });
+		await expect(
+			new AssignDelivery(prisma).execute("cmp_1", { courierId: "courier_1", orderId: "ord_1" }),
+		).rejects.toThrow("INVALID_TRANSITION");
+	});
+
 	it("throws COURIER_NOT_AVAILABLE when courier is outside order unit", async () => {
 		const { prisma } = makeAssignPrisma({ staffUnit: null });
 		await expect(
@@ -88,11 +101,10 @@ describe("AssignDelivery", () => {
 		).rejects.toThrow("COURIER_NOT_AVAILABLE");
 	});
 
-	it("throws ORDER_ALREADY_ASSIGNED when delivery exists", async () => {
-		const { prisma } = makeAssignPrisma({ existing: baseDelivery });
-		await expect(
-			new AssignDelivery(prisma).execute("cmp_1", { courierId: "courier_1", orderId: "ord_1" }),
-		).rejects.toThrow("ORDER_ALREADY_ASSIGNED");
+	it("reassigns an existing delivery", async () => {
+		const { prisma, updated } = makeAssignPrisma({ existing: baseDelivery });
+		await new AssignDelivery(prisma).execute("cmp_1", { courierId: "courier_1", orderId: "ord_1" });
+		expect(updated).toContainEqual(expect.objectContaining({ courierId: "courier_1", id: "del_1" }));
 	});
 });
 

@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuBike, LuShoppingBag, LuUserRound } from "react-icons/lu";
+import { LuBike, LuChefHat, LuShoppingBag, LuUserRound } from "react-icons/lu";
 import { OrderSummaryModal } from "@/components/orders";
 import { Button } from "@/components/ui/button";
 import type { GetOrders200 } from "@/lib/api";
 import { AssignCourierModal } from "./AssignCourierModal";
 import { AssignKitchenModal } from "./AssignKitchenModal";
+import { OrderStatusBadge } from "./OrderStatusBadge";
 
 interface OrderKanbanCardProps {
 	canManageAssignments: boolean;
@@ -13,6 +14,7 @@ interface OrderKanbanCardProps {
 	onDragEnd: () => void;
 	onDragStart: (orderId: string) => void;
 	order: GetOrders200[number];
+	showStatus?: boolean;
 }
 
 export function OrderKanbanCard({
@@ -21,6 +23,7 @@ export function OrderKanbanCard({
 	onDragEnd,
 	onDragStart,
 	order,
+	showStatus = false,
 }: OrderKanbanCardProps) {
 	const { t } = useTranslation();
 	const [assignOpen, setAssignOpen] = useState(false);
@@ -29,14 +32,8 @@ export function OrderKanbanCard({
 
 	const DeliveryIcon = order.deliveryMethod === "delivery" ? LuBike : LuShoppingBag;
 	const isDeliveryOrder = order.deliveryMethod === "delivery";
-	const hasDeliveryAssigned = !!order.delivery;
-	const canAssign = order.status === "pronto" && isDeliveryOrder && !hasDeliveryAssigned;
-	const kitchenStatuses = new Set(["recebido", "em_preparo", "pronto", "retirado", "cancelado"]);
-	const showsKitchenAssignee =
-		kitchenStatuses.has(order.status) && !(order.status === "pronto" && isDeliveryOrder);
-	const showsCourierAssignee =
-		["pronto", "saiu_para_entrega", "entregue"].includes(order.status) && isDeliveryOrder;
-	const canAssignKitchen = kitchenStatuses.has(order.status);
+	const canAssignCourier = order.status === "pronto" && isDeliveryOrder;
+	const canAssignKitchen = order.status === "recebido" || order.status === "em_preparo";
 
 	const visibleItems = order.items.slice(0, 2);
 	const remainingItems = order.items.length - visibleItems.length;
@@ -78,6 +75,7 @@ export function OrderKanbanCard({
 						<p className="truncate font-semibold text-base">{order.customerName}</p>
 						<p className="mt-1 truncate text-muted-foreground text-sm">{order.unitName}</p>
 					</div>
+					{showStatus && <OrderStatusBadge status={order.status} />}
 				</div>
 
 				<div className="mt-4 grid gap-2 text-sm">
@@ -103,45 +101,50 @@ export function OrderKanbanCard({
 							</li>
 						)}
 					</ul>
-					{showsKitchenAssignee && (
+					{order.preparedBy?.name && (
 						<div className="flex items-center gap-2 text-muted-foreground">
 							<LuUserRound className="size-4 shrink-0" />
-							<span>{order.preparedBy?.name ?? "-"}</span>
+							<span>{order.preparedBy.name}</span>
 						</div>
 					)}
-					{showsCourierAssignee && (
+					{order.delivery?.courierName && (
 						<div className="flex items-center gap-2 text-muted-foreground">
 							<LuUserRound className="size-4 shrink-0" />
-							<span>{order.delivery?.courierName ?? "-"}</span>
+							<span>{order.delivery.courierName}</span>
 						</div>
 					)}
 				</div>
 			</button>
 
-			{canManageAssignments && (canAssign || canAssignKitchen) && (
+			{canManageAssignments && (canAssignCourier || canAssignKitchen) && (
 				<div className="mt-4 flex flex-wrap gap-2 border-border border-t pt-3">
 					{canAssignKitchen && (
 						<Button onClick={() => setAssignKitchenOpen(true)} size="sm" type="button" variant="outline">
-							<LuUserRound aria-hidden className="size-4" />
-							{t("admin.orders.assignment.assignKitchen")}
+							<LuChefHat aria-hidden className="size-4" />
+							{t("admin.orders.assignment.assign")}
 						</Button>
 					)}
-					{canAssign && (
+					{canAssignCourier && (
 						<Button onClick={() => setAssignOpen(true)} size="sm" type="button" variant="outline">
-							<LuUserRound aria-hidden className="size-4" />
-							{t("admin.deliveries.assign.action")}
+							<LuBike aria-hidden className="size-4" />
+							{t("admin.orders.assignment.assign")}
 						</Button>
 					)}
 				</div>
 			)}
 
-			<AssignCourierModal isOpen={assignOpen} onClose={() => setAssignOpen(false)} orderId={order.id} />
+			<AssignCourierModal
+				currentCourierId={order.delivery?.courierId}
+				isOpen={assignOpen}
+				onClose={() => setAssignOpen(false)}
+				orderId={order.id}
+			/>
 			<AssignKitchenModal
 				currentAssigneeId={order.preparedBy?.id ?? null}
 				isOpen={assignKitchenOpen}
 				onClose={() => setAssignKitchenOpen(false)}
 				orderId={order.id}
-				status={order.status as "recebido" | "em_preparo" | "pronto" | "retirado" | "cancelado"}
+				status={order.status as "recebido" | "em_preparo"}
 			/>
 			<OrderSummaryModal
 				onClose={() => setDetailsOpen(false)}

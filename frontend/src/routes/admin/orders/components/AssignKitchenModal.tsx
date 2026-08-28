@@ -13,7 +13,7 @@ interface AssignKitchenModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	orderId: string;
-	status: "recebido" | "em_preparo" | "pronto" | "retirado" | "cancelado";
+	status: "recebido" | "em_preparo";
 }
 
 export function AssignKitchenModal({

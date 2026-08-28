@@ -1,6 +1,7 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { Role } from "@/shared/permissions";
 import type { AdminOrderListReturn, ListOrdersQuery } from "../dtos";
+import { getCurrentBusinessShiftStart } from "./getCurrentBusinessShiftStart";
 
 export class ListOrders {
 	constructor(private readonly prisma: PrismaInstance) {}
@@ -11,13 +12,37 @@ export class ListOrders {
 		userId?: string,
 	): Promise<AdminOrderListReturn> {
 		const { customerId, deliveryMethod, from, hasCoupon, search, status, to, unitId } = query;
-		const company = companyId
-			? await this.prisma.company.findUnique({
-					select: { orderBoardStartedAt: true },
-					where: { id: companyId },
-				})
+		const staffUnitScope =
+			(role === "courier" || role === "kitchen") && userId ? { staffUnits: { some: { userId } } } : {};
+		const shiftStarts =
+			!from && !to
+				? await this.prisma.unit.findMany({
+						select: { hours: true, id: true },
+						where: {
+							...(companyId ? { companyId } : {}),
+							...staffUnitScope,
+							...(unitId ? { id: unitId } : {}),
+						},
+					})
+				: [];
+		const currentShiftFilter =
+			!from && !to
+				? {
+						OR: shiftStarts.map(unit => ({
+							createdAt: { gte: getCurrentBusinessShiftStart(unit.hours) },
+							unitId: unit.id,
+						})),
+					}
+				: null;
+		const searchFilter = search
+			? {
+						OR: [
+							{ id: { contains: search } },
+							{ customer: { user: { name: { contains: search, mode: "insensitive" as const } } } },
+							{ customer: { phone: { contains: search } } },
+						],
+					}
 			: null;
-		const defaultFrom = !from && !to ? company?.orderBoardStartedAt : null;
 		const orders = await this.prisma.order.findMany({
 			include: {
 				coupon: { select: { code: true, type: true, value: true } },
@@ -34,7 +59,7 @@ export class ListOrders {
 				...((role === "courier" || role === "kitchen") && userId
 					? {
 							...(role === "courier" ? { deliveryMethod: "delivery" } : {}),
-							unit: { staffUnits: { some: { userId } } },
+							unit: staffUnitScope,
 						}
 					: {}),
 				...(customerId ? { customerId } : {}),
@@ -42,23 +67,17 @@ export class ListOrders {
 				...(status ? { status } : {}),
 				...(unitId ? { unitId } : {}),
 				...(hasCoupon !== undefined ? (hasCoupon ? { couponId: { not: null } } : { couponId: null }) : {}),
-				...(from || to || defaultFrom
+				...(from || to
 					? {
 							createdAt: {
-								...(from ? { gte: new Date(from) } : defaultFrom ? { gte: defaultFrom } : {}),
+								...(from ? { gte: new Date(from) } : {}),
 								...(to ? { lte: new Date(to) } : {}),
 							},
 						}
 					: {}),
-				...(search
-					? {
-							OR: [
-								{ id: { contains: search } },
-								{ customer: { user: { name: { contains: search, mode: "insensitive" } } } },
-								{ customer: { phone: { contains: search } } },
-							],
-						}
-					: {}),
+				...(currentShiftFilter && searchFilter
+					? { AND: [currentShiftFilter, searchFilter] }
+					: currentShiftFilter ?? searchFilter ?? {}),
 			},
 		});
 		const productIds = [...new Set(orders.flatMap(order => order.items.map(item => item.productId)))];

@@ -472,7 +472,7 @@
 			},
 			"orders": {
 				"assignment": {
-					"assignKitchen": "Definir cozinha",
+					"assign": "Atribuir",
 					"courier": "Entregador",
 					"deadline": "Prazo estimado",
 					"error": "Não foi possível atualizar a pessoa responsável.",
@@ -502,7 +502,8 @@
 				},
 				"items": "{{count}} item(s)",
 				"kanban": {
-					"emptyColumn": "Sem pedidos"
+					"emptyColumn": "Sem pedidos",
+					"finalized": "Finalizado"
 				},
 				"loadError": "Não foi possível carregar os pedidos.",
 				"refund": {
@@ -523,6 +524,7 @@
 					"cancelado": "Cancelado",
 					"em_preparo": "Em preparo",
 					"entregue": "Entregue",
+					"problema": "Problema",
 					"pronto": "Pronto",
 					"recebido": "Recebido",
 					"retirado": "Retirado",
@@ -1309,9 +1311,9 @@
 				"myProfile": "Meu perfil",
 				"orders": {
 					"empty": "Você ainda não fez nenhum pedido.",
+					"identifier": "Pedido #{{number}}",
 					"itemsCount_one": "{{count}} item",
 					"itemsCount_other": "{{count}} itens",
-					"identifier": "Pedido #{{number}}",
 					"loadError": "Não foi possível carregar seus pedidos.",
 					"rate": "Avaliar pedido",
 					"signInPrompt": "Entre para ver seus pedidos.",
@@ -1601,9 +1603,9 @@
 					"cancelled": "Pedido cancelado",
 					"cancelledDescription": "Este pedido não seguirá para preparo.",
 					"empty": "Não encontramos este pedido.",
+					"identifier": "Pedido #{{number}}",
 					"items": "Itens do pedido",
 					"note": "Observação",
-					"identifier": "Pedido #{{number}}",
 					"rate": "Avaliar este pedido",
 					"refreshing": "Atualização automática ativa",
 					"status": {
