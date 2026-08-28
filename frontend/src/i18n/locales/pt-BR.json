@@ -1681,7 +1681,9 @@
 					"loadError": "Não foi possível carregar as avaliações.",
 					"title": "Avaliações"
 				},
-				"searchOptions": "Pesquise pelas opções..."
+				"searchOptions": "Pesquise pelas opções...",
+				"selectionProgress_one": "{{selected}} de {{max}} selecionada",
+				"selectionProgress_other": "{{selected}} de {{max}} selecionadas"
 			},
 			"rate": {
 				"alreadyReviewed": "Você já avaliou este pedido.",

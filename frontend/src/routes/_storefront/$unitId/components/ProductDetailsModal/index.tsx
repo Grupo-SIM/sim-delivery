@@ -86,6 +86,7 @@ export function ProductDetailsModal({
 	const [options, setOptions] = useState<SelectedOption[]>([]);
 	const [imagePreview, setImagePreview] = useState<OptionImagePreview | null>(null);
 	const [expandedGroupIds, setExpandedGroupIds] = useState<Set<string>>(new Set());
+	const [contentViewport, setContentViewport] = useState<HTMLDivElement | null>(null);
 	const [optionsViewport, setOptionsViewport] = useState<HTMLDivElement | null>(null);
 	const [initializedModalKey, setInitializedModalKey] = useState<string | null>(null);
 	const modalKey = item ? `${item.id}:${editingItem?.lineKey ?? "new"}` : null;
@@ -171,13 +172,17 @@ export function ProductDetailsModal({
 				urlState={selectedItem.id}
 			>
 				<div className="flex h-full min-h-0 min-w-0 flex-col gap-4 sm:gap-6">
-					<div
-						className={`grid min-h-0 min-w-0 flex-1 grid-rows-[auto_minmax(0,1fr)] gap-4 overflow-hidden sm:gap-6 lg:grid-rows-1 ${
-							selectedItem.imageUrl ? "lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)]" : "lg:grid-cols-1"
-						}`}
+					<ScrollArea
+						className="scrollbar-none min-h-0 flex-1 overflow-y-auto lg:overflow-y-hidden"
+						ref={setContentViewport}
 					>
+						<div
+							className={`grid min-w-0 grid-rows-[auto_minmax(0,1fr)] gap-4 sm:gap-6 lg:h-full lg:min-h-0 lg:grid-rows-1 ${
+								selectedItem.imageUrl ? "lg:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)]" : "lg:grid-cols-1"
+							}`}
+						>
 						{selectedItem.imageUrl && (
-							<div className="mx-auto aspect-square w-3/4 shrink-0 self-start overflow-hidden rounded-brand bg-muted sm:mx-0 sm:aspect-[4/3] sm:w-full lg:aspect-square">
+							<div className="aspect-[4/3] w-full shrink-0 self-start overflow-hidden rounded-brand bg-muted lg:aspect-square">
 								<img alt={selectedItem.title} className="size-full object-cover" src={selectedItem.imageUrl} />
 							</div>
 						)}
@@ -189,9 +194,9 @@ export function ProductDetailsModal({
 								)}
 							</div>
 
-							<div className="relative h-0 min-h-0 flex-1">
+							<div className="relative lg:h-0 lg:min-h-0 lg:flex-1">
 								<ScrollArea
-									className="scrollbar-none h-full overflow-y-auto"
+									className="scrollbar-none lg:h-full lg:overflow-y-auto"
 									ref={setOptionsViewport}
 								>
 									<div className="space-y-5 pr-5">
@@ -226,10 +231,12 @@ export function ProductDetailsModal({
 										</div>
 									</div>
 								</ScrollArea>
-								<Scrollbar container={optionsViewport} persistent variant="prominent" />
+								<Scrollbar className="hidden lg:block" container={optionsViewport} persistent variant="prominent" />
 							</div>
 						</div>
-					</div>
+						</div>
+					</ScrollArea>
+					<Scrollbar className="lg:hidden" container={contentViewport} persistent variant="prominent" />
 
 					<div className="flex items-center justify-between gap-4 border-border border-t pt-4">
 						<div className="flex items-center gap-2">

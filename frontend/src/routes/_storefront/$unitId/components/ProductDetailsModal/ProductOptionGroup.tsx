@@ -54,9 +54,9 @@ export function ProductOptionGroup({
 	}
 
 	return (
-		<section className="min-w-0 overflow-hidden rounded-brand border border-border">
+		<section className="min-w-0 rounded-brand border border-border">
 			<button
-				className={`flex w-full min-w-0 items-center justify-between gap-3 bg-muted px-4 py-3 text-left ${
+				className={`sticky top-0 z-10 flex w-full min-w-0 items-center justify-between gap-3 rounded-t-brand bg-muted px-4 py-3 text-left shadow-sm ${
 					complete ? "cursor-pointer" : "cursor-default"
 				}`}
 				onClick={() => complete && onToggleExpanded()}
@@ -73,6 +73,15 @@ export function ProductOptionGroup({
 					</div>
 				</div>
 				<div className="flex shrink-0 items-center gap-2">
+					{group.maxSelect != null && (
+						<span className="rounded-full bg-background px-2 py-1 font-medium text-muted-foreground text-xs">
+							{t("store.product.selectionProgress", {
+								count: groupQuantity,
+								max: Number(group.maxSelect),
+								selected: groupQuantity,
+							})}
+						</span>
+					)}
 					{complete ? (
 						<span className="font-bold text-primary" title={t("store.product.optional")}>
 							✓
