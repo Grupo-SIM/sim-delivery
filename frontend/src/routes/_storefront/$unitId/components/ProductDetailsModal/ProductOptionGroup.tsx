@@ -56,48 +56,48 @@ export function ProductOptionGroup({
 	return (
 		<section className="min-w-0 rounded-brand border border-border">
 			<button
-				className={`sticky top-0 z-10 flex w-full min-w-0 items-center justify-between gap-3 rounded-t-brand bg-muted px-4 py-3 text-left shadow-sm ${
+				className={`sticky top-0 z-10 block w-full min-w-0 rounded-t-brand bg-muted px-4 py-3 text-left shadow-sm ${
 					complete ? "cursor-pointer" : "cursor-default"
 				}`}
 				onClick={() => complete && onToggleExpanded()}
 				type="button"
 			>
-				<div className="flex min-w-0 items-center gap-3">
-					{collapsed && selectedImageUrl && (
-						<img alt="" className="size-10 shrink-0 rounded object-cover" src={selectedImageUrl} />
-					)}
-					<div className="min-w-0">
-						<h3 className="font-semibold text-foreground">{group.name}</h3>
-						<p className="truncate text-muted-foreground text-sm">{collapsed ? summary : chooseLabel()}</p>
-						{priceRuleHint && <p className="mt-1 text-muted-foreground text-xs leading-snug">{priceRuleHint}</p>}
+				<div className="flex min-w-0 items-center justify-between gap-3">
+					<div className="flex min-w-0 items-center gap-3">
+						{collapsed && selectedImageUrl && (
+							<img alt="" className="size-10 shrink-0 rounded object-cover" src={selectedImageUrl} />
+						)}
+						<h3 className="truncate font-semibold text-foreground">{group.name}</h3>
+					</div>
+					<div className="flex shrink-0 items-center gap-2">
+						{complete ? (
+							<span className="font-bold text-primary" title={t("store.product.optional")}>
+								✓
+							</span>
+						) : group.required ? (
+							<span className="rounded bg-foreground px-2 py-1 font-semibold text-[10px] text-background uppercase">
+								{t("store.product.required")}
+							</span>
+						) : null}
+						{complete && (
+							<LuChevronDown
+								aria-hidden="true"
+								className={`text-muted-foreground transition-transform ${collapsed ? "" : "rotate-180"}`}
+							/>
+						)}
 					</div>
 				</div>
-				<div className="flex shrink-0 items-center gap-2">
-					{group.maxSelect != null && (
-						<span className="rounded-full bg-background px-2 py-1 font-medium text-muted-foreground text-xs">
-							{t("store.product.selectionProgress", {
-								count: groupQuantity,
-								max: Number(group.maxSelect),
-								selected: groupQuantity,
-							})}
-						</span>
-					)}
-					{complete ? (
-						<span className="font-bold text-primary" title={t("store.product.optional")}>
-							✓
-						</span>
-					) : group.required ? (
-						<span className="rounded bg-foreground px-2 py-1 font-semibold text-[10px] text-background uppercase">
-							{t("store.product.required")}
-						</span>
-					) : null}
-					{complete && (
-						<LuChevronDown
-							aria-hidden="true"
-							className={`text-muted-foreground transition-transform ${collapsed ? "" : "rotate-180"}`}
-						/>
-					)}
-				</div>
+				<p className="mt-1 truncate text-muted-foreground text-sm">{collapsed ? summary : chooseLabel()}</p>
+				{priceRuleHint && <p className="mt-1 text-muted-foreground text-xs leading-snug">{priceRuleHint}</p>}
+				{group.maxSelect != null && (
+					<p className="mt-2 font-medium text-muted-foreground text-xs">
+						{t("store.product.selectionProgress", {
+							count: groupQuantity,
+							max: Number(group.maxSelect),
+							selected: groupQuantity,
+						})}
+					</p>
+				)}
 			</button>
 			{!collapsed && (
 				<div className="divide-y divide-border">

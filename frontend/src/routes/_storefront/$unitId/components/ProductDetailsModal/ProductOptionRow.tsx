@@ -75,7 +75,7 @@ export function ProductOptionRow({
 			) : null}
 			<div className="flex min-w-0 flex-1 flex-col justify-center">
 				<p className="font-medium text-foreground">{option.name}</p>
-				{option.description && <p className="truncate text-muted-foreground text-sm">{option.description}</p>}
+				{option.description && <p className="break-words text-muted-foreground text-sm">{option.description}</p>}
 				{Number(option.priceDeltaCents) > 0 && (
 					<p className="text-muted-foreground text-sm">
 						{`+ ${money.format(Number(option.priceDeltaCents) / 100)}`}
