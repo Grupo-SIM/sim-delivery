@@ -299,7 +299,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 	return (
 		<>
 			<ScrollArea
-				className="-mx-5 overflow-x-auto px-5 pb-3"
+				className="overflow-x-auto pb-3"
 				onDragLeave={event => {
 					const nextTarget = event.relatedTarget as Node | null;
 					if (nextTarget && !event.currentTarget.contains(nextTarget)) finishDrag();
@@ -307,7 +307,13 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 				onDragOver={event => updateAutoScroll(event.clientX)}
 				ref={scrollContainerRef}
 			>
-				<div className="flex min-w-max gap-3">
+				<div
+					className="grid gap-3"
+					style={{
+						gridTemplateColumns: `repeat(${columns.length}, minmax(15rem, 1fr))`,
+						minWidth: `${columns.length * 15}rem`,
+					}}
+				>
 					{columns.map(column => {
 						const isDropTarget = dragOverStatus === column.status;
 						const finalizedCounts =
@@ -319,7 +325,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 								: [];
 						return (
 							<section
-								className={`min-h-[36rem] w-[280px] shrink-0 rounded-2xl border bg-muted/35 transition ${
+								className={`min-h-[calc(100dvh-14rem)] rounded-2xl border bg-muted/35 transition ${
 									isDropTarget ? "border-primary bg-primary/5" : "border-border"
 								}`}
 								key={column.status}

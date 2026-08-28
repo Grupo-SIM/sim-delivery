@@ -58,12 +58,12 @@ function OrdersPage() {
 	const availableStatuses = getAvailableStatuses(role);
 
 	return (
-		<Container className="space-y-6 py-6 sm:py-8">
+		<Container className="space-y-6 py-6 sm:py-8" size="full">
 			<div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 				<SectionHeading subtitle={t("admin.orders.subtitle")} title={t("admin.orders.title")} />
 			</div>
 
-			<div className="grid gap-4 sm:grid-cols-[minmax(0,15rem)_11rem_minmax(0,15rem)] sm:items-start">
+			<div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(11rem,1fr)_minmax(0,2fr)] md:items-start">
 				<TextField
 					label={t("admin.orders.filter.search")}
 					onValueChange={setSearch}
