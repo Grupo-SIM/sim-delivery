@@ -347,6 +347,22 @@ describe("UpdateOrderStatus", () => {
 		expect(messages).toEqual(["Pedido ord_1 em produção."]);
 	});
 
+	it("notifies the customer when the order is ready", async () => {
+		const { prisma } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			id: "ord_1",
+			phone: "+5511999999999",
+			status: "em_preparo",
+		});
+		const messages: string[] = [];
+
+		await new UpdateOrderStatus(prisma, {
+			sendOrderStatus: async (_phone, _status, _orderId, message) => void messages.push(message ?? ""),
+		}).execute("cmp_1", "ord_1", { status: "pronto" });
+
+		expect(messages).toEqual(["Seu pedido ord_1 está pronto e logo seguirá para você."]);
+	});
+
 	it("does not send WhatsApp when customer opted out", async () => {
 		const { prisma, stored } = makeUpdateStatusPrisma({
 			companyId: "cmp_1",

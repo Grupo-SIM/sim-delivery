@@ -22,6 +22,7 @@ interface CustomerRow {
 	cpf: string | null;
 	domId: string | null;
 	id: string;
+	notificationEmail?: boolean;
 	phone: string | null;
 	user: { email: string; id: string; name: string; phoneNumber: string | null };
 	userId: string;
@@ -70,6 +71,7 @@ const baseCustomer: CustomerRow = {
 	cpf: "12345678901",
 	domId: null,
 	id: "cust_1",
+	notificationEmail: false,
 	phone: "5581999999999",
 	user: { email: "maria@example.com", id: "user_1", name: "Maria", phoneNumber: "5581988888888" },
 	userId: "user_1",
@@ -174,9 +176,11 @@ function makeWorld(opts: WorldOptions = {}) {
 		findUniqueOrThrow: async ({ where }: { where: { id: string } }) => {
 			const order = orders.find(row => row.id === where.id);
 			if (!order) throw new Error(`unknown order ${where.id}`);
+			const customer = customers.find(row => row.id === order.customerId);
 
 			return {
 				...order,
+				customer,
 				unit: {
 					cashbackPercent: order.cashbackPercent,
 					loyaltyPointsRate: order.loyaltyPointsRate,
@@ -549,6 +553,37 @@ describe("ConfirmPayment", () => {
 		expect(payments[0].status).toBe("confirmed");
 		expect(cashbackLedger[0]).toMatchObject({ amount: 500, customerId: "cust_1", type: "accrual" });
 		expect(loyaltyLedger[0]).toMatchObject({ amount: 250, customerId: "cust_1", type: "earn" });
+	});
+
+	it("emails the customer when the order is received", async () => {
+		const sent: Record<string, string>[] = [];
+		const { prisma } = makeWorld({
+			customers: [{ ...baseCustomer, notificationEmail: true }],
+			payments: [
+				{
+					amount: 5000,
+					id: "pay_1",
+					method: "pix",
+					orderId: "order_1",
+					pixContent: "c",
+					pixQrcode: "q",
+					simpayPaymentId: "simpay_1",
+					status: "pending",
+					token: "token_1",
+				},
+			],
+		});
+
+		await new ConfirmPayment(prisma, { send: async input => void sent.push(input) }).execute("token_1");
+
+		expect(sent).toEqual([
+			{
+				message: "Recebemos seu pedido order_1. Em breve começaremos o preparo.",
+				orderId: "order_1",
+				status: "recebido",
+				to: "maria@example.com",
+			},
+		]);
 	});
 
 	it("floors fractional cashback and points", async () => {

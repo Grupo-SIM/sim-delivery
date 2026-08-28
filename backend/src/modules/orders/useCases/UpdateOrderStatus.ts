@@ -8,19 +8,13 @@ import type { WhatsAppProvider } from "@/shared/infra/whatsapp";
 import type { Role } from "@/shared/permissions";
 import type { OrderReturn, UpdateOrderStatusBody } from "../dtos";
 import { OrderErrors } from "../errors";
+import { formatOrderStatusMessage } from "../order-status-message";
 
 const DELIVERY_FLOW = ["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue"];
 const PICKUP_FLOW = ["recebido", "em_preparo", "pronto", "retirado"];
 const REOPENABLE_FROM_CANCELLED = new Set(["recebido", "em_preparo", "pronto"]);
 
-const NOTIFIABLE = new Set(["em_preparo", "saiu_para_entrega", "entregue", "retirado"]);
-
-const DEFAULT_ORDER_STATUS_MESSAGES: Record<string, string> = {
-	em_preparo: "Seu pedido {{orderId}} está em preparo.",
-	entregue: "Seu pedido {{orderId}} foi entregue. Bom apetite!",
-	retirado: "Seu pedido {{orderId}} está pronto para retirada.",
-	saiu_para_entrega: "Seu pedido {{orderId}} saiu para entrega.",
-};
+const NOTIFIABLE = new Set(["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue", "retirado"]);
 
 function canTransition(current: string, next: string, deliveryMethod: string): boolean {
 	if (current === next) return true;
@@ -53,14 +47,6 @@ function canRoleTransition(role: Role | undefined, current: string, next: string
 function shouldNotify(current: string, next: string, deliveryMethod: string): boolean {
 	const flow = deliveryMethod === "pickup" ? PICKUP_FLOW : DELIVERY_FLOW;
 	return NOTIFIABLE.has(next) && flow.indexOf(next) > flow.indexOf(current);
-}
-
-function formatOrderStatusMessage(template: string | undefined, status: string, orderId: string): string {
-	return (
-		template ??
-		DEFAULT_ORDER_STATUS_MESSAGES[status] ??
-		`Order ${orderId} status updated to "${status}"`
-	).replaceAll("{{orderId}}", orderId);
 }
 
 export class UpdateOrderStatus {
