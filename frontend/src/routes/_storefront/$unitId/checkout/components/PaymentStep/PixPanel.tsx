@@ -54,14 +54,14 @@ export function PixPanel({ customerCpf, onConfirmed, onCpfSaved, orderId, slug }
 		confirmedRef.current = true;
 		onConfirmed();
 	}, [onConfirmed]);
-	const isStatusStreamConnected = usePaymentStatusEvents(pix?.token, status => {
+	usePaymentStatusEvents(pix?.token, status => {
 		if (status === "confirmed") notifyConfirmed();
 	});
 	const { data: status } = useGetPaymentsStatusByToken(pix?.token, {
 		query: {
 			enabled: !!pix,
 			refetchInterval: query => {
-				if (isStatusStreamConnected || query.state.data?.status === "confirmed") return false;
+				if (query.state.data?.status === "confirmed") return false;
 				return 15_000;
 			},
 			refetchIntervalInBackground: false,

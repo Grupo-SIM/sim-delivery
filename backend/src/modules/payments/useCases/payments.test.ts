@@ -275,7 +275,7 @@ function makeSimpay(overrides: Partial<Record<string, unknown>> = {}) {
 		createCardPayment: async (payload: unknown) => {
 			calls.card.push(payload);
 
-			return { id: "simpay_card_1" };
+			return { id: "simpay_card_1", status: "COMPLETED" };
 		},
 		createPixPayment: async (payload: unknown) => {
 			calls.pix.push(payload);
@@ -616,13 +616,13 @@ describe("ConfirmPayment", () => {
 });
 
 describe("GetPaymentStatus", () => {
-	function makePending() {
+	function makePending(method = "pix") {
 		return makeWorld({
 			payments: [
 				{
 					amount: 5000,
 					id: "pay_1",
-					method: "pix",
+					method,
 					orderId: "order_1",
 					pixContent: "c",
 					pixQrcode: "q",
@@ -636,8 +636,11 @@ describe("GetPaymentStatus", () => {
 
 	it("returns the persisted status for its owner", async () => {
 		const { prisma } = makePending();
+		const { simpay } = makeSimpay();
 
-		expect(await new GetPaymentStatus(prisma).execute("user_1", "token_1")).toEqual({ status: "pending" });
+		expect(await new GetPaymentStatus(prisma, simpay).execute("user_1", "token_1")).toEqual({
+			status: "pending",
+		});
 	});
 
 	it("returns a confirmed persisted status without calling the gateway", async () => {
@@ -656,19 +659,53 @@ describe("GetPaymentStatus", () => {
 				},
 			],
 		});
-		expect(await new GetPaymentStatus(prisma).execute("user_1", "token_1")).toEqual({ status: "confirmed" });
+		const { simpay } = makeSimpay({
+			getPixStatusDirect: async () => {
+				throw new Error("must not call gateway");
+			},
+		});
+		expect(await new GetPaymentStatus(prisma, simpay).execute("user_1", "token_1")).toEqual({
+			status: "confirmed",
+		});
+	});
+
+	it("confirms a card only after Simpay reports approval", async () => {
+		const { cashbackLedger, payments, prisma } = makePending("credit_card");
+		const { simpay } = makeSimpay({ getPaymentStatus: async () => ({ status: "COMPLETED" }) });
+
+		expect(await new GetPaymentStatus(prisma, simpay).execute("user_1", "token_1")).toEqual({
+			status: "confirmed",
+		});
+		expect(payments[0]?.status).toBe("confirmed");
+		expect(cashbackLedger).toHaveLength(1);
+	});
+
+	it("marks a card as failed when Simpay reports a terminal rejection", async () => {
+		const { payments, prisma } = makePending("credit_card");
+		const { simpay } = makeSimpay({ getPaymentStatus: async () => ({ status: "FAILED" }) });
+
+		expect(await new GetPaymentStatus(prisma, simpay).execute("user_1", "token_1")).toEqual({
+			status: "failed",
+		});
+		expect(payments[0]?.status).toBe("failed");
 	});
 
 	it("does not disclose a payment to another user", async () => {
 		const { prisma } = makePending();
+		const { simpay } = makeSimpay();
 
-		await expect(new GetPaymentStatus(prisma).execute("user_2", "token_1")).rejects.toThrow("PAYMENT_NOT_FOUND");
+		await expect(new GetPaymentStatus(prisma, simpay).execute("user_2", "token_1")).rejects.toThrow(
+			"PAYMENT_NOT_FOUND",
+		);
 	});
 
 	it("does not expose an unknown token", async () => {
 		const { prisma } = makePending();
+		const { simpay } = makeSimpay();
 
-		await expect(new GetPaymentStatus(prisma).execute("user_1", "token_9")).rejects.toThrow("PAYMENT_NOT_FOUND");
+		await expect(new GetPaymentStatus(prisma, simpay).execute("user_1", "token_9")).rejects.toThrow(
+			"PAYMENT_NOT_FOUND",
+		);
 	});
 });
 
@@ -758,7 +795,7 @@ describe("CreateCardPayment", () => {
 	};
 	const body = { card, holderCpf: "98765432100", orderId: "order_1", slug: "zero-grau" };
 
-	it("tokenizes a new card, charges it and confirms right away", async () => {
+	it("tokenizes a new card and confirms an explicitly completed charge", async () => {
 		const { cashbackLedger, payments, prisma } = makeWorld();
 		const { calls, simpay } = makeSimpay();
 		const { dom } = makeDom();
@@ -769,6 +806,33 @@ describe("CreateCardPayment", () => {
 		expect(payments[0]).toMatchObject({ method: "credit_card", status: "confirmed" });
 		expect(calls.card[0]).toMatchObject({ brand: "visa", installments: 1, price: 50, token: "424242tok" });
 		expect(cashbackLedger).toHaveLength(1);
+	});
+
+	it("keeps the order pending while Simpay has not approved the card", async () => {
+		const { cashbackLedger, payments, prisma } = makeWorld();
+		const { simpay } = makeSimpay({
+			createCardPayment: async () => ({ id: "simpay_card_1", status: "PENDING" }),
+		});
+		const { dom } = makeDom();
+
+		const result = await new CreateCardPayment(prisma, simpay, dom).execute("user_1", body);
+
+		expect(result).toMatchObject({ status: "pending", token: "token_1" });
+		expect(payments[0]).toMatchObject({ method: "credit_card", status: "pending" });
+		expect(cashbackLedger).toHaveLength(0);
+	});
+
+	it("rejects a terminal failure returned with HTTP success", async () => {
+		const { payments, prisma } = makeWorld();
+		const { simpay } = makeSimpay({
+			createCardPayment: async () => ({ id: "simpay_card_1", status: "FAILED" }),
+		});
+		const { dom } = makeDom();
+
+		await expect(new CreateCardPayment(prisma, simpay, dom).execute("user_1", body)).rejects.toThrow(
+			"CARD_DECLINED",
+		);
+		expect(payments).toHaveLength(0);
 	});
 
 	it("strips card number formatting before tokenizing", async () => {

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaCreditCard } from "react-icons/fa";
 import { FaPix } from "react-icons/fa6";
@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { getPaymentsCardsQueryOptions, usePostPaymentsCard } from "@/lib/api";
 import { showAlert } from "@/stores";
 import { CardPaymentForm, type CardPaymentValue } from "./CardPaymentForm";
+import { CardPaymentPending } from "./CardPaymentPending";
 import { PixPanel } from "./PixPanel";
 
 type PaymentMethod = "card" | "pix";
@@ -24,6 +25,7 @@ export function PaymentStep({ amountCents, customerCpf, onConfirmed, orderId, sl
 	const { t } = useTranslation();
 	const [method, setMethod] = useState<PaymentMethod>("card");
 	const [pixCpf, setPixCpf] = useState(customerCpf);
+	const [cardPaymentToken, setCardPaymentToken] = useState<string | null>(null);
 
 	const { data: savedCards, isPending: savedCardsPending } = useQuery(getPaymentsCardsQueryOptions({ slug }));
 	const { isPending: isPayingCard, mutate: payWithCard } = usePostPaymentsCard();
@@ -40,10 +42,15 @@ export function PaymentStep({ amountCents, customerCpf, onConfirmed, orderId, sl
 						});
 					void showAlert(message);
 				},
-				onSuccess: () => onConfirmed(),
+				onSuccess: payment => {
+					if (payment.status === "confirmed") onConfirmed();
+					else setCardPaymentToken(payment.token);
+				},
 			},
 		);
 	}
+
+	const handleCardFailed = useCallback(() => setCardPaymentToken(null), []);
 
 	const methods: { icon: typeof FaCreditCard; key: PaymentMethod; label: string }[] = [
 		{ icon: FaCreditCard, key: "card", label: t("store.checkout.payment.methodCard") },
@@ -70,7 +77,9 @@ export function PaymentStep({ amountCents, customerCpf, onConfirmed, orderId, sl
 				))}
 			</div>
 
-			{method === "card" && savedCardsPending ? (
+			{method === "card" && cardPaymentToken ? (
+				<CardPaymentPending onConfirmed={onConfirmed} onFailed={handleCardFailed} token={cardPaymentToken} />
+			) : method === "card" && savedCardsPending ? (
 				<div className="space-y-3">
 					<Skeleton className="h-12 w-full" />
 					<Skeleton className="h-12 w-full" />

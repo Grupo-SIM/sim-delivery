@@ -5,7 +5,7 @@ import { PaymentErrors } from "../errors";
 export class ConfirmPayment {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(token: string): Promise<boolean> {
+	async execute(token: string, expectedSimpayPaymentId?: string): Promise<boolean> {
 		const payment = await this.prisma.payment.findUnique({ where: { token } });
 		if (!payment) throw new DomainError(PaymentErrors.PAYMENT_NOT_FOUND);
 
@@ -22,7 +22,11 @@ export class ConfirmPayment {
 			// row inside the transaction ensures rewards and order transition run once.
 			const { count } = await tx.payment.updateMany({
 				data: { confirmedAt: new Date(), status: "confirmed" },
-				where: { id: payment.id, status: "pending" },
+				where: {
+					id: payment.id,
+					...(expectedSimpayPaymentId ? { simpayPaymentId: expectedSimpayPaymentId } : {}),
+					status: "pending",
+				},
 			});
 			if (count === 0) return false;
 

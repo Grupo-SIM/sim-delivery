@@ -73,6 +73,41 @@ function resolveBaseUrl(): string {
 
 const headers = { Accept: "application/json", "Content-Type": "application/json" };
 
+const APPROVED_PAYMENT_STATUSES = new Set([
+	"APPROVED",
+	"AUTHORIZED",
+	"CAPTURED",
+	"CHARGE-APPROVED",
+	"COMPLETED",
+	"CONFIRMED",
+	"PAID",
+	"SUCCEEDED",
+	"SUCCESS",
+]);
+
+const FAILED_PAYMENT_STATUSES = new Set([
+	"CANCELED",
+	"CANCELLED",
+	"CHARGEBACK",
+	"EXPIRED",
+	"FAILED",
+	"NOT_AUTHORIZED",
+	"REFUNDED",
+	"REJECTED",
+]);
+
+function normalizePaymentStatus(status: unknown): string {
+	return typeof status === "string" ? status.trim().toUpperCase() : "";
+}
+
+export function isApprovedSimpayStatus(status: unknown): boolean {
+	return APPROVED_PAYMENT_STATUSES.has(normalizePaymentStatus(status));
+}
+
+export function isFailedSimpayStatus(status: unknown): boolean {
+	return FAILED_PAYMENT_STATUSES.has(normalizePaymentStatus(status));
+}
+
 export class SimpayClient {
 	async createCardPayment(params: SimpayCardPaymentParams): Promise<SimpayPaymentResponse> {
 		const response = await fetch(`${resolveBaseUrl()}/zero-grau/payments/credit-card`, {

@@ -60,7 +60,7 @@ export const PaymentsController = new Elysia({ detail: { tags: ["Payments"] } })
 				createCardPayment: new CreateCardPayment(prisma, simpay, domPagamentos),
 				createPixPayment: new CreatePixPayment(prisma, simpay),
 				deleteSavedCard: new DeleteSavedCard(prisma),
-				getPaymentStatus: new GetPaymentStatus(prisma),
+				getPaymentStatus: new GetPaymentStatus(prisma, simpay),
 				listSavedCards: new ListSavedCards(prisma),
 				prisma,
 				refundPayment: new RefundPayment(prisma, simpay),

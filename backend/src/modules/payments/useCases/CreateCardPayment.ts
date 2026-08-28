@@ -1,7 +1,7 @@
 import { DomainError } from "@/shared/errors";
 import type { DomCardTokenResult, DomPagamentosClient } from "@/shared/infra/domPagamentos";
 import { PaymentProviderError, paymentProviderErrorDescription } from "@/shared/infra/paymentProviderError";
-import type { SimpayClient } from "@/shared/infra/simpay";
+import { isApprovedSimpayStatus, isFailedSimpayStatus, type SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CardPaymentReturn, CreateCardPaymentBody } from "../dtos";
 import { PaymentErrors } from "../errors";
@@ -77,6 +77,7 @@ export class CreateCardPayment {
 		const phone = (customer.phone ?? user.phoneNumber ?? "").replace(/\D/g, "");
 
 		let simpayPaymentId: string | null = null;
+		let gatewayStatus = "";
 		try {
 			const result = await this.simpay.createCardPayment({
 				bin: cardToken.substring(0, 6),
@@ -93,8 +94,12 @@ export class CreateCardPayment {
 				token: cardToken,
 			});
 			simpayPaymentId = result.paymentId ?? result.id ?? null;
+			gatewayStatus = result.status;
 		} catch (error) {
 			throw new DomainError(PaymentErrors.CARD_DECLINED, paymentProviderErrorDescription(error));
+		}
+		if (isFailedSimpayStatus(gatewayStatus)) {
+			throw new DomainError(PaymentErrors.CARD_DECLINED);
 		}
 
 		if (tokenizedForSave) {
@@ -137,11 +142,14 @@ export class CreateCardPayment {
 					data: { amount: order.total, method: "credit_card", orderId: order.id, simpayPaymentId },
 				});
 
-		// Card charges resolve synchronously at the gateway (same as Atlas): a successful
-		// createCardPayment call means the charge went through, so confirm right away.
-		await new ConfirmPayment(this.prisma).execute(payment.token);
+		// Simintpay accepts the request before the acquirer settles it. HTTP success and
+		// PENDING must not release the order; only an explicit approval may do that.
+		if (isApprovedSimpayStatus(gatewayStatus)) {
+			await new ConfirmPayment(this.prisma).execute(payment.token);
+			return { status: "confirmed", token: payment.token };
+		}
 
-		return { status: "confirmed", token: payment.token };
+		return { status: "pending", token: payment.token };
 	}
 
 	private async createDomCustomer(
