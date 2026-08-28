@@ -90,7 +90,6 @@ export function MenuBrowser({
 				</div>
 			</div>
 			<ProductDetailsModal
-				historyMode="replace"
 				initialNote={modalNote}
 				initialOptions={modalOptions}
 				item={selectedItem}
