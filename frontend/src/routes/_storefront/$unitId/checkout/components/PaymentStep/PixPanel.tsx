@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { type PostPaymentsPix200, useGetPaymentsStatusByToken, usePostPaymentsPix } from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
 import { showAlert } from "@/stores";
+import { usePaymentStatusEvents } from "./usePaymentStatusEvents";
 
 interface PixPanelProps {
 	onConfirmed: () => void;
@@ -17,11 +18,13 @@ export function PixPanel({ onConfirmed, orderId, slug }: PixPanelProps) {
 	const [pix, setPix] = useState<PostPaymentsPix200 | null>(null);
 	const [copied, setCopied] = useState(false);
 	const [failed, setFailed] = useState(false);
+	const confirmedRef = useRef(false);
 	const requestedRef = useRef(false);
 
 	const { isPending, mutateAsync: createPix } = usePostPaymentsPix();
 
 	const generate = useCallback(async () => {
+		confirmedRef.current = false;
 		setFailed(false);
 		try {
 			setPix(await createPix({ data: { orderId, slug } }));
@@ -37,14 +40,29 @@ export function PixPanel({ onConfirmed, orderId, slug }: PixPanelProps) {
 		void generate();
 	}, [generate]);
 
+	const notifyConfirmed = useCallback(() => {
+		if (confirmedRef.current) return;
+		confirmedRef.current = true;
+		onConfirmed();
+	}, [onConfirmed]);
+	const isStatusStreamConnected = usePaymentStatusEvents(pix?.token, status => {
+		if (status === "confirmed") notifyConfirmed();
+	});
 	const { data: status } = useGetPaymentsStatusByToken(pix?.token, {
-		query: { enabled: !!pix, refetchInterval: 4000 },
+		query: {
+			enabled: !!pix,
+			refetchInterval: query => {
+				if (isStatusStreamConnected || query.state.data?.status === "confirmed") return false;
+				return 15_000;
+			},
+			refetchIntervalInBackground: false,
+			refetchOnWindowFocus: false,
+		},
 	});
 
 	useEffect(() => {
-		if (status?.status === "confirmed") onConfirmed();
-	}, [status?.status, onConfirmed]);
-
+		if (status?.status === "confirmed") notifyConfirmed();
+	}, [notifyConfirmed, status?.status]);
 	function copyContent() {
 		if (!pix) return;
 		void navigator.clipboard.writeText(pix.pixContent).then(() => {

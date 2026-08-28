@@ -133,12 +133,35 @@ function makeWorld(opts: WorldOptions = {}) {
 					(where.orderId !== undefined && payment.orderId === where.orderId) ||
 					(where.token !== undefined && payment.token === where.token),
 			) ?? null,
+		findFirst: async ({
+			where,
+		}: {
+			where: { order: { customer: { userId: string } }; token: string };
+		}) =>
+			payments.find(payment => {
+				if (payment.token !== where.token) return false;
+				const order = orders.find(candidate => candidate.id === payment.orderId);
+				const customer = customers.find(candidate => candidate.id === order?.customerId);
+				return customer?.userId === where.order.customer.userId;
+			}) ?? null,
 		update: async ({ data, where }: { data: Record<string, unknown>; where: { id: string } }) => {
 			const payment = payments.find(row => row.id === where.id);
 			if (!payment) throw new Error(`unknown payment ${where.id}`);
 			Object.assign(payment, data);
 
 			return payment;
+		},
+		updateMany: async ({
+			data,
+			where,
+		}: {
+			data: Record<string, unknown>;
+			where: { id: string; status: string };
+		}) => {
+			const payment = payments.find(row => row.id === where.id && row.status === where.status);
+			if (!payment) return { count: 0 };
+			Object.assign(payment, data);
+			return { count: 1 };
 		},
 	};
 
@@ -582,12 +605,12 @@ describe("ConfirmPayment", () => {
 		await expect(new ConfirmPayment(prisma).execute("token_9")).rejects.toThrow("PAYMENT_NOT_FOUND");
 	});
 
-	it("does not confirm and accrue twice", async () => {
+	it("ignores a duplicate webhook without accruing twice", async () => {
 		const { cashbackLedger, prisma } = makePending();
 
-		await new ConfirmPayment(prisma).execute("token_1");
+		expect(await new ConfirmPayment(prisma).execute("token_1")).toBe(true);
 
-		await expect(new ConfirmPayment(prisma).execute("token_1")).rejects.toThrow("PAYMENT_ALREADY_CONFIRMED");
+		expect(await new ConfirmPayment(prisma).execute("token_1")).toBe(false);
 		expect(cashbackLedger).toHaveLength(1);
 	});
 });
@@ -611,16 +634,13 @@ describe("GetPaymentStatus", () => {
 		});
 	}
 
-	it("throws for an unknown token", async () => {
+	it("returns the persisted status for its owner", async () => {
 		const { prisma } = makePending();
-		const { simpay } = makeSimpay();
 
-		await expect(new GetPaymentStatus(prisma, simpay).execute("token_9")).rejects.toThrow(
-			"PAYMENT_NOT_FOUND",
-		);
+		expect(await new GetPaymentStatus(prisma).execute("user_1", "token_1")).toEqual({ status: "pending" });
 	});
 
-	it("returns the stored status without polling when already confirmed", async () => {
+	it("returns a confirmed persisted status without calling the gateway", async () => {
 		const { prisma } = makeWorld({
 			payments: [
 				{
@@ -636,74 +656,19 @@ describe("GetPaymentStatus", () => {
 				},
 			],
 		});
-		const { simpay } = makeSimpay({
-			getPixStatusDirect: async () => {
-				throw new Error("should not poll");
-			},
-		});
-
-		expect(await new GetPaymentStatus(prisma, simpay).execute("token_1")).toEqual({ status: "confirmed" });
+		expect(await new GetPaymentStatus(prisma).execute("user_1", "token_1")).toEqual({ status: "confirmed" });
 	});
 
-	it("stays pending while the gateway has not settled", async () => {
-		const { cashbackLedger, prisma } = makePending();
-		const { simpay } = makeSimpay();
-
-		expect(await new GetPaymentStatus(prisma, simpay).execute("token_1")).toEqual({ status: "pending" });
-		expect(cashbackLedger).toHaveLength(0);
-	});
-
-	it("confirms when the direct DOM check reports approval", async () => {
-		const { cashbackLedger, payments, prisma } = makePending();
-		const { simpay } = makeSimpay({ getPixStatusDirect: async () => ({ status: "APPROVED" }) });
-
-		expect(await new GetPaymentStatus(prisma, simpay).execute("token_1")).toEqual({ status: "confirmed" });
-		expect(payments[0].status).toBe("confirmed");
-		expect(cashbackLedger).toHaveLength(1);
-	});
-
-	it("falls back to the Simpay status when the direct check is inconclusive", async () => {
-		const { payments, prisma } = makePending();
-		const { simpay } = makeSimpay({ getPaymentStatus: async () => ({ status: "PAID" }) });
-
-		expect(await new GetPaymentStatus(prisma, simpay).execute("token_1")).toEqual({ status: "confirmed" });
-		expect(payments[0].status).toBe("confirmed");
-	});
-
-	it("stays pending when the fallback status service throws", async () => {
+	it("does not disclose a payment to another user", async () => {
 		const { prisma } = makePending();
-		const { simpay } = makeSimpay({
-			getPaymentStatus: async () => {
-				throw new Error("status service down");
-			},
-		});
 
-		expect(await new GetPaymentStatus(prisma, simpay).execute("token_1")).toEqual({ status: "pending" });
+		await expect(new GetPaymentStatus(prisma).execute("user_2", "token_1")).rejects.toThrow("PAYMENT_NOT_FOUND");
 	});
 
-	it("cannot poll a pending payment that never reached the gateway", async () => {
-		const { prisma } = makeWorld({
-			payments: [
-				{
-					amount: 5000,
-					id: "pay_1",
-					method: "pix",
-					orderId: "order_1",
-					pixContent: "c",
-					pixQrcode: "q",
-					simpayPaymentId: null,
-					status: "pending",
-					token: "token_1",
-				},
-			],
-		});
-		const { simpay } = makeSimpay({
-			getPixStatusDirect: async () => {
-				throw new Error("should not poll");
-			},
-		});
+	it("does not expose an unknown token", async () => {
+		const { prisma } = makePending();
 
-		expect(await new GetPaymentStatus(prisma, simpay).execute("token_1")).toEqual({ status: "pending" });
+		await expect(new GetPaymentStatus(prisma).execute("user_1", "token_9")).rejects.toThrow("PAYMENT_NOT_FOUND");
 	});
 });
 
