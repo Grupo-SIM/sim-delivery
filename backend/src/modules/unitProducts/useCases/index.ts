@@ -4,3 +4,4 @@ export * from "./ListUnitProducts";
 export * from "./RemoveUnitProduct";
 export * from "./SetProductUnits";
 export * from "./UpdateUnitProduct";
+export * from "./UpdateUnitProductsAvailability";

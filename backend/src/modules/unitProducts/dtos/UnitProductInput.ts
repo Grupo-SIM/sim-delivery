@@ -43,3 +43,9 @@ export type AssociateProductBody = typeof AssociateProductBody.static;
 
 export const UpdateUnitProductBody = t.Object({ ...fields });
 export type UpdateUnitProductBody = typeof UpdateUnitProductBody.static;
+
+export const UpdateUnitProductsAvailabilityBody = t.Object({
+	available: t.Boolean(),
+	categoryId: t.Optional(t.String({ minLength: 1 })),
+});
+export type UpdateUnitProductsAvailabilityBody = typeof UpdateUnitProductsAvailabilityBody.static;

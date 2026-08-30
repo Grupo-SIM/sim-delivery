@@ -38,3 +38,6 @@ export type UnitProductReturn = typeof UnitProductReturn.static;
 
 export const UnitProductListReturn = t.Array(UnitProductReturn);
 export type UnitProductListReturn = typeof UnitProductListReturn.static;
+
+export const UpdateUnitProductsAvailabilityReturn = t.Object({ updatedCount: t.Integer({ minimum: 0 }) });
+export type UpdateUnitProductsAvailabilityReturn = typeof UpdateUnitProductsAvailabilityReturn.static;

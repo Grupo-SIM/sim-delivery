@@ -8,8 +8,16 @@ import {
 	UnitProductListReturn,
 	UnitProductReturn,
 	UpdateUnitProductBody,
+	UpdateUnitProductsAvailabilityBody,
+	UpdateUnitProductsAvailabilityReturn,
 } from "../../dtos";
-import { AssociateProduct, ListUnitProducts, RemoveUnitProduct, UpdateUnitProduct } from "../../useCases";
+import {
+	AssociateProduct,
+	ListUnitProducts,
+	RemoveUnitProduct,
+	UpdateUnitProduct,
+	UpdateUnitProductsAvailability,
+} from "../../useCases";
 
 export const UnitProductsController = new Elysia({
 	detail: {
@@ -27,6 +35,7 @@ export const UnitProductsController = new Elysia({
 				prisma,
 				removeUnitProduct: new RemoveUnitProduct(prisma),
 				updateUnitProduct: new UpdateUnitProduct(prisma),
+				updateUnitProductsAvailability: new UpdateUnitProductsAvailability(prisma),
 			}))
 			.get(
 				"/:unitProductId/local-options/:localOptionId/recipe",
@@ -70,6 +79,19 @@ export const UnitProductsController = new Elysia({
 					return associateProduct.execute(scope.companyId, params.unitId, body);
 				},
 				{ body: AssociateProductBody, response: UnitProductReturn },
+			)
+			.patch(
+				"/availability",
+				async ({ body, params, request, updateUnitProductsAvailability }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "menu", "update");
+
+					return updateUnitProductsAvailability.execute(scope.companyId, params.unitId, body);
+				},
+				{
+					body: UpdateUnitProductsAvailabilityBody,
+					response: UpdateUnitProductsAvailabilityReturn,
+				},
 			)
 			.patch(
 				"/:unitProductId",

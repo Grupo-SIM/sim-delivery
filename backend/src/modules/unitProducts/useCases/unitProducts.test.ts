@@ -4,6 +4,7 @@ import { AssociateProduct } from "./AssociateProduct";
 import { ListUnitProducts } from "./ListUnitProducts";
 import { RemoveUnitProduct } from "./RemoveUnitProduct";
 import { UpdateUnitProduct } from "./UpdateUnitProduct";
+import { UpdateUnitProductsAvailability } from "./UpdateUnitProductsAvailability";
 
 interface Scoped {
 	id: string;
@@ -27,6 +28,7 @@ function prismaWith(opts: {
 	const associations = opts.associations ?? [];
 	const created: unknown[] = [];
 	const deleted: string[] = [];
+	const updatedMany: unknown[] = [];
 	const scoped = (rows: Scoped[]) => ({
 		count: async ({ where }: { where: { companyId: string; id: { in: string[] } } }) =>
 			rows.filter(row => row.companyId === where.companyId && where.id.in.includes(row.id)).length,
@@ -37,6 +39,7 @@ function prismaWith(opts: {
 	return {
 		created,
 		deleted,
+		updatedMany,
 		prisma: {
 			category: scoped(categories),
 			product: scoped(products),
@@ -67,6 +70,10 @@ function prismaWith(opts: {
 					id: where.id,
 					...data,
 				}),
+				updateMany: async (args: unknown) => {
+					updatedMany.push(args);
+					return { count: 2 };
+				},
 			},
 		} as unknown as PrismaInstance,
 	};
@@ -144,6 +151,62 @@ describe("unit-products use-cases", () => {
 		await expect(
 			new UpdateUnitProduct(prisma).execute("cmp_1", "unit1", "up_x", { available: false }),
 		).rejects.toThrow("UNIT_PRODUCT_NOT_FOUND");
+	});
+
+	it("UpdateUnitProductsAvailability updates every product in an owned unit", async () => {
+		const { prisma, updatedMany } = prismaWith({
+			units: [{ companyId: "cmp_1", id: "unit1" }],
+		});
+
+		const result = await new UpdateUnitProductsAvailability(prisma).execute("cmp_1", "unit1", {
+			available: false,
+		});
+
+		expect(result).toEqual({ updatedCount: 2 });
+		expect(updatedMany[0]).toEqual({
+			data: { available: false },
+			where: { unitId: "unit1" },
+		});
+	});
+
+	it("UpdateUnitProductsAvailability respects effective category overrides", async () => {
+		const { prisma, updatedMany } = prismaWith({
+			categories: [{ companyId: "cmp_1", id: "cat1" }],
+			units: [{ companyId: "cmp_1", id: "unit1" }],
+		});
+
+		await new UpdateUnitProductsAvailability(prisma).execute("cmp_1", "unit1", {
+			available: true,
+			categoryId: "cat1",
+		});
+
+		expect(updatedMany[0]).toMatchObject({
+			data: { available: true },
+			where: {
+				OR: [
+					{ categories: { some: { categoryId: "cat1" } }, categoriesOverridden: true },
+					{
+						categoriesOverridden: false,
+						product: { categories: { some: { categoryId: "cat1" } } },
+					},
+				],
+				unitId: "unit1",
+			},
+		});
+	});
+
+	it("UpdateUnitProductsAvailability rejects a category from another company", async () => {
+		const { prisma } = prismaWith({
+			categories: [{ companyId: "cmp_2", id: "cat1" }],
+			units: [{ companyId: "cmp_1", id: "unit1" }],
+		});
+
+		await expect(
+			new UpdateUnitProductsAvailability(prisma).execute("cmp_1", "unit1", {
+				available: true,
+				categoryId: "cat1",
+			}),
+		).rejects.toThrow("CATEGORY_NOT_FOUND");
 	});
 
 	it("RemoveUnitProduct deletes an owned association", async () => {

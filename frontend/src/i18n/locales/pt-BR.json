@@ -1039,6 +1039,19 @@
 			},
 			"unitProducts": {
 				"back": "Voltar para unidades",
+				"bulk": {
+					"allProducts": "Todos os produtos da unidade",
+					"availableSuccess_one": "{{count}} produto disponibilizado.",
+					"availableSuccess_other": "{{count}} produtos disponibilizados.",
+					"description": "Altere o cardápio inteiro ou uma categoria quando itens começarem a ser vendidos ou esgotarem.",
+					"error": "Não foi possível alterar a disponibilidade dos produtos.",
+					"makeAvailable": "Disponibilizar",
+					"makeUnavailable": "Indisponibilizar",
+					"scope": "Unidade ou categoria",
+					"title": "Disponibilidade rápida",
+					"unavailableSuccess_one": "{{count}} produto indisponibilizado.",
+					"unavailableSuccess_other": "{{count}} produtos indisponibilizados."
+				},
 				"columns": {
 					"availability": "Disponibilidade",
 					"categories": "Categorias",
@@ -1079,13 +1092,18 @@
 					"unavailableTitle": "Opções indisponíveis nesta unidade"
 				},
 				"row": {
+					"availabilityError": "Não foi possível alterar a disponibilidade do produto.",
+					"availableSuccess": "{{title}} está disponível.",
 					"edit": "Editar",
+					"makeAvailable": "Disponibilizar",
+					"makeUnavailable": "Indisponibilizar",
 					"none": "Nenhuma",
 					"overridden": "(substituído)",
 					"remove": "Remover",
 					"removeConfirm": "Remover {{title}} do cardápio desta unidade?",
 					"removeError": "Não foi possível remover a associação.",
-					"removeSuccess": "Produto removido do cardápio."
+					"removeSuccess": "Produto removido do cardápio.",
+					"unavailableSuccess": "{{title}} está indisponível."
 				},
 				"status": {
 					"available": "Disponível",

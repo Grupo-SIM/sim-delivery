@@ -1,10 +1,15 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LuCircleCheck, LuCircleX, LuPencil, LuTrash2 } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
-import { getUnitsByUnitIdProductsQueryKey, useDeleteUnitsByUnitIdProductsByUnitProductId } from "@/lib/api";
+import {
+	getUnitsByUnitIdProductsQueryKey,
+	useDeleteUnitsByUnitIdProductsByUnitProductId,
+	usePatchUnitsByUnitIdProductsByUnitProductId,
+} from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 import { type Category, money, type Product, type Tag, type UnitProduct } from "./types";
 import { UnitProductEditModal } from "./UnitProductEditModal";
@@ -22,6 +27,7 @@ export function UnitProductRow({ association, categories, products, tags, unitId
 	const queryClient = useQueryClient();
 	const [editing, setEditing] = useState(false);
 	const remove = useDeleteUnitsByUnitIdProductsByUnitProductId();
+	const updateAvailability = usePatchUnitsByUnitIdProductsByUnitProductId();
 
 	const product = products.find(p => p.id === association.productId);
 	const effectiveCategories = association.categoriesOverridden
@@ -41,6 +47,28 @@ export function UnitProductRow({ association, categories, products, tags, unitId
 				onSuccess: () => {
 					void queryClient.invalidateQueries({ queryKey: getUnitsByUnitIdProductsQueryKey(unitId) });
 					showToast(t("admin.unitProducts.row.removeSuccess"), "positive");
+				},
+			},
+		);
+	}
+
+	function toggleAvailability() {
+		const available = !association.available;
+		updateAvailability.mutate(
+			{ data: { available }, unitId, unitProductId: association.id },
+			{
+				onError: () => void showAlert(t("admin.unitProducts.row.availabilityError")),
+				onSuccess: () => {
+					void queryClient.invalidateQueries({ queryKey: getUnitsByUnitIdProductsQueryKey(unitId) });
+					showToast(
+						t(
+							available
+								? "admin.unitProducts.row.availableSuccess"
+								: "admin.unitProducts.row.unavailableSuccess",
+							{ title: product?.title ?? association.productId },
+						),
+						"positive",
+					);
 				},
 			},
 		);
@@ -111,7 +139,20 @@ export function UnitProductRow({ association, categories, products, tags, unitId
 				</td>
 				<td className="px-4 py-3 text-right">
 					<div className="flex justify-end gap-2">
+						<Button
+							disabled={updateAvailability.isPending}
+							onClick={toggleAvailability}
+							size="sm"
+							type="button"
+							variant="outline"
+						>
+							{association.available ? <LuCircleX /> : <LuCircleCheck />}
+							{association.available
+								? t("admin.unitProducts.row.makeUnavailable")
+								: t("admin.unitProducts.row.makeAvailable")}
+						</Button>
 						<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
+							<LuPencil />
 							{t("admin.unitProducts.row.edit")}
 						</Button>
 						<ConfirmActionButton
@@ -123,6 +164,7 @@ export function UnitProductRow({ association, categories, products, tags, unitId
 							type="button"
 							variant="outline"
 						>
+							<LuTrash2 />
 							{t("admin.unitProducts.row.remove")}
 						</ConfirmActionButton>
 					</div>

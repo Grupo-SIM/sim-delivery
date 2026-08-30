@@ -11,7 +11,7 @@ import {
 	useGetUnits,
 	useGetUnitsByUnitIdProducts,
 } from "@/lib/api";
-import { AssociateProductForm, UnitProductsTable } from "./components";
+import { AssociateProductForm, AvailabilityBulkActions, UnitProductsTable } from "./components";
 
 function UnitProductsPage() {
 	const { t } = useTranslation();
@@ -54,6 +54,12 @@ function UnitProductsPage() {
 						categories={categories ?? []}
 						products={products ?? []}
 						tags={tags ?? []}
+						unitId={unitId}
+					/>
+
+					<AvailabilityBulkActions
+						categories={categories ?? []}
+						disabled={associationsQuery.data.length === 0}
 						unitId={unitId}
 					/>
 
