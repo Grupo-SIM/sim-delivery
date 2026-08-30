@@ -87,7 +87,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 					icon={LuPackage}
 					label={t("admin.products.title")}
 					onNavigate={onNavigate}
-					to="/admin/products"
+					to={role === "manager" ? "/admin/units" : "/admin/products"}
 				/>
 				<NavItem
 					icon={LuFolderTree}

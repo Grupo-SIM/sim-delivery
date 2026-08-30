@@ -11,6 +11,7 @@ export const CompanyScopeReturn = t.Object({
 		t.Literal("courier"),
 		t.Literal("customer"),
 	]),
+	unitIds: t.Array(t.String()),
 	userId: t.String(),
 });
 export type CompanyScopeReturn = typeof CompanyScopeReturn.static;

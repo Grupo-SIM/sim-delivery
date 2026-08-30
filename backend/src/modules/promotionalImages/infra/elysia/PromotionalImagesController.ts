@@ -95,6 +95,7 @@ export const PromotionalImagesController = new Elysia({ detail: { tags: ["Promot
 		async ({ listUnitPromotionalImages, params, request }) => {
 			const scope = await CompanyScopeGuard.execute(request.headers);
 			CompanyScopeGuard.authorize(scope, "units", "read");
+			CompanyScopeGuard.authorizeUnit(scope, params.unitId);
 			return listUnitPromotionalImages.execute(scope.companyId, params.unitId);
 		},
 		{ response: PromotionalImageListReturn },
@@ -104,6 +105,7 @@ export const PromotionalImagesController = new Elysia({ detail: { tags: ["Promot
 		async ({ body, params, request, setUnitPromotionalImages }) => {
 			const scope = await CompanyScopeGuard.execute(request.headers);
 			CompanyScopeGuard.authorize(scope, "units", "update");
+			CompanyScopeGuard.authorizeUnit(scope, params.unitId);
 			return setUnitPromotionalImages.execute(scope.companyId, params.unitId, body.promotionalImageIds);
 		},
 		{ body: SetUnitPromotionalImagesBody, response: PromotionalImageListReturn },

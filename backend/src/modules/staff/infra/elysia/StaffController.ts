@@ -68,6 +68,7 @@ export const StaffController = new Elysia({
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "staff", "invite");
 					if (body.role === "owner") CompanyScopeGuard.authorize(scope, "staff", "inviteOwner");
+					CompanyScopeGuard.authorizeUnits(scope, body.unitIds ?? []);
 
 					return inviteStaff.execute({ ...body, companyId: scope.companyId, unitIds: body.unitIds ?? [] });
 				},
@@ -81,6 +82,7 @@ export const StaffController = new Elysia({
 				async ({ body, params, request, updateStaffUnits }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "staff", "setRole");
+					CompanyScopeGuard.authorizeUnits(scope, body.unitIds);
 
 					return updateStaffUnits.execute({
 						...body,

@@ -22,10 +22,6 @@ export function StaffRow({ member }: StaffRowProps) {
 	const isOwner = member.role === "owner";
 	const unitNames =
 		unitsQuery.data?.filter(unit => member.unitIds.includes(unit.id)).map(unit => unit.name) ?? [];
-	const servesAllUnits =
-		unitsQuery.data !== undefined &&
-		unitsQuery.data.length > 0 &&
-		unitsQuery.data.every(unit => member.unitIds.includes(unit.id));
 
 	function removeMember() {
 		remove.mutate(
@@ -52,8 +48,6 @@ export function StaffRow({ member }: StaffRowProps) {
 					"—"
 				) : unitsQuery.isPending ? (
 					<div className="h-5 w-28 animate-pulse rounded bg-muted" />
-				) : servesAllUnits ? (
-					t("admin.staff.row.allUnits")
 				) : unitNames.length > 0 ? (
 					unitNames.join(", ")
 				) : (

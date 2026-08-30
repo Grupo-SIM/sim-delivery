@@ -148,7 +148,7 @@ export const ProductsController = new Elysia({
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "menu", "read");
 
-					return listProducts.execute(scope.companyId);
+					return listProducts.execute(scope.companyId, scope.role, scope.userId);
 				},
 				{ response: ProductListReturn },
 			)
@@ -157,8 +157,12 @@ export const ProductsController = new Elysia({
 				async ({ body, createProduct, request }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "menu", "create");
+					const unitIds = ["owner", "superAdmin"].includes(scope.role)
+						? body.unitIds
+						: (body.unitIds ?? scope.unitIds);
+					CompanyScopeGuard.authorizeUnits(scope, unitIds ?? []);
 
-					return createProduct.execute(scope.companyId, body);
+					return createProduct.execute(scope.companyId, { ...body, unitIds });
 				},
 				{ body: CreateProductBody, response: ProductReturn },
 			)
@@ -190,7 +194,11 @@ export const ProductsController = new Elysia({
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "menu", "read");
 
-					return listProductUnits.execute(scope.companyId, params.productId);
+					return listProductUnits.execute(
+						scope.companyId,
+						params.productId,
+						["owner", "superAdmin"].includes(scope.role) ? undefined : scope.unitIds,
+					);
 				},
 				{ response: ProductUnitsReturn },
 			)
@@ -199,8 +207,14 @@ export const ProductsController = new Elysia({
 				async ({ body, params, request, setProductUnits }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "menu", "update");
+					CompanyScopeGuard.authorizeUnits(scope, body.unitIds);
 
-					return setProductUnits.execute(scope.companyId, params.productId, body.unitIds);
+					return setProductUnits.execute(
+						scope.companyId,
+						params.productId,
+						body.unitIds,
+						["owner", "superAdmin"].includes(scope.role) ? undefined : scope.unitIds,
+					);
 				},
 				{ body: SetProductUnitsBody, response: ProductUnitsReturn },
 			),

@@ -1,5 +1,5 @@
-/// Unit assignments for unit-scoped staff. Managers may have no assignments,
-/// which means company-wide access; couriers require at least one assignment.
+/// Explicit unit assignments for unit-scoped staff. Every non-owner staff member
+/// requires at least one assignment; no assignment ever means company-wide access.
 model StaffUnit {
     userId String
     unitId String

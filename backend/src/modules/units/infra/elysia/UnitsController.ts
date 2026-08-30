@@ -67,6 +67,7 @@ export const UnitsController = new Elysia({
 				async ({ body, params, request, updateUnit }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "units", "update");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
 
 					return updateUnit.execute(scope.companyId, params.unitId, body);
 				},
@@ -77,6 +78,7 @@ export const UnitsController = new Elysia({
 				async ({ getUnitHours, params, request }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "units", "read");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
 
 					return getUnitHours.execute(scope.companyId, params.unitId);
 				},
@@ -87,6 +89,7 @@ export const UnitsController = new Elysia({
 				async ({ body, params, request, setUnitHours }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "units", "update");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
 
 					return setUnitHours.execute(scope.companyId, params.unitId, body.hours);
 				},
@@ -97,6 +100,7 @@ export const UnitsController = new Elysia({
 				async ({ listDeliveryZones, params, request }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "units", "read");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
 
 					return listDeliveryZones.execute(scope.companyId, params.unitId);
 				},
@@ -107,6 +111,7 @@ export const UnitsController = new Elysia({
 				async ({ body, params, request, setDeliveryZones }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "units", "update");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
 
 					return setDeliveryZones.execute(scope.companyId, params.unitId, body.zones);
 				},
@@ -117,6 +122,7 @@ export const UnitsController = new Elysia({
 				async ({ deleteUnit, params, request }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "units", "delete");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
 
 					await deleteUnit.execute(scope.companyId, params.unitId);
 

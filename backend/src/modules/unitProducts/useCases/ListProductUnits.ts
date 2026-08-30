@@ -6,7 +6,11 @@ import type { ProductUnitsReturn } from "../dtos";
 export class ListProductUnits {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(companyId: string | null, productId: string): Promise<ProductUnitsReturn> {
+	async execute(
+		companyId: string | null,
+		productId: string,
+		permittedUnitIds?: string[],
+	): Promise<ProductUnitsReturn> {
 		const product = companyId
 			? await this.prisma.product.findFirst({ where: { companyId, id: productId } })
 			: null;
@@ -16,7 +20,7 @@ export class ListProductUnits {
 
 		const associations = await this.prisma.unitProduct.findMany({
 			select: { unitId: true },
-			where: { productId },
+			where: { productId, ...(permittedUnitIds ? { unitId: { in: permittedUnitIds } } : {}) },
 		});
 
 		return associations.map(({ unitId }) => unitId);

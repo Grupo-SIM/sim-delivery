@@ -105,7 +105,6 @@ export function InviteStaffForm() {
 						<div className="mt-2 h-11 animate-pulse rounded-md bg-muted" />
 					) : (
 						<StaffUnitSelector
-							allUnitsLabel={t("admin.staff.invite.allUnits")}
 							idPrefix="invite-staff-unit"
 							onChange={setUnitIds}
 							unitIds={unitIds}

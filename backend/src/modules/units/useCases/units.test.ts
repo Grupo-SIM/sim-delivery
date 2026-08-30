@@ -75,7 +75,7 @@ describe("units use-cases", () => {
 			},
 		} as unknown as PrismaInstance;
 
-		const result = await new ListUnits(prisma).execute("cmp_1", "kitchen", "staff_1");
+		const result = await new ListUnits(prisma).execute("cmp_1", "manager", "staff_1");
 		expect(result.map(unit => unit.id)).toEqual(["u1", "u2"]);
 	});
 

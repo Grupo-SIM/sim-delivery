@@ -90,7 +90,6 @@ export function StaffEditorModal({ member, onClose }: StaffEditorModalProps) {
 						<div className="mt-2 h-11 animate-pulse rounded-md bg-muted" />
 					) : (
 						<StaffUnitSelector
-							allUnitsLabel={t("admin.staff.row.allUnits")}
 							idPrefix={`staff-edit-unit-${member?.id ?? ""}`}
 							onChange={setUnitIds}
 							unitIds={unitIds}

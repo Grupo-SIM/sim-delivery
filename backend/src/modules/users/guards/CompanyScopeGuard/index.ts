@@ -25,7 +25,7 @@ export abstract class CompanyScopeGuard {
 		const [company, user] = await Promise.all([
 			prisma.company.findUnique({ select: { id: true }, where: { slug } }),
 			prisma.user.findUnique({
-				select: { companyId: true, role: true },
+				select: { companyId: true, role: true, staffUnits: { select: { unitId: true } } },
 				where: { id: session.user.id },
 			}),
 		]);
@@ -41,6 +41,7 @@ export abstract class CompanyScopeGuard {
 		return {
 			companyId: company.id,
 			role: user.role,
+			unitIds: user.staffUnits.map(({ unitId }) => unitId),
 			userId: session.user.id,
 		};
 	}
@@ -62,5 +63,16 @@ export abstract class CompanyScopeGuard {
 		if (!check(resource, action)) {
 			throw new DomainError(UserErrors.FORBIDDEN);
 		}
+	}
+
+	/** Blocks staff from reading or mutating a unit they were not explicitly assigned. */
+	static authorizeUnit(scope: CompanyScopeReturn, unitId: string): void {
+		if (!["owner", "superAdmin"].includes(scope.role) && !scope.unitIds.includes(unitId)) {
+			throw new DomainError(UserErrors.FORBIDDEN);
+		}
+	}
+
+	static authorizeUnits(scope: CompanyScopeReturn, unitIds: string[]): void {
+		for (const unitId of unitIds) this.authorizeUnit(scope, unitId);
 	}
 }

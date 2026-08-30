@@ -42,6 +42,7 @@ export const UnitProductsController = new Elysia({
 				async ({ inventory, params, request }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "inventory", "read");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
 					return inventory.getLocalOptionRecipe(scope.companyId!, params.unitProductId, params.localOptionId);
 				},
 				{ response: LocalOptionRecipeReturn },
@@ -51,6 +52,7 @@ export const UnitProductsController = new Elysia({
 				async ({ body, inventory, params, request }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "inventory", "update");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
 					return inventory.putLocalOptionRecipe(
 						scope.companyId!,
 						params.unitProductId,
@@ -65,6 +67,7 @@ export const UnitProductsController = new Elysia({
 				async ({ listUnitProducts, params, request }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "menu", "read");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
 
 					return listUnitProducts.execute(scope.companyId, params.unitId);
 				},
@@ -75,6 +78,7 @@ export const UnitProductsController = new Elysia({
 				async ({ associateProduct, body, params, request }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "menu", "create");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
 
 					return associateProduct.execute(scope.companyId, params.unitId, body);
 				},
@@ -85,6 +89,7 @@ export const UnitProductsController = new Elysia({
 				async ({ body, params, request, updateUnitProductsAvailability }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "menu", "update");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
 
 					return updateUnitProductsAvailability.execute(scope.companyId, params.unitId, body);
 				},
@@ -98,6 +103,7 @@ export const UnitProductsController = new Elysia({
 				async ({ body, params, request, updateUnitProduct }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "menu", "update");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
 
 					return updateUnitProduct.execute(scope.companyId, params.unitId, params.unitProductId, body);
 				},
@@ -108,6 +114,7 @@ export const UnitProductsController = new Elysia({
 				async ({ params, removeUnitProduct, request }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "menu", "delete");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
 
 					await removeUnitProduct.execute(scope.companyId, params.unitId, params.unitProductId);
 

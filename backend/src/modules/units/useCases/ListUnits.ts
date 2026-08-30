@@ -8,7 +8,9 @@ export class ListUnits {
 
 	async execute(companyId: string | null, role?: Role, userId?: string): Promise<UnitWithStatusListReturn> {
 		const staffUnitScope =
-			(role === "courier" || role === "kitchen") && userId ? { staffUnits: { some: { userId } } } : {};
+			role !== undefined && !["owner", "superAdmin"].includes(role) && userId
+				? { staffUnits: { some: { userId } } }
+				: {};
 		const units = await this.prisma.unit.findMany({
 			include: { hours: true },
 			orderBy: { createdAt: "asc" },

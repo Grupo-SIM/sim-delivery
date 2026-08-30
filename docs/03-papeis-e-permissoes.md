@@ -10,14 +10,15 @@ escopada por `companyId`; permissões operacionais podem ainda ser escopadas por
 |---|---|---|
 | `superAdmin` | Operador da plataforma (você). Cria empresas, variantes, planos. | Cross-tenant (todas as empresas). |
 | `owner` | Dono da empresa. Acesso total ao próprio tenant. | 1 empresa (todas as unidades). |
-| `manager` | Gerente — quase tudo do `owner`, exceto branding/variante, gestão de outros donos e exclusão da empresa. | 1 empresa, opcional 1..N unidades. |
-| `attendant` | Atendente/caixa — cria e acompanha pedidos, atende clientes, aplica cupons. Sem acesso a relatórios financeiros nem edição de cardápio. | 1 empresa, opcional 1..N unidades. |
-| `kitchen` | Cozinha — vê pedidos em preparo, muda status de produção. Sem finanças nem cadastro. | 1 empresa, opcional 1..N unidades. |
+| `manager` | Gerente — quase tudo do `owner`, exceto branding/variante, gestão de outros donos e exclusão da empresa. | 1 empresa, obrigatoriamente 1..N unidades específicas. |
+| `attendant` | Atendente/caixa — cria e acompanha pedidos, atende clientes, aplica cupons. Sem acesso a relatórios financeiros nem edição de cardápio. | 1 empresa, obrigatoriamente 1..N unidades específicas. |
+| `kitchen` | Cozinha — vê pedidos em preparo, muda status de produção. Sem finanças nem cadastro. | 1 empresa, obrigatoriamente 1..N unidades específicas. |
 | `courier` | Motoboy. Vê e atualiza suas entregas. | Entregas atribuídas. |
 | `customer` | Consumidor final (app). | Próprios pedidos/dados. |
 
-Ponto em aberto: se `manager`/`attendant`/`kitchen` são vinculados a unidades específicas
-(permissão por unidade) ou à empresa toda. Ver "Pontos em aberto".
+Todo funcionário que não seja `owner` deve estar vinculado a pelo menos uma unidade específica.
+Não existe vínculo curinga com "todas as unidades": novas unidades não são concedidas automaticamente.
+Listagens e mutações operacionais devem ser filtradas por esses vínculos.
 
 ## Matriz de permissões (ação × role)
 
@@ -78,7 +79,6 @@ escopadas por unidade recebem o `unitId` no `check`.
 
 ## Pontos em aberto
 
-- Permissão de `manager`/`attendant`/`kitchen` por unidade vs por empresa (multi-unidade).
 - Se `manager` pode gerir outros `manager` ou só níveis abaixo.
 - Papel de "financeiro" dedicado (roadmap, quando entrar módulo financeiro/caixa).
 - Como `courier` autentica (mesmo Better Auth ou fluxo próprio) — ver [01](01-visao-geral-e-dominio.md).
