@@ -498,6 +498,7 @@
 				"filter": {
 					"all": "Todos",
 					"date": "Data",
+					"datePlaceholder": "Selecionar período",
 					"search": "Buscar",
 					"searchPlaceholder": "Buscar por nome, telefone ou pedido",
 					"unit": "Unidade",
