@@ -32,6 +32,7 @@ export class GetCustomerOrder {
 			createdAt: order.createdAt,
 			deliveryMethod: order.deliveryMethod,
 			displayNumber: order.displayNumber,
+			estimatedStatusCompletionAt: order.estimatedStatusCompletionAt,
 			id: order.id,
 			items: order.items.map(item => ({
 				...item,

@@ -1636,6 +1636,7 @@
 					"identifier": "Pedido #{{number}}",
 					"items": "Itens do pedido",
 					"note": "Observação",
+					"phaseDeadline": "Previsão desta etapa: {{time}}",
 					"rate": "Avaliar este pedido",
 					"refreshing": "Atualização automática ativa",
 					"status": {

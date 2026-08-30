@@ -6,6 +6,7 @@ export interface CustomerOrderTracking {
 	createdAt: string;
 	deliveryMethod: "delivery" | "pickup";
 	displayNumber: number;
+	estimatedStatusCompletionAt: string | null;
 	id: string;
 	items: {
 		id: string;

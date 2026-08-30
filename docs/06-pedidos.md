@@ -18,6 +18,13 @@ qualquer_estado_ativo → cancelado
 - `entregue` / `retirado` — concluído.
 - `cancelado` — encerrado sem conclusão (com motivo).
 
+Ao iniciar uma fase com duração operacional (`em_preparo` ou `saiu_para_entrega`), a
+equipe pode informar uma estimativa em minutos para concluir essa fase. A estimativa é
+registrada no pedido como prazo absoluto e substitui, no acompanhamento, a faixa geral
+configurada na unidade. Ao mover o pedido para a fase seguinte, o prazo anterior é
+removido. Em pedidos de retirada, `pronto` informa ao cliente que ele já pode buscar o
+pedido; não inclui o tempo de uma eventual entrega.
+
 Regra objetiva: transições seguem a ordem acima; `cancelado` é terminal; não se altera
 pedido `entregue`/`retirado`/`cancelado`. Enum de status é **traduzível no frontend**
 (nunca renderizar valor cru — ver `AGENTS.md` › i18n).

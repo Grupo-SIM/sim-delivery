@@ -21,6 +21,8 @@ model Order {
     deliveryMethod String
     cancelReason   String?
     problemReason  String?
+    /// Absolute deadline for completing the current operational phase.
+    estimatedStatusCompletionAt DateTime?
     /// Cents refunded so far across all `Refund` records for this order's payment.
     refundedCents  Int      @default(0)
     createdAt      DateTime @default(now())

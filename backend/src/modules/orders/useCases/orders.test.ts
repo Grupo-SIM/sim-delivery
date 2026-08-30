@@ -212,6 +212,7 @@ describe("CreateOrder", () => {
 function makeUpdateStatusPrisma(order: {
 	companyId: string;
 	deliveryMethod?: string;
+	estimatedStatusCompletionAt?: Date | null;
 	id: string;
 	phone?: string | null;
 	status: string;
@@ -225,6 +226,7 @@ function makeUpdateStatusPrisma(order: {
 		cancelReason: string | null;
 		items: unknown[];
 		deliveryMethod: string;
+		estimatedStatusCompletionAt: Date | null;
 		company: { orderStatusWhatsAppTemplates: Record<string, string> | null };
 		customer: {
 			notificationEmail?: boolean;
@@ -244,6 +246,7 @@ function makeUpdateStatusPrisma(order: {
 			user: { email: "cliente@example.com" },
 		},
 		deliveryMethod: order.deliveryMethod ?? "delivery",
+		estimatedStatusCompletionAt: order.estimatedStatusCompletionAt ?? null,
 		items: [],
 	};
 
@@ -280,6 +283,36 @@ describe("UpdateOrderStatus", () => {
 		});
 		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "em_preparo" });
 		expect(stored.status).toBe("em_preparo");
+	});
+
+	it("stores a deadline for the current estimated phase", async () => {
+		const { stored, prisma } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			id: "ord_1",
+			status: "recebido",
+		});
+		const before = Date.now();
+
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", {
+			estimatedMinutes: 15,
+			status: "em_preparo",
+		});
+
+		expect(stored.estimatedStatusCompletionAt).toBeInstanceOf(Date);
+		expect((stored.estimatedStatusCompletionAt as Date).getTime()).toBeGreaterThanOrEqual(before + 15 * 60_000);
+	});
+
+	it("clears the previous phase deadline when advancing", async () => {
+		const { stored, prisma } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			estimatedStatusCompletionAt: new Date(),
+			id: "ord_1",
+			status: "em_preparo",
+		});
+
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "pronto" });
+
+		expect(stored.estimatedStatusCompletionAt).toBeNull();
 	});
 
 	it("lets kitchen advance only its preparation stages", async () => {

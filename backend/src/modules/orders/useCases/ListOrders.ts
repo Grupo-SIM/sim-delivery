@@ -106,6 +106,7 @@ export class ListOrders {
 			deliveryMethod: o.deliveryMethod,
 			displayNumber: o.displayNumber,
 			discountCents: o.discountCents,
+			estimatedStatusCompletionAt: o.estimatedStatusCompletionAt,
 			id: o.id,
 			items: o.items.map(item => ({
 				...item,

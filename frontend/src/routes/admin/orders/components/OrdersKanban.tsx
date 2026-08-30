@@ -13,10 +13,11 @@ import {
 	type PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey,
 	usePatchOrdersByOrderIdStatus,
 } from "@/lib/api";
-import { showAlert } from "@/stores";
+import { showAlert, showToast } from "@/stores";
 import { OrderKanbanCard } from "./OrderKanbanCard";
 import { AssignCourierModal } from "./AssignCourierModal";
 import { OrderStatusBadge } from "./OrderStatusBadge";
+import { PhaseEstimateModal } from "./PhaseEstimateModal";
 
 const KANBAN_STATUSES = [
 	"awaiting_payment",
@@ -34,6 +35,7 @@ const FINALIZED_STATUSES = ["entregue", "retirado", "cancelado"] as const;
 
 type KanbanStatus = (typeof KANBAN_STATUSES)[number];
 type FinalizedStatus = (typeof FINALIZED_STATUSES)[number];
+type EstimableStatus = "em_preparo" | "saiu_para_entrega";
 type KanbanColumn =
 	| { kind: "status"; orders: GetOrders200; status: KanbanStatus }
 	| { kind: "finalized"; orders: GetOrders200; status: "finalizado" };
@@ -89,6 +91,10 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 	const [dragOverStatus, setDragOverStatus] = useState<string | null>(null);
 	const [courierAssignmentOrderId, setCourierAssignmentOrderId] = useState<string | null>(null);
 	const [problemOrderId, setProblemOrderId] = useState<string | null>(null);
+	const [phaseEstimate, setPhaseEstimate] = useState<{
+		orderId: string;
+		status: EstimableStatus;
+	} | null>(null);
 	const [problemReason, setProblemReason] = useDebouncedInput("", () => undefined);
 	const columns = useMemo<KanbanColumn[]>(
 		() => {
@@ -258,13 +264,22 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 			setProblemOrderId(orderId);
 			return;
 		}
+		if (status === "em_preparo" || status === "saiu_para_entrega") {
+			setPhaseEstimate({ orderId, status });
+			return;
+		}
 
-		updateOrderStatus(orderId, status as PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey);
+		updateOrderStatus(orderId, status);
 	}
 
-	function updateOrderStatus(orderId: string, status: PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey) {
+	function updateOrderStatus(
+		orderId: string,
+		status: PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey,
+		estimatedMinutes?: number,
+		closeEstimateModal = false,
+	) {
 		patchStatus.mutate(
-			{ data: { status }, orderId },
+			{ data: { estimatedMinutes, status }, orderId },
 			{
 				onError: () =>
 					void showAlert(
@@ -273,7 +288,18 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 						}),
 						t("admin.orders.updateStatus.errorTitle", { defaultValue: "Falha ao atualizar" }),
 					),
-				onSuccess: () => queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() }),
+				onSuccess: () => {
+					void queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() });
+					if (closeEstimateModal) {
+						showToast(
+							estimatedMinutes === undefined
+								? "Status atualizado sem estimativa."
+								: "Status atualizado com estimativa da fase.",
+							"positive",
+						);
+						window.history.back();
+					}
+				},
 			},
 		);
 	}
@@ -442,6 +468,18 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 				}}
 				onClose={() => setCourierAssignmentOrderId(null)}
 				orderId={courierAssignmentOrderId ?? ""}
+			/>
+			<PhaseEstimateModal
+				isOpen={phaseEstimate !== null}
+				isPending={patchStatus.isPending}
+				key={phaseEstimate ? `${phaseEstimate.orderId}:${phaseEstimate.status}` : "closed"}
+				onClose={() => setPhaseEstimate(null)}
+				onConfirm={minutes => {
+					if (phaseEstimate)
+						updateOrderStatus(phaseEstimate.orderId, phaseEstimate.status, minutes, true);
+				}}
+				orderId={phaseEstimate?.orderId}
+				status={phaseEstimate?.status ?? "em_preparo"}
 			/>
 		</>
 	);

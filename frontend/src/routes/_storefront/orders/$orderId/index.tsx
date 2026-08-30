@@ -100,6 +100,11 @@ function OrderTrackingPage() {
 			: current
 				? t(current.description)
 				: t("store.checkout.tracking.status.awaiting_payment");
+	const phaseDeadline = order.estimatedStatusCompletionAt
+		? new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit" }).format(
+				new Date(order.estimatedStatusCompletionAt),
+			)
+		: null;
 
 	return (
 		<Container className="max-w-lg space-y-6 py-8">
@@ -125,6 +130,11 @@ function OrderTrackingPage() {
 								{current ? t(current.title) : t("store.checkout.tracking.status.awaiting_payment")}
 							</p>
 							<p className="text-muted-foreground text-sm">{currentDescription}</p>
+							{phaseDeadline && (
+								<p className="font-medium text-primary text-sm">
+									{t("store.checkout.tracking.phaseDeadline", { time: phaseDeadline })}
+								</p>
+							)}
 						</div>
 					</div>
 

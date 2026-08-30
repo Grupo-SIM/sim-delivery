@@ -19,6 +19,7 @@ export const AdminOrderReturn = t.Object({
 	deliveryMethod: t.String(),
 	displayNumber: t.Integer(),
 	discountCents: t.Integer(),
+	estimatedStatusCompletionAt: __nullable__(t.Date()),
 	id: t.String(),
 	items: t.Array(
 		t.Object({
@@ -101,6 +102,7 @@ export const OrderReturn = t.Object({
 	deliveryMethod: t.String(),
 	displayNumber: t.Integer(),
 	discountCents: t.Integer(),
+	estimatedStatusCompletionAt: __nullable__(t.Date()),
 	id: t.String(),
 	items: t.Array(OrderItemReturn),
 	loyaltyPointsRedeemed: t.Integer(),
@@ -126,6 +128,7 @@ export const CustomerOrderTrackingReturn = t.Object({
 	createdAt: t.Date(),
 	deliveryMethod: t.String(),
 	displayNumber: t.Integer(),
+	estimatedStatusCompletionAt: __nullable__(t.Date()),
 	id: t.String(),
 	items: t.Array(
 		t.Object({

@@ -15,6 +15,7 @@ const PICKUP_FLOW = ["recebido", "em_preparo", "pronto", "retirado"];
 const REOPENABLE_FROM_CANCELLED = new Set(["recebido", "em_preparo", "pronto"]);
 
 const NOTIFIABLE = new Set(["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue", "retirado"]);
+const ESTIMABLE_STATUSES = new Set(["em_preparo", "saiu_para_entrega"]);
 
 function canTransition(current: string, next: string, deliveryMethod: string): boolean {
 	if (current === next) return true;
@@ -69,7 +70,7 @@ export class UpdateOrderStatus {
 		role?: Role,
 		userId?: string,
 	): Promise<OrderReturn> {
-		const { status, cancelReason, preparedById, problemReason, refund } = data;
+		const { status, cancelReason, estimatedMinutes, preparedById, problemReason, refund } = data;
 
 		const order = await this.prisma.order.findFirst({
 			include: {
@@ -127,6 +128,10 @@ export class UpdateOrderStatus {
 			const result = await tx.order.update({
 				data: {
 					cancelReason: status === "cancelado" ? cancelReason : null,
+					estimatedStatusCompletionAt:
+						estimatedMinutes !== undefined && ESTIMABLE_STATUSES.has(status)
+							? new Date(Date.now() + estimatedMinutes * 60_000)
+							: null,
 					problemReason: status === "problema" ? problemReason : order.problemReason,
 					...(preparedById !== undefined ? { preparedById } : {}),
 					status,

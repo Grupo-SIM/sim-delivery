@@ -37,19 +37,11 @@ export function OrderKanbanCard({
 
 	const visibleItems = order.items.slice(0, 2);
 	const remainingItems = order.items.length - visibleItems.length;
-	const prepTime =
-		order.unitPrepTimeMinMinutes != null && order.unitPrepTimeMaxMinutes != null
-			? `${order.unitPrepTimeMinMinutes}-${order.unitPrepTimeMaxMinutes} min`
-			: order.unitPrepTimeMinMinutes != null
-				? `${order.unitPrepTimeMinMinutes} min`
-				: null;
-	const etaLabel =
-		order.unitPrepTimeMinMinutes != null && order.unitPrepTimeMaxMinutes != null
-			? t("admin.orders.assignment.estimatedTime", {
-					max: order.unitPrepTimeMaxMinutes,
-					min: order.unitPrepTimeMinMinutes,
-				})
-			: prepTime;
+	const phaseDeadline = order.estimatedStatusCompletionAt
+		? new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit" }).format(
+				new Date(order.estimatedStatusCompletionAt),
+			)
+		: null;
 
 	return (
 		<article
@@ -86,7 +78,7 @@ export function OrderKanbanCard({
 								{t(`store.checkout.order.${order.deliveryMethod}`, { defaultValue: order.deliveryMethod })}
 							</span>
 						</div>
-						{etaLabel && <span className="shrink-0">{etaLabel}</span>}
+						{phaseDeadline && <span className="shrink-0">Prazo {phaseDeadline}</span>}
 					</div>
 					<ul className="space-y-1 text-foreground text-sm">
 						{visibleItems.map(item => (

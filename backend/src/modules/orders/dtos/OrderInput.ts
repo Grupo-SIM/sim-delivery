@@ -10,6 +10,7 @@ export type CancelOrderRefundBody = typeof CancelOrderRefundBody.static;
 
 export const UpdateOrderStatusBody = t.Object({
 	cancelReason: t.Optional(t.String({ minLength: 1 })),
+	estimatedMinutes: t.Optional(t.Integer({ maximum: 1440, minimum: 1 })),
 	preparedById: t.Optional(t.Nullable(t.String({ minLength: 1 }))),
 	problemReason: t.Optional(t.String({ minLength: 1 })),
 	/** Only applied when transitioning to "cancelado" against a confirmed payment. */
