@@ -76,7 +76,7 @@ function openModalHistory(entry: ModalHistoryEntry, key: string, state: string |
 }
 
 function replaceModalState(id: string, key: string, state?: string) {
-	if (currentModalState()?.id !== id) return;
+	if (entries.at(-1)?.id !== id) return;
 	window.history.replaceState(
 		{
 			...window.history.state,
