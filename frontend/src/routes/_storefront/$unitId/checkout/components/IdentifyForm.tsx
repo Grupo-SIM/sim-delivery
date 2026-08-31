@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label, RequiredMark } from "@/components/ui/label";
 import { requestMagicLink as sendMagicLinkRequest } from "@/lib/request-magic-link";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/stores/auth";
 
 type Channel = "email" | "whatsapp";
+type AccessMethod = "magic-link" | "password";
 type Step = "form" | "email-sent";
 
 interface IdentifyFormProps {
@@ -87,15 +90,19 @@ function Spinner({ className }: { className?: string }) {
 
 export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 	const { t } = useTranslation();
+	const signIn = useAuthStore(state => state.signIn);
 	const [channel, setChannel] = useState<Channel>("email");
+	const [accessMethod, setAccessMethod] = useState<AccessMethod>("magic-link");
 	const [step, setStep] = useState<Step>("form");
 	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [cooldown, setCooldown] = useState(0);
 	const [resent, setResent] = useState(false);
 
 	const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+	const passwordIsValid = password.length > 0;
 
 	useEffect(() => {
 		if (cooldown <= 0) return;
@@ -119,6 +126,23 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 		} finally {
 			setLoading(false);
 		}
+	}
+
+	async function signInWithPassword() {
+		setError(null);
+		setLoading(true);
+
+		await signIn({
+			defaultUserName: "Cliente",
+			email,
+			invalidCredentialsMessage: t("store.checkout.identify.errors.invalidCredentials"),
+			password,
+		});
+
+		const { error: signInError } = useAuthStore.getState();
+		if (signInError) setError(signInError);
+
+		setLoading(false);
 	}
 
 	const channels: { key: Channel; label: string; icon: typeof MailIcon; disabled?: boolean }[] = [
@@ -172,12 +196,16 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 					className="animate-slide-in-3d space-y-4"
 					onSubmit={event => {
 						event.preventDefault();
+						if (accessMethod === "password") {
+							void signInWithPassword();
+							return;
+						}
 						void requestMagicLink();
 					}}
 				>
-					<label className="grid gap-2">
+					<Label>
 						<span>
-							{t("store.checkout.identify.email")} <span className="text-destructive">*</span>
+							{t("store.checkout.identify.email")} <RequiredMark />
 						</span>
 						<div className="relative">
 							<MailIcon className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground/70" />
@@ -197,10 +225,30 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 								<CheckCircleIcon className="absolute top-1/2 right-3.5 size-4.5 -translate-y-1/2 animate-slide-in-3d text-success" />
 							)}
 						</div>
-					</label>
+					</Label>
 					<p className="text-muted-foreground text-xs">
-						{t("store.checkout.identify.emailHint")}
+						{t(`store.checkout.identify.${accessMethod === "password" ? "passwordHint" : "emailHint"}`)}
 					</p>
+
+					{accessMethod === "password" && (
+						<Label className="animate-slide-in-3d">
+							<span>
+								{t("store.checkout.identify.password")} <RequiredMark />
+							</span>
+							<Input
+								autoComplete="current-password"
+								className="h-12 rounded-pill"
+								name="password"
+								onChange={event => {
+									setPassword(event.currentTarget.value);
+									setError(null);
+								}}
+								placeholder={t("store.checkout.identify.passwordPlaceholder")}
+								type="password"
+								value={password}
+							/>
+						</Label>
+					)}
 
 					{error && (
 						<div
@@ -214,11 +262,28 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 
 					<Button
 						className="h-12 w-full rounded-pill font-bold text-base shadow-glow-blue transition-shadow disabled:shadow-none"
-						disabled={loading || !emailIsValid}
+						disabled={loading || !emailIsValid || (accessMethod === "password" && !passwordIsValid)}
 						type="submit"
 					>
 						{loading && <Spinner className="size-4" />}
-						{loading ? t("store.checkout.identify.sending") : t("store.checkout.identify.sendLink")}
+						{loading
+							? t(accessMethod === "password" ? "store.checkout.identify.signingIn" : "store.checkout.identify.sending")
+							: t(accessMethod === "password" ? "store.checkout.identify.signInWithPassword" : "store.checkout.identify.sendLink")}
+					</Button>
+					<Button
+						className="h-11 w-full"
+						onClick={() => {
+							setAccessMethod(current => (current === "magic-link" ? "password" : "magic-link"));
+							setError(null);
+						}}
+						type="button"
+						variant="outline"
+					>
+						{t(
+							accessMethod === "password"
+								? "store.checkout.identify.signInWithLink"
+								: "store.checkout.identify.signInWithPassword",
+						)}
 					</Button>
 				</form>
 			)}
