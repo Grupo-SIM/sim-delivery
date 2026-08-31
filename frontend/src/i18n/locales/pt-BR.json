@@ -1522,9 +1522,6 @@
 				},
 				"back": "Voltar ao cardápio",
 				"identify": {
-					"createAccount": "Criar conta",
-					"createAccountHint": "Crie sua conta com nome e e-mail. Enviaremos um link para confirmar o acesso.",
-					"createAccountWithLink": "Criar conta e enviar link",
 					"changeEmail": "Usar outro e-mail",
 					"channels": {
 						"email": "E-mail",
@@ -1534,27 +1531,16 @@
 					"email": "E-mail",
 					"emailHint": "Enviaremos um link de acesso. Sem senha, sem complicação.",
 					"errors": {
-						"accountAlreadyExists": "Já existe uma conta com este e-mail. Entre para receber seu link de acesso.",
-						"accountNotFound": "Não encontramos uma conta com este e-mail. Crie sua conta para continuar.",
-						"invalidCredentials": "E-mail ou senha inválidos.",
 						"magicLink": "Este link é inválido ou expirou.",
 						"send": "Não foi possível enviar o link. Tente novamente."
 					},
 					"linkResent": "Link reenviado!",
 					"linkSent": "Enviamos um link de acesso para <strong>{{email}}</strong>. Verifique sua caixa de entrada.",
 					"linkSentTitle": "Confira seu e-mail!",
-					"name": "Nome completo",
-					"namePlaceholder": "Ex: Maria Silva",
-					"password": "Senha",
-					"passwordPlaceholder": "Digite sua senha",
 					"resend": "Reenviar link",
 					"resendIn": "Reenviar em {{seconds}}s",
 					"sending": "Enviando…",
 					"sendLink": "Enviar link de acesso",
-					"signIn": "Entrar",
-					"signInWithLink": "Entrar com link de acesso",
-					"signInWithPassword": "Entrar com senha",
-					"signingIn": "Entrando…",
 					"subtitle": "Informe seu e-mail para entrar sem senha.",
 					"title": "Identificação",
 					"verifying": "Verificando…"
@@ -1604,6 +1590,7 @@
 							"CARD_TOKENIZATION_FAILED": "Não foi possível validar os dados do cartão.",
 							"DOCUMENT_REQUIRED": "Informe o CPF do titular do cartão.",
 							"INVALID_DOCUMENT": "O CPF do titular do cartão é inválido.",
+							"NAME_REQUIRED": "Informe seu nome completo antes de pagar.",
 							"ORDER_NOT_FOUND": "Pedido não encontrado.",
 							"PAYMENT_ALREADY_CONFIRMED": "Este pedido já foi pago.",
 							"SAVED_CARD_NOT_FOUND": "O cartão salvo não foi encontrado.",
@@ -1627,6 +1614,15 @@
 					},
 					"cpf": "CPF",
 					"cpfPlaceholder": "000.000.000-00",
+					"identity": {
+						"continue": "Continuar para pagamento",
+						"error": "Não foi possível salvar seus dados. Tente novamente.",
+						"name": "Nome completo",
+						"namePlaceholder": "Ex: Maria Silva",
+						"saving": "Salvando…",
+						"subtitle": "Precisamos destes dados para processar cartão ou PIX.",
+						"title": "Dados para pagamento"
+					},
 					"methodCard": "Cartão",
 					"methodPix": "PIX",
 					"pix": {
@@ -1645,16 +1641,6 @@
 					},
 					"subtitle": "Conclua o pagamento para confirmar o pedido.",
 					"title": "Pagamento"
-				},
-				"profile": {
-					"cpf": "CPF (opcional)",
-					"cpfPlaceholder": "000.000.000-00",
-					"error": "Não foi possível salvar seu perfil.",
-					"name": "Nome completo",
-					"namePlaceholder": "Ex: Maria Silva",
-					"submit": "Continuar",
-					"subtitle": "Informe seu nome para personalizarmos seu pedido.",
-					"title": "Seu perfil"
 				},
 				"thankYou": {
 					"continue": "Continuar navegando",

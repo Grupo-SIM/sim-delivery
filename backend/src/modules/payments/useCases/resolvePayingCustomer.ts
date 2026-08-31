@@ -56,6 +56,9 @@ export async function resolvePayingCustomer(
 	const bodyCpf = data.cpf?.replace(/\D/g, "");
 	let document = customer.cpf?.replace(/\D/g, "") || bodyCpf || null;
 	if (!document && options.requireDocument !== false) throw new DomainError(PaymentErrors.DOCUMENT_REQUIRED);
+	if (customer.user.name.trim().split(/\s+/).filter(Boolean).length < 2) {
+		throw new DomainError(PaymentErrors.NAME_REQUIRED);
+	}
 
 	if (!customer.cpf && bodyCpf) {
 		await prisma.customer.update({ data: { cpf: bodyCpf }, where: { id: customer.id } });

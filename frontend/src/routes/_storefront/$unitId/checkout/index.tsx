@@ -14,15 +14,18 @@ import {
 	useDeleteCustomersMeAddressesByAddressId,
 	useGetCashbackMe,
 	useGetLoyaltyMe,
+	usePatchCustomersMe,
 	usePostCustomersMe,
 	usePostOrders,
 } from "@/lib/api";
+import { authClient } from "@/lib/auth-client";
 import { slug } from "@/lib/variant";
 import {
 	type AppliedCoupon,
 	cartTotalCents,
 	type DeliveryMethod,
 	showAlert,
+	mapSessionUser,
 	useAuthStore,
 	useCartStore,
 	useCouponStore,
@@ -34,22 +37,20 @@ import {
 	IdentifyForm,
 	OrderReview,
 	PaymentStep,
-	ProfileForm,
-	type ProfileValue,
 } from "./components";
 
-type Step = "identify" | "profile" | "review" | "payment";
+type Step = "identify" | "review" | "payment";
 
 function CheckoutPage() {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const { unitId: unitSlug } = Route.useParams();
 	const identified = useAuthStore(state => state.isAuthenticated);
+	const setUser = useAuthStore(state => state.setUser);
 	const user = useAuthStore(state => state.user);
 	const cartItems = useCartStore(state => state.items);
 	const clearCart = useCartStore(state => state.clear);
 
-	const [profileValue, setProfileValue] = useState<ProfileValue | null>(null);
 	const [savedCustomer, setSavedCustomer] = useState<PostCustomersMe200 | null>(null);
 	const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
 	const [addressModalOpen, setAddressModalOpen] = useState(false);
@@ -86,6 +87,7 @@ function CheckoutPage() {
 		mutation: { mutationKey: ["checkout-customer"] },
 	});
 	const { mutate: placeOrder, isPending: isPlacingOrder } = usePostOrders();
+	const { mutateAsync: updateCustomer, isPending: isSavingIdentity } = usePatchCustomersMe();
 	const deleteAddress = useDeleteCustomersMeAddressesByAddressId();
 
 	const { data: existingCustomer, isLoading: loadingCustomer } = useQuery({
@@ -119,18 +121,7 @@ function CheckoutPage() {
 		addresses.find(address => address.id === selectedAddressId) ??
 		addresses.find(address => address.isDefault) ??
 		null;
-	const hasCustomer = activeCustomer !== null;
-	// Magic-link/OTP accounts can end up with a blank name; without one we can't skip
-	// straight to address (the save would submit an empty name and fail server-side).
-	const hasUsableName = !!user?.name?.trim();
-	const reviewStep: Step =
-		!identified || loadingCustomer
-			? "identify"
-			: !hasCustomer && profileValue === null
-				? "profile"
-				: existingCustomer !== null && savedCustomer === null && !hasUsableName && profileValue === null
-					? "profile"
-					: "review";
+	const reviewStep: Step = !identified || loadingCustomer ? "identify" : "review";
 
 	const step: Step = placedOrder ? "payment" : reviewStep;
 
@@ -145,7 +136,7 @@ function CheckoutPage() {
 	}
 
 	function handleAddressSubmit(address: AddressValue) {
-		const profile = profileValue ?? { cpf: existingCustomer?.cpf ?? "", name: user?.name ?? "" };
+		const profile = { cpf: existingCustomer?.cpf ?? "", name: user?.name ?? "Cliente" };
 		saveCustomer(
 			{
 				data: {
@@ -167,7 +158,7 @@ function CheckoutPage() {
 				},
 			},
 			{
-				onError: () => void showAlert(t("store.checkout.profile.error")),
+				onError: () => void showAlert(t("store.checkout.payment.identity.error")),
 				onSuccess: data => {
 					setSavedCustomer(data);
 					setSelectedAddressId(data.addresses.find(address => address.isDefault)?.id ?? null);
@@ -217,6 +208,19 @@ function CheckoutPage() {
 		});
 	}
 
+	async function handleIdentitySubmit(value: { cpf: string; name: string }) {
+		try {
+			const { error } = await authClient.updateUser({ name: value.name });
+			if (error) throw error;
+			const customer = await updateCustomer({ data: { cpf: value.cpf, slug: slug ?? "" } });
+			setSavedCustomer(customer);
+			const session = await authClient.getSession();
+			if (session.data?.user) setUser(mapSessionUser(session.data.user));
+		} catch {
+			void showAlert(t("store.checkout.payment.identity.error"));
+		}
+	}
+
 	const isPendingOrder = isPlacingOrder;
 
 	if (loadingUnits || (identified && loadingCustomer)) {
@@ -252,19 +256,6 @@ function CheckoutPage() {
 						title={t("store.checkout.identify.title")}
 					/>
 					<IdentifyForm unitSlug={unitSlug} />
-				</>
-			)}
-
-			{step === "profile" && (
-				<>
-					<SectionHeading
-						subtitle={t("store.checkout.profile.subtitle")}
-						title={t("store.checkout.profile.title")}
-					/>
-					<ProfileForm
-						initialName={user?.name?.startsWith("+") ? "" : (user?.name ?? "")}
-						onSubmit={value => setProfileValue(value)}
-					/>
 				</>
 			)}
 
@@ -310,7 +301,10 @@ function CheckoutPage() {
 					<PaymentStep
 						amountCents={placedOrder.totalCents}
 						customerCpf={activeCustomer?.cpf ?? null}
+						customerName={user?.name ?? ""}
+						isSavingIdentity={isSavingIdentity}
 						onConfirmed={handlePaymentConfirmed}
+						onIdentitySubmit={handleIdentitySubmit}
 						orderId={placedOrder.id}
 						slug={slug ?? ""}
 					/>

@@ -74,7 +74,7 @@ const baseCustomer: CustomerRow = {
 	id: "cust_1",
 	notificationEmail: false,
 	phone: "5581999999999",
-	user: { email: "maria@example.com", id: "user_1", name: "Maria", phoneNumber: "5581988888888" },
+	user: { email: "maria@example.com", id: "user_1", name: "Maria Silva", phoneNumber: "5581988888888" },
 	userId: "user_1",
 };
 
@@ -374,6 +374,14 @@ describe("resolvePayingCustomer", () => {
 		const { prisma } = makeWorld({ customers: [{ ...baseCustomer, cpf: null }] });
 
 		await expect(resolvePayingCustomer(prisma, "user_1", body)).rejects.toThrow("DOCUMENT_REQUIRED");
+	});
+
+	it("requires a full customer name before payment", async () => {
+		const { prisma } = makeWorld({
+			customers: [{ ...baseCustomer, user: { ...baseCustomer.user, name: "Cliente" } }],
+		});
+
+		await expect(resolvePayingCustomer(prisma, "user_1", body)).rejects.toThrow("NAME_REQUIRED");
 	});
 
 	it("persists the body CPF when the customer has none", async () => {

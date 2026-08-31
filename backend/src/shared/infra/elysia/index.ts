@@ -51,9 +51,7 @@ export const app = new Elysia({ normalize: "typebox" })
 		{
 			body: t.Object({
 				email: t.String({ format: "email", maxLength: 320 }),
-				intent: t.Union([t.Literal("sign-in"), t.Literal("sign-up")]),
 				metadata: t.Optional(t.Record(t.String(), t.Unknown())),
-				name: t.Optional(t.String({ maxLength: 120, minLength: 2 })),
 			}),
 			response: t.Object({ status: t.Boolean() }),
 		},

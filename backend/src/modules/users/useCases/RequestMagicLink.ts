@@ -1,8 +1,3 @@
-import { DomainError } from "@/shared/errors";
-import { UserErrors } from "../errors";
-
-export type MagicLinkIntent = "sign-in" | "sign-up";
-
 interface UserLookup {
 	findUnique(input: { where: { email: string } }): Promise<{ id: string } | null>;
 }
@@ -16,9 +11,9 @@ interface MagicLinkRequest {
 type MagicLinkSender = (request: MagicLinkRequest) => Promise<unknown>;
 
 /**
- * Makes account creation explicit while retaining passwordless access. Better Auth
- * only creates a magic-link user after verification, so the name must accompany
- * the first link request instead of being collected after the account exists.
+ * Sends one passwordless entry link for every email. Better Auth creates the
+ * account after verification when needed; its temporary name is replaced during
+ * checkout before an order can be paid.
  */
 export class RequestMagicLink {
 	constructor(
@@ -26,17 +21,16 @@ export class RequestMagicLink {
 		private readonly sendMagicLink: MagicLinkSender,
 	) {}
 
-	async execute(input: MagicLinkRequest & { intent: MagicLinkIntent }): Promise<void> {
+	async execute(input: MagicLinkRequest): Promise<void> {
 		const email = input.email.trim().toLowerCase();
 		const exists = !!(await this.users.findUnique({ where: { email } }));
-
-		if (input.intent === "sign-in" && !exists) throw new DomainError(UserErrors.ACCOUNT_NOT_FOUND);
-		if (input.intent === "sign-up" && exists) throw new DomainError(UserErrors.ACCOUNT_ALREADY_EXISTS);
 
 		await this.sendMagicLink({
 			email,
 			metadata: input.metadata,
-			name: input.intent === "sign-up" ? input.name?.trim() : undefined,
+			// User.name is non-null in our database. This placeholder also ensures the
+			// checkout presents the full-name step before payment.
+			name: exists ? undefined : "Cliente",
 		});
 	}
 }

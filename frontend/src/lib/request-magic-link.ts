@@ -1,12 +1,8 @@
 import { branding } from "./branding";
 
-export type MagicLinkIntent = "sign-in" | "sign-up";
-
 interface RequestMagicLinkInput {
 	email: string;
-	intent: MagicLinkIntent;
 	metadata?: Record<string, unknown>;
-	name?: string;
 }
 
 export class RequestMagicLinkError extends Error {
@@ -15,7 +11,7 @@ export class RequestMagicLinkError extends Error {
 	}
 }
 
-/** Requests the passwordless link through the storefront flow, which validates the account intent first. */
+/** Requests a passwordless link; verification signs in or creates the customer account. */
 export async function requestMagicLink(input: RequestMagicLinkInput): Promise<void> {
 	const response = await fetch(`${branding.apiUrl}/auth/request-magic-link`, {
 		body: JSON.stringify(input),

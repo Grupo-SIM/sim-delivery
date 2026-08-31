@@ -2,14 +2,7 @@ import { useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label, RequiredMark } from "@/components/ui/label";
-import { useDebouncedInput } from "@/hooks/use-debounced-input";
-import { authClient } from "@/lib/auth-client";
-import {
-	type MagicLinkIntent,
-	RequestMagicLinkError,
-	requestMagicLink as sendMagicLinkRequest,
-} from "@/lib/request-magic-link";
+import { requestMagicLink as sendMagicLinkRequest } from "@/lib/request-magic-link";
 import { cn } from "@/lib/utils";
 
 type Channel = "email" | "whatsapp";
@@ -96,20 +89,13 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 	const { t } = useTranslation();
 	const [channel, setChannel] = useState<Channel>("email");
 	const [step, setStep] = useState<Step>("form");
-	const [intent, setIntent] = useState<MagicLinkIntent>("sign-in");
 	const [email, setEmail] = useState("");
-	const [accountName, setAccountName] = useState("");
-	const [name, setName] = useDebouncedInput(accountName, setAccountName);
-	const [password, setPassword] = useState("");
-	const [usePassword, setUsePassword] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [cooldown, setCooldown] = useState(0);
 	const [resent, setResent] = useState(false);
 
 	const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-	const passwordIsValid = password.length > 0;
-	const nameIsValid = name.trim().length >= 2;
 
 	useEffect(() => {
 		if (cooldown <= 0) return;
@@ -123,40 +109,15 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 		try {
 			await sendMagicLinkRequest({
 				email,
-				intent,
 				metadata: { unitId: unitSlug ?? "" },
-				name: intent === "sign-up" ? name.trim() : undefined,
 			});
 			setCooldown(RESEND_COOLDOWN_SECONDS);
 			setResent(isResend);
 			setStep("email-sent");
-		} catch (caught) {
-			if (caught instanceof RequestMagicLinkError) {
-				const key =
-					caught.code === "ACCOUNT_NOT_FOUND"
-						? "store.checkout.identify.errors.accountNotFound"
-						: caught.code === "ACCOUNT_ALREADY_EXISTS"
-							? "store.checkout.identify.errors.accountAlreadyExists"
-							: "store.checkout.identify.errors.send";
-				setError(t(key));
-			} else {
-				setError(t("store.checkout.identify.errors.send"));
-			}
+		} catch {
+			setError(t("store.checkout.identify.errors.send"));
 		} finally {
 			setLoading(false);
-		}
-	}
-
-	async function signInWithPassword() {
-		setError(null);
-		setLoading(true);
-		const { error: caught } = await authClient.signIn.email({
-			email,
-			password,
-		});
-		setLoading(false);
-		if (caught) {
-			setError(t("store.checkout.identify.errors.invalidCredentials"));
 		}
 	}
 
@@ -211,65 +172,12 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 					className="animate-slide-in-3d space-y-4"
 					onSubmit={event => {
 						event.preventDefault();
-						if (intent === "sign-in" && usePassword) {
-							void signInWithPassword();
-							return;
-						}
 						void requestMagicLink();
 					}}
 				>
-					<div className="grid grid-cols-2 gap-2">
-						<Button
-							aria-pressed={intent === "sign-in"}
-							className="h-10"
-							onClick={() => {
-								setIntent("sign-in");
-								setError(null);
-								setUsePassword(false);
-							}}
-							type="button"
-							variant={intent === "sign-in" ? "default" : "outline"}
-						>
-							{t("store.checkout.identify.signIn")}
-						</Button>
-						<Button
-							aria-pressed={intent === "sign-up"}
-							className="h-10"
-							onClick={() => {
-								setIntent("sign-up");
-								setError(null);
-								setUsePassword(false);
-							}}
-							type="button"
-							variant={intent === "sign-up" ? "default" : "outline"}
-						>
-							{t("store.checkout.identify.createAccount")}
-						</Button>
-					</div>
-
-					{intent === "sign-up" && (
-						<Label className="animate-slide-in-3d">
-							<span>
-								{t("store.checkout.identify.name")} <RequiredMark />
-							</span>
-							<Input
-								autoComplete="name"
-								className="h-12 rounded-pill"
-								name="name"
-								onChange={event => {
-									setName(event.currentTarget.value);
-									setError(null);
-								}}
-								placeholder={t("store.checkout.identify.namePlaceholder")}
-								type="text"
-								value={name}
-							/>
-						</Label>
-					)}
-
-					<Label>
+					<label className="grid gap-2">
 						<span>
-							{t("store.checkout.identify.email")} <RequiredMark />
+							{t("store.checkout.identify.email")} <span className="text-destructive">*</span>
 						</span>
 						<div className="relative">
 							<MailIcon className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground/70" />
@@ -289,27 +197,10 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 								<CheckCircleIcon className="absolute top-1/2 right-3.5 size-4.5 -translate-y-1/2 animate-slide-in-3d text-success" />
 							)}
 						</div>
-					</Label>
+					</label>
 					<p className="text-muted-foreground text-xs">
-						{t(`store.checkout.identify.${intent === "sign-up" ? "createAccountHint" : "emailHint"}`)}
+						{t("store.checkout.identify.emailHint")}
 					</p>
-					{intent === "sign-in" && usePassword && (
-						<Label className="animate-slide-in-3d">
-							{t("store.checkout.identify.password")}
-							<Input
-								autoComplete="current-password"
-								className="h-12 rounded-pill"
-								name="password"
-								onChange={event => {
-									setPassword(event.currentTarget.value);
-									setError(null);
-								}}
-								placeholder={t("store.checkout.identify.passwordPlaceholder")}
-								type="password"
-								value={password}
-							/>
-						</Label>
-					)}
 
 					{error && (
 						<div
@@ -323,40 +214,12 @@ export function IdentifyForm({ unitSlug }: IdentifyFormProps) {
 
 					<Button
 						className="h-12 w-full rounded-pill font-bold text-base shadow-glow-blue transition-shadow disabled:shadow-none"
-						disabled={
-							loading ||
-							!emailIsValid ||
-							(intent === "sign-up" && !nameIsValid) ||
-							(intent === "sign-in" && usePassword && !passwordIsValid)
-						}
+						disabled={loading || !emailIsValid}
 						type="submit"
 					>
 						{loading && <Spinner className="size-4" />}
-						{loading
-							? t(intent === "sign-in" && usePassword ? "store.checkout.identify.signingIn" : "store.checkout.identify.sending")
-							: t(
-									intent === "sign-in" && usePassword
-										? "store.checkout.identify.signInWithPassword"
-										: intent === "sign-up"
-											? "store.checkout.identify.createAccountWithLink"
-											: "store.checkout.identify.sendLink",
-								)}
+						{loading ? t("store.checkout.identify.sending") : t("store.checkout.identify.sendLink")}
 					</Button>
-					{intent === "sign-in" && (
-						<Button
-							className="w-full"
-						onClick={() => {
-							setUsePassword(current => !current);
-							setError(null);
-						}}
-						type="button"
-							variant="outline"
-					>
-						{usePassword
-							? t("store.checkout.identify.signInWithLink")
-							: t("store.checkout.identify.signInWithPassword")}
-						</Button>
-					)}
 				</form>
 			)}
 

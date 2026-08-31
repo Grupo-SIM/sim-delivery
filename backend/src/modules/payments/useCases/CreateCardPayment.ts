@@ -19,8 +19,7 @@ export class CreateCardPayment {
 		const context = await resolvePayingCustomer(
 			this.prisma,
 			userId,
-			{ orderId: data.orderId, slug: data.slug },
-			{ requireDocument: false },
+			{ cpf: data.holderCpf ?? data.cpf, orderId: data.orderId, slug: data.slug },
 		);
 		const { customer, order, user } = context;
 

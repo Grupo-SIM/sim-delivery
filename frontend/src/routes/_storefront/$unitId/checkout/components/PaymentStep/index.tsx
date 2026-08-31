@@ -8,6 +8,7 @@ import { getPaymentsCardsQueryOptions, usePostPaymentsCard } from "@/lib/api";
 import { showAlert } from "@/stores";
 import { CardPaymentForm, type CardPaymentValue } from "./CardPaymentForm";
 import { CardPaymentPending } from "./CardPaymentPending";
+import { PaymentIdentityForm } from "./PaymentIdentityForm";
 import { PixPanel } from "./PixPanel";
 
 type PaymentMethod = "card" | "pix";
@@ -16,16 +17,30 @@ interface PaymentStepProps {
 	amountCents: number;
 	/** CPF already stored on the customer profile, if any. */
 	customerCpf: string | null;
+	customerName: string;
+	isSavingIdentity: boolean;
+	onIdentitySubmit: (value: { cpf: string; name: string }) => void;
 	onConfirmed: () => void;
 	orderId: string;
 	slug: string;
 }
 
-export function PaymentStep({ amountCents, customerCpf, onConfirmed, orderId, slug }: PaymentStepProps) {
+export function PaymentStep({
+	amountCents,
+	customerCpf,
+	customerName,
+	isSavingIdentity,
+	onConfirmed,
+	onIdentitySubmit,
+	orderId,
+	slug,
+}: PaymentStepProps) {
 	const { t } = useTranslation();
 	const [method, setMethod] = useState<PaymentMethod>("card");
 	const [pixCpf, setPixCpf] = useState(customerCpf);
 	const [cardPaymentToken, setCardPaymentToken] = useState<string | null>(null);
+	const hasFullName = customerName.trim().split(/\s+/).filter(Boolean).length >= 2;
+	const identityComplete = hasFullName && (customerCpf?.replace(/\D/g, "").length ?? 0) === 11;
 
 	const { data: savedCards, isPending: savedCardsPending } = useQuery(getPaymentsCardsQueryOptions({ slug }));
 	const { isPending: isPayingCard, mutate: payWithCard } = usePostPaymentsCard();
@@ -59,7 +74,18 @@ export function PaymentStep({ amountCents, customerCpf, onConfirmed, orderId, sl
 
 	return (
 		<div className="space-y-4">
-			<div className="grid grid-cols-2 gap-3">
+			{!identityComplete && (
+				<PaymentIdentityForm
+					initialCpf={customerCpf}
+					initialName={hasFullName ? customerName : ""}
+					isSaving={isSavingIdentity}
+					onSubmit={onIdentitySubmit}
+				/>
+			)}
+
+			{identityComplete && (
+				<>
+					<div className="grid grid-cols-2 gap-3">
 				{methods.map(option => (
 					<button
 						className={`flex cursor-pointer flex-col items-start gap-1 rounded-xl border p-4 text-left transition-colors ${
@@ -75,17 +101,17 @@ export function PaymentStep({ amountCents, customerCpf, onConfirmed, orderId, sl
 						<span className="font-medium text-sm">{option.label}</span>
 					</button>
 				))}
-			</div>
+					</div>
 
-			{method === "card" && cardPaymentToken ? (
+					{method === "card" && cardPaymentToken ? (
 				<CardPaymentPending onConfirmed={onConfirmed} onFailed={handleCardFailed} token={cardPaymentToken} />
-			) : method === "card" && savedCardsPending ? (
+					) : method === "card" && savedCardsPending ? (
 				<div className="space-y-3">
 					<Skeleton className="h-12 w-full" />
 					<Skeleton className="h-12 w-full" />
 					<Skeleton className="h-12 w-full" />
 				</div>
-			) : (
+					) : (
 				method === "card" && (
 					<CardPaymentForm
 						amountCents={amountCents}
@@ -95,9 +121,9 @@ export function PaymentStep({ amountCents, customerCpf, onConfirmed, orderId, sl
 						savedCards={savedCards ?? []}
 					/>
 				)
-			)}
+					)}
 
-			{method === "pix" && (
+					{method === "pix" && (
 				<PixPanel
 					customerCpf={pixCpf}
 					onConfirmed={onConfirmed}
@@ -105,6 +131,8 @@ export function PaymentStep({ amountCents, customerCpf, onConfirmed, orderId, sl
 					orderId={orderId}
 					slug={slug}
 				/>
+					)}
+				</>
 			)}
 		</div>
 	);
