@@ -73,7 +73,7 @@ export function StorefrontHeader({
 						>
 							{t(isOperationalStaff(role) ? "store.account.staffOrders" : "store.account.staffAdmin")}
 						</Link>
-					)}
+					) : null}
 					<ProfileMenu
 						logoutTo={profileMenuLogoutTo}
 						onlyLogout={profileMenuOnlyLogout}
