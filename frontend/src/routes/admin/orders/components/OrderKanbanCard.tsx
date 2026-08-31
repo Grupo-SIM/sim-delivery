@@ -70,9 +70,7 @@ export function OrderKanbanCard({
 				<div className="flex items-start justify-between gap-3">
 					<div className="min-w-0">
 						<p className="truncate font-semibold text-base">{order.customerName}</p>
-						<p className="mt-1 font-semibold text-primary text-sm">
-							{t("admin.orders.receipt.order")} #{order.displayNumber}
-						</p>
+						<p className="mt-1 font-semibold text-primary text-sm">#{order.displayNumber}</p>
 						<p className="mt-1 truncate text-muted-foreground text-sm">{order.unitName}</p>
 					</div>
 					{showStatus && <OrderStatusBadge status={order.status} />}
