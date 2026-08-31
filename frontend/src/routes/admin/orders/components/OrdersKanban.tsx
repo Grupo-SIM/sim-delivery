@@ -415,7 +415,14 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 															: order.status === "pronto" || order.status === "saiu_para_entrega"
 												}
 												canManageAssignments={role !== "kitchen" && role !== "courier"}
-															key={order.id}
+												canPrint={[
+													"superAdmin",
+													"owner",
+													"manager",
+													"attendant",
+													"kitchen",
+												].includes(role ?? "")}
+												key={order.id}
 															onDragEnd={finishDrag}
 															onDragStart={setDraggedOrderId}
 															order={order}

@@ -510,6 +510,41 @@
 					"finalized": "Finalizado"
 				},
 				"loadError": "Não foi possível carregar os pedidos.",
+				"receipt": {
+					"action": "Imprimir",
+					"address": "Endereço",
+					"addressMissing": "ENDEREÇO NÃO INFORMADO",
+					"cashback": "Cashback",
+					"customer": "Cliente",
+					"date": "Data",
+					"delivery": "ENTREGA",
+					"deliveryFee": "Entrega",
+					"discount": "Descontos",
+					"error": "Não foi possível preparar o recibo. Tente novamente.",
+					"errorTitle": "Falha ao imprimir",
+					"loyalty": "Fidelidade",
+					"note": "OBSERVAÇÃO",
+					"order": "PEDIDO",
+					"payment": "Pagamento",
+					"paymentMethod": {
+						"credit_card": "Cartão de crédito",
+						"pix": "PIX"
+					},
+					"paymentMissing": "Pagamento não informado",
+					"paymentStatus": {
+						"confirmed": "Confirmado",
+						"failed": "Falhou",
+						"partially_refunded": "Parcialmente estornado",
+						"pending": "Pendente",
+						"refunded": "Estornado"
+					},
+					"pickup": "RETIRADA",
+					"preparedBy": "Responsável pelo preparo",
+					"preparing": "Preparando...",
+					"status": "Status",
+					"subtotal": "Subtotal",
+					"total": "TOTAL"
+				},
 				"refund": {
 					"method": {
 						"cashback": "Cashback",

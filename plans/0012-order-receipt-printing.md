@@ -7,7 +7,7 @@ Gerar PDF real de recibo térmico de 80 mm, abrir o visualizador do navegador e 
 ## Progresso
 
 - [x] Implementar endpoint e contrato `GET /orders/:orderId/receipt`, autorização e testes de backend.
-- [ ] Exportar OpenAPI, regenerar SDK e implementar gerador PDF, botão e traduções no frontend.
+- [x] Exportar OpenAPI, regenerar SDK e implementar gerador PDF, botão e traduções no frontend.
 - [ ] Documentar regras de negócio e criar commits atômicos.
 - [ ] Validar testes, PDF, renderização e fluxo de impressão no Chrome.
 

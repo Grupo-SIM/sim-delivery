@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import type { GetOrders200 } from "@/lib/api";
 import { AssignCourierModal } from "./AssignCourierModal";
 import { AssignKitchenModal } from "./AssignKitchenModal";
+import { OrderReceiptButton } from "./OrderReceiptButton";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 
 interface OrderKanbanCardProps {
 	canManageAssignments: boolean;
+	canPrint: boolean;
 	canDrag: boolean;
 	onDragEnd: () => void;
 	onDragStart: (orderId: string) => void;
@@ -20,6 +22,7 @@ interface OrderKanbanCardProps {
 export function OrderKanbanCard({
 	canDrag,
 	canManageAssignments,
+	canPrint,
 	onDragEnd,
 	onDragStart,
 	order,
@@ -96,9 +99,10 @@ export function OrderKanbanCard({
 				</div>
 			</button>
 
-			{canManageAssignments && (canAssignCourier || canAssignKitchen) && (
+			{(canPrint || (canManageAssignments && (canAssignCourier || canAssignKitchen))) && (
 				<div className="mt-4 flex flex-wrap gap-2 border-border border-t pt-3">
-					{canAssignKitchen && (
+					{canPrint && <OrderReceiptButton orderId={order.id} />}
+					{canManageAssignments && canAssignKitchen && (
 						<Button onClick={() => setAssignKitchenOpen(true)} size="sm" type="button" variant="outline">
 							<LuChefHat aria-hidden className="size-4" />
 							<span className="max-w-32 truncate">
@@ -106,7 +110,7 @@ export function OrderKanbanCard({
 							</span>
 						</Button>
 					)}
-					{canAssignCourier && (
+					{canManageAssignments && canAssignCourier && (
 						<Button onClick={() => setAssignOpen(true)} size="sm" type="button" variant="outline">
 							<LuBike aria-hidden className="size-4" />
 							<span className="max-w-32 truncate">
