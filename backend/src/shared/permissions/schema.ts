@@ -9,7 +9,7 @@ export interface PermissionSchema extends PermixDefinition {
 	company: { action: "read" | "create" | "update" | "delete" };
 	units: { action: "read" | "create" | "update" | "delete" };
 	menu: { action: "read" | "create" | "update" | "delete" };
-	orders: { action: "read" | "create" | "updateStatus" };
+	orders: { action: "read" | "create" | "print" | "updateStatus" };
 	customers: { action: "read" | "update" };
 	staff: { action: "read" | "invite" | "inviteOwner" | "setRole" | "remove" };
 	deliveries: { action: "read" | "assign" | "updateStatus" };

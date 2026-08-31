@@ -40,6 +40,7 @@ describe("createPermissions matrix", () => {
 		expect(superAdmin.check("menu", "read")).toBe(true);
 		expect(superAdmin.check("menu", "update")).toBe(true);
 		expect(superAdmin.check("orders", "create")).toBe(true);
+		expect(superAdmin.check("orders", "print")).toBe(true);
 		expect(superAdmin.check("orders", "read")).toBe(true);
 		expect(superAdmin.check("orders", "updateStatus")).toBe(true);
 		expect(superAdmin.check("reports", "read")).toBe(true);
@@ -112,5 +113,14 @@ describe("createPermissions matrix", () => {
 		expect(permix.check("orders", "create")).toBe(true);
 		expect(permix.check("orders", "updateStatus")).toBe(false);
 		expect(permix.check("reports", "read")).toBe(false);
+	});
+
+	it("permits receipt printing only for operational and kitchen roles", () => {
+		for (const role of ["superAdmin", "owner", "manager", "attendant", "kitchen"] as const) {
+			expect(createPermissions(role).check("orders", "print")).toBe(true);
+		}
+		for (const role of ["courier", "customer"] as const) {
+			expect(createPermissions(role).check("orders", "print")).toBe(false);
+		}
 	});
 });

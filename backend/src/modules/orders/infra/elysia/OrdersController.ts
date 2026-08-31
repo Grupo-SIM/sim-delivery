@@ -12,6 +12,7 @@ import {
 	CustomerOrderTrackingReturn,
 	GetCustomerOrderQuery,
 	ListOrdersQuery,
+	OrderReceiptReturn,
 	OrderReturn,
 	UpdateOrderStatusBody,
 } from "../../dtos";
@@ -19,6 +20,7 @@ import {
 	CloseOrdersDay,
 	CreateOrder,
 	GetCustomerOrder,
+	GetOrderReceipt,
 	ListCustomerOrders,
 	ListOrders,
 	UpdateOrderStatus,
@@ -34,6 +36,7 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 				closeOrdersDay: new CloseOrdersDay(prisma),
 				createOrder: new CreateOrder(prisma),
 				getCustomerOrder: new GetCustomerOrder(prisma),
+				getOrderReceipt: new GetOrderReceipt(prisma),
 				listCustomerOrders: new ListCustomerOrders(prisma),
 				listOrders: new ListOrders(prisma),
 				prisma,
@@ -72,6 +75,18 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 					return listCustomerOrders.execute(userId, query.slug);
 				},
 				{ query: GetCustomerOrderQuery, response: CustomerOrderListReturn },
+			)
+			.get(
+				"/:orderId/receipt",
+				async ({ getOrderReceipt, params, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "orders", "print");
+					return getOrderReceipt.execute(scope.companyId, params.orderId, scope.role, scope.userId);
+				},
+				{
+					params: t.Object({ orderId: t.String({ minLength: 1 }) }),
+					response: OrderReceiptReturn,
+				},
 			)
 			.get(
 				"/:orderId/track",
