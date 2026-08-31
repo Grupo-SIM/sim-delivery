@@ -6,11 +6,15 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
+import { canManageCatalog } from "@/lib/staff-guard";
 import { useGetTags } from "@/lib/api";
+import { useAuthStore } from "@/stores";
 import { CreateTagForm, TagsTable } from "./components";
 
 function TagsPage() {
 	const { t } = useTranslation();
+	const role = useAuthStore(state => state.role);
+	const canManage = canManageCatalog(role);
 	const { data: tags, isError, isPending } = useGetTags();
 	const [search, setSearch] = useState("");
 
@@ -25,7 +29,7 @@ function TagsPage() {
 		<Container className="space-y-6 py-8">
 			<SectionHeading subtitle={t("admin.tags.subtitle")} title={t("admin.tags.title")} />
 
-			<CreateTagForm />
+			{canManage && <CreateTagForm />}
 
 			<div className="max-w-sm">
 				<TextField
@@ -41,7 +45,7 @@ function TagsPage() {
 			) : isError ? (
 				<ErrorState title={t("admin.tags.loadError")} />
 			) : (
-				<TagsTable tags={filteredTags ?? []} />
+				<TagsTable canManage={canManage} tags={filteredTags ?? []} />
 			)}
 		</Container>
 	);

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuArrowLeft, LuPlus } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
@@ -12,17 +12,26 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
 import { useGetInventoryItems, useGetInventoryMovements, useGetUnits } from "@/lib/api";
+import { canAccessAllUnits, canManageInventory } from "@/lib/staff-guard";
+import { useAuthStore } from "@/stores";
 import { InventoryMovementModal } from "../components";
 
 const number = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 3, signDisplay: "always" });
 function MovementsPage() {
 	const { t } = useTranslation();
+	const role = useAuthStore(state => state.role);
+	const canManage = canManageInventory(role);
+	const canViewAllUnits = canAccessAllUnits(role);
 	const [unitId, setUnitId] = useState("");
 	const [inventoryItemId, setInventoryItemId] = useState("");
 	const [type, setType] = useState("");
 	const [search, setSearch] = useState("");
 	const [open, setOpen] = useState(false);
 	const { data: units = [] } = useGetUnits();
+	useEffect(() => {
+		if (canViewAllUnits || units.length === 0 || units.some(unit => unit.id === unitId)) return;
+		setUnitId(units[0].id);
+	}, [canViewAllUnits, unitId, units]);
 	const { data: items = [] } = useGetInventoryItems();
 	const {
 		data: movements = [],
@@ -45,10 +54,12 @@ function MovementsPage() {
 					subtitle={t("admin.inventory.movementsSubtitle")}
 					title={t("admin.inventory.movementsTitle")}
 				/>
-				<Button onClick={() => setOpen(true)} type="button">
-					<LuPlus />
-					{t("admin.inventory.addMovement")}
-				</Button>
+				{canManage && (
+					<Button onClick={() => setOpen(true)} type="button">
+						<LuPlus />
+						{t("admin.inventory.addMovement")}
+					</Button>
+				)}
 			</div>
 			<div className="grid gap-3 md:grid-cols-4">
 				<TextField
@@ -62,7 +73,7 @@ function MovementsPage() {
 					<CustomSelect
 						onChange={setUnitId}
 						options={[
-							{ label: t("admin.inventory.filters.allUnits"), value: "" },
+							...(canViewAllUnits ? [{ label: t("admin.inventory.filters.allUnits"), value: "" }] : []),
 							...units.map(unit => ({ label: unit.name, value: unit.id })),
 						]}
 						value={unitId}
@@ -131,7 +142,7 @@ function MovementsPage() {
 					</tbody>
 				</DataTable>
 			)}
-			<InventoryMovementModal isOpen={open} onClose={() => setOpen(false)} />
+			{canManage && <InventoryMovementModal isOpen={open} onClose={() => setOpen(false)} />}
 		</Container>
 	);
 }

@@ -24,6 +24,7 @@ import { showToast } from "@/stores";
 import { CategoryRow } from "./CategoryRow";
 
 interface CategoriesTableProps {
+	canManage: boolean;
 	categories: GetCategories200;
 	onSearchChange: (value: string) => void;
 	search: string;
@@ -31,6 +32,7 @@ interface CategoriesTableProps {
 }
 
 export function CategoriesTable({
+	canManage,
 	categories,
 	onSearchChange,
 	search,
@@ -39,7 +41,7 @@ export function CategoriesTable({
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const reorder = usePutCategoriesOrder();
-	const dragDisabled = search.trim() !== "" || reorder.isPending;
+	const dragDisabled = !canManage || search.trim() !== "" || reorder.isPending;
 	const sensors = useSensors(
 		useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
 		useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -69,7 +71,7 @@ export function CategoriesTable({
 		<DataTable>
 			<thead>
 				<tr className="border-border border-b text-left text-muted-foreground">
-					<th className="px-2 py-3" />
+					{canManage && <th className="px-2 py-3" />}
 					<th className="px-4 py-3 font-medium">{t("admin.categories.columns.name")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.categories.columns.products")}</th>
 					<th className="px-4 py-3 font-medium">
@@ -93,13 +95,13 @@ export function CategoriesTable({
 					<tbody>
 						{visibleCategories.length === 0 ? (
 							<tr>
-								<td className="px-4 py-6 text-center text-muted-foreground" colSpan={4}>
+								<td className="px-4 py-6 text-center text-muted-foreground" colSpan={canManage ? 4 : 3}>
 									{t("admin.categories.searchEmpty")}
 								</td>
 							</tr>
 						) : (
 							visibleCategories.map(category => (
-								<CategoryRow category={category} dragDisabled={dragDisabled} key={category.id} />
+								<CategoryRow canManage={canManage} category={category} dragDisabled={dragDisabled} key={category.id} />
 							))
 						)}
 					</tbody>

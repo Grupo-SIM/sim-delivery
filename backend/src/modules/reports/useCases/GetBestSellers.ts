@@ -11,10 +11,12 @@ export class GetBestSellers {
 		companyId: string | null,
 		query: GetReportsQuery,
 		limit: number | null = 10,
+		permittedUnitIds?: string[],
 	): Promise<BestSellersReturn> {
 		const { endDate, period, startDate, unitId } = query;
 		const now = new Date();
 		const { since, until } = getReportDateRange(period, startDate, endDate, now);
+		const unitFilter = unitId ? { unitId } : permittedUnitIds ? { unitId: { in: permittedUnitIds } } : {};
 
 		const rows = await this.prisma.orderItem.groupBy({
 			_sum: { costCents: true, netRevenueCents: true, quantity: true, total: true },
@@ -25,7 +27,7 @@ export class GetBestSellers {
 				order: {
 					...(companyId ? { companyId } : {}),
 					status: { in: COMPLETED },
-					...(unitId ? { unitId } : {}),
+					...unitFilter,
 					...(since || until
 						? { createdAt: { ...(since ? { gte: since } : {}), ...(until ? { lt: until } : {}) } }
 						: {}),

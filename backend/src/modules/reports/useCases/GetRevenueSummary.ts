@@ -6,10 +6,15 @@ import { getReportDateRange } from "../utils/reportPeriod";
 export class GetRevenueSummary {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(companyId: string | null, query: GetReportsQuery): Promise<RevenueSummaryReturn> {
+	async execute(
+		companyId: string | null,
+		query: GetReportsQuery,
+		permittedUnitIds?: string[],
+	): Promise<RevenueSummaryReturn> {
 		const { endDate, period, startDate, unitId } = query;
 		const now = new Date();
 		const { since, until } = getReportDateRange(period, startDate, endDate, now);
+		const unitFilter = query.unitId ? { unitId: query.unitId } : permittedUnitIds ? { unitId: { in: permittedUnitIds } } : {};
 
 		const agg = await this.prisma.order.aggregate({
 			_count: { id: true },
@@ -17,7 +22,7 @@ export class GetRevenueSummary {
 			where: {
 				...(companyId ? { companyId } : {}),
 				status: { in: COMPLETED },
-				...(unitId ? { unitId } : {}),
+				...unitFilter,
 				...(since || until
 					? { createdAt: { ...(since ? { gte: since } : {}), ...(until ? { lt: until } : {}) } }
 					: {}),
@@ -33,7 +38,7 @@ export class GetRevenueSummary {
 				order: {
 					...(companyId ? { companyId } : {}),
 					status: { in: COMPLETED },
-					...(unitId ? { unitId } : {}),
+					...unitFilter,
 					...(since || until
 						? { createdAt: { ...(since ? { gte: since } : {}), ...(until ? { lt: until } : {}) } }
 						: {}),

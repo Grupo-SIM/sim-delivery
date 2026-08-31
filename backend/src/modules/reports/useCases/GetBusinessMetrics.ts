@@ -46,12 +46,17 @@ function eventAt(order: MetricsOrder, status: string): Date | undefined {
 export class GetBusinessMetrics {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(companyId: string | null, query: GetDashboardAnalyticsQuery): Promise<BusinessMetricsReturn> {
+	async execute(
+		companyId: string | null,
+		query: GetDashboardAnalyticsQuery,
+		permittedUnitIds?: string[],
+	): Promise<BusinessMetricsReturn> {
 		const now = new Date();
 		const { since, until } = getReportDateRange(query.period, query.startDate, query.endDate, now);
+		const unitFilter = query.unitId ? { unitId: query.unitId } : permittedUnitIds ? { unitId: { in: permittedUnitIds } } : {};
 		const where = {
 			...(companyId ? { companyId } : {}),
-			...(query.unitId ? { unitId: query.unitId } : {}),
+			...unitFilter,
 			...(since || until
 				? { createdAt: { ...(since ? { gte: since } : {}), ...(until ? { lt: until } : {}) } }
 				: {}),

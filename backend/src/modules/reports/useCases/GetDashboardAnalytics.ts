@@ -10,11 +10,13 @@ export class GetDashboardAnalytics {
 	async execute(
 		companyId: string | null,
 		query: GetDashboardAnalyticsQuery,
+		permittedUnitIds?: string[],
 	): Promise<DashboardAnalyticsReturn> {
 		const { endDate, groupBy: requestedGroupBy, period, startDate, unitId } = query;
 		const now = new Date();
 		const { since, until } = getReportDateRange(period, startDate, endDate, now);
 		const groupBy = requestedGroupBy ?? getDefaultReportGroupBy(since, now);
+		const unitFilter = unitId ? { unitId } : permittedUnitIds ? { unitId: { in: permittedUnitIds } } : {};
 		const orders = await this.prisma.order.findMany({
 			select: {
 				createdAt: true,
@@ -26,7 +28,7 @@ export class GetDashboardAnalytics {
 			where: {
 				...(companyId ? { companyId } : {}),
 				status: { in: COMPLETED },
-				...(unitId ? { unitId } : {}),
+				...unitFilter,
 				...(since || until
 					? { createdAt: { ...(since ? { gte: since } : {}), ...(until ? { lt: until } : {}) } }
 					: {}),

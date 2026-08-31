@@ -19,12 +19,13 @@ import { ProductUnitsModal } from "./ProductUnitsModal";
 import type { Product } from "./types";
 
 interface ProductRowProps {
+	canManage: boolean;
 	product: Product;
 }
 
 const money = new Intl.NumberFormat("pt-BR", { currency: "BRL", style: "currency" });
 
-export function ProductRow({ product }: ProductRowProps) {
+export function ProductRow({ canManage, product }: ProductRowProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [editing, setEditing] = useState(false);
@@ -103,9 +104,10 @@ export function ProductRow({ product }: ProductRowProps) {
 						)}
 					</div>
 				</td>
-				<td className="whitespace-nowrap px-4 py-3 text-right">
-					<div className="flex justify-end gap-2">
-						<Tooltip content={t("admin.products.edit.action")}>
+				{canManage && (
+					<td className="whitespace-nowrap px-4 py-3 text-right">
+						<div className="flex justify-end gap-2">
+							<Tooltip content={t("admin.products.edit.action")}>
 							<Button
 								aria-label={t("admin.products.edit.action")}
 								onClick={() => setEditing(true)}
@@ -164,19 +166,24 @@ export function ProductRow({ product }: ProductRowProps) {
 						>
 							{null}
 						</ConfirmActionButton>
-					</div>
-				</td>
+						</div>
+					</td>
+				)}
 			</tr>
-			<ProductEditModal onClose={() => setEditing(false)} product={editing ? product : null} />
-			<ProductRecipeModal
-				onClose={() => setManagingRecipe(false)}
-				product={managingRecipe ? product : null}
-			/>
-			<ProductUnitsModal onClose={() => setManagingUnits(false)} product={managingUnits ? product : null} />
-			<ProductTaxonomyModal
-				onClose={() => setManagingTaxonomy(false)}
-				product={managingTaxonomy ? product : null}
-			/>
+			{canManage && (
+				<>
+					<ProductEditModal onClose={() => setEditing(false)} product={editing ? product : null} />
+					<ProductRecipeModal
+						onClose={() => setManagingRecipe(false)}
+						product={managingRecipe ? product : null}
+					/>
+					<ProductUnitsModal onClose={() => setManagingUnits(false)} product={managingUnits ? product : null} />
+					<ProductTaxonomyModal
+						onClose={() => setManagingTaxonomy(false)}
+						product={managingTaxonomy ? product : null}
+					/>
+				</>
+			)}
 		</>
 	);
 }

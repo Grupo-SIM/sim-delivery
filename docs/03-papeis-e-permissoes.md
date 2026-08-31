@@ -11,7 +11,7 @@ escopada por `companyId`; permissões operacionais podem ainda ser escopadas por
 | `superAdmin` | Operador da plataforma (você). Cria empresas, variantes, planos. | Cross-tenant (todas as empresas). |
 | `owner` | Dono da empresa. Acesso total ao próprio tenant. | 1 empresa (todas as unidades). |
 | `manager` | Gerente — quase tudo do `owner`, exceto branding/variante, gestão de outros donos e exclusão da empresa. | 1 empresa, obrigatoriamente 1..N unidades específicas. |
-| `attendant` | Atendente/caixa — cria e acompanha pedidos, atende clientes, aplica cupons. Sem acesso a relatórios financeiros nem edição de cardápio. | 1 empresa, obrigatoriamente 1..N unidades específicas. |
+| `attendant` | Atendente/caixa — acompanha pedidos, consulta catálogo, estoque e dashboard operacional. Sem acesso a relatórios financeiros nem edição de cardápio. | 1 empresa, obrigatoriamente 1..N unidades específicas. |
 | `kitchen` | Cozinha — vê pedidos em preparo, muda status de produção. Sem finanças nem cadastro. | 1 empresa, obrigatoriamente 1..N unidades específicas. |
 | `courier` | Motoboy. Vê e atualiza suas entregas. | Entregas atribuídas. |
 | `customer` | Consumidor final (app). | Próprios pedidos/dados. |
@@ -36,7 +36,8 @@ Legenda: ✅ total · 🟡 limitado/escopado · ⛔ nenhum.
 | Ver/gerir clientes | ✅ | ✅ | ✅ | 🟡 leitura | ⛔ | ⛔ | 🟡 próprio |
 | Gerir staff (convites/papéis) | ✅ | ✅ | 🟡 abaixo de si | ⛔ | ⛔ | ⛔ | ⛔ |
 | Gerir motoboys / atribuir entregas | ✅ | ✅ | ✅ | 🟡 atribuir | ⛔ | ⛔ | ⛔ |
-| Ver relatórios/financeiro | ✅ | ✅ | ✅ | ⛔ | ⛔ | ⛔ | ⛔ |
+| Ver dashboard operacional | ✅ | ✅ | ✅ | ✅ | ⛔ | ⛔ | ⛔ |
+| Ver relatórios financeiros | ✅ | ✅ | ✅ | ⛔ | ⛔ | ⛔ | ⛔ |
 | Config de pagamentos/frete | ✅ | ✅ | ✅ | ⛔ | ⛔ | ⛔ | ⛔ |
 | Fazer pedido (app) | ⛔ | ⛔ | ⛔ | ⛔ | ⛔ | ⛔ | ✅ |
 
@@ -63,7 +64,7 @@ interface PermissionSchema extends PermixDefinition {
   staff:      { action: "read" | "invite" | "setRole" | "remove" };
   deliveries: { action: "read" | "assign" | "updateStatus" };
   coupons:    { action: "read" | "create" | "apply" };
-  reports:    { action: "read" };
+  reports:    { action: "dashboard" | "read" };
   branding:   { action: "read" | "update" };
 }
 ```

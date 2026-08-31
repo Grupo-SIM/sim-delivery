@@ -5,10 +5,11 @@ import type { GetTags200 } from "@/lib/api";
 import { TagRow } from "./TagRow";
 
 interface TagsTableProps {
+	canManage: boolean;
 	tags: GetTags200;
 }
 
-export function TagsTable({ tags }: TagsTableProps) {
+export function TagsTable({ canManage, tags }: TagsTableProps) {
 	const { t } = useTranslation();
 
 	if (tags.length === 0) {
@@ -22,12 +23,12 @@ export function TagsTable({ tags }: TagsTableProps) {
 					<th className="px-4 py-3 font-medium">{t("admin.tags.columns.name")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.tags.columns.color")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.tags.columns.products")}</th>
-					<th className="px-4 py-3" />
+					{canManage && <th className="px-4 py-3" />}
 				</tr>
 			</thead>
 			<tbody>
 				{tags.map(tag => (
-					<TagRow key={tag.id} tag={tag} />
+					<TagRow canManage={canManage} key={tag.id} tag={tag} />
 				))}
 			</tbody>
 		</DataTable>

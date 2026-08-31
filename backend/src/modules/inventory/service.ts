@@ -22,11 +22,12 @@ const normalizeItem = <T extends { unit: string }>(item: T) => ({
 export class InventoryService {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async listItems(companyId: string, query: ListInventoryItemsQuery) {
+	async listItems(companyId: string, query: ListInventoryItemsQuery, permittedUnitIds?: string[]) {
 		const items = await this.prisma.inventoryItem.findMany({
 			orderBy: { name: "asc" },
 			where: {
 				companyId,
+				...(permittedUnitIds ? { balances: { some: { unitId: { in: permittedUnitIds } } } } : {}),
 				...(query.active === undefined ? {} : { active: query.active }),
 				...(query.search ? { name: { contains: query.search, mode: "insensitive" } } : {}),
 			},
@@ -124,12 +125,13 @@ export class InventoryService {
 		});
 	}
 
-	async listMovements(companyId: string, query: ListInventoryMovementsQuery) {
+	async listMovements(companyId: string, query: ListInventoryMovementsQuery, permittedUnitIds?: string[]) {
 		const rows = await this.prisma.inventoryMovement.findMany({
 			include: { inventoryItem: true, unit: true },
 			orderBy: { createdAt: "desc" },
 			where: {
 				unit: { companyId },
+				...(permittedUnitIds ? { unitId: { in: permittedUnitIds } } : {}),
 				...(query.unitId ? { unitId: query.unitId } : {}),
 				...(query.inventoryItemId ? { inventoryItemId: query.inventoryItemId } : {}),
 				...(query.type ? { type: query.type } : {}),
@@ -154,13 +156,17 @@ export class InventoryService {
 		}));
 	}
 
-	async overview(companyId: string, query: InventoryOverviewQuery) {
+	async overview(companyId: string, query: InventoryOverviewQuery, permittedUnitIds?: string[]) {
 		const settings = await this.getSettings(companyId);
 		const since = new Date(Date.now() - settings.consumptionWindowDays * 86_400_000);
 		const [units, inventoryItems, balances, usages] = await Promise.all([
 			this.prisma.unit.findMany({
 				orderBy: { name: "asc" },
-				where: { companyId, ...(query.unitId ? { id: query.unitId } : {}) },
+				where: {
+					companyId,
+					...(permittedUnitIds ? { id: { in: permittedUnitIds } } : {}),
+					...(query.unitId ? { id: query.unitId } : {}),
+				},
 			}),
 			this.prisma.inventoryItem.findMany({
 				orderBy: { name: "asc" },
@@ -172,13 +178,19 @@ export class InventoryService {
 			this.prisma.unitInventoryBalance.findMany({
 				where: {
 					unit: { companyId },
+					...(permittedUnitIds ? { unitId: { in: permittedUnitIds } } : {}),
 					...(query.unitId ? { unitId: query.unitId } : {}),
 				},
 			}),
 			this.prisma.inventoryMovement.groupBy({
 				_sum: { quantity: true },
 				by: ["unitId", "inventoryItemId"],
-				where: { createdAt: { gte: since }, type: { in: ["consumption", "loss"] }, unit: { companyId } },
+				where: {
+					createdAt: { gte: since },
+					type: { in: ["consumption", "loss"] },
+					unit: { companyId },
+					...(permittedUnitIds ? { unitId: { in: permittedUnitIds } } : {}),
+				},
 			}),
 		]);
 		const balancesByKey = new Map(

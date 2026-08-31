@@ -17,14 +17,14 @@ export class ExportReports {
 		private readonly getFinancialAnalytics: GetFinancialAnalytics,
 	) {}
 
-	async execute(companyId: string | null, query: GetReportsQuery): Promise<Buffer> {
+	async execute(companyId: string | null, query: GetReportsQuery, permittedUnitIds?: string[]): Promise<Buffer> {
 		const now = new Date();
 		const { since, until } = getReportDateRange(query.period, query.startDate, query.endDate, now);
 		const [summary, bestSellers, analytics, financial, orders] = await Promise.all([
-			this.getRevenueSummary.execute(companyId, query),
-			this.getBestSellers.execute(companyId, query, null),
-			this.getDashboardAnalytics.execute(companyId, query),
-			this.getFinancialAnalytics.execute(companyId, query),
+			this.getRevenueSummary.execute(companyId, query, permittedUnitIds),
+			this.getBestSellers.execute(companyId, query, null, permittedUnitIds),
+			this.getDashboardAnalytics.execute(companyId, query, permittedUnitIds),
+			this.getFinancialAnalytics.execute(companyId, query, permittedUnitIds),
 			this.prisma.order.findMany({
 				include: {
 					coupon: { select: { code: true } },
@@ -35,7 +35,11 @@ export class ExportReports {
 				orderBy: { createdAt: "desc" },
 				where: {
 					...(companyId ? { companyId } : {}),
-					...(query.unitId ? { unitId: query.unitId } : {}),
+					...(query.unitId
+						? { unitId: query.unitId }
+						: permittedUnitIds
+							? { unitId: { in: permittedUnitIds } }
+							: {}),
 					...(since || until
 						? { createdAt: { ...(since ? { gte: since } : {}), ...(until ? { lt: until } : {}) } }
 						: {}),

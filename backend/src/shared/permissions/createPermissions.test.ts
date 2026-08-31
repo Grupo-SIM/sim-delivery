@@ -43,6 +43,7 @@ describe("createPermissions matrix", () => {
 		expect(superAdmin.check("orders", "print")).toBe(true);
 		expect(superAdmin.check("orders", "read")).toBe(true);
 		expect(superAdmin.check("orders", "updateStatus")).toBe(true);
+		expect(superAdmin.check("reports", "dashboard")).toBe(true);
 		expect(superAdmin.check("reports", "read")).toBe(true);
 		expect(superAdmin.check("reviews", "create")).toBe(true);
 		expect(superAdmin.check("reviews", "read")).toBe(true);
@@ -81,12 +82,15 @@ describe("createPermissions matrix", () => {
 		expect(createPermissions("manager").check("staff", "inviteOwner")).toBe(false);
 	});
 
-	it("attendant handles orders/customers but not menu or reports", () => {
+	it("attendant accesses dashboard and inventory read-only, but not catalog or financial management", () => {
 		const permix = createPermissions("attendant");
 		expect(permix.check("orders", "create")).toBe(true);
 		expect(permix.check("coupons", "apply")).toBe(true);
 		expect(permix.check("customers", "read")).toBe(true);
+		expect(permix.check("inventory", "read")).toBe(true);
+		expect(permix.check("inventory", "update")).toBe(false);
 		expect(permix.check("menu", "update")).toBe(false);
+		expect(permix.check("reports", "dashboard")).toBe(true);
 		expect(permix.check("reports", "read")).toBe(false);
 	});
 

@@ -20,7 +20,7 @@ mock.module("@tanstack/react-router", () => ({
 	redirect: (options: { to: string }) => Object.assign(new Error(`redirect:${options.to}`), options),
 }));
 
-const { getStaffAreaPath, isStaff, requireStaffBeforeLoad } = await import("./staff-guard");
+const { canAccessAdminPath, getStaffAreaPath, isStaff, requireStaffBeforeLoad } = await import("./staff-guard");
 
 describe("isStaff", () => {
 	it("accepts every back-office role", () => {
@@ -49,6 +49,26 @@ describe("getStaffAreaPath", () => {
 	it("sends other staff roles to the administrative area", () => {
 		for (const role of ["superAdmin", "owner", "manager", "attendant"]) {
 			expect(getStaffAreaPath(role)).toBe("/admin");
+		}
+	});
+});
+
+describe("canAccessAdminPath", () => {
+	it("limits attendants to dashboard, catalog, orders and inventory", () => {
+		for (const pathname of [
+			"/admin/",
+			"/admin/products/",
+			"/admin/categories/",
+			"/admin/tags/",
+			"/admin/orders/",
+			"/admin/inventory/",
+			"/admin/inventory/movements/",
+		]) {
+			expect(canAccessAdminPath("attendant", pathname)).toBe(true);
+		}
+
+		for (const pathname of ["/admin/finance/", "/admin/customers/", "/admin/staff/", "/admin/units/"]) {
+			expect(canAccessAdminPath("attendant", pathname)).toBe(false);
 		}
 	});
 });
@@ -92,6 +112,18 @@ describe("requireStaffBeforeLoad", () => {
 		session = { data: { user: { role: "kitchen" } } };
 
 		expect(await requireStaffBeforeLoad("/admin/orders")).toBeUndefined();
+	});
+
+	it("redirects attendants away from unauthorized pages", async () => {
+		session = { data: { user: { role: "attendant" } } };
+
+		await expect(requireStaffBeforeLoad("/admin/finance/")).rejects.toMatchObject({ to: "/admin/" });
+	});
+
+	it("lets attendants access their permitted pages", async () => {
+		session = { data: { user: { role: "attendant" } } };
+
+		expect(await requireStaffBeforeLoad("/admin/inventory/")).toBeUndefined();
 	});
 
 	it("redirects a user with no role at all to login", async () => {

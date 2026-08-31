@@ -12,10 +12,11 @@ import { type GetTags200, getTagsQueryKey, useDeleteTagsByTagId, usePatchTagsByT
 import { showAlert, showToast } from "@/stores";
 
 interface TagRowProps {
+	canManage: boolean;
 	tag: GetTags200[number];
 }
 
-export function TagRow({ tag }: TagRowProps) {
+export function TagRow({ canManage, tag }: TagRowProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [editing, setEditing] = useState(false);
@@ -106,8 +107,9 @@ export function TagRow({ tag }: TagRowProps) {
 					)}
 				</div>
 			</td>
-			<td className="w-56 px-4 py-3 text-right">
-				<div className="flex justify-end gap-2">
+			{canManage && (
+				<td className="w-56 px-4 py-3 text-right">
+					<div className="flex justify-end gap-2">
 					{editing ? (
 						<>
 							<Button disabled={isPending} onClick={cancel} size="sm" type="button" variant="outline">
@@ -137,8 +139,9 @@ export function TagRow({ tag }: TagRowProps) {
 							</ConfirmActionButton>
 						</>
 					)}
-				</div>
-			</td>
+					</div>
+				</td>
+			)}
 		</tr>
 	);
 }

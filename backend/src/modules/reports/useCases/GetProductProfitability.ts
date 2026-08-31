@@ -16,13 +16,18 @@ const number = (value: unknown) => Number(value ?? 0);
 export class GetProductProfitability {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(companyId: string | null, query: GetReportsQuery): Promise<ProductProfitabilityReturn> {
-		const bestSellers = await new GetBestSellers(this.prisma).execute(companyId, query, null);
+	async execute(
+		companyId: string | null,
+		query: GetReportsQuery,
+		permittedUnitIds?: string[],
+	): Promise<ProductProfitabilityReturn> {
+		const bestSellers = await new GetBestSellers(this.prisma).execute(companyId, query, null, permittedUnitIds);
 		const bestSellerById = new Map(bestSellers.map(row => [row.productId, row]));
 
 		const { endDate, period, startDate, unitId } = query;
 		const now = new Date();
 		const { since, until } = getReportDateRange(period, startDate, endDate, now);
+		const unitFilter = unitId ? { unitId } : permittedUnitIds ? { unitId: { in: permittedUnitIds } } : {};
 		const wastedRows = await this.prisma.orderItem.groupBy({
 			_sum: { costCents: true },
 			by: ["productId"],
@@ -30,7 +35,7 @@ export class GetProductProfitability {
 				order: {
 					...(companyId ? { companyId } : {}),
 					status: CANCELLED,
-					...(unitId ? { unitId } : {}),
+					...unitFilter,
 					...(since || until
 						? { createdAt: { ...(since ? { gte: since } : {}), ...(until ? { lt: until } : {}) } }
 						: {}),
@@ -51,7 +56,10 @@ export class GetProductProfitability {
 					? { unitProducts: { select: { priceCentsOverride: true, promotionalPriceCents: true }, where: { unitId } } }
 					: {}),
 			},
-			where: { ...(companyId ? { companyId } : {}) },
+			where: {
+				...(companyId ? { companyId } : {}),
+				...(permittedUnitIds ? { unitProducts: { some: { unitId: { in: permittedUnitIds } } } } : {}),
+			},
 		});
 
 		const ingredientIds = [
@@ -66,7 +74,11 @@ export class GetProductProfitability {
 				: await this.prisma.unitInventoryBalance.groupBy({
 						_avg: { averageCostCents: true },
 						by: ["inventoryItemId"],
-						where: { inventoryItemId: { in: ingredientIds }, unit: { companyId: companyId ?? undefined } },
+						where: {
+							inventoryItemId: { in: ingredientIds },
+							unit: { companyId: companyId ?? undefined },
+							...(permittedUnitIds ? { unitId: { in: permittedUnitIds } } : {}),
+						},
 					})
 			: [];
 		const costByInventoryItem = new Map(

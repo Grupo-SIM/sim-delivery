@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import type { IconType } from "react-icons";
 import {
@@ -20,6 +21,7 @@ import {
 	LuUsers,
 } from "react-icons/lu";
 import { ScrollArea } from "@/components/ui/ScrollArea";
+import { isAttendant } from "@/lib/staff-guard";
 import { cn } from "@/lib/utils";
 import { isSuperAdmin, useAuthStore } from "@/stores/auth";
 
@@ -49,7 +51,7 @@ function NavItem({ exact = false, icon: Icon, label, onNavigate, to }: NavItemPr
 }
 
 interface NavGroupProps {
-	children: React.ReactNode;
+	children: ReactNode;
 	label: string;
 }
 
@@ -68,6 +70,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 	const { t } = useTranslation();
 	const { logout, role } = useAuthStore();
 	const navigate = useNavigate();
+	const attendant = isAttendant(role);
 
 	async function handleLogout() {
 		await logout();
@@ -105,44 +108,50 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 					onNavigate={onNavigate}
 					to="/admin/orders"
 				/>
-				<NavItem icon={LuLandmark} label="Financeiro" onNavigate={onNavigate} to="/admin/finance" />
+				{!attendant && <NavItem icon={LuLandmark} label="Financeiro" onNavigate={onNavigate} to="/admin/finance" />}
 				<NavItem
 					icon={LuPackageOpen}
 					label={t("admin.inventory.title")}
 					onNavigate={onNavigate}
 					to="/admin/inventory"
 				/>
-				<NavItem
-					icon={LuTicket}
-					label={t("admin.coupons.title")}
-					onNavigate={onNavigate}
-					to="/admin/coupons"
-				/>
-				<NavItem
-					icon={LuImages}
-					label={t("admin.promotionalImages.title")}
-					onNavigate={onNavigate}
-					to="/admin/promotional-images"
-				/>
-				<NavItem
-					icon={LuUsers}
-					label={t("admin.customers.title")}
-					onNavigate={onNavigate}
-					to="/admin/customers"
-				/>
-				<NavItem icon={LuStar} label={t("admin.reviews.title")} onNavigate={onNavigate} to="/admin/reviews" />
+				{!attendant && (
+					<>
+						<NavItem
+							icon={LuTicket}
+							label={t("admin.coupons.title")}
+							onNavigate={onNavigate}
+							to="/admin/coupons"
+						/>
+						<NavItem
+							icon={LuImages}
+							label={t("admin.promotionalImages.title")}
+							onNavigate={onNavigate}
+							to="/admin/promotional-images"
+						/>
+						<NavItem
+							icon={LuUsers}
+							label={t("admin.customers.title")}
+							onNavigate={onNavigate}
+							to="/admin/customers"
+						/>
+						<NavItem icon={LuStar} label={t("admin.reviews.title")} onNavigate={onNavigate} to="/admin/reviews" />
+					</>
+				)}
 			</NavGroup>
 
-			<NavGroup label={t("admin.dashboard.nav.settings")}>
-				<NavItem
-					icon={LuSettings}
-					label={t("admin.branding.navTitle")}
-					onNavigate={onNavigate}
-					to="/admin/company"
-				/>
-				<NavItem icon={LuStore} label={t("admin.units.title")} onNavigate={onNavigate} to="/admin/units" />
-				<NavItem icon={LuUsers} label={t("admin.staff.title")} onNavigate={onNavigate} to="/admin/staff" />
-			</NavGroup>
+			{!attendant && (
+				<NavGroup label={t("admin.dashboard.nav.settings")}>
+					<NavItem
+						icon={LuSettings}
+						label={t("admin.branding.navTitle")}
+						onNavigate={onNavigate}
+						to="/admin/company"
+					/>
+					<NavItem icon={LuStore} label={t("admin.units.title")} onNavigate={onNavigate} to="/admin/units" />
+					<NavItem icon={LuUsers} label={t("admin.staff.title")} onNavigate={onNavigate} to="/admin/staff" />
+				</NavGroup>
+			)}
 
 			{isSuperAdmin(role) && (
 				<NavGroup label={t("admin.dashboard.nav.platform")}>

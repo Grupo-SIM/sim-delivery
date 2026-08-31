@@ -47,6 +47,7 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 				async ({ listOrders, query, request }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "orders", "read");
+					if (query.unitId) CompanyScopeGuard.authorizeUnit(scope, query.unitId);
 					return listOrders.execute(scope.companyId, query, scope.role, scope.userId);
 				},
 				{ query: ListOrdersQuery, response: AdminOrderListReturn },

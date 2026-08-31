@@ -20,11 +20,12 @@ import {
 import { showAlert, showToast } from "@/stores";
 
 interface CategoryRowProps {
+	canManage: boolean;
 	category: GetCategories200[number];
 	dragDisabled: boolean;
 }
 
-export function CategoryRow({ category, dragDisabled }: CategoryRowProps) {
+export function CategoryRow({ canManage, category, dragDisabled }: CategoryRowProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [editing, setEditing] = useState(false);
@@ -77,20 +78,22 @@ export function CategoryRow({ category, dragDisabled }: CategoryRowProps) {
 			ref={setNodeRef}
 			style={{ transform: CSS.Transform.toString(transform), transition }}
 		>
-			<td className="w-10 px-2 py-3">
-				<Tooltip content={t("admin.categories.order.reorder")}>
-					<button
-						{...attributes}
-						{...listeners}
-						aria-label={t("admin.categories.order.reorder")}
-						className="grid size-9 cursor-grab touch-none place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-40"
-						disabled={dragDisabled}
-						type="button"
-					>
-						<LuGripVertical className="size-4" />
-					</button>
-				</Tooltip>
-			</td>
+			{canManage && (
+				<td className="w-10 px-2 py-3">
+					<Tooltip content={t("admin.categories.order.reorder")}>
+						<button
+							{...attributes}
+							{...listeners}
+							aria-label={t("admin.categories.order.reorder")}
+							className="grid size-9 cursor-grab touch-none place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-40"
+							disabled={dragDisabled}
+							type="button"
+						>
+							<LuGripVertical className="size-4" />
+						</button>
+					</Tooltip>
+				</td>
+			)}
 			<td className="w-56 px-4 py-3 font-medium">
 				{editing ? (
 					<div className="grid">
@@ -142,8 +145,9 @@ export function CategoryRow({ category, dragDisabled }: CategoryRowProps) {
 					</>
 				)}
 			</td>
-			<td className="w-56 px-4 py-3 text-right">
-				<div className="flex justify-end gap-2">
+			{canManage && (
+				<td className="w-56 px-4 py-3 text-right">
+					<div className="flex justify-end gap-2">
 					{editing ? (
 						<>
 							<Button disabled={isPending} onClick={cancel} size="sm" type="button" variant="outline">
@@ -173,8 +177,9 @@ export function CategoryRow({ category, dragDisabled }: CategoryRowProps) {
 							</ConfirmActionButton>
 						</>
 					)}
-				</div>
-			</td>
+					</div>
+				</td>
+			)}
 		</tr>
 	);
 }

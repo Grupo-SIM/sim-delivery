@@ -17,7 +17,9 @@ import {
 	useGetReportsDashboardAnalytics,
 	useGetReportsSummary,
 } from "@/lib/api";
+import { isAttendant } from "@/lib/staff-guard";
 import { showToast } from "@/stores";
+import { useAuthStore } from "@/stores/auth";
 import {
 	DashboardDateRangePicker,
 	DashboardDeliveryRadiusTable,
@@ -32,6 +34,8 @@ function formatCents(cents: number): string {
 
 function AdminDashboardPage() {
 	const { t } = useTranslation();
+	const role = useAuthStore(state => state.role);
+	const attendant = isAttendant(role);
 	const [period, setPeriod] = useState<DashboardPeriodSelection>("month");
 	const [groupBy, setGroupBy] = useState<GetReportsDashboardAnalytics200GroupByEnumKey | "auto">("auto");
 	const [dateRange, setDateRange] = useState<{ endDate: string; startDate: string } | null>(null);
@@ -135,9 +139,11 @@ function AdminDashboardPage() {
 						value={dateRange}
 					/>
 					<DashboardUnitPicker onChange={setUnitId} value={unitId} />
-					<Button disabled={isExporting} onClick={handleExport} type="button" variant="outline">
-						{isExporting ? t("admin.reports.export.pending") : t("admin.reports.export.button")}
-					</Button>
+					{!attendant && (
+						<Button disabled={isExporting} onClick={handleExport} type="button" variant="outline">
+							{isExporting ? t("admin.reports.export.pending") : t("admin.reports.export.button")}
+						</Button>
+					)}
 				</div>
 			</div>
 

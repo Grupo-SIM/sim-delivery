@@ -40,8 +40,9 @@ export const ReportsController = new Elysia({ prefix: "/reports" })
 		"/summary",
 		async ({ query, request }) => {
 			const scope = await CompanyScopeGuard.execute(request.headers);
-			CompanyScopeGuard.authorize(scope, "reports", "read");
-			return getRevenueSummary.execute(scope.companyId, query);
+			CompanyScopeGuard.authorize(scope, "reports", "dashboard");
+			if (query.unitId) CompanyScopeGuard.authorizeUnit(scope, query.unitId);
+			return getRevenueSummary.execute(scope.companyId, query, CompanyScopeGuard.permittedUnitIds(scope));
 		},
 		{ query: GetReportsQuery, response: RevenueSummaryReturn },
 	)
@@ -49,8 +50,9 @@ export const ReportsController = new Elysia({ prefix: "/reports" })
 		"/dashboard-analytics",
 		async ({ query, request }) => {
 			const scope = await CompanyScopeGuard.execute(request.headers);
-			CompanyScopeGuard.authorize(scope, "reports", "read");
-			return getDashboardAnalytics.execute(scope.companyId, query);
+			CompanyScopeGuard.authorize(scope, "reports", "dashboard");
+			if (query.unitId) CompanyScopeGuard.authorizeUnit(scope, query.unitId);
+			return getDashboardAnalytics.execute(scope.companyId, query, CompanyScopeGuard.permittedUnitIds(scope));
 		},
 		{ query: GetDashboardAnalyticsQuery, response: DashboardAnalyticsReturn },
 	)
@@ -59,7 +61,8 @@ export const ReportsController = new Elysia({ prefix: "/reports" })
 		async ({ query, request }) => {
 			const scope = await CompanyScopeGuard.execute(request.headers);
 			CompanyScopeGuard.authorize(scope, "reports", "read");
-			return getFinancialAnalytics.execute(scope.companyId, query);
+			if (query.unitId) CompanyScopeGuard.authorizeUnit(scope, query.unitId);
+			return getFinancialAnalytics.execute(scope.companyId, query, CompanyScopeGuard.permittedUnitIds(scope));
 		},
 		{ query: GetDashboardAnalyticsQuery, response: FinancialAnalyticsReturn },
 	)
@@ -68,7 +71,8 @@ export const ReportsController = new Elysia({ prefix: "/reports" })
 		async ({ query, request }) => {
 			const scope = await CompanyScopeGuard.execute(request.headers);
 			CompanyScopeGuard.authorize(scope, "reports", "read");
-			return getBusinessMetrics.execute(scope.companyId, query);
+			if (query.unitId) CompanyScopeGuard.authorizeUnit(scope, query.unitId);
+			return getBusinessMetrics.execute(scope.companyId, query, CompanyScopeGuard.permittedUnitIds(scope));
 		},
 		{ query: GetDashboardAnalyticsQuery, response: BusinessMetricsReturn },
 	)
@@ -77,7 +81,8 @@ export const ReportsController = new Elysia({ prefix: "/reports" })
 		async ({ query, request }) => {
 			const scope = await CompanyScopeGuard.execute(request.headers);
 			CompanyScopeGuard.authorize(scope, "reports", "read");
-			return getProductProfitability.execute(scope.companyId, query);
+			if (query.unitId) CompanyScopeGuard.authorizeUnit(scope, query.unitId);
+			return getProductProfitability.execute(scope.companyId, query, CompanyScopeGuard.permittedUnitIds(scope));
 		},
 		{ query: GetReportsQuery, response: ProductProfitabilityReturn },
 	)
@@ -85,8 +90,9 @@ export const ReportsController = new Elysia({ prefix: "/reports" })
 		"/best-sellers",
 		async ({ query, request }) => {
 			const scope = await CompanyScopeGuard.execute(request.headers);
-			CompanyScopeGuard.authorize(scope, "reports", "read");
-			return getBestSellers.execute(scope.companyId, query);
+			CompanyScopeGuard.authorize(scope, "reports", "dashboard");
+			if (query.unitId) CompanyScopeGuard.authorizeUnit(scope, query.unitId);
+			return getBestSellers.execute(scope.companyId, query, 10, CompanyScopeGuard.permittedUnitIds(scope));
 		},
 		{ query: GetReportsQuery, response: BestSellersReturn },
 	)
@@ -95,7 +101,8 @@ export const ReportsController = new Elysia({ prefix: "/reports" })
 		async ({ query, request, set }) => {
 			const scope = await CompanyScopeGuard.execute(request.headers);
 			CompanyScopeGuard.authorize(scope, "reports", "read");
-			const workbook = await exportReports.execute(scope.companyId, query);
+			if (query.unitId) CompanyScopeGuard.authorizeUnit(scope, query.unitId);
+			const workbook = await exportReports.execute(scope.companyId, query, CompanyScopeGuard.permittedUnitIds(scope));
 			const today = new Date().toISOString().slice(0, 10);
 			set.headers["content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 			set.headers["content-disposition"] = `attachment; filename="relatorio-${today}.xlsx"`;

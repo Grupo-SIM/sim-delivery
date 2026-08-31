@@ -13,7 +13,9 @@ export class ListOrders {
 	): Promise<AdminOrderListReturn> {
 		const { customerId, deliveryMethod, from, hasCoupon, search, status, to, unitId } = query;
 		const staffUnitScope =
-			(role === "courier" || role === "kitchen") && userId ? { staffUnits: { some: { userId } } } : {};
+			role !== undefined && !["owner", "superAdmin"].includes(role) && userId
+				? { staffUnits: { some: { userId } } }
+				: {};
 		const shiftStarts =
 			!from && !to
 				? await this.prisma.unit.findMany({
@@ -56,7 +58,7 @@ export class ListOrders {
 			orderBy: { createdAt: "desc" },
 			where: {
 				...(companyId ? { companyId } : {}),
-				...((role === "courier" || role === "kitchen") && userId
+				...(role !== undefined && !["owner", "superAdmin"].includes(role) && userId
 					? {
 							...(role === "courier" ? { deliveryMethod: "delivery" } : {}),
 							unit: staffUnitScope,

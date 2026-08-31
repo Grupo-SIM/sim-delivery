@@ -75,4 +75,9 @@ export abstract class CompanyScopeGuard {
 	static authorizeUnits(scope: CompanyScopeReturn, unitIds: string[]): void {
 		for (const unitId of unitIds) this.authorizeUnit(scope, unitId);
 	}
+
+	/** Non-owner staff is always restricted to explicitly assigned units. */
+	static permittedUnitIds(scope: CompanyScopeReturn): string[] | undefined {
+		return ["owner", "superAdmin"].includes(scope.role) ? undefined : scope.unitIds;
+	}
 }

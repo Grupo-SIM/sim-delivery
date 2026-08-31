@@ -27,7 +27,10 @@ function makeRevenuePrisma(
 					row =>
 						(where.companyId === undefined || row.companyId === where.companyId) &&
 						status.in.includes(row.status) &&
-						(where.unitId === undefined || row.unitId === where.unitId) &&
+						(where.unitId === undefined ||
+							(where.unitId instanceof Object && "in" in where.unitId
+								? (where.unitId.in as string[]).includes(row.unitId)
+								: row.unitId === where.unitId)) &&
 						(createdAt === undefined || row.createdAt >= createdAt.gte),
 				);
 
@@ -143,6 +146,17 @@ describe("GetRevenueSummary", () => {
 		const result = await new GetRevenueSummary(prisma).execute("cmp_1", { unitId: "unit_2" });
 
 		expect(result).toMatchObject({ averageOrderValue: 4000, orderCount: 1, totalRevenue: 4000 });
+	});
+
+	it("scopes a unit-assigned employee to every permitted unit", async () => {
+		const { prisma } = makeRevenuePrisma([
+			{ companyId: "cmp_1", createdAt: now, status: "entregue", total: 1000, unitId: "unit_1" },
+			{ companyId: "cmp_1", createdAt: now, status: "entregue", total: 4000, unitId: "unit_2" },
+		]);
+
+		const result = await new GetRevenueSummary(prisma).execute("cmp_1", {}, ["unit_1"]);
+
+		expect(result).toMatchObject({ averageOrderValue: 1000, orderCount: 1, totalRevenue: 1000 });
 	});
 
 	it("keeps only today's orders for the today period", async () => {

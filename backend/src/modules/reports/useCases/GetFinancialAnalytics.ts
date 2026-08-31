@@ -186,7 +186,7 @@ export class GetFinancialAnalytics {
 		const previousSince = since && duration ? new Date(since.getTime() - duration) : undefined;
 		const previousUntil = since;
 		const groupBy = query.groupBy ?? "dayOfMonth";
-		const unitIds = permittedUnitIds?.length ? permittedUnitIds : undefined;
+		const unitIds = permittedUnitIds;
 		if (query.unitId && unitIds && !unitIds.includes(query.unitId))
 			return this.empty(groupBy, since, now, until);
 		const unitFilter = query.unitId ? { unitId: query.unitId } : unitIds ? { unitId: { in: unitIds } } : {};

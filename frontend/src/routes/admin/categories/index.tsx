@@ -5,11 +5,15 @@ import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { canManageCatalog } from "@/lib/staff-guard";
 import { useGetCategories } from "@/lib/api";
+import { useAuthStore } from "@/stores";
 import { CategoriesTable, CreateCategoryForm } from "./components";
 
 function CategoriesPage() {
 	const { t } = useTranslation();
+	const role = useAuthStore(state => state.role);
+	const canManage = canManageCatalog(role);
 	const { data: categories, isError, isPending } = useGetCategories();
 	const [search, setSearch] = useState("");
 
@@ -28,7 +32,7 @@ function CategoriesPage() {
 		<Container className="space-y-6 py-6 sm:py-8">
 			<SectionHeading subtitle={t("admin.categories.subtitle")} title={t("admin.categories.title")} />
 
-			<CreateCategoryForm />
+			{canManage && <CreateCategoryForm />}
 
 			{isPending ? (
 				<Skeleton className="h-40 w-full" />
@@ -36,6 +40,7 @@ function CategoriesPage() {
 				<ErrorState title={t("admin.categories.loadError")} />
 			) : (
 				<CategoriesTable
+					canManage={canManage}
 					categories={categories}
 					onSearchChange={setSearch}
 					search={search}

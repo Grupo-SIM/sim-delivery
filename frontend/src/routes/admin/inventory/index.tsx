@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
 	LuArrowDownToLine,
@@ -30,8 +30,9 @@ import {
 	useGetUnits,
 	usePatchInventoryItemsByItemId,
 } from "@/lib/api";
+import { canAccessAllUnits, canManageInventory } from "@/lib/staff-guard";
 import { cn } from "@/lib/utils";
-import { showAlert, showToast } from "@/stores";
+import { showAlert, showToast, useAuthStore } from "@/stores";
 import { CreateInventoryItemModal, InventoryMovementModal } from "./components";
 
 const money = new Intl.NumberFormat("pt-BR", { currency: "BRL", style: "currency" });
@@ -65,6 +66,9 @@ export function groupInventoryItems(items: InventoryOverviewItem[]): InventoryIt
 
 function InventoryPage() {
 	const { t } = useTranslation();
+	const role = useAuthStore(state => state.role);
+	const canManage = canManageInventory(role);
+	const canViewAllUnits = canAccessAllUnits(role);
 	const queryClient = useQueryClient();
 	const [unitId, setUnitId] = useState("");
 	const [status, setStatus] = useState<"all" | "low" | "negative" | "no_history">("all");
@@ -78,6 +82,11 @@ function InventoryPage() {
 		unitId: string;
 	} | null>(null);
 	const { data: units = [] } = useGetUnits();
+
+	useEffect(() => {
+		if (canViewAllUnits || units.length === 0 || units.some(unit => unit.id === unitId)) return;
+		setUnitId(units[0].id);
+	}, [canViewAllUnits, unitId, units]);
 	const { data, isError, isPending } = useGetInventoryOverview({
 		search: search || undefined,
 		status,
@@ -118,16 +127,18 @@ function InventoryPage() {
 		<Container className="space-y-6 py-8">
 			<div className="flex flex-wrap items-start justify-between gap-3">
 				<SectionHeading subtitle={t("admin.inventory.subtitle")} title={t("admin.inventory.title")} />
-				<div className="flex gap-2">
-					<Button onClick={() => setItemOpen(true)} type="button" variant="outline">
-						<LuPackagePlus />
-						{t("admin.inventory.addItem")}
-					</Button>
-					<Button onClick={() => setMovementOpen(true)} type="button">
-						<LuPlus />
-						{t("admin.inventory.addMovement")}
-					</Button>
-				</div>
+				{canManage && (
+					<div className="flex gap-2">
+						<Button onClick={() => setItemOpen(true)} type="button" variant="outline">
+							<LuPackagePlus />
+							{t("admin.inventory.addItem")}
+						</Button>
+						<Button onClick={() => setMovementOpen(true)} type="button">
+							<LuPlus />
+							{t("admin.inventory.addMovement")}
+						</Button>
+					</div>
+				)}
 			</div>
 			<div className="grid gap-3 md:grid-cols-3">
 				<TextField
@@ -141,7 +152,7 @@ function InventoryPage() {
 					<CustomSelect
 						onChange={setUnitId}
 						options={[
-							{ label: t("admin.inventory.filters.allUnits"), value: "" },
+							...(canViewAllUnits ? [{ label: t("admin.inventory.filters.allUnits"), value: "" }] : []),
 							...units.map(unit => ({ label: unit.name, value: unit.id })),
 						]}
 						value={unitId}
@@ -225,21 +236,23 @@ function InventoryPage() {
 															: t("admin.inventory.item.unitCount_other", { count: group.items.length })}
 													</span>
 												</button>
-												<ConfirmActionButton
-													aria-label={t("admin.inventory.item.delete")}
-													confirmation={t("admin.inventory.item.deleteConfirm", {
-														name: group.inventoryItemName,
-													})}
-													confirmLabel={t("admin.inventory.item.delete")}
-													disabled={deactivate.isPending}
-													idleIcon={<LuTrash2 className="size-4" />}
-													onConfirm={() => deactivateItem(group.inventoryItemId)}
-													size="icon"
-													type="button"
-													variant="outline"
-												>
-													{null}
-												</ConfirmActionButton>
+										{canManage && (
+											<ConfirmActionButton
+												aria-label={t("admin.inventory.item.delete")}
+												confirmation={t("admin.inventory.item.deleteConfirm", {
+													name: group.inventoryItemName,
+												})}
+												confirmLabel={t("admin.inventory.item.delete")}
+												disabled={deactivate.isPending}
+												idleIcon={<LuTrash2 className="size-4" />}
+												onConfirm={() => deactivateItem(group.inventoryItemId)}
+												size="icon"
+												type="button"
+												variant="outline"
+											>
+												{null}
+											</ConfirmActionButton>
+										)}
 											</div>
 										</td>
 									</tr>
@@ -263,7 +276,8 @@ function InventoryPage() {
 															})}
 												</td>
 												<td className="px-4 py-3">
-													<div className="flex justify-end gap-2">
+													{canManage && (
+														<div className="flex justify-end gap-2">
 														<Tooltip content={t("admin.inventory.actions.registerEntry")}>
 															<Button
 																aria-label={t("admin.inventory.actions.registerEntry")}
@@ -298,7 +312,8 @@ function InventoryPage() {
 																<LuArrowUpFromLine />
 															</Button>
 														</Tooltip>
-													</div>
+														</div>
+													)}
 												</td>
 											</tr>
 										))}
@@ -309,15 +324,19 @@ function InventoryPage() {
 					})}
 				</DataTable>
 			)}
-			<CreateInventoryItemModal isOpen={itemOpen} onClose={() => setItemOpen(false)} />
-			<InventoryMovementModal isOpen={movementOpen} onClose={() => setMovementOpen(false)} />
-			<InventoryMovementModal
-				initialInventoryItemId={quickMovement?.inventoryItemId}
-				initialType={quickMovement?.type}
-				initialUnitId={quickMovement?.unitId}
-				isOpen={quickMovement !== null}
-				onClose={() => setQuickMovement(null)}
-			/>
+			{canManage && (
+				<>
+					<CreateInventoryItemModal isOpen={itemOpen} onClose={() => setItemOpen(false)} />
+					<InventoryMovementModal isOpen={movementOpen} onClose={() => setMovementOpen(false)} />
+					<InventoryMovementModal
+						initialInventoryItemId={quickMovement?.inventoryItemId}
+						initialType={quickMovement?.type}
+						initialUnitId={quickMovement?.unitId}
+						isOpen={quickMovement !== null}
+						onClose={() => setQuickMovement(null)}
+					/>
+				</>
+			)}
 		</Container>
 	);
 }

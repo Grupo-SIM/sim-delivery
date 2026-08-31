@@ -6,11 +6,15 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
+import { canManageCatalog } from "@/lib/staff-guard";
 import { useGetProducts } from "@/lib/api";
+import { useAuthStore } from "@/stores";
 import { CreateProductForm, ProductsTable } from "./components";
 
 function ProductsPage() {
 	const { t } = useTranslation();
+	const role = useAuthStore(state => state.role);
+	const canManage = canManageCatalog(role);
 	const { data: products, isError, isPending } = useGetProducts();
 	const [search, setSearch] = useState("");
 
@@ -25,7 +29,7 @@ function ProductsPage() {
 		<Container className="space-y-6 py-6 sm:py-8">
 			<SectionHeading subtitle={t("admin.products.catalogSubtitle")} title={t("admin.products.title")} />
 
-			<CreateProductForm />
+			{canManage && <CreateProductForm />}
 
 			<div className="max-w-sm">
 				<TextField
@@ -41,7 +45,7 @@ function ProductsPage() {
 			) : isError ? (
 				<ErrorState title={t("admin.products.loadError")} />
 			) : (
-				<ProductsTable products={filteredProducts ?? []} />
+				<ProductsTable canManage={canManage} products={filteredProducts ?? []} />
 			)}
 		</Container>
 	);

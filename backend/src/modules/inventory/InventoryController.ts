@@ -28,7 +28,7 @@ export const InventoryController = new Elysia({ detail: { tags: ["Inventory"] } 
 				async ({ inventory, query, request }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "inventory", "read");
-					return inventory.listItems(scope.companyId!, query);
+					return inventory.listItems(scope.companyId!, query, CompanyScopeGuard.permittedUnitIds(scope));
 				},
 				{ query: ListInventoryItemsQuery, response: InventoryItemsReturn },
 			)
@@ -73,7 +73,8 @@ export const InventoryController = new Elysia({ detail: { tags: ["Inventory"] } 
 				async ({ inventory, query, request }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "inventory", "read");
-					return inventory.overview(scope.companyId!, query);
+					if (query.unitId) CompanyScopeGuard.authorizeUnit(scope, query.unitId);
+					return inventory.overview(scope.companyId!, query, CompanyScopeGuard.permittedUnitIds(scope));
 				},
 				{ query: InventoryOverviewQuery, response: InventoryOverviewReturn },
 			)
@@ -82,7 +83,8 @@ export const InventoryController = new Elysia({ detail: { tags: ["Inventory"] } 
 				async ({ inventory, query, request }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "inventory", "read");
-					return inventory.listMovements(scope.companyId!, query);
+					if (query.unitId) CompanyScopeGuard.authorizeUnit(scope, query.unitId);
+					return inventory.listMovements(scope.companyId!, query, CompanyScopeGuard.permittedUnitIds(scope));
 				},
 				{ query: ListInventoryMovementsQuery, response: InventoryMovementsReturn },
 			)
@@ -91,6 +93,7 @@ export const InventoryController = new Elysia({ detail: { tags: ["Inventory"] } 
 				async ({ body, inventory, request }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "inventory", "create");
+					CompanyScopeGuard.authorizeUnit(scope, body.unitId);
 					return inventory.createMovement(scope.companyId!, scope.userId, body);
 				},
 				{ body: CreateInventoryMovementBody, response: InventoryMovementReturn },

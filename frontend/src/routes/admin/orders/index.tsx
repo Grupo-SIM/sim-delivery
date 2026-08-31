@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Container } from "@/components/ui/Container";
 import { CustomSelect } from "@/components/ui/CustomSelect";
@@ -8,6 +8,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
 import { useGetOrders, useGetUnits } from "@/lib/api";
+import { canAccessAllUnits } from "@/lib/staff-guard";
 import { useAuthStore } from "@/stores";
 import { DashboardDateRangePicker } from "../components/DashboardDateRangePicker";
 import { OrdersKanban } from "./components";
@@ -40,6 +41,13 @@ function OrdersPage() {
 	const [dateRange, setDateRange] = useState<{ endDate: string; startDate: string } | null>(null);
 	const [unitId, setUnitId] = useState("");
 	const unitsQuery = useGetUnits();
+	const canViewAllUnits = canAccessAllUnits(role);
+
+	useEffect(() => {
+		const units = unitsQuery.data ?? [];
+		if (canViewAllUnits || units.length === 0 || units.some(unit => unit.id === unitId)) return;
+		setUnitId(units[0].id);
+	}, [canViewAllUnits, unitId, unitsQuery.data]);
 
 	const {
 		data: orders,
@@ -83,7 +91,7 @@ function OrdersPage() {
 					<CustomSelect
 						onChange={setUnitId}
 						options={[
-							{ label: t("admin.orders.filter.unitAll"), value: "" },
+							...(canViewAllUnits ? [{ label: t("admin.orders.filter.unitAll"), value: "" }] : []),
 							...(unitsQuery.data?.map(unit => ({ label: unit.name, value: unit.id })) ?? []),
 						]}
 						value={unitId}
