@@ -187,6 +187,11 @@ export function ProductDetailsModal({
 				layer={layer}
 				maxWidth="1100px"
 				onClose={onClose}
+				closeConfirmation={{
+					confirmation: t("store.product.closeConfirmation"),
+					confirmLabel: t("common.actions.discard"),
+					tooltip: t("store.product.closeTooltip"),
+				}}
 				scrollable={false}
 				urlKey="product-details"
 				urlState={selectedItem.id}

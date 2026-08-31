@@ -6,33 +6,46 @@ import { Tooltip } from "@/components/ui/Tooltip";
 interface ConfirmActionButtonProps
 	extends Omit<ComponentPropsWithoutRef<typeof Button>, "children" | "onClick"> {
 	children: ReactNode;
+	confirming?: boolean;
 	confirmation: string;
 	confirmLabel: string;
 	confirmIcon?: ReactNode;
 	idleIcon?: ReactNode;
 	onConfirm: () => void;
+	onConfirmingChange?: (confirming: boolean) => void;
 	tooltip?: string;
 }
 
 /** Two-click destructive action with an anchored confirmation tooltip. */
 export function ConfirmActionButton({
 	children,
+	confirming: controlledConfirming,
 	confirmation,
 	confirmLabel,
 	confirmIcon,
 	idleIcon,
 	onConfirm,
+	onConfirmingChange,
 	tooltip,
 	...buttonProps
 }: ConfirmActionButtonProps) {
-	const [confirming, setConfirming] = useState(false);
+	const [uncontrolledConfirming, setUncontrolledConfirming] = useState(false);
+	const confirming = controlledConfirming ?? uncontrolledConfirming;
+
+	function setConfirming(next: boolean) {
+		if (controlledConfirming === undefined) setUncontrolledConfirming(next);
+		onConfirmingChange?.(next);
+	}
 
 	useEffect(() => {
 		if (!confirming) return;
 
-		const timeout = window.setTimeout(() => setConfirming(false), 3_000);
+		const timeout = window.setTimeout(() => {
+			if (controlledConfirming === undefined) setUncontrolledConfirming(false);
+			onConfirmingChange?.(false);
+		}, 3_000);
 		return () => window.clearTimeout(timeout);
-	}, [confirming]);
+	}, [confirming, controlledConfirming, onConfirmingChange]);
 
 	function handleClick() {
 		if (!confirming) {

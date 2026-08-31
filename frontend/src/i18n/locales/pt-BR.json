@@ -1715,6 +1715,8 @@
 				"chooseGroup": "Escolha {{group}}",
 				"chooseRange": "Escolha de {{min}} a {{max}}",
 				"chooseUpTo": "Escolha até {{count}}",
+				"closeConfirmation": "Descartar seleção deste produto?",
+				"closeTooltip": "Fechar seleção de produto",
 				"continueShopping": "Continuar comprando",
 				"from": "A partir de",
 				"goToCart": "Avançar para o carrinho",
