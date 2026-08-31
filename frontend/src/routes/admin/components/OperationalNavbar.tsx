@@ -10,6 +10,7 @@ export function OperationalNavbar() {
 			profileMenuLogoutTo="/identify"
 			profileMenuOnlyLogout
 			showBackToCustomerArea
+			staffAction="unitSelection"
 		/>
 	);
 }

@@ -8,6 +8,7 @@ import type { StorefrontBranding } from "./types";
 
 interface StorefrontHeaderProps {
 	branding?: StorefrontBranding;
+	staffAction?: "staffArea" | "unitSelection";
 	hideUnitChange?: boolean;
 	profileMenuOnlyLogout?: boolean;
 	profileMenuLogoutTo?: "/" | "/identify";
@@ -17,6 +18,7 @@ interface StorefrontHeaderProps {
 
 export function StorefrontHeader({
 	branding,
+	staffAction = "staffArea",
 	hideUnitChange = false,
 	profileMenuLogoutTo,
 	profileMenuOnlyLogout = false,
@@ -56,7 +58,15 @@ export function StorefrontHeader({
 							{t("store.unit.change")}
 						</Link>
 					)}
-					{isStaff(role) && (
+					{isStaff(role) && staffAction === "unitSelection" ? (
+						<Link
+							className="hidden cursor-pointer rounded-md border border-border px-3 py-2 font-semibold text-sm transition-colors hover:bg-muted sm:flex"
+							hash="unidades"
+							to="/"
+						>
+							{t("store.unit.change")}
+						</Link>
+					) : isStaff(role) ? (
 						<Link
 							className="hidden cursor-pointer rounded-md border border-border px-3 py-2 font-semibold text-sm transition-colors hover:bg-muted sm:flex"
 							to={staffAreaPath}
