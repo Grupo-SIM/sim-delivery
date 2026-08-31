@@ -13,11 +13,20 @@ import {
 	ProductOptionGroupsReturn,
 	ProductReturn,
 	SaveProductOptionGroupsBody,
+	UpdateProductAvailabilityBody,
+	UpdateProductAvailabilityReturn,
 	UpdateOptionBody,
 	UpdateOptionGroupBody,
 	UpdateProductBody,
 } from "../../dtos";
-import { CreateProduct, DeleteProduct, ListProducts, ProductOptions, UpdateProduct } from "../../useCases";
+import {
+	CreateProduct,
+	DeleteProduct,
+	ListProducts,
+	ProductOptions,
+	UpdateProduct,
+	UpdateProductAvailability,
+} from "../../useCases";
 
 export const ProductsController = new Elysia({
 	detail: {
@@ -38,6 +47,7 @@ export const ProductsController = new Elysia({
 				productOptions: new ProductOptions(prisma),
 				setProductUnits: new SetProductUnits(prisma),
 				updateProduct: new UpdateProduct(prisma),
+				updateProductAvailability: new UpdateProductAvailability(prisma),
 			}))
 			.get(
 				"/:productId/recipe",
@@ -165,6 +175,21 @@ export const ProductsController = new Elysia({
 					return createProduct.execute(scope.companyId, { ...body, unitIds });
 				},
 				{ body: CreateProductBody, response: ProductReturn },
+			)
+			.patch(
+				"/:productId/availability",
+				async ({ body, params, request, updateProductAvailability }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "menu", "updateAvailability");
+
+					return updateProductAvailability.execute(
+						scope.companyId,
+						params.productId,
+						body,
+						CompanyScopeGuard.permittedUnitIds(scope),
+					);
+				},
+				{ body: UpdateProductAvailabilityBody, response: UpdateProductAvailabilityReturn },
 			)
 			.patch(
 				"/:productId",

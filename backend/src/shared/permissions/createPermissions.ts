@@ -27,7 +27,7 @@ export function createPermissions(role: Role) {
 			customers: { read: true, update: true },
 			deliveries: { assign: true, read: true, updateStatus: true },
 			inventory: { create: true, read: true, update: true },
-			menu: { create: true, delete: true, read: true, update: true },
+			menu: { create: true, delete: true, read: true, update: true, updateAvailability: true },
 			orders: { create: true, print: true, read: true, updateStatus: true },
 			reports: { dashboard: true, read: true },
 			reviews: { create: true, read: true },
@@ -79,6 +79,7 @@ export function createPermissions(role: Role) {
 			delete: mgmt,
 			read: staffRead || isCustomer,
 			update: mgmt,
+			updateAvailability: mgmt || isAttendant,
 		},
 		orders: {
 			create: mgmt || isAttendant || isCustomer,
@@ -99,10 +100,10 @@ export function createPermissions(role: Role) {
 			setRole: mgmt,
 		},
 		units: {
-			create: mgmt,
-			delete: mgmt,
+			create: isOwner,
+			delete: isOwner,
 			read: staffRead || isCustomer,
-			update: mgmt,
+			update: isOwner,
 		},
 	});
 

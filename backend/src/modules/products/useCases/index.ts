@@ -3,3 +3,4 @@ export * from "./DeleteProduct";
 export * from "./ListProducts";
 export * from "./ProductOptions";
 export * from "./UpdateProduct";
+export * from "./UpdateProductAvailability";

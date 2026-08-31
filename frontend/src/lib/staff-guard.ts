@@ -4,7 +4,7 @@ import { showToast } from "@/stores";
 
 const staffRoles = new Set(["superAdmin", "owner", "manager", "attendant", "kitchen", "courier"]);
 const operationalRoles = new Set(["kitchen", "courier"]);
-const attendantPaths = ["/admin", "/admin/products", "/admin/categories", "/admin/tags", "/admin/orders", "/admin/inventory"];
+const attendantPaths = ["/admin", "/admin/products", "/admin/orders", "/admin/inventory"];
 
 /** Back-office roles, including operational kitchen and courier users, that may access /admin. */
 export function isStaff(role: string | null | undefined): boolean {
@@ -19,6 +19,10 @@ export function isAttendant(role: string | null | undefined): boolean {
 	return role === "attendant";
 }
 
+export function isManager(role: string | null | undefined): boolean {
+	return role === "manager";
+}
+
 export function canAccessAllUnits(role: string | null | undefined): boolean {
 	return role === "owner" || role === "superAdmin";
 }
@@ -31,9 +35,14 @@ export function canManageInventory(role: string | null | undefined): boolean {
 	return role === "owner" || role === "manager" || role === "superAdmin";
 }
 
+export function canToggleProductAvailability(role: string | null | undefined): boolean {
+	return canManageCatalog(role) || isAttendant(role);
+}
+
 export function canAccessAdminPath(role: string | null | undefined, pathname: string): boolean {
-	if (!isAttendant(role)) return true;
 	const normalizedPath = pathname.replace(/\/+$/, "") || "/";
+	if (isManager(role)) return normalizedPath !== "/admin/units" && !normalizedPath.startsWith("/admin/units/");
+	if (!isAttendant(role)) return true;
 	return attendantPaths.some(path =>
 		path === "/admin" ? normalizedPath === path : normalizedPath === path || normalizedPath.startsWith(`${path}/`),
 	);

@@ -39,6 +39,7 @@ describe("createPermissions matrix", () => {
 		expect(superAdmin.check("menu", "delete")).toBe(true);
 		expect(superAdmin.check("menu", "read")).toBe(true);
 		expect(superAdmin.check("menu", "update")).toBe(true);
+		expect(superAdmin.check("menu", "updateAvailability")).toBe(true);
 		expect(superAdmin.check("orders", "create")).toBe(true);
 		expect(superAdmin.check("orders", "print")).toBe(true);
 		expect(superAdmin.check("orders", "read")).toBe(true);
@@ -61,13 +62,16 @@ describe("createPermissions matrix", () => {
 		expect(createPermissions("manager").check("company", "delete")).toBe(false);
 	});
 
-	it("owner and manager get full store management", () => {
+	it("owner and manager manage store operations, while only owner manages units", () => {
 		for (const permix of [createPermissions("owner"), createPermissions("manager")]) {
-			expect(permix.check("units", "create")).toBe(true);
 			expect(permix.check("menu", "update")).toBe(true);
+			expect(permix.check("menu", "updateAvailability")).toBe(true);
 			expect(permix.check("reports", "read")).toBe(true);
 			expect(permix.check("staff", "invite")).toBe(true);
 		}
+		expect(createPermissions("owner").check("units", "create")).toBe(true);
+		expect(createPermissions("manager").check("units", "create")).toBe(false);
+		expect(createPermissions("manager").check("units", "update")).toBe(false);
 	});
 
 	it("only owner and superAdmin may update branding", () => {
@@ -82,7 +86,7 @@ describe("createPermissions matrix", () => {
 		expect(createPermissions("manager").check("staff", "inviteOwner")).toBe(false);
 	});
 
-	it("attendant accesses dashboard and inventory read-only, but not catalog or financial management", () => {
+	it("attendant pauses product sales but cannot edit the catalog or finances", () => {
 		const permix = createPermissions("attendant");
 		expect(permix.check("orders", "create")).toBe(true);
 		expect(permix.check("coupons", "apply")).toBe(true);
@@ -90,6 +94,7 @@ describe("createPermissions matrix", () => {
 		expect(permix.check("inventory", "read")).toBe(true);
 		expect(permix.check("inventory", "update")).toBe(false);
 		expect(permix.check("menu", "update")).toBe(false);
+		expect(permix.check("menu", "updateAvailability")).toBe(true);
 		expect(permix.check("reports", "dashboard")).toBe(true);
 		expect(permix.check("reports", "read")).toBe(false);
 	});

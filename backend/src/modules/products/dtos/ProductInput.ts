@@ -21,3 +21,8 @@ export const UpdateProductBody = t.Object({
 	title: t.Optional(t.String({ minLength: 1 })),
 });
 export type UpdateProductBody = typeof UpdateProductBody.static;
+
+export const UpdateProductAvailabilityBody = t.Object({
+	available: t.Boolean(),
+});
+export type UpdateProductAvailabilityBody = typeof UpdateProductAvailabilityBody.static;

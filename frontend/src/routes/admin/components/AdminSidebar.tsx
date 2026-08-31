@@ -21,7 +21,7 @@ import {
 	LuUsers,
 } from "react-icons/lu";
 import { ScrollArea } from "@/components/ui/ScrollArea";
-import { isAttendant } from "@/lib/staff-guard";
+import { isAttendant, isManager } from "@/lib/staff-guard";
 import { cn } from "@/lib/utils";
 import { isSuperAdmin, useAuthStore } from "@/stores/auth";
 
@@ -71,6 +71,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 	const { logout, role } = useAuthStore();
 	const navigate = useNavigate();
 	const attendant = isAttendant(role);
+	const manager = isManager(role);
 
 	async function handleLogout() {
 		await logout();
@@ -90,15 +91,19 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 					icon={LuPackage}
 					label={t("admin.products.title")}
 					onNavigate={onNavigate}
-					to={role === "manager" ? "/admin/units" : "/admin/products"}
+					to="/admin/products"
 				/>
-				<NavItem
-					icon={LuFolderTree}
-					label={t("admin.categories.title")}
-					onNavigate={onNavigate}
-					to="/admin/categories"
-				/>
-				<NavItem icon={LuTag} label={t("admin.tags.title")} onNavigate={onNavigate} to="/admin/tags" />
+				{!attendant && (
+					<>
+						<NavItem
+							icon={LuFolderTree}
+							label={t("admin.categories.title")}
+							onNavigate={onNavigate}
+							to="/admin/categories"
+						/>
+						<NavItem icon={LuTag} label={t("admin.tags.title")} onNavigate={onNavigate} to="/admin/tags" />
+					</>
+				)}
 			</NavGroup>
 
 			<NavGroup label={t("admin.dashboard.nav.operations")}>
@@ -148,7 +153,9 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 						onNavigate={onNavigate}
 						to="/admin/company"
 					/>
-					<NavItem icon={LuStore} label={t("admin.units.title")} onNavigate={onNavigate} to="/admin/units" />
+					{!manager && (
+						<NavItem icon={LuStore} label={t("admin.units.title")} onNavigate={onNavigate} to="/admin/units" />
+					)}
 					<NavItem icon={LuUsers} label={t("admin.staff.title")} onNavigate={onNavigate} to="/admin/staff" />
 				</NavGroup>
 			)}

@@ -10,8 +10,8 @@ escopada por `companyId`; permissões operacionais podem ainda ser escopadas por
 |---|---|---|
 | `superAdmin` | Operador da plataforma (você). Cria empresas, variantes, planos. | Cross-tenant (todas as empresas). |
 | `owner` | Dono da empresa. Acesso total ao próprio tenant. | 1 empresa (todas as unidades). |
-| `manager` | Gerente — quase tudo do `owner`, exceto branding/variante, gestão de outros donos e exclusão da empresa. | 1 empresa, obrigatoriamente 1..N unidades específicas. |
-| `attendant` | Atendente/caixa — acompanha pedidos, consulta catálogo, estoque e dashboard operacional. Sem acesso a relatórios financeiros nem edição de cardápio. | 1 empresa, obrigatoriamente 1..N unidades específicas. |
+| `manager` | Gerente — gerencia operação, catálogo e equipe no próprio escopo, sem administrar unidades, branding/variante, outros donos ou excluir empresa. | 1 empresa, obrigatoriamente 1..N unidades específicas. |
+| `attendant` | Atendente/caixa — acompanha pedidos, consulta catálogo, estoque e dashboard operacional; pode pausar ou retomar venda de produtos nas unidades atribuídas. Sem acesso a relatórios financeiros nem edição de cardápio. | 1 empresa, obrigatoriamente 1..N unidades específicas. |
 | `kitchen` | Cozinha — vê pedidos em preparo, muda status de produção. Sem finanças nem cadastro. | 1 empresa, obrigatoriamente 1..N unidades específicas. |
 | `courier` | Motoboy. Vê e atualiza suas entregas. | Entregas atribuídas. |
 | `customer` | Consumidor final (app). | Próprios pedidos/dados. |
@@ -28,8 +28,9 @@ Legenda: ✅ total · 🟡 limitado/escopado · ⛔ nenhum.
 |---|---|---|---|---|---|---|---|
 | Criar/editar empresa | ✅ | ⛔ | ⛔ | ⛔ | ⛔ | ⛔ | ⛔ |
 | Gerir variantes/branding | ✅ | ✅ | ⛔ | ⛔ | ⛔ | ⛔ | ⛔ |
-| Gerir unidades | ✅ | ✅ | ✅ | ⛔ | ⛔ | ⛔ | ⛔ |
+| Gerir unidades | ✅ | ✅ | ⛔ | ⛔ | ⛔ | ⛔ | ⛔ |
 | Gerir cardápio (produtos/categorias/tags) | ✅ | ✅ | ✅ | ⛔ | ⛔ | ⛔ | ⛔ |
+| Pausar/retomar venda de produto | ✅ | ✅ | ✅ | ✅ | ⛔ | ⛔ | ⛔ |
 | Gerir cupons/promoções | ✅ | ✅ | ✅ | 🟡 aplicar | ⛔ | ⛔ | ⛔ |
 | Ver/gerir pedidos | ✅ | ✅ | ✅ | ✅ | 🟡 produção | 🟡 entrega | 🟡 próprios |
 | Mudar status de pedido | ✅ | ✅ | ✅ | ✅ | 🟡 preparo | 🟡 entrega | ⛔ |
@@ -58,7 +59,7 @@ Esboço do schema:
 ```ts
 interface PermissionSchema extends PermixDefinition {
   units:      { action: "read" | "create" | "update" | "delete" };
-  menu:       { action: "read" | "create" | "update" | "delete" };
+  menu:       { action: "read" | "create" | "update" | "updateAvailability" | "delete" };
   orders:     { action: "read" | "create" | "updateStatus" };
   customers:  { action: "read" | "update" };
   staff:      { action: "read" | "invite" | "setRole" | "remove" };

@@ -54,12 +54,10 @@ describe("getStaffAreaPath", () => {
 });
 
 describe("canAccessAdminPath", () => {
-	it("limits attendants to dashboard, catalog, orders and inventory", () => {
+	it("limits attendants to dashboard, products, orders and inventory", () => {
 		for (const pathname of [
 			"/admin/",
 			"/admin/products/",
-			"/admin/categories/",
-			"/admin/tags/",
 			"/admin/orders/",
 			"/admin/inventory/",
 			"/admin/inventory/movements/",
@@ -67,9 +65,22 @@ describe("canAccessAdminPath", () => {
 			expect(canAccessAdminPath("attendant", pathname)).toBe(true);
 		}
 
-		for (const pathname of ["/admin/finance/", "/admin/customers/", "/admin/staff/", "/admin/units/"]) {
+		for (const pathname of [
+			"/admin/categories/",
+			"/admin/tags/",
+			"/admin/finance/",
+			"/admin/customers/",
+			"/admin/staff/",
+			"/admin/units/",
+		]) {
 			expect(canAccessAdminPath("attendant", pathname)).toBe(false);
 		}
+	});
+
+	it("blocks managers from unit routes", () => {
+		expect(canAccessAdminPath("manager", "/admin/units/")).toBe(false);
+		expect(canAccessAdminPath("manager", "/admin/units/unit_1/products/")).toBe(false);
+		expect(canAccessAdminPath("manager", "/admin/products/")).toBe(true);
 	});
 });
 
@@ -118,6 +129,12 @@ describe("requireStaffBeforeLoad", () => {
 		session = { data: { user: { role: "attendant" } } };
 
 		await expect(requireStaffBeforeLoad("/admin/finance/")).rejects.toMatchObject({ to: "/admin/" });
+	});
+
+	it("redirects managers away from unit pages", async () => {
+		session = { data: { user: { role: "manager" } } };
+
+		await expect(requireStaffBeforeLoad("/admin/units/")).rejects.toMatchObject({ to: "/admin/" });
 	});
 
 	it("lets attendants access their permitted pages", async () => {

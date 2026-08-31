@@ -4,6 +4,7 @@ import { CreateProduct } from "./CreateProduct";
 import { DeleteProduct } from "./DeleteProduct";
 import { ListProducts } from "./ListProducts";
 import { UpdateProduct } from "./UpdateProduct";
+import { UpdateProductAvailability } from "./UpdateProductAvailability";
 
 function prismaWith(
 	products: Array<{ id: string; companyId: string; [key: string]: unknown }>,
@@ -165,6 +166,33 @@ describe("products use-cases", () => {
 		const { prisma } = prismaWith([{ companyId: "cmp_1", id: "prod1" }]);
 		const product = await new UpdateProduct(prisma).execute(null, "prod1", { title: "X" });
 		expect(product).toMatchObject({ id: "prod1", title: "X" });
+	});
+
+	it("UpdateProductAvailability only changes associations in permitted units", async () => {
+		const calls: unknown[] = [];
+		const prisma = {
+			unitProduct: {
+				updateMany: async (args: unknown) => {
+					calls.push(args);
+					return { count: 1 };
+				},
+			},
+		} as unknown as PrismaInstance;
+
+		const result = await new UpdateProductAvailability(prisma).execute(
+			"cmp_1",
+			"prod_1",
+			{ available: false },
+			["unit_1"],
+		);
+
+		expect(result).toEqual({ updatedCount: 1 });
+		expect(calls).toEqual([
+			{
+				data: { available: false },
+				where: { productId: "prod_1", unit: { companyId: "cmp_1", id: { in: ["unit_1"] } } },
+			},
+		]);
 	});
 
 	it("DeleteProduct removes a product of the same company", async () => {

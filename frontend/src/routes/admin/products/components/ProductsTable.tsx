@@ -6,10 +6,11 @@ import { ProductRow } from "./ProductRow";
 
 interface ProductsTableProps {
 	canManage: boolean;
+	canToggleAvailability: boolean;
 	products: GetProducts200;
 }
 
-export function ProductsTable({ canManage, products }: ProductsTableProps) {
+export function ProductsTable({ canManage, canToggleAvailability, products }: ProductsTableProps) {
 	const { t } = useTranslation();
 
 	if (products.length === 0) {
@@ -32,12 +33,17 @@ export function ProductsTable({ canManage, products }: ProductsTableProps) {
 						{t("admin.products.columns.categories")}
 					</th>
 					<th className="whitespace-nowrap px-4 py-3 font-medium">{t("admin.products.columns.tags")}</th>
-					{canManage && <th className="px-4 py-3" />}
+					{(canManage || canToggleAvailability) && <th className="px-4 py-3" />}
 				</tr>
 			</thead>
 			<tbody>
 				{products.map(product => (
-					<ProductRow canManage={canManage} key={product.id} product={product} />
+					<ProductRow
+						canManage={canManage}
+						canToggleAvailability={canToggleAvailability}
+						key={product.id}
+						product={product}
+					/>
 				))}
 			</tbody>
 		</DataTable>

@@ -8,13 +8,20 @@ export class ListProducts {
 
 	async execute(companyId: string | null, role?: Role, userId?: string): Promise<ProductListReturn> {
 		const staffUserId = role !== undefined && !["owner", "superAdmin"].includes(role) ? userId : undefined;
-		const staffUnitScope = staffUserId
-				? { unitProducts: { some: { unit: { staffUnits: { some: { userId: staffUserId } } } } } }
-				: {};
+		const staffUnitScope = staffUserId ? { unit: { staffUnits: { some: { userId: staffUserId } } } } : undefined;
 		const products = await this.prisma.product.findMany({
-			include: productTaxonomyInclude,
+			include: {
+				...productTaxonomyInclude,
+				unitProducts: {
+					select: { available: true, id: true, unitId: true },
+					...(staffUnitScope ? { where: staffUnitScope } : {}),
+				},
+			},
 			orderBy: [{ title: "asc" }],
-			where: { ...(companyId ? { companyId } : {}), ...staffUnitScope },
+			where: {
+				...(companyId ? { companyId } : {}),
+				...(staffUnitScope ? { unitProducts: { some: staffUnitScope } } : {}),
+			},
 		});
 		return products.map(mapProductTaxonomy);
 	}

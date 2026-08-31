@@ -597,6 +597,13 @@
 				}
 			},
 			"products": {
+				"availability": {
+					"error": "Não foi possível atualizar a disponibilidade do produto.",
+					"pauseAction": "Pausar venda",
+					"pauseSuccess": "{{title}} foi pausado.",
+					"resumeAction": "Retomar venda",
+					"resumeSuccess": "{{title}} voltou à venda."
+				},
 				"catalogSubtitle": "Produtos, categorias e etiquetas desta empresa.",
 				"columns": {
 					"cashback": "Cashback",

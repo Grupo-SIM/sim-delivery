@@ -12,16 +12,18 @@ export const productTaxonomyInclude = {
 		select: { _count: { select: { options: true } }, id: true, name: true },
 	},
 	tags: { include: { tag: true } },
+	unitProducts: { select: { available: true, id: true, unitId: true } },
 } as const;
 
 type ProductTaxonomySource = Omit<
 	ProductReturn,
-	"categories" | "optionGroupCount" | "optionGroups" | "tags"
+	"categories" | "optionGroupCount" | "optionGroups" | "tags" | "unitAvailability"
 > & {
 	_count?: { optionGroups: number };
 	categories?: { category: ProductReturn["categories"][number] }[];
 	optionGroups?: { _count: { options: number }; id: string; name: string }[];
 	tags?: { tag: ProductReturn["tags"][number] }[];
+	unitProducts?: { available: boolean; id: string; unitId: string }[];
 };
 
 export function mapProductTaxonomy(product: ProductTaxonomySource): ProductReturn {
@@ -38,6 +40,9 @@ export function mapProductTaxonomy(product: ProductTaxonomySource): ProductRetur
 				}))
 			: [],
 		tags: Array.isArray(product.tags) ? product.tags.map(item => item.tag) : [],
+		unitAvailability: Array.isArray(product.unitProducts)
+			? product.unitProducts.map(({ available, id, unitId }) => ({ available, unitId, unitProductId: id }))
+			: [],
 	};
 }
 
