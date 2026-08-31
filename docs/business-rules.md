@@ -29,6 +29,24 @@ possui **N unidades** (lojas físicas). Detalhes em
 - **Cardápio** — conjunto de produtos/categorias que uma unidade oferece.
 - **Cashback** — crédito acumulado pelo cliente, resgatável em pedidos futuros.
 
+## Impressão de recibos de pedido
+
+- `superAdmin`, `owner`, `manager`, `attendant` e `kitchen` podem imprimir e reimprimir o
+  recibo de qualquer pedido visível ao seu escopo, independentemente do status.
+- `kitchen` só imprime pedidos das unidades às quais está atribuída. Pedido de outra
+  empresa ou unidade deve ser tratado como inexistente. `courier` e `customer` não podem
+  imprimir recibos administrativos.
+- Impressão é operação somente de leitura: não inicia preparo, não altera status e não
+  modifica pedido, pagamento ou responsável.
+- Recibo usa bobina de 80 mm e inclui identificação do pedido e unidade, status, data,
+  modalidade, cliente, contato, endereço de entrega, itens, opções, observações, pagamento,
+  descontos, créditos, total e responsável pelo preparo quando informado.
+- Entrega sem endereço mostra `ENDEREÇO NÃO INFORMADO`. Pagamento ausente mostra
+  `Pagamento não informado`. Campos opcionais vazios são omitidos.
+- Visualizador do navegador permanece aberto como fallback quando diálogo automático de
+  impressão não for permitido. Seleção da impressora, escala de 100% e configuração da
+  bobina de 80 mm pertencem ao navegador e ao driver local.
+
 ## Índice
 
 1. [Visão geral e domínio](01-visao-geral-e-dominio.md) — produto, tenancy, entidades.
