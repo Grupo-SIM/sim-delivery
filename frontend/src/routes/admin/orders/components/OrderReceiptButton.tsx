@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuPrinter } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { getOrdersByOrderIdReceipt } from "@/lib/api";
 import { showAlert } from "@/stores";
 import type { OrderReceiptLabels } from "../-order-receipt-pdf";
@@ -64,10 +65,13 @@ export function OrderReceiptButton({ orderId }: OrderReceiptButtonProps) {
 		}
 	}
 
+	const label = isPreparing ? t("admin.orders.receipt.preparing") : t("admin.orders.receipt.action");
+
 	return (
-		<Button disabled={isPreparing} onClick={() => void handlePrint()} size="sm" type="button" variant="outline">
-			<LuPrinter aria-hidden className="size-4" />
-			{isPreparing ? t("admin.orders.receipt.preparing") : t("admin.orders.receipt.action")}
-		</Button>
+		<Tooltip content={label}>
+			<Button aria-label={label} disabled={isPreparing} onClick={() => void handlePrint()} size="icon" type="button" variant="outline">
+				<LuPrinter aria-hidden className="size-4" />
+			</Button>
+		</Tooltip>
 	);
 }

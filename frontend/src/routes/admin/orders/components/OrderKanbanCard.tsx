@@ -48,7 +48,9 @@ export function OrderKanbanCard({
 
 	return (
 		<article
-			className={`rounded-md border border-border bg-card p-4 shadow-sm transition hover:border-primary/40 hover:shadow-md ${
+			className={`relative rounded-md border border-border bg-card p-4 shadow-sm transition hover:border-primary/40 hover:shadow-md ${
+				canPrint ? "pb-16" : ""
+			} ${
 				canDrag ? "cursor-grab active:cursor-grabbing" : "cursor-default"
 			}`}
 			draggable={canDrag}
@@ -99,10 +101,9 @@ export function OrderKanbanCard({
 				</div>
 			</button>
 
-			{(canPrint || (canManageAssignments && (canAssignCourier || canAssignKitchen))) && (
+			{canManageAssignments && (canAssignCourier || canAssignKitchen) && (
 				<div className="mt-4 flex flex-wrap gap-2 border-border border-t pt-3">
-					{canPrint && <OrderReceiptButton orderId={order.id} />}
-					{canManageAssignments && canAssignKitchen && (
+					{canAssignKitchen && (
 						<Button onClick={() => setAssignKitchenOpen(true)} size="sm" type="button" variant="outline">
 							<LuChefHat aria-hidden className="size-4" />
 							<span className="max-w-32 truncate">
@@ -110,7 +111,7 @@ export function OrderKanbanCard({
 							</span>
 						</Button>
 					)}
-					{canManageAssignments && canAssignCourier && (
+					{canAssignCourier && (
 						<Button onClick={() => setAssignOpen(true)} size="sm" type="button" variant="outline">
 							<LuBike aria-hidden className="size-4" />
 							<span className="max-w-32 truncate">
@@ -118,6 +119,11 @@ export function OrderKanbanCard({
 							</span>
 						</Button>
 					)}
+				</div>
+			)}
+			{canPrint && (
+				<div className="absolute right-4 bottom-4">
+					<OrderReceiptButton orderId={order.id} />
 				</div>
 			)}
 
