@@ -25,6 +25,8 @@ Listagem de clientes com **filtragem compreensiva**, incluindo informações de 
   **frequência de compra**, data do último pedido, saldo de cashback.
 - Busca por nome/CPF/email/telefone.
 - Cada cliente exibe **histórico de pedidos** e métricas (total gasto, cashback).
+- Pedidos cancelados antes da confirmação do pagamento não entram em histórico ou métricas
+  de cliente; somente uma listagem geral de pedidos pode exibi-los.
 
 Acesso: `owner`/`manager` (gestão), `attendant` (leitura). Ver [03](03-papeis-e-permissoes.md).
 

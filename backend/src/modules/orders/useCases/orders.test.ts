@@ -3,6 +3,7 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import { DisabledWhatsAppProvider } from "@/shared/infra/whatsapp";
 import { CreateOrder } from "./CreateOrder";
 import { GetCustomerOrder } from "./GetCustomerOrder";
+import { ListCustomerOrders } from "./ListCustomerOrders";
 import { ListOrders } from "./ListOrders";
 import { UpdateOrderStatus } from "./UpdateOrderStatus";
 
@@ -541,6 +542,71 @@ describe("ListOrders", () => {
 		const { prisma } = makeListOrdersPrisma();
 		const result = await new ListOrders(prisma).execute(null, {});
 		expect(result).toHaveLength(1);
+	});
+
+	it("excludes cancelled unpaid orders when listing one customer's history", async () => {
+		let where: unknown;
+		const prisma = {
+			order: {
+				findMany: async ({ where: nextWhere }: { where: unknown }) => {
+					where = nextWhere;
+					return [];
+				},
+			},
+			product: { findMany: async () => [] },
+			unit: { findMany: async () => [] },
+		} as unknown as PrismaInstance;
+
+		await new ListOrders(prisma).execute("cmp_1", { customerId: "cust_1" });
+
+		expect(where).toMatchObject({
+			NOT: {
+				AND: [
+					{ status: "cancelado" },
+					{
+						OR: [
+							{ payment: { is: null } },
+							{ payment: { is: { status: { not: "confirmed" } } } },
+						],
+					},
+				],
+			},
+			customerId: "cust_1",
+		});
+	});
+});
+
+describe("ListCustomerOrders", () => {
+	it("excludes cancelled unpaid orders from the customer's own order history", async () => {
+		let where: unknown;
+		const prisma = {
+			company: { findUnique: async () => ({ id: "cmp_1", slug: "demo" }) },
+			order: {
+				findMany: async ({ where: nextWhere }: { where: unknown }) => {
+					where = nextWhere;
+					return [];
+				},
+			},
+		} as unknown as PrismaInstance;
+
+		const result = await new ListCustomerOrders(prisma).execute("user_1", "demo");
+
+		expect(result).toEqual([]);
+		expect(where).toMatchObject({
+			NOT: {
+				AND: [
+					{ status: "cancelado" },
+					{
+						OR: [
+							{ payment: { is: null } },
+							{ payment: { is: { status: { not: "confirmed" } } } },
+						],
+					},
+				],
+			},
+			companyId: "cmp_1",
+			customer: { userId: "user_1" },
+		});
 	});
 });
 

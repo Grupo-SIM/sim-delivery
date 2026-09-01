@@ -231,6 +231,7 @@ describe("customers use-cases", () => {
 
 	describe("customer administration", () => {
 		it("scopes customer list by company and search", async () => {
+			let findManyArgs: unknown;
 			let where: unknown;
 			const prisma = {
 				customer: {
@@ -238,7 +239,9 @@ describe("customers use-cases", () => {
 						where = nextWhere;
 						return 0;
 					},
-					findMany: async ({ where: nextWhere }: { where: unknown }) => {
+					findMany: async (args: { where: unknown }) => {
+						findManyArgs = args;
+						const { where: nextWhere } = args;
 						where = nextWhere;
 						return [];
 					},
@@ -248,6 +251,74 @@ describe("customers use-cases", () => {
 			const result = await new ListCustomers(prisma).execute("cmp_1", { search: "maria" });
 			expect(result).toMatchObject({ items: [], page: 1, pageSize: 20, total: 0 });
 			expect(where).toMatchObject({ companyId: "cmp_1" });
+			expect(findManyArgs).toMatchObject({
+				include: {
+					orders: {
+						where: {
+							NOT: {
+								AND: [
+									{ status: "cancelado" },
+									{
+										OR: [
+											{ payment: { is: null } },
+											{ payment: { is: { status: { not: "confirmed" } } } },
+										],
+									},
+								],
+							},
+						},
+					},
+				},
+			});
+		});
+
+		it("excludes cancelled unpaid orders from customer detail metrics", async () => {
+			let findFirstArgs: unknown;
+			const prisma = {
+				customer: {
+					findFirst: async (args: unknown) => {
+						findFirstArgs = args;
+						return {
+							addresses: [],
+							cashbackLedger: [],
+							companyId: "cmp_1",
+							cpf: null,
+							createdAt: new Date(),
+							id: "cust_1",
+							notificationEmail: true,
+							notificationWhatsApp: true,
+							orders: [{ createdAt: new Date("2026-01-01"), total: 2500 }],
+							phone: null,
+							updatedAt: new Date(),
+							user: { email: "maria@example.com", name: "Maria" },
+							userId: "user_1",
+						};
+					},
+				},
+			} as unknown as PrismaInstance;
+
+			const result = await new GetCustomer(prisma).execute("cmp_1", "cust_1");
+
+			expect(result).toMatchObject({ averageTicket: 2500, orderCount: 1, totalSpent: 2500 });
+			expect(findFirstArgs).toMatchObject({
+				include: {
+					orders: {
+						where: {
+							NOT: {
+								AND: [
+									{ status: "cancelado" },
+									{
+										OR: [
+											{ payment: { is: null } },
+											{ payment: { is: { status: { not: "confirmed" } } } },
+										],
+									},
+								],
+							},
+						},
+					},
+				},
+			});
 		});
 
 		it("does not return a customer outside current company", async () => {

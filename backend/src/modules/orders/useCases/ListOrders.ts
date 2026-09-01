@@ -1,6 +1,7 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { Role } from "@/shared/permissions";
 import type { AdminOrderListReturn, ListOrdersQuery } from "../dtos";
+import { customerOrderFilter } from "../customer-order-filter";
 import { getCurrentBusinessShiftStart } from "./getCurrentBusinessShiftStart";
 
 export class ListOrders {
@@ -65,6 +66,7 @@ export class ListOrders {
 						}
 					: {}),
 				...(customerId ? { customerId } : {}),
+				...(customerId ? customerOrderFilter : {}),
 				...(deliveryMethod ? { deliveryMethod } : {}),
 				...(status ? { status } : {}),
 				...(unitId ? { unitId } : {}),

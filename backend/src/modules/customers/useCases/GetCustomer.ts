@@ -1,5 +1,6 @@
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
+import { customerOrderFilter } from "@/modules/orders/customer-order-filter";
 import type { CustomerAdminReturn } from "../dtos";
 import { CustomerErrors } from "../errors";
 
@@ -11,7 +12,11 @@ export class GetCustomer {
 			include: {
 				addresses: { orderBy: { isDefault: "desc" }, where: { deletedAt: null } },
 				cashbackLedger: { select: { amount: true } },
-				orders: { orderBy: { createdAt: "desc" }, select: { createdAt: true, total: true } },
+				orders: {
+					orderBy: { createdAt: "desc" },
+					select: { createdAt: true, total: true },
+					where: customerOrderFilter,
+				},
 				user: { select: { email: true, name: true } },
 			},
 			where: { ...(companyId ? { companyId } : {}), id: customerId },

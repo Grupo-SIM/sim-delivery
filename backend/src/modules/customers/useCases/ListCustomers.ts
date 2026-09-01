@@ -1,4 +1,5 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
+import { customerOrderFilter } from "@/modules/orders/customer-order-filter";
 import type { CustomerListReturn, ListCustomersQuery } from "../dtos";
 
 interface CustomerMetricSource {
@@ -43,7 +44,11 @@ export class ListCustomers {
 			this.prisma.customer.findMany({
 				include: {
 					cashbackLedger: { select: { amount: true } },
-					orders: { orderBy: { createdAt: "desc" }, select: { createdAt: true, total: true } },
+					orders: {
+						orderBy: { createdAt: "desc" },
+						select: { createdAt: true, total: true },
+						where: customerOrderFilter,
+					},
 					user: { select: { email: true, name: true } },
 				},
 				orderBy: { createdAt: "desc" },

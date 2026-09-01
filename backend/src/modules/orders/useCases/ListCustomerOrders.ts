@@ -2,6 +2,7 @@ import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CustomerOrderListReturn } from "../dtos";
 import { OrderErrors } from "../errors";
+import { customerOrderFilter } from "../customer-order-filter";
 
 export class ListCustomerOrders {
 	constructor(private readonly prisma: PrismaInstance) {}
@@ -16,7 +17,7 @@ export class ListCustomerOrders {
 				unit: { select: { name: true, slug: true } },
 			},
 			orderBy: { createdAt: "desc" },
-			where: { companyId: company.id, customer: { userId } },
+			where: { ...customerOrderFilter, companyId: company.id, customer: { userId } },
 		});
 
 		return orders.map(order => ({
