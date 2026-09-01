@@ -2,21 +2,22 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuPencil, LuTrash2 } from "react-icons/lu";
+import { AssociatedProducts, ProductAvailabilityBulkActions } from "@/components/products";
 import { Button } from "@/components/ui/button";
 import { ColorField } from "@/components/ui/ColorField";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Input } from "@/components/ui/input";
-import { AssociatedProducts } from "@/components/products";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { type GetTags200, getTagsQueryKey, useDeleteTagsByTagId, usePatchTagsByTagId } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 
 interface TagRowProps {
 	canManage: boolean;
+	canToggleAvailability: boolean;
 	tag: GetTags200[number];
 }
 
-export function TagRow({ canManage, tag }: TagRowProps) {
+export function TagRow({ canManage, canToggleAvailability, tag }: TagRowProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [editing, setEditing] = useState(false);
@@ -104,38 +105,42 @@ export function TagRow({ canManage, tag }: TagRowProps) {
 					viewLabel={t("admin.tags.products.viewButton", { count: tag.products.length })}
 				/>
 			</td>
-			{canManage && (
+			{(canManage || canToggleAvailability) && (
 				<td className="w-56 px-4 py-3 text-right">
 					<div className="flex justify-end gap-2">
-					{editing ? (
-						<>
-							<Button disabled={isPending} onClick={cancel} size="sm" type="button" variant="outline">
-								{t("admin.tags.edit.cancel")}
-							</Button>
-							<Button disabled={isPending || !localName.trim()} onClick={save} size="sm" type="button">
-								{isPending ? t("admin.tags.edit.saving") : t("admin.tags.edit.save")}
-							</Button>
-						</>
-					) : (
-						<>
-							<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
-								<LuPencil className="size-4" />
-								{t("admin.tags.edit.action")}
-							</Button>
-							<ConfirmActionButton
-								confirmation={t("admin.tags.row.deleteConfirm", { name: tag.name })}
-								confirmLabel={t("admin.tags.row.delete")}
-								disabled={remove.isPending}
-								idleIcon={<LuTrash2 className="size-4" />}
-								onConfirm={del}
-								size="sm"
-								type="button"
-								variant="outline"
-							>
-								{t("admin.tags.row.delete")}
-							</ConfirmActionButton>
-						</>
-					)}
+						{canToggleAvailability && tag.products.length > 0 && (
+							<ProductAvailabilityBulkActions scope={{ tagId: tag.id }} />
+						)}
+						{canManage &&
+							(editing ? (
+								<>
+									<Button disabled={isPending} onClick={cancel} size="sm" type="button" variant="outline">
+										{t("admin.tags.edit.cancel")}
+									</Button>
+									<Button disabled={isPending || !localName.trim()} onClick={save} size="sm" type="button">
+										{isPending ? t("admin.tags.edit.saving") : t("admin.tags.edit.save")}
+									</Button>
+								</>
+							) : (
+								<>
+									<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
+										<LuPencil className="size-4" />
+										{t("admin.tags.edit.action")}
+									</Button>
+									<ConfirmActionButton
+										confirmation={t("admin.tags.row.deleteConfirm", { name: tag.name })}
+										confirmLabel={t("admin.tags.row.delete")}
+										disabled={remove.isPending}
+										idleIcon={<LuTrash2 className="size-4" />}
+										onConfirm={del}
+										size="sm"
+										type="button"
+										variant="outline"
+									>
+										{t("admin.tags.row.delete")}
+									</ConfirmActionButton>
+								</>
+							))}
 					</div>
 				</td>
 			)}

@@ -4,7 +4,7 @@ import { showToast } from "@/stores";
 
 const staffRoles = new Set(["superAdmin", "owner", "manager", "attendant", "kitchen", "courier"]);
 const operationalRoles = new Set(["kitchen", "courier"]);
-const attendantPaths = ["/admin", "/admin/products", "/admin/orders", "/admin/inventory"];
+const attendantPaths = ["/admin", "/admin/products", "/admin/categories", "/admin/tags", "/admin/orders", "/admin/inventory"];
 
 /** Back-office roles, including operational kitchen and courier users, that may access /admin. */
 export function isStaff(role: string | null | undefined): boolean {
@@ -25,6 +25,11 @@ export function isManager(role: string | null | undefined): boolean {
 
 export function canAccessAllUnits(role: string | null | undefined): boolean {
 	return role === "owner" || role === "superAdmin";
+}
+
+/** Staff roles without catalog-wide control work on one assigned unit at a time. */
+export function requiresSelectedUnit(role: string | null | undefined): boolean {
+	return !!role && !["owner", "manager", "superAdmin"].includes(role);
 }
 
 export function canManageCatalog(role: string | null | undefined): boolean {
@@ -73,6 +78,6 @@ export async function requireStaffBeforeLoad(pathname?: string) {
 		throw redirect({ to: "/admin/orders" });
 	}
 	if (pathname && !canAccessAdminPath(role, pathname)) {
-		throw redirect({ to: "/admin/" });
+		throw redirect({ to: "/admin" });
 	}
 }

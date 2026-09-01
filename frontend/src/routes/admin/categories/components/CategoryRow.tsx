@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuGripVertical, LuPencil, LuTrash2 } from "react-icons/lu";
-import { AssociatedProducts } from "@/components/products";
+import { AssociatedProducts, ProductAvailabilityBulkActions } from "@/components/products";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Input } from "@/components/ui/input";
@@ -20,11 +20,12 @@ import { showAlert, showToast } from "@/stores";
 
 interface CategoryRowProps {
 	canManage: boolean;
+	canToggleAvailability: boolean;
 	category: GetCategories200[number];
 	dragDisabled: boolean;
 }
 
-export function CategoryRow({ canManage, category, dragDisabled }: CategoryRowProps) {
+export function CategoryRow({ canManage, canToggleAvailability, category, dragDisabled }: CategoryRowProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [editing, setEditing] = useState(false);
@@ -120,38 +121,42 @@ export function CategoryRow({ canManage, category, dragDisabled }: CategoryRowPr
 					viewLabel={t("admin.categories.products.viewButton", { count: category.products.length })}
 				/>
 			</td>
-			{canManage && (
+			{(canManage || canToggleAvailability) && (
 				<td className="w-56 px-4 py-3 text-right">
 					<div className="flex justify-end gap-2">
-					{editing ? (
-						<>
-							<Button disabled={isPending} onClick={cancel} size="sm" type="button" variant="outline">
-								{t("admin.categories.edit.cancel")}
-							</Button>
-							<Button disabled={isPending || !localName.trim()} onClick={save} size="sm" type="button">
-								{isPending ? t("admin.categories.edit.saving") : t("admin.categories.edit.save")}
-							</Button>
-						</>
-					) : (
-						<>
-							<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
-								<LuPencil className="size-4" />
-								{t("admin.categories.edit.action")}
-							</Button>
-							<ConfirmActionButton
-								confirmation={t("admin.categories.row.deleteConfirm", { name: category.name })}
-								confirmLabel={t("admin.categories.row.delete")}
-								disabled={remove.isPending}
-								idleIcon={<LuTrash2 className="size-4" />}
-								onConfirm={del}
-								size="sm"
-								type="button"
-								variant="outline"
-							>
-								{t("admin.categories.row.delete")}
-							</ConfirmActionButton>
-						</>
-					)}
+						{canToggleAvailability && category.products.length > 0 && (
+							<ProductAvailabilityBulkActions scope={{ categoryId: category.id }} />
+						)}
+						{canManage &&
+							(editing ? (
+								<>
+									<Button disabled={isPending} onClick={cancel} size="sm" type="button" variant="outline">
+										{t("admin.categories.edit.cancel")}
+									</Button>
+									<Button disabled={isPending || !localName.trim()} onClick={save} size="sm" type="button">
+										{isPending ? t("admin.categories.edit.saving") : t("admin.categories.edit.save")}
+									</Button>
+								</>
+							) : (
+								<>
+									<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
+										<LuPencil className="size-4" />
+										{t("admin.categories.edit.action")}
+									</Button>
+									<ConfirmActionButton
+										confirmation={t("admin.categories.row.deleteConfirm", { name: category.name })}
+										confirmLabel={t("admin.categories.row.delete")}
+										disabled={remove.isPending}
+										idleIcon={<LuTrash2 className="size-4" />}
+										onConfirm={del}
+										size="sm"
+										type="button"
+										variant="outline"
+									>
+										{t("admin.categories.row.delete")}
+									</ConfirmActionButton>
+								</>
+							))}
 					</div>
 				</td>
 			)}

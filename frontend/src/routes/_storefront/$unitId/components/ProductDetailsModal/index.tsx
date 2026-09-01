@@ -189,7 +189,7 @@ export function ProductDetailsModal({
 				onClose={onClose}
 				closeConfirmation={{
 					confirmation: t("store.product.closeConfirmation"),
-					confirmLabel: t("common.actions.discard"),
+					confirmLabel: t("actions.discard"),
 					tooltip: t("store.product.closeTooltip"),
 				}}
 				scrollable={false}

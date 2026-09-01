@@ -8,9 +8,10 @@ interface ProductsTableProps {
 	canManage: boolean;
 	canToggleAvailability: boolean;
 	products: GetProducts200;
+	selectedUnitId: string | null;
 }
 
-export function ProductsTable({ canManage, canToggleAvailability, products }: ProductsTableProps) {
+export function ProductsTable({ canManage, canToggleAvailability, products, selectedUnitId }: ProductsTableProps) {
 	const { t } = useTranslation();
 
 	if (products.length === 0) {
@@ -40,10 +41,11 @@ export function ProductsTable({ canManage, canToggleAvailability, products }: Pr
 				{products.map(product => (
 					<ProductRow
 						canManage={canManage}
-						canToggleAvailability={canToggleAvailability}
-						key={product.id}
-						product={product}
-					/>
+					canToggleAvailability={canToggleAvailability}
+					key={product.id}
+					product={product}
+					selectedUnitId={selectedUnitId}
+				/>
 				))}
 			</tbody>
 		</DataTable>

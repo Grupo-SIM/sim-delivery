@@ -26,7 +26,7 @@ export const TagsController = new Elysia({
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "menu", "read");
 
-					return listTags.execute(scope.companyId);
+					return listTags.execute(scope.companyId, scope.role, scope.userId);
 				},
 				{ response: TagListReturn },
 			)

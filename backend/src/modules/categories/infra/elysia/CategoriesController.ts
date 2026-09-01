@@ -39,7 +39,7 @@ export const CategoriesController = new Elysia({
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "menu", "read");
 
-					return listCategories.execute(scope.companyId);
+					return listCategories.execute(scope.companyId, scope.role, scope.userId);
 				},
 				{ response: CategoryListReturn },
 			)

@@ -4,7 +4,7 @@ import { CreateProduct } from "./CreateProduct";
 import { DeleteProduct } from "./DeleteProduct";
 import { ListProducts } from "./ListProducts";
 import { UpdateProduct } from "./UpdateProduct";
-import { UpdateProductAvailability } from "./UpdateProductAvailability";
+import { UpdateProductAvailability, UpdateProductsAvailability } from "./UpdateProductAvailability";
 
 function prismaWith(
 	products: Array<{ id: string; companyId: string; [key: string]: unknown }>,
@@ -191,6 +191,84 @@ describe("products use-cases", () => {
 			{
 				data: { available: false },
 				where: { productId: "prod_1", unit: { companyId: "cmp_1", id: { in: ["unit_1"] } } },
+			},
+		]);
+	});
+
+	it("UpdateProductAvailability only changes the selected unit", async () => {
+		const calls: unknown[] = [];
+		const prisma = {
+			unitProduct: {
+				updateMany: async (args: unknown) => {
+					calls.push(args);
+					return { count: 1 };
+				},
+			},
+		} as unknown as PrismaInstance;
+
+		await new UpdateProductAvailability(prisma).execute("cmp_1", "prod_1", { available: false }, ["unit_2"]);
+
+		expect(calls).toEqual([
+			{
+				data: { available: false },
+				where: { productId: "prod_1", unit: { companyId: "cmp_1", id: { in: ["unit_2"] } } },
+			},
+		]);
+	});
+
+	it("UpdateProductsAvailability scopes a category update to permitted units", async () => {
+		const calls: unknown[] = [];
+		const prisma = {
+			unitProduct: {
+				updateMany: async (args: unknown) => {
+					calls.push(args);
+					return { count: 2 };
+				},
+			},
+		} as unknown as PrismaInstance;
+
+		const result = await new UpdateProductsAvailability(prisma).execute(
+			"cmp_1",
+			{ available: false, categoryId: "cat_1" },
+			["unit_1"],
+		);
+
+		expect(result).toEqual({ updatedCount: 2 });
+		expect(calls).toEqual([
+			{
+				data: { available: false },
+				where: {
+					product: { categories: { some: { categoryId: "cat_1" } }, companyId: "cmp_1" },
+					unit: { companyId: "cmp_1", id: { in: ["unit_1"] } },
+				},
+			},
+		]);
+	});
+
+	it("UpdateProductsAvailability only changes the selected unit", async () => {
+		const calls: unknown[] = [];
+		const prisma = {
+			unitProduct: {
+				updateMany: async (args: unknown) => {
+					calls.push(args);
+					return { count: 2 };
+				},
+			},
+		} as unknown as PrismaInstance;
+
+		await new UpdateProductsAvailability(prisma).execute(
+			"cmp_1",
+			{ available: false, tagId: "tag_1" },
+			["unit_2"],
+		);
+
+		expect(calls).toEqual([
+			{
+				data: { available: false },
+				where: {
+					product: { companyId: "cmp_1", tags: { some: { tagId: "tag_1" } } },
+					unit: { companyId: "cmp_1", id: { in: ["unit_2"] } },
+				},
 			},
 		]);
 	});

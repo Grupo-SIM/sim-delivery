@@ -6,9 +6,9 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
-import { canManageCatalog, canToggleProductAvailability } from "@/lib/staff-guard";
+import { canManageCatalog, canToggleProductAvailability, requiresSelectedUnit } from "@/lib/staff-guard";
 import { useGetProducts } from "@/lib/api";
-import { useAuthStore } from "@/stores";
+import { useAdminSelectedUnitStore, useAuthStore } from "@/stores";
 import { CreateProductForm, ProductsTable } from "./components";
 
 function ProductsPage() {
@@ -16,6 +16,8 @@ function ProductsPage() {
 	const role = useAuthStore(state => state.role);
 	const canManage = canManageCatalog(role);
 	const canToggleAvailability = canToggleProductAvailability(role);
+	const selectedUnitId = useAdminSelectedUnitStore(state => state.unitId);
+	const needsUnitSelection = requiresSelectedUnit(role);
 	const { data: products, isError, isPending } = useGetProducts();
 	const [search, setSearch] = useState("");
 
@@ -50,6 +52,7 @@ function ProductsPage() {
 					canManage={canManage}
 					canToggleAvailability={canToggleAvailability}
 					products={filteredProducts ?? []}
+					selectedUnitId={needsUnitSelection ? selectedUnitId : null}
 				/>
 			)}
 		</Container>

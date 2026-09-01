@@ -17,8 +17,8 @@ import {
 	useGetReportsDashboardAnalytics,
 	useGetReportsSummary,
 } from "@/lib/api";
-import { isAttendant } from "@/lib/staff-guard";
-import { showToast } from "@/stores";
+import { isAttendant, requiresSelectedUnit } from "@/lib/staff-guard";
+import { showToast, useAdminSelectedUnitStore } from "@/stores";
 import { useAuthStore } from "@/stores/auth";
 import {
 	DashboardDateRangePicker,
@@ -26,6 +26,7 @@ import {
 	DashboardOrdersByPeriodChart,
 	type DashboardPeriodSelection,
 	DashboardUnitPicker,
+	AdminUnitPicker,
 } from "./components";
 
 function formatCents(cents: number): string {
@@ -36,11 +37,15 @@ function AdminDashboardPage() {
 	const { t } = useTranslation();
 	const role = useAuthStore(state => state.role);
 	const attendant = isAttendant(role);
+	const selectedUnitId = useAdminSelectedUnitStore(state => state.unitId);
+	const needsUnitSelection = requiresSelectedUnit(role);
 	const [period, setPeriod] = useState<DashboardPeriodSelection>("month");
 	const [groupBy, setGroupBy] = useState<GetReportsDashboardAnalytics200GroupByEnumKey | "auto">("auto");
 	const [dateRange, setDateRange] = useState<{ endDate: string; startDate: string } | null>(null);
-	const [unitId, setUnitId] = useState("");
+	const [dashboardUnitId, setDashboardUnitId] = useState("");
 	const [isExporting, setIsExporting] = useState(false);
+	const unitId = needsUnitSelection ? (selectedUnitId ?? "") : dashboardUnitId;
+	const queriesEnabled = !needsUnitSelection || Boolean(selectedUnitId);
 
 	const periodLabels: Record<DashboardPeriodSelection, string> = {
 		custom: t("admin.reports.period.custom"),
@@ -69,22 +74,31 @@ function AdminDashboardPage() {
 		data: summary,
 		isError: summaryError,
 		isPending: summaryPending,
-	} = useGetReportsSummary({ ...dateRange, ...(unitId ? { unitId } : {}), period: queryPeriod });
+	} = useGetReportsSummary(
+		{ ...dateRange, ...(unitId ? { unitId } : {}), period: queryPeriod },
+		{ query: { enabled: queriesEnabled } },
+	);
 	const {
 		data: bestSellers,
 		isError: bsError,
 		isPending: bsPending,
-	} = useGetReportsBestSellers({ ...dateRange, ...(unitId ? { unitId } : {}), period: queryPeriod });
+	} = useGetReportsBestSellers(
+		{ ...dateRange, ...(unitId ? { unitId } : {}), period: queryPeriod },
+		{ query: { enabled: queriesEnabled } },
+	);
 	const {
 		data: analytics,
 		isError: analyticsError,
 		isPending: analyticsPending,
-	} = useGetReportsDashboardAnalytics({
-		...dateRange,
-		...(groupBy === "auto" ? {} : { groupBy }),
-		...(unitId ? { unitId } : {}),
-		period: queryPeriod,
-	});
+	} = useGetReportsDashboardAnalytics(
+		{
+			...dateRange,
+			...(groupBy === "auto" ? {} : { groupBy }),
+			...(unitId ? { unitId } : {}),
+			period: queryPeriod,
+		},
+		{ query: { enabled: queriesEnabled } },
+	);
 	const {
 		data: allOrders,
 		isError: ordersError,
@@ -98,6 +112,7 @@ function AdminDashboardPage() {
 					...(unitId ? { unitId } : {}),
 				}
 			: undefined,
+		{ query: { enabled: queriesEnabled } },
 	);
 
 	const recentOrders = allOrders?.slice(0, 10) ?? [];
@@ -138,7 +153,7 @@ function AdminDashboardPage() {
 						presetValue={period}
 						value={dateRange}
 					/>
-					<DashboardUnitPicker onChange={setUnitId} value={unitId} />
+					{needsUnitSelection ? <AdminUnitPicker /> : <DashboardUnitPicker onChange={setDashboardUnitId} value={unitId} />}
 					{!attendant && (
 						<Button disabled={isExporting} onClick={handleExport} type="button" variant="outline">
 							{isExporting ? t("admin.reports.export.pending") : t("admin.reports.export.button")}
@@ -148,7 +163,7 @@ function AdminDashboardPage() {
 			</div>
 
 			{/* Stats */}
-			{summaryPending ? (
+			{!queriesEnabled || summaryPending ? (
 				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 					<Skeleton className="h-24" />
 					<Skeleton className="h-24" />
@@ -179,7 +194,7 @@ function AdminDashboardPage() {
 				</div>
 			)}
 
-			{analyticsPending ? (
+			{!queriesEnabled || analyticsPending ? (
 				<Skeleton className="h-72" />
 			) : analyticsError ? (
 				<ErrorState title={t("admin.reports.loadError")} />
@@ -196,7 +211,7 @@ function AdminDashboardPage() {
 
 			<div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
 				<div className="min-w-0">
-					{analyticsPending ? (
+					{!queriesEnabled || analyticsPending ? (
 						<Skeleton className="h-72" />
 					) : analyticsError ? (
 						<ErrorState title={t("admin.reports.loadError")} />
@@ -221,7 +236,7 @@ function AdminDashboardPage() {
 				{/* Best sellers */}
 				<div className="min-w-0">
 					<h2 className="mb-3 font-semibold text-base">{t("admin.reports.bestSellers.title")}</h2>
-					{bsPending ? (
+					{!queriesEnabled || bsPending ? (
 						<Skeleton className="h-40 w-full" />
 					) : bsError ? (
 						<ErrorState title={t("admin.reports.loadError")} />

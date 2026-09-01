@@ -25,6 +25,7 @@ import { CategoryRow } from "./CategoryRow";
 
 interface CategoriesTableProps {
 	canManage: boolean;
+	canToggleAvailability: boolean;
 	categories: GetCategories200;
 	onSearchChange: (value: string) => void;
 	search: string;
@@ -33,6 +34,7 @@ interface CategoriesTableProps {
 
 export function CategoriesTable({
 	canManage,
+	canToggleAvailability,
 	categories,
 	onSearchChange,
 	search,
@@ -74,6 +76,7 @@ export function CategoriesTable({
 					{canManage && <th className="px-2 py-3" />}
 					<th className="px-4 py-3 font-medium">{t("admin.categories.columns.name")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.categories.columns.products")}</th>
+					{(canManage || canToggleAvailability) && <th className="px-4 py-3" />}
 					<th className="px-4 py-3 font-medium">
 						<TextField
 							className="h-8"
@@ -95,13 +98,22 @@ export function CategoriesTable({
 					<tbody>
 						{visibleCategories.length === 0 ? (
 							<tr>
-								<td className="px-4 py-6 text-center text-muted-foreground" colSpan={canManage ? 4 : 3}>
+								<td
+									className="px-4 py-6 text-center text-muted-foreground"
+									colSpan={(canManage || canToggleAvailability ? 4 : 3) + (canManage ? 1 : 0)}
+								>
 									{t("admin.categories.searchEmpty")}
 								</td>
 							</tr>
 						) : (
 							visibleCategories.map(category => (
-								<CategoryRow canManage={canManage} category={category} dragDisabled={dragDisabled} key={category.id} />
+								<CategoryRow
+									canManage={canManage}
+									canToggleAvailability={canToggleAvailability}
+									category={category}
+									dragDisabled={dragDisabled}
+									key={category.id}
+								/>
 							))
 						)}
 					</tbody>

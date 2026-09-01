@@ -21,9 +21,10 @@ import {
 	LuUsers,
 } from "react-icons/lu";
 import { ScrollArea } from "@/components/ui/ScrollArea";
-import { isAttendant, isManager } from "@/lib/staff-guard";
+import { isAttendant, isManager, requiresSelectedUnit } from "@/lib/staff-guard";
 import { cn } from "@/lib/utils";
 import { isSuperAdmin, useAuthStore } from "@/stores/auth";
+import { AdminUnitPicker } from "./AdminUnitPicker";
 
 interface NavItemProps {
 	exact?: boolean;
@@ -72,6 +73,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 	const navigate = useNavigate();
 	const attendant = isAttendant(role);
 	const manager = isManager(role);
+	const needsUnitSelection = requiresSelectedUnit(role);
 
 	async function handleLogout() {
 		await logout();
@@ -83,6 +85,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 			<div className="px-1">
 				<span className="font-bold text-foreground text-lg">Admin</span>
 			</div>
+			{needsUnitSelection && <AdminUnitPicker />}
 
 			<NavItem exact icon={LuChartBar} label="Dashboard" onNavigate={onNavigate} to="/admin/" />
 
@@ -93,17 +96,13 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 					onNavigate={onNavigate}
 					to="/admin/products"
 				/>
-				{!attendant && (
-					<>
-						<NavItem
-							icon={LuFolderTree}
-							label={t("admin.categories.title")}
-							onNavigate={onNavigate}
-							to="/admin/categories"
-						/>
-						<NavItem icon={LuTag} label={t("admin.tags.title")} onNavigate={onNavigate} to="/admin/tags" />
-					</>
-				)}
+				<NavItem
+					icon={LuFolderTree}
+					label={t("admin.categories.title")}
+					onNavigate={onNavigate}
+					to="/admin/categories"
+				/>
+				<NavItem icon={LuTag} label={t("admin.tags.title")} onNavigate={onNavigate} to="/admin/tags" />
 			</NavGroup>
 
 			<NavGroup label={t("admin.dashboard.nav.operations")}>

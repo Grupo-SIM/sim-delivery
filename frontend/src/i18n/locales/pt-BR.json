@@ -339,6 +339,7 @@
 					"settings": "Configurações"
 				},
 				"recentOrders": "Pedidos recentes",
+				"selectedUnit": "Unidade selecionada",
 				"subtitle": "Gerencie o catálogo, a equipe e as unidades desta empresa.",
 				"title": "Admin",
 				"viewAll": "Ver todos"
@@ -598,6 +599,15 @@
 			},
 			"products": {
 				"availability": {
+					"bulk": {
+						"error": "Não foi possível atualizar a disponibilidade dos produtos.",
+						"pauseAction": "Pausar todos",
+						"pauseSuccess_one": "{{count}} produto pausado.",
+						"pauseSuccess_other": "{{count}} produtos pausados.",
+						"resumeAction": "Retomar todos",
+						"resumeSuccess_one": "{{count}} produto retomado.",
+						"resumeSuccess_other": "{{count}} produtos retomados."
+					},
 					"error": "Não foi possível atualizar a disponibilidade do produto.",
 					"pauseAction": "Pausar venda",
 					"pauseSuccess": "{{title}} foi pausado.",

@@ -54,6 +54,46 @@ describe("tags use-cases", () => {
 		expect(await new ListTags(prisma).execute("cmp_1")).toHaveLength(1);
 	});
 
+	it("ListTags only returns products assigned to the staff member's units", async () => {
+		const calls: unknown[] = [];
+		const prisma = {
+			tag: {
+				findMany: async (args: unknown) => {
+					calls.push(args);
+					return [];
+				},
+			},
+		} as unknown as PrismaInstance;
+
+		await new ListTags(prisma).execute("cmp_1", "attendant", "user_1");
+
+		expect(calls).toEqual([
+			{
+				include: {
+					products: {
+						include: { product: true },
+						where: {
+							product: {
+								unitProducts: { some: { unit: { staffUnits: { some: { userId: "user_1" } } } } },
+							},
+						},
+					},
+				},
+				orderBy: [{ name: "asc" }],
+				where: {
+					companyId: "cmp_1",
+					products: {
+						some: {
+							product: {
+								unitProducts: { some: { unit: { staffUnits: { some: { userId: "user_1" } } } } },
+							},
+						},
+					},
+				},
+			},
+		]);
+	});
+
 	it("UpdateTag rejects a tag from another company", async () => {
 		const { prisma } = prismaWith([{ companyId: "cmp_1", id: "tag1" }]);
 		await expect(new UpdateTag(prisma).execute("cmp_2", "tag1", { name: "X" })).rejects.toThrow(

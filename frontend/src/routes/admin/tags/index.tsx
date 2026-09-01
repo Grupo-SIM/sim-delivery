@@ -6,7 +6,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
-import { canManageCatalog } from "@/lib/staff-guard";
+import { canManageCatalog, canToggleProductAvailability } from "@/lib/staff-guard";
 import { useGetTags } from "@/lib/api";
 import { useAuthStore } from "@/stores";
 import { CreateTagForm, TagsTable } from "./components";
@@ -15,6 +15,7 @@ function TagsPage() {
 	const { t } = useTranslation();
 	const role = useAuthStore(state => state.role);
 	const canManage = canManageCatalog(role);
+	const canToggleAvailability = canToggleProductAvailability(role);
 	const { data: tags, isError, isPending } = useGetTags();
 	const [search, setSearch] = useState("");
 
@@ -45,7 +46,7 @@ function TagsPage() {
 			) : isError ? (
 				<ErrorState title={t("admin.tags.loadError")} />
 			) : (
-				<TagsTable canManage={canManage} tags={filteredTags ?? []} />
+				<TagsTable canManage={canManage} canToggleAvailability={canToggleAvailability} tags={filteredTags ?? []} />
 			)}
 		</Container>
 	);

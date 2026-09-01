@@ -6,10 +6,11 @@ import { TagRow } from "./TagRow";
 
 interface TagsTableProps {
 	canManage: boolean;
+	canToggleAvailability: boolean;
 	tags: GetTags200;
 }
 
-export function TagsTable({ canManage, tags }: TagsTableProps) {
+export function TagsTable({ canManage, canToggleAvailability, tags }: TagsTableProps) {
 	const { t } = useTranslation();
 
 	if (tags.length === 0) {
@@ -23,12 +24,12 @@ export function TagsTable({ canManage, tags }: TagsTableProps) {
 					<th className="px-4 py-3 font-medium">{t("admin.tags.columns.name")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.tags.columns.color")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.tags.columns.products")}</th>
-					{canManage && <th className="px-4 py-3" />}
+					{(canManage || canToggleAvailability) && <th className="px-4 py-3" />}
 				</tr>
 			</thead>
 			<tbody>
 				{tags.map(tag => (
-					<TagRow canManage={canManage} key={tag.id} tag={tag} />
+					<TagRow canManage={canManage} canToggleAvailability={canToggleAvailability} key={tag.id} tag={tag} />
 				))}
 			</tbody>
 		</DataTable>

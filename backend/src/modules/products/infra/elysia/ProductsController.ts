@@ -15,6 +15,7 @@ import {
 	SaveProductOptionGroupsBody,
 	UpdateProductAvailabilityBody,
 	UpdateProductAvailabilityReturn,
+	UpdateProductsAvailabilityBody,
 	UpdateOptionBody,
 	UpdateOptionGroupBody,
 	UpdateProductBody,
@@ -26,6 +27,7 @@ import {
 	ProductOptions,
 	UpdateProduct,
 	UpdateProductAvailability,
+	UpdateProductsAvailability,
 } from "../../useCases";
 
 export const ProductsController = new Elysia({
@@ -48,6 +50,7 @@ export const ProductsController = new Elysia({
 				setProductUnits: new SetProductUnits(prisma),
 				updateProduct: new UpdateProduct(prisma),
 				updateProductAvailability: new UpdateProductAvailability(prisma),
+				updateProductsAvailability: new UpdateProductsAvailability(prisma),
 			}))
 			.get(
 				"/:productId/recipe",
@@ -177,16 +180,32 @@ export const ProductsController = new Elysia({
 				{ body: CreateProductBody, response: ProductReturn },
 			)
 			.patch(
+				"/availability",
+				async ({ body, request, updateProductsAvailability }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "menu", "updateAvailability");
+					if (body.unitId) CompanyScopeGuard.authorizeUnit(scope, body.unitId);
+
+					return updateProductsAvailability.execute(
+						scope.companyId,
+						{ available: body.available, categoryId: body.categoryId, tagId: body.tagId },
+						body.unitId ? [body.unitId] : CompanyScopeGuard.permittedUnitIds(scope),
+					);
+				},
+				{ body: UpdateProductsAvailabilityBody, response: UpdateProductAvailabilityReturn },
+			)
+			.patch(
 				"/:productId/availability",
 				async ({ body, params, request, updateProductAvailability }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "menu", "updateAvailability");
+					if (body.unitId) CompanyScopeGuard.authorizeUnit(scope, body.unitId);
 
 					return updateProductAvailability.execute(
 						scope.companyId,
 						params.productId,
-						body,
-						CompanyScopeGuard.permittedUnitIds(scope),
+						{ available: body.available },
+						body.unitId ? [body.unitId] : CompanyScopeGuard.permittedUnitIds(scope),
 					);
 				},
 				{ body: UpdateProductAvailabilityBody, response: UpdateProductAvailabilityReturn },

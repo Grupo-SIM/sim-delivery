@@ -23,11 +23,12 @@ interface ProductRowProps {
 	canManage: boolean;
 	canToggleAvailability: boolean;
 	product: Product;
+	selectedUnitId: string | null;
 }
 
 const money = new Intl.NumberFormat("pt-BR", { currency: "BRL", style: "currency" });
 
-export function ProductRow({ canManage, canToggleAvailability, product }: ProductRowProps) {
+export function ProductRow({ canManage, canToggleAvailability, product, selectedUnitId }: ProductRowProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [editing, setEditing] = useState(false);
@@ -36,7 +37,12 @@ export function ProductRow({ canManage, canToggleAvailability, product }: Produc
 	const [managingRecipe, setManagingRecipe] = useState(false);
 	const remove = useDeleteProductsByProductId();
 	const updateAvailability = usePatchProductsByProductIdAvailability();
-	const shouldPause = product.unitAvailability.length > 0 && product.unitAvailability.every(unit => unit.available);
+	const selectedUnitAvailability = selectedUnitId
+		? product.unitAvailability.find(unit => unit.unitId === selectedUnitId)
+		: null;
+	const shouldPause = selectedUnitId
+		? selectedUnitAvailability?.available === true
+		: product.unitAvailability.length > 0 && product.unitAvailability.every(unit => unit.available);
 
 	function del() {
 		remove.mutate(
@@ -58,7 +64,7 @@ export function ProductRow({ canManage, canToggleAvailability, product }: Produc
 	function toggleAvailability() {
 		const available = !shouldPause;
 		updateAvailability.mutate(
-			{ data: { available }, productId: product.id },
+			{ data: { available, ...(selectedUnitId ? { unitId: selectedUnitId } : {}) }, productId: product.id },
 			{
 				onError: () => void showAlert(t("admin.products.availability.error")),
 				onSuccess: () => {
@@ -127,10 +133,13 @@ export function ProductRow({ canManage, canToggleAvailability, product }: Produc
 						)}
 					</div>
 				</td>
-				{(canManage || (canToggleAvailability && product.unitAvailability.length > 0)) && (
+				{(canManage ||
+					(canToggleAvailability &&
+						(selectedUnitId ? selectedUnitAvailability !== undefined : product.unitAvailability.length > 0))) && (
 					<td className="whitespace-nowrap px-4 py-3 text-right">
 						<div className="flex justify-end gap-2">
-							{canToggleAvailability && product.unitAvailability.length > 0 && (
+							{canToggleAvailability &&
+								(selectedUnitId ? selectedUnitAvailability !== undefined : product.unitAvailability.length > 0) && (
 								<Tooltip
 									content={t(
 										shouldPause

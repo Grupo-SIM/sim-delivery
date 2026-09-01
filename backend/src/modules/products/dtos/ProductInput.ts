@@ -24,5 +24,14 @@ export type UpdateProductBody = typeof UpdateProductBody.static;
 
 export const UpdateProductAvailabilityBody = t.Object({
 	available: t.Boolean(),
+	unitId: t.Optional(t.String()),
 });
 export type UpdateProductAvailabilityBody = typeof UpdateProductAvailabilityBody.static;
+
+export const UpdateProductsAvailabilityBody = t.Object({
+	available: t.Boolean(),
+	categoryId: t.Optional(t.String({ minLength: 1 })),
+	tagId: t.Optional(t.String({ minLength: 1 })),
+	unitId: t.Optional(t.String()),
+});
+export type UpdateProductsAvailabilityBody = typeof UpdateProductsAvailabilityBody.static;
