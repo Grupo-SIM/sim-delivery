@@ -218,7 +218,13 @@ export class GetFinancialAnalytics {
 				payment: { select: { status: true } },
 				statusEvents: { orderBy: { createdAt: "asc" } },
 			},
-			where: { ...(companyId ? { companyId } : {}), status: CANCELLED, ...unitFilter, ...createdAtFilter },
+			where: {
+				...(companyId ? { companyId } : {}),
+				payment: { is: { status: "confirmed" } },
+				status: CANCELLED,
+				...unitFilter,
+				...createdAtFilter,
+			},
 		});
 
 		const dated = orders.map(order => ({ ...order, competenceAt: competenceDate(order) }));

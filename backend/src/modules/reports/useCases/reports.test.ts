@@ -376,7 +376,10 @@ function makeFinancialPrisma(completed: FinancialOrderRow[], cancelled: Financia
 		order: {
 			findMany: async ({ where }: { where: Where }) => {
 				const isCancelled = typeof where.status === "string";
-				return (isCancelled ? cancelled : completed).map(fill);
+				const rows = isCancelled ? cancelled : completed;
+				return rows
+					.filter(row => where.payment === undefined || row.payment?.status === "confirmed")
+					.map(fill);
 			},
 		},
 	} as unknown as PrismaInstance;
@@ -385,12 +388,12 @@ function makeFinancialPrisma(completed: FinancialOrderRow[], cancelled: Financia
 }
 
 describe("GetFinancialAnalytics", () => {
-	it("computes the cancellation rate, stage breakdown, waste and pending refunds", async () => {
+	it("computes cancellation metrics only from orders with confirmed payments", async () => {
 		const prisma = makeFinancialPrisma(
 			[{ items: [{ costCents: 1000, netRevenueCents: 4000, total: 5000 }], payment: null, total: 5000 }],
 			[
 				{
-					// Cancelled before preparation: the reservation was released, so no cost remains.
+					// Expired before a payment existed: not an operational cancellation.
 					items: [{ costCents: 0, total: 2000 }],
 					payment: null,
 					statusEvents: [
@@ -398,6 +401,16 @@ describe("GetFinancialAnalytics", () => {
 						{ createdAt: now, status: "cancelado" },
 					],
 					total: 2000,
+				},
+				{
+					// Failed payment: also excluded from cancellation metrics.
+					items: [{ costCents: 0, total: 7000 }],
+					payment: { status: "failed" },
+					statusEvents: [
+						{ createdAt: daysAgo(1), status: "awaiting_payment" },
+						{ createdAt: now, status: "cancelado" },
+					],
+					total: 7000,
 				},
 				{
 					// Cancelled after preparation: the consumed reservation's cost stays as waste.
@@ -417,20 +430,17 @@ describe("GetFinancialAnalytics", () => {
 		const result = await new GetFinancialAnalytics(prisma).execute("cmp_1", {});
 
 		expect(result.cancellation).toMatchObject({
-			averageCanceledTicket: 2500,
-			cancelRatePercent: (2 / 3) * 100,
-			canceledOrderCount: 2,
-			lostRevenueCents: 5000,
+			averageCanceledTicket: 3000,
+			cancelRatePercent: 50,
+			canceledOrderCount: 1,
+			lostRevenueCents: 3000,
 			pendingRefundCents: 3000,
 			refundedCents: 0,
 			wastedCostCents: 300,
 		});
-		expect(result.cancellation.byStage).toEqual(
-			expect.arrayContaining([
-				{ lostRevenueCents: 2000, orderCount: 1, stage: "awaiting_payment" },
-				{ lostRevenueCents: 3000, orderCount: 1, stage: "em_preparo" },
-			]),
-		);
+		expect(result.cancellation.byStage).toEqual([
+			{ lostRevenueCents: 3000, orderCount: 1, stage: "em_preparo" },
+		]);
 	});
 
 	it("subtracts refunds from net revenue and gross profit", async () => {
