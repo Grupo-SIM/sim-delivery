@@ -2,11 +2,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuPencil, LuTrash2 } from "react-icons/lu";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ColorField } from "@/components/ui/ColorField";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Input } from "@/components/ui/input";
+import { AssociatedProducts } from "@/components/products";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { type GetTags200, getTagsQueryKey, useDeleteTagsByTagId, usePatchTagsByTagId } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
@@ -95,17 +95,14 @@ export function TagRow({ canManage, tag }: TagRowProps) {
 				)}
 			</td>
 			<td className="px-4 py-3">
-				<div className="flex max-w-80 flex-wrap gap-1.5">
-					{tag.products.length === 0 ? (
-						<span className="text-muted-foreground text-sm">{t("admin.tags.products.empty")}</span>
-					) : (
-						tag.products.map(product => (
-							<Badge key={product.id} tone="neutral">
-								{product.title}
-							</Badge>
-						))
-					)}
-				</div>
+				<AssociatedProducts
+					emptyLabel={t("admin.tags.products.empty")}
+					modalTitle={t("admin.tags.products.modalTitle", { name: tag.name })}
+					products={tag.products}
+					urlKey="tag-products"
+					urlState={tag.id}
+					viewLabel={t("admin.tags.products.viewButton", { count: tag.products.length })}
+				/>
 			</td>
 			{canManage && (
 				<td className="w-56 px-4 py-3 text-right">

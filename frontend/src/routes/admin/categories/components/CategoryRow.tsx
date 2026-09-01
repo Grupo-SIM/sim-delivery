@@ -4,11 +4,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuGripVertical, LuPencil, LuTrash2 } from "react-icons/lu";
-import { Badge } from "@/components/ui/badge";
+import { AssociatedProducts } from "@/components/products";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Input } from "@/components/ui/input";
-import { Modal } from "@/components/ui/Modal";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import {
@@ -29,7 +28,6 @@ export function CategoryRow({ canManage, category, dragDisabled }: CategoryRowPr
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [editing, setEditing] = useState(false);
-	const [productsOpen, setProductsOpen] = useState(false);
 	const [name, setName] = useState(category.name);
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
 	const { isPending, mutate } = usePatchCategoriesByCategoryId();
@@ -113,37 +111,14 @@ export function CategoryRow({ canManage, category, dragDisabled }: CategoryRowPr
 				)}
 			</td>
 			<td className="w-56 px-4 py-3">
-				{category.products.length === 0 ? (
-					<span className="text-muted-foreground text-sm">{t("admin.categories.products.empty")}</span>
-				) : (
-					<>
-						<Button
-							className="cursor-pointer"
-							onClick={() => setProductsOpen(true)}
-							size="sm"
-							type="button"
-							variant="outline"
-						>
-							{t("admin.categories.products.viewButton", { count: category.products.length })}
-						</Button>
-						<Modal
-							isOpen={productsOpen}
-							maxWidth="480px"
-							onClose={() => setProductsOpen(false)}
-							title={t("admin.categories.products.modalTitle", { name: category.name })}
-							urlKey="category-products"
-							urlState={category.id}
-						>
-							<div className="flex flex-wrap gap-1.5">
-								{category.products.map(product => (
-									<Badge key={product.id} tone="neutral">
-										{product.title}
-									</Badge>
-								))}
-							</div>
-						</Modal>
-					</>
-				)}
+				<AssociatedProducts
+					emptyLabel={t("admin.categories.products.empty")}
+					modalTitle={t("admin.categories.products.modalTitle", { name: category.name })}
+					products={category.products}
+					urlKey="category-products"
+					urlState={category.id}
+					viewLabel={t("admin.categories.products.viewButton", { count: category.products.length })}
+				/>
 			</td>
 			{canManage && (
 				<td className="w-56 px-4 py-3 text-right">

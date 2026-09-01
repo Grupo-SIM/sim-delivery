@@ -1064,7 +1064,10 @@
 				"empty": "Nenhuma etiqueta ainda.",
 				"loadError": "Não foi possível carregar as etiquetas.",
 				"products": {
-					"empty": "Nenhum produto associado"
+					"empty": "Nenhum produto associado",
+					"modalTitle": "Produtos de {{name}}",
+					"viewButton_one": "{{count}} produto",
+					"viewButton_other": "{{count}} produtos"
 				},
 				"row": {
 					"delete": "Excluir",
