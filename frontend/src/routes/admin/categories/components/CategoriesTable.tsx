@@ -76,8 +76,7 @@ export function CategoriesTable({
 					{canManage && <th className="px-2 py-3" />}
 					<th className="px-4 py-3 font-medium">{t("admin.categories.columns.name")}</th>
 					<th className="px-4 py-3 font-medium">{t("admin.categories.columns.products")}</th>
-					{(canManage || canToggleAvailability) && <th className="px-4 py-3" />}
-					<th className="px-4 py-3 font-medium">
+					<th className="px-4 py-3 font-medium text-right">
 						<TextField
 							className="h-8"
 							label={<span className="sr-only">{t("admin.categories.search.label")}</span>}
@@ -100,7 +99,7 @@ export function CategoriesTable({
 							<tr>
 								<td
 									className="px-4 py-6 text-center text-muted-foreground"
-									colSpan={(canManage || canToggleAvailability ? 4 : 3) + (canManage ? 1 : 0)}
+									colSpan={3 + (canManage ? 1 : 0)}
 								>
 									{t("admin.categories.searchEmpty")}
 								</td>

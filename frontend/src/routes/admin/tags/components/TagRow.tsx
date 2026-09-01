@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ColorField } from "@/components/ui/ColorField";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Input } from "@/components/ui/input";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { type GetTags200, getTagsQueryKey, useDeleteTagsByTagId, usePatchTagsByTagId } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
@@ -24,6 +25,8 @@ export function TagRow({ canManage, canToggleAvailability, tag }: TagRowProps) {
 	const [name, setName] = useState(tag.name);
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
 	const [color, setColor] = useState(tag.color);
+	const hasBulkAction = canToggleAvailability && tag.products.length > 0;
+	const iconOnlyActions = canManage && hasBulkAction;
 	const { isPending, mutate } = usePatchTagsByTagId();
 	const remove = useDeleteTagsByTagId();
 	const invalidate = () => queryClient.invalidateQueries({ queryKey: getTagsQueryKey() });
@@ -108,8 +111,8 @@ export function TagRow({ canManage, canToggleAvailability, tag }: TagRowProps) {
 			{(canManage || canToggleAvailability) && (
 				<td className="w-56 px-4 py-3 text-right">
 					<div className="flex justify-end gap-2">
-						{canToggleAvailability && tag.products.length > 0 && (
-							<ProductAvailabilityBulkActions scope={{ tagId: tag.id }} />
+						{hasBulkAction && (
+							<ProductAvailabilityBulkActions iconOnly={iconOnlyActions} scope={{ tagId: tag.id }} />
 						)}
 						{canManage &&
 							(editing ? (
@@ -123,17 +126,38 @@ export function TagRow({ canManage, canToggleAvailability, tag }: TagRowProps) {
 								</>
 							) : (
 								<>
-									<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
-										<LuPencil className="size-4" />
-										{t("admin.tags.edit.action")}
-									</Button>
+									{iconOnlyActions ? (
+										<Tooltip content={t("admin.tags.edit.action")}>
+											<Button
+												aria-label={t("admin.tags.edit.action")}
+												onClick={() => setEditing(true)}
+												size="icon"
+												type="button"
+												variant="outline"
+											>
+												<LuPencil className="size-4" />
+											</Button>
+										</Tooltip>
+									) : (
+										<Button
+											onClick={() => setEditing(true)}
+											size="sm"
+											type="button"
+											variant="outline"
+										>
+											<LuPencil className="size-4" />
+											{t("admin.tags.edit.action")}
+										</Button>
+									)}
 									<ConfirmActionButton
+										aria-label={t("admin.tags.row.delete")}
 										confirmation={t("admin.tags.row.deleteConfirm", { name: tag.name })}
 										confirmLabel={t("admin.tags.row.delete")}
 										disabled={remove.isPending}
 										idleIcon={<LuTrash2 className="size-4" />}
 										onConfirm={del}
-										size="sm"
+										size={iconOnlyActions ? "icon" : "sm"}
+										tooltip={iconOnlyActions ? t("admin.tags.row.delete") : undefined}
 										type="button"
 										variant="outline"
 									>

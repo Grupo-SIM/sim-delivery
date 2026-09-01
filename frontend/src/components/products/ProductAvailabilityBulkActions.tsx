@@ -1,7 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuPause, LuPlay } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { getProductsQueryKey, usePatchProductsAvailability } from "@/lib/api";
 import { requiresSelectedUnit } from "@/lib/staff-guard";
 import { showAlert, showToast, useAdminSelectedUnitStore } from "@/stores";
@@ -11,28 +13,35 @@ type ProductAvailabilityScope = { categoryId: string } | { tagId: string };
 
 interface ProductAvailabilityBulkActionsProps {
 	disabled?: boolean;
+	iconOnly?: boolean;
 	scope: ProductAvailabilityScope;
 }
 
-export function ProductAvailabilityBulkActions({ disabled = false, scope }: ProductAvailabilityBulkActionsProps) {
+export function ProductAvailabilityBulkActions({
+	disabled = false,
+	iconOnly = false,
+	scope,
+}: ProductAvailabilityBulkActionsProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const role = useAuthStore(state => state.role);
 	const selectedUnitId = useAdminSelectedUnitStore(state => state.unitId);
 	const updateAvailability = usePatchProductsAvailability();
+	const [productsAvailable, setProductsAvailable] = useState(true);
 	const unitId = requiresSelectedUnit(role) ? selectedUnitId : null;
 	const isDisabled = disabled || (requiresSelectedUnit(role) && !unitId);
 
-	function update(available: boolean) {
+	function update(nextAvailable: boolean) {
 		updateAvailability.mutate(
-			{ data: { available, ...scope, ...(unitId ? { unitId } : {}) } },
+			{ data: { available: nextAvailable, ...scope, ...(unitId ? { unitId } : {}) } },
 			{
 				onError: () => void showAlert(t("admin.products.availability.bulk.error")),
 				onSuccess: result => {
+					setProductsAvailable(nextAvailable);
 					void queryClient.invalidateQueries({ queryKey: getProductsQueryKey() });
 					showToast(
 						t(
-							available
+							nextAvailable
 								? "admin.products.availability.bulk.resumeSuccess"
 								: "admin.products.availability.bulk.pauseSuccess",
 							{ count: Number(result.updatedCount) },
@@ -43,29 +52,25 @@ export function ProductAvailabilityBulkActions({ disabled = false, scope }: Prod
 			},
 		);
 	}
-
-	return (
-		<div className="flex justify-end gap-2">
-			<Button
-				disabled={isDisabled || updateAvailability.isPending}
-				onClick={() => update(false)}
-				size="sm"
-				type="button"
-				variant="outline"
-			>
-				<LuPause className="size-4" />
-				{t("admin.products.availability.bulk.pauseAction")}
-			</Button>
-			<Button
-				disabled={isDisabled || updateAvailability.isPending}
-				onClick={() => update(true)}
-				size="sm"
-				type="button"
-				variant="outline"
-			>
-				<LuPlay className="size-4" />
-				{t("admin.products.availability.bulk.resumeAction")}
-			</Button>
-		</div>
+	const actionLabel = t(
+		productsAvailable
+			? "admin.products.availability.bulk.pauseAction"
+			: "admin.products.availability.bulk.resumeAction",
 	);
+
+	const button = (
+		<Button
+			aria-label={actionLabel}
+			disabled={isDisabled || updateAvailability.isPending}
+			onClick={() => update(!productsAvailable)}
+			size={iconOnly ? "icon" : "sm"}
+			type="button"
+			variant="outline"
+		>
+			{productsAvailable ? <LuPause className="size-4" /> : <LuPlay className="size-4" />}
+			{!iconOnly && actionLabel}
+		</Button>
+	);
+
+	return iconOnly ? <Tooltip content={actionLabel}>{button}</Tooltip> : button;
 }

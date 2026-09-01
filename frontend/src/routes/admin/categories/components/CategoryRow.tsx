@@ -31,6 +31,7 @@ export function CategoryRow({ canManage, canToggleAvailability, category, dragDi
 	const [editing, setEditing] = useState(false);
 	const [name, setName] = useState(category.name);
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
+	const iconOnlyActions = canManage && canToggleAvailability;
 	const { isPending, mutate } = usePatchCategoriesByCategoryId();
 	const remove = useDeleteCategoriesByCategoryId();
 	const invalidate = () => queryClient.invalidateQueries({ queryKey: getCategoriesQueryKey() });
@@ -124,8 +125,11 @@ export function CategoryRow({ canManage, canToggleAvailability, category, dragDi
 			{(canManage || canToggleAvailability) && (
 				<td className="w-56 px-4 py-3 text-right">
 					<div className="flex justify-end gap-2">
-						{canToggleAvailability && category.products.length > 0 && (
-							<ProductAvailabilityBulkActions scope={{ categoryId: category.id }} />
+						{canToggleAvailability && (
+							<ProductAvailabilityBulkActions
+								iconOnly={iconOnlyActions}
+								scope={{ categoryId: category.id }}
+							/>
 						)}
 						{canManage &&
 							(editing ? (
@@ -139,17 +143,38 @@ export function CategoryRow({ canManage, canToggleAvailability, category, dragDi
 								</>
 							) : (
 								<>
-									<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
-										<LuPencil className="size-4" />
-										{t("admin.categories.edit.action")}
-									</Button>
+									{iconOnlyActions ? (
+										<Tooltip content={t("admin.categories.edit.action")}>
+											<Button
+												aria-label={t("admin.categories.edit.action")}
+												onClick={() => setEditing(true)}
+												size="icon"
+												type="button"
+												variant="outline"
+											>
+												<LuPencil className="size-4" />
+											</Button>
+										</Tooltip>
+									) : (
+										<Button
+											onClick={() => setEditing(true)}
+											size="sm"
+											type="button"
+											variant="outline"
+										>
+											<LuPencil className="size-4" />
+											{t("admin.categories.edit.action")}
+										</Button>
+									)}
 									<ConfirmActionButton
+										aria-label={t("admin.categories.row.delete")}
 										confirmation={t("admin.categories.row.deleteConfirm", { name: category.name })}
 										confirmLabel={t("admin.categories.row.delete")}
 										disabled={remove.isPending}
 										idleIcon={<LuTrash2 className="size-4" />}
 										onConfirm={del}
-										size="sm"
+										size={iconOnlyActions ? "icon" : "sm"}
+										tooltip={iconOnlyActions ? t("admin.categories.row.delete") : undefined}
 										type="button"
 										variant="outline"
 									>
