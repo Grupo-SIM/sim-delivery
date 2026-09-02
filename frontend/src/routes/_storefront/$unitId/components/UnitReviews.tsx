@@ -18,7 +18,7 @@ export function UnitReviews({ isOpen, onClose, unitId }: UnitReviewsProps) {
 	return (
 		<Modal isOpen={isOpen} onClose={onClose} title={t("store.unit.reviews.title")} urlKey="unit-reviews">
 			{reviewsQuery.isPending ? (
-				<div className="grid gap-3 sm:grid-cols-2">
+				<div className="grid gap-3">
 					<Skeleton className="h-20" />
 					<Skeleton className="h-20" />
 				</div>
@@ -27,7 +27,7 @@ export function UnitReviews({ isOpen, onClose, unitId }: UnitReviewsProps) {
 			) : reviewsQuery.data?.length === 0 ? (
 				<p className="text-muted-foreground text-sm">{t("store.unit.reviews.empty")}</p>
 			) : (
-				<div className="grid gap-3 sm:grid-cols-2">
+				<div className="grid gap-3">
 					{reviewsQuery.data?.map(review => (
 						<div className="space-y-1 rounded-brand border border-border bg-card p-3" key={review.id}>
 							<div className="flex items-center justify-between gap-2">
