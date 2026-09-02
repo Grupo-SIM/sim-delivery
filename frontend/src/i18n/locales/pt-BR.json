@@ -331,7 +331,7 @@
 			},
 			"dashboard": {
 				"nav": {
-					"backToCustomerArea": "Voltar para área do cliente",
+					"backToCustomerArea": "Área dos clientes",
 					"logout": "Sair",
 					"operations": "Operações",
 					"platform": "Plataforma",
@@ -1398,7 +1398,7 @@
 		},
 		"store": {
 			"account": {
-				"backToCustomerArea": "Voltar para área do cliente",
+				"backToCustomerArea": "Área dos clientes",
 				"identify": {
 					"subtitle": "Entre com seu e-mail para acompanhar seus pedidos.",
 					"title": "Entrar"

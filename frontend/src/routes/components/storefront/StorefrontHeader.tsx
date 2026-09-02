@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { LuMapPin } from "react-icons/lu";
 import { getStaffAreaPath, isOperationalStaff, isStaff } from "@/lib/staff-guard";
@@ -8,6 +9,7 @@ import type { StorefrontBranding } from "./types";
 
 interface StorefrontHeaderProps {
 	branding?: StorefrontBranding;
+	navbarContent?: ReactNode;
 	staffAction?: "staffArea" | "unitSelection";
 	hideUnitChange?: boolean;
 	profileMenuOnlyLogout?: boolean;
@@ -18,6 +20,7 @@ interface StorefrontHeaderProps {
 
 export function StorefrontHeader({
 	branding,
+	navbarContent,
 	staffAction = "staffArea",
 	hideUnitChange = false,
 	profileMenuLogoutTo,
@@ -48,6 +51,7 @@ export function StorefrontHeader({
 				</Link>
 
 				<div className="flex items-center gap-4">
+					{navbarContent}
 					{!hideUnitChange && (
 						<Link
 							className="hidden items-center gap-2 text-muted-foreground text-sm sm:flex"
@@ -64,7 +68,7 @@ export function StorefrontHeader({
 							hash="unidades"
 							to="/"
 						>
-							{t("store.unit.change")}
+							{t("store.account.backToCustomerArea")}
 						</Link>
 					) : isStaff(role) ? (
 						<Link
