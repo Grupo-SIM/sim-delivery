@@ -1,21 +1,17 @@
 import { DomainError } from "@/shared/errors";
-import { OrderStatusEmail } from "@/shared/infra/emails";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import { formatOrderStatusMessage } from "@/modules/orders/order-status-message";
+import { createWhatsAppProvider, type WhatsAppProvider } from "@/shared/infra/whatsapp";
+import {
+	type OrderStatusEmailSender,
+	sendOrderStatusNotification,
+} from "@/modules/orders/notifications/sendOrderStatusNotification";
 import { PaymentErrors } from "../errors";
-
-interface OrderStatusEmailSender {
-	send(input: { message: string; orderNumber: number; to: string }): Promise<void>;
-}
-
-const orderStatusEmailSender: OrderStatusEmailSender = {
-	send: input => new OrderStatusEmail(input).send(),
-};
 
 export class ConfirmPayment {
 	constructor(
 		private readonly prisma: PrismaInstance,
-		private readonly emailSender: OrderStatusEmailSender = orderStatusEmailSender,
+		private readonly emailSender?: OrderStatusEmailSender,
+		private readonly whatsApp: WhatsAppProvider = createWhatsAppProvider(),
 	) {}
 
 	async execute(token: string, expectedSimpayPaymentId?: string): Promise<boolean> {
@@ -23,7 +19,18 @@ export class ConfirmPayment {
 		if (!payment) throw new DomainError(PaymentErrors.PAYMENT_NOT_FOUND);
 
 		const order = await this.prisma.order.findUniqueOrThrow({
-			include: { customer: { select: { notificationEmail: true, user: { select: { email: true } } } }, unit: true },
+			include: {
+				company: { select: { orderStatusWhatsAppTemplates: true } },
+				customer: {
+					select: {
+						notificationEmail: true,
+						notificationWhatsApp: true,
+						phone: true,
+						user: { select: { email: true, phoneNumber: true } },
+					},
+				},
+				unit: true,
+			},
 			where: { id: payment.orderId },
 		});
 
@@ -73,16 +80,19 @@ export class ConfirmPayment {
 			return true;
 		});
 
-		if (confirmed && order.customer.notificationEmail !== false && order.customer.user.email) {
-			await this.emailSender
-				.send({
-					message: formatOrderStatusMessage(undefined, "recebido", order.displayNumber, order.deliveryMethod),
-					orderNumber: order.displayNumber,
-					to: order.customer.user.email,
-				})
-				.catch(() => {});
-		}
+		if (!confirmed) return false;
 
-		return confirmed;
+		await sendOrderStatusNotification({
+			customer: order.customer,
+			deliveryMethod: order.deliveryMethod,
+			emailSender: this.emailSender,
+			orderId: order.id,
+			orderNumber: order.displayNumber,
+			status: "recebido",
+			templates: order.company.orderStatusWhatsAppTemplates as Record<string, string> | null,
+			whatsApp: this.whatsApp,
+		});
+
+		return true;
 	}
 }

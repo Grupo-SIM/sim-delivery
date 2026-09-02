@@ -2,13 +2,12 @@ import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
 import type { RefundPayment } from "@/modules/payments/useCases";
 import { UserErrors } from "@/modules/users/errors";
 import { DomainError } from "@/shared/errors";
-import { OrderStatusEmail } from "@/shared/infra/emails";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { WhatsAppProvider } from "@/shared/infra/whatsapp";
 import type { Role } from "@/shared/permissions";
 import type { OrderReturn, UpdateOrderStatusBody } from "../dtos";
 import { OrderErrors } from "../errors";
-import { formatOrderStatusMessage } from "../order-status-message";
+import { type OrderStatusEmailSender, sendOrderStatusNotification } from "../notifications/sendOrderStatusNotification";
 
 const DELIVERY_FLOW = ["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue"];
 const PICKUP_FLOW = ["recebido", "em_preparo", "pronto", "entregue"];
@@ -16,14 +15,6 @@ const REOPENABLE_FROM_CANCELLED = new Set(["recebido", "em_preparo", "pronto"]);
 
 const NOTIFIABLE = new Set(["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue", "retirado"]);
 const ESTIMABLE_STATUSES = new Set(["em_preparo", "saiu_para_entrega"]);
-
-interface OrderStatusEmailSender {
-	send(input: { message: string; orderNumber: number; reviewUrl?: string; to: string }): Promise<void>;
-}
-
-const orderStatusEmailSender: OrderStatusEmailSender = {
-	send: input => new OrderStatusEmail(input).send(),
-};
 
 function canTransition(current: string, next: string, deliveryMethod: string): boolean {
 	if (current === next) return true;
@@ -73,7 +64,7 @@ export class UpdateOrderStatus {
 		private readonly prisma: PrismaInstance,
 		private readonly whatsApp: WhatsAppProvider,
 		private readonly refundPayment?: RefundPayment,
-		private readonly emailSender: OrderStatusEmailSender = orderStatusEmailSender,
+		private readonly emailSender?: OrderStatusEmailSender,
 	) {}
 
 	async execute(
@@ -173,35 +164,18 @@ export class UpdateOrderStatus {
 		const notifiesEstimateUpdate =
 			order.status === "em_preparo" && status === "em_preparo" && estimatedMinutes !== undefined;
 		if (notifiesStatusChange || notifiesEstimateUpdate) {
-			const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
-			const message = formatOrderStatusMessage(
-				templates?.[status]?.trim() || undefined,
-				status,
-				order.displayNumber,
-				order.deliveryMethod,
-			);
-			const phone = order.customer.phone ?? order.customer.user.phoneNumber;
-			if (order.customer.notificationWhatsApp !== false && phone) {
-				await this.whatsApp.sendOrderStatus(phone, status, orderId, message).catch(() => {});
-			}
-		}
-		if ((notifiesStatusChange || notifiesEstimateUpdate) && order.customer.notificationEmail !== false && order.customer.user.email) {
-			const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
-			const message = formatOrderStatusMessage(
-				templates?.[status]?.trim() || undefined,
-				status,
-				order.displayNumber,
-				order.deliveryMethod,
-			);
 			const reviewUrl = status === "entregue" || status === "retirado" ? getReviewUrl(order.unit.slug, orderId) : undefined;
-			await this.emailSender
-				.send({
-					message,
-					orderNumber: order.displayNumber,
-					reviewUrl,
-					to: order.customer.user.email,
-				})
-				.catch(() => {});
+			await sendOrderStatusNotification({
+				customer: order.customer,
+				deliveryMethod: order.deliveryMethod,
+				emailSender: this.emailSender,
+				orderId,
+				orderNumber: order.displayNumber,
+				reviewUrl,
+				status,
+				templates: order.company.orderStatusWhatsAppTemplates as Record<string, string> | null,
+				whatsApp: this.whatsApp,
+			});
 		}
 
 		return { ...updated, items: updated.items.map(item => ({ ...item, options: item.optionSnapshots })) };

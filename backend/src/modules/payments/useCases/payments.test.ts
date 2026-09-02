@@ -182,6 +182,7 @@ function makeWorld(opts: WorldOptions = {}) {
 
 			return {
 				...order,
+				company: { orderStatusWhatsAppTemplates: null },
 				customer,
 				unit: {
 					cashbackPercent: order.cashbackPercent,
@@ -571,8 +572,9 @@ describe("ConfirmPayment", () => {
 		expect(loyaltyLedger[0]).toMatchObject({ amount: 250, customerId: "cust_1", type: "earn" });
 	});
 
-	it("emails the customer when the order is received", async () => {
+	it("notifies email and WhatsApp when the order is received", async () => {
 		const sent: Record<string, string | number>[] = [];
+		const whatsAppSent: unknown[][] = [];
 		const { prisma } = makeWorld({
 			customers: [{ ...baseCustomer, notificationEmail: true }],
 			payments: [
@@ -590,7 +592,11 @@ describe("ConfirmPayment", () => {
 			],
 		});
 
-		await new ConfirmPayment(prisma, { send: async input => void sent.push(input) }).execute("token_1");
+		await new ConfirmPayment(
+			prisma,
+			{ send: async input => void sent.push(input) },
+			{ sendOrderStatus: async (...input: unknown[]) => void whatsAppSent.push(input) },
+		).execute("token_1");
 
 		expect(sent).toEqual([
 			{
@@ -598,6 +604,14 @@ describe("ConfirmPayment", () => {
 				orderNumber: 154,
 				to: "maria@example.com",
 			},
+		]);
+		expect(whatsAppSent).toEqual([
+			[
+				"5581999999999",
+				"recebido",
+				"order_1",
+				"Recebemos seu pedido #154 e ele já entrou na fila de preparo.",
+			],
 		]);
 	});
 
