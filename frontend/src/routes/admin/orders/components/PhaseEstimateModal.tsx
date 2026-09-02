@@ -1,4 +1,5 @@
 import { NumericFormat } from "react-number-format";
+import { LuClock3, LuTimerOff } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/Modal";
@@ -29,45 +30,69 @@ export function PhaseEstimateModal({
 	return (
 		<Modal
 			isOpen={isOpen}
-			maxWidth="480px"
+			maxWidth="520px"
 			onClose={onClose}
-			title={`Estimar tempo de ${phaseLabel}`}
+			title={
+				<span className="flex items-center gap-3">
+					<span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">
+						<LuClock3 className="size-5" />
+					</span>
+					<span>Estimar tempo de {phaseLabel}</span>
+				</span>
+			}
 			urlKey="order-phase-estimate"
 			urlState={orderId ? `${orderId}:${status}` : undefined}
 		>
-			<div className="space-y-5">
-				<p className="text-muted-foreground text-sm">
-					Informe em quanto tempo esta fase deve terminar ou avance sem estimativa. Cliente verá horário
-					previsto quando informado.
+			<div className="space-y-6">
+				<p className="max-w-md text-muted-foreground text-sm leading-6">
+					Defina quando esta etapa deve terminar. Cliente verá a previsão de horário no acompanhamento do pedido.
 				</p>
-				<label className="space-y-1.5">
-					<span className="font-medium text-sm">Tempo estimado (opcional)</span>
-					<NumericFormat
-						allowNegative={false}
-						customInput={Input}
-						decimalScale={0}
-						inputMode="numeric"
-						name="estimatedMinutes"
-						onValueChange={({ value }) => setMinutes(value)}
-						placeholder="Ex: 15 min"
-						suffix=" min"
-						value={minutes}
-					/>
-				</label>
-				<div className="flex flex-wrap justify-end gap-2">
-					<Button onClick={() => window.history.back()} type="button" variant="outline">
-						Descartar
+				<div className="rounded-xl border bg-muted/30 p-4">
+					<label className="block space-y-2">
+						<span className="font-semibold text-sm">Tempo estimado</span>
+						<NumericFormat
+							allowNegative={false}
+							customInput={Input}
+							decimalScale={0}
+							inputMode="numeric"
+							name="estimatedMinutes"
+							onValueChange={({ value }) => setMinutes(value)}
+							placeholder="Ex.: 15"
+							suffix=" min"
+							value={minutes}
+						/>
+					</label>
+					<div className="mt-3 flex flex-wrap gap-2" aria-label="Sugestões de tempo">
+						{[15, 30, 45, 60].map(value => (
+							<Button
+								className="h-8 min-w-12 px-2 text-xs"
+								key={value}
+								onClick={() => setMinutes(String(value))}
+								type="button"
+								variant={minutes === String(value) ? "default" : "outline"}
+							>
+								{value} min
+							</Button>
+						))}
+					</div>
+				</div>
+				<div className="flex flex-col-reverse gap-2 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
+					<Button className="sm:self-start" onClick={() => window.history.back()} type="button" variant="outline">
+						Cancelar
 					</Button>
-					<Button disabled={isPending} onClick={() => onConfirm()} type="button" variant="outline">
-						Sem estimativa
-					</Button>
-					<Button
-						disabled={!isValid || isPending}
-						onClick={() => onConfirm(parsedMinutes)}
-						type="button"
-					>
-						{isPending ? "Atualizando..." : "Confirmar mudança"}
-					</Button>
+					<div className="grid gap-2 sm:flex">
+						<Button disabled={isPending} onClick={() => onConfirm()} type="button" variant="outline">
+							<LuTimerOff className="size-4" />
+							Sem estimativa
+						</Button>
+						<Button
+							disabled={!isValid || isPending}
+							onClick={() => onConfirm(parsedMinutes)}
+							type="button"
+						>
+							{isPending ? "Atualizando..." : "Confirmar previsão"}
+						</Button>
+					</div>
 				</div>
 			</div>
 		</Modal>
