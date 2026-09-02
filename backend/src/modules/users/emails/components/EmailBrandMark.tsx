@@ -17,41 +17,41 @@ export function EmailBrandMark() {
 		<Section>
 			<table cellPadding="0" cellSpacing="0" style={{ borderCollapse: "collapse" }}>
 				<tr>
-					<td>
+					<td style={{ backgroundColor: emailColors.surface, borderRadius: "12px", padding: "4px" }}>
 						{emailBranding.logoUrl ? (
 							<Img
 								alt={emailBranding.companyName}
-								height="32"
+								height="36"
 								src={emailBranding.logoUrl}
-								style={{ borderRadius: "4px", display: "block", objectFit: "contain" }}
-								width="32"
+								style={{ borderRadius: "8px", display: "block", objectFit: "contain" }}
+								width="36"
 							/>
 						) : (
 							<div
 								style={{
 									alignItems: "center",
-									backgroundColor: emailColors.primary,
-									borderRadius: "999px",
-									color: emailColors.primaryForeground,
+									backgroundColor: emailColors.surfaceMuted,
+									borderRadius: "8px",
+									color: emailColors.primary,
 									display: "inline-flex",
 									fontSize: "13px",
 									fontWeight: "800",
-									height: "32px",
+									height: "36px",
 									justifyContent: "center",
-									lineHeight: "32px",
+									lineHeight: "36px",
 									textAlign: "center",
-									width: "32px",
+									width: "36px",
 								}}
 							>
 								{initials(emailBranding.companyName)}
 							</div>
 						)}
 					</td>
-					<td style={{ paddingLeft: "8px" }}>
+					<td style={{ paddingLeft: "12px" }}>
 						<span
 							style={{
 								color: emailColors.primaryForeground,
-								fontSize: "16px",
+								fontSize: "20px",
 								fontWeight: "800",
 								letterSpacing: "0.02em",
 							}}

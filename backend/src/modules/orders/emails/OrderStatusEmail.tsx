@@ -1,5 +1,4 @@
-import { Heading, Hr, Text } from "@react-email/components";
-import { emailBranding } from "@/shared/infra/branding";
+import { Heading, Text } from "@react-email/components";
 import { EmailButton, EmailLayout, emailColors } from "@/modules/users/emails/components";
 
 interface OrderStatusEmailProps {
@@ -12,12 +11,25 @@ interface OrderStatusEmailProps {
 export function OrderStatusEmailTemplate({ message, orderNumber, reviewUrl, status }: OrderStatusEmailProps) {
 	return (
 		<EmailLayout preview={`Atualização do pedido #${orderNumber}`}>
+			<Text
+				style={{
+					color: emailColors.primary,
+					fontSize: "12px",
+					fontWeight: "800",
+					letterSpacing: "0.08em",
+					margin: "0 0 10px",
+					textTransform: "uppercase",
+				}}
+			>
+				Acompanhe seu pedido
+			</Text>
 			<Heading
 				style={{
 					color: emailColors.foreground,
-					fontSize: "22px",
-					fontWeight: "700",
-					margin: "0 0 8px",
+					fontSize: "30px",
+					fontWeight: "800",
+					letterSpacing: "-0.03em",
+					margin: "0 0 12px",
 				}}
 			>
 				Atualização do pedido #{orderNumber}
@@ -26,9 +38,9 @@ export function OrderStatusEmailTemplate({ message, orderNumber, reviewUrl, stat
 			<Text
 				style={{
 					color: emailColors.foreground,
-					fontSize: "15px",
+					fontSize: "16px",
 					lineHeight: "1.6",
-					margin: "0 0 24px",
+					margin: "0 0 28px",
 				}}
 			>
 				{message}
@@ -38,13 +50,13 @@ export function OrderStatusEmailTemplate({ message, orderNumber, reviewUrl, stat
 				style={{
 					backgroundColor: emailColors.surfaceMuted,
 					border: `1px solid ${emailColors.border}`,
-					borderRadius: "8px",
+					borderRadius: "12px",
 					color: emailColors.foreground,
-					fontSize: "13px",
+					fontSize: "14px",
 					fontWeight: "700",
 					lineHeight: "1.5",
-					margin: "0 0 24px",
-					padding: "10px 12px",
+					margin: "0 0 28px",
+					padding: "14px 16px",
 				}}
 			>
 				Status: {status}
@@ -52,18 +64,6 @@ export function OrderStatusEmailTemplate({ message, orderNumber, reviewUrl, stat
 
 			{reviewUrl && <EmailButton href={reviewUrl}>Avaliar pedido</EmailButton>}
 
-			<Hr style={{ borderColor: emailColors.border, margin: "32px 0 24px" }} />
-
-			<Text
-				style={{
-					color: emailColors.muted,
-					fontSize: "12px",
-					lineHeight: "1.5",
-					margin: "0",
-				}}
-			>
-				© {new Date().getFullYear()} {emailBranding.companyName}.
-			</Text>
 		</EmailLayout>
 	);
 }

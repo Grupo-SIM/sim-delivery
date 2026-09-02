@@ -15,13 +15,13 @@ export function EmailButton({ children, href }: EmailButtonProps) {
 			style={{
 				backgroundColor: emailColors.primary,
 				border: `1px solid ${emailColors.primary}`,
-				borderRadius: "10px",
+				borderRadius: "999px",
 				color: emailColors.primaryForeground,
 				display: "inline-block",
 				fontSize: "14px",
 				fontWeight: "800",
 				letterSpacing: "0",
-				padding: "13px 22px",
+				padding: "14px 24px",
 				textDecoration: "none",
 			}}
 		>

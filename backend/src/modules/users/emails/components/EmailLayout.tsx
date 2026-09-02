@@ -1,5 +1,6 @@
-import { Body, Container, Head, Html, Preview, Section } from "@react-email/components";
+import { Body, Container, Head, Html, Preview, Section, Text } from "@react-email/components";
 import type { ReactNode } from "react";
+import { emailBranding } from "@/shared/infra/branding";
 import { EmailBrandMark } from "./EmailBrandMark";
 import { emailColors, emailFontFamily } from "./theme";
 
@@ -9,7 +10,7 @@ interface EmailLayoutProps {
 	lang?: string;
 }
 
-/** Shared light-first Kinetic Velocity shell for transactional emails. */
+/** Shared storefront-inspired shell for transactional emails. */
 export function EmailLayout({ children, lang = "pt-BR", preview }: EmailLayoutProps) {
 	return (
 		<Html lang={lang}>
@@ -20,32 +21,48 @@ export function EmailLayout({ children, lang = "pt-BR", preview }: EmailLayoutPr
 					backgroundColor: emailColors.background,
 					fontFamily: emailFontFamily,
 					margin: "0",
-					padding: "48px 16px",
+					padding: "40px 16px",
 				}}
 			>
 				<Container
 					style={{
 						backgroundColor: emailColors.surface,
 						border: `1px solid ${emailColors.border}`,
-						borderRadius: "16px",
+						borderRadius: "24px",
 						margin: "0 auto",
 						maxWidth: "560px",
 						overflow: "hidden",
 						padding: "0",
-						boxShadow: "0 12px 32px rgba(0, 18, 255, 0.10)",
+						boxShadow: "0 18px 44px rgba(0, 18, 255, 0.16)",
 					}}
 				>
 					<Section
 						style={{
-							backgroundColor: emailColors.surface,
-							borderBottom: `1px solid ${emailColors.border}`,
-							borderTop: `4px solid ${emailColors.primary}`,
-							padding: "24px 32px 20px",
+							backgroundColor: emailColors.primary,
+							padding: "28px 32px",
 						}}
 					>
 						<EmailBrandMark />
 					</Section>
-					<Section style={{ padding: "36px 32px 32px" }}>{children}</Section>
+					<Section style={{ padding: "36px 32px" }}>{children}</Section>
+					<Section
+						style={{
+							backgroundColor: emailColors.surfaceMuted,
+							borderTop: `1px solid ${emailColors.border}`,
+							padding: "20px 32px 24px",
+						}}
+					>
+						<Text
+							style={{
+								color: emailColors.muted,
+								fontSize: "12px",
+								lineHeight: "1.5",
+								margin: "0",
+							}}
+						>
+							© {new Date().getFullYear()} {emailBranding.companyName}. Todos os direitos reservados.
+						</Text>
+					</Section>
 				</Container>
 			</Body>
 		</Html>

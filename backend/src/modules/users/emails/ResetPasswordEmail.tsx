@@ -1,4 +1,4 @@
-import { Heading, Hr, Text } from "@react-email/components";
+import { Heading, Text } from "@react-email/components";
 import { emailBranding } from "@/shared/infra/branding";
 import { EmailButton, EmailLayout, emailColors } from "./components";
 
@@ -10,12 +10,25 @@ interface ResetPasswordEmailProps {
 export function ResetPasswordEmailTemplate({ name, url }: ResetPasswordEmailProps) {
 	return (
 		<EmailLayout preview={`Defina sua senha do ${emailBranding.companyName}`}>
+			<Text
+				style={{
+					color: emailColors.primary,
+					fontSize: "12px",
+					fontWeight: "800",
+					letterSpacing: "0.08em",
+					margin: "0 0 10px",
+					textTransform: "uppercase",
+				}}
+			>
+				Sua conta
+			</Text>
 			<Heading
 				style={{
 					color: emailColors.foreground,
-					fontSize: "22px",
-					fontWeight: "700",
-					margin: "0 0 8px",
+					fontSize: "30px",
+					fontWeight: "800",
+					letterSpacing: "-0.03em",
+					margin: "0 0 12px",
 				}}
 			>
 				Definição de senha
@@ -24,9 +37,9 @@ export function ResetPasswordEmailTemplate({ name, url }: ResetPasswordEmailProp
 			<Text
 				style={{
 					color: emailColors.foreground,
-					fontSize: "15px",
+					fontSize: "16px",
 					lineHeight: "1.6",
-					margin: "0 0 24px",
+					margin: "0 0 28px",
 				}}
 			>
 				Olá, {name}! Use o link abaixo para definir a senha da sua conta.
@@ -36,27 +49,16 @@ export function ResetPasswordEmailTemplate({ name, url }: ResetPasswordEmailProp
 
 			<Text
 				style={{
-					color: emailColors.muted,
-					fontSize: "13px",
-					lineHeight: "1.5",
-					margin: "24px 0 0",
-				}}
-			>
-				O link expira em 7 dias e pode ser usado uma única vez. Se você não solicitou esta ação, ignore este
-				e-mail.
-			</Text>
-
-			<Hr style={{ borderColor: emailColors.border, margin: "32px 0 24px" }} />
-
-			<Text
-				style={{
+					backgroundColor: emailColors.surfaceMuted,
+					borderRadius: "12px",
 					color: emailColors.muted,
 					fontSize: "12px",
 					lineHeight: "1.5",
-					margin: "0",
+					margin: "28px 0 0",
+					padding: "14px 16px",
 				}}
 			>
-				© {new Date().getFullYear()} {emailBranding.companyName}.
+				Por segurança, este link expira em 7 dias e pode ser usado uma única vez. Se não foi você, ignore este e-mail.
 			</Text>
 		</EmailLayout>
 	);
