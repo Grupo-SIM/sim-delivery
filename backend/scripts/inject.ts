@@ -39,10 +39,10 @@ interface ThemeColors {
 const { PrismaClient, adapter } = await import("../../packages/sql/src/index.ts");
 const prisma = new PrismaClient({ adapter });
 
-let company: { logoUrl: string | null; name: string; themeColors: unknown } | null;
+let company: { fontFamily: string | null; logoUrl: string | null; name: string; themeColors: unknown } | null;
 try {
 	company = await prisma.company.findUnique({
-		select: { logoUrl: true, name: true, themeColors: true },
+		select: { fontFamily: true, logoUrl: true, name: true, themeColors: true },
 		where: { slug },
 	});
 } finally {
@@ -52,24 +52,43 @@ try {
 if (!company) throw new Error(`Company "${slug}" was not found.`);
 
 const colors = (company.themeColors as ThemeColors | null)?.light;
-const primaryColor = colors?.primary?.trim() || "#dc3a00";
-const primaryForegroundColor = colors?.primaryForeground?.trim() || "#ffffff";
+const themeColors = {
+	background: colors?.background?.trim() || "#ffffff",
+	border: colors?.border?.trim() || "#d4d4d4",
+	card: colors?.card?.trim() || "#ffffff",
+	foreground: colors?.foreground?.trim() || "#000000",
+	muted: colors?.muted?.trim() || "#f5f5f5",
+	mutedForeground: colors?.mutedForeground?.trim() || "#525252",
+	primary: colors?.primary?.trim() || "#000000",
+	primaryForeground: colors?.primaryForeground?.trim() || "#ffffff",
+	surfaceSunken: colors?.surfaceSunken?.trim() || "#f5f5f5",
+};
 
 await writeFile(
 	brandingPath,
 	`export interface EmailBranding {
 \tcompanyName: string;
+\tfontFamily: string;
 \tlogoUrl: string | null;
-\tprimaryColor: string;
-\tprimaryForegroundColor: string;
+\tthemeColors: {
+\t\tbackground: string;
+\t\tborder: string;
+\t\tcard: string;
+\t\tforeground: string;
+\t\tmuted: string;
+\t\tmutedForeground: string;
+\t\tprimary: string;
+\t\tprimaryForeground: string;
+\t\tsurfaceSunken: string;
+\t};
 }
 
 export const emailBranding: EmailBranding = ${JSON.stringify(
 		{
 			companyName: company.name,
+			fontFamily: company.fontFamily?.trim() || "Inter",
 			logoUrl: company.logoUrl,
-			primaryColor,
-			primaryForegroundColor,
+			themeColors,
 		},
 		null,
 		"\t",

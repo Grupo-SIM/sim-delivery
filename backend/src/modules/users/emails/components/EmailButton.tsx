@@ -7,22 +7,22 @@ interface EmailButtonProps {
 	children: ReactNode;
 }
 
-/** Primary orange CTA button matching the frontend design system. */
+/** Primary CTA button matching the frontend design system. */
 export function EmailButton({ children, href }: EmailButtonProps) {
 	return (
 		<Button
 			href={href}
 			style={{
 				backgroundColor: emailColors.primary,
-				borderRadius: "4px",
+				border: `1px solid ${emailColors.primary}`,
+				borderRadius: "10px",
 				color: emailColors.primaryForeground,
 				display: "inline-block",
 				fontSize: "14px",
 				fontWeight: "800",
-				letterSpacing: "0.04em",
-				padding: "12px 24px",
+				letterSpacing: "0",
+				padding: "13px 22px",
 				textDecoration: "none",
-				textTransform: "uppercase",
 			}}
 		>
 			{children}

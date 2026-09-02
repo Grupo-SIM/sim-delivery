@@ -1,19 +1,19 @@
 /**
- * Kinetic Velocity email theme — mirrors the frontend light-first design system.
+ * Transactional email theme — mirrors the active frontend light theme.
  * Email clients require inline styles and hex colors (no CSS
  * variables / Tailwind), so the palette is duplicated here as plain values.
  */
 import { emailBranding } from "@/shared/infra/branding";
 
 export const emailColors = {
-	background: "#f7f8fa",
-	border: "#d7dee7",
-	foreground: "#14171b",
-	muted: "#53606c",
-	primary: emailBranding.primaryColor,
-	primaryForeground: emailBranding.primaryForegroundColor,
-	surface: "#ffffff",
-	surfaceDark: "#14171b",
+	background: emailBranding.themeColors.surfaceSunken,
+	border: emailBranding.themeColors.border,
+	foreground: emailBranding.themeColors.foreground,
+	muted: emailBranding.themeColors.mutedForeground,
+	primary: emailBranding.themeColors.primary,
+	primaryForeground: emailBranding.themeColors.primaryForeground,
+	surface: emailBranding.themeColors.card,
+	surfaceMuted: emailBranding.themeColors.muted,
 } as const;
 
-export const emailFontFamily = '"Hanken Grotesk", "Segoe UI", system-ui, -apple-system, sans-serif';
+export const emailFontFamily = `"${emailBranding.fontFamily}", "Segoe UI", Arial, sans-serif`;

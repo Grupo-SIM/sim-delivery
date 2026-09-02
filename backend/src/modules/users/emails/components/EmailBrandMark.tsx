@@ -31,10 +31,10 @@ export function EmailBrandMark() {
 								style={{
 									alignItems: "center",
 									backgroundColor: emailColors.primary,
-									borderRadius: "4px",
+									borderRadius: "999px",
 									color: emailColors.primaryForeground,
 									display: "inline-flex",
-									fontSize: "14px",
+									fontSize: "13px",
 									fontWeight: "800",
 									height: "32px",
 									justifyContent: "center",
@@ -53,7 +53,7 @@ export function EmailBrandMark() {
 								color: emailColors.primaryForeground,
 								fontSize: "16px",
 								fontWeight: "800",
-								letterSpacing: "-0.02em",
+								letterSpacing: "0.02em",
 							}}
 						>
 							{emailBranding.companyName}

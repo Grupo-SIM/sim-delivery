@@ -36,10 +36,15 @@ export function OrderStatusEmailTemplate({ message, orderNumber, reviewUrl, stat
 
 			<Text
 				style={{
-					color: emailColors.muted,
+					backgroundColor: emailColors.surfaceMuted,
+					border: `1px solid ${emailColors.border}`,
+					borderRadius: "8px",
+					color: emailColors.foreground,
 					fontSize: "13px",
+					fontWeight: "700",
 					lineHeight: "1.5",
-					margin: "0",
+					margin: "0 0 24px",
+					padding: "10px 12px",
 				}}
 			>
 				Status: {status}
