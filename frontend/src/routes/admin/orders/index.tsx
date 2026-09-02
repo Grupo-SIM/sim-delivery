@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LuLoaderCircle, LuRefreshCw } from "react-icons/lu";
+import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/Container";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -9,7 +11,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
 import { useGetOrders, useGetUnits } from "@/lib/api";
 import { canAccessAllUnits } from "@/lib/staff-guard";
-import { useAuthStore } from "@/stores";
+import { showToast, useAuthStore } from "@/stores";
 import { DashboardDateRangePicker } from "../components/DashboardDateRangePicker";
 import { OrdersKanban } from "./components";
 
@@ -49,11 +51,7 @@ function OrdersPage() {
 		setUnitId(units[0].id);
 	}, [canViewAllUnits, unitId, unitsQuery.data]);
 
-	const {
-		data: orders,
-		isError,
-		isPending,
-	} = useGetOrders({
+	const ordersQuery = useGetOrders({
 		...(unitId ? { unitId } : {}),
 		...(search.trim() ? { search: search.trim() } : {}),
 		...(dateRange
@@ -62,13 +60,31 @@ function OrdersPage() {
 					to: `${dateRange.endDate}T23:59:59.999`,
 				}
 			: {}),
-	});
+	}, { client: { cache: "no-store" } });
 	const availableStatuses = getAvailableStatuses(role);
+
+	async function handleRefresh() {
+		try {
+			const { error } = await ordersQuery.refetch();
+			if (error) throw error;
+			showToast(t("admin.orders.refresh.success"), "positive");
+		} catch {
+			showToast(t("admin.orders.refresh.error"), "negative");
+		}
+	}
 
 	return (
 		<Container className="space-y-6 py-6 sm:py-8" size="full">
 			<div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 				<SectionHeading subtitle={t("admin.orders.subtitle")} title={t("admin.orders.title")} />
+				<Button disabled={ordersQuery.isFetching} onClick={() => void handleRefresh()} type="button" variant="outline">
+					{ordersQuery.isFetching ? (
+						<LuLoaderCircle aria-hidden className="size-4 animate-spin" />
+					) : (
+						<LuRefreshCw aria-hidden className="size-4" />
+					)}
+					{t("admin.orders.refresh.action")}
+				</Button>
 			</div>
 
 			<div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(15rem,1fr)_minmax(0,2fr)] md:items-start">
@@ -99,12 +115,12 @@ function OrdersPage() {
 				</div>
 			</div>
 
-			{isPending ? (
+			{ordersQuery.isPending ? (
 				<Skeleton className="h-40 w-full" />
-			) : isError ? (
+			) : ordersQuery.isError ? (
 				<ErrorState title={t("admin.orders.loadError")} />
 			) : (
-				<OrdersKanban orders={orders} role={role} statuses={availableStatuses} />
+				<OrdersKanban orders={ordersQuery.data} role={role} statuses={availableStatuses} />
 			)}
 		</Container>
 	);

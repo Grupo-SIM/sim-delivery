@@ -511,6 +511,11 @@
 					"finalized": "Finalizado"
 				},
 				"loadError": "Não foi possível carregar os pedidos.",
+				"refresh": {
+					"action": "Atualizar",
+					"error": "Não foi possível atualizar os pedidos.",
+					"success": "Pedidos atualizados."
+				},
 				"receipt": {
 					"action": "Imprimir",
 					"address": "Endereço",
