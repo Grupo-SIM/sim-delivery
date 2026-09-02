@@ -28,7 +28,7 @@ const KANBAN_STATUSES = [
 ] as const;
 
 const KITCHEN_KANBAN_STATUSES = ["recebido", "em_preparo", "pronto"] as const;
-const COURIER_KANBAN_STATUSES = ["pronto", "saiu_para_entrega", "entregue"] as const;
+const COURIER_KANBAN_STATUSES = ["pronto", "saiu_para_entrega", "problema", "entregue"] as const;
 
 function getAvailableStatuses(role: string | null): readonly (typeof KANBAN_STATUSES)[number][] {
 	if (role === "kitchen") return KITCHEN_KANBAN_STATUSES;
