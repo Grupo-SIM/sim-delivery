@@ -208,6 +208,22 @@ describe("CreateOrder", () => {
 		await new CreateOrder(prisma).execute("user_1", { ...baseBody, deliveryMethod: "pickup" });
 		expect(orders[0]).toMatchObject({ deliveryFee: 0, total: 2000 });
 	});
+
+	it("confirms a zero-value order without creating a payment", async () => {
+		const freeUnitProduct = {
+			...baseUnitProduct,
+			priceCentsOverride: 0 as unknown as null,
+		};
+		const { orders, prisma } = makeOrderPrisma({ unitProducts: [freeUnitProduct] });
+
+		const result = await new CreateOrder(prisma).execute("user_1", {
+			...baseBody,
+			deliveryMethod: "pickup",
+		});
+
+		expect(orders[0]).toMatchObject({ status: "recebido", subtotal: 0, total: 0 });
+		expect(result.status).toBe("recebido");
+	});
 });
 
 function makeUpdateStatusPrisma(order: {

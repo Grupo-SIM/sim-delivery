@@ -189,7 +189,18 @@ function CheckoutPage() {
 			},
 			{
 				onError: () => void showAlert(t("store.checkout.order.error")),
-				onSuccess: order => setPlacedOrder({ id: order.id, totalCents: Number(order.total) }),
+				onSuccess: order => {
+					const totalCents = Number(order.total);
+					if (totalCents === 0) {
+						clearCart();
+						void navigate({
+							params: { orderId: order.id },
+							to: "/orders/$orderId",
+						});
+						return;
+					}
+					setPlacedOrder({ id: order.id, totalCents });
+				},
 			},
 		);
 	}

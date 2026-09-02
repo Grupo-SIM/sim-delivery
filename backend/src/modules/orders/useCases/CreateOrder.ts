@@ -274,6 +274,8 @@ export class CreateOrder {
 					subtotal,
 					total,
 					unitId,
+					// Zero-value orders do not need an external payment authorization.
+					status: total === 0 ? "recebido" : "awaiting_payment",
 				},
 			});
 
