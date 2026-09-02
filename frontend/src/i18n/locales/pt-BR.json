@@ -89,7 +89,7 @@
 				"mobileIconUpload": "Enviar ícone mobile",
 				"mobileIconUrl": "URL do ícone do app mobile",
 				"navTitle": "Empresa",
-				"notificationPlaceholder": "Ex: Seu pedido {{orderId}} está em preparo.",
+				"notificationPlaceholder": "Ex: Seu pedido {{orderId}} já está sendo preparado com carinho.",
 				"notificationsHelp": "Use {{orderId}} para inserir o código do pedido. Deixe um campo vazio para usar mensagem padrão.",
 				"notificationsSummary_one": "{{count}} mensagem personalizada",
 				"notificationsSummary_other": "{{count}} mensagens personalizadas",

@@ -66,7 +66,6 @@ export class CancelExpiredUnpaidOrders {
 					await new OrderStatusEmail({
 						message,
 						orderNumber: order.displayNumber,
-						status: "cancelado",
 						to: order.customer.user.email,
 					})
 						.send()

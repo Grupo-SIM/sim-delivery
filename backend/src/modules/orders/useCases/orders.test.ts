@@ -338,10 +338,9 @@ describe("UpdateOrderStatus", () => {
 
 		expect(sent).toEqual([
 			{
-				message: "Seu pedido #154 está em preparo.",
+				message: "Seu pedido #154 já está sendo preparado com carinho. Assim que ficar pronto, seguirá para entrega.",
 				orderNumber: 154,
 				reviewUrl: undefined,
-				status: "em_preparo",
 				to: "cliente@example.com",
 			},
 		]);
@@ -455,7 +454,7 @@ describe("UpdateOrderStatus", () => {
 			sendOrderStatus: async (_phone, _status, _orderId, message) => void messages.push(message ?? ""),
 		}).execute("cmp_1", "ord_1", { status: "pronto" });
 
-		expect(messages).toEqual(["Seu pedido #154 está pronto e logo seguirá para você."]);
+		expect(messages).toEqual(["Seu pedido #154 está pronto e logo seguirá para entrega."]);
 	});
 
 	it("does not send WhatsApp when customer opted out", async () => {

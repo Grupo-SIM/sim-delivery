@@ -18,7 +18,7 @@ const NOTIFIABLE = new Set(["recebido", "em_preparo", "pronto", "saiu_para_entre
 const ESTIMABLE_STATUSES = new Set(["em_preparo", "saiu_para_entrega"]);
 
 interface OrderStatusEmailSender {
-	send(input: { message: string; orderNumber: number; reviewUrl?: string; status: string; to: string }): Promise<void>;
+	send(input: { message: string; orderNumber: number; reviewUrl?: string; to: string }): Promise<void>;
 }
 
 const orderStatusEmailSender: OrderStatusEmailSender = {
@@ -171,7 +171,12 @@ export class UpdateOrderStatus {
 			order.status === "em_preparo" && status === "em_preparo" && estimatedMinutes !== undefined;
 		if (notifiesStatusChange) {
 			const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
-			const message = formatOrderStatusMessage(templates?.[status]?.trim() || undefined, status, order.displayNumber);
+			const message = formatOrderStatusMessage(
+				templates?.[status]?.trim() || undefined,
+				status,
+				order.displayNumber,
+				order.deliveryMethod,
+			);
 			const phone = order.customer.phone ?? order.customer.user.phoneNumber;
 			if (order.customer.notificationWhatsApp !== false && phone) {
 				await this.whatsApp.sendOrderStatus(phone, status, orderId, message).catch(() => {});
@@ -179,14 +184,18 @@ export class UpdateOrderStatus {
 		}
 		if ((notifiesStatusChange || notifiesEstimateUpdate) && order.customer.notificationEmail !== false && order.customer.user.email) {
 			const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
-			const message = formatOrderStatusMessage(templates?.[status]?.trim() || undefined, status, order.displayNumber);
+			const message = formatOrderStatusMessage(
+				templates?.[status]?.trim() || undefined,
+				status,
+				order.displayNumber,
+				order.deliveryMethod,
+			);
 			const reviewUrl = status === "entregue" || status === "retirado" ? getReviewUrl(order.unit.slug, orderId) : undefined;
 			await this.emailSender
 				.send({
 					message,
 					orderNumber: order.displayNumber,
 					reviewUrl,
-					status,
 					to: order.customer.user.email,
 				})
 				.catch(() => {});

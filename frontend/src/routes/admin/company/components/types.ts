@@ -8,10 +8,10 @@ export type OrderStatusTemplateKey = (typeof ORDER_STATUS_TEMPLATE_KEYS)[number]
 export type OrderStatusTemplates = Record<OrderStatusTemplateKey, string>;
 
 export const defaultOrderStatusTemplates: OrderStatusTemplates = {
-	em_preparo: "Seu pedido {{orderId}} está em preparo.",
-	entregue: "Seu pedido {{orderId}} foi entregue. Bom apetite!",
-	retirado: "Seu pedido {{orderId}} está pronto para retirada.",
-	saiu_para_entrega: "Seu pedido {{orderId}} saiu para entrega.",
+	em_preparo: "Seu pedido {{orderId}} já está sendo preparado com carinho.",
+	entregue: "Seu pedido {{orderId}} chegou até você. Bom apetite!",
+	retirado: "Seu pedido {{orderId}} foi retirado. Bom apetite!",
+	saiu_para_entrega: "Seu pedido {{orderId}} saiu para entrega e está a caminho.",
 };
 
 export interface BrandAssetsState {

@@ -5,10 +5,9 @@ interface OrderStatusEmailProps {
 	message: string;
 	orderNumber: number;
 	reviewUrl?: string;
-	status: string;
 }
 
-export function OrderStatusEmailTemplate({ message, orderNumber, reviewUrl, status }: OrderStatusEmailProps) {
+export function OrderStatusEmailTemplate({ message, orderNumber, reviewUrl }: OrderStatusEmailProps) {
 	return (
 		<EmailLayout preview={`Atualização do pedido #${orderNumber}`}>
 			<Text
@@ -44,22 +43,6 @@ export function OrderStatusEmailTemplate({ message, orderNumber, reviewUrl, stat
 				}}
 			>
 				{message}
-			</Text>
-
-			<Text
-				style={{
-					backgroundColor: emailColors.surfaceMuted,
-					border: `1px solid ${emailColors.border}`,
-					borderRadius: "12px",
-					color: emailColors.foreground,
-					fontSize: "14px",
-					fontWeight: "700",
-					lineHeight: "1.5",
-					margin: "0 0 28px",
-					padding: "14px 16px",
-				}}
-			>
-				Status: {status}
 			</Text>
 
 			{reviewUrl && <EmailButton href={reviewUrl}>Avaliar pedido</EmailButton>}

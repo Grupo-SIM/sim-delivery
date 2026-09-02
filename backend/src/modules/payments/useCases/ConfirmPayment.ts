@@ -5,7 +5,7 @@ import { formatOrderStatusMessage } from "@/modules/orders/order-status-message"
 import { PaymentErrors } from "../errors";
 
 interface OrderStatusEmailSender {
-	send(input: { message: string; orderNumber: number; status: string; to: string }): Promise<void>;
+	send(input: { message: string; orderNumber: number; to: string }): Promise<void>;
 }
 
 const orderStatusEmailSender: OrderStatusEmailSender = {
@@ -76,9 +76,8 @@ export class ConfirmPayment {
 		if (confirmed && order.customer.notificationEmail !== false && order.customer.user.email) {
 			await this.emailSender
 				.send({
-					message: formatOrderStatusMessage(undefined, "recebido", order.displayNumber),
+					message: formatOrderStatusMessage(undefined, "recebido", order.displayNumber, order.deliveryMethod),
 					orderNumber: order.displayNumber,
-					status: "recebido",
 					to: order.customer.user.email,
 				})
 				.catch(() => {});
