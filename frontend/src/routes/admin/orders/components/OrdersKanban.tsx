@@ -227,6 +227,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 				defaultValue: "Pedidos cancelados só podem ser reabertos para Recebido, Em preparo ou Pronto.",
 			});
 		}
+		if (status === "problema") return null;
 		if (status === "cancelado") return null;
 
 		const flow = getFlow(order.deliveryMethod);
