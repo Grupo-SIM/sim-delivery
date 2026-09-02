@@ -382,6 +382,23 @@ describe("UpdateOrderStatus", () => {
 		).rejects.toThrow("FORBIDDEN");
 	});
 
+	it("lets attendants return a ready order to preparation", async () => {
+		const { stored, prisma } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			id: "ord_1",
+			status: "pronto",
+		});
+
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute(
+			"cmp_1",
+			"ord_1",
+			{ status: "em_preparo" },
+			"attendant",
+		);
+
+		expect(stored.status).toBe("em_preparo");
+	});
+
 	it("lets kitchen reassign the cook during preparation", async () => {
 		const { stored, prisma } = makeUpdateStatusPrisma({
 			companyId: "cmp_1",
