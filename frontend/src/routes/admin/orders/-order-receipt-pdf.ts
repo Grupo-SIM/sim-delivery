@@ -1,7 +1,7 @@
 import { jsPDF } from "jspdf";
 import type { GetOrdersByOrderIdReceipt200 } from "@/lib/api";
 
-export const RECEIPT_WIDTH_MM = 80;
+export const RECEIPT_WIDTH_MM = 72;
 export const RECEIPT_MARGIN_MM = 4;
 const MIN_RECEIPT_HEIGHT_MM = 90;
 const CONTENT_WIDTH_MM = RECEIPT_WIDTH_MM - RECEIPT_MARGIN_MM * 2;

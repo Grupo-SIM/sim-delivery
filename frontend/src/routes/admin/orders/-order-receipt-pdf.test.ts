@@ -95,10 +95,11 @@ function signature(document: ReturnType<typeof createOrderReceiptPdf>) {
 }
 
 describe("createOrderReceiptPdf", () => {
-	it("creates a real one-page 80 mm PDF with delivery, PIX, options and discounts", () => {
+	it("creates a real one-page 72 mm PDF with delivery, PIX, options and discounts", () => {
 		const document = createOrderReceiptPdf(receipt, labels);
 		expect(signature(document)).toBe("%PDF");
 		expect(document.getNumberOfPages()).toBe(1);
+		expect(receiptWidthMm).toBe(72);
 		expect(document.internal.pageSize.getWidth()).toBeCloseTo(receiptWidthMm, 2);
 		expect(document.output()).toContain("Bacon");
 		expect(document.output()).toContain("/PickTrayByPDFSize true");
