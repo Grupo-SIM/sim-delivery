@@ -32,8 +32,8 @@ do pedido** (`saiu_para_entrega`/`entregue` — ver [06](06-pedidos.md)).
 
 ## Atribuição
 
-- **Manual** (MVP): `owner`/`manager`/`attendant` atribui o pedido a um motoboy no painel
-  (ver [10](10-painel-do-dono.md)).
+- **Manual e opcional** (MVP): `owner`/`manager`/`attendant` pode atribuir o pedido a um motoboy no painel
+  (ver [10](10-painel-do-dono.md)); pedido pode sair para entrega sem atribuição.
 - **Automática** (roadmap): por disponibilidade/proximidade.
 
 ## Regras comportamentais

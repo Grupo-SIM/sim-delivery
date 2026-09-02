@@ -13,6 +13,7 @@ describe("formatOrderStatusMessage", () => {
 	});
 
 	it.each([
+		["entregue", "Seu pedido #154 foi retirado. Esperamos que aproveite cada detalhe!"],
 		["em_preparo", "Seu pedido #154 já está sendo preparado com carinho. Avisaremos assim que estiver pronto para retirada."],
 		["pronto", "Seu pedido #154 está pronto para retirada. Esperamos você!"],
 		["retirado", "Seu pedido #154 foi retirado. Esperamos que aproveite cada detalhe!"],

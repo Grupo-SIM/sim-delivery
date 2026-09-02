@@ -19,16 +19,14 @@ type NextStatus =
 	| "pronto"
 	| "saiu_para_entrega"
 	| "entregue"
-	| "retirado"
 	| "cancelado";
 
 const TRANSITIONS: Record<string, NextStatus[]> = {
 	cancelado: ["recebido", "em_preparo", "pronto"],
 	em_preparo: ["recebido", "pronto", "cancelado"],
 	entregue: ["saiu_para_entrega"],
-	pronto: ["em_preparo", "saiu_para_entrega", "retirado", "cancelado"],
+	pronto: ["em_preparo", "saiu_para_entrega", "entregue", "cancelado"],
 	recebido: ["em_preparo", "cancelado"],
-	retirado: ["pronto"],
 	saiu_para_entrega: ["pronto", "entregue", "cancelado"],
 };
 
@@ -37,7 +35,6 @@ const REFUND_METHODS: RefundMethodEnumKey[] = ["manual", "gateway", "cashback"];
 interface UpdateStatusModalProps {
 	currentStatus: string;
 	deliveryMethod: string;
-	hasDeliveryAssigned?: boolean;
 	isOpen: boolean;
 	onClose: () => void;
 	orderId: string;
@@ -48,7 +45,6 @@ interface UpdateStatusModalProps {
 export function UpdateStatusModal({
 	currentStatus,
 	deliveryMethod,
-	hasDeliveryAssigned = false,
 	isOpen,
 	onClose,
 	orderId,
@@ -66,8 +62,8 @@ export function UpdateStatusModal({
 	const [refundAmount, setRefundAmount] = useState(orderTotal);
 
 	const nexts = (TRANSITIONS[currentStatus] ?? []).filter(s => {
-		if (s === "saiu_para_entrega" && (deliveryMethod !== "delivery" || !hasDeliveryAssigned)) return false;
-		if (s === "retirado" && deliveryMethod !== "pickup") return false;
+		if (s === "saiu_para_entrega" && deliveryMethod !== "delivery") return false;
+		if (s === "entregue" && deliveryMethod !== "pickup") return false;
 		return true;
 	});
 	const hasOptions = nexts.length > 0;

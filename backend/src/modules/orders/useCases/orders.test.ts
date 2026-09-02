@@ -252,6 +252,7 @@ function makeUpdateStatusPrisma(order: {
 			phone: string | null;
 			user: { email: string };
 		};
+		unit: { slug: string };
 	} = {
 		...order,
 		cancelReason: null,
@@ -266,6 +267,7 @@ function makeUpdateStatusPrisma(order: {
 		deliveryMethod: order.deliveryMethod ?? "delivery",
 		estimatedStatusCompletionAt: order.estimatedStatusCompletionAt ?? null,
 		items: [],
+		unit: { slug: "centro" },
 	};
 
 	const prisma = {
@@ -277,7 +279,7 @@ function makeUpdateStatusPrisma(order: {
 		order: {
 			findFirst: async ({ where }: { where: { companyId?: string; id: string } }) =>
 				(where.companyId ? stored.companyId === where.companyId : true) && stored.id === where.id
-					? { ...stored, company: { ...stored.company }, customer: { ...stored.customer } }
+				? { ...stored, company: { ...stored.company }, customer: { ...stored.customer }, unit: { ...stored.unit } }
 					: null,
 			update: async ({ data }: { data: object }) => {
 				Object.assign(stored, data);
@@ -325,12 +327,16 @@ describe("UpdateOrderStatus", () => {
 		const { prisma, stored } = makeUpdateStatusPrisma({
 			companyId: "cmp_1",
 			id: "ord_1",
+			phone: "5581999999999",
 			status: "em_preparo",
 		});
 		stored.customer.notificationEmail = true;
 		const sent: Record<string, string | number | undefined>[] = [];
 
-		await new UpdateOrderStatus(prisma, noopWhatsApp, undefined, { send: async input => void sent.push(input) }).execute(
+		const whatsAppSent: unknown[][] = [];
+		const whatsApp = { sendOrderStatus: async (...input: unknown[]) => void whatsAppSent.push(input) };
+
+		await new UpdateOrderStatus(prisma, whatsApp, undefined, { send: async input => void sent.push(input) }).execute(
 			"cmp_1",
 			"ord_1",
 			{ estimatedMinutes: 20, status: "em_preparo" },
@@ -343,6 +349,14 @@ describe("UpdateOrderStatus", () => {
 				reviewUrl: undefined,
 				to: "cliente@example.com",
 			},
+		]);
+		expect(whatsAppSent).toEqual([
+			[
+				"5581999999999",
+				"em_preparo",
+				"ord_1",
+				"Seu pedido #154 já está sendo preparado com carinho. Assim que ficar pronto, seguirá para entrega.",
+			],
 		]);
 	});
 
@@ -382,6 +396,21 @@ describe("UpdateOrderStatus", () => {
 		).rejects.toThrow("FORBIDDEN");
 	});
 
+	it("lets courier report a problem from a delivery stage", async () => {
+		const { stored, prisma } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			id: "ord_1",
+			status: "saiu_para_entrega",
+		});
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute(
+			"cmp_1",
+			"ord_1",
+			{ problemReason: "Cliente relatou item faltante.", status: "problema" },
+			"courier",
+		);
+		expect(stored).toMatchObject({ problemReason: "Cliente relatou item faltante.", status: "problema" });
+	});
+
 	it("lets kitchen return a ready order to preparation", async () => {
 		const { stored, prisma } = makeUpdateStatusPrisma({
 			companyId: "cmp_1",
@@ -397,6 +426,43 @@ describe("UpdateOrderStatus", () => {
 		);
 
 		expect(stored.status).toBe("em_preparo");
+	});
+
+	it("completes a pickup order directly from ready", async () => {
+		const { prisma, stored } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			deliveryMethod: "pickup",
+			id: "ord_1",
+			status: "pronto",
+		});
+
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "entregue" });
+
+		expect(stored.status).toBe("entregue");
+	});
+
+	it("emails pickup completion as collected", async () => {
+		const { prisma, stored } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			deliveryMethod: "pickup",
+			id: "ord_1",
+			status: "pronto",
+		});
+		stored.customer.notificationEmail = true;
+		const sent: Record<string, string | number | undefined>[] = [];
+
+		await new UpdateOrderStatus(prisma, noopWhatsApp, undefined, { send: async input => void sent.push(input) }).execute(
+			"cmp_1",
+			"ord_1",
+			{ status: "entregue" },
+		);
+
+		expect(sent[0]).toMatchObject({
+			message: "Seu pedido #154 foi retirado. Esperamos que aproveite cada detalhe!",
+			orderNumber: 154,
+			to: "cliente@example.com",
+		});
+		expect(sent[0]?.reviewUrl).toContain("/centro/rate?orderId=ord_1");
 	});
 
 	it("lets kitchen reassign the cook during preparation", async () => {

@@ -11,7 +11,7 @@ import { OrderErrors } from "../errors";
 import { formatOrderStatusMessage } from "../order-status-message";
 
 const DELIVERY_FLOW = ["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue"];
-const PICKUP_FLOW = ["recebido", "em_preparo", "pronto", "retirado"];
+const PICKUP_FLOW = ["recebido", "em_preparo", "pronto", "entregue"];
 const REOPENABLE_FROM_CANCELLED = new Set(["recebido", "em_preparo", "pronto"]);
 
 const NOTIFIABLE = new Set(["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue", "retirado"]);
@@ -48,6 +48,7 @@ function canRoleTransition(role: Role | undefined, current: string, next: string
 		);
 	}
 	if (role === "courier") {
+		if (next === "problema") return current === "pronto" || current === "saiu_para_entrega";
 		return (
 			(current === "pronto" && next === "saiu_para_entrega") ||
 			(current === "saiu_para_entrega" && next === "entregue")
@@ -171,7 +172,7 @@ export class UpdateOrderStatus {
 		const notifiesStatusChange = shouldNotify(order.status, status, order.deliveryMethod);
 		const notifiesEstimateUpdate =
 			order.status === "em_preparo" && status === "em_preparo" && estimatedMinutes !== undefined;
-		if (notifiesStatusChange) {
+		if (notifiesStatusChange || notifiesEstimateUpdate) {
 			const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
 			const message = formatOrderStatusMessage(
 				templates?.[status]?.trim() || undefined,

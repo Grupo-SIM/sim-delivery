@@ -15,7 +15,6 @@ import {
 } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 import { OrderKanbanCard } from "./OrderKanbanCard";
-import { AssignCourierModal } from "./AssignCourierModal";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 import { PhaseEstimateModal } from "./PhaseEstimateModal";
 
@@ -62,7 +61,7 @@ function isMovableStatus(
 
 function getFlow(deliveryMethod: string) {
 	return deliveryMethod === "pickup"
-		? ["recebido", "em_preparo", "pronto", "retirado"]
+		? ["recebido", "em_preparo", "pronto", "entregue"]
 		: ["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue"];
 }
 
@@ -70,8 +69,8 @@ function isFinalizedStatus(status: KanbanStatus): status is FinalizedStatus {
 	return FINALIZED_STATUSES.includes(status as FinalizedStatus);
 }
 
-function getFinalizedStatus(order: GetOrders200[number]): FinalizedStatus {
-	return order.deliveryMethod === "pickup" ? "retirado" : "entregue";
+function getFinalizedStatus(): FinalizedStatus {
+	return "entregue";
 }
 
 interface OrdersKanbanProps {
@@ -89,7 +88,6 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 	const scrollSpeedRef = useRef(0);
 	const [draggedOrderId, setDraggedOrderId] = useState<string | null>(null);
 	const [dragOverStatus, setDragOverStatus] = useState<string | null>(null);
-	const [courierAssignmentOrderId, setCourierAssignmentOrderId] = useState<string | null>(null);
 	const [problemOrderId, setProblemOrderId] = useState<string | null>(null);
 	const [phaseEstimate, setPhaseEstimate] = useState<{
 		orderId: string;
@@ -194,11 +192,12 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 		if (
 			role === "courier" &&
 			!(
+				(status === "problema" && ["pronto", "saiu_para_entrega"].includes(order.status)) ||
 				(order.status === "pronto" && status === "saiu_para_entrega") ||
 				(order.status === "saiu_para_entrega" && status === "entregue")
 			)
 		) {
-			return "Você só pode avançar pedidos de Pronto para Saiu para entrega ou de Saiu para entrega para Entregue.";
+			return "Você pode relatar um problema em pedidos Prontos ou em rota, além de avançar pedidos de Pronto para Saiu para entrega e de Saiu para entrega para Entregue.";
 		}
 		if (order.status === "awaiting_payment") {
 			return t("admin.orders.updateStatus.errors.awaitingPayment", {
@@ -218,15 +217,9 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 					"Somente pedidos de entrega podem sair para entrega. Pedidos de retirada devem ir para Retirado.",
 			});
 		}
-		if (status === "saiu_para_entrega" && !order.delivery && role !== "courier") {
-			return t("admin.orders.updateStatus.errors.needsCourier", {
-				defaultValue: "Antes de sair para entrega, atribua um entregador disponível ao pedido.",
-			});
-		}
-		if (status === "retirado" && order.deliveryMethod !== "pickup") {
+		if (status === "entregue" && order.deliveryMethod !== "pickup") {
 			return t("admin.orders.updateStatus.errors.pickupOnly", {
-				defaultValue:
-					"Somente pedidos de retirada podem ser marcados como Retirado. Para delivery, use Saiu para entrega e depois Entregue.",
+				defaultValue: "Pedidos de retirada são concluídos como Entregue.",
 			});
 		}
 		if (order.status === "cancelado" && !["recebido", "em_preparo", "pronto"].includes(status)) {
@@ -249,11 +242,6 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 	function moveOrder(orderId: string, status: KanbanStatus) {
 		const order = orders.find(candidate => candidate.id === orderId);
 		if (!order) return;
-		if (order.status === "pronto" && status === "saiu_para_entrega" && !order.delivery && role !== "courier") {
-			setCourierAssignmentOrderId(orderId);
-			return;
-		}
-
 		const blockReason = getMoveBlockReason(order, status);
 		if (blockReason) {
 			showStatusAlert(blockReason);
@@ -373,7 +361,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 									if (order)
 										moveOrder(
 											order.id,
-											column.kind === "finalized" ? getFinalizedStatus(order) : column.status,
+										column.kind === "finalized" ? getFinalizedStatus() : column.status,
 										);
 								}}
 							>
@@ -469,14 +457,6 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 					</div>
 				</div>
 			</Modal>
-			<AssignCourierModal
-				isOpen={courierAssignmentOrderId !== null}
-				onAssigned={() => {
-					if (courierAssignmentOrderId) updateOrderStatus(courierAssignmentOrderId, "saiu_para_entrega");
-				}}
-				onClose={() => setCourierAssignmentOrderId(null)}
-				orderId={courierAssignmentOrderId ?? ""}
-			/>
 			<PhaseEstimateModal
 				isOpen={phaseEstimate !== null}
 				isPending={patchStatus.isPending}

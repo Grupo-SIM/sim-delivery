@@ -89,10 +89,12 @@ function OrderTrackingPage() {
 	const stages =
 		order.deliveryMethod === "delivery"
 			? ["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue"]
-			: ["recebido", "em_preparo", "pronto", "retirado"];
+			: ["recebido", "em_preparo", "pronto", "entregue"];
 	const stageIndex = stages.indexOf(order.status);
 	const eventByStatus = new Map(order.statusEvents.map(event => [event.status, event.createdAt]));
-	const current = STATUS_COPY[order.status as keyof typeof STATUS_COPY];
+	const current = STATUS_COPY[
+		order.deliveryMethod === "pickup" && order.status === "entregue" ? "retirado" : (order.status as keyof typeof STATUS_COPY)
+	];
 	const CurrentIcon = current?.icon ?? LuClock3;
 	const currentDescription =
 		order.status === "pronto" && order.deliveryMethod === "pickup"
@@ -140,7 +142,11 @@ function OrderTrackingPage() {
 
 					<ol className="space-y-0 rounded-lg border border-border bg-card p-5">
 						{stages.map((status, index) => {
-							const copy = STATUS_COPY[status as keyof typeof STATUS_COPY];
+							const copy = STATUS_COPY[
+								order.deliveryMethod === "pickup" && status === "entregue"
+									? "retirado"
+									: (status as keyof typeof STATUS_COPY)
+							];
 							const Icon = copy.icon;
 							const complete = stageIndex >= index;
 							const statusTime = complete ? formatStatusTime(eventByStatus.get(status)) : null;

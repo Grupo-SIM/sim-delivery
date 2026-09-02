@@ -7,6 +7,7 @@ const DEFAULT_ORDER_STATUS_MESSAGES: Record<string, Record<string, string>> = {
 		saiu_para_entrega: "Seu pedido {{orderNumber}} saiu para entrega e está a caminho.",
 	},
 	pickup: {
+		entregue: "Seu pedido {{orderNumber}} foi retirado. Esperamos que aproveite cada detalhe!",
 		em_preparo: "Seu pedido {{orderNumber}} já está sendo preparado com carinho. Avisaremos assim que estiver pronto para retirada.",
 		pronto: "Seu pedido {{orderNumber}} está pronto para retirada. Esperamos você!",
 		recebido: "Recebemos seu pedido {{orderNumber}} e ele já entrou na fila de preparo.",

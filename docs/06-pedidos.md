@@ -7,15 +7,15 @@ pagamento e (quando delivery) uma entrega.
 
 ```
 recebido → em_preparo → pronto → saiu_para_entrega → entregue
-                                └───────────────────→ (retirada) retirado
+                                └───────────────────→ (retirada) entregue
 qualquer_estado_ativo → cancelado
 ```
 
 - `recebido` — pedido criado e pago/confirmado; aguardando aceite da loja.
 - `em_preparo` — cozinha produzindo (visível ao role `kitchen`).
 - `pronto` — pronto para sair/retirar.
-- `saiu_para_entrega` — atribuído a um motoboy, a caminho (delivery).
-- `entregue` / `retirado` — concluído.
+- `saiu_para_entrega` — a caminho (delivery); atribuição de motoboy é opcional.
+- `entregue` — concluído; em retirada, registra que cliente retirou na unidade.
 - `cancelado` — encerrado sem conclusão (com motivo).
 
 Ao iniciar uma fase com duração operacional (`em_preparo` ou `saiu_para_entrega`), a
@@ -23,7 +23,7 @@ equipe pode informar uma estimativa em minutos para concluir essa fase. A estima
 registrada no pedido como prazo absoluto e substitui, no acompanhamento, a faixa geral
 configurada na unidade. Ao mover o pedido para a fase seguinte, o prazo anterior é
 removido. Em pedidos de retirada, `pronto` informa ao cliente que ele já pode buscar o
-pedido; não inclui o tempo de uma eventual entrega.
+pedido; a conclusão segue diretamente para `entregue` e não inclui tempo de entrega.
 
 Regra objetiva: transições seguem a ordem acima; `cancelado` é terminal; não se altera
 pedido `entregue`/`retirado`/`cancelado`. Enum de status é **traduzível no frontend**

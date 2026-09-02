@@ -186,8 +186,7 @@ export class GetBusinessMetrics {
 				const delivery = minutesBetween(eventAt(order, "saiu_para_entrega"), eventAt(order, "entregue"));
 				if (delivery !== undefined) deliveryMinutes.push(delivery);
 			}
-			const completion = order.deliveryMethod === "pickup" ? "retirado" : "entregue";
-			const fulfillment = minutesBetween(eventAt(order, "recebido"), eventAt(order, completion));
+			const fulfillment = minutesBetween(eventAt(order, "recebido"), eventAt(order, "entregue"));
 			if (fulfillment !== undefined) fulfillmentMinutes.push(fulfillment);
 
 			const hourKey = String(order.createdAt.getHours());
