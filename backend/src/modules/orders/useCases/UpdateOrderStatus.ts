@@ -14,7 +14,7 @@ const PICKUP_FLOW = ["recebido", "em_preparo", "pronto", "entregue"];
 const REOPENABLE_FROM_CANCELLED = new Set(["recebido", "em_preparo", "pronto"]);
 
 const NOTIFIABLE = new Set(["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue", "retirado"]);
-const ESTIMABLE_STATUSES = new Set(["em_preparo", "saiu_para_entrega"]);
+const ESTIMABLE_STATUSES = new Set(["em_preparo"]);
 
 function canTransition(current: string, next: string, deliveryMethod: string): boolean {
 	if (current === next) return true;

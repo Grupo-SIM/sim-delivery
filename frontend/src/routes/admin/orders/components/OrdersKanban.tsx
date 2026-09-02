@@ -34,7 +34,7 @@ const FINALIZED_STATUSES = ["entregue", "retirado", "cancelado"] as const;
 
 type KanbanStatus = (typeof KANBAN_STATUSES)[number];
 type FinalizedStatus = (typeof FINALIZED_STATUSES)[number];
-type EstimableStatus = "em_preparo" | "saiu_para_entrega";
+type EstimableStatus = "em_preparo";
 type KanbanColumn =
 	| { kind: "status"; orders: GetOrders200; status: KanbanStatus }
 	| { kind: "finalized"; orders: GetOrders200; status: "finalizado" };
@@ -252,7 +252,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 			setProblemOrderId(orderId);
 			return;
 		}
-		if (status === "em_preparo" || status === "saiu_para_entrega") {
+		if (status === "em_preparo") {
 			setPhaseEstimate({ orderId, status });
 			return;
 		}

@@ -323,6 +323,21 @@ describe("UpdateOrderStatus", () => {
 		expect((stored.estimatedStatusCompletionAt as Date).getTime()).toBeGreaterThanOrEqual(before + 15 * 60_000);
 	});
 
+	it("does not store an estimate when the order leaves for delivery", async () => {
+		const { stored, prisma } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			id: "ord_1",
+			status: "pronto",
+		});
+
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", {
+			estimatedMinutes: 15,
+			status: "saiu_para_entrega",
+		});
+
+		expect(stored.estimatedStatusCompletionAt).toBeNull();
+	});
+
 	it("emails the customer when the preparation estimate is added or edited", async () => {
 		const { prisma, stored } = makeUpdateStatusPrisma({
 			companyId: "cmp_1",

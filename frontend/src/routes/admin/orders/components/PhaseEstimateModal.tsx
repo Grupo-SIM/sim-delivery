@@ -12,7 +12,7 @@ interface PhaseEstimateModalProps {
 	onClose: () => void;
 	onConfirm: (minutes?: number) => void;
 	orderId?: string;
-	status: "em_preparo" | "saiu_para_entrega";
+	status: "em_preparo";
 }
 
 export function PhaseEstimateModal({
@@ -27,7 +27,6 @@ export function PhaseEstimateModal({
 	const [minutes, setMinutes] = useDebouncedInput(String(initialMinutes), () => undefined);
 	const parsedMinutes = Number.parseInt(minutes, 10);
 	const isValid = Number.isInteger(parsedMinutes) && parsedMinutes >= 1 && parsedMinutes <= 1440;
-	const phaseLabel = status === "em_preparo" ? "preparo" : "entrega";
 
 	return (
 		<Modal
@@ -40,7 +39,7 @@ export function PhaseEstimateModal({
 					<span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">
 						<LuClock3 className="size-5" />
 					</span>
-					<span>Estimar tempo de {phaseLabel}</span>
+					<span>Estimar tempo de preparo</span>
 				</span>
 			}
 			urlKey="order-phase-estimate"

@@ -53,13 +53,13 @@ export function OrderKanbanCard({
 				new Date(order.estimatedStatusCompletionAt),
 			)
 		: null;
-	const canEditEstimate = order.status === "em_preparo" || order.status === "saiu_para_entrega";
+	const canEditEstimate = order.status === "em_preparo";
 	const initialEstimateMinutes = order.estimatedStatusCompletionAt
 		? Math.max(1, Math.round((new Date(order.estimatedStatusCompletionAt).getTime() - Date.now()) / 60_000))
 		: 15;
 
 	function updateEstimate(minutes?: number) {
-		if (order.status !== "em_preparo" && order.status !== "saiu_para_entrega") return;
+		if (order.status !== "em_preparo") return;
 
 		patchStatus.mutate(
 			{ data: { estimatedMinutes: minutes, status: order.status }, orderId: order.id },
@@ -185,7 +185,7 @@ export function OrderKanbanCard({
 				onClose={() => setEstimateOpen(false)}
 				onConfirm={updateEstimate}
 				orderId={order.id}
-				status={order.status as "em_preparo" | "saiu_para_entrega"}
+				status="em_preparo"
 			/>
 		</article>
 	);
