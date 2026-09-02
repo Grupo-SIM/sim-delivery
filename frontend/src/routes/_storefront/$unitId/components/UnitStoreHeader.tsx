@@ -7,12 +7,13 @@ import { UnitContactLinks } from "./UnitContactLinks";
 import { UnitSwitcher } from "./UnitSwitcher";
 
 interface UnitStoreHeaderProps {
+	onReviewsClick: () => void;
 	unit: GetPublicUnits200[number];
 	unitSlug: string;
 	units?: GetPublicUnits200;
 }
 
-export function UnitStoreHeader({ unit, unitSlug, units }: UnitStoreHeaderProps) {
+export function UnitStoreHeader({ onReviewsClick, unit, unitSlug, units }: UnitStoreHeaderProps) {
 	const { t } = useTranslation();
 	const address = [unit.addressLine, unit.neighborhood, unit.city].filter(Boolean).join(", ");
 
@@ -38,7 +39,14 @@ export function UnitStoreHeader({ unit, unitSlug, units }: UnitStoreHeaderProps)
 						{unit.isOpenNow ? t("store.status.open") : t("store.status.closed")}
 					</Badge>
 					{Number(unit.ratingCount) > 0 && (
-						<StarRating average={unit.ratingAverage} count={Number(unit.ratingCount)} />
+						<button
+							aria-label={t("store.unit.reviews.title")}
+							className="cursor-pointer rounded-md border border-transparent focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+							onClick={onReviewsClick}
+							type="button"
+						>
+							<StarRating average={unit.ratingAverage} count={Number(unit.ratingCount)} />
+						</button>
 					)}
 				</div>
 				{units && <UnitSwitcher unitId={unitSlug} units={units} />}

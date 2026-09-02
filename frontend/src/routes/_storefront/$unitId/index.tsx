@@ -38,6 +38,7 @@ function UnitStorePage() {
 	const units = unitsQuery.data;
 	const unit = units?.find(item => item.slug === unitSlug);
 	const [hoursOpen, setHoursOpen] = useState(false);
+	const [reviewsOpen, setReviewsOpen] = useState(false);
 	const [categoryNavDocked, setCategoryNavDocked] = useState(false);
 	const [search, setSearch] = useState("");
 	const setSelectedUnit = useSelectedUnitStore(state => state.setUnit);
@@ -96,7 +97,7 @@ function UnitStorePage() {
 				label={t("store.unit.bannerCarousel")}
 			/>
 			<Container className="space-y-6 py-8">
-				<UnitStoreHeader unit={unit} unitSlug={unitSlug} units={units} />
+				<UnitStoreHeader onReviewsClick={() => setReviewsOpen(true)} unit={unit} unitSlug={unitSlug} units={units} />
 
 				{menu.isPending ? (
 					<Skeleton className="h-64 w-full" />
@@ -139,8 +140,6 @@ function UnitStorePage() {
 					/>
 				)}
 
-				<UnitReviews unitId={unit.id} />
-
 				<CartBar
 					categoryNavDocked={categoryNavDocked}
 					deliveryFee={fee}
@@ -150,6 +149,7 @@ function UnitStorePage() {
 					unitSlug={unitSlug}
 				/>
 				<StoreHoursModal hours={unit.hours} isOpen={hoursOpen} onClose={() => setHoursOpen(false)} />
+				<UnitReviews isOpen={reviewsOpen} onClose={() => setReviewsOpen(false)} unitId={unit.id} />
 			</Container>
 		</>
 	);
