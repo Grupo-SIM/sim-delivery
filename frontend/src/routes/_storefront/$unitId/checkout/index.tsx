@@ -15,7 +15,7 @@ import {
 	useGetCashbackMe,
 	useGetLoyaltyMe,
 	usePatchCustomersMe,
-	usePostCustomersMe,
+	usePostCustomersMeAddresses,
 	usePostOrders,
 } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
@@ -81,10 +81,10 @@ function CheckoutPage() {
 		setAppliedCoupon(getStoredCoupon(unitId));
 	}, [getStoredCoupon, unitId]);
 
-	const { mutate: saveCustomer, isPending: isSavingCustomer } = usePostCustomersMe({
+	const createAddress = usePostCustomersMeAddresses({
 		// Customer response is stored locally after submit. Avoid Kubb's broad
 		// "Customers" mutation invalidation causing an unnecessary GET during checkout.
-		mutation: { mutationKey: ["checkout-customer"] },
+		mutation: { mutationKey: ["checkout-address"] },
 	});
 	const { mutate: placeOrder, isPending: isPlacingOrder } = usePostOrders();
 	const { mutateAsync: updateCustomer, isPending: isSavingIdentity } = usePatchCustomersMe();
@@ -136,24 +136,19 @@ function CheckoutPage() {
 	}
 
 	function handleAddressSubmit(address: AddressValue) {
-		const profile = { cpf: existingCustomer?.cpf ?? "", name: user?.name ?? "Cliente" };
-		saveCustomer(
+		createAddress.mutate(
 			{
 				data: {
-					address: {
-						addressLine: address.addressLine,
-						city: address.city || undefined,
-						complement: address.complement || undefined,
-						latitude: address.latitude,
-						longitude: address.longitude,
-						neighborhood: address.neighborhood || undefined,
-						number: address.number,
-						reference: address.reference || undefined,
-						state: address.state || undefined,
-						zipCode: address.zipCode,
-					},
-					cpf: profile.cpf || undefined,
-					name: profile.name,
+					addressLine: address.addressLine,
+					city: address.city || undefined,
+					complement: address.complement || undefined,
+					latitude: address.latitude,
+					longitude: address.longitude,
+					neighborhood: address.neighborhood || undefined,
+					number: address.number,
+					reference: address.reference || undefined,
+					state: address.state || undefined,
+					zipCode: address.zipCode,
 					slug: slug ?? "",
 				},
 			},
@@ -341,7 +336,7 @@ function CheckoutPage() {
 			/>
 			<AddressCreateModal
 				isOpen={addressCreateModalOpen}
-				isSaving={isSavingCustomer}
+				isSaving={createAddress.isPending}
 				isSubmodal={addressModalOpen}
 				onClose={() => setAddressCreateModalOpen(false)}
 				onCreate={handleAddressSubmit}
