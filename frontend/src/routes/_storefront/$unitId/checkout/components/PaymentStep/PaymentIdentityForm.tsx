@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { MaskedInput } from "@/components/ui/MaskedInput";
+import { hasCompletePaymentIdentity } from "./payment-identity";
 
 interface PaymentIdentityFormProps {
 	initialCpf: string | null;
@@ -18,8 +19,7 @@ export function PaymentIdentityForm({ initialCpf, initialName, isSaving, onSubmi
 	const [name, setName] = useDebouncedInput(initialName, () => undefined);
 	const [cpf, setCpf] = useState(initialCpf ?? "");
 	const cpfDigits = cpf.replace(/\D/g, "");
-	const hasFullName = name.trim().split(/\s+/).filter(Boolean).length >= 2;
-	const canSubmit = hasFullName && cpfDigits.length === 11;
+	const canSubmit = hasCompletePaymentIdentity(name, cpf);
 
 	return (
 		<form

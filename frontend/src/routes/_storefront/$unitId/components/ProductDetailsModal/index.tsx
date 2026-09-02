@@ -6,6 +6,7 @@ import { Modal } from "@/components/ui/Modal";
 import { ScrollArea } from "@/components/ui/ScrollArea";
 import { Scrollbar } from "@/components/ui/Scrollbar";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { closeActiveModalHistory } from "@/hooks/use-modal-history";
 import type { CartItem, SelectedOption } from "@/stores";
 import { showToast, useCartStore } from "@/stores";
 import { OptionImagePreviewModal } from "../OptionImagePreviewModal";
@@ -17,7 +18,7 @@ import type { OptionImagePreview, ProductOption } from "./types";
 interface ProductDetailsModalProps {
 	item: MenuItem | null;
 	editingItem?: CartItem | null;
-	historyMode?: "push" | "replace";
+	historyMode?: "none" | "push" | "replace";
 	initialNote?: string;
 	initialOptions?: string;
 	layer?: "modal" | "submodal";
@@ -176,7 +177,8 @@ export function ProductDetailsModal({
 		if (editingItem) replaceItem(unitId, editingItem.lineKey, input, quantity, note);
 		else addItem(unitId, input, quantity, note);
 		showToast(t(editingItem ? "store.cart.updated" : "store.cart.added"), "positive");
-		onClose();
+		if (historyMode === "none") onClose();
+		else closeActiveModalHistory();
 	}
 
 	return (
@@ -187,11 +189,6 @@ export function ProductDetailsModal({
 				layer={layer}
 				maxWidth="1100px"
 				onClose={onClose}
-				closeConfirmation={{
-					confirmation: t("store.product.closeConfirmation"),
-					confirmLabel: t("actions.discard"),
-					tooltip: t("store.product.closeTooltip"),
-				}}
 				scrollable={false}
 				urlKey="product-details"
 				urlState={selectedItem.id}

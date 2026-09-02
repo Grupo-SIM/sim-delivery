@@ -18,7 +18,7 @@ interface ModalHistoryEntry {
 }
 
 interface UseModalHistoryOptions {
-	historyMode?: "push" | "replace";
+	historyMode?: "none" | "push" | "replace";
 	isOpen: boolean;
 	onClose: () => void;
 	urlKey: string;
@@ -92,10 +92,10 @@ function closeModalHistory(id: string) {
 	window.history.back();
 }
 
-export function closeActiveModalHistory(afterClose: () => void) {
+export function closeActiveModalHistory(afterClose?: () => void) {
 	const entry = entries.at(-1);
 	if (!entry) {
-		afterClose();
+		afterClose?.();
 		return;
 	}
 	entry.afterClose = afterClose;
@@ -127,6 +127,8 @@ export function useModalHistory({
 	}, [id]);
 
 	useLayoutEffect(() => {
+		if (historyMode === "none") return;
+
 		if (isOpen && !active.current) {
 			active.current = true;
 			openModalHistory(
@@ -150,11 +152,16 @@ export function useModalHistory({
 	}, [historyMode, id, isOpen, urlKey, urlState]);
 
 	useLayoutEffect(() => {
+		if (historyMode === "none") return;
 		if (active.current) replaceModalState(id, urlKey, urlState);
-	});
+	}, [historyMode, id, urlKey, urlState]);
 
 	return useCallback(() => {
+		if (historyMode === "none") {
+			onCloseRef.current();
+			return;
+		}
 		if (active.current) closeModalHistory(id);
 		else onCloseRef.current();
-	}, [id]);
+	}, [historyMode, id]);
 }

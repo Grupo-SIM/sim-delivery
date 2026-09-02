@@ -9,6 +9,7 @@ import { showAlert } from "@/stores";
 import { CardPaymentForm, type CardPaymentValue } from "./CardPaymentForm";
 import { CardPaymentPending } from "./CardPaymentPending";
 import { PaymentIdentityForm } from "./PaymentIdentityForm";
+import { hasCompletePaymentIdentity } from "./payment-identity";
 import { PixPanel } from "./PixPanel";
 
 type PaymentMethod = "card" | "pix";
@@ -40,7 +41,7 @@ export function PaymentStep({
 	const [pixCpf, setPixCpf] = useState(customerCpf);
 	const [cardPaymentToken, setCardPaymentToken] = useState<string | null>(null);
 	const hasFullName = customerName.trim().split(/\s+/).filter(Boolean).length >= 2;
-	const identityComplete = hasFullName && (customerCpf?.replace(/\D/g, "").length ?? 0) === 11;
+	const identityComplete = hasCompletePaymentIdentity(customerName, customerCpf);
 
 	const { data: savedCards, isPending: savedCardsPending } = useQuery(getPaymentsCardsQueryOptions({ slug }));
 	const { isPending: isPayingCard, mutate: payWithCard } = usePostPaymentsCard();

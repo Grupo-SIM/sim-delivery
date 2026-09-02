@@ -6,7 +6,7 @@ import { ConfirmActionButton } from "./ConfirmActionButton";
 import { Scrollbar } from "./Scrollbar";
 
 interface ModalProps {
-	historyMode?: "push" | "replace";
+	historyMode?: "none" | "push" | "replace";
 	layer?: "modal" | "submodal";
 	isOpen: boolean;
 	closeConfirmation?: {
