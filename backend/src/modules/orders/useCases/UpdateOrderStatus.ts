@@ -31,6 +31,7 @@ function canTransition(current: string, next: string, deliveryMethod: string): b
 }
 
 function canRoleTransition(role: Role | undefined, current: string, next: string): boolean {
+	if (current === next) return true;
 	if (role === "kitchen") {
 		return (
 			(current === "recebido" && next === "em_preparo") || (current === "em_preparo" && next === "pronto")
@@ -83,7 +84,7 @@ export class UpdateOrderStatus {
 		});
 		if (!order) throw new DomainError(OrderErrors.ORDER_NOT_FOUND);
 		if (!canRoleTransition(role, order.status, status)) throw new DomainError(UserErrors.FORBIDDEN);
-		if (preparedById !== undefined && (role === "kitchen" || role === "courier")) {
+		if (preparedById !== undefined && role === "courier") {
 			throw new DomainError(UserErrors.FORBIDDEN);
 		}
 

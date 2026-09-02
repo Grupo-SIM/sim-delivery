@@ -46,7 +46,10 @@ export const StaffController = new Elysia({
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "staff", "read");
 
-					return listStaff.execute(scope.companyId, scope.role === "attendant" ? ["kitchen", "courier"] : undefined);
+					return listStaff.execute(
+						scope.companyId,
+						scope.role === "attendant" ? ["kitchen", "courier"] : scope.role === "kitchen" ? ["kitchen"] : undefined,
+					);
 				},
 				{
 					response: StaffListReturn,

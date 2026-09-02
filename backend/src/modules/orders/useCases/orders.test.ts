@@ -244,6 +244,7 @@ function makeUpdateStatusPrisma(order: {
 		items: unknown[];
 		deliveryMethod: string;
 		estimatedStatusCompletionAt: Date | null;
+		preparedById?: string | null;
 		company: { orderStatusWhatsAppTemplates: Record<string, string> | null };
 		customer: {
 			notificationEmail?: boolean;
@@ -285,6 +286,7 @@ function makeUpdateStatusPrisma(order: {
 		},
 		orderItem: { findMany: async () => [] },
 		orderStatusEvent: { create: async () => ({}) },
+		user: { findFirst: async () => ({ id: "kitchen_2" }) },
 		unitProduct: { updateMany: async () => ({ count: 1 }) },
 	} as unknown as PrismaInstance;
 
@@ -353,6 +355,21 @@ describe("UpdateOrderStatus", () => {
 				"kitchen",
 			),
 		).rejects.toThrow("FORBIDDEN");
+	});
+
+	it("lets kitchen reassign the cook during preparation", async () => {
+		const { stored, prisma } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			id: "ord_1",
+			status: "em_preparo",
+		});
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute(
+			"cmp_1",
+			"ord_1",
+			{ preparedById: "kitchen_2", status: "em_preparo" },
+			"kitchen",
+		);
+		expect(stored).toMatchObject({ preparedById: "kitchen_2", status: "em_preparo" });
 	});
 
 	it("lets courier advance only its delivery stages", async () => {

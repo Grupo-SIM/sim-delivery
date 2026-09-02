@@ -414,7 +414,8 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 															? order.status === "recebido" || order.status === "em_preparo"
 															: order.status === "pronto" || order.status === "saiu_para_entrega"
 												}
-												canManageAssignments={role !== "kitchen" && role !== "courier"}
+												canManageCourierAssignment={role !== "kitchen" && role !== "courier"}
+												canManageKitchenAssignment={role !== "courier"}
 												canPrint={[
 													"superAdmin",
 													"owner",

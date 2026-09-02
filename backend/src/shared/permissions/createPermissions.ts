@@ -96,7 +96,7 @@ export function createPermissions(role: Role) {
 			assignOperational: isAttendant,
 			invite: mgmt,
 			inviteOwner: isOwner,
-			read: mgmt || isAttendant,
+			read: mgmt || isAttendant || isKitchen,
 			remove: mgmt,
 			setRole: mgmt,
 		},

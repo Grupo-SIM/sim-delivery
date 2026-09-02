@@ -13,7 +13,8 @@ import { OrderStatusBadge } from "./OrderStatusBadge";
 import { PhaseEstimateModal } from "./PhaseEstimateModal";
 
 interface OrderKanbanCardProps {
-	canManageAssignments: boolean;
+	canManageCourierAssignment: boolean;
+	canManageKitchenAssignment: boolean;
 	canPrint: boolean;
 	canDrag: boolean;
 	onDragEnd: () => void;
@@ -24,7 +25,8 @@ interface OrderKanbanCardProps {
 
 export function OrderKanbanCard({
 	canDrag,
-	canManageAssignments,
+	canManageCourierAssignment,
+	canManageKitchenAssignment,
 	canPrint,
 	onDragEnd,
 	onDragStart,
@@ -129,9 +131,9 @@ export function OrderKanbanCard({
 				</div>
 			</button>
 
-			{canManageAssignments && (canAssignCourier || canAssignKitchen) && (
+			{(canManageKitchenAssignment || canManageCourierAssignment) && (canAssignCourier || canAssignKitchen) && (
 				<div className="mt-4 flex flex-wrap gap-2 border-border border-t pt-3">
-					{canAssignKitchen && (
+					{canManageKitchenAssignment && canAssignKitchen && (
 						<Button onClick={() => setAssignKitchenOpen(true)} size="sm" type="button" variant="outline">
 							<LuChefHat aria-hidden className="size-4" />
 							<span className="max-w-32 truncate">
@@ -139,7 +141,7 @@ export function OrderKanbanCard({
 							</span>
 						</Button>
 					)}
-					{canAssignCourier && (
+					{canManageCourierAssignment && canAssignCourier && (
 						<Button onClick={() => setAssignOpen(true)} size="sm" type="button" variant="outline">
 							<LuBike aria-hidden className="size-4" />
 							<span className="max-w-32 truncate">

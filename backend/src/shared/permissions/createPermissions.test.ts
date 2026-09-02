@@ -108,6 +108,7 @@ describe("createPermissions matrix", () => {
 		const permix = createPermissions("kitchen");
 		expect(permix.check("orders", "updateStatus")).toBe(true);
 		expect(permix.check("orders", "read")).toBe(true);
+		expect(permix.check("staff", "read")).toBe(true);
 		expect(permix.check("customers", "read")).toBe(false);
 		expect(permix.check("units", "create")).toBe(false);
 	});
