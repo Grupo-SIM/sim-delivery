@@ -1,9 +1,11 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { LuCircleAlert } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Input } from "@/components/ui/input";
+import { Label, RequiredMark } from "@/components/ui/label";
 import { Modal } from "@/components/ui/Modal";
 import { ScrollArea } from "@/components/ui/ScrollArea";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
@@ -298,10 +300,16 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 		patchStatus.mutate(
 			{ data: { problemReason: problemReason.trim(), status: "problema" }, orderId: problemOrderId },
 			{
+				onError: () =>
+					void showAlert(
+						"Não foi possível registrar a pendência agora. Atualize a página e tente novamente.",
+						"Falha ao registrar pendência",
+					),
 				onSuccess: () => {
 					void queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() });
-					setProblemOrderId(null);
+					showToast("Pendência registrada no pedido.", "positive");
 					setProblemReason("");
+					window.history.back();
 				},
 			},
 		);
@@ -429,23 +437,40 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 			<Modal
 				isOpen={problemOrderId !== null}
 				maxWidth="520px"
-				onClose={() => setProblemOrderId(null)}
-				title="Registrar pendência"
+				onClose={() => {
+					setProblemOrderId(null);
+					setProblemReason("");
+				}}
+				title={
+					<span className="flex items-center gap-3">
+						<span className="grid size-10 shrink-0 place-items-center rounded-xl bg-destructive/10 text-destructive">
+							<LuCircleAlert className="size-5" />
+						</span>
+						<span>Registrar pendência</span>
+					</span>
+				}
 				urlKey="order-problem-create"
 				urlState={problemOrderId ?? undefined}
 			>
-				<div className="space-y-4">
-					<label className="space-y-1">
-						<span className="font-medium text-sm">Explique o que aconteceu *</span>
+				<div className="space-y-6">
+					<p className="text-muted-foreground text-sm leading-6">
+						Descreva o ocorrido para orientar a equipe no próximo atendimento deste pedido.
+					</p>
+					<Label>
+						<span>
+							O que aconteceu <RequiredMark />
+						</span>
 						<Input
+							autoComplete="off"
+							name="problemReason"
 							onChange={event => setProblemReason(event.currentTarget.value)}
-							placeholder="Ex: Item faltante será enviado novamente."
+							placeholder="Ex.: Item faltante será enviado novamente."
 							type="text"
 							value={problemReason}
 						/>
-					</label>
-					<div className="flex justify-end gap-2">
-						<Button onClick={() => setProblemOrderId(null)} type="button" variant="outline">
+					</Label>
+					<div className="flex flex-col-reverse gap-2 border-t border-border/70 pt-5 sm:flex-row sm:justify-end">
+						<Button onClick={() => window.history.back()} type="button" variant="outline">
 							Descartar
 						</Button>
 						<Button

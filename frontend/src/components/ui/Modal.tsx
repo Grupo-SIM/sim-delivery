@@ -75,12 +75,17 @@ export function Modal({
 					style={{ maxWidth }}
 				>
 					<div
-						className={`scrollbar-none max-h-[calc(100dvh-2rem)] overflow-x-hidden p-4 pr-7 sm:p-7 sm:pr-10 ${
+						className={`scrollbar-none max-h-[calc(100dvh-2rem)] overflow-x-hidden p-5 sm:p-7 ${
 							scrollable ? "overflow-y-auto" : "flex h-[calc(100dvh-2rem)] flex-col overflow-y-hidden"
 						}`}
 						ref={setContentRef}
 					>
-						<div className="mb-2 flex shrink-0 justify-end">
+						<div
+							className={`flex shrink-0 items-start gap-4 ${
+								title ? "border-border/70 border-b pb-5" : "justify-end"
+							}`}
+						>
+							{title && <Dialog.Title className="min-w-0 flex-1 font-bold text-xl leading-tight">{title}</Dialog.Title>}
 							{closeConfirmation ? (
 								<ConfirmActionButton
 									aria-label={closeConfirmation.tooltip}
@@ -101,14 +106,13 @@ export function Modal({
 							) : (
 								<Dialog.Close
 									aria-label="Fechar"
-									className="grid size-9 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+									className="grid size-9 shrink-0 cursor-pointer place-items-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
 								>
 									<LuX className="size-5" />
 								</Dialog.Close>
 							)}
 						</div>
-						{title && <Dialog.Title className="shrink-0 font-bold text-xl">{title}</Dialog.Title>}
-						<div className={`${title ? "pt-4" : ""} min-w-0 ${scrollable ? "" : "min-h-0 flex-1"}`}>
+						<div className={`${title ? "pt-5" : ""} min-w-0 ${scrollable ? "" : "min-h-0 flex-1"}`}>
 							{children}
 						</div>
 					</div>
