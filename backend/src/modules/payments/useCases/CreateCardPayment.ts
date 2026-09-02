@@ -1,4 +1,5 @@
 import { DomainError } from "@/shared/errors";
+import { isValidCpf } from "@/shared/cpf";
 import type { DomCardTokenResult, DomPagamentosClient } from "@/shared/infra/domPagamentos";
 import { PaymentProviderError, paymentProviderErrorDescription } from "@/shared/infra/paymentProviderError";
 import { isApprovedSimpayStatus, isFailedSimpayStatus, type SimpayClient } from "@/shared/infra/simpay";
@@ -69,6 +70,7 @@ export class CreateCardPayment {
 			throw new DomainError(PaymentErrors.CARD_REQUIRED);
 		}
 		if (!holderDocument) throw new DomainError(PaymentErrors.DOCUMENT_REQUIRED);
+		if (!isValidCpf(holderDocument)) throw new DomainError(PaymentErrors.INVALID_DOCUMENT);
 
 		const existing = await this.prisma.payment.findUnique({ where: { orderId: order.id } });
 		if (existing?.status === "confirmed") throw new DomainError(PaymentErrors.PAYMENT_ALREADY_CONFIRMED);

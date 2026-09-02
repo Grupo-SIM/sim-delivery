@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { FaCcAmex, FaCcDiscover, FaCcMastercard, FaCcVisa, FaCreditCard } from "react-icons/fa";
 import { LuEye, LuEyeOff } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
+import { isValidCpf } from "@/lib/cpf";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
@@ -80,7 +81,7 @@ export function CardPaymentForm({
 		expMonth <= 12 &&
 		expYear >= new Date().getFullYear() &&
 		cvv.length >= 3;
-	const validCpf = !holderCpfRequired || holderCpf.length === 11;
+	const validCpf = !holderCpfRequired || isValidCpf(holderCpf);
 	const canSubmit = validCpf && (usingSavedCard || validNewCard);
 
 	function handleSubmit() {

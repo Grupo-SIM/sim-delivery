@@ -1,4 +1,5 @@
 import { DomainError } from "@/shared/errors";
+import { isValidCpf } from "@/shared/cpf";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { AddressInput, CreateCustomerBody, CustomerReturn } from "../dtos";
 import { CustomerErrors } from "../errors";
@@ -11,6 +12,7 @@ export class UpsertCustomer {
 
 		const company = await this.prisma.company.findUnique({ where: { slug } });
 		if (!company) throw new DomainError(CustomerErrors.COMPANY_NOT_FOUND);
+		if (cpf && !isValidCpf(cpf)) throw new DomainError(CustomerErrors.INVALID_CPF);
 
 		await this.prisma.user.update({ data: { name }, where: { id: userId } });
 

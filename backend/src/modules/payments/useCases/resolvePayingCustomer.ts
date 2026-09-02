@@ -1,4 +1,5 @@
 import { DomainError } from "@/shared/errors";
+import { isValidDocument } from "@/shared/cpf";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { PaymentErrors } from "../errors";
 
@@ -56,6 +57,7 @@ export async function resolvePayingCustomer(
 	const bodyCpf = data.cpf?.replace(/\D/g, "");
 	let document = customer.cpf?.replace(/\D/g, "") || bodyCpf || null;
 	if (!document && options.requireDocument !== false) throw new DomainError(PaymentErrors.DOCUMENT_REQUIRED);
+	if (document && !isValidDocument(document)) throw new DomainError(PaymentErrors.INVALID_DOCUMENT);
 	if (customer.user.name.trim().split(/\s+/).filter(Boolean).length < 2) {
 		throw new DomainError(PaymentErrors.NAME_REQUIRED);
 	}

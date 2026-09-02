@@ -6,6 +6,7 @@ import { Label, RequiredMark } from "@/components/ui/label";
 import { MaskedInput } from "@/components/ui/MaskedInput";
 import { type PostPaymentsPix200, useGetPaymentsStatusByToken, usePostPaymentsPix } from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
+import { isValidCpf } from "@/lib/cpf";
 import { showAlert } from "@/stores";
 import { usePaymentStatusEvents } from "./usePaymentStatusEvents";
 
@@ -87,7 +88,7 @@ export function PixPanel({ customerCpf, onConfirmed, onCpfSaved, orderId, slug }
 				className="space-y-4 rounded-xl border border-border bg-card p-4"
 				onSubmit={event => {
 					event.preventDefault();
-					if (cpfDigits.length !== 11) return;
+					if (!isValidCpf(cpfDigits)) return;
 					requestedRef.current = true;
 					void generate();
 				}}
@@ -114,7 +115,7 @@ export function PixPanel({ customerCpf, onConfirmed, onCpfSaved, orderId, slug }
 					/>
 				</Label>
 				{failed && <p className="text-destructive text-sm">{t("store.checkout.payment.pix.failedRetry")}</p>}
-				<Button className="w-full" disabled={isPending || cpfDigits.length !== 11} type="submit">
+				<Button className="w-full" disabled={isPending || !isValidCpf(cpfDigits)} type="submit">
 					{isPending ? t("store.checkout.payment.pix.generating") : t("store.checkout.payment.pix.generate")}
 				</Button>
 			</form>

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { MaskedInput } from "@/components/ui/MaskedInput";
+import { isValidCpf } from "@/lib/cpf";
 import type { AuthUser } from "@/stores/auth";
 
 interface ProfileDetailsFormProps {
@@ -33,7 +34,7 @@ export function ProfileDetailsForm({ customer, isSaving, onSave, user }: Profile
 		phoneDigits !== (customer?.phone ?? "") ||
 		cpfDigits !== (customer?.cpf ?? "");
 	const validPhone = phoneDigits.length === 0 || phoneDigits.length === 13;
-	const validCpf = cpfDigits.length === 0 || cpfDigits.length === 11;
+	const validCpf = cpfDigits.length === 0 || isValidCpf(cpfDigits);
 
 	return (
 		<section className="space-y-4 rounded-xl border border-border bg-card p-5">

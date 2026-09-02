@@ -69,7 +69,7 @@ const baseCompany: CompanyRow = { id: "cmp_1", slug: "zero-grau" };
 
 const baseCustomer: CustomerRow = {
 	companyId: "cmp_1",
-	cpf: "12345678901",
+	cpf: "52998224725",
 	domId: null,
 	id: "cust_1",
 	notificationEmail: false,
@@ -337,7 +337,7 @@ describe("resolvePayingCustomer", () => {
 
 		const context = await resolvePayingCustomer(prisma, "user_1", body);
 
-		expect(context.document).toBe("12345678901");
+		expect(context.document).toBe("52998224725");
 		expect(context.order).toEqual({ id: "order_1", total: 5000, unitName: "Boa Viagem" });
 		expect(context.user.email).toBe("maria@example.com");
 	});
@@ -387,19 +387,25 @@ describe("resolvePayingCustomer", () => {
 	it("persists the body CPF when the customer has none", async () => {
 		const { customers, prisma } = makeWorld({ customers: [{ ...baseCustomer, cpf: null }] });
 
-		const context = await resolvePayingCustomer(prisma, "user_1", { ...body, cpf: "987.654.321-00" });
+		const context = await resolvePayingCustomer(prisma, "user_1", { ...body, cpf: "111.444.777-35" });
 
-		expect(context.document).toBe("98765432100");
-		expect(customers[0].cpf).toBe("98765432100");
+		expect(context.document).toBe("11144477735");
+		expect(customers[0].cpf).toBe("11144477735");
 	});
 
 	it("keeps the stored CPF over the one sent in the body", async () => {
 		const { customers, prisma } = makeWorld();
 
-		const context = await resolvePayingCustomer(prisma, "user_1", { ...body, cpf: "987.654.321-00" });
+		const context = await resolvePayingCustomer(prisma, "user_1", { ...body, cpf: "111.444.777-35" });
 
-		expect(context.document).toBe("12345678901");
-		expect(customers[0].cpf).toBe("12345678901");
+		expect(context.document).toBe("52998224725");
+		expect(customers[0].cpf).toBe("52998224725");
+	});
+
+	it("rejects an invalid CPF before calling the payment gateway", async () => {
+		const { prisma } = makeWorld({ customers: [{ ...baseCustomer, cpf: "70267787497" }] });
+
+		await expect(resolvePayingCustomer(prisma, "user_1", body)).rejects.toThrow("INVALID_DOCUMENT");
 	});
 });
 
@@ -420,7 +426,7 @@ describe("CreatePixPayment", () => {
 		expect(payments).toHaveLength(1);
 		expect(calls.pix[0]).toMatchObject({
 			description: "Pedido Zero Grau [Unidade - Boa Viagem]",
-			document: "12345678901",
+			document: "52998224725",
 			document_type: "CPF",
 			price: 50,
 		});
@@ -793,7 +799,7 @@ describe("ListSavedCards", () => {
 	});
 
 	it("marks cards with a stored holder document as ready for reuse", async () => {
-		const { prisma } = makeWorld({ savedCards: [makeCard({ holderDocument: "98765432100" })] });
+		const { prisma } = makeWorld({ savedCards: [makeCard({ holderDocument: "11144477735" })] });
 
 		expect((await new ListSavedCards(prisma).execute("user_1", "zero-grau"))[0]?.holderCpfRequired).toBe(
 			false,
@@ -838,7 +844,7 @@ describe("CreateCardPayment", () => {
 		holderName: "MARIA S",
 		number: "4242 4242 4242 4242",
 	};
-	const body = { card, holderCpf: "98765432100", orderId: "order_1", slug: "zero-grau" };
+	const body = { card, holderCpf: "11144477735", orderId: "order_1", slug: "zero-grau" };
 
 	it("tokenizes a new card and confirms an explicitly completed charge", async () => {
 		const { cashbackLedger, payments, prisma } = makeWorld();
@@ -898,10 +904,10 @@ describe("CreateCardPayment", () => {
 		await new CreateCardPayment(prisma, simpay, dom).execute("user_1", body);
 
 		expect((domCalls.tokens[0] as { payload: { holder_document: string } }).payload.holder_document).toBe(
-			"98765432100",
+			"11144477735",
 		);
-		expect((simpayCalls.card[0] as { document: string }).document).toBe("98765432100");
-		expect(customers[0]?.cpf).toBe("12345678901");
+		expect((simpayCalls.card[0] as { document: string }).document).toBe("11144477735");
+		expect(customers[0]?.cpf).toBe("52998224725");
 	});
 
 	it("creates a DOM customer once and reuses the stored id", async () => {
@@ -939,7 +945,7 @@ describe("CreateCardPayment", () => {
 
 		expect(savedCards).toHaveLength(1);
 		expect(savedCards[0]).toMatchObject({
-			holderDocument: "98765432100",
+			holderDocument: "11144477735",
 			isDefault: true,
 			last4: "4242",
 			nickname: "Cartão pessoal",
@@ -986,7 +992,7 @@ describe("CreateCardPayment", () => {
 			customerId: "cust_1",
 			expiryMonth: "12",
 			expiryYear: "2030",
-			holderDocument: "98765432100",
+			holderDocument: "11144477735",
 			holderName: "MARIA SILVA",
 			id: "card_1",
 			isDefault: true,
@@ -1030,14 +1036,14 @@ describe("CreateCardPayment", () => {
 		const { dom } = makeDom();
 
 		await new CreateCardPayment(prisma, simpay, dom).execute("user_1", {
-			holderCpf: "98765432100",
+			holderCpf: "11144477735",
 			orderId: "order_1",
 			savedCardId: "card_legacy",
 			slug: "zero-grau",
 		});
 
-		expect((calls.card[0] as { document: string }).document).toBe("98765432100");
-		expect(savedCards[0]?.holderDocument).toBe("98765432100");
+		expect((calls.card[0] as { document: string }).document).toBe("11144477735");
+		expect(savedCards[0]?.holderDocument).toBe("11144477735");
 	});
 
 	it("refuses a saved card that belongs to someone else", async () => {
@@ -1212,7 +1218,7 @@ describe("DeleteSavedCard", () => {
 			customerId,
 			expiryMonth: "12",
 			expiryYear: "2030",
-			holderDocument: "98765432100",
+			holderDocument: "11144477735",
 			holderName: "MARIA",
 			id,
 			isDefault,

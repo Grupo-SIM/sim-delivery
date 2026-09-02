@@ -202,7 +202,7 @@ describe("customers use-cases", () => {
 			const { addresses, customers, prisma, users } = makePrisma();
 			await new UpsertCustomer(prisma).execute("user_1", {
 				address: baseAddress,
-				cpf: "12345678901",
+				cpf: "52998224725",
 				name: "Maria Silva",
 				slug: "demo",
 			});
@@ -337,15 +337,23 @@ describe("customer profile mutations", () => {
 	it("upserts CPF and phone without creating an address", async () => {
 		const { addresses, customers, prisma } = makePrisma();
 		await new UpdateMyCustomer(prisma).execute("user_1", {
-			cpf: "12345678901",
+			cpf: "52998224725",
 			phone: "11999999999",
 			slug: "demo",
 		});
 
 		expect(addresses).toHaveLength(0);
 		expect(customers).toEqual([
-			expect.objectContaining({ cpf: "12345678901", phone: "11999999999", userId: "user_1" }),
+			expect.objectContaining({ cpf: "52998224725", phone: "11999999999", userId: "user_1" }),
 		]);
+	});
+
+	it("rejects an invalid CPF", async () => {
+		const { prisma } = makePrisma();
+
+		await expect(
+			new UpdateMyCustomer(prisma).execute("user_1", { cpf: "70267787497", slug: "demo" }),
+		).rejects.toThrow("INVALID_CPF");
 	});
 
 	it("creates a default address and clears the prior default", async () => {
