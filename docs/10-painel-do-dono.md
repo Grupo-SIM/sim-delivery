@@ -11,6 +11,9 @@ esboço original — **deduzido** do escopo de televenda/delivery e do benchmark
 - Nº de pedidos, ticket médio, taxa de conversão do carrinho.
 - **Produtos mais vendidos** / mais populares.
 - Cashback emitido e resgatado; uso de cupons.
+- Cancelamentos operacionais consideram somente pedidos com pagamento confirmado.
+- Pedidos cancelados sem pagamento confirmado aparecem separadamente como abandono no pagamento,
+  com quantidade, valor não convertido e ticket médio não convertido.
 - Filtros por unidade e período.
 
 ### Gestão de pedidos

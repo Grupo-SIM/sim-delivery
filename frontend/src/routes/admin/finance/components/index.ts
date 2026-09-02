@@ -5,4 +5,5 @@ export * from "./DiscountMetrics";
 export * from "./FinancialDistribution";
 export * from "./FinancialTrend";
 export * from "./OperationsMetrics";
+export * from "./PaymentAbandonmentSummary";
 export * from "./UnitComparisonTable";

@@ -163,6 +163,15 @@ function summarizeCancellations(orders: CancelledOrder[]) {
 	return cancellation;
 }
 
+function summarizePaymentAbandonment(orders: CancelledOrder[]) {
+	const abandonedValueCents = orders.reduce((total, order) => total + order.total, 0);
+	return {
+		abandonedOrderCount: orders.length,
+		abandonedValueCents,
+		averageAbandonedTicket: orders.length ? Math.round(abandonedValueCents / orders.length) : 0,
+	};
+}
+
 function financialTrendKey(date: Date, groupBy: ReportGroupBy): string {
 	if (groupBy === "hourOfDay") return String(date.getHours());
 	if (groupBy === "dayOfWeek") return String((date.getDay() + 6) % 7);
@@ -220,7 +229,6 @@ export class GetFinancialAnalytics {
 			},
 			where: {
 				...(companyId ? { companyId } : {}),
-				payment: { is: { status: "confirmed" } },
 				status: CANCELLED,
 				...unitFilter,
 				...createdAtFilter,
@@ -238,19 +246,23 @@ export class GetFinancialAnalytics {
 				order.competenceAt >= previousSince &&
 				order.competenceAt < previousUntil,
 		);
-		const currentCancelled = cancelledOrders.filter(order => {
+		const currentAllCancelled = cancelledOrders.filter(order => {
 			const { at } = cancellationStage(order);
 			return (!since || at >= since) && (!until || at < until);
 		});
-		const previousCancelled = cancelledOrders.filter(order => {
+		const previousAllCancelled = cancelledOrders.filter(order => {
 			const { at } = cancellationStage(order);
 			return previousSince && previousUntil && at >= previousSince && at < previousUntil;
 		});
+		const currentCancelled = currentAllCancelled.filter(order => order.payment?.status === "confirmed");
+		const previousCancelled = previousAllCancelled.filter(order => order.payment?.status === "confirmed");
+		const currentAbandoned = currentAllCancelled.filter(order => order.payment?.status !== "confirmed");
 
 		const summary = summarize(current);
 		const previousSummary = summarize(previous);
 		const cancellation = summarizeCancellations(currentCancelled);
 		const previousCancellation = summarizeCancellations(previousCancelled);
+		const paymentAbandonment = summarizePaymentAbandonment(currentAbandoned);
 		cancellation.cancelRatePercent = cancellation.canceledOrderCount + summary.orderCount
 			? (cancellation.canceledOrderCount / (cancellation.canceledOrderCount + summary.orderCount)) * 100
 			: 0;
@@ -309,6 +321,7 @@ export class GetFinancialAnalytics {
 			},
 			distribution: { delivery: [...byDelivery.values()], payment: [...byPayment.values()] },
 			groupBy,
+			paymentAbandonment,
 			summary,
 			trend: [...trend.values()],
 		};
@@ -334,6 +347,7 @@ export class GetFinancialAnalytics {
 			},
 			distribution: { delivery: [], payment: [] },
 			groupBy,
+			paymentAbandonment: summarizePaymentAbandonment([]),
 			summary: emptySummary(),
 			trend: getOrdersByPeriod([], groupBy, since, now, until).map(bucket => ({
 				grossProfitCents: 0,

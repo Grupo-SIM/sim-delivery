@@ -376,10 +376,7 @@ function makeFinancialPrisma(completed: FinancialOrderRow[], cancelled: Financia
 		order: {
 			findMany: async ({ where }: { where: Where }) => {
 				const isCancelled = typeof where.status === "string";
-				const rows = isCancelled ? cancelled : completed;
-				return rows
-					.filter(row => where.payment === undefined || row.payment?.status === "confirmed")
-					.map(fill);
+				return (isCancelled ? cancelled : completed).map(fill);
 			},
 		},
 	} as unknown as PrismaInstance;
@@ -441,6 +438,11 @@ describe("GetFinancialAnalytics", () => {
 		expect(result.cancellation.byStage).toEqual([
 			{ lostRevenueCents: 3000, orderCount: 1, stage: "em_preparo" },
 		]);
+		expect(result.paymentAbandonment).toEqual({
+			abandonedOrderCount: 2,
+			abandonedValueCents: 9000,
+			averageAbandonedTicket: 4500,
+		});
 	});
 
 	it("subtracts refunds from net revenue and gross profit", async () => {

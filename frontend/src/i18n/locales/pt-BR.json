@@ -900,6 +900,12 @@
 						"problemRate": "Taxa de pedidos com problema",
 						"title": "Operação"
 					},
+					"paymentAbandonment": {
+						"averageTicket": "Ticket médio não convertido",
+						"count": "Pedidos não pagos",
+						"title": "Abandono no pagamento",
+						"value": "Valor não convertido"
+					},
 					"paymentMethod": {
 						"credit_card": "Cartão de crédito",
 						"pix": "PIX"

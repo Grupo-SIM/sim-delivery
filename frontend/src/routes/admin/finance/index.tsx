@@ -27,6 +27,7 @@ import {
 	FinancialDistribution,
 	FinancialTrend,
 	OperationsMetrics,
+	PaymentAbandonmentSummary,
 	UnitComparisonTable,
 } from "./components";
 
@@ -264,6 +265,17 @@ function FinancePage() {
 						lostRevenueCents: Number(row.lostRevenueCents),
 						orderCount: Number(row.orderCount),
 					})) ?? []
+				}
+			/>
+			<PaymentAbandonmentSummary
+				formatCents={formatCents}
+				isPending={isPending}
+				paymentAbandonment={
+					report && {
+						abandonedOrderCount: Number(report.paymentAbandonment.abandonedOrderCount),
+						abandonedValueCents: Number(report.paymentAbandonment.abandonedValueCents),
+						averageAbandonedTicket: Number(report.paymentAbandonment.averageAbandonedTicket),
+					}
 				}
 			/>
 			<CustomerMetrics

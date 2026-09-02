@@ -109,6 +109,12 @@ const CancellationSummary = t.Object({
 	wastedCostCents: t.Integer(),
 });
 
+const PaymentAbandonmentSummary = t.Object({
+	abandonedOrderCount: t.Integer(),
+	abandonedValueCents: t.Integer(),
+	averageAbandonedTicket: t.Integer(),
+});
+
 export const FinancialAnalyticsReturn = t.Object({
 	cancellation: CancellationSummary,
 	comparison: t.Object({
@@ -133,6 +139,7 @@ export const FinancialAnalyticsReturn = t.Object({
 		t.Literal("quarter"),
 		t.Literal("year"),
 	]),
+	paymentAbandonment: PaymentAbandonmentSummary,
 	summary: FinancialSummary,
 	trend: t.Array(FinancialTrendItem),
 });
