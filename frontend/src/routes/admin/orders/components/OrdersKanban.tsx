@@ -339,7 +339,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 								: [];
 						return (
 							<section
-								className={`min-h-[calc(100dvh-14rem)] rounded-2xl border bg-muted/35 transition ${
+								className={`flex h-[calc(100dvh-14rem)] min-h-0 flex-col rounded-2xl border bg-muted/35 transition ${
 									isDropTarget ? "border-primary bg-primary/5" : "border-border"
 								}`}
 								key={column.status}
@@ -387,7 +387,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 										{column.orders.length}
 									</span>
 								</header>
-								<div className="space-y-3 px-3 pb-3">
+								<ScrollArea className="min-h-0 flex-1 space-y-3 overflow-y-auto px-3 pb-3">
 									{column.orders.length === 0 ? (
 										<p className="rounded-md border border-border border-dashed px-2 py-8 text-center text-muted-foreground text-xs">
 											{t("admin.orders.kanban.emptyColumn")}
@@ -419,7 +419,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 											/>
 										))
 									)}
-								</div>
+								</ScrollArea>
 							</section>
 						);
 					})}
