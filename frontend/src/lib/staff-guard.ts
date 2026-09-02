@@ -5,13 +5,11 @@ import { showToast } from "@/stores";
 const staffRoles = new Set(["superAdmin", "owner", "manager", "attendant", "kitchen", "courier"]);
 const operationalRoles = new Set(["kitchen", "courier"]);
 const attendantPaths = [
-	"/admin",
+	"/admin/orders",
+	"/admin/inventory",
 	"/admin/products",
 	"/admin/categories",
 	"/admin/tags",
-	"/admin/orders",
-	"/admin/inventory",
-	"/admin/staff",
 ];
 
 /** Back-office roles, including operational kitchen and courier users, that may access /admin. */
@@ -62,7 +60,7 @@ export function canAccessAdminPath(role: string | null | undefined, pathname: st
 }
 
 export function getStaffAreaPath(role: string | null | undefined): "/admin" | "/admin/orders" {
-	return isOperationalStaff(role) ? "/admin/orders" : "/admin";
+	return isOperationalStaff(role) || isAttendant(role) ? "/admin/orders" : "/admin";
 }
 
 /** Route `beforeLoad` gate. Operational and attendant roles have limited admin routes. */
@@ -86,6 +84,6 @@ export async function requireStaffBeforeLoad(pathname?: string) {
 		throw redirect({ to: "/admin/orders" });
 	}
 	if (pathname && !canAccessAdminPath(role, pathname)) {
-		throw redirect({ to: "/admin" });
+		throw redirect({ to: isAttendant(role) ? "/admin/orders" : "/admin" });
 	}
 }

@@ -87,7 +87,7 @@ export function createPermissions(role: Role) {
 			read: mgmt || isAttendant || isKitchen || isCourier || isCustomer,
 			updateStatus: mgmt || isAttendant || isKitchen || isCourier,
 		},
-		reports: { dashboard: mgmt || isAttendant, read: mgmt },
+		reports: { dashboard: mgmt, read: mgmt },
 		reviews: {
 			create: isCustomer,
 			read: mgmt,
@@ -96,7 +96,7 @@ export function createPermissions(role: Role) {
 			assignOperational: isAttendant,
 			invite: mgmt,
 			inviteOwner: isOwner,
-			read: mgmt || isAttendant || isKitchen,
+			read: mgmt || isKitchen,
 			remove: mgmt,
 			setRole: mgmt,
 		},

@@ -87,23 +87,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 			</div>
 			{needsUnitSelection && <AdminUnitPicker />}
 
-			<NavItem exact icon={LuChartBar} label="Dashboard" onNavigate={onNavigate} to="/admin/" />
-
-			<NavGroup label={t("admin.dashboard.nav.products")}>
-				<NavItem
-					icon={LuPackage}
-					label={t("admin.products.title")}
-					onNavigate={onNavigate}
-					to="/admin/products"
-				/>
-				<NavItem
-					icon={LuFolderTree}
-					label={t("admin.categories.title")}
-					onNavigate={onNavigate}
-					to="/admin/categories"
-				/>
-				<NavItem icon={LuTag} label={t("admin.tags.title")} onNavigate={onNavigate} to="/admin/tags" />
-			</NavGroup>
+			{!attendant && <NavItem exact icon={LuChartBar} label="Dashboard" onNavigate={onNavigate} to="/admin/" />}
 
 			<NavGroup label={t("admin.dashboard.nav.operations")}>
 				<NavItem
@@ -144,6 +128,22 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 				)}
 			</NavGroup>
 
+			<NavGroup label={t("admin.dashboard.nav.products")}>
+				<NavItem
+					icon={LuPackage}
+					label={t("admin.products.title")}
+					onNavigate={onNavigate}
+					to="/admin/products"
+				/>
+				<NavItem
+					icon={LuFolderTree}
+					label={t("admin.categories.title")}
+					onNavigate={onNavigate}
+					to="/admin/categories"
+				/>
+				<NavItem icon={LuTag} label={t("admin.tags.title")} onNavigate={onNavigate} to="/admin/tags" />
+			</NavGroup>
+
 			{!attendant && (
 				<NavGroup label={t("admin.dashboard.nav.settings")}>
 					<NavItem
@@ -157,8 +157,6 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 					)}
 				</NavGroup>
 			)}
-
-			{attendant && <NavItem icon={LuUsers} label={t("admin.staff.title")} onNavigate={onNavigate} to="/admin/staff" />}
 
 			{isSuperAdmin(role) && (
 				<NavGroup label={t("admin.dashboard.nav.platform")}>

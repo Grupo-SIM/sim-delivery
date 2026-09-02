@@ -87,7 +87,7 @@ describe("createPermissions matrix", () => {
 		expect(createPermissions("manager").check("staff", "inviteOwner")).toBe(false);
 	});
 
-	it("attendant pauses product sales and assigns operational staff without editing the catalog or finances", () => {
+	it("attendant pauses product sales and assigns operational staff without dashboards, team access, catalog or finances", () => {
 		const permix = createPermissions("attendant");
 		expect(permix.check("orders", "create")).toBe(true);
 		expect(permix.check("coupons", "apply")).toBe(true);
@@ -96,10 +96,10 @@ describe("createPermissions matrix", () => {
 		expect(permix.check("inventory", "update")).toBe(false);
 		expect(permix.check("menu", "update")).toBe(false);
 		expect(permix.check("menu", "updateAvailability")).toBe(true);
-		expect(permix.check("reports", "dashboard")).toBe(true);
+		expect(permix.check("reports", "dashboard")).toBe(false);
 		expect(permix.check("reports", "read")).toBe(false);
 		expect(permix.check("staff", "assignOperational")).toBe(true);
-		expect(permix.check("staff", "read")).toBe(true);
+		expect(permix.check("staff", "read")).toBe(false);
 		expect(permix.check("staff", "invite")).toBe(false);
 		expect(permix.check("staff", "setRole")).toBe(false);
 	});

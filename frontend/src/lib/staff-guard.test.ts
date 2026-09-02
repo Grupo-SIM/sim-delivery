@@ -46,31 +46,35 @@ describe("getStaffAreaPath", () => {
 		expect(getStaffAreaPath("courier")).toBe("/admin/orders");
 	});
 
-	it("sends other staff roles to the administrative area", () => {
-		for (const role of ["superAdmin", "owner", "manager", "attendant"]) {
+	it("sends management roles to the administrative area", () => {
+		for (const role of ["superAdmin", "owner", "manager"]) {
 			expect(getStaffAreaPath(role)).toBe("/admin");
 		}
+	});
+
+	it("sends attendants to the orders board", () => {
+		expect(getStaffAreaPath("attendant")).toBe("/admin/orders");
 	});
 });
 
 describe("canAccessAdminPath", () => {
-	it("limits attendants to dashboard, catalog, orders, inventory and operational staff assignments", () => {
+	it("limits attendants to catalog, orders and inventory", () => {
 		for (const pathname of [
-			"/admin/",
 			"/admin/products/",
 			"/admin/categories/",
 			"/admin/tags/",
 			"/admin/orders/",
 			"/admin/inventory/",
 			"/admin/inventory/movements/",
-			"/admin/staff/",
 		]) {
 			expect(canAccessAdminPath("attendant", pathname)).toBe(true);
 		}
 
 		for (const pathname of [
+			"/admin/",
 			"/admin/finance/",
 			"/admin/customers/",
+			"/admin/staff/",
 			"/admin/units/",
 		]) {
 			expect(canAccessAdminPath("attendant", pathname)).toBe(false);
@@ -125,10 +129,10 @@ describe("requireStaffBeforeLoad", () => {
 		expect(await requireStaffBeforeLoad("/admin/orders")).toBeUndefined();
 	});
 
-	it("redirects attendants away from unauthorized pages", async () => {
+	it("redirects attendants away from unauthorized pages to the orders board", async () => {
 		session = { data: { user: { role: "attendant" } } };
 
-		await expect(requireStaffBeforeLoad("/admin/finance/")).rejects.toMatchObject({ to: "/admin" });
+		await expect(requireStaffBeforeLoad("/admin/finance/")).rejects.toMatchObject({ to: "/admin/orders" });
 	});
 
 	it("redirects managers away from unit pages", async () => {
