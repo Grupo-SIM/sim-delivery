@@ -58,7 +58,7 @@ export function CheckoutItemRow({ item, onEdit }: CheckoutItemRowProps) {
 				<div className="relative size-20">
 					{item.imageUrl ? (
 						<img
-							alt={item.title}
+							alt=""
 							className="size-20 rounded-lg object-cover"
 							loading="lazy"
 							src={item.imageUrl}
