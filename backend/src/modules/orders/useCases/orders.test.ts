@@ -382,7 +382,7 @@ describe("UpdateOrderStatus", () => {
 		).rejects.toThrow("FORBIDDEN");
 	});
 
-	it("lets attendants return a ready order to preparation", async () => {
+	it("lets kitchen return a ready order to preparation", async () => {
 		const { stored, prisma } = makeUpdateStatusPrisma({
 			companyId: "cmp_1",
 			id: "ord_1",
@@ -393,7 +393,7 @@ describe("UpdateOrderStatus", () => {
 			"cmp_1",
 			"ord_1",
 			{ status: "em_preparo" },
-			"attendant",
+			"kitchen",
 		);
 
 		expect(stored.status).toBe("em_preparo");

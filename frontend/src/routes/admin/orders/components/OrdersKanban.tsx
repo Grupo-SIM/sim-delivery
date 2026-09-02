@@ -411,7 +411,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 													role !== "kitchen" && role !== "courier"
 														? true
 														: role === "kitchen"
-															? order.status === "recebido" || order.status === "em_preparo"
+															? ["recebido", "em_preparo", "pronto"].includes(order.status)
 															: order.status === "pronto" || order.status === "saiu_para_entrega"
 												}
 												canManageCourierAssignment={role !== "kitchen" && role !== "courier"}

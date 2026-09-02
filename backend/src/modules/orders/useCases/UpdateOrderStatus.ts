@@ -42,7 +42,9 @@ function canRoleTransition(role: Role | undefined, current: string, next: string
 	if (current === next) return true;
 	if (role === "kitchen") {
 		return (
-			(current === "recebido" && next === "em_preparo") || (current === "em_preparo" && next === "pronto")
+			(current === "recebido" && next === "em_preparo") ||
+			(current === "em_preparo" && next === "pronto") ||
+			(current === "pronto" && next === "em_preparo")
 		);
 	}
 	if (role === "courier") {
