@@ -1,4 +1,6 @@
 import { useTranslation } from "react-i18next";
+import { LuPencil } from "react-icons/lu";
+import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import type { GetOrders200 } from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
@@ -6,22 +8,19 @@ import { formatMoney } from "@/lib/formatMoney";
 type OrderSummaryModalView = "customer" | "orders";
 
 interface OrderSummaryModalProps {
+	onEditEstimate?: () => void;
 	onClose: () => void;
 	order: GetOrders200[number] | null;
 	view: OrderSummaryModalView;
 }
 
-export function OrderSummaryModal({ onClose, order, view }: OrderSummaryModalProps) {
+export function OrderSummaryModal({ onClose, onEditEstimate, order, view }: OrderSummaryModalProps) {
 	const { t } = useTranslation();
-	const deadline =
-		order?.unitPrepTimeMinMinutes != null && order.unitPrepTimeMaxMinutes != null
-			? t("admin.orders.assignment.estimatedTime", {
-					max: order.unitPrepTimeMaxMinutes,
-					min: order.unitPrepTimeMinMinutes,
-				})
-			: order?.unitPrepTimeMinMinutes != null
-				? `${order.unitPrepTimeMinMinutes} min`
-				: "-";
+	const deadline = order?.estimatedStatusCompletionAt
+		? new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit" }).format(
+				new Date(order.estimatedStatusCompletionAt),
+			)
+		: "Sem previsão";
 	const subtotal = order ? Number(order.subtotal) : 0;
 	const deliveryFee = order ? Number(order.deliveryFee) : 0;
 	const discount = order ? Number(order.discountCents) : 0;
@@ -71,7 +70,23 @@ export function OrderSummaryModal({ onClose, order, view }: OrderSummaryModalPro
 							<>
 								<div>
 									<p className="text-muted-foreground">{t("admin.orders.assignment.deadline")}</p>
-									<p className="mt-1 font-medium">{deadline}</p>
+									{onEditEstimate ? (
+										<Button
+											aria-label="Editar previsão"
+											className="mt-1 h-10 w-full justify-between px-3 font-medium"
+											onClick={onEditEstimate}
+											type="button"
+											variant="outline"
+										>
+											<span>{deadline}</span>
+											<span className="flex items-center gap-1.5 border-border border-l pl-2 text-muted-foreground text-xs">
+												Editar
+												<LuPencil className="size-3.5" />
+											</span>
+										</Button>
+									) : (
+										<p className="mt-1 font-medium">{deadline}</p>
+									)}
 								</div>
 								<div>
 									<p className="text-muted-foreground">{t("admin.orders.assignment.preparedBy")}</p>

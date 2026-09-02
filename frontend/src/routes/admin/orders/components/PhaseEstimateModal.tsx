@@ -8,6 +8,7 @@ import { useDebouncedInput } from "@/hooks/use-debounced-input";
 interface PhaseEstimateModalProps {
 	isOpen: boolean;
 	isPending: boolean;
+	initialMinutes?: number;
 	onClose: () => void;
 	onConfirm: (minutes?: number) => void;
 	orderId?: string;
@@ -17,12 +18,13 @@ interface PhaseEstimateModalProps {
 export function PhaseEstimateModal({
 	isOpen,
 	isPending,
+	initialMinutes = 15,
 	onClose,
 	onConfirm,
 	orderId,
 	status,
 }: PhaseEstimateModalProps) {
-	const [minutes, setMinutes] = useDebouncedInput("15", () => undefined);
+	const [minutes, setMinutes] = useDebouncedInput(String(initialMinutes), () => undefined);
 	const parsedMinutes = Number.parseInt(minutes, 10);
 	const isValid = Number.isInteger(parsedMinutes) && parsedMinutes >= 1 && parsedMinutes <= 1440;
 	const phaseLabel = status === "em_preparo" ? "preparo" : "entrega";
@@ -30,6 +32,7 @@ export function PhaseEstimateModal({
 	return (
 		<Modal
 			isOpen={isOpen}
+			layer="submodal"
 			maxWidth="520px"
 			onClose={onClose}
 			title={

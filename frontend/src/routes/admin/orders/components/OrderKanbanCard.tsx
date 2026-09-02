@@ -1,13 +1,16 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuBike, LuChefHat, LuShoppingBag } from "react-icons/lu";
 import { OrderSummaryModal } from "@/components/orders";
 import { Button } from "@/components/ui/button";
-import type { GetOrders200 } from "@/lib/api";
+import { getOrdersQueryKey, type GetOrders200, usePatchOrdersByOrderIdStatus } from "@/lib/api";
+import { showAlert, showToast } from "@/stores";
 import { AssignCourierModal } from "./AssignCourierModal";
 import { AssignKitchenModal } from "./AssignKitchenModal";
 import { OrderReceiptButton } from "./OrderReceiptButton";
 import { OrderStatusBadge } from "./OrderStatusBadge";
+import { PhaseEstimateModal } from "./PhaseEstimateModal";
 
 interface OrderKanbanCardProps {
 	canManageAssignments: boolean;
@@ -29,9 +32,12 @@ export function OrderKanbanCard({
 	showStatus = false,
 }: OrderKanbanCardProps) {
 	const { t } = useTranslation();
+	const queryClient = useQueryClient();
+	const patchStatus = usePatchOrdersByOrderIdStatus();
 	const [assignOpen, setAssignOpen] = useState(false);
 	const [assignKitchenOpen, setAssignKitchenOpen] = useState(false);
 	const [detailsOpen, setDetailsOpen] = useState(false);
+	const [estimateOpen, setEstimateOpen] = useState(false);
 
 	const DeliveryIcon = order.deliveryMethod === "delivery" ? LuBike : LuShoppingBag;
 	const isDeliveryOrder = order.deliveryMethod === "delivery";
@@ -45,6 +51,27 @@ export function OrderKanbanCard({
 				new Date(order.estimatedStatusCompletionAt),
 			)
 		: null;
+	const canEditEstimate = order.status === "em_preparo" || order.status === "saiu_para_entrega";
+	const initialEstimateMinutes = order.estimatedStatusCompletionAt
+		? Math.max(1, Math.round((new Date(order.estimatedStatusCompletionAt).getTime() - Date.now()) / 60_000))
+		: 15;
+
+	function updateEstimate(minutes?: number) {
+		if (order.status !== "em_preparo" && order.status !== "saiu_para_entrega") return;
+
+		patchStatus.mutate(
+			{ data: { estimatedMinutes: minutes, status: order.status }, orderId: order.id },
+			{
+				onError: () =>
+					void showAlert("Não foi possível atualizar a previsão agora. Atualize a página e tente novamente."),
+				onSuccess: () => {
+					void queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() });
+					showToast(minutes === undefined ? "Previsão removida." : "Previsão atualizada.", "positive");
+					window.history.back();
+				},
+			},
+		);
+	}
 
 	return (
 		<article
@@ -143,9 +170,20 @@ export function OrderKanbanCard({
 				status={order.status as "recebido" | "em_preparo"}
 			/>
 			<OrderSummaryModal
+				onEditEstimate={canEditEstimate ? () => setEstimateOpen(true) : undefined}
 				onClose={() => setDetailsOpen(false)}
 				order={detailsOpen ? order : null}
 				view="orders"
+			/>
+			<PhaseEstimateModal
+				initialMinutes={initialEstimateMinutes}
+				isOpen={estimateOpen}
+				isPending={patchStatus.isPending}
+				key={estimateOpen ? `${order.id}:${order.status}` : "closed"}
+				onClose={() => setEstimateOpen(false)}
+				onConfirm={updateEstimate}
+				orderId={order.id}
+				status={order.status as "em_preparo" | "saiu_para_entrega"}
 			/>
 		</article>
 	);
