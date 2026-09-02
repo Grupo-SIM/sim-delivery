@@ -16,7 +16,7 @@ export class OrderStatusEmail extends BaseEmail {
 
 	constructor({ message, orderNumber, reviewUrl, to }: OrderStatusEmailInput) {
 		super(to);
-		this.message = message;
+		this.message = message.replace(new RegExp(`\\s*#${orderNumber}\\b`, "g"), "");
 		this.orderNumber = orderNumber;
 		this.reviewUrl = reviewUrl;
 	}

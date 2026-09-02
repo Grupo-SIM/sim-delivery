@@ -70,8 +70,10 @@ describe("email classes", () => {
 		expect(status.messages[0]?.html).toContain("Zero Grau");
 		expect(status.messages[0]?.html).toContain("Todos os direitos reservados.");
 		expect(status.messages[1]).toMatchObject({
-			text: "Seu pedido #154 foi entregue. Bom apetite!\n\nAvalie seu pedido: https://example.com/centro/rate?orderId=order_1",
+			text: "Seu pedido foi entregue. Bom apetite!\n\nAvalie seu pedido: https://example.com/centro/rate?orderId=order_1",
 		});
+		expect(status.messages[1]?.html).toContain("Seu pedido foi entregue. Bom apetite!");
+		expect(status.messages[1]?.html).not.toContain("Seu pedido #154 foi entregue.");
 		expect(status.messages[1]?.html).toContain("Avaliar pedido");
 		expect(status.messages[1]?.html).toContain("https://example.com/centro/rate?orderId=order_1");
 	});
