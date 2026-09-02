@@ -2,7 +2,7 @@ import { describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { UpdateStaffUnits } from "./UpdateStaffUnits";
 
-function fakePrisma(unitCount: number) {
+function fakePrisma(unitCount: number, capture: { staffWhere?: unknown } = {}) {
 	const created: Array<{ userId: string; unitId: string }> = [];
 	const deleted: string[] = [];
 	return {
@@ -24,13 +24,16 @@ function fakePrisma(unitCount: number) {
 				findMany: async () => Array.from({ length: unitCount }, (_, index) => ({ id: `unit_${index + 1}` })),
 			},
 			user: {
-				findFirst: async () => ({
+				findFirst: async ({ where }: { where: unknown }) => {
+					capture.staffWhere = where;
+					return {
 					createdAt: new Date(),
 					email: "courier@example.com",
 					id: "courier_1",
 					name: "Courier",
 					role: "courier",
-				}),
+					};
+				},
 			},
 		} as unknown as PrismaInstance,
 	};
@@ -62,5 +65,20 @@ describe("UpdateStaffUnits", () => {
 				unitIds: ["unit_1", "unit_2"],
 			}),
 		).rejects.toThrow("UNIT_NOT_FOUND");
+	});
+
+	it("limits operational assignments to kitchen and courier staff", async () => {
+		const capture: { staffWhere?: unknown } = {};
+		const { prisma } = fakePrisma(1, capture);
+		await new UpdateStaffUnits(prisma).execute(
+			{ companyId: "cmp_1", staffId: "courier_1", unitIds: ["unit_1"] },
+			["kitchen", "courier"],
+		);
+
+		expect(capture.staffWhere).toEqual({
+			companyId: "cmp_1",
+			id: "courier_1",
+			role: { in: ["kitchen", "courier"] },
+		});
 	});
 });

@@ -31,7 +31,7 @@ export function createPermissions(role: Role) {
 			orders: { create: true, print: true, read: true, updateStatus: true },
 			reports: { dashboard: true, read: true },
 			reviews: { create: true, read: true },
-			staff: { invite: true, inviteOwner: true, read: true, remove: true, setRole: true },
+			staff: { assignOperational: true, invite: true, inviteOwner: true, read: true, remove: true, setRole: true },
 			units: { create: true, delete: true, read: true, update: true },
 		});
 		return permix;
@@ -44,7 +44,7 @@ export function createPermissions(role: Role) {
 
 	permix.setup({
 		branding: {
-			read: mgmt,
+			read: mgmt || isAttendant,
 			update: isOwner,
 		},
 		company: {
@@ -90,12 +90,13 @@ export function createPermissions(role: Role) {
 		reports: { dashboard: mgmt || isAttendant, read: mgmt },
 		reviews: {
 			create: isCustomer,
-			read: mgmt || isAttendant,
+			read: mgmt,
 		},
 		staff: {
+			assignOperational: isAttendant,
 			invite: mgmt,
 			inviteOwner: isOwner,
-			read: mgmt,
+			read: mgmt || isAttendant,
 			remove: mgmt,
 			setRole: mgmt,
 		},

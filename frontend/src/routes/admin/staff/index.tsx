@@ -7,11 +7,15 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
 import { useGetStaff } from "@/lib/api";
+import { isAttendant } from "@/lib/staff-guard";
+import { useAuthStore } from "@/stores";
 import { InviteStaffForm, StaffTable } from "./components";
 
 function StaffPage() {
 	const { t } = useTranslation();
 	const { data: staff, isError, isPending } = useGetStaff();
+	const role = useAuthStore(state => state.role);
+	const assignmentOnly = isAttendant(role);
 	const [search, setSearch] = useState("");
 
 	const filteredStaff = useMemo(() => {
@@ -31,7 +35,7 @@ function StaffPage() {
 		<Container className="space-y-6 py-8">
 			<SectionHeading subtitle={t("admin.staff.subtitle")} title={t("admin.staff.title")} />
 
-			<InviteStaffForm />
+			{!assignmentOnly && <InviteStaffForm />}
 
 			<div className="max-w-sm">
 				<TextField
@@ -47,7 +51,7 @@ function StaffPage() {
 			) : isError ? (
 				<ErrorState title={t("admin.staff.loadError")} />
 			) : (
-				<StaffTable staff={filteredStaff ?? []} />
+				<StaffTable assignmentOnly={assignmentOnly} staff={filteredStaff ?? []} />
 			)}
 		</Container>
 	);

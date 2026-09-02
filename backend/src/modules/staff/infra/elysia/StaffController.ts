@@ -46,7 +46,7 @@ export const StaffController = new Elysia({
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "staff", "read");
 
-					return listStaff.execute(scope.companyId);
+					return listStaff.execute(scope.companyId, scope.role === "attendant" ? ["kitchen", "courier"] : undefined);
 				},
 				{
 					response: StaffListReturn,
@@ -81,14 +81,15 @@ export const StaffController = new Elysia({
 				"/:staffId/units",
 				async ({ body, params, request, updateStaffUnits }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
-					CompanyScopeGuard.authorize(scope, "staff", "setRole");
+					const action = scope.role === "attendant" ? "assignOperational" : "setRole";
+					CompanyScopeGuard.authorize(scope, "staff", action);
 					CompanyScopeGuard.authorizeUnits(scope, body.unitIds);
 
 					return updateStaffUnits.execute({
 						...body,
 						companyId: scope.companyId,
 						staffId: params.staffId,
-					});
+					}, scope.role === "attendant" ? ["kitchen", "courier"] : undefined);
 				},
 				{
 					body: UpdateStaffUnitsBody,

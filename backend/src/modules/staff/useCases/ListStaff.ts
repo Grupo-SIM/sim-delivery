@@ -1,10 +1,11 @@
+import type { Role } from "@/shared/permissions";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { StaffListReturn } from "../dtos";
 
 export class ListStaff {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(companyId: string | null): Promise<StaffListReturn> {
+	async execute(companyId: string | null, roles?: Role[]): Promise<StaffListReturn> {
 		const staff = await this.prisma.user.findMany({
 			orderBy: { name: "asc" },
 			select: {
@@ -17,7 +18,7 @@ export class ListStaff {
 			},
 			where: {
 				...(companyId ? { companyId } : {}),
-				role: { in: ["owner", "manager", "attendant", "kitchen", "courier"] },
+				role: { in: roles ?? ["owner", "manager", "attendant", "kitchen", "courier"] },
 			},
 		});
 

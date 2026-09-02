@@ -5,10 +5,11 @@ import type { GetStaff200 } from "@/lib/api";
 import { StaffRow } from "./StaffRow";
 
 interface StaffTableProps {
+	assignmentOnly?: boolean;
 	staff: GetStaff200;
 }
 
-export function StaffTable({ staff }: StaffTableProps) {
+export function StaffTable({ assignmentOnly = false, staff }: StaffTableProps) {
 	const { t } = useTranslation();
 
 	if (staff.length === 0) {
@@ -28,7 +29,7 @@ export function StaffTable({ staff }: StaffTableProps) {
 			</thead>
 			<tbody>
 				{staff.map(member => (
-					<StaffRow key={member.id} member={member} />
+					<StaffRow assignmentOnly={assignmentOnly} key={member.id} member={member} />
 				))}
 			</tbody>
 		</DataTable>

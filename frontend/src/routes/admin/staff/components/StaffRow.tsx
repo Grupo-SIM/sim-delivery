@@ -10,10 +10,11 @@ import { showAlert, showToast } from "@/stores";
 import { StaffEditorModal } from "./StaffEditorModal";
 
 interface StaffRowProps {
+	assignmentOnly?: boolean;
 	member: GetStaff200[number];
 }
 
-export function StaffRow({ member }: StaffRowProps) {
+export function StaffRow({ assignmentOnly = false, member }: StaffRowProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const remove = useDeleteStaffByStaffId();
@@ -69,22 +70,24 @@ export function StaffRow({ member }: StaffRowProps) {
 								{t("admin.staff.row.edit")}
 							</Button>
 						</Tooltip>
-						<ConfirmActionButton
-							confirmation={t("admin.staff.row.removeConfirm", { name: member.name })}
-							confirmLabel={t("admin.staff.row.remove")}
-							disabled={remove.isPending}
-							onConfirm={removeMember}
-							size="sm"
-							type="button"
-							variant="outline"
-						>
-							<LuTrash2 className="size-4" />
-							{t("admin.staff.row.remove")}
-						</ConfirmActionButton>
+						{!assignmentOnly && (
+							<ConfirmActionButton
+								confirmation={t("admin.staff.row.removeConfirm", { name: member.name })}
+								confirmLabel={t("admin.staff.row.remove")}
+								disabled={remove.isPending}
+								onConfirm={removeMember}
+								size="sm"
+								type="button"
+								variant="outline"
+							>
+								<LuTrash2 className="size-4" />
+								{t("admin.staff.row.remove")}
+							</ConfirmActionButton>
+						)}
 					</div>
 				)}
 			</td>
-			<StaffEditorModal member={isEditing ? member : null} onClose={() => setIsEditing(false)} />
+			<StaffEditorModal assignmentOnly={assignmentOnly} member={isEditing ? member : null} onClose={() => setIsEditing(false)} />
 		</tr>
 	);
 }

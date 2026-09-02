@@ -17,11 +17,12 @@ import { StaffUnitSelector } from "./StaffUnitSelector";
 type EditableRole = "manager" | "attendant" | "kitchen" | "courier";
 
 interface StaffEditorModalProps {
+	assignmentOnly?: boolean;
 	member: GetStaff200[number] | null;
 	onClose: () => void;
 }
 
-export function StaffEditorModal({ member, onClose }: StaffEditorModalProps) {
+export function StaffEditorModal({ assignmentOnly = false, member, onClose }: StaffEditorModalProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const unitsQuery = useGetUnits();
@@ -47,7 +48,7 @@ export function StaffEditorModal({ member, onClose }: StaffEditorModalProps) {
 	async function save() {
 		if (!member || unitIds.length === 0) return;
 		try {
-			await patch.mutateAsync({ data: { role }, staffId: member.id });
+			if (!assignmentOnly) await patch.mutateAsync({ data: { role }, staffId: member.id });
 			await updateUnits.mutateAsync({ data: { unitIds }, staffId: member.id });
 			await queryClient.invalidateQueries({ queryKey: getStaffQueryKey() });
 			showToast(t("admin.staff.row.updateSuccess"), "positive");
@@ -76,14 +77,16 @@ export function StaffEditorModal({ member, onClose }: StaffEditorModalProps) {
 						<p className="mt-1 text-muted-foreground">{member?.email}</p>
 					</div>
 				</div>
-				<div className="flex flex-col gap-1.5">
-					<span className="font-medium text-sm">{t("admin.staff.columns.role")}</span>
-					<CustomSelect
-						onChange={value => setRole(value as EditableRole)}
-						options={roleOptions}
-						value={role}
-					/>
-				</div>
+				{!assignmentOnly && (
+					<div className="flex flex-col gap-1.5">
+						<span className="font-medium text-sm">{t("admin.staff.columns.role")}</span>
+						<CustomSelect
+							onChange={value => setRole(value as EditableRole)}
+							options={roleOptions}
+							value={role}
+						/>
+					</div>
+				)}
 				<fieldset>
 					<legend className="font-medium text-sm">{t("admin.staff.invite.units")}</legend>
 					{unitsQuery.isPending ? (

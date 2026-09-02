@@ -38,4 +38,14 @@ describe("ListStaff", () => {
 			role: { in: ["owner", "manager", "attendant", "kitchen", "courier"] },
 		});
 	});
+
+	it("limits an operational-assignment listing to kitchen and courier staff", async () => {
+		const capture: { orderBy?: unknown; where?: unknown } = {};
+		await new ListStaff(fakePrisma(capture)).execute("cmp_1", ["kitchen", "courier"]);
+
+		expect(capture.where).toEqual({
+			companyId: "cmp_1",
+			role: { in: ["kitchen", "courier"] },
+		});
+	});
 });

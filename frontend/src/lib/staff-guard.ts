@@ -4,7 +4,15 @@ import { showToast } from "@/stores";
 
 const staffRoles = new Set(["superAdmin", "owner", "manager", "attendant", "kitchen", "courier"]);
 const operationalRoles = new Set(["kitchen", "courier"]);
-const attendantPaths = ["/admin", "/admin/products", "/admin/categories", "/admin/tags", "/admin/orders", "/admin/inventory"];
+const attendantPaths = [
+	"/admin",
+	"/admin/products",
+	"/admin/categories",
+	"/admin/tags",
+	"/admin/orders",
+	"/admin/inventory",
+	"/admin/staff",
+];
 
 /** Back-office roles, including operational kitchen and courier users, that may access /admin. */
 export function isStaff(role: string | null | undefined): boolean {

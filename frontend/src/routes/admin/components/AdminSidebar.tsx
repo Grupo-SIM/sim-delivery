@@ -155,9 +155,10 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 					{!manager && (
 						<NavItem icon={LuStore} label={t("admin.units.title")} onNavigate={onNavigate} to="/admin/units" />
 					)}
-					<NavItem icon={LuUsers} label={t("admin.staff.title")} onNavigate={onNavigate} to="/admin/staff" />
 				</NavGroup>
 			)}
+
+			{attendant && <NavItem icon={LuUsers} label={t("admin.staff.title")} onNavigate={onNavigate} to="/admin/staff" />}
 
 			{isSuperAdmin(role) && (
 				<NavGroup label={t("admin.dashboard.nav.platform")}>

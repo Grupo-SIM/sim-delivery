@@ -54,7 +54,7 @@ describe("getStaffAreaPath", () => {
 });
 
 describe("canAccessAdminPath", () => {
-	it("limits attendants to dashboard, catalog, orders and inventory", () => {
+	it("limits attendants to dashboard, catalog, orders, inventory and operational staff assignments", () => {
 		for (const pathname of [
 			"/admin/",
 			"/admin/products/",
@@ -63,6 +63,7 @@ describe("canAccessAdminPath", () => {
 			"/admin/orders/",
 			"/admin/inventory/",
 			"/admin/inventory/movements/",
+			"/admin/staff/",
 		]) {
 			expect(canAccessAdminPath("attendant", pathname)).toBe(true);
 		}
@@ -70,7 +71,6 @@ describe("canAccessAdminPath", () => {
 		for (const pathname of [
 			"/admin/finance/",
 			"/admin/customers/",
-			"/admin/staff/",
 			"/admin/units/",
 		]) {
 			expect(canAccessAdminPath("attendant", pathname)).toBe(false);
