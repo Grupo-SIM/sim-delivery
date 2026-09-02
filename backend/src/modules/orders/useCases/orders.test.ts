@@ -321,6 +321,32 @@ describe("UpdateOrderStatus", () => {
 		expect((stored.estimatedStatusCompletionAt as Date).getTime()).toBeGreaterThanOrEqual(before + 15 * 60_000);
 	});
 
+	it("emails the customer when the preparation estimate is added or edited", async () => {
+		const { prisma, stored } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			id: "ord_1",
+			status: "em_preparo",
+		});
+		stored.customer.notificationEmail = true;
+		const sent: Record<string, string | number | undefined>[] = [];
+
+		await new UpdateOrderStatus(prisma, noopWhatsApp, undefined, { send: async input => void sent.push(input) }).execute(
+			"cmp_1",
+			"ord_1",
+			{ estimatedMinutes: 20, status: "em_preparo" },
+		);
+
+		expect(sent).toEqual([
+			{
+				message: "Seu pedido #154 está em preparo.",
+				orderNumber: 154,
+				reviewUrl: undefined,
+				status: "em_preparo",
+				to: "cliente@example.com",
+			},
+		]);
+	});
+
 	it("clears the previous phase deadline when advancing", async () => {
 		const { stored, prisma } = makeUpdateStatusPrisma({
 			companyId: "cmp_1",
