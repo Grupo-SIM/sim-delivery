@@ -1,5 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useCallback, useRef, useState } from "react";
 import { LuX } from "react-icons/lu";
 import { useModalHistory } from "@/hooks/use-modal-history";
 import { ConfirmActionButton } from "./ConfirmActionButton";
@@ -38,8 +38,13 @@ export function Modal({
 }: ModalProps) {
 	const zIndexClass = layer === "submodal" ? "z-[60]" : "z-50";
 	const [content, setContent] = useState<HTMLDivElement | null>(null);
+	const contentRef = useRef<HTMLDivElement | null>(null);
 	const [closeConfirming, setCloseConfirming] = useState(false);
 	const closeWithHistory = useModalHistory({ historyMode, isOpen, onClose, urlKey, urlState });
+	const setContentRef = useCallback((node: HTMLDivElement | null) => {
+		contentRef.current = node;
+		setContent(node);
+	}, []);
 
 	return (
 		<Dialog.Root
@@ -53,6 +58,10 @@ export function Modal({
 				<Dialog.Overlay className={`fixed inset-0 ${zIndexClass} bg-black/55 backdrop-blur-sm`} />
 				<Dialog.Content
 					className={`fixed top-1/2 left-1/2 ${zIndexClass} w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl bg-card text-card-foreground shadow-2xl sm:w-[92vw] sm:max-w-[92vw]`}
+					onOpenAutoFocus={event => {
+						event.preventDefault();
+						contentRef.current?.focus({ preventScroll: true });
+					}}
 					onEscapeKeyDown={event => {
 						if (!closeConfirmation) return;
 						event.preventDefault();
@@ -69,7 +78,7 @@ export function Modal({
 						className={`scrollbar-none max-h-[calc(100dvh-2rem)] overflow-x-hidden p-4 pr-7 sm:p-7 sm:pr-10 ${
 							scrollable ? "overflow-y-auto" : "flex h-[calc(100dvh-2rem)] flex-col overflow-y-hidden"
 						}`}
-						ref={setContent}
+						ref={setContentRef}
 					>
 						<div className="mb-2 flex shrink-0 justify-end">
 							{closeConfirmation ? (

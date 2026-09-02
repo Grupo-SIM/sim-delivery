@@ -21,11 +21,13 @@ function createBrowser() {
 	let index = -1;
 	const popStateListeners: (() => void)[] = [];
 	const location = { href: "" };
+	const scrollCalls: ScrollToOptions[] = [];
 
 	function reset(url: string) {
 		entries = [{ state: null, url: new URL(url) }];
 		index = 0;
 		location.href = entries[0].url.href;
+		scrollCalls.length = 0;
 	}
 
 	function setCurrent(entry: BrowserEntry) {
@@ -64,13 +66,15 @@ function createBrowser() {
 			callback();
 			return 1;
 		},
-		scrollTo: () => undefined,
+		scrollTo: (options: ScrollToOptions) => {
+			scrollCalls.push(options);
+		},
 		scrollX: 0,
 		scrollY: 0,
 	};
 
 	reset("https://delivery.test/boa-viagem");
-	return { reset, windowStub };
+	return { reset, scrollCalls, windowStub };
 }
 
 const browser = createBrowser();
@@ -93,6 +97,7 @@ describe("modal history", () => {
 		});
 
 		expect(window.location.href).toContain("modal=product-details");
+		expect(browser.scrollCalls).toEqual([{ behavior: "instant", left: 0, top: 0 }]);
 		close();
 
 		expect(closed).toBe(1);

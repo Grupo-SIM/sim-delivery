@@ -73,6 +73,7 @@ function openModalHistory(entry: ModalHistoryEntry, key: string, state: string |
 		"",
 		modalUrl(key, state),
 	);
+	restoreScroll(entry);
 }
 
 function replaceModalState(id: string, key: string, state?: string) {
