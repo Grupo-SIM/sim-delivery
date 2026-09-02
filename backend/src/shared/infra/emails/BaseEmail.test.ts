@@ -68,6 +68,7 @@ describe("email classes", () => {
 		expect(status.messages[0]?.html).toContain("Atualização do pedido");
 		expect(status.messages[0]?.html).not.toContain("Status:");
 		expect(status.messages[0]?.html).toContain("Zero Grau");
+		expect(status.messages[0]?.html).toContain("Todos os direitos reservados.");
 		expect(status.messages[1]).toMatchObject({
 			text: "Seu pedido #154 foi entregue. Bom apetite!\n\nAvalie seu pedido: https://example.com/centro/rate?orderId=order_1",
 		});

@@ -31,7 +31,6 @@ export function EmailLayout({ children, lang = "pt-BR", preview }: EmailLayoutPr
 						borderRadius: "24px",
 						margin: "0 auto",
 						maxWidth: "560px",
-						overflow: "hidden",
 						padding: "0",
 						boxShadow: "0 18px 44px rgba(0, 18, 255, 0.16)",
 					}}
@@ -39,6 +38,7 @@ export function EmailLayout({ children, lang = "pt-BR", preview }: EmailLayoutPr
 					<Section
 						style={{
 							backgroundColor: emailColors.primary,
+							borderRadius: "23px 23px 0 0",
 							padding: "28px 32px",
 						}}
 					>
@@ -48,6 +48,7 @@ export function EmailLayout({ children, lang = "pt-BR", preview }: EmailLayoutPr
 					<Section
 						style={{
 							backgroundColor: emailColors.surfaceMuted,
+							borderRadius: "0 0 23px 23px",
 							borderTop: `1px solid ${emailColors.border}`,
 							padding: "20px 32px 24px",
 						}}
