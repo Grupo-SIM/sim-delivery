@@ -14,6 +14,7 @@ import { canAccessAllUnits } from "@/lib/staff-guard";
 import { showToast, useAuthStore } from "@/stores";
 import { DashboardDateRangePicker } from "../components/DashboardDateRangePicker";
 import { OrdersKanban } from "./components";
+import { useOrderEvents } from "./use-order-events";
 
 const KANBAN_STATUSES = [
 	"awaiting_payment",
@@ -61,6 +62,7 @@ function OrdersPage() {
 				}
 			: {}),
 	}, { client: { cache: "no-store" } });
+	useOrderEvents(unitId);
 	const availableStatuses = getAvailableStatuses(role);
 
 	async function handleRefresh() {

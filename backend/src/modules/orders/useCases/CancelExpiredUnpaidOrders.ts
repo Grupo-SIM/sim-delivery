@@ -1,4 +1,5 @@
 import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
+import { orderEvents } from "@/shared/infra/OrderEvents";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { WhatsAppProvider } from "@/shared/infra/whatsapp";
 import { sendOrderStatusNotification } from "../notifications/sendOrderStatusNotification";
@@ -52,6 +53,7 @@ export class CancelExpiredUnpaidOrders {
 				if (result.count === 0) continue;
 
 				cancelled += 1;
+				orderEvents.publish(order.companyId, order.unitId);
 
 				const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
 				const message = (

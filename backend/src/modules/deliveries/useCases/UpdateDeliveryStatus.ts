@@ -1,4 +1,5 @@
 import { DomainError } from "@/shared/errors";
+import { orderEvents } from "@/shared/infra/OrderEvents";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { DeliveryReturn, UpdateDeliveryStatusBody } from "../dtos";
 import { DeliveryErrors } from "../errors";
@@ -56,6 +57,7 @@ export class UpdateDeliveryStatus {
 					]
 				: []),
 		]);
+		if (ORDER_STATUS_MAP[status]) orderEvents.publish(delivery.companyId, delivery.unitId);
 
 		return updated;
 	}

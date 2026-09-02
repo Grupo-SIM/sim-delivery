@@ -2,6 +2,7 @@ import Elysia, { t } from "elysia";
 import { RefundPayment } from "@/modules/payments/useCases";
 import { AuthGuard, CompanyScopeGuard } from "@/modules/users/guards";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
+import { orderEvents } from "@/shared/infra/OrderEvents";
 import { simpay } from "@/shared/infra/simpay";
 import { createWhatsAppProvider } from "@/shared/infra/whatsapp";
 import {
@@ -27,6 +28,18 @@ import {
 } from "../../useCases";
 
 const whatsApp = createWhatsAppProvider();
+const encoder = new TextEncoder();
+const sseHeaders = {
+	"Cache-Control": "no-cache, no-transform",
+	Connection: "keep-alive",
+	"Content-Type": "text/event-stream",
+	"X-Accel-Buffering": "no",
+};
+
+function orderChangedEvent(unitId: string): Uint8Array {
+	return encoder.encode(`event: orders-changed\ndata: ${JSON.stringify({ unitId })}\n\n`);
+}
+
 export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 	.use([GlobalPlugin])
 	.group("/orders", app =>
@@ -43,6 +56,44 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 				updateOrderStatus: new UpdateOrderStatus(prisma, whatsApp, new RefundPayment(prisma, simpay)),
 			}))
 			.get(
+				"/events",
+				async ({ query, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "orders", "read");
+					if (query.unitId) CompanyScopeGuard.authorizeUnit(scope, query.unitId);
+
+					let close = () => undefined;
+					const stream = new ReadableStream<Uint8Array>({
+						cancel: () => close(),
+						start(controller) {
+							let closed = false;
+							const send = (unitId: string) => {
+								if (!closed) controller.enqueue(orderChangedEvent(unitId));
+							};
+							const unsubscribe = orderEvents.subscribe(scope.companyId!, query.unitId, send);
+							const heartbeat = setInterval(() => {
+								if (!closed) controller.enqueue(encoder.encode(": keepalive\n\n"));
+							}, 25_000);
+							const onAbort = () => close();
+
+							close = () => {
+								if (closed) return;
+								closed = true;
+								clearInterval(heartbeat);
+								unsubscribe();
+								request.signal.removeEventListener("abort", onAbort);
+								controller.close();
+							};
+
+							request.signal.addEventListener("abort", onAbort, { once: true });
+						},
+					});
+
+					return new Response(stream, { headers: sseHeaders });
+				},
+				{ query: t.Object({ unitId: t.Optional(t.String({ minLength: 1 })) }) },
+			)
+			.get(
 				"/",
 				async ({ listOrders, query, request }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
@@ -57,7 +108,9 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 				async ({ closeOrdersDay, request }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "orders", "updateStatus");
-					return closeOrdersDay.execute(scope.companyId);
+					const result = await closeOrdersDay.execute(scope.companyId);
+					orderEvents.publishCompany(scope.companyId!);
+					return result;
 				},
 				{ response: CloseOrdersDayReturn },
 			)
@@ -65,7 +118,9 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 				"/",
 				async ({ body, createOrder, request }) => {
 					const { userId } = await AuthGuard.execute(request.headers);
-					return createOrder.execute(userId, body);
+					const order = await createOrder.execute(userId, body);
+					orderEvents.publish(order.companyId, order.unitId);
+					return order;
 				},
 				{ body: CreateOrderBody, response: OrderReturn },
 			)
@@ -106,7 +161,9 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 				async ({ body, params, request, updateOrderStatus }) => {
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "orders", "updateStatus");
-					return updateOrderStatus.execute(scope.companyId, params.orderId, body, scope.role, scope.userId);
+					const order = await updateOrderStatus.execute(scope.companyId, params.orderId, body, scope.role, scope.userId);
+					orderEvents.publish(order.companyId, order.unitId);
+					return order;
 				},
 				{ body: UpdateOrderStatusBody, response: OrderReturn },
 			),

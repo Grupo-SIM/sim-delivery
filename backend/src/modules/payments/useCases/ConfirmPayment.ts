@@ -1,4 +1,5 @@
 import { DomainError } from "@/shared/errors";
+import { orderEvents } from "@/shared/infra/OrderEvents";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { createWhatsAppProvider, type WhatsAppProvider } from "@/shared/infra/whatsapp";
 import {
@@ -81,6 +82,7 @@ export class ConfirmPayment {
 		});
 
 		if (!confirmed) return false;
+		orderEvents.publish(order.companyId, order.unitId);
 
 		await sendOrderStatusNotification({
 			customer: order.customer,

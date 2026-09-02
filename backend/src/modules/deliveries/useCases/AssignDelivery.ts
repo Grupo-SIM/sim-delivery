@@ -1,4 +1,5 @@
 import { DomainError } from "@/shared/errors";
+import { orderEvents } from "@/shared/infra/OrderEvents";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { AssignDeliveryBody, DeliveryReturn } from "../dtos";
 import { DeliveryErrors } from "../errors";
@@ -28,7 +29,9 @@ export class AssignDelivery {
 
 		const existing = await this.prisma.delivery.findUnique({ where: { orderId } });
 		if (existing) {
-			return this.prisma.delivery.update({ data: { courierId }, where: { id: existing.id } });
+			const updated = await this.prisma.delivery.update({ data: { courierId }, where: { id: existing.id } });
+			orderEvents.publish(order.companyId, order.unitId);
+			return updated;
 		}
 
 		const delivery = await this.prisma.delivery.create({
@@ -40,6 +43,7 @@ export class AssignDelivery {
 			},
 		});
 
+		orderEvents.publish(order.companyId, order.unitId);
 		return delivery;
 	}
 }
