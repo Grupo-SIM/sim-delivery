@@ -755,6 +755,7 @@ describe("ListOrders", () => {
 			},
 			customerId: "cust_1",
 		});
+		expect(where).not.toHaveProperty("OR");
 	});
 });
 

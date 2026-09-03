@@ -13,12 +13,15 @@ export class ListOrders {
 		userId?: string,
 	): Promise<AdminOrderListReturn> {
 		const { customerId, deliveryMethod, from, hasCoupon, search, status, to, unitId } = query;
+		// The operational board defaults to the current business shift. A customer history,
+		// however, must cover every eligible order so it agrees with the customer metrics.
+		const usesCurrentShift = !customerId && !from && !to;
 		const staffUnitScope =
 			role !== undefined && !["owner", "superAdmin"].includes(role) && userId
 				? { staffUnits: { some: { userId } } }
 				: {};
 		const shiftStarts =
-			!from && !to
+			usesCurrentShift
 				? await this.prisma.unit.findMany({
 						select: { hours: true, id: true },
 						where: {
@@ -29,7 +32,7 @@ export class ListOrders {
 					})
 				: [];
 		const currentShiftFilter =
-			!from && !to
+			usesCurrentShift
 				? {
 						OR: shiftStarts.map(unit => ({
 							createdAt: { gte: getCurrentBusinessShiftStart(unit.hours) },
