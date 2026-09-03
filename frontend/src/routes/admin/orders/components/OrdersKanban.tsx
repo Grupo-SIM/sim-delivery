@@ -227,6 +227,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 	function moveOrder(orderId: string, status: KanbanStatus) {
 		const order = orders.find(candidate => candidate.id === orderId);
 		if (!order) return;
+		if (order.status === status) return;
 		const blockReason = getMoveBlockReason(order, status);
 		if (blockReason) {
 			showStatusAlert(blockReason);
