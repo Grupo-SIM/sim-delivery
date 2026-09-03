@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuBike, LuChefHat, LuShoppingBag } from "react-icons/lu";
+import { LuBike, LuChefHat, LuCircleAlert, LuShoppingBag } from "react-icons/lu";
 import { OrderSummaryModal } from "@/components/orders";
 import { Button } from "@/components/ui/button";
 import { getOrdersQueryKey, type GetOrders200, usePatchOrdersByOrderIdStatus } from "@/lib/api";
@@ -54,6 +54,7 @@ export function OrderKanbanCard({
 			)
 		: null;
 	const canEditEstimate = order.status === "em_preparo";
+	const problemReason = order.status === "problema" ? order.problemReason : null;
 	const initialEstimateMinutes = order.estimatedStatusCompletionAt
 		? Math.max(1, Math.round((new Date(order.estimatedStatusCompletionAt).getTime() - Date.now()) / 60_000))
 		: 15;
@@ -129,6 +130,15 @@ export function OrderKanbanCard({
 						)}
 					</ul>
 				</div>
+				{problemReason && (
+					<div className="mt-4 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-left text-sm">
+						<p className="flex items-center gap-1.5 font-semibold text-destructive">
+							<LuCircleAlert aria-hidden className="size-4 shrink-0" />
+							{t("admin.orders.problemReason")}
+						</p>
+						<p className="mt-1 break-words text-foreground leading-5">{problemReason}</p>
+					</div>
+				)}
 			</button>
 
 			{(canManageKitchenAssignment || canManageCourierAssignment) && (canAssignCourier || canAssignKitchen) && (

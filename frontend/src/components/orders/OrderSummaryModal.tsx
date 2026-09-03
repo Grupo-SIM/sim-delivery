@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { LuPencil } from "react-icons/lu";
+import { LuCircleAlert, LuPencil } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import type { GetOrders200 } from "@/lib/api";
@@ -96,6 +96,15 @@ export function OrderSummaryModal({ onClose, onEditEstimate, order, view }: Orde
 									<p className="text-muted-foreground">{t("admin.orders.assignment.courier")}</p>
 									<p className="mt-1 font-medium">{order.delivery?.courierName ?? "-"}</p>
 								</div>
+								{order.status === "problema" && order.problemReason && (
+									<div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 sm:col-span-2">
+										<p className="flex items-center gap-1.5 font-semibold text-destructive">
+											<LuCircleAlert aria-hidden className="size-4 shrink-0" />
+											{t("admin.orders.problemReason")}
+										</p>
+										<p className="mt-1 break-words font-medium text-foreground leading-5">{order.problemReason}</p>
+									</div>
+								)}
 							</>
 						)}
 					</div>

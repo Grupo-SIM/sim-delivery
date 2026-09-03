@@ -511,6 +511,7 @@
 					"finalized": "Finalizado"
 				},
 				"loadError": "Não foi possível carregar os pedidos.",
+				"problemReason": "Motivo da pendência",
 				"refresh": {
 					"action": "Atualizar",
 					"error": "Não foi possível atualizar os pedidos.",
