@@ -13,6 +13,8 @@ export class GetCustomerOrder {
 		const order = await this.prisma.order.findFirst({
 			include: {
 				items: { include: { optionSnapshots: true } },
+				productReviews: { select: { productId: true } },
+				review: { select: { id: true } },
 				statusEvents: { orderBy: { createdAt: "asc" } },
 				unit: { select: { name: true, slug: true } },
 			},
@@ -39,7 +41,9 @@ export class GetCustomerOrder {
 				imageUrl: imageUrlByProductId.get(item.productId) ?? null,
 				options: item.optionSnapshots,
 			})),
+			hasOrderReview: order.review !== null,
 			problemReason: order.problemReason,
+			reviewedProductIds: order.productReviews.map(review => review.productId),
 			status: order.status,
 			statusEvents:
 				order.statusEvents?.length > 0

@@ -8,6 +8,7 @@ export interface CustomerOrderTracking {
 	displayNumber: number;
 	estimatedStatusCompletionAt: string | null;
 	id: string;
+	hasOrderReview: boolean;
 	items: {
 		id: string;
 		imageUrl: string | null;
@@ -17,6 +18,7 @@ export interface CustomerOrderTracking {
 		quantity: number;
 	}[];
 	problemReason: string | null;
+	reviewedProductIds: string[];
 	status: string;
 	statusEvents: {
 		createdAt: string;

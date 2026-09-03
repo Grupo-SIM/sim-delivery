@@ -34,10 +34,16 @@ export class CreateProductReview {
 		});
 		if (existing) throw new DomainError(ProductReviewErrors.ALREADY_REVIEWED);
 
-		const review = await this.prisma.productReview.create({
-			data: { comment: comment ?? null, companyId, customerId, orderId, productId, rating },
-			include: { customer: { include: { user: true } }, product: { select: { title: true } } },
-		});
+		let review;
+		try {
+			review = await this.prisma.productReview.create({
+				data: { comment: comment ?? null, companyId, customerId, orderId, productId, rating },
+				include: { customer: { include: { user: true } }, product: { select: { title: true } } },
+			});
+		} catch (error) {
+			if (isDuplicateProductReviewError(error)) throw new DomainError(ProductReviewErrors.ALREADY_REVIEWED);
+			throw error;
+		}
 
 		return {
 			comment: review.comment,
@@ -53,4 +59,9 @@ export class CreateProductReview {
 			updatedAt: review.updatedAt,
 		};
 	}
+}
+
+function isDuplicateProductReviewError(error: unknown): boolean {
+	if (typeof error !== "object" || error === null || !("code" in error)) return false;
+	return error.code === "P2002";
 }

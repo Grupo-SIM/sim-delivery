@@ -10,9 +10,10 @@ interface ProductRatingRowProps {
 	orderId: string;
 	productId: string;
 	productName: string;
+	reviewed: boolean;
 }
 
-export function ProductRatingRow({ orderId, productId, productName }: ProductRatingRowProps) {
+export function ProductRatingRow({ orderId, productId, productName, reviewed }: ProductRatingRowProps) {
 	const { t } = useTranslation();
 	const [rating, setRating] = useState(0);
 	const [hovered, setHovered] = useState(0);
@@ -38,7 +39,7 @@ export function ProductRatingRow({ orderId, productId, productName }: ProductRat
 		);
 	}
 
-	if (submitted) {
+	if (submitted || reviewed) {
 		return (
 			<div className="rounded-brand border border-border bg-card p-4 text-muted-foreground text-sm">
 				{productName} — {t("store.rate.products.submitted")}

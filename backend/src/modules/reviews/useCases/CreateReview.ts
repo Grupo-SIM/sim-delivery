@@ -21,10 +21,16 @@ export class CreateReview {
 		const existing = await this.prisma.review.findUnique({ where: { orderId } });
 		if (existing) throw new DomainError(ReviewErrors.ALREADY_REVIEWED);
 
-		const review = await this.prisma.review.create({
-			data: { comment: comment ?? null, companyId, customerId, orderId, rating },
-			include: { customer: { include: { user: true } } },
-		});
+		let review;
+		try {
+			review = await this.prisma.review.create({
+				data: { comment: comment ?? null, companyId, customerId, orderId, rating },
+				include: { customer: { include: { user: true } } },
+			});
+		} catch (error) {
+			if (isDuplicateReviewError(error)) throw new DomainError(ReviewErrors.ALREADY_REVIEWED);
+			throw error;
+		}
 
 		return {
 			comment: review.comment,
@@ -38,4 +44,9 @@ export class CreateReview {
 			updatedAt: review.updatedAt,
 		};
 	}
+}
+
+function isDuplicateReviewError(error: unknown): boolean {
+	if (typeof error !== "object" || error === null || !("code" in error)) return false;
+	return error.code === "P2002";
 }

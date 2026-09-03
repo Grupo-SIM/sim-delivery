@@ -26,8 +26,8 @@ const baseBody = {
 	slug: "demo",
 };
 
-function makeCreatePrisma(opts: { existingReview?: boolean; orders?: OrderRow[] } = {}) {
-	const { existingReview = false, orders = [baseOrder] } = opts;
+function makeCreatePrisma(opts: { createError?: unknown; existingReview?: boolean; orders?: OrderRow[] } = {}) {
+	const { createError, existingReview = false, orders = [baseOrder] } = opts;
 	const created: Record<string, unknown>[] = [];
 
 	const prisma = {
@@ -42,6 +42,7 @@ function makeCreatePrisma(opts: { existingReview?: boolean; orders?: OrderRow[] 
 		},
 		review: {
 			create: async ({ data }: { data: Record<string, unknown> }) => {
+				if (createError) throw createError;
 				created.push(data);
 
 				return {
@@ -147,6 +148,12 @@ describe("CreateReview", () => {
 
 	it("allows only one review per order", async () => {
 		const { prisma } = makeCreatePrisma({ existingReview: true });
+
+		await expect(new CreateReview(prisma).execute(baseBody)).rejects.toThrow("ALREADY_REVIEWED");
+	});
+
+	it("handles a concurrent duplicate review as already reviewed", async () => {
+		const { prisma } = makeCreatePrisma({ createError: { code: "P2002" } });
 
 		await expect(new CreateReview(prisma).execute(baseBody)).rejects.toThrow("ALREADY_REVIEWED");
 	});

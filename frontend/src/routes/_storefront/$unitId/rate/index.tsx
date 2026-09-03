@@ -5,7 +5,9 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/Container";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { TextField } from "@/components/ui/TextField";
 import { usePostReviews } from "@/lib/api";
 import { useGetCustomerOrder } from "@/lib/api/get-customer-order";
@@ -30,9 +32,25 @@ function RatePage() {
 	const { isPending, mutate } = usePostReviews();
 	const orderQuery = useGetCustomerOrder(orderId, slug ?? "");
 
-	const uniqueProducts = orderQuery.data
-		? [...new Map(orderQuery.data.items.map(item => [item.productId, item.productName])).entries()]
-		: [];
+	if (orderQuery.isPending) {
+		return (
+			<Container className="max-w-lg space-y-6 py-8">
+				<Skeleton className="h-20 w-2/3" />
+				<Skeleton className="h-48 w-full" />
+			</Container>
+		);
+	}
+
+	if (orderQuery.isError || !orderQuery.data) {
+		return (
+			<Container className="max-w-lg py-8">
+				<ErrorState title={t("store.checkout.tracking.empty")} />
+			</Container>
+		);
+	}
+
+	const order = orderQuery.data;
+	const uniqueProducts = [...new Map(order.items.map(item => [item.productId, item.productName])).entries()];
 
 	function submit() {
 		if (rating === 0) return;
@@ -52,10 +70,10 @@ function RatePage() {
 
 	return (
 		<Container className="max-w-lg space-y-8 py-8">
-			{submitted ? (
+			{submitted || order.hasOrderReview ? (
 				<div className="space-y-6 text-center">
 					<p className="text-5xl">⭐</p>
-					<SectionHeading title={t("store.rate.success")} />
+					<SectionHeading title={t(submitted ? "store.rate.success" : "store.rate.alreadyReviewed")} />
 				</div>
 			) : (
 				<div className="space-y-6">
@@ -111,6 +129,7 @@ function RatePage() {
 							orderId={orderId}
 							productId={productId}
 							productName={productName}
+							reviewed={order.reviewedProductIds.includes(productId)}
 						/>
 					))}
 				</div>
