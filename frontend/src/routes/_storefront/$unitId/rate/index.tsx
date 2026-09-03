@@ -63,18 +63,22 @@ function RatePage() {
 					<div className="space-y-2">
 						<p className="font-medium text-sm">{t("store.rate.rating")}</p>
 						<div className="flex gap-1">
-							{[1, 2, 3, 4, 5].map(star => (
-								<button
-									className="text-3xl transition-transform hover:scale-110"
+							{[1, 2, 3, 4, 5].map(star => {
+								const isSelected = (hovered || rating) >= star;
+
+								return (
+									<button
+									className="cursor-pointer text-3xl transition-transform hover:scale-110"
 									key={star}
 									onClick={() => setRating(star)}
 									onMouseEnter={() => setHovered(star)}
 									onMouseLeave={() => setHovered(0)}
 									type="button"
 								>
-									{(hovered || rating) >= star ? "⭐" : "☆"}
-								</button>
-							))}
+									<span className={isSelected ? "text-[22px]" : undefined}>{isSelected ? "⭐" : "☆"}</span>
+									</button>
+								);
+							})}
 						</div>
 					</div>
 

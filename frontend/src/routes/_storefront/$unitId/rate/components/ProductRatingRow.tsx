@@ -49,8 +49,11 @@ export function ProductRatingRow({ orderId, productId, productName }: ProductRat
 		<div className="space-y-3 rounded-brand border border-border bg-card p-4">
 			<p className="font-medium text-sm">{productName}</p>
 			<div className="flex gap-1">
-				{[1, 2, 3, 4, 5].map(star => (
-					<button
+				{[1, 2, 3, 4, 5].map(star => {
+					const isSelected = (hovered || rating) >= star;
+
+					return (
+						<button
 						className="cursor-pointer text-2xl transition-transform hover:scale-110"
 						key={star}
 						onClick={() => setRating(star)}
@@ -58,9 +61,10 @@ export function ProductRatingRow({ orderId, productId, productName }: ProductRat
 						onMouseLeave={() => setHovered(0)}
 						type="button"
 					>
-						{(hovered || rating) >= star ? "⭐" : "☆"}
-					</button>
-				))}
+						<span className={isSelected ? "text-[18px]" : undefined}>{isSelected ? "⭐" : "☆"}</span>
+						</button>
+					);
+				})}
 			</div>
 			<TextField
 				label={t("store.rate.products.comment")}
