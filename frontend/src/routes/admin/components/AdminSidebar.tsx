@@ -97,12 +97,6 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 					to="/admin/orders"
 				/>
 				{!attendant && <NavItem icon={LuLandmark} label="Financeiro" onNavigate={onNavigate} to="/admin/finance" />}
-				<NavItem
-					icon={LuPackageOpen}
-					label={t("admin.inventory.title")}
-					onNavigate={onNavigate}
-					to="/admin/inventory"
-				/>
 				{!attendant && (
 					<>
 						<NavItem
@@ -134,6 +128,12 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 					label={t("admin.products.title")}
 					onNavigate={onNavigate}
 					to="/admin/products"
+				/>
+				<NavItem
+					icon={LuPackageOpen}
+					label={t("admin.inventory.title")}
+					onNavigate={onNavigate}
+					to="/admin/inventory"
 				/>
 				<NavItem
 					icon={LuFolderTree}
