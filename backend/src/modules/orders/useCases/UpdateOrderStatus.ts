@@ -9,25 +9,18 @@ import type { OrderReturn, UpdateOrderStatusBody } from "../dtos";
 import { OrderErrors } from "../errors";
 import { type OrderStatusEmailSender, sendOrderStatusNotification } from "../notifications/sendOrderStatusNotification";
 
-const DELIVERY_FLOW = ["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue"];
-const PICKUP_FLOW = ["recebido", "em_preparo", "pronto", "entregue"];
-const REOPENABLE_FROM_CANCELLED = new Set(["recebido", "em_preparo", "pronto"]);
-
 const NOTIFIABLE = new Set(["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue", "retirado"]);
 const ESTIMABLE_STATUSES = new Set(["em_preparo"]);
-
-function canTransition(current: string, next: string, deliveryMethod: string): boolean {
-	if (current === next) return true;
-	if (next === "problema") return current !== "cancelado";
-	if (current === "problema") return next !== "awaiting_payment";
-	if (next === "cancelado") return true;
-	if (current === "cancelado") return REOPENABLE_FROM_CANCELLED.has(next);
-
-	const flow = deliveryMethod === "pickup" ? PICKUP_FLOW : DELIVERY_FLOW;
-	const currentIndex = flow.indexOf(current);
-	const nextIndex = flow.indexOf(next);
-	return currentIndex >= 0 && nextIndex >= 0 && Math.abs(nextIndex - currentIndex) === 1;
-}
+const STATUS_SEQUENCE = [
+	"recebido",
+	"em_preparo",
+	"pronto",
+	"saiu_para_entrega",
+	"problema",
+	"entregue",
+	"retirado",
+	"cancelado",
+];
 
 function canRoleTransition(role: Role | undefined, current: string, next: string): boolean {
 	if (current === next) return true;
@@ -48,9 +41,8 @@ function canRoleTransition(role: Role | undefined, current: string, next: string
 	return true;
 }
 
-function shouldNotify(current: string, next: string, deliveryMethod: string): boolean {
-	const flow = deliveryMethod === "pickup" ? PICKUP_FLOW : DELIVERY_FLOW;
-	return NOTIFIABLE.has(next) && flow.indexOf(next) > flow.indexOf(current);
+function shouldNotify(current: string, next: string): boolean {
+	return NOTIFIABLE.has(next) && STATUS_SEQUENCE.indexOf(next) > STATUS_SEQUENCE.indexOf(current);
 }
 
 function getReviewUrl(unitSlug: string, orderId: string): string {
@@ -91,8 +83,6 @@ export class UpdateOrderStatus {
 			throw new DomainError(UserErrors.FORBIDDEN);
 		}
 
-		if (!canTransition(order.status, status, order.deliveryMethod))
-			throw new DomainError(OrderErrors.INVALID_TRANSITION);
 		if (status === "cancelado" && !cancelReason) throw new DomainError(OrderErrors.CANCEL_REASON_REQUIRED);
 		if (status === "problema" && !problemReason) throw new DomainError(OrderErrors.INVALID_TRANSITION);
 
@@ -160,7 +150,7 @@ export class UpdateOrderStatus {
 			await this.refundPayment.execute(order.companyId, orderId, refund, userId);
 		}
 
-		const notifiesStatusChange = shouldNotify(order.status, status, order.deliveryMethod);
+		const notifiesStatusChange = shouldNotify(order.status, status);
 		const notifiesEstimateUpdate =
 			order.status === "em_preparo" && status === "em_preparo" && estimatedMinutes !== undefined;
 		if (notifiesStatusChange || notifiesEstimateUpdate) {

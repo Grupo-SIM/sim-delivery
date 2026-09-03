@@ -594,11 +594,39 @@ describe("UpdateOrderStatus", () => {
 		expect(stored.status).toBe("em_preparo");
 	});
 
-	it("throws INVALID_TRANSITION for illegal transition", async () => {
-		const { prisma } = makeUpdateStatusPrisma({ companyId: "cmp_1", id: "ord_1", status: "recebido" });
-		await expect(
-			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "entregue" }),
-		).rejects.toThrow("INVALID_TRANSITION");
+	it("allows moving an order directly to any operational status", async () => {
+		const { prisma, stored } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			id: "ord_1",
+			status: "recebido",
+		});
+
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "entregue" });
+
+		expect(stored.status).toBe("entregue");
+	});
+
+	it("does not notify when returning an order to an earlier status", async () => {
+		const { prisma, stored } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			id: "ord_1",
+			phone: "+5511999999999",
+			status: "pronto",
+		});
+		stored.customer.notificationEmail = true;
+		const emails: Record<string, string | number | undefined>[] = [];
+		const messages: string[] = [];
+
+		await new UpdateOrderStatus(
+			prisma,
+			{ sendOrderStatus: async () => void messages.push("sent") },
+			undefined,
+			{ send: async input => void emails.push(input) },
+		).execute("cmp_1", "ord_1", { status: "em_preparo" });
+
+		expect(stored.status).toBe("em_preparo");
+		expect(emails).toEqual([]);
+		expect(messages).toEqual([]);
 	});
 
 	it("allows reopening a cancelled order for correction", async () => {

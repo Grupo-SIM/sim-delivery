@@ -25,9 +25,11 @@ configurada na unidade. Ao mover o pedido para a fase seguinte, o prazo anterior
 removido. Em pedidos de retirada, `pronto` informa ao cliente que ele já pode buscar o
 pedido; a conclusão segue diretamente para `entregue` e não inclui tempo de entrega.
 
-Regra objetiva: transições seguem a ordem acima; `cancelado` é terminal; não se altera
-pedido `entregue`/`retirado`/`cancelado`. Enum de status é **traduzível no frontend**
-(nunca renderizar valor cru — ver `AGENTS.md` › i18n).
+Gestores podem mover manualmente o pedido entre quaisquer etapas operacionais, inclusive
+reabrir pedidos concluídos ou cancelados. O status `awaiting_payment` continua controlado
+pela confirmação de pagamento. Movimentos para trás não notificam o cliente.
+Enum de status é **traduzível no frontend** (nunca renderizar valor cru — ver `AGENTS.md`
+› i18n).
 
 ## Estrutura
 
@@ -60,9 +62,10 @@ Visões por role: `kitchen` vê fila de produção; `attendant` vê pedidos ativ
 
 ## Atualização por WhatsApp (regra comportamental)
 
-A cada mudança de status relevante, o cliente é **notificado por WhatsApp** (recebido,
-em preparo, saiu para entrega, entregue). Ao concluir o pedido no app, a tela de obrigado
-informa que o acompanhamento será por WhatsApp (ver [08](08-app-cliente.md)).
+Quando o pedido avança no fluxo, o cliente é **notificado por WhatsApp e e-mail**
+(recebido, em preparo, pronto, saiu para entrega, entregue). Retornos de etapa não
+disparam mensagens. Ao concluir o pedido no app, a tela de obrigado informa que o
+acompanhamento será por WhatsApp (ver [08](08-app-cliente.md)).
 
 ## Reembolso em cancelamento
 

@@ -18,17 +18,21 @@ type NextStatus =
 	| "em_preparo"
 	| "pronto"
 	| "saiu_para_entrega"
+	| "problema"
 	| "entregue"
+	| "retirado"
 	| "cancelado";
 
-const TRANSITIONS: Record<string, NextStatus[]> = {
-	cancelado: ["recebido", "em_preparo", "pronto"],
-	em_preparo: ["recebido", "pronto", "cancelado"],
-	entregue: ["saiu_para_entrega"],
-	pronto: ["em_preparo", "saiu_para_entrega", "entregue", "cancelado"],
-	recebido: ["em_preparo", "cancelado"],
-	saiu_para_entrega: ["pronto", "entregue", "cancelado"],
-};
+const MANUAL_STATUSES: NextStatus[] = [
+	"recebido",
+	"em_preparo",
+	"pronto",
+	"saiu_para_entrega",
+	"problema",
+	"entregue",
+	"retirado",
+	"cancelado",
+];
 
 const REFUND_METHODS: RefundMethodEnumKey[] = ["manual", "gateway", "cashback"];
 
@@ -57,20 +61,19 @@ export function UpdateStatusModal({
 
 	const [selected, setSelected] = useState<NextStatus | null>(null);
 	const [cancelReason, setCancelReason] = useState("");
+	const [problemReason, setProblemReason] = useState("");
 	const [wantsRefund, setWantsRefund] = useState(false);
 	const [refundMethod, setRefundMethod] = useState<RefundMethodEnumKey>("manual");
 	const [refundAmount, setRefundAmount] = useState(orderTotal);
 
-	const nexts = (TRANSITIONS[currentStatus] ?? []).filter(s => {
-		if (s === "saiu_para_entrega" && deliveryMethod !== "delivery") return false;
-		return true;
-	});
+	const nexts = MANUAL_STATUSES.filter(status => status !== currentStatus);
 	const hasOptions = nexts.length > 0;
 	const canRefund = paymentStatus === "confirmed";
 
 	function handleClose() {
 		setSelected(null);
 		setCancelReason("");
+		setProblemReason("");
 		setWantsRefund(false);
 		setRefundMethod("manual");
 		setRefundAmount(orderTotal);
@@ -84,6 +87,7 @@ export function UpdateStatusModal({
 			{
 				data: {
 					cancelReason: selected === "cancelado" ? cancelReason : undefined,
+					problemReason: selected === "problema" ? problemReason : undefined,
 					refund:
 						selected === "cancelado" && wantsRefund
 							? { amount: Math.round(refundAmount), method: refundMethod }
@@ -138,7 +142,7 @@ export function UpdateStatusModal({
 					<p className="mt-1 text-muted-foreground text-sm leading-5">
 						{t("admin.orders.updateStatus.help", {
 							defaultValue:
-								"Você pode avançar ou voltar uma etapa por vez. Pedidos aguardando pagamento entram no fluxo automaticamente quando o pagamento é confirmado.",
+								"Você pode mover o pedido para qualquer etapa. Retornos não notificam o cliente.",
 						})}
 					</p>
 				</div>
@@ -229,6 +233,17 @@ export function UpdateStatusModal({
 					</div>
 				)}
 
+				{selected === "problema" && (
+					<TextField
+						label={t("admin.orders.updateStatus.problemReason", { defaultValue: "Motivo da pendência" })}
+						onValueChange={setProblemReason}
+						placeholder={t("admin.orders.updateStatus.problemReasonPlaceholder", {
+							defaultValue: "Ex: Faltou um item no pedido",
+						})}
+						value={problemReason}
+					/>
+				)}
+
 				<div className="flex justify-end gap-2 border-border border-t pt-4">
 					<Button onClick={handleClose} type="button" variant="outline">
 						{t("admin.orders.updateStatus.cancel")}
@@ -238,6 +253,7 @@ export function UpdateStatusModal({
 							!selected ||
 							patch.isPending ||
 							(selected === "cancelado" && !cancelReason.trim()) ||
+							(selected === "problema" && !problemReason.trim()) ||
 							(selected === "cancelado" && wantsRefund && refundAmount <= 0)
 						}
 						onClick={submit}

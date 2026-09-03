@@ -195,27 +195,10 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 		) {
 			return "Você pode relatar um problema em pedidos Prontos ou em rota, além de avançar pedidos de Pronto para Saiu para entrega e de Saiu para entrega para Entregue.";
 		}
-		if (order.status === "awaiting_payment") {
-			return t("admin.orders.updateStatus.errors.awaitingPayment", {
-				defaultValue:
-					"Este pedido ainda está aguardando pagamento. Ele só pode ir para preparo depois que o pagamento for confirmado e o status virar Recebido.",
-			});
-		}
 		if (!isMovableStatus(status)) {
 			return t("admin.orders.updateStatus.errors.cannotReturnToPayment", {
 				defaultValue:
 					"Não é possível voltar um pedido para Aguardando pagamento pelo kanban. Esse status é controlado pelo pagamento.",
-			});
-		}
-		if (status === "saiu_para_entrega" && order.deliveryMethod !== "delivery") {
-			return t("admin.orders.updateStatus.errors.deliveryOnly", {
-				defaultValue:
-					"Somente pedidos de entrega podem sair para entrega. Pedidos de retirada devem ir para Retirado.",
-			});
-		}
-		if (order.status === "cancelado" && !["recebido", "em_preparo", "pronto"].includes(status)) {
-			return t("admin.orders.updateStatus.errors.cancelledReopen", {
-				defaultValue: "Pedidos cancelados só podem ser reabertos para Recebido, Em preparo ou Pronto.",
 			});
 		}
 		if (status === "problema") return null;
