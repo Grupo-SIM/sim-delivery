@@ -22,25 +22,6 @@ const STATUS_SEQUENCE = [
 	"cancelado",
 ];
 
-function canRoleTransition(role: Role | undefined, current: string, next: string): boolean {
-	if (current === next) return true;
-	if (role === "kitchen") {
-		return (
-			(current === "recebido" && next === "em_preparo") ||
-			(current === "em_preparo" && next === "pronto") ||
-			(current === "pronto" && next === "em_preparo")
-		);
-	}
-	if (role === "courier") {
-		if (next === "problema") return current === "pronto" || current === "saiu_para_entrega";
-		return (
-			(current === "pronto" && next === "saiu_para_entrega") ||
-			(current === "saiu_para_entrega" && next === "entregue")
-		);
-	}
-	return true;
-}
-
 function shouldNotify(current: string, next: string): boolean {
 	return NOTIFIABLE.has(next) && STATUS_SEQUENCE.indexOf(next) > STATUS_SEQUENCE.indexOf(current);
 }
@@ -78,7 +59,6 @@ export class UpdateOrderStatus {
 			where: { ...(companyId ? { companyId } : {}), id: orderId },
 		});
 		if (!order) throw new DomainError(OrderErrors.ORDER_NOT_FOUND);
-		if (!canRoleTransition(role, order.status, status)) throw new DomainError(UserErrors.FORBIDDEN);
 		if (preparedById !== undefined && role === "courier") {
 			throw new DomainError(UserErrors.FORBIDDEN);
 		}

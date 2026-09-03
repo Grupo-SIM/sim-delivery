@@ -176,25 +176,6 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 
 	function getMoveBlockReason(order: GetOrders200[number], status: KanbanStatus) {
 		if (order.status === status) return null;
-		if (
-			role === "kitchen" &&
-			!(
-				(order.status === "recebido" && status === "em_preparo") ||
-				(order.status === "em_preparo" && status === "pronto")
-			)
-		) {
-			return "Você só pode avançar pedidos de Recebido para Em preparo ou de Em preparo para Pronto.";
-		}
-		if (
-			role === "courier" &&
-			!(
-				(status === "problema" && ["pronto", "saiu_para_entrega"].includes(order.status)) ||
-				(order.status === "pronto" && status === "saiu_para_entrega") ||
-				(order.status === "saiu_para_entrega" && status === "entregue")
-			)
-		) {
-			return "Você pode relatar um problema em pedidos Prontos ou em rota, além de avançar pedidos de Pronto para Saiu para entrega e de Saiu para entrega para Entregue.";
-		}
 		if (!isMovableStatus(status)) {
 			return t("admin.orders.updateStatus.errors.cannotReturnToPayment", {
 				defaultValue:
@@ -370,13 +351,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 									) : (
 										column.orders.map(order => (
 											<OrderKanbanCard
-												canDrag={
-													role !== "kitchen" && role !== "courier"
-														? true
-														: role === "kitchen"
-															? ["recebido", "em_preparo", "pronto"].includes(order.status)
-															: order.status === "pronto" || order.status === "saiu_para_entrega"
-												}
+												canDrag
 												canManageCourierAssignment={role !== "kitchen" && role !== "courier"}
 												canManageKitchenAssignment={role !== "courier"}
 												canPrint={[

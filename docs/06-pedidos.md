@@ -25,9 +25,9 @@ configurada na unidade. Ao mover o pedido para a fase seguinte, o prazo anterior
 removido. Em pedidos de retirada, `pronto` informa ao cliente que ele já pode buscar o
 pedido; a conclusão segue diretamente para `entregue` e não inclui tempo de entrega.
 
-Gestores podem mover manualmente o pedido entre quaisquer etapas operacionais, inclusive
-reabrir pedidos concluídos ou cancelados. O status `awaiting_payment` continua controlado
-pela confirmação de pagamento. Movimentos para trás não notificam o cliente.
+Qualquer cargo pode mover manualmente o pedido entre quaisquer etapas operacionais,
+inclusive reabrir pedidos concluídos ou cancelados. O status `awaiting_payment` continua
+controlado pela confirmação de pagamento. Movimentos para trás não notificam o cliente.
 Enum de status é **traduzível no frontend** (nunca renderizar valor cru — ver `AGENTS.md`
 › i18n).
 

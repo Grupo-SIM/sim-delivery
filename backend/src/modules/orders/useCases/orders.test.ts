@@ -388,7 +388,7 @@ describe("UpdateOrderStatus", () => {
 		expect(stored.estimatedStatusCompletionAt).toBeNull();
 	});
 
-	it("lets kitchen advance only its preparation stages", async () => {
+	it("lets kitchen move an order to any status", async () => {
 		const { stored, prisma } = makeUpdateStatusPrisma({
 			companyId: "cmp_1",
 			id: "ord_1",
@@ -401,29 +401,28 @@ describe("UpdateOrderStatus", () => {
 			"kitchen",
 		);
 		expect(stored.status).toBe("em_preparo");
-		await expect(
-			new UpdateOrderStatus(prisma, noopWhatsApp).execute(
-				"cmp_1",
-				"ord_1",
-				{ status: "saiu_para_entrega" },
-				"kitchen",
-			),
-		).rejects.toThrow("FORBIDDEN");
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute(
+			"cmp_1",
+			"ord_1",
+			{ status: "saiu_para_entrega" },
+			"kitchen",
+		);
+		expect(stored.status).toBe("saiu_para_entrega");
 	});
 
-	it("lets courier report a problem from a delivery stage", async () => {
+	it("lets courier move an order to any status", async () => {
 		const { stored, prisma } = makeUpdateStatusPrisma({
 			companyId: "cmp_1",
 			id: "ord_1",
-			status: "saiu_para_entrega",
+			status: "recebido",
 		});
 		await new UpdateOrderStatus(prisma, noopWhatsApp).execute(
 			"cmp_1",
 			"ord_1",
-			{ problemReason: "Cliente relatou item faltante.", status: "problema" },
+			{ status: "entregue" },
 			"courier",
 		);
-		expect(stored).toMatchObject({ problemReason: "Cliente relatou item faltante.", status: "problema" });
+		expect(stored.status).toBe("entregue");
 	});
 
 	it("lets kitchen return a ready order to preparation", async () => {
@@ -495,7 +494,7 @@ describe("UpdateOrderStatus", () => {
 		expect(stored).toMatchObject({ preparedById: "kitchen_2", status: "em_preparo" });
 	});
 
-	it("lets courier advance only its delivery stages", async () => {
+	it("lets courier return an order to an earlier status", async () => {
 		const { stored, prisma } = makeUpdateStatusPrisma({
 			companyId: "cmp_1",
 			id: "ord_1",
@@ -508,14 +507,13 @@ describe("UpdateOrderStatus", () => {
 			"courier",
 		);
 		expect(stored.status).toBe("saiu_para_entrega");
-		await expect(
-			new UpdateOrderStatus(prisma, noopWhatsApp).execute(
-				"cmp_1",
-				"ord_1",
-				{ status: "em_preparo" },
-				"courier",
-			),
-		).rejects.toThrow("FORBIDDEN");
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute(
+			"cmp_1",
+			"ord_1",
+			{ status: "em_preparo" },
+			"courier",
+		);
+		expect(stored.status).toBe("em_preparo");
 	});
 
 	it("sends configured WhatsApp template for a status", async () => {
@@ -807,19 +805,28 @@ function makeCustomerOrderPrisma(order: object | null) {
 describe("GetCustomerOrder", () => {
 	it("returns the tracking details for the order owner", async () => {
 		const result = await new GetCustomerOrder(
-			makeCustomerOrderPrisma({
+		makeCustomerOrderPrisma({
 				cancelReason: null,
 				createdAt: new Date("2024-01-01"),
 				deliveryMethod: "delivery",
 				id: "ord_1",
 				items: [],
+				productReviews: [{ productId: "prod_1" }],
+				review: { id: "review_1" },
 				status: "em_preparo",
 				total: 2500,
 			unit: { name: "Centro", slug: "centro" },
 		}),
 		).execute("user_1", "ord_1", "demo");
 
-		expect(result).toMatchObject({ id: "ord_1", status: "em_preparo", unitName: "Centro", unitSlug: "centro" });
+		expect(result).toMatchObject({
+			hasOrderReview: true,
+			id: "ord_1",
+			reviewedProductIds: ["prod_1"],
+			status: "em_preparo",
+			unitName: "Centro",
+			unitSlug: "centro",
+		});
 	});
 
 	it("hides orders that do not belong to the authenticated customer", async () => {
