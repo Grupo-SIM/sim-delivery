@@ -96,7 +96,7 @@ export function OrderSummaryModal({ onClose, onEditEstimate, order, view }: Orde
 									<p className="text-muted-foreground">{t("admin.orders.assignment.courier")}</p>
 									<p className="mt-1 font-medium">{order.delivery?.courierName ?? "-"}</p>
 								</div>
-								{order.status === "problema" && order.problemReason && (
+								{order.problemReason && (
 									<div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 sm:col-span-2">
 										<p className="flex items-center gap-1.5 font-semibold text-destructive">
 											<LuCircleAlert aria-hidden className="size-4 shrink-0" />
