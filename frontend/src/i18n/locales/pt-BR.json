@@ -1706,6 +1706,8 @@
 						"em_preparoDescription": "A cozinha já está preparando seu pedido.",
 						"entregue": "Pedido entregue",
 						"entregueDescription": "Esperamos que aproveite.",
+						"problema": "Pedido com problema",
+						"problemaDescription": "Aconteceu uma pendência com seu pedido. Nossa equipe está trabalhando para resolver.",
 						"pronto": "Pedido pronto",
 						"prontoDeliveryDescription": "Seu pedido está pronto e aguardando saída.",
 						"prontoPickupDescription": "Seu pedido está pronto para retirada.",

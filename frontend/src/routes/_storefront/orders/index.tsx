@@ -16,6 +16,7 @@ const CLOSED_STATUSES = new Set(["entregue", "retirado", "cancelado"]);
 
 function statusToneClass(status: string): string {
 	if (status === "cancelado") return "bg-destructive/10 text-destructive";
+	if (status === "problema") return "bg-destructive/10 text-destructive";
 	if (status === "awaiting_payment") return "bg-warning/10 text-warning";
 	if (status === "recebido") return "bg-success/10 text-success";
 	if (CLOSED_STATUSES.has(status)) return "bg-muted text-muted-foreground";

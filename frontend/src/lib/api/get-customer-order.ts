@@ -16,6 +16,7 @@ export interface CustomerOrderTracking {
 		productName: string;
 		quantity: number;
 	}[];
+	problemReason: string | null;
 	status: string;
 	statusEvents: {
 		createdAt: string;

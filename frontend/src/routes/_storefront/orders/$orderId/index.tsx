@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import {
 	LuBike,
+	LuCircleAlert,
 	LuCheck,
 	LuChefHat,
 	LuCircleCheck,
@@ -43,6 +44,11 @@ const STATUS_COPY = {
 		description: "store.checkout.tracking.status.prontoDeliveryDescription",
 		icon: LuPackageCheck,
 		title: "store.checkout.tracking.status.pronto",
+	},
+	problema: {
+		description: "store.checkout.tracking.status.problemaDescription",
+		icon: LuCircleAlert,
+		title: "store.checkout.tracking.status.problema",
 	},
 	recebido: {
 		description: "store.checkout.tracking.status.recebidoDescription",
@@ -90,8 +96,11 @@ function OrderTrackingPage() {
 		order.deliveryMethod === "delivery"
 			? ["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue"]
 			: ["recebido", "em_preparo", "pronto", "entregue"];
-	const stageIndex = stages.indexOf(order.status);
 	const eventByStatus = new Map(order.statusEvents.map(event => [event.status, event.createdAt]));
+	const lastFlowStatus = [...order.statusEvents]
+		.reverse()
+		.find(event => stages.includes(event.status))?.status;
+	const stageIndex = stages.indexOf(order.status === "problema" ? (lastFlowStatus ?? "") : order.status);
 	const current = STATUS_COPY[
 		order.deliveryMethod === "pickup" && order.status === "entregue" ? "retirado" : (order.status as keyof typeof STATUS_COPY)
 	];
@@ -107,6 +116,7 @@ function OrderTrackingPage() {
 				new Date(order.estimatedStatusCompletionAt),
 			)
 		: null;
+	const isProblem = order.status === "problema";
 
 	return (
 		<Container className="max-w-lg space-y-6 py-8">
@@ -125,13 +135,20 @@ function OrderTrackingPage() {
 				</div>
 			) : (
 				<>
-					<div className="fade-in slide-in-from-bottom-2 flex animate-in items-start gap-3 rounded-lg border border-primary/30 bg-primary/5 p-5 duration-500">
-						<CurrentIcon className="mt-0.5 size-6 animate-pulse text-primary" />
+					<div
+						className={`fade-in slide-in-from-bottom-2 flex animate-in items-start gap-3 rounded-lg border p-5 duration-500 ${
+							isProblem ? "border-destructive/40 bg-destructive/5" : "border-primary/30 bg-primary/5"
+						}`}
+					>
+						<CurrentIcon className={`mt-0.5 size-6 ${isProblem ? "text-destructive" : "animate-pulse text-primary"}`} />
 						<div className="space-y-1">
 							<p className="font-semibold">
 								{current ? t(current.title) : t("store.checkout.tracking.status.awaiting_payment")}
 							</p>
 							<p className="text-muted-foreground text-sm">{currentDescription}</p>
+							{isProblem && order.problemReason && (
+								<p className="text-foreground text-sm">{order.problemReason}</p>
+							)}
 							{phaseDeadline && (
 								<p className="font-medium text-primary text-sm">
 									{t("store.checkout.tracking.phaseDeadline", { time: phaseDeadline })}
