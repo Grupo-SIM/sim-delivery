@@ -63,7 +63,6 @@ export function UpdateStatusModal({
 
 	const nexts = (TRANSITIONS[currentStatus] ?? []).filter(s => {
 		if (s === "saiu_para_entrega" && deliveryMethod !== "delivery") return false;
-		if (s === "entregue" && deliveryMethod !== "pickup") return false;
 		return true;
 	});
 	const hasOptions = nexts.length > 0;

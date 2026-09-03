@@ -213,11 +213,6 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 					"Somente pedidos de entrega podem sair para entrega. Pedidos de retirada devem ir para Retirado.",
 			});
 		}
-		if (status === "entregue" && order.deliveryMethod !== "pickup") {
-			return t("admin.orders.updateStatus.errors.pickupOnly", {
-				defaultValue: "Pedidos de retirada são concluídos como Entregue.",
-			});
-		}
 		if (order.status === "cancelado" && !["recebido", "em_preparo", "pronto"].includes(status)) {
 			return t("admin.orders.updateStatus.errors.cancelledReopen", {
 				defaultValue: "Pedidos cancelados só podem ser reabertos para Recebido, Em preparo ou Pronto.",
