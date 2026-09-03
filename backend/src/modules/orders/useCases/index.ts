@@ -1,4 +1,5 @@
 export * from "./CancelExpiredUnpaidOrders";
+export * from "./CloseOrdersAtShiftEnd";
 export * from "./CloseOrdersDay";
 export * from "./CreateOrder";
 export * from "./GetCustomerOrder";

@@ -1,4 +1,4 @@
-import { startExpiredUnpaidOrderCancellation } from "./modules/orders/useCases";
+import { startExpiredUnpaidOrderCancellation, startShiftEndOrderClosure } from "./modules/orders/useCases";
 import { server } from "./server";
 import { auth } from "./shared/infra/betterAuth";
 import { app } from "./shared/infra/elysia";
@@ -11,6 +11,7 @@ import { createWhatsAppProvider } from "./shared/infra/whatsapp";
 await new SeedAdmin(prisma, input => auth.api.signUpEmail(input)).execute();
 await new SeedOwner(prisma, input => auth.api.signUpEmail(input)).execute();
 startExpiredUnpaidOrderCancellation(prisma, createWhatsAppProvider());
+startShiftEndOrderClosure(prisma);
 
 server.listen(process.env.PORT || 3333);
 
