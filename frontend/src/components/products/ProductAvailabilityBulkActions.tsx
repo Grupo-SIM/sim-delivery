@@ -1,13 +1,13 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuPause, LuPlay } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/Tooltip";
-import { getProductsQueryKey, usePatchProductsAvailability } from "@/lib/api";
+import { getProductsQueryKey, useGetProducts, usePatchProductsAvailability } from "@/lib/api";
 import { requiresSelectedUnit } from "@/lib/staff-guard";
 import { showAlert, showToast, useAdminSelectedUnitStore } from "@/stores";
 import { useAuthStore } from "@/stores/auth";
+import { areProductsAvailable } from "./product-availability";
 
 type ProductAvailabilityScope = { categoryId: string } | { tagId: string };
 
@@ -27,9 +27,17 @@ export function ProductAvailabilityBulkActions({
 	const role = useAuthStore(state => state.role);
 	const selectedUnitId = useAdminSelectedUnitStore(state => state.unitId);
 	const updateAvailability = usePatchProductsAvailability();
-	const [productsAvailable, setProductsAvailable] = useState(true);
+	const { data: products, isPending: areProductsPending } = useGetProducts();
 	const unitId = requiresSelectedUnit(role) ? selectedUnitId : null;
-	const isDisabled = disabled || (requiresSelectedUnit(role) && !unitId);
+	const scopedProducts =
+		products?.filter(product =>
+			"categoryId" in scope
+				? product.categories.some(category => category.id === scope.categoryId)
+				: product.tags.some(tag => tag.id === scope.tagId),
+		) ?? [];
+	const productsAvailable = areProductsAvailable(scopedProducts, unitId);
+	const isDisabled =
+		disabled || areProductsPending || scopedProducts.length === 0 || (requiresSelectedUnit(role) && !unitId);
 
 	function update(nextAvailable: boolean) {
 		updateAvailability.mutate(
@@ -37,7 +45,6 @@ export function ProductAvailabilityBulkActions({
 			{
 				onError: () => void showAlert(t("admin.products.availability.bulk.error")),
 				onSuccess: result => {
-					setProductsAvailable(nextAvailable);
 					void queryClient.invalidateQueries({ queryKey: getProductsQueryKey() });
 					showToast(
 						t(
