@@ -100,7 +100,8 @@ export function TagRow({ canManage, canToggleAvailability, tag }: TagRowProps) {
 			</td>
 			<td className="px-4 py-3">
 				<AssociatedProducts
-					emptyLabel={t("admin.tags.products.empty")}
+					association="tag"
+					canManage={canManage}
 					modalTitle={t("admin.tags.products.modalTitle", { name: tag.name })}
 					products={tag.products}
 					urlKey="tag-products"
@@ -139,12 +140,7 @@ export function TagRow({ canManage, canToggleAvailability, tag }: TagRowProps) {
 											</Button>
 										</Tooltip>
 									) : (
-										<Button
-											onClick={() => setEditing(true)}
-											size="sm"
-											type="button"
-											variant="outline"
-										>
+										<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
 											<LuPencil className="size-4" />
 											{t("admin.tags.edit.action")}
 										</Button>

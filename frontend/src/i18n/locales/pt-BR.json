@@ -167,6 +167,18 @@
 					"viewButton_one": "{{count}} produto",
 					"viewButton_other": "{{count}} produtos"
 				},
+				"productAssociations": {
+					"cancel": "Descartar",
+					"empty": "Nenhum produto encontrado.",
+					"readOnly": "Sem permissão para alterar associações.",
+					"save": "Salvar associações",
+					"saveError": "Não foi possível salvar as associações.",
+					"saveSuccess": "Associações atualizadas.",
+					"saving": "Salvando...",
+					"searchPlaceholder": "Buscar produto por nome",
+					"selected_one": "{{count}} produto selecionado",
+					"selected_other": "{{count}} produtos selecionados"
+				},
 				"row": {
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir categoria {{name}}?",
@@ -1090,6 +1102,18 @@
 					"modalTitle": "Produtos de {{name}}",
 					"viewButton_one": "{{count}} produto",
 					"viewButton_other": "{{count}} produtos"
+				},
+				"productAssociations": {
+					"cancel": "Descartar",
+					"empty": "Nenhum produto encontrado.",
+					"readOnly": "Sem permissão para alterar associações.",
+					"save": "Salvar associações",
+					"saveError": "Não foi possível salvar as associações.",
+					"saveSuccess": "Associações atualizadas.",
+					"saving": "Salvando...",
+					"searchPlaceholder": "Buscar produto por nome",
+					"selected_one": "{{count}} produto selecionado",
+					"selected_other": "{{count}} produtos selecionados"
 				},
 				"row": {
 					"delete": "Excluir",
