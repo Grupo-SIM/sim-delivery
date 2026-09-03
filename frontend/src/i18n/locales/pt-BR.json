@@ -1697,6 +1697,7 @@
 					"items": "Itens do pedido",
 					"note": "Observação",
 					"phaseDeadline": "Previsão desta etapa: {{time}}",
+					"problemReason": "Motivo informado",
 					"rate": "Avaliar este pedido",
 					"refreshing": "Atualização automática ativa",
 					"status": {

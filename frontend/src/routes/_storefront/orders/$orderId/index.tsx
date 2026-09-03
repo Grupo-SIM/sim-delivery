@@ -147,7 +147,12 @@ function OrderTrackingPage() {
 							</p>
 							<p className="text-muted-foreground text-sm">{currentDescription}</p>
 							{isProblem && order.problemReason && (
-								<p className="text-foreground text-sm">{order.problemReason}</p>
+								<div className="mt-3 border-destructive/20 border-t pt-3">
+									<p className="font-semibold text-destructive text-xs uppercase tracking-wide">
+										{t("store.checkout.tracking.problemReason")}
+									</p>
+									<p className="mt-1 text-foreground text-sm">{order.problemReason}</p>
+								</div>
 							)}
 							{phaseDeadline && (
 								<p className="font-medium text-primary text-sm">
