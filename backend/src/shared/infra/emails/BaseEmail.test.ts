@@ -44,12 +44,14 @@ describe("email classes", () => {
 		const statusEmail = new OrderStatusEmail({
 			message: "Seu pedido foi cancelado.",
 			orderNumber: 154,
+			status: "cancelado",
 			to: "maria@example.com",
 		});
 		const reviewEmail = new OrderStatusEmail({
 			message: "Seu pedido #154 foi entregue. Bom apetite!",
 			orderNumber: 154,
 			reviewUrl: "https://example.com/centro/rate?orderId=order_1",
+			status: "entregue",
 			to: "maria@example.com",
 		});
 
@@ -62,7 +64,7 @@ describe("email classes", () => {
 
 		expect(magic.messages[0]).toMatchObject({ subject: "Seu link de acesso", to: "maria@example.com" });
 		expect(status.messages[0]).toMatchObject({
-			subject: "Atualização do pedido #154",
+			subject: "Pedido #154 — Cancelado",
 			text: "Seu pedido foi cancelado.",
 		});
 		expect(status.messages[0]?.html).toContain("Atualização do pedido");

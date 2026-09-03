@@ -3,7 +3,7 @@ import type { WhatsAppProvider } from "@/shared/infra/whatsapp";
 import { formatOrderStatusMessage } from "../order-status-message";
 
 export interface OrderStatusEmailSender {
-	send(input: { message: string; orderNumber: number; reviewUrl?: string; to: string }): Promise<void>;
+	send(input: { message: string; orderNumber: number; reviewUrl?: string; status: string; to: string }): Promise<void>;
 }
 
 export interface OrderStatusNotificationCustomer {
@@ -53,7 +53,15 @@ export async function sendOrderStatusNotification({
 		deliveries.push(whatsApp.sendOrderStatus(phone, status, orderId, message));
 	}
 	if (customer.notificationEmail !== false && customer.user?.email) {
-		deliveries.push(emailSender.send({ message, orderNumber, reviewUrl, to: customer.user.email }));
+		deliveries.push(
+			emailSender.send({
+				message,
+				orderNumber,
+				...(reviewUrl ? { reviewUrl } : {}),
+				status,
+				to: customer.user.email,
+			}),
+		);
 	}
 
 	await Promise.allSettled(deliveries);

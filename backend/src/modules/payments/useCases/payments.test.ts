@@ -602,6 +602,7 @@ describe("ConfirmPayment", () => {
 			{
 				message: "Recebemos seu pedido #154 e ele já entrou na fila de preparo.",
 				orderNumber: 154,
+				status: "recebido",
 				to: "maria@example.com",
 			},
 		]);

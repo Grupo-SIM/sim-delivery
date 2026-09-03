@@ -361,7 +361,7 @@ describe("UpdateOrderStatus", () => {
 			{
 				message: "Seu pedido #154 já está sendo preparado com carinho. Assim que ficar pronto, seguirá para entrega.",
 				orderNumber: 154,
-				reviewUrl: undefined,
+				status: "em_preparo",
 				to: "cliente@example.com",
 			},
 		]);
