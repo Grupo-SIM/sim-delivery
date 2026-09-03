@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { LuStar } from "react-icons/lu";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -62,20 +63,20 @@ function RatePage() {
 
 					<div className="space-y-2">
 						<p className="font-medium text-sm">{t("store.rate.rating")}</p>
-						<div className="flex gap-1">
+						<div className="flex gap-1" onMouseLeave={() => setHovered(0)}>
 							{[1, 2, 3, 4, 5].map(star => {
 								const isSelected = (hovered || rating) >= star;
 
 								return (
 									<button
-									className="cursor-pointer text-3xl transition-transform hover:scale-110"
-									key={star}
+										aria-label={`${star} ${t("store.rate.rating")}`}
+										className="flex size-6 cursor-pointer items-center justify-center transition-transform hover:scale-110"
+										key={star}
 									onClick={() => setRating(star)}
 									onMouseEnter={() => setHovered(star)}
-									onMouseLeave={() => setHovered(0)}
-									type="button"
-								>
-									<span className={isSelected ? "text-[22px]" : undefined}>{isSelected ? "⭐" : "☆"}</span>
+										type="button"
+									>
+										<LuStar className={isSelected ? "size-6 fill-warning text-warning" : "size-6 text-foreground"} />
 									</button>
 								);
 							})}

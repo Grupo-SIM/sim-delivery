@@ -1,3 +1,4 @@
+import { LuStar } from "react-icons/lu";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -48,20 +49,20 @@ export function ProductRatingRow({ orderId, productId, productName }: ProductRat
 	return (
 		<div className="space-y-3 rounded-brand border border-border bg-card p-4">
 			<p className="font-medium text-sm">{productName}</p>
-			<div className="flex gap-1">
+			<div className="flex gap-1" onMouseLeave={() => setHovered(0)}>
 				{[1, 2, 3, 4, 5].map(star => {
 					const isSelected = (hovered || rating) >= star;
 
 					return (
 						<button
-						className="cursor-pointer text-2xl transition-transform hover:scale-110"
+						aria-label={`${star} ${t("store.rate.rating")}`}
+						className="flex size-6 cursor-pointer items-center justify-center transition-transform hover:scale-110"
 						key={star}
 						onClick={() => setRating(star)}
 						onMouseEnter={() => setHovered(star)}
-						onMouseLeave={() => setHovered(0)}
 						type="button"
 					>
-						<span className={isSelected ? "text-[18px]" : undefined}>{isSelected ? "⭐" : "☆"}</span>
+						<LuStar className={isSelected ? "size-6 fill-warning text-warning" : "size-6 text-foreground"} />
 						</button>
 					);
 				})}
