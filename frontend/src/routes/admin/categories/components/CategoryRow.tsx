@@ -96,22 +96,16 @@ export function CategoryRow({ canManage, canToggleAvailability, category, dragDi
 			)}
 			<td className="w-56 px-4 py-3 font-medium">
 				{editing ? (
-					<div className="grid rounded-md border border-primary/50 bg-primary/5 px-1.5 py-0.5 shadow-sm">
-						<span aria-hidden className="invisible col-start-1 row-start-1 whitespace-pre">
-							{category.name || " "}
-						</span>
-						<Input
-							aria-label={t("admin.categories.create.name")}
-							className="col-start-1 row-start-1 h-auto min-w-32 rounded-none border-0 bg-transparent p-0 font-medium leading-[inherit] shadow-none focus-visible:ring-0"
-							name="category-name"
-							onBlur={flushName}
-							onChange={event => setLocalName(event.currentTarget.value)}
-							placeholder={t("admin.categories.create.namePlaceholder")}
-							value={localName}
-						/>
-					</div>
+					<Input
+						aria-label={t("admin.categories.create.name")}
+						name="category-name"
+						onBlur={flushName}
+						onChange={event => setLocalName(event.currentTarget.value)}
+						placeholder={t("admin.categories.create.namePlaceholder")}
+						value={localName}
+					/>
 				) : (
-					category.name
+					<span className="flex h-11 items-center">{category.name}</span>
 				)}
 			</td>
 			<td className="w-56 px-4 py-3">
