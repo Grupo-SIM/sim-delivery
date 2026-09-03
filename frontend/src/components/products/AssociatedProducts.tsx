@@ -43,7 +43,10 @@ export function AssociatedProducts({
 	viewLabel,
 }: AssociatedProductsProps) {
 	const { t } = useTranslation();
-	const translationKey = `admin.${association === "category" ? "categories" : "tags"}.productAssociations`;
+	const translationKey =
+		association === "category"
+			? "admin.categories.productAssociations"
+			: "admin.tags.productAssociations";
 	const queryClient = useQueryClient();
 	const [isOpen, setIsOpen] = useState(false);
 	const productsQuery = useGetProducts({ query: { enabled: isOpen } });

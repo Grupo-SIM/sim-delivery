@@ -61,7 +61,7 @@ function OrdersPage() {
 					to: `${dateRange.endDate}T23:59:59.999`,
 				}
 			: {}),
-	}, { client: { cache: "no-store" } });
+	});
 	useOrderEvents(unitId);
 	const availableStatuses = getAvailableStatuses(role);
 
