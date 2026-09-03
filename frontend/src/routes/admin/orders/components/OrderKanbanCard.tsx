@@ -54,7 +54,7 @@ export function OrderKanbanCard({
 			)
 		: null;
 	const canEditEstimate = order.status === "em_preparo";
-	const problemReason = order.problemReason;
+	const problemReason = order.status === "problema" ? order.problemReason : null;
 	const initialEstimateMinutes = order.estimatedStatusCompletionAt
 		? Math.max(1, Math.round((new Date(order.estimatedStatusCompletionAt).getTime() - Date.now()) / 60_000))
 		: 15;
