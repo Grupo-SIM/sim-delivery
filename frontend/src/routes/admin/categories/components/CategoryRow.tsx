@@ -178,7 +178,7 @@ export function CategoryRow({ canManage, canToggleAvailability, category, dragDi
 										type="button"
 										variant="outline"
 									>
-										{t("admin.categories.row.delete")}
+										{iconOnlyActions ? null : t("admin.categories.row.delete")}
 									</ConfirmActionButton>
 								</>
 							))}

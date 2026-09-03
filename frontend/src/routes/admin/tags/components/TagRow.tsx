@@ -161,7 +161,7 @@ export function TagRow({ canManage, canToggleAvailability, tag }: TagRowProps) {
 										type="button"
 										variant="outline"
 									>
-										{t("admin.tags.row.delete")}
+										{iconOnlyActions ? null : t("admin.tags.row.delete")}
 									</ConfirmActionButton>
 								</>
 							))}
