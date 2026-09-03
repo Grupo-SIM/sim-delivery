@@ -193,8 +193,8 @@ function InventoryPage() {
 						<col className="w-[15%]" />
 						<col className="w-[14%]" />
 						<col className="w-[15%]" />
-						<col className="w-[16%]" />
-						<col className="w-[6%]" />
+						<col />
+						<col className="w-28" />
 					</colgroup>
 					<thead>
 						<tr className="border-b text-left">
@@ -277,7 +277,7 @@ function InventoryPage() {
 												</td>
 												<td className="px-4 py-3">
 													{canManage && (
-														<div className="flex justify-end gap-2">
+														<div className="flex min-w-max justify-end gap-2">
 														<Tooltip content={t("admin.inventory.actions.registerEntry")}>
 															<Button
 																aria-label={t("admin.inventory.actions.registerEntry")}
