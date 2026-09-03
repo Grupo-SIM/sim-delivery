@@ -61,12 +61,6 @@ function isMovableStatus(
 	return MOVABLE_STATUSES.includes(status as PatchOrdersByOrderIdStatusMutationRequestStatusEnumKey);
 }
 
-function getFlow(deliveryMethod: string) {
-	return deliveryMethod === "pickup"
-		? ["recebido", "em_preparo", "pronto", "entregue"]
-		: ["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue"];
-}
-
 function isFinalizedStatus(status: KanbanStatus): status is FinalizedStatus {
 	return FINALIZED_STATUSES.includes(status as FinalizedStatus);
 }
@@ -232,14 +226,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 		if (status === "problema") return null;
 		if (status === "cancelado") return null;
 
-		const flow = getFlow(order.deliveryMethod);
-		const currentIndex = flow.indexOf(order.status);
-		const nextIndex = flow.indexOf(status);
-		if (currentIndex >= 0 && nextIndex >= 0 && Math.abs(nextIndex - currentIndex) === 1) return null;
-
-		return t("admin.orders.updateStatus.errors.sequence", {
-			defaultValue: "Esse movimento pula etapas do pedido. Avance ou volte apenas uma coluna por vez.",
-		});
+		return null;
 	}
 
 	function moveOrder(orderId: string, status: KanbanStatus) {
