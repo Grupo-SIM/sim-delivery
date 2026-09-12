@@ -92,12 +92,12 @@ function ProfilePage() {
 		await customerQuery.refetch();
 	}
 
-	async function handleDetailsSave(value: { cpf: string | null; name: string; phone: string | null }) {
+	async function handleDetailsSave(value: { cpf: string; name: string; phone: string }) {
 		try {
 			const changedName = value.name !== authenticatedUser.name;
 			const changedCustomer =
-				value.cpf !== (customerQuery.data?.cpf ?? null) ||
-				value.phone !== (customerQuery.data?.phone ?? null);
+				value.cpf !== (customerQuery.data?.cpf ?? "") ||
+				value.phone !== (customerQuery.data?.phone ?? "");
 			if (changedName) {
 				const { error } = await authClient.updateUser({ name: value.name });
 				if (error) throw error;

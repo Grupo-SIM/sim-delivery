@@ -10,7 +10,7 @@ import type { AuthUser } from "@/stores/auth";
 interface ProfileDetailsFormProps {
 	customer: { cpf: string | null; phone: string | null } | null;
 	isSaving: boolean;
-	onSave: (value: { cpf: string | null; name: string; phone: string | null }) => void;
+	onSave: (value: { cpf: string; name: string; phone: string }) => void;
 	user: AuthUser;
 }
 
@@ -33,54 +33,75 @@ export function ProfileDetailsForm({ customer, isSaving, onSave, user }: Profile
 		trimmedName !== user.name ||
 		phoneDigits !== (customer?.phone ?? "") ||
 		cpfDigits !== (customer?.cpf ?? "");
-	const validPhone = phoneDigits.length === 0 || phoneDigits.length === 13;
-	const validCpf = cpfDigits.length === 0 || isValidCpf(cpfDigits);
+	const validPhone = phoneDigits.length === 13;
+	const validCpf = isValidCpf(cpfDigits);
 
 	return (
-		<section className="space-y-4 rounded-xl border border-border bg-card p-5">
+		<form
+			className="space-y-4 rounded-xl border border-border bg-card p-5"
+			onSubmit={event => {
+				event.preventDefault();
+				onSave({ cpf: cpfDigits, name: trimmedName, phone: phoneDigits });
+			}}
+		>
 			<h2 className="font-semibold text-lg">{t("store.account.profile.personalData")}</h2>
 			<Label>
 				<span>
 					{t("store.account.profile.name")} <RequiredMark />
 				</span>
-				<Input onChange={event => setName(event.currentTarget.value)} value={name} />
+				<Input
+					autoComplete="name"
+					name="name"
+					onChange={event => setName(event.currentTarget.value)}
+					placeholder={t("store.account.profile.namePlaceholder")}
+					required
+					value={name}
+				/>
 			</Label>
 			<Label>
 				{t("store.account.profile.email")}
-				<Input disabled readOnly value={user.email} />
+				<Input autoComplete="email" disabled name="email" readOnly value={user.email} />
 			</Label>
 			<p className="text-muted-foreground text-xs">{t("store.account.profile.emailHint")}</p>
 			<div className="grid gap-4 sm:grid-cols-2">
 				<Label>
-					{t("store.account.profile.phone")}
+					<span>
+						{t("store.account.profile.phone")} <RequiredMark />
+					</span>
 					<MaskedInput
+						autoComplete="tel"
 						format="+55 (##) #####-####"
 						inputMode="tel"
 						mask="_"
+						name="phone"
 						onValueChange={({ value }) => setPhone(value)}
 						placeholder={t("store.account.profile.phonePlaceholder")}
+						required
 						value={phone}
 					/>
 				</Label>
 				<Label>
-					{t("store.account.profile.cpf")}
+					<span>
+						{t("store.account.profile.cpf")} <RequiredMark />
+					</span>
 					<MaskedInput
 						format="###.###.###-##"
 						inputMode="numeric"
 						mask="_"
+						name="cpf"
 						onValueChange={({ value }) => setCpf(value)}
 						placeholder="000.000.000-00"
+						required
 						value={cpf}
 					/>
 				</Label>
 			</div>
 			<Button
 				disabled={!dirty || !trimmedName || !validCpf || !validPhone || isSaving}
-				onClick={() => onSave({ cpf: cpfDigits || null, name: trimmedName, phone: phoneDigits || null })}
-				type="button"
+				type="submit"
 			>
 				{isSaving ? t("store.account.profile.saving") : t("store.account.profile.save")}
 			</Button>
-		</section>
+		</form>
 	);
 }
