@@ -9,7 +9,7 @@ import { isUnitOpen } from "../isUnitOpen";
 export class ListPublicUnits {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(slug: string | undefined): Promise<PublicUnitListReturn> {
+	async execute(slug: string | undefined, timeZone?: string): Promise<PublicUnitListReturn> {
 		if (!slug) {
 			return [];
 		}
@@ -72,7 +72,7 @@ export class ListPublicUnits {
 				id: unit.id,
 				imageUrl: unit.imageUrl,
 				instagramUrl: unit.instagramUrl,
-				isOpenNow: isUnitOpen(hours, unit.isOpenManual),
+				isOpenNow: isUnitOpen(hours, unit.isOpenManual, new Date(), timeZone),
 				minOrderCents: unit.minOrderCents,
 				name: unit.name,
 				neighborhood: unit.neighborhood,

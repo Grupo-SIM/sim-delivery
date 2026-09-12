@@ -6,7 +6,12 @@ import { isUnitOpen } from "../isUnitOpen";
 export class ListUnits {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(companyId: string | null, role?: Role, userId?: string): Promise<UnitWithStatusListReturn> {
+	async execute(
+		companyId: string | null,
+		role?: Role,
+		userId?: string,
+		timeZone?: string,
+	): Promise<UnitWithStatusListReturn> {
 		const staffUnitScope =
 			role !== undefined && !["owner", "superAdmin"].includes(role) && userId
 				? { staffUnits: { some: { userId } } }
@@ -17,6 +22,6 @@ export class ListUnits {
 			where: { ...(companyId ? { companyId } : {}), ...staffUnitScope },
 		});
 
-		return units.map(({ hours, ...unit }) => ({ ...unit, isOpenNow: isUnitOpen(hours, unit.isOpenManual) }));
+		return units.map(({ hours, ...unit }) => ({ ...unit, isOpenNow: isUnitOpen(hours, unit.isOpenManual, new Date(), timeZone) }));
 	}
 }

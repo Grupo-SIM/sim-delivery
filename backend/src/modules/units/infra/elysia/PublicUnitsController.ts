@@ -25,7 +25,7 @@ export const PublicUnitsController = new Elysia({
 				prisma,
 				simulateFreight: new SimulateFreight(prisma),
 			}))
-			.get("/units", async ({ listPublicUnits, query }) => listPublicUnits.execute(query.slug), {
+			.get("/units", async ({ listPublicUnits, query, request }) => listPublicUnits.execute(query.slug, request.headers.get("x-time-zone") ?? undefined), {
 				query: t.Object({ slug: t.Optional(t.String()) }),
 				response: PublicUnitListReturn,
 			})

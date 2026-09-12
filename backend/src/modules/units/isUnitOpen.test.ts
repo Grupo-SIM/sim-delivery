@@ -35,4 +35,12 @@ describe("isUnitOpen", () => {
 		expect(isUnitOpen([tuesday], null, new Date(2026, 6, 14, 23))).toBe(true);
 		expect(isUnitOpen([tuesday], null, new Date(2026, 6, 14, 1))).toBe(false);
 	});
+
+	it("uses the requesting client's time zone instead of the server time zone", () => {
+		const monday = day(1, "15:00", "23:00");
+		const instant = new Date("2026-07-14T03:26:00.000Z");
+
+		expect(isUnitOpen([monday], null, instant, "America/Rio_Branco")).toBe(true);
+		expect(isUnitOpen([monday], null, instant, "UTC")).toBe(false);
+	});
 });
