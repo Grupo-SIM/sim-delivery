@@ -10,13 +10,13 @@ export class UpdateMyCustomer {
 	async execute(userId: string, data: UpdateCustomerBody): Promise<CustomerReturn> {
 		const company = await this.prisma.company.findUnique({ where: { slug: data.slug } });
 		if (!company) throw new DomainError(CustomerErrors.COMPANY_NOT_FOUND);
-		if (data.cpf && !isValidCpf(data.cpf)) throw new DomainError(CustomerErrors.INVALID_CPF);
+		if (!isValidCpf(data.cpf)) throw new DomainError(CustomerErrors.INVALID_CPF);
 
 		const customer = await this.prisma.customer.upsert({
-			create: { companyId: company.id, cpf: data.cpf ?? null, phone: data.phone ?? null, userId },
+			create: { companyId: company.id, cpf: data.cpf, phone: data.phone, userId },
 			update: {
-				cpf: data.cpf === undefined ? undefined : data.cpf,
-				phone: data.phone === undefined ? undefined : data.phone,
+				cpf: data.cpf,
+				phone: data.phone,
 			},
 			where: { userId },
 		});

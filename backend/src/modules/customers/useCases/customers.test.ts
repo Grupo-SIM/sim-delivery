@@ -352,7 +352,11 @@ describe("customer profile mutations", () => {
 		const { prisma } = makePrisma();
 
 		await expect(
-			new UpdateMyCustomer(prisma).execute("user_1", { cpf: "70267787497", slug: "demo" }),
+			new UpdateMyCustomer(prisma).execute("user_1", {
+				cpf: "70267787497",
+				phone: "5511999999999",
+				slug: "demo",
+			}),
 		).rejects.toThrow("INVALID_CPF");
 	});
 

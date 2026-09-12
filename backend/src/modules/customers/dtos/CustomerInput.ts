@@ -47,8 +47,8 @@ export const UpdateCustomerAddressBody = t.Partial(
 export type UpdateCustomerAddressBody = typeof UpdateCustomerAddressBody.static;
 
 export const UpdateCustomerBody = t.Object({
-	cpf: t.Optional(t.Nullable(t.String())),
-	phone: t.Optional(t.Nullable(t.String({ maxLength: 13, minLength: 13 }))),
+	cpf: t.String({ maxLength: 11, minLength: 11 }),
+	phone: t.String({ maxLength: 13, minLength: 13 }),
 	slug: t.String({ minLength: 1 }),
 });
 export type UpdateCustomerBody = typeof UpdateCustomerBody.static;
