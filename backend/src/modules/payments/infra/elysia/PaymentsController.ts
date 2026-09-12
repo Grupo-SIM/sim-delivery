@@ -16,10 +16,11 @@ import {
 	RefundPaymentBody,
 	RefundReturn,
 	SavedCardsReturn,
-	WebhookBody,
+	SimpayWebhookBody,
+	SimpayWebhookReturn,
 } from "../../dtos";
 import {
-	ConfirmPayment,
+	ApplySimpayPaymentStatus,
 	CreateCardPayment,
 	CreatePixPayment,
 	DeleteSavedCard,
@@ -56,7 +57,7 @@ export const PaymentsController = new Elysia({ detail: { tags: ["Payments"] } })
 		app
 			.decorate(({ prisma, ...injected }) => ({
 				...injected,
-				confirmPayment: new ConfirmPayment(prisma),
+				applySimpayPaymentStatus: new ApplySimpayPaymentStatus(prisma),
 				createCardPayment: new CreateCardPayment(prisma, simpay, domPagamentos),
 				createPixPayment: new CreatePixPayment(prisma, simpay),
 				deleteSavedCard: new DeleteSavedCard(prisma),
@@ -173,17 +174,19 @@ export const PaymentsController = new Elysia({ detail: { tags: ["Payments"] } })
 				},
 			)
 			.post(
-				"/webhook",
-				async ({ body, confirmPayment, request, set }) => {
+				"/webhooks/simintpay",
+				async ({ applySimpayPaymentStatus, body, request, set }) => {
 					if (!isValidWebhookSecret(request.headers.get("x-simpay-webhook-secret"))) {
 						set.status = 401;
 						return { error: "UNAUTHORIZED" };
 					}
 
-					const confirmed = await confirmPayment.execute(body.token);
-					if (confirmed) paymentStatusEvents.publish(body.token, "confirmed");
-					return new Response(null, { status: 204 });
+					const result = await applySimpayPaymentStatus.execute(body.paymentId, body.status);
+					return { processed: result.found, status: result.status };
 				},
-				{ body: WebhookBody, response: { 401: PaymentErrorReturn } },
+				{
+					body: SimpayWebhookBody,
+					response: { 200: SimpayWebhookReturn, 401: PaymentErrorReturn },
+				},
 			),
 	);

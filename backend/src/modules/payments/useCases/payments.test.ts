@@ -3,12 +3,14 @@ import type { DomPagamentosClient } from "@/shared/infra/domPagamentos";
 import { PaymentProviderError } from "@/shared/infra/paymentProviderError";
 import type { SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
+import { ApplySimpayPaymentStatus } from "./ApplySimpayPaymentStatus";
 import { ConfirmPayment } from "./ConfirmPayment";
 import { CreateCardPayment } from "./CreateCardPayment";
 import { CreatePixPayment } from "./CreatePixPayment";
 import { DeleteSavedCard } from "./DeleteSavedCard";
 import { GetPaymentStatus } from "./GetPaymentStatus";
 import { ListSavedCards } from "./ListSavedCards";
+import { ReconcilePendingPixPayments } from "./ReconcilePendingPixPayments";
 import { buildPaymentDescription, resolvePayingCustomer } from "./resolvePayingCustomer";
 
 /** Shapes below mirror only the columns the use cases actually read. */
@@ -34,6 +36,7 @@ interface OrderRow {
 	displayNumber: number;
 	id: string;
 	loyaltyPointsRate: number;
+	status?: string;
 	total: number;
 	unitName: string;
 }
@@ -84,6 +87,7 @@ const baseOrder: OrderRow = {
 	displayNumber: 154,
 	id: "order_1",
 	loyaltyPointsRate: 5,
+	status: "awaiting_payment",
 	total: 5000,
 	unitName: "Boa Viagem",
 };
@@ -137,17 +141,26 @@ function makeWorld(opts: WorldOptions = {}) {
 					(where.orderId !== undefined && payment.orderId === where.orderId) ||
 					(where.token !== undefined && payment.token === where.token),
 			) ?? null,
-		findFirst: async ({
-			where,
-		}: {
-			where: { order: { customer: { userId: string } }; token: string };
-		}) =>
+		findFirst: async ({ where }: { where: { order?: { customer: { userId: string } }; simpayPaymentId?: string; token?: string } }) =>
 			payments.find(payment => {
-				if (payment.token !== where.token) return false;
+				if (where.simpayPaymentId !== undefined) return payment.simpayPaymentId === where.simpayPaymentId;
+				if (payment.token !== where.token || !where.order) return false;
 				const order = orders.find(candidate => candidate.id === payment.orderId);
 				const customer = customers.find(candidate => candidate.id === order?.customerId);
 				return customer?.userId === where.order.customer.userId;
 			}) ?? null,
+		findMany: async () =>
+			payments
+				.filter(payment => {
+					const order = orders.find(candidate => candidate.id === payment.orderId);
+					return (
+						payment.method === "pix" &&
+						payment.status === "pending" &&
+						payment.simpayPaymentId !== null &&
+						order?.status === "awaiting_payment"
+					);
+				})
+				.map(payment => ({ simpayPaymentId: payment.simpayPaymentId })),
 		update: async ({ data, where }: { data: Record<string, unknown>; where: { id: string } }) => {
 			const payment = payments.find(row => row.id === where.id);
 			if (!payment) throw new Error(`unknown payment ${where.id}`);
@@ -777,6 +790,88 @@ describe("GetPaymentStatus", () => {
 		await expect(new GetPaymentStatus(prisma, simpay).execute("user_1", "token_9")).rejects.toThrow(
 			"PAYMENT_NOT_FOUND",
 		);
+	});
+});
+
+describe("ApplySimpayPaymentStatus", () => {
+	it("confirms a payment from its Simpay payment id", async () => {
+		const { payments, prisma } = makeWorld({
+			payments: [
+				{
+					amount: 5000,
+					id: "pay_1",
+					method: "pix",
+					orderId: "order_1",
+					pixContent: "c",
+					pixQrcode: "q",
+					simpayPaymentId: "simpay_1",
+					status: "pending",
+					token: "token_1",
+				},
+			],
+		});
+
+		const result = await new ApplySimpayPaymentStatus(prisma).execute("simpay_1", "COMPLETED");
+
+		expect(result).toEqual({ found: true, status: "confirmed" });
+		expect(payments[0]?.status).toBe("confirmed");
+	});
+
+	it("acknowledges an unknown payment without changing state", async () => {
+		const { prisma } = makeWorld();
+
+		expect(await new ApplySimpayPaymentStatus(prisma).execute("missing", "COMPLETED")).toEqual({
+			found: false,
+			status: "not_found",
+		});
+	});
+});
+
+describe("ReconcilePendingPixPayments", () => {
+	it("polls pending PIX payments and confirms approvals", async () => {
+		const { payments, prisma } = makeWorld({
+			payments: [
+				{
+					amount: 5000,
+					id: "pay_1",
+					method: "pix",
+					orderId: "order_1",
+					pixContent: "c",
+					pixQrcode: "q",
+					simpayPaymentId: "simpay_1",
+					status: "pending",
+					token: "token_1",
+				},
+			],
+		});
+		const { simpay } = makeSimpay({ getPixStatusDirect: async () => ({ status: "APPROVED" }) });
+
+		expect(await new ReconcilePendingPixPayments(prisma, simpay).execute()).toBe(1);
+		expect(payments[0]?.status).toBe("confirmed");
+	});
+
+	it("isolates gateway failures so later payments are still reconciled", async () => {
+		const pending = (id: string): PaymentRow => ({
+			amount: 5000,
+			id: `pay_${id}`,
+			method: "pix",
+			orderId: "order_1",
+			pixContent: "c",
+			pixQrcode: "q",
+			simpayPaymentId: id,
+			status: "pending",
+			token: `token_${id}`,
+		});
+		const { payments, prisma } = makeWorld({ payments: [pending("broken"), pending("approved")] });
+		const { simpay } = makeSimpay({
+			getPixStatusDirect: async (paymentId: string) => {
+				if (paymentId === "broken") throw new Error("gateway unavailable");
+				return { status: "COMPLETED" };
+			},
+		});
+
+		expect(await new ReconcilePendingPixPayments(prisma, simpay).execute()).toBe(1);
+		expect(payments.find(payment => payment.simpayPaymentId === "approved")?.status).toBe("confirmed");
 	});
 });
 

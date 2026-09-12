@@ -1,9 +1,9 @@
 import { DomainError } from "@/shared/errors";
-import { isApprovedSimpayStatus, isFailedSimpayStatus, type SimpayClient } from "@/shared/infra/simpay";
+import type { SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { PaymentStatusReturn } from "../dtos";
 import { PaymentErrors } from "../errors";
-import { ConfirmPayment } from "./ConfirmPayment";
+import { ApplySimpayPaymentStatus } from "./ApplySimpayPaymentStatus";
 
 export class GetPaymentStatus {
 	constructor(
@@ -30,25 +30,10 @@ export class GetPaymentStatus {
 			return { status: payment.status };
 		}
 
-		if (isApprovedSimpayStatus(remote.status)) {
-			const confirmed = await new ConfirmPayment(this.prisma).execute(payment.token, payment.simpayPaymentId);
-			if (confirmed) return { status: "confirmed" };
-
-			const current = await this.prisma.payment.findUnique({ where: { token: payment.token } });
-			return { status: current?.status ?? payment.status };
-		}
-
-		if (isFailedSimpayStatus(remote.status)) {
-			const { count } = await this.prisma.payment.updateMany({
-				data: { status: "failed" },
-				where: { id: payment.id, simpayPaymentId: payment.simpayPaymentId, status: "pending" },
-			});
-			if (count > 0) return { status: "failed" };
-
-			const current = await this.prisma.payment.findUnique({ where: { token: payment.token } });
-			return { status: current?.status ?? payment.status };
-		}
-
-		return { status: payment.status };
+		const result = await new ApplySimpayPaymentStatus(this.prisma).execute(
+			payment.simpayPaymentId,
+			remote.status,
+		);
+		return { status: result.status };
 	}
 }

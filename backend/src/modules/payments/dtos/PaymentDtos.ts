@@ -81,10 +81,17 @@ export type ListSavedCardsQuery = typeof ListSavedCardsQuery.static;
 export const DeleteSavedCardReturn = t.Object({ id: t.String() });
 export type DeleteSavedCardReturn = typeof DeleteSavedCardReturn.static;
 
-export const WebhookBody = t.Object({
-	token: t.String({ minLength: 1 }),
+export const SimpayWebhookBody = t.Object({
+	paymentId: t.String({ minLength: 1 }),
+	status: t.String({ minLength: 1 }),
 });
-export type WebhookBody = typeof WebhookBody.static;
+export type SimpayWebhookBody = typeof SimpayWebhookBody.static;
+
+export const SimpayWebhookReturn = t.Object({
+	processed: t.Boolean(),
+	status: t.String(),
+});
+export type SimpayWebhookReturn = typeof SimpayWebhookReturn.static;
 
 export const RefundMethod = t.Union([t.Literal("gateway"), t.Literal("manual"), t.Literal("cashback")]);
 export type RefundMethod = typeof RefundMethod.static;
