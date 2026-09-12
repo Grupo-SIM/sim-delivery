@@ -8,7 +8,7 @@ export default createClient(
 		baseUrl: branding.apiUrl,
 		credentials: "include",
 		hooks: {
-			beforeRequest: [request => {
+			beforeRequest: [({ request }) => {
 				if (typeof window === "undefined") return;
 
 				const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
