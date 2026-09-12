@@ -43,8 +43,8 @@ function makeOrderPrisma(
 				inventoryReservation: { createMany: async () => ({ count: 0 }) },
 				localOptionRecipeIngredient: { findMany: async () => [] },
 				optionRecipeIngredient: { findMany: async () => [] },
-				order: {
-					create: async ({ data }: { data: object }) => {
+		order: {
+			create: async ({ data }: { data: object }) => {
 						const o = {
 							cancelReason: null,
 							createdAt: new Date(),
@@ -103,6 +103,16 @@ function makeOrderPrisma(
 			findFirst: async ({ where }: { where: { companyId: string; userId: string } }) =>
 				customer?.companyId === where.companyId && customer?.userId === where.userId ? customer : null,
 		},
+		order: {
+			findFirst: async ({ where }: { where: { customerId: string; idempotencyKey: string } }) => {
+				const order = orders.find(
+					candidate =>
+						(candidate as { customerId?: string }).customerId === where.customerId &&
+						(candidate as { idempotencyKey?: string }).idempotencyKey === where.idempotencyKey,
+				);
+				return order ? { ...(order as object), items: orderItems } : null;
+			},
+		},
 		unit: {
 			findFirst: async ({ where }: { where: { active: boolean; companyId: string; slug: string } }) =>
 				unit?.active === where.active && unit?.companyId === where.companyId && unit?.slug === where.slug
@@ -121,6 +131,7 @@ function makeOrderPrisma(
 const baseBody = {
 	addressId: "addr_1",
 	deliveryMethod: "delivery" as const,
+	idempotencyKey: "00000000-0000-4000-8000-000000000001",
 	items: [{ note: undefined, quantity: 2, unitProductId: "up_1" }],
 	slug: "demo",
 	unitSlug: "centro",
@@ -184,6 +195,17 @@ describe("CreateOrder", () => {
 			unitPrice: 1000,
 		});
 		expect(result.items).toHaveLength(1);
+	});
+
+	it("returns the existing order when the checkout request is retried", async () => {
+		const { orders, prisma } = makeOrderPrisma();
+		const createOrder = new CreateOrder(prisma);
+
+		const first = await createOrder.execute("user_1", baseBody);
+		const retry = await createOrder.execute("user_1", baseBody);
+
+		expect(orders).toHaveLength(1);
+		expect(retry.id).toBe(first.id);
 	});
 
 	it("uses priceCentsOverride when set", async () => {

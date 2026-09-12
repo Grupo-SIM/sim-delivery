@@ -6,6 +6,8 @@ model Order {
     companyId      String
     unitId         String
     customerId     String
+    /// Client-generated UUID that makes checkout retries return this same order.
+    idempotencyKey String?
     preparedById   String?
     addressId      String?
     couponId              String?
@@ -50,6 +52,7 @@ model Order {
     @@index([companyId, status, createdAt])
     @@index([customerId])
     @@index([preparedById])
+    @@unique([customerId, idempotencyKey])
     @@map("order")
 }
 

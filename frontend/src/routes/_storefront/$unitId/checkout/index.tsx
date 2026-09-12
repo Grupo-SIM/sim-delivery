@@ -50,6 +50,7 @@ function CheckoutPage() {
 	const user = useAuthStore(state => state.user);
 	const cartItems = useCartStore(state => state.items);
 	const clearCart = useCartStore(state => state.clear);
+	const getCheckoutIdempotencyKey = useCartStore(state => state.getCheckoutIdempotencyKey);
 
 	const [savedCustomer, setSavedCustomer] = useState<PostCustomersMe200 | null>(null);
 	const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
@@ -172,6 +173,7 @@ function CheckoutPage() {
 					addressId: savedAddress.id,
 					couponCode: appliedCoupon?.code,
 					deliveryMethod,
+					idempotencyKey: getCheckoutIdempotencyKey(),
 					items: cartItems.map(item => ({
 						note: item.note || undefined,
 						options: item.options.map(option => ({

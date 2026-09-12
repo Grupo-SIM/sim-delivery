@@ -17,6 +17,7 @@ export class CreateOrder {
 			addressId,
 			couponCode,
 			deliveryMethod,
+			idempotencyKey,
 			items,
 			redeemCashbackCents,
 			redeemLoyaltyPoints,
@@ -39,6 +40,8 @@ export class CreateOrder {
 			where: { companyId: company.id, userId },
 		});
 		if (!customer) throw new DomainError(OrderErrors.CUSTOMER_NOT_FOUND);
+		const existingOrder = await this.findOrderByIdempotencyKey(customer.id, idempotencyKey);
+		if (existingOrder) return existingOrder;
 
 		const address = await this.prisma.address.findFirst({
 			where: { customerId: customer.id, deletedAt: null, id: addressId },
@@ -259,7 +262,8 @@ export class CreateOrder {
 			subtotal + deliveryFee - discountCents - cashbackCentsRedeemed - loyaltyPointsRedeemed,
 		);
 
-		const order = await this.prisma.$transaction(async tx => {
+		try {
+			const order = await this.prisma.$transaction(async tx => {
 			const created = await tx.order.create({
 				data: {
 					addressId: addressId ?? null,
@@ -270,6 +274,7 @@ export class CreateOrder {
 					deliveryFee,
 					deliveryMethod,
 					discountCents,
+					idempotencyKey,
 					loyaltyPointsRedeemed,
 					subtotal,
 					total,
@@ -361,15 +366,39 @@ export class CreateOrder {
 				});
 			}
 
-			return tx.order.findUniqueOrThrow({
-				include: { items: { include: { optionSnapshots: true } } },
-				where: { id: created.id },
+				return tx.order.findUniqueOrThrow({
+					include: { items: { include: { optionSnapshots: true } } },
+					where: { id: created.id },
+				});
 			});
+
+			return {
+				...order,
+				items: order.items.map(item => ({ ...item, options: item.optionSnapshots })),
+			};
+		} catch (error) {
+			if (!isDuplicateIdempotencyKeyError(error)) throw error;
+			const duplicate = await this.findOrderByIdempotencyKey(customer.id, idempotencyKey);
+			if (!duplicate) throw error;
+			return duplicate;
+		}
+	}
+
+	private async findOrderByIdempotencyKey(customerId: string, idempotencyKey: string): Promise<OrderReturn | null> {
+		const order = await this.prisma.order.findFirst({
+			include: { items: { include: { optionSnapshots: true } } },
+			where: { customerId, idempotencyKey },
 		});
+		if (!order) return null;
 
 		return {
 			...order,
 			items: order.items.map(item => ({ ...item, options: item.optionSnapshots })),
 		};
 	}
+}
+
+function isDuplicateIdempotencyKeyError(error: unknown): boolean {
+	if (typeof error !== "object" || error === null || !("code" in error)) return false;
+	return error.code === "P2002";
 }

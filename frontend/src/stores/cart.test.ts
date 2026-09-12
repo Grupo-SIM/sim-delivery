@@ -23,7 +23,7 @@ const option = {
 };
 
 describe("cart store", () => {
-	beforeEach(() => useCartStore.setState({ items: [], unitId: null }));
+	beforeEach(() => useCartStore.setState({ checkoutIdempotencyKey: null, items: [], unitId: null }));
 
 	it("uses deterministic option identity regardless of selection order", () => {
 		expect(
@@ -55,5 +55,15 @@ describe("cart store", () => {
 			.replaceItem("u_1", plain.lineKey, { ...base, options: [option] }, 3, "sem cebola");
 		expect(useCartStore.getState().items).toHaveLength(1);
 		expect(useCartStore.getState().items[0]?.quantity).toBe(5);
+	});
+
+	it("keeps a checkout key through retries and replaces it after a cart change", () => {
+		useCartStore.getState().addItem("u_1", base, 1);
+		const first = useCartStore.getState().getCheckoutIdempotencyKey();
+
+		expect(useCartStore.getState().getCheckoutIdempotencyKey()).toBe(first);
+
+		useCartStore.getState().setQuantity("up_1", 2);
+		expect(useCartStore.getState().getCheckoutIdempotencyKey()).not.toBe(first);
 	});
 });

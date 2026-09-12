@@ -31,7 +31,10 @@ export type CartItemInput = Omit<CartItem, "lineKey" | "note" | "quantity">;
 
 export interface CartState {
 	addItem: (unitId: string, item: CartItemInput, quantity?: number, note?: string) => void;
+	checkoutIdempotencyKey: string | null;
 	clear: () => void;
+	/** Stable request key for the current cart, persisted across checkout refreshes. */
+	getCheckoutIdempotencyKey: () => string;
 	items: CartItem[];
 	removeItem: (lineKey: string) => void;
 	replaceItem: (unitId: string, lineKey: string, item: CartItemInput, quantity: number, note: string) => void;
@@ -63,14 +66,27 @@ export const useCartStore = create<CartState>()(
 								line.lineKey === lineKey ? { ...line, quantity: line.quantity + quantity } : line,
 							)
 						: [...base, { ...item, lineKey, note, quantity }];
-					return { items, unitId };
+					return { checkoutIdempotencyKey: null, items, unitId };
 				}),
-			clear: () => set({ items: [], unitId: null }),
+			checkoutIdempotencyKey: null,
+			clear: () => set({ checkoutIdempotencyKey: null, items: [], unitId: null }),
+			getCheckoutIdempotencyKey: () => {
+				const existing = get().checkoutIdempotencyKey;
+				if (existing) return existing;
+
+				const checkoutIdempotencyKey = globalThis.crypto.randomUUID();
+				set({ checkoutIdempotencyKey });
+				return checkoutIdempotencyKey;
+			},
 			items: [],
 			removeItem: lineKey =>
 				set(state => {
 					const items = state.items.filter(line => line.lineKey !== lineKey);
-					return { items, unitId: items.length === 0 ? null : state.unitId };
+					return {
+						checkoutIdempotencyKey: null,
+						items,
+						unitId: items.length === 0 ? null : state.unitId,
+					};
 				}),
 			replaceItem: (unitId, lineKey, item, quantity, note) =>
 				set(state => {
@@ -82,10 +98,11 @@ export const useCartStore = create<CartState>()(
 								line.lineKey === nextLineKey ? { ...line, quantity: line.quantity + quantity } : line,
 							)
 						: [...base, { ...item, lineKey: nextLineKey, note, quantity }];
-					return { items, unitId };
+					return { checkoutIdempotencyKey: null, items, unitId };
 				}),
 			setNote: (lineKey, note) =>
 				set(state => ({
+					checkoutIdempotencyKey: null,
 					items: state.items.map(line => (line.lineKey === lineKey ? { ...line, note } : line)),
 				})),
 			setQuantity: (lineKey, quantity) => {
@@ -94,6 +111,7 @@ export const useCartStore = create<CartState>()(
 					return;
 				}
 				set(state => ({
+					checkoutIdempotencyKey: null,
 					items: state.items.map(line => (line.lineKey === lineKey ? { ...line, quantity } : line)),
 				}));
 			},
