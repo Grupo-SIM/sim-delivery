@@ -385,6 +385,12 @@ describe("resolvePayingCustomer", () => {
 		await expect(resolvePayingCustomer(prisma, "user_1", body)).rejects.toThrow("NAME_REQUIRED");
 	});
 
+	it("requires a Brazilian mobile number before payment", async () => {
+		const { prisma } = makeWorld({ customers: [{ ...baseCustomer, phone: null }] });
+
+		await expect(resolvePayingCustomer(prisma, "user_1", body)).rejects.toThrow("PHONE_REQUIRED");
+	});
+
 	it("persists the body CPF when the customer has none", async () => {
 		const { customers, prisma } = makeWorld({ customers: [{ ...baseCustomer, cpf: null }] });
 

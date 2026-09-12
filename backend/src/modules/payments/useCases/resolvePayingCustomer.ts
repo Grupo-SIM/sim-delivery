@@ -61,6 +61,9 @@ export async function resolvePayingCustomer(
 	if (customer.user.name.trim().split(/\s+/).filter(Boolean).length < 2) {
 		throw new DomainError(PaymentErrors.NAME_REQUIRED);
 	}
+	if (customer.phone?.replace(/\D/g, "").length !== 13) {
+		throw new DomainError(PaymentErrors.PHONE_REQUIRED);
+	}
 
 	if (!customer.cpf && bodyCpf) {
 		await prisma.customer.update({ data: { cpf: bodyCpf }, where: { id: customer.id } });

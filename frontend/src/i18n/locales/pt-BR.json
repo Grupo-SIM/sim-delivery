@@ -1656,6 +1656,7 @@
 							"NAME_REQUIRED": "Informe seu nome completo antes de pagar.",
 							"ORDER_NOT_FOUND": "Pedido não encontrado.",
 							"PAYMENT_ALREADY_CONFIRMED": "Este pedido já foi pago.",
+							"PHONE_REQUIRED": "Informe seu celular antes de pagar.",
 							"SAVED_CARD_NOT_FOUND": "O cartão salvo não foi encontrado.",
 							"UNAUTHORIZED_ORDER": "Este pedido não pertence à sua conta."
 						},
@@ -1682,6 +1683,8 @@
 						"error": "Não foi possível salvar seus dados. Tente novamente.",
 						"name": "Nome completo",
 						"namePlaceholder": "Ex: Maria Silva",
+						"phone": "Celular",
+						"phonePlaceholder": "(11) 99999-9999",
 						"saving": "Salvando…",
 						"subtitle": "Precisamos destes dados para processar cartão ou PIX.",
 						"title": "Dados para pagamento"

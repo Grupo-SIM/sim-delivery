@@ -10,16 +10,25 @@ import { hasCompletePaymentIdentity } from "./payment-identity";
 interface PaymentIdentityFormProps {
 	initialCpf: string | null;
 	initialName: string;
+	initialPhone: string | null;
 	isSaving: boolean;
-	onSubmit: (value: { cpf: string; name: string }) => void;
+	onSubmit: (value: { cpf: string; name: string; phone: string }) => void;
 }
 
-export function PaymentIdentityForm({ initialCpf, initialName, isSaving, onSubmit }: PaymentIdentityFormProps) {
+export function PaymentIdentityForm({
+	initialCpf,
+	initialName,
+	initialPhone,
+	isSaving,
+	onSubmit,
+}: PaymentIdentityFormProps) {
 	const { t } = useTranslation();
 	const [name, setName] = useDebouncedInput(initialName, () => undefined);
 	const [cpf, setCpf] = useState(initialCpf ?? "");
+	const [phone, setPhone] = useState(initialPhone ?? "");
 	const cpfDigits = cpf.replace(/\D/g, "");
-	const canSubmit = hasCompletePaymentIdentity(name, cpf);
+	const phoneDigits = phone.replace(/\D/g, "");
+	const canSubmit = hasCompletePaymentIdentity(name, cpf, phone);
 
 	return (
 		<form
@@ -27,7 +36,7 @@ export function PaymentIdentityForm({ initialCpf, initialName, isSaving, onSubmi
 			onSubmit={event => {
 				event.preventDefault();
 				if (!canSubmit) return;
-				onSubmit({ cpf: cpfDigits, name: name.trim() });
+				onSubmit({ cpf: cpfDigits, name: name.trim(), phone: phoneDigits });
 			}}
 		>
 			<div className="space-y-1">
@@ -58,6 +67,21 @@ export function PaymentIdentityForm({ initialCpf, initialName, isSaving, onSubmi
 					onValueChange={({ formattedValue }) => setCpf(formattedValue)}
 					placeholder={t("store.checkout.payment.cpfPlaceholder")}
 					value={cpf}
+				/>
+			</Label>
+			<Label>
+				<span>
+					{t("store.checkout.payment.identity.phone")} <RequiredMark />
+				</span>
+				<MaskedInput
+					autoComplete="tel"
+					format="+55 (##) #####-####"
+					inputMode="tel"
+					mask="_"
+					name="phone"
+					onValueChange={({ value }) => setPhone(value)}
+					placeholder={t("store.checkout.payment.identity.phonePlaceholder")}
+					value={phone}
 				/>
 			</Label>
 			<Button className="w-full" disabled={!canSubmit || isSaving} type="submit">

@@ -19,8 +19,9 @@ interface PaymentStepProps {
 	/** CPF already stored on the customer profile, if any. */
 	customerCpf: string | null;
 	customerName: string;
+	customerPhone: string | null;
 	isSavingIdentity: boolean;
-	onIdentitySubmit: (value: { cpf: string; name: string }) => void;
+	onIdentitySubmit: (value: { cpf: string; name: string; phone: string }) => void;
 	onConfirmed: () => void;
 	orderId: string;
 	slug: string;
@@ -30,6 +31,7 @@ export function PaymentStep({
 	amountCents,
 	customerCpf,
 	customerName,
+	customerPhone,
 	isSavingIdentity,
 	onConfirmed,
 	onIdentitySubmit,
@@ -41,7 +43,7 @@ export function PaymentStep({
 	const [pixCpf, setPixCpf] = useState(customerCpf);
 	const [cardPaymentToken, setCardPaymentToken] = useState<string | null>(null);
 	const hasFullName = customerName.trim().split(/\s+/).filter(Boolean).length >= 2;
-	const identityComplete = hasCompletePaymentIdentity(customerName, customerCpf);
+	const identityComplete = hasCompletePaymentIdentity(customerName, customerCpf, customerPhone);
 
 	const { data: savedCards, isPending: savedCardsPending } = useQuery(getPaymentsCardsQueryOptions({ slug }));
 	const { isPending: isPayingCard, mutate: payWithCard } = usePostPaymentsCard();
@@ -79,6 +81,7 @@ export function PaymentStep({
 				<PaymentIdentityForm
 					initialCpf={customerCpf}
 					initialName={hasFullName ? customerName : ""}
+					initialPhone={customerPhone}
 					isSaving={isSavingIdentity}
 					onSubmit={onIdentitySubmit}
 				/>

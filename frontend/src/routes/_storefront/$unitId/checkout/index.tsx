@@ -214,11 +214,11 @@ function CheckoutPage() {
 		});
 	}
 
-	async function handleIdentitySubmit(value: { cpf: string; name: string }) {
+	async function handleIdentitySubmit(value: { cpf: string; name: string; phone: string }) {
 		try {
 			const { error } = await authClient.updateUser({ name: value.name });
 			if (error) throw error;
-			const customer = await updateCustomer({ data: { cpf: value.cpf, slug: slug ?? "" } });
+			const customer = await updateCustomer({ data: { cpf: value.cpf, phone: value.phone, slug: slug ?? "" } });
 			setSavedCustomer(customer);
 			const session = await authClient.getSession();
 			if (session.data?.user) setUser(mapSessionUser(session.data.user));
@@ -308,6 +308,7 @@ function CheckoutPage() {
 						amountCents={placedOrder.totalCents}
 						customerCpf={activeCustomer?.cpf ?? null}
 						customerName={user?.name ?? ""}
+						customerPhone={activeCustomer?.phone ?? null}
 						isSavingIdentity={isSavingIdentity}
 						onConfirmed={handlePaymentConfirmed}
 						onIdentitySubmit={handleIdentitySubmit}
