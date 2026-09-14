@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { getCartSuggestions, hasEffectiveOptions } from "./CartSuggestions";
+import { getCartSuggestions, hasBasePrice, hasEffectiveOptions } from "./CartSuggestions";
 import type { MenuItem, MenuSection } from "./types";
 
 function makeItem(id: string, cashbackPercent: number | null = null): MenuItem {
@@ -86,5 +86,12 @@ describe("hasEffectiveOptions", () => {
 
 		expect(hasEffectiveOptions(emptyGroup)).toBe(false);
 		expect(hasEffectiveOptions(selectableGroup)).toBe(true);
+	});
+});
+
+describe("hasBasePrice", () => {
+	it("does not display a price when the product has no base value", () => {
+		expect(hasBasePrice(makeItem("customizable", 0))).toBe(true);
+		expect(hasBasePrice({ ...makeItem("composed"), priceCents: 0 })).toBe(false);
 	});
 });

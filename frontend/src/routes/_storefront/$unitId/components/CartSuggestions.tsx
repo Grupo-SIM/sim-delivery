@@ -18,6 +18,11 @@ export function hasEffectiveOptions(item: MenuItem): boolean {
 	return item.optionGroups.some(group => group.options.length > 0);
 }
 
+/** A zero base price means the item price is defined by its selected options. */
+export function hasBasePrice(item: MenuItem): boolean {
+	return Number(item.priceCents) > 0;
+}
+
 export function getCartSuggestions(sections: MenuSection[], itemIds: string[]): MenuItem[] {
 	const inCart = new Set(itemIds);
 	const candidates: MenuItem[] = [];
@@ -67,9 +72,11 @@ export function CartSuggestions({ onSelect, sections, unitId }: CartSuggestionsP
 						)}
 						<div className="flex flex-1 flex-col gap-1 p-2">
 							<p className="truncate font-medium text-xs">{item.title}</p>
-							<span className="text-muted-foreground text-xs">
-								{money.format(Number(item.priceCents) / 100)}
-							</span>
+							{hasBasePrice(item) && (
+								<span className="text-muted-foreground text-xs">
+									{money.format(Number(item.priceCents) / 100)}
+								</span>
+							)}
 							<Button
 								className="mt-1 w-full"
 								onClick={() => (hasEffectiveOptions(item) ? onSelect(item) : addDirectly(item))}
