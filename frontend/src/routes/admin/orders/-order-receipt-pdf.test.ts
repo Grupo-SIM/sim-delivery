@@ -44,6 +44,33 @@ const labels: OrderReceiptLabels = {
 	total: "TOTAL",
 };
 
+const defaultTemplate: GetOrdersByOrderIdReceipt200["template"] = {
+	blocks: [
+		{ id: "unit-name", type: "unitName" },
+		{ id: "order-number", type: "orderNumber" },
+		{ id: "status", type: "status" },
+		{ id: "date", type: "date" },
+		{ id: "separator-1", type: "separator" },
+		{ id: "delivery-method", type: "deliveryMethod" },
+		{ id: "customer-name", type: "customerName" },
+		{ id: "customer-phone", type: "customerPhone" },
+		{ id: "address", type: "address" },
+		{ id: "separator-2", type: "separator" },
+		{ id: "items", type: "items" },
+		{ id: "separator-3", type: "separator" },
+		{ id: "payment", type: "payment" },
+		{ id: "separator-4", type: "separator" },
+		{ id: "subtotal", type: "subtotal" },
+		{ id: "delivery-fee", type: "deliveryFee" },
+		{ id: "discount", type: "discount" },
+		{ id: "cashback", type: "cashback" },
+		{ id: "loyalty", type: "loyalty" },
+		{ id: "total", type: "total" },
+		{ id: "separator-5", type: "separator" },
+		{ id: "prepared-by", type: "preparedBy" },
+	],
+};
+
 const receipt: GetOrdersByOrderIdReceipt200 = {
 	address: {
 		addressLine: "Rua das Flores",
@@ -86,6 +113,7 @@ const receipt: GetOrdersByOrderIdReceipt200 = {
 	preparedBy: { id: "staff_1", name: "Carlos" },
 	status: "em_preparo",
 	subtotal: 3600,
+	template: defaultTemplate,
 	total: 3750,
 	unit: { id: "unit_1", name: "Unidade Centro" },
 };
@@ -126,6 +154,27 @@ describe("createOrderReceiptPdf", () => {
 		const document = createOrderReceiptPdf({ ...receipt, address: null, payment: null }, labels);
 		expect(document.output()).toContain("ENDEREÇO NÃO INFORMADO");
 		expect(document.output()).toContain("Pagamento não informado");
+	});
+
+	it("honors custom order, removed sections, separators and styled free text", () => {
+		const document = createOrderReceiptPdf(
+			{
+				...receipt,
+				template: {
+					blocks: [
+						{ align: "center", bold: true, content: "VOLTE SEMPRE", id: "text-1", size: "large", type: "text" },
+						{ id: "separator-1", type: "separator" },
+						{ id: "items", type: "items" },
+					],
+				},
+			},
+			labels,
+		);
+
+		expect(document.output()).toContain("VOLTE SEMPRE");
+		expect(document.output()).toContain("Bacon");
+		expect(document.output()).not.toContain("Unidade Centro");
+		expect(document.output()).not.toContain("Subtotal");
 	});
 
 	it("grows page height and preserves the final marker for long content", () => {

@@ -49,7 +49,7 @@ function drawWrappedText(
 	cursor: ReceiptCursor,
 	text: string,
 	options: {
-		align?: "center" | "left";
+		align?: "center" | "left" | "right";
 		fontSize?: number;
 		indent?: number;
 		style?: "bold" | "normal";
@@ -64,7 +64,11 @@ function drawWrappedText(
 	for (const line of lines) {
 		cursor.doc.text(
 			line,
-			align === "center" ? RECEIPT_WIDTH_MM / 2 : RECEIPT_MARGIN_MM + indent,
+			align === "center"
+				? RECEIPT_WIDTH_MM / 2
+				: align === "right"
+					? RECEIPT_WIDTH_MM - RECEIPT_MARGIN_MM - indent
+					: RECEIPT_MARGIN_MM + indent,
 			cursor.y,
 			{ align },
 		);
@@ -119,79 +123,121 @@ function drawReceipt(doc: jsPDF, receipt: GetOrdersByOrderIdReceipt200, labels: 
 		year: "numeric",
 	}).format(new Date(receipt.createdAt));
 
-	drawWrappedText(cursor, receipt.unit.name, { align: "center", fontSize: 10, style: "bold" });
-	drawWrappedText(cursor, `${labels.order} #${receipt.displayNumber}`, {
-		align: "center",
-		fontSize: 13,
-		style: "bold",
-	});
-	cursor.y += 1;
-	drawWrappedText(cursor, `${labels.statusLabel}: ${labels.status}`);
-	drawWrappedText(cursor, `${labels.date}: ${date}`);
-	drawSeparator(cursor);
-
-	drawWrappedText(cursor, receipt.deliveryMethod === "delivery" ? labels.delivery : labels.pickup, {
-		fontSize: 10,
-		style: "bold",
-	});
-	if (receipt.customer.name.trim()) drawWrappedText(cursor, `${labels.customer}: ${receipt.customer.name}`);
-	if (receipt.customer.phone?.trim()) drawWrappedText(cursor, receipt.customer.phone);
-	if (receipt.deliveryMethod === "delivery") {
-		drawWrappedText(
-			cursor,
-			receipt.address ? `${labels.address}: ${formatAddress(receipt.address)}` : labels.addressMissing,
-			{ style: receipt.address ? "normal" : "bold" },
-		);
-	}
-	drawSeparator(cursor);
-
-	for (const item of receipt.items) {
-		drawAmountRow(cursor, `${item.quantity}× ${item.productName}`, formatMoney(item.total), true);
-		const groups = new Map<string, string[]>();
-		for (const option of item.options) {
-			const optionPrice = Number(option.priceDeltaCents);
-			const detail = `${option.quantity}× ${option.optionName}${optionPrice ? ` (${formatMoney(optionPrice)})` : ""}`;
-			groups.set(option.groupName, [...(groups.get(option.groupName) ?? []), detail]);
-		}
-		for (const [groupName, options] of groups) {
-			drawWrappedText(cursor, `${groupName}: ${options.join(", ")}`, { fontSize: 7.5, indent: 3 });
-		}
-		if (item.note?.trim()) {
-			setTextStyle(doc, 8, "bold");
-			const noteLines = doc.splitTextToSize(`${labels.note}: ${item.note}`, CONTENT_WIDTH_MM - 4) as string[];
-			const boxHeight = noteLines.length * 3.4 + 2;
-			doc.setDrawColor(0, 0, 0);
-			doc.rect(RECEIPT_MARGIN_MM + 1, cursor.y - 2.2, CONTENT_WIDTH_MM - 2, boxHeight);
-			for (const line of noteLines) {
-				doc.text(line, RECEIPT_MARGIN_MM + 3, cursor.y);
-				cursor.y += 3.4;
+	for (const block of receipt.template.blocks) {
+		switch (block.type) {
+			case "unitName":
+				drawWrappedText(cursor, receipt.unit.name, { align: "center", fontSize: 10, style: "bold" });
+				break;
+			case "orderNumber":
+				drawWrappedText(cursor, `${labels.order} #${receipt.displayNumber}`, {
+					align: "center",
+					fontSize: 13,
+					style: "bold",
+				});
+				break;
+			case "status":
+				drawWrappedText(cursor, `${labels.statusLabel}: ${labels.status}`);
+				break;
+			case "date":
+				drawWrappedText(cursor, `${labels.date}: ${date}`);
+				break;
+			case "deliveryMethod":
+				drawWrappedText(cursor, receipt.deliveryMethod === "delivery" ? labels.delivery : labels.pickup, {
+					fontSize: 10,
+					style: "bold",
+				});
+				break;
+			case "customerName":
+				if (receipt.customer.name.trim()) drawWrappedText(cursor, `${labels.customer}: ${receipt.customer.name}`);
+				break;
+			case "customerPhone":
+				if (receipt.customer.phone?.trim()) drawWrappedText(cursor, receipt.customer.phone);
+				break;
+			case "address":
+				if (receipt.deliveryMethod === "delivery") {
+					drawWrappedText(
+						cursor,
+						receipt.address ? `${labels.address}: ${formatAddress(receipt.address)}` : labels.addressMissing,
+						{ style: receipt.address ? "normal" : "bold" },
+					);
+				}
+				break;
+			case "items":
+				for (const item of receipt.items) {
+					drawAmountRow(cursor, `${item.quantity}× ${item.productName}`, formatMoney(item.total), true);
+					const groups = new Map<string, string[]>();
+					for (const option of item.options) {
+						const optionPrice = Number(option.priceDeltaCents);
+						const detail = `${option.quantity}× ${option.optionName}${optionPrice ? ` (${formatMoney(optionPrice)})` : ""}`;
+						groups.set(option.groupName, [...(groups.get(option.groupName) ?? []), detail]);
+					}
+					for (const [groupName, options] of groups) {
+						drawWrappedText(cursor, `${groupName}: ${options.join(", ")}`, { fontSize: 7.5, indent: 3 });
+					}
+					if (item.note?.trim()) {
+						setTextStyle(doc, 8, "bold");
+						const noteLines = doc.splitTextToSize(`${labels.note}: ${item.note}`, CONTENT_WIDTH_MM - 4) as string[];
+						const boxHeight = noteLines.length * 3.4 + 2;
+						doc.setDrawColor(0, 0, 0);
+						doc.rect(RECEIPT_MARGIN_MM + 1, cursor.y - 2.2, CONTENT_WIDTH_MM - 2, boxHeight);
+						for (const line of noteLines) {
+							doc.text(line, RECEIPT_MARGIN_MM + 3, cursor.y);
+							cursor.y += 3.4;
+						}
+						cursor.y += 2;
+					}
+					cursor.y += 1;
+				}
+				break;
+			case "payment":
+				drawWrappedText(
+					cursor,
+					receipt.payment
+						? `${labels.payment}: ${labels.paymentMethod} · ${labels.paymentStatus}`
+						: labels.paymentMissing,
+					{ style: "bold" },
+				);
+				break;
+			case "subtotal":
+				drawAmountRow(cursor, labels.subtotal, formatMoney(receipt.subtotal));
+				break;
+			case "deliveryFee":
+				drawAmountRow(cursor, labels.deliveryFee, formatMoney(receipt.deliveryFee));
+				break;
+			case "discount":
+				drawAmountRow(cursor, labels.discount, `-${formatMoney(receipt.discountCents)}`);
+				break;
+			case "cashback":
+				drawAmountRow(cursor, labels.cashback, `-${formatMoney(receipt.cashbackCentsRedeemed)}`);
+				break;
+			case "loyalty":
+				drawAmountRow(cursor, labels.loyalty, `-${formatMoney(receipt.loyaltyPointsRedeemed)}`);
+				break;
+			case "total":
+				cursor.y += 1;
+				drawAmountRow(cursor, labels.total, formatMoney(receipt.total), true);
+				break;
+			case "preparedBy":
+				if (receipt.preparedBy?.name.trim()) {
+					drawWrappedText(cursor, `${labels.preparedBy}: ${receipt.preparedBy.name}`);
+				}
+				break;
+			case "separator":
+				drawSeparator(cursor);
+				break;
+			case "text": {
+				const fontSize = block.size === "small" ? 7 : block.size === "large" ? 11 : 8;
+				if (block.content?.trim()) {
+					drawWrappedText(cursor, block.content.trim(), {
+						align: block.align ?? "left",
+						fontSize,
+						style: block.bold ? "bold" : "normal",
+					});
+				}
+				break;
 			}
-			cursor.y += 2;
 		}
-		cursor.y += 1;
-	}
-	drawSeparator(cursor);
-
-	drawWrappedText(
-		cursor,
-		receipt.payment
-			? `${labels.payment}: ${labels.paymentMethod} · ${labels.paymentStatus}`
-			: labels.paymentMissing,
-		{ style: "bold" },
-	);
-	drawSeparator(cursor);
-
-	drawAmountRow(cursor, labels.subtotal, formatMoney(receipt.subtotal));
-	drawAmountRow(cursor, labels.deliveryFee, formatMoney(receipt.deliveryFee));
-	drawAmountRow(cursor, labels.discount, `-${formatMoney(receipt.discountCents)}`);
-	drawAmountRow(cursor, labels.cashback, `-${formatMoney(receipt.cashbackCentsRedeemed)}`);
-	drawAmountRow(cursor, labels.loyalty, `-${formatMoney(receipt.loyaltyPointsRedeemed)}`);
-	cursor.y += 1;
-	drawAmountRow(cursor, labels.total, formatMoney(receipt.total), true);
-
-	if (receipt.preparedBy?.name.trim()) {
-		drawSeparator(cursor);
-		drawWrappedText(cursor, `${labels.preparedBy}: ${receipt.preparedBy.name}`);
+		cursor.y += block.type === "separator" ? 0 : 1;
 	}
 
 	return cursor.y + RECEIPT_MARGIN_MM;

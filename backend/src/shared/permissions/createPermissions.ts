@@ -30,6 +30,7 @@ export function createPermissions(role: Role) {
 			menu: { create: true, delete: true, read: true, update: true, updateAvailability: true },
 			orders: { create: true, print: true, read: true, updateStatus: true },
 			reports: { dashboard: true, read: true },
+			receiptTemplate: { read: true, update: true },
 			reviews: { create: true, read: true },
 			staff: { assignOperational: true, invite: true, inviteOwner: true, read: true, remove: true, setRole: true },
 			units: { create: true, delete: true, read: true, update: true },
@@ -88,6 +89,7 @@ export function createPermissions(role: Role) {
 			updateStatus: mgmt || isAttendant || isKitchen || isCourier,
 		},
 		reports: { dashboard: mgmt, read: mgmt },
+		receiptTemplate: { read: mgmt, update: mgmt },
 		reviews: {
 			create: isCustomer,
 			read: mgmt,

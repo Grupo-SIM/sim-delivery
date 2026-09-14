@@ -16,6 +16,7 @@ export interface PermissionSchema extends PermixDefinition {
 	coupons: { action: "read" | "create" | "update" | "delete" | "apply" };
 	inventory: { action: "read" | "create" | "update" };
 	reports: { action: "dashboard" | "read" };
+	receiptTemplate: { action: "read" | "update" };
 	reviews: { action: "read" | "create" };
 	branding: { action: "read" | "update" };
 }

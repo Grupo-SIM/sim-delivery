@@ -1,6 +1,8 @@
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { Role } from "@/shared/permissions";
+import { defaultReceiptTemplate } from "@/modules/receiptTemplates/defaultReceiptTemplate";
+import { isValidReceiptTemplate } from "@/modules/receiptTemplates/validateReceiptTemplate";
 import type { OrderReceiptReturn } from "../dtos";
 import { OrderErrors } from "../errors";
 
@@ -16,6 +18,7 @@ export class GetOrderReceipt {
 		const order = await this.prisma.order.findFirst({
 			include: {
 				address: true,
+				company: { select: { receiptTemplate: true } },
 				customer: { include: { user: { select: { name: true, phoneNumber: true } } } },
 				items: { include: { optionSnapshots: true } },
 				payment: { select: { method: true, status: true } },
@@ -74,6 +77,9 @@ export class GetOrderReceipt {
 			preparedBy: order.preparedBy,
 			status: order.status,
 			subtotal: order.subtotal,
+			template: isValidReceiptTemplate(order.company.receiptTemplate)
+				? order.company.receiptTemplate
+				: defaultReceiptTemplate,
 			total: order.total,
 			unit: order.unit,
 		};

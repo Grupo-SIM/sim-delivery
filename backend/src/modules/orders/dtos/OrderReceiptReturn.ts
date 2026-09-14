@@ -1,5 +1,6 @@
 import { t } from "elysia";
 import { __nullable__ } from "sql/typebox";
+import { ReceiptTemplate } from "@/modules/receiptTemplates/dtos";
 
 export const OrderReceiptReturn = t.Object({
 	address: __nullable__(
@@ -45,6 +46,7 @@ export const OrderReceiptReturn = t.Object({
 	preparedBy: __nullable__(t.Object({ id: t.String(), name: t.String() })),
 	status: t.String(),
 	subtotal: t.Integer(),
+	template: ReceiptTemplate,
 	total: t.Integer(),
 	unit: t.Object({ id: t.String(), name: t.String() }),
 });

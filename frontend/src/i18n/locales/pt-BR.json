@@ -831,6 +831,131 @@
 				"upload": "Enviar imagem promocional",
 				"uploadError": "Não foi possível enviar a imagem."
 			},
+			"receiptTemplate": {
+				"actions": {
+					"remove": "Remover do recibo",
+					"reorder": "Arrastar para reordenar"
+				},
+				"blocks": {
+					"address": {
+						"description": "Endereço completo quando for entrega",
+						"label": "Endereço"
+					},
+					"cashback": {
+						"description": "Crédito de cashback usado",
+						"label": "Cashback"
+					},
+					"customerName": {
+						"description": "Nome de quem fez o pedido",
+						"label": "Nome do cliente"
+					},
+					"customerPhone": {
+						"description": "Telefone para contato",
+						"label": "Telefone do cliente"
+					},
+					"date": {
+						"description": "Data e hora do pedido",
+						"label": "Data"
+					},
+					"deliveryFee": {
+						"description": "Valor cobrado pela entrega",
+						"label": "Taxa de entrega"
+					},
+					"deliveryMethod": {
+						"description": "Indicação ENTREGA ou RETIRADA",
+						"label": "Modalidade"
+					},
+					"discount": {
+						"description": "Descontos aplicados ao pedido",
+						"label": "Descontos"
+					},
+					"items": {
+						"description": "Produtos, adicionais e observações",
+						"label": "Itens do pedido"
+					},
+					"loyalty": {
+						"description": "Crédito de fidelidade usado",
+						"label": "Fidelidade"
+					},
+					"orderNumber": {
+						"description": "Número público do pedido",
+						"label": "Número do pedido"
+					},
+					"payment": {
+						"description": "Método e situação do pagamento",
+						"label": "Pagamento"
+					},
+					"preparedBy": {
+						"description": "Funcionário responsável pelo preparo",
+						"label": "Responsável pelo preparo"
+					},
+					"separator": {
+						"description": "Linha horizontal para dividir seções",
+						"label": "Linha divisória"
+					},
+					"status": {
+						"description": "Situação atual do pedido",
+						"label": "Status"
+					},
+					"subtotal": {
+						"description": "Soma dos itens antes de ajustes",
+						"label": "Subtotal"
+					},
+					"text": {
+						"description": "Mensagem livre, aviso ou agradecimento",
+						"label": "Texto personalizado"
+					},
+					"total": {
+						"description": "Valor final do pedido em destaque",
+						"label": "Total"
+					},
+					"unitName": {
+						"description": "Nome da unidade no topo",
+						"label": "Nome da unidade"
+					}
+				},
+				"editor": {
+					"subtitle": "Arraste os blocos. Remova o que não precisa. A ordem abaixo será usada na impressão.",
+					"title": "Montagem do recibo"
+				},
+				"library": {
+					"subtitle": "Seções removidas podem ser adicionadas novamente. Textos e linhas podem aparecer várias vezes.",
+					"title": "Adicionar conteúdo"
+				},
+				"loadError": "Não foi possível carregar o modelo do recibo.",
+				"navTitle": "Recibo impresso",
+				"preview": {
+					"frameTitle": "Prévia do recibo térmico",
+					"title": "Prévia real"
+				},
+				"restore": {
+					"action": "Restaurar padrão",
+					"feedback": "Modelo padrão restaurado na edição. Salve para aplicar."
+				},
+				"save": {
+					"action": "Salvar modelo",
+					"emptyError": "Adicione pelo menos um bloco ao recibo.",
+					"error": "Não foi possível salvar o modelo do recibo.",
+					"pending": "Salvando...",
+					"success": "Modelo do recibo salvo."
+				},
+				"subtitle": "Defina exatamente o que sai na bobina e em qual ordem.",
+				"text": {
+					"alignCenter": "Centralizado",
+					"alignLeft": "À esquerda",
+					"alignRight": "À direita",
+					"alignment": "Alinhamento",
+					"bold": "Usar negrito",
+					"content": "Conteúdo",
+					"defaultContent": "Obrigado pela preferência!",
+					"placeholder": "Ex: Obrigado pela preferência!",
+					"size": "Tamanho",
+					"sizeLarge": "Grande",
+					"sizeNormal": "Normal",
+					"sizeSmall": "Pequeno"
+				},
+				"title": "Personalização do recibo"
+			},
 			"reports": {
 				"bestSellers": {
 					"columns": {

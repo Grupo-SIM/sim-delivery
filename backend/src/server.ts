@@ -19,6 +19,7 @@ import {
 } from "./modules/productReviews/infra/elysia";
 import { ProductsController } from "./modules/products/infra";
 import { PromotionalImagesController } from "./modules/promotionalImages/infra";
+import { ReceiptTemplatesController } from "./modules/receiptTemplates/infra";
 import { ReportsController } from "./modules/reports/infra";
 import { PublicReviewsController, ReviewsController } from "./modules/reviews/infra/elysia";
 import { StaffController } from "./modules/staff/infra";
@@ -43,6 +44,7 @@ export const server = app.use([
 	TagsController,
 	ProductsController,
 	PromotionalImagesController,
+	ReceiptTemplatesController,
 	UnitProductsController,
 	CashbackController,
 	LoyaltyController,

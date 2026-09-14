@@ -13,6 +13,7 @@ import {
 	LuLogOut,
 	LuPackage,
 	LuPackageOpen,
+	LuReceiptText,
 	LuSettings,
 	LuStar,
 	LuStore,
@@ -21,7 +22,7 @@ import {
 	LuUsers,
 } from "react-icons/lu";
 import { ScrollArea } from "@/components/ui/ScrollArea";
-import { isAttendant, isManager, requiresSelectedUnit } from "@/lib/staff-guard";
+import { canCustomizeReceipt, isAttendant, isManager, requiresSelectedUnit } from "@/lib/staff-guard";
 import { cn } from "@/lib/utils";
 import { isSuperAdmin, useAuthStore } from "@/stores/auth";
 import { AdminUnitPicker } from "./AdminUnitPicker";
@@ -146,6 +147,14 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 
 			{!attendant && (
 				<NavGroup label={t("admin.dashboard.nav.settings")}>
+					{canCustomizeReceipt(role) && (
+						<NavItem
+							icon={LuReceiptText}
+							label={t("admin.receiptTemplate.navTitle")}
+							onNavigate={onNavigate}
+							to="/admin/receipt-template"
+						/>
+					)}
 					<NavItem
 						icon={LuSettings}
 						label={t("admin.branding.navTitle")}

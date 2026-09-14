@@ -46,6 +46,7 @@ describe("createPermissions matrix", () => {
 		expect(superAdmin.check("orders", "updateStatus")).toBe(true);
 		expect(superAdmin.check("reports", "dashboard")).toBe(true);
 		expect(superAdmin.check("reports", "read")).toBe(true);
+		expect(superAdmin.check("receiptTemplate", "update")).toBe(true);
 		expect(superAdmin.check("reviews", "create")).toBe(true);
 		expect(superAdmin.check("reviews", "read")).toBe(true);
 		expect(superAdmin.check("staff", "invite")).toBe(true);
@@ -68,6 +69,7 @@ describe("createPermissions matrix", () => {
 			expect(permix.check("menu", "update")).toBe(true);
 			expect(permix.check("menu", "updateAvailability")).toBe(true);
 			expect(permix.check("reports", "read")).toBe(true);
+			expect(permix.check("receiptTemplate", "update")).toBe(true);
 			expect(permix.check("staff", "invite")).toBe(true);
 		}
 		expect(createPermissions("owner").check("units", "create")).toBe(true);
@@ -98,6 +100,7 @@ describe("createPermissions matrix", () => {
 		expect(permix.check("menu", "updateAvailability")).toBe(true);
 		expect(permix.check("reports", "dashboard")).toBe(false);
 		expect(permix.check("reports", "read")).toBe(false);
+		expect(permix.check("receiptTemplate", "update")).toBe(false);
 		expect(permix.check("staff", "assignOperational")).toBe(true);
 		expect(permix.check("staff", "read")).toBe(false);
 		expect(permix.check("staff", "invite")).toBe(false);
@@ -136,6 +139,17 @@ describe("createPermissions matrix", () => {
 		}
 		for (const role of ["courier", "customer"] as const) {
 			expect(createPermissions(role).check("orders", "print")).toBe(false);
+		}
+	});
+
+	it("permits receipt customization only for management roles", () => {
+		for (const role of ["superAdmin", "owner", "manager"] as const) {
+			expect(createPermissions(role).check("receiptTemplate", "read")).toBe(true);
+			expect(createPermissions(role).check("receiptTemplate", "update")).toBe(true);
+		}
+		for (const role of ["attendant", "kitchen", "courier", "customer"] as const) {
+			expect(createPermissions(role).check("receiptTemplate", "read")).toBe(false);
+			expect(createPermissions(role).check("receiptTemplate", "update")).toBe(false);
 		}
 	});
 });

@@ -46,6 +46,13 @@ possui **N unidades** (lojas físicas). Detalhes em
 - Visualizador do navegador permanece aberto como fallback quando diálogo automático de
   impressão não for permitido. Seleção da impressora, escala de 100% e configuração da
   bobina de 80 mm pertencem ao navegador e ao driver local.
+- `owner`, `manager` e `superAdmin` podem personalizar o modelo do recibo da empresa.
+  Outros papéis imprimem o modelo salvo, mas não podem consultá-lo ou alterá-lo diretamente.
+- O modelo é uma lista ordenada de blocos. Cada campo dinâmico (unidade, número, status,
+  data, modalidade, dados do cliente, endereço, itens, pagamento, cada linha de valor e
+  responsável) aparece no máximo uma vez;
+  textos personalizados e linhas divisórias podem aparecer várias vezes. Qualquer bloco
+  pode ser removido, reordenado e posteriormente adicionado novamente.
 
 ## Índice
 

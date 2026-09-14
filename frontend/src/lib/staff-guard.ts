@@ -46,6 +46,10 @@ export function canManageInventory(role: string | null | undefined): boolean {
 	return role === "owner" || role === "manager" || role === "superAdmin";
 }
 
+export function canCustomizeReceipt(role: string | null | undefined): boolean {
+	return role === "owner" || role === "manager" || role === "superAdmin";
+}
+
 export function canToggleProductAvailability(role: string | null | undefined): boolean {
 	return canManageCatalog(role) || isAttendant(role);
 }

@@ -20,7 +20,7 @@ mock.module("@tanstack/react-router", () => ({
 	redirect: (options: { to: string }) => Object.assign(new Error(`redirect:${options.to}`), options),
 }));
 
-const { canAccessAdminPath, getStaffAreaPath, isStaff, requireStaffBeforeLoad } = await import("./staff-guard");
+const { canAccessAdminPath, canCustomizeReceipt, getStaffAreaPath, isStaff, requireStaffBeforeLoad } = await import("./staff-guard");
 
 describe("isStaff", () => {
 	it("accepts every back-office role", () => {
@@ -85,6 +85,15 @@ describe("canAccessAdminPath", () => {
 		expect(canAccessAdminPath("manager", "/admin/units/")).toBe(false);
 		expect(canAccessAdminPath("manager", "/admin/units/unit_1/products/")).toBe(false);
 		expect(canAccessAdminPath("manager", "/admin/products/")).toBe(true);
+	});
+});
+
+describe("canCustomizeReceipt", () => {
+	it("allows only company management and super admins", () => {
+		for (const role of ["superAdmin", "owner", "manager"]) expect(canCustomizeReceipt(role)).toBe(true);
+		for (const role of ["attendant", "kitchen", "courier", "customer", null]) {
+			expect(canCustomizeReceipt(role)).toBe(false);
+		}
 	});
 });
 
