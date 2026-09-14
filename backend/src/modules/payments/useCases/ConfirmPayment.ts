@@ -3,8 +3,9 @@ import { orderEvents } from "@/shared/infra/OrderEvents";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { createWhatsAppProvider, type WhatsAppProvider } from "@/shared/infra/whatsapp";
 import {
+	dispatchOrderStatusWhatsApp,
 	type OrderStatusEmailSender,
-	sendOrderStatusNotification,
+	sendOrderStatusEmail,
 } from "@/modules/orders/notifications/sendOrderStatusNotification";
 import { PaymentErrors } from "../errors";
 
@@ -37,6 +38,7 @@ export class ConfirmPayment {
 
 		const earnedCashbackCents = Math.floor((order.total * order.unit.cashbackPercent) / 100);
 		const earnedLoyaltyPoints = Math.floor((order.total * order.unit.loyaltyPointsRate) / 100);
+		const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
 
 		const confirmed = await this.prisma.$transaction(async tx => {
 			// Webhooks can be retried or delivered concurrently. Claiming the pending
@@ -54,6 +56,22 @@ export class ConfirmPayment {
 			await tx.order.update({
 				data: { status: "recebido" },
 				where: { id: order.id },
+			});
+			const statusEvent = await tx.orderStatusEvent?.create({
+				data: { orderId: order.id, status: "recebido" },
+			});
+			await dispatchOrderStatusWhatsApp({
+				customer: order.customer,
+				deduplicationKey: statusEvent?.id
+					? `order-status:${statusEvent.id}`
+					: `payment-confirmed:${payment.id}`,
+				deliveryMethod: order.deliveryMethod,
+				orderId: order.id,
+				orderNumber: order.displayNumber,
+				prisma: tx,
+				status: "recebido",
+				templates,
+				whatsApp: this.whatsApp,
 			});
 
 			if (earnedCashbackCents > 0) {
@@ -84,15 +102,14 @@ export class ConfirmPayment {
 		if (!confirmed) return false;
 		orderEvents.publish(order.companyId, order.unitId);
 
-		await sendOrderStatusNotification({
+		await sendOrderStatusEmail({
 			customer: order.customer,
 			deliveryMethod: order.deliveryMethod,
 			emailSender: this.emailSender,
 			orderId: order.id,
 			orderNumber: order.displayNumber,
 			status: "recebido",
-			templates: order.company.orderStatusWhatsAppTemplates as Record<string, string> | null,
-			whatsApp: this.whatsApp,
+			templates,
 		});
 
 		return true;

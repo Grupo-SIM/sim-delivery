@@ -2,11 +2,19 @@ export { ConsoleWhatsAppProvider } from "./implementations/ConsoleWhatsAppProvid
 export { DisabledWhatsAppProvider } from "./implementations/DisabledWhatsAppProvider";
 export { WahaWhatsAppProvider } from "./implementations/WahaWhatsAppProvider";
 export { WhatsAppProvider } from "./WhatsAppProvider";
+export { dispatchWhatsApp, ProcessWhatsAppOutbox, startWhatsAppOutboxWorker } from "./WhatsAppOutbox";
+export {
+	getWahaClientOptions,
+	InvalidWhatsAppPhoneError,
+	normalizeBrazilianWhatsAppPhone,
+	WahaClient,
+} from "./WahaClient";
 
 import { ConsoleWhatsAppProvider } from "./implementations/ConsoleWhatsAppProvider";
 import { DisabledWhatsAppProvider } from "./implementations/DisabledWhatsAppProvider";
 import { WahaWhatsAppProvider } from "./implementations/WahaWhatsAppProvider";
 import type { WhatsAppProvider } from "./WhatsAppProvider";
+import { getWahaClientOptions } from "./WahaClient";
 
 export function createWhatsAppProvider(): WhatsAppProvider {
 	const driver = process.env.WHATSAPP_DRIVER ?? "disabled";
@@ -14,13 +22,7 @@ export function createWhatsAppProvider(): WhatsAppProvider {
 		case "console":
 			return new ConsoleWhatsAppProvider();
 		case "waha": {
-			const baseUrl = process.env.WAHA_BASE_URL;
-			if (!baseUrl) throw new Error("WAHA_BASE_URL is required for WHATSAPP_DRIVER=waha");
-			return new WahaWhatsAppProvider({
-				apiKey: process.env.WAHA_API_KEY,
-				baseUrl,
-				session: process.env.WAHA_SESSION ?? "default",
-			});
+			return new WahaWhatsAppProvider(getWahaClientOptions());
 		}
 		default:
 			return new DisabledWhatsAppProvider();

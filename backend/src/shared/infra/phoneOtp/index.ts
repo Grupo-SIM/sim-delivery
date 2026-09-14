@@ -1,12 +1,12 @@
 import { ConsolePhoneOtpProvider } from "./implementations/ConsolePhoneOtpProvider";
-import { DisabledWhatsAppOtpProvider } from "./implementations/DisabledWhatsAppOtpProvider";
 import { TwilioPhoneOtpProvider } from "./implementations/TwilioPhoneOtpProvider";
+import { WahaPhoneOtpProvider } from "./implementations/WahaPhoneOtpProvider";
 import type { PhoneOtpProvider } from "./models/PhoneOtpProvider";
 
 export enum PhoneOtpProvidersEnum {
 	CONSOLE = "console",
 	TWILIO = "twilio",
-	WHATSAPP_DISABLED = "whatsapp-disabled",
+	WAHA = "waha",
 }
 
 export type PhoneOtpProviderKey = `${PhoneOtpProvidersEnum}`;
@@ -14,7 +14,8 @@ export type PhoneOtpProviderKey = `${PhoneOtpProvidersEnum}`;
 export const phoneOtpProviders: Record<PhoneOtpProviderKey, new () => PhoneOtpProvider> = {
 	[PhoneOtpProvidersEnum.CONSOLE]: ConsolePhoneOtpProvider,
 	[PhoneOtpProvidersEnum.TWILIO]: TwilioPhoneOtpProvider,
-	[PhoneOtpProvidersEnum.WHATSAPP_DISABLED]: DisabledWhatsAppOtpProvider,
+	[PhoneOtpProvidersEnum.WAHA]: WahaPhoneOtpProvider,
 };
 
 export { PhoneOtpProvider } from "./models/PhoneOtpProvider";
+export { WahaPhoneOtpProvider } from "./implementations/WahaPhoneOtpProvider";

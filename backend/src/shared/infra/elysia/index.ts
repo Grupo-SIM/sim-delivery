@@ -94,6 +94,18 @@ export const app = new Elysia({ normalize: "typebox" })
 		return auth.api.setPassword({ body: { newPassword: body.newPassword }, headers: request.headers });
 	})
 	.all("/auth/*", ({ request, set }) => {
+		if (new URL(request.url).pathname.endsWith("/auth/phone-number/send-otp")) {
+			const otpOutcome = consume(request, {
+				keyPrefix: "auth-phone-otp",
+				max: 5,
+				windowMs: timeConversion(10, "minutes", "milliseconds"),
+			});
+			if (!otpOutcome.allowed) {
+				set.status = 429;
+				if (otpOutcome.retryAfterSeconds) set.headers["Retry-After"] = String(otpOutcome.retryAfterSeconds);
+				return { error: "RATE_LIMITED" };
+			}
+		}
 		const outcome = consume(request, {
 			keyPrefix: "auth",
 			max: 1000,

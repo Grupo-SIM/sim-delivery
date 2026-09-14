@@ -9,7 +9,7 @@ describe("ConsoleWhatsAppProvider", () => {
 		console.log = consoleSpy;
 
 		const provider = new ConsoleWhatsAppProvider();
-		await provider.sendOrderStatus("5511999999999", "em_preparo", "ord_1");
+		await provider.sendText("5511999999999", "Pedido em preparo");
 
 		console.log = original;
 		expect(consoleSpy).toHaveBeenCalledTimes(1);
@@ -19,6 +19,6 @@ describe("ConsoleWhatsAppProvider", () => {
 describe("DisabledWhatsAppProvider", () => {
 	it("resolves without doing anything", async () => {
 		const provider = new DisabledWhatsAppProvider();
-		await expect(provider.sendOrderStatus("5511999999999", "em_preparo", "ord_1")).resolves.toBeUndefined();
+		await expect(provider.sendText("5511999999999", "Pedido em preparo")).resolves.toBeUndefined();
 	});
 });

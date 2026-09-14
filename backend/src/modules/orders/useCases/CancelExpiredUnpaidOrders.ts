@@ -2,7 +2,10 @@ import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
 import { orderEvents } from "@/shared/infra/OrderEvents";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { WhatsAppProvider } from "@/shared/infra/whatsapp";
-import { sendOrderStatusNotification } from "../notifications/sendOrderStatusNotification";
+import {
+	dispatchOrderStatusWhatsApp,
+	sendOrderStatusEmail,
+} from "../notifications/sendOrderStatusNotification";
 
 const CANCELLATION_REASON = "Pagamento não confirmado em até 1 hora.";
 const EXPIRATION_MS = 60 * 60 * 1_000;
@@ -34,6 +37,11 @@ export class CancelExpiredUnpaidOrders {
 		let cancelled = 0;
 		for (const order of orders) {
 			try {
+				const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
+				const message = (
+					templates?.cancelado?.trim() ||
+					"Seu pedido {{orderId}} foi cancelado porque o pagamento não foi confirmado em até 1 hora."
+				).replaceAll("{{orderId}}", `#${order.displayNumber}`);
 				const result = await this.prisma.$transaction(async tx => {
 					const changed = await tx.order.updateMany({
 						data: { cancelReason: CANCELLATION_REASON, status: "cancelado" },
@@ -46,7 +54,23 @@ export class CancelExpiredUnpaidOrders {
 					});
 					if (changed.count > 0) {
 						await InventoryLifecycle.release(tx, order.id);
-						await tx.orderStatusEvent?.create({ data: { orderId: order.id, status: "cancelado" } });
+						const statusEvent = await tx.orderStatusEvent?.create({
+							data: { orderId: order.id, status: "cancelado" },
+						});
+						await dispatchOrderStatusWhatsApp({
+							customer: order.customer,
+							deduplicationKey: statusEvent?.id
+								? `order-status:${statusEvent.id}`
+								: `expired-cancellation:${order.id}`,
+							deliveryMethod: order.deliveryMethod,
+							message,
+							orderId: order.id,
+							orderNumber: order.displayNumber,
+							prisma: tx,
+							status: "cancelado",
+							templates,
+							whatsApp: this.whatsApp,
+						});
 					}
 					return changed;
 				});
@@ -55,19 +79,13 @@ export class CancelExpiredUnpaidOrders {
 				cancelled += 1;
 				orderEvents.publish(order.companyId, order.unitId);
 
-				const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
-				const message = (
-					templates?.cancelado?.trim() ||
-					"Seu pedido {{orderId}} foi cancelado porque o pagamento não foi confirmado em até 1 hora."
-				).replaceAll("{{orderId}}", `#${order.displayNumber}`);
-				await sendOrderStatusNotification({
+				await sendOrderStatusEmail({
 					customer: order.customer,
 					deliveryMethod: order.deliveryMethod,
 					message,
 					orderId: order.id,
 					orderNumber: order.displayNumber,
 					status: "cancelado",
-					whatsApp: this.whatsApp,
 				});
 			} catch (error) {
 				console.error(`Failed to cancel expired unpaid order ${order.id}`, error);

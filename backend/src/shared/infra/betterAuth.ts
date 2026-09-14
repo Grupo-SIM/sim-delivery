@@ -5,6 +5,7 @@ import { magicLink, phoneNumber } from "better-auth/plugins";
 import { MagicLinkEmail, ResetPasswordEmail } from "./emails";
 import { type PhoneOtpProviderKey, phoneOtpProviders } from "./phoneOtp";
 import { prisma } from "./sql";
+import { normalizeBrazilianWhatsAppPhone } from "./whatsapp";
 
 const algorithm = "argon2id";
 
@@ -30,6 +31,17 @@ export const auth = betterAuth({
 	},
 	plugins: [
 		phoneNumber({
+			allowedAttempts: 3,
+			expiresIn: 300,
+			otpLength: 6,
+			phoneNumberValidator: to => {
+				try {
+					normalizeBrazilianWhatsAppPhone(to);
+					return true;
+				} catch {
+					return false;
+				}
+			},
 			sendOTP: async ({ code, phoneNumber: to }) => {
 				await phoneOtpProvider.sendCode(to, code);
 			},

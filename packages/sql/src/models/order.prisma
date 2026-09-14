@@ -47,6 +47,7 @@ model Order {
     statusEvents    OrderStatusEvent[]
     inventoryMovements InventoryMovement[]
     inventoryReservations InventoryReservation[]
+    whatsAppNotifications WhatsAppNotification[]
 
     @@index([companyId, status])
     @@index([companyId, status, createdAt])
@@ -54,6 +55,32 @@ model Order {
     @@index([preparedById])
     @@unique([customerId, idempotencyKey])
     @@map("order")
+}
+
+/// Durable outbox entry for transactional WhatsApp order notifications.
+model WhatsAppNotification {
+    id            String    @id @default(cuid())
+    orderId       String?
+    recipient     String
+    message       String
+    orderStatus   String
+    deduplicationKey String  @unique
+    /// pending | processing | sent | failed
+    status        String    @default("pending")
+    attempts      Int       @default(0)
+    nextAttemptAt DateTime  @default(now())
+    leaseUntil    DateTime?
+    lastError     String?
+    sentAt        DateTime?
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
+
+    order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+    @@index([status, nextAttemptAt])
+    @@index([status, leaseUntil])
+    @@index([orderId])
+    @@map("whatsapp_notification")
 }
 
 /// A single line item in an order. Price and name are snapshotted at creation time.

@@ -9,7 +9,7 @@ describe("WahaWhatsAppProvider", () => {
 			fetch as unknown as typeof globalThis.fetch,
 		);
 
-		await provider.sendOrderStatus("+55 (11) 99999-9999", "em_preparo", "ord_1", "Pedido pronto");
+		await provider.sendText("+55 (11) 99999-9999", "Pedido pronto");
 
 		expect(fetch).toHaveBeenCalledWith(
 			"http://waha:3000/api/sendText",
@@ -19,8 +19,9 @@ describe("WahaWhatsAppProvider", () => {
 					session: "delivery",
 					text: "Pedido pronto",
 				}),
-				headers: { "Content-Type": "application/json", "X-Api-Key": "secret" },
+				headers: { Accept: "application/json", "Content-Type": "application/json", "X-Api-Key": "secret" },
 				method: "POST",
+				signal: expect.any(AbortSignal),
 			}),
 		);
 	});
@@ -32,11 +33,11 @@ describe("WahaWhatsAppProvider", () => {
 			fetch as unknown as typeof globalThis.fetch,
 		);
 
-		await provider.sendOrderStatus("5511999999999", "em_preparo", "ord_1");
+		await provider.sendText("5511999999999", "Atualização do pedido.");
 
 		expect(fetch).toHaveBeenCalledWith(
 			expect.any(String),
-			expect.objectContaining({ headers: { "Content-Type": "application/json" } }),
+			expect.objectContaining({ headers: { Accept: "application/json", "Content-Type": "application/json" } }),
 		);
 	});
 
@@ -48,8 +49,8 @@ describe("WahaWhatsAppProvider", () => {
 			) as unknown as typeof globalThis.fetch,
 		);
 
-		await expect(provider.sendOrderStatus("5511999999999", "em_preparo", "ord_1")).rejects.toThrow(
-			"WAHA request failed (400): invalid",
+		await expect(provider.sendText("5511999999999", "Atualização")).rejects.toThrow(
+			"WAHA request failed (400)",
 		);
 	});
 });

@@ -35,8 +35,11 @@ export const ThemeColors = t.Object({ dark: ThemeColorSet, light: ThemeColorSet 
 export type ThemeColors = typeof ThemeColors.static;
 
 export const OrderStatusWhatsAppTemplates = t.Object({
+	cancelado: t.Optional(t.String({ maxLength: 1000 })),
 	em_preparo: t.Optional(t.String({ maxLength: 1000 })),
 	entregue: t.Optional(t.String({ maxLength: 1000 })),
+	pronto: t.Optional(t.String({ maxLength: 1000 })),
+	recebido: t.Optional(t.String({ maxLength: 1000 })),
 	retirado: t.Optional(t.String({ maxLength: 1000 })),
 	saiu_para_entrega: t.Optional(t.String({ maxLength: 1000 })),
 });

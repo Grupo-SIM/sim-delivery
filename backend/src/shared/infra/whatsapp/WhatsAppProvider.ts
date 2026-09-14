@@ -1,3 +1,4 @@
 export abstract class WhatsAppProvider {
-	abstract sendOrderStatus(phone: string, status: string, orderId: string, message?: string): Promise<void>;
+	abstract readonly deliveryMode: "direct" | "outbox";
+	abstract sendText(phone: string, message: string): Promise<void>;
 }

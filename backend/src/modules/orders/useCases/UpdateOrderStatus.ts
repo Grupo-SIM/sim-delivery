@@ -7,7 +7,11 @@ import type { WhatsAppProvider } from "@/shared/infra/whatsapp";
 import type { Role } from "@/shared/permissions";
 import type { OrderReturn, UpdateOrderStatusBody } from "../dtos";
 import { OrderErrors } from "../errors";
-import { type OrderStatusEmailSender, sendOrderStatusNotification } from "../notifications/sendOrderStatusNotification";
+import {
+	dispatchOrderStatusWhatsApp,
+	type OrderStatusEmailSender,
+	sendOrderStatusEmail,
+} from "../notifications/sendOrderStatusNotification";
 
 const NOTIFIABLE = new Set(["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue", "retirado"]);
 const ESTIMABLE_STATUSES = new Set(["em_preparo"]);
@@ -72,6 +76,11 @@ export class UpdateOrderStatus {
 			});
 			if (!kitchenMember) throw new DomainError(UserErrors.FORBIDDEN);
 		}
+		const notifiesStatusChange = shouldNotify(order.status, status);
+		const notifiesEstimateUpdate =
+			order.status === "em_preparo" && status === "em_preparo" && estimatedMinutes !== undefined;
+		const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
+		const reviewUrl = status === "entregue" || status === "retirado" ? getReviewUrl(order.unit.slug, orderId) : undefined;
 
 		const updated = await this.prisma.$transaction(async tx => {
 			if (order.status !== status && status === "cancelado") {
@@ -113,10 +122,28 @@ export class UpdateOrderStatus {
 				include: { items: { include: { optionSnapshots: true } } },
 				where: { id: orderId },
 			});
-			if (order.status !== status)
-				await tx.orderStatusEvent?.create({
+			let statusEventId: string | undefined;
+			if (order.status !== status) {
+				const statusEvent = await tx.orderStatusEvent?.create({
 					data: { orderId, status },
 				});
+				statusEventId = statusEvent?.id;
+			}
+			if (notifiesStatusChange || notifiesEstimateUpdate) {
+				await dispatchOrderStatusWhatsApp({
+					customer: order.customer,
+					deduplicationKey: statusEventId
+						? `order-status:${statusEventId}`
+						: `order-estimate:${orderId}:${crypto.randomUUID()}`,
+					deliveryMethod: order.deliveryMethod,
+					orderId,
+					orderNumber: order.displayNumber,
+					prisma: tx,
+					status,
+					templates,
+					whatsApp: this.whatsApp,
+				});
+			}
 			return result;
 		});
 
@@ -130,12 +157,8 @@ export class UpdateOrderStatus {
 			await this.refundPayment.execute(order.companyId, orderId, refund, userId);
 		}
 
-		const notifiesStatusChange = shouldNotify(order.status, status);
-		const notifiesEstimateUpdate =
-			order.status === "em_preparo" && status === "em_preparo" && estimatedMinutes !== undefined;
 		if (notifiesStatusChange || notifiesEstimateUpdate) {
-			const reviewUrl = status === "entregue" || status === "retirado" ? getReviewUrl(order.unit.slug, orderId) : undefined;
-			await sendOrderStatusNotification({
+			await sendOrderStatusEmail({
 				customer: order.customer,
 				deliveryMethod: order.deliveryMethod,
 				emailSender: this.emailSender,
@@ -143,8 +166,7 @@ export class UpdateOrderStatus {
 				orderNumber: order.displayNumber,
 				reviewUrl,
 				status,
-				templates: order.company.orderStatusWhatsAppTemplates as Record<string, string> | null,
-				whatsApp: this.whatsApp,
+				templates,
 			});
 		}
 
