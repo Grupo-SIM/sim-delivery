@@ -67,6 +67,11 @@ Quando o pedido avança no fluxo, o cliente é **notificado por WhatsApp e e-mai
 disparam mensagens. Ao concluir o pedido no app, a tela de obrigado informa que o
 acompanhamento será por WhatsApp (ver [08](08-app-cliente.md)).
 
+O canal WhatsApp usa WAHA. Com `WHATSAPP_DRIVER=waha`, mensagens entram em uma outbox
+transacional e são reenviadas com backoff até entrega; `console` envia ao log local e
+`disabled` ignora o canal. A instância e sessão WAHA são externas ao projeto e configuradas
+por `WAHA_BASE_URL`, `WAHA_SESSION` e, quando a instância exige autenticação, `WAHA_API_KEY`.
+
 ## Reembolso em cancelamento
 
 Cancelar um pedido com pagamento `confirmed` pode registrar um estorno (`Refund`), opcional
@@ -83,7 +88,6 @@ e informado junto com a transição para `cancelado`:
 
 ## Pontos em aberto
 
-- Provedor de WhatsApp (API oficial vs gateway).
 - Aceite manual da loja vs auto-aceite ao pagar.
 - Agendamento de pedidos e KDS de cozinha (roadmap — ver [12](12-referencias-e-benchmark.md)).
 - Endpoint de estorno da Simpay (hoje sem API documentada).

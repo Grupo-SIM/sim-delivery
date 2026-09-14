@@ -30,7 +30,7 @@ function IdentifyPage() {
 					title={t("store.account.identify.title")}
 				/>
 				<div className="rounded-brand border border-border bg-card p-4 sm:p-7">
-					<IdentifyForm />
+					<IdentifyForm enableWhatsApp />
 				</div>
 			</Container>
 		</div>

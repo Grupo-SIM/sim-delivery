@@ -1,15 +1,21 @@
 export const ORDER_STATUS_TEMPLATE_KEYS = [
+	"recebido",
 	"em_preparo",
+	"pronto",
 	"saiu_para_entrega",
 	"entregue",
 	"retirado",
+	"cancelado",
 ] as const;
 export type OrderStatusTemplateKey = (typeof ORDER_STATUS_TEMPLATE_KEYS)[number];
 export type OrderStatusTemplates = Record<OrderStatusTemplateKey, string>;
 
 export const defaultOrderStatusTemplates: OrderStatusTemplates = {
+	cancelado: "Seu pedido {{orderId}} foi cancelado.",
 	em_preparo: "Seu pedido {{orderId}} já está sendo preparado com carinho.",
 	entregue: "Seu pedido {{orderId}} chegou até você. Bom apetite!",
+	pronto: "Seu pedido {{orderId}} está pronto.",
+	recebido: "Recebemos seu pedido {{orderId}} e ele já entrou na fila de preparo.",
 	retirado: "Seu pedido {{orderId}} foi retirado. Bom apetite!",
 	saiu_para_entrega: "Seu pedido {{orderId}} saiu para entrega e está a caminho.",
 };

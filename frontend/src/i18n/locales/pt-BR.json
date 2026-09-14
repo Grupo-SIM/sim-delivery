@@ -95,8 +95,11 @@
 				"notificationsSummary_other": "{{count}} mensagens personalizadas",
 				"notificationsSummaryEmpty": "Mensagens padrão",
 				"orderStatus": {
+					"cancelado": "Pedido cancelado",
 					"em_preparo": "Pedido em preparo",
 					"entregue": "Pedido entregue",
+					"pronto": "Pedido pronto",
+					"recebido": "Pedido recebido",
 					"retirado": "Pedido retirado",
 					"saiu_para_entrega": "Saiu para entrega"
 				},
@@ -1550,7 +1553,7 @@
 			"account": {
 				"backToCustomerArea": "Área dos clientes",
 				"identify": {
-					"subtitle": "Entre com seu e-mail para acompanhar seus pedidos.",
+					"subtitle": "Entre por e-mail ou WhatsApp para acompanhar seus pedidos.",
 					"title": "Entrar"
 				},
 				"myOrders": "Meus pedidos",
@@ -1704,16 +1707,21 @@
 				"back": "Voltar ao cardápio",
 				"identify": {
 					"changeEmail": "Usar outro e-mail",
+					"changePhone": "Usar outro número",
 					"channels": {
 						"email": "E-mail",
-						"soon": "em breve",
 						"whatsapp": "WhatsApp"
 					},
+					"code": "Código de acesso",
+					"codePlaceholder": "123456",
 					"email": "E-mail",
 					"emailHint": "Enviaremos um link de acesso. Sem senha, sem complicação.",
 					"errors": {
 						"invalidCredentials": "E-mail ou senha inválidos.",
 						"magicLink": "Este link é inválido ou expirou.",
+						"otpInvalid": "Código inválido ou expirado.",
+						"otpSend": "Não foi possível enviar o código pelo WhatsApp. Tente novamente.",
+						"rateLimited": "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
 						"send": "Não foi possível enviar o link. Tente novamente."
 					},
 					"linkResent": "Link reenviado!",
@@ -1722,15 +1730,21 @@
 					"password": "Senha",
 					"passwordHint": "Informe seu e-mail e senha para entrar.",
 					"passwordPlaceholder": "Digite sua senha",
+					"phone": "WhatsApp",
+					"phoneHint": "Enviaremos um código de 6 dígitos pelo WhatsApp.",
+					"otpSent": "Código enviado. Confira seu WhatsApp.",
 					"resend": "Reenviar link",
+					"resendCode": "Reenviar código",
 					"resendIn": "Reenviar em {{seconds}}s",
+					"sendCode": "Enviar código",
 					"sending": "Enviando…",
 					"sendLink": "Enviar link de acesso",
 					"signInWithLink": "Entrar com link de acesso",
 					"signInWithPassword": "Entrar com senha",
 					"signingIn": "Entrando…",
-					"subtitle": "Informe seu e-mail para entrar sem senha.",
+					"subtitle": "Entre com seu e-mail para continuar.",
 					"title": "Identificação",
+					"verifyCode": "Verificar código",
 					"verifying": "Verificando…"
 				},
 				"order": {

@@ -61,6 +61,7 @@ direto na escolha de unidade.
 
 ## Pontos em aberto
 
-- Mecanismo do passwordless (código por email/SMS/WhatsApp vs magic link).
+- **Entregue:** passwordless por magic link no e-mail ou código de 6 dígitos pelo WhatsApp
+  via WAHA. O código expira em 5 minutos e permite até 3 tentativas.
 - Pagamento in-app (online) vs na entrega vs ambos.
 - Acompanhamento do pedido dentro do app (status ao vivo) além do WhatsApp.
