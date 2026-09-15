@@ -215,7 +215,6 @@ export function IdentifyForm({ enableWhatsApp = false, returnTo, unitSlug }: Ide
 					{identifierKind && <LuCircleCheck className="absolute top-1/2 right-3.5 size-4.5 -translate-y-1/2 text-success" />}
 				</div>
 			</Label>
-			{isPasswordLogin && <p className="text-muted-foreground text-xs">{t("store.checkout.identify.passwordHint")}</p>}
 			{isPasswordLogin && (
 				<Label>
 					<span>{t("store.checkout.identify.password")} <RequiredMark /></span>
