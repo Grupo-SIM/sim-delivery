@@ -12,7 +12,7 @@ import { IdentifyError } from "./IdentifyError";
 type AccessMethod = "magic-link" | "password";
 type Step = "form" | "email-sent";
 
-export function EmailIdentifyForm({ unitSlug }: { unitSlug?: string }) {
+export function EmailIdentifyForm({ returnTo, unitSlug }: { returnTo?: string; unitSlug?: string }) {
 	const { t } = useTranslation();
 	const signIn = useAuthStore(state => state.signIn);
 	const [accessMethod, setAccessMethod] = useState<AccessMethod>("magic-link");
@@ -35,7 +35,7 @@ export function EmailIdentifyForm({ unitSlug }: { unitSlug?: string }) {
 		setError(null);
 		setLoading(true);
 		try {
-			await sendMagicLinkRequest({ email, metadata: { unitId: unitSlug ?? "" } });
+			await sendMagicLinkRequest({ email, metadata: { redirectTo: returnTo ?? "", unitId: unitSlug ?? "" } });
 			setCooldown(30);
 			setResent(isResend);
 			setStep("email-sent");

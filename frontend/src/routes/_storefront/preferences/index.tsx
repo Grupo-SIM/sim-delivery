@@ -26,7 +26,7 @@ function PreferencesPage() {
 	const [saved, setSaved] = useState(false);
 
 	useEffect(() => {
-		if (hydrated && !isAuthenticated) void navigate({ to: "/identify" });
+		if (hydrated && !isAuthenticated) void navigate({ search: { redirectTo: "/preferences" }, to: "/identify" });
 	}, [hydrated, isAuthenticated, navigate]);
 
 	useEffect(() => {

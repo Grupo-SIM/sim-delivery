@@ -40,6 +40,7 @@ function OrdersPage() {
 					action={
 						<Link
 							className="inline-block rounded-full bg-primary px-5 py-2 font-semibold text-primary-foreground text-sm"
+							search={{ redirectTo: "/orders" }}
 							to="/identify"
 						>
 							{t("store.account.signIn")}

@@ -10,10 +10,11 @@ type Channel = "email" | "whatsapp";
 
 interface IdentifyFormProps {
 	enableWhatsApp?: boolean;
+	returnTo?: string;
 	unitSlug?: string;
 }
 
-export function IdentifyForm({ enableWhatsApp = false, unitSlug }: IdentifyFormProps) {
+export function IdentifyForm({ enableWhatsApp = false, returnTo, unitSlug }: IdentifyFormProps) {
 	const { t } = useTranslation();
 	const [channel, setChannel] = useState<Channel>("email");
 	const channels = [
@@ -50,7 +51,7 @@ export function IdentifyForm({ enableWhatsApp = false, unitSlug }: IdentifyFormP
 			)}
 
 			{!enableWhatsApp || channel === "email" ? (
-				<EmailIdentifyForm unitSlug={unitSlug} />
+				<EmailIdentifyForm returnTo={returnTo} unitSlug={unitSlug} />
 			) : (
 				<WhatsAppIdentifyForm />
 			)}

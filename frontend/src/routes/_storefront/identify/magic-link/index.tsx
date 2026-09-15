@@ -2,19 +2,21 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Container } from "@/components/ui/Container";
+import { getSafeAuthRedirect } from "@/lib/auth-redirect";
 import { authClient } from "@/lib/auth-client";
 import { mapSessionUser, useAuthStore } from "@/stores/auth";
 
 interface MagicLinkSearch {
 	token: string;
 	unitId?: string;
+	redirectTo?: string;
 }
 
 function MagicLinkVerifyPage() {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const setUser = useAuthStore(state => state.setUser);
-	const { token, unitId } = Route.useSearch();
+	const { redirectTo, token, unitId } = Route.useSearch();
 	const [error, setError] = useState(false);
 	// Magic link tokens are single-use server-side; StrictMode's double effect invocation
 	// in dev would otherwise fire verify() twice, failing the second call. Cache the request
@@ -45,13 +47,16 @@ function MagicLinkVerifyPage() {
 			}
 
 			setUser(mapSessionUser(session.data.user));
-			void navigate({ params: { unitId: unitId ?? "" }, to: unitId ? "/$unitId/checkout" : "/" });
+			void navigate({
+				params: { unitId: unitId ?? "" },
+				to: getSafeAuthRedirect(redirectTo) ?? (unitId ? "/$unitId/checkout" : "/"),
+			});
 		});
 
 		return () => {
 			cancelled = true;
 		};
-	}, [token, unitId, navigate, setUser]);
+	}, [token, unitId, redirectTo, navigate, setUser]);
 
 	return (
 		<Container className="flex min-h-screen items-center justify-center py-10" size="sm">
@@ -65,6 +70,7 @@ function MagicLinkVerifyPage() {
 export const Route = createFileRoute("/_storefront/identify/magic-link/")({
 	component: MagicLinkVerifyPage,
 	validateSearch: (search: Record<string, unknown>): MagicLinkSearch => ({
+		redirectTo: getSafeAuthRedirect(search.redirectTo),
 		token: String(search.token ?? ""),
 		unitId: search.unitId ? String(search.unitId) : undefined,
 	}),

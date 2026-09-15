@@ -53,8 +53,14 @@ export const auth = betterAuth({
 		magicLink({
 			sendMagicLink: async ({ email, metadata, token }) => {
 				const unitId = typeof metadata?.unitId === "string" ? metadata.unitId : undefined;
-				const url = `${process.env.APP_URL}/identify/magic-link?token=${token}${unitId ? `&unitId=${unitId}` : ""}`;
-				await new MagicLinkEmail({ to: email, url }).send();
+				const redirectTo = typeof metadata?.redirectTo === "string" && metadata.redirectTo.startsWith("/") && !metadata.redirectTo.startsWith("//") && !metadata.redirectTo.startsWith("/identify")
+					? metadata.redirectTo
+					: undefined;
+				const url = new URL("/identify/magic-link", process.env.APP_URL);
+				url.searchParams.set("token", token);
+				if (unitId) url.searchParams.set("unitId", unitId);
+				if (redirectTo) url.searchParams.set("redirectTo", redirectTo);
+				await new MagicLinkEmail({ to: email, url: url.toString() }).send();
 			},
 		}),
 	],

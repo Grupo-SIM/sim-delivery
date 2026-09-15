@@ -73,7 +73,7 @@ function ProfilePage() {
 	const { mode, saveThemePreference } = useThemePreference(allowThemeToggle, defaultTheme);
 
 	useEffect(() => {
-		if (hydrated && !isAuthenticated) void navigate({ to: "/identify" });
+		if (hydrated && !isAuthenticated) void navigate({ search: { redirectTo: "/profile" }, to: "/identify" });
 	}, [hydrated, isAuthenticated, navigate]);
 
 	if (

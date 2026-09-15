@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
@@ -32,6 +32,7 @@ export function ProfileMenu({
 }: ProfileMenuProps) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const currentPath = useLocation({ select: location => `${location.pathname}${location.searchStr}` });
 	const hydrated = useAuthStore(state => state.hydrated);
 	const isAuthenticated = useAuthStore(state => state.isAuthenticated);
 	const user = useAuthStore(state => state.user);
@@ -76,6 +77,7 @@ export function ProfileMenu({
 		return (
 			<Link
 				className="rounded-full bg-primary px-4 py-2 font-semibold text-primary-foreground text-sm transition hover:opacity-90"
+				search={{ redirectTo: currentPath }}
 				to="/identify"
 			>
 				{t("store.account.signIn")}
