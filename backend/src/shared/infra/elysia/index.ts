@@ -93,6 +93,18 @@ export const app = new Elysia({ normalize: "typebox" })
 
 		return auth.api.setPassword({ body: { newPassword: body.newPassword }, headers: request.headers });
 	})
+	.post("/auth/change-email", async ({ request, set }) => {
+		const session = await auth.api.getSession({ headers: request.headers });
+		const canSetInitialEmail =
+			session?.user.phoneNumberVerified && session.user.email.endsWith("@phone.local");
+
+		if (!canSetInitialEmail) {
+			set.status = 403;
+			return { error: "EMAIL_CHANGE_FORBIDDEN" };
+		}
+
+		return auth.handler(request);
+	})
 	.all("/auth/*", ({ request, set }) => {
 		if (new URL(request.url).pathname.endsWith("/auth/phone-number/send-otp")) {
 			const otpOutcome = consume(request, {

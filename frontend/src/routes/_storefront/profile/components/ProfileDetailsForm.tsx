@@ -10,27 +10,32 @@ import type { AuthUser } from "@/stores/auth";
 interface ProfileDetailsFormProps {
 	customer: { cpf: string | null; phone: string | null } | null;
 	isSaving: boolean;
-	onSave: (value: { cpf: string; name: string; phone: string }) => void;
+	onSave: (value: { cpf: string; email: string; name: string; phone: string }) => void;
 	user: AuthUser;
 }
 
 export function ProfileDetailsForm({ customer, isSaving, onSave, user }: ProfileDetailsFormProps) {
 	const { t } = useTranslation();
 	const [name, setName] = useState(user.name);
+	const hasTemporaryPhoneEmail = user.email.endsWith("@phone.local");
+	const [email, setEmail] = useState(hasTemporaryPhoneEmail ? "" : user.email);
 	const [phone, setPhone] = useState(customer?.phone ?? "");
 	const [cpf, setCpf] = useState(customer?.cpf ?? "");
 
 	useEffect(() => setName(user.name), [user.name]);
+	useEffect(() => setEmail(hasTemporaryPhoneEmail ? "" : user.email), [hasTemporaryPhoneEmail, user.email]);
 	useEffect(() => {
 		setPhone(customer?.phone ?? "");
 		setCpf(customer?.cpf ?? "");
 	}, [customer?.cpf, customer?.phone]);
 
 	const trimmedName = name.trim();
+	const trimmedEmail = email.trim();
 	const phoneDigits = phone.replace(/\D/g, "");
 	const cpfDigits = cpf.replace(/\D/g, "");
 	const dirty =
 		trimmedName !== user.name ||
+		(hasTemporaryPhoneEmail && Boolean(trimmedEmail)) ||
 		phoneDigits !== (customer?.phone ?? "") ||
 		cpfDigits !== (customer?.cpf ?? "");
 	const validPhone = phoneDigits.length === 13;
@@ -41,7 +46,7 @@ export function ProfileDetailsForm({ customer, isSaving, onSave, user }: Profile
 			className="space-y-4 rounded-xl border border-border bg-card p-5"
 			onSubmit={event => {
 				event.preventDefault();
-				onSave({ cpf: cpfDigits, name: trimmedName, phone: phoneDigits });
+				onSave({ cpf: cpfDigits, email: trimmedEmail, name: trimmedName, phone: phoneDigits });
 			}}
 		>
 			<h2 className="font-semibold text-lg">{t("store.account.profile.personalData")}</h2>
@@ -60,9 +65,20 @@ export function ProfileDetailsForm({ customer, isSaving, onSave, user }: Profile
 			</Label>
 			<Label>
 				{t("store.account.profile.email")}
-				<Input autoComplete="email" disabled name="email" readOnly value={user.email} />
+				<Input
+					autoComplete="email"
+					disabled={!hasTemporaryPhoneEmail}
+					name="email"
+					onChange={event => setEmail(event.currentTarget.value)}
+					placeholder={hasTemporaryPhoneEmail ? t("store.account.profile.emailPlaceholder") : undefined}
+					readOnly={!hasTemporaryPhoneEmail}
+					type="email"
+					value={email}
+				/>
 			</Label>
-			<p className="text-muted-foreground text-xs">{t("store.account.profile.emailHint")}</p>
+			<p className="text-muted-foreground text-xs">
+				{t(`store.account.profile.${hasTemporaryPhoneEmail ? "emailInitialHint" : "emailHint"}`)}
+			</p>
 			<div className="grid gap-4 sm:grid-cols-2">
 				<Label>
 					<span>

@@ -93,6 +93,10 @@ export const auth = betterAuth({
 	// Tenant + RBAC fields (docs/03). Surfaced on session.user so guards can scope by
 	// company/role without an extra query. `role` defaults to customer for self sign-ups.
 	user: {
+		changeEmail: {
+			enabled: true,
+			updateEmailWithoutVerification: true,
+		},
 		additionalFields: {
 			companyId: { input: false, required: false, type: "string" },
 			role: { defaultValue: "customer", input: false, required: false, type: "string" },

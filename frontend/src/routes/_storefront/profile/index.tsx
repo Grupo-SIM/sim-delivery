@@ -67,6 +67,7 @@ function ProfilePage() {
 	const createAddress = usePostCustomersMeAddresses();
 	const updateAddress = usePatchCustomersMeAddressesByAddressId();
 	const deleteAddress = useDeleteCustomersMeAddressesByAddressId();
+	const [savingDetails, setSavingDetails] = useState(false);
 	const [savingPassword, setSavingPassword] = useState(false);
 	const [savingTheme, setSavingTheme] = useState(false);
 	const { allowThemeToggle, defaultTheme } = useLiveBranding();
@@ -92,14 +93,23 @@ function ProfilePage() {
 		await customerQuery.refetch();
 	}
 
-	async function handleDetailsSave(value: { cpf: string; name: string; phone: string }) {
+	async function handleDetailsSave(value: { cpf: string; email: string; name: string; phone: string }) {
+		setSavingDetails(true);
 		try {
 			const changedName = value.name !== authenticatedUser.name;
+			const settingInitialEmail =
+				authenticatedUser.email.endsWith("@phone.local") && Boolean(value.email);
 			const changedCustomer =
 				value.cpf !== (customerQuery.data?.cpf ?? "") ||
 				value.phone !== (customerQuery.data?.phone ?? "");
 			if (changedName) {
 				const { error } = await authClient.updateUser({ name: value.name });
+				if (error) throw error;
+				const session = await authClient.getSession();
+				if (session.data?.user) setUser(mapSessionUser(session.data.user));
+			}
+			if (settingInitialEmail) {
+				const { error } = await authClient.changeEmail({ newEmail: value.email });
 				if (error) throw error;
 				const session = await authClient.getSession();
 				if (session.data?.user) setUser(mapSessionUser(session.data.user));
@@ -110,6 +120,8 @@ function ProfilePage() {
 			showToast(t("store.account.profile.saved"), "positive");
 		} catch {
 			showToast(t("store.account.profile.saveError"), "negative");
+		} finally {
+			setSavingDetails(false);
 		}
 	}
 
@@ -201,10 +213,11 @@ function ProfilePage() {
 			/>
 			<ProfileDetailsForm
 				customer={customerQuery.data}
-				isSaving={updateCustomer.isPending}
+				isSaving={savingDetails || updateCustomer.isPending}
 				onSave={handleDetailsSave}
 				user={user}
 			/>
+			<ProfileSecurityForm isSaving={savingPassword} onSave={handlePasswordSave} />
 			<ProfileAddressSection
 				addresses={customerQuery.data?.addresses ?? []}
 				isSaving={addressSaving}
@@ -220,7 +233,6 @@ function ProfilePage() {
 				mode={mode}
 				onChange={handleThemeChange}
 			/>
-			<ProfileSecurityForm isSaving={savingPassword} onSave={handlePasswordSave} />
 		</Container>
 	);
 }

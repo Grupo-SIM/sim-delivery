@@ -1609,6 +1609,8 @@
 					"editAddress": "Editar endereço",
 					"email": "Email",
 					"emailHint": "O email não pode ser alterado.",
+					"emailInitialHint": "Informe seu email. Ele não poderá ser alterado depois.",
+					"emailPlaceholder": "voce@email.com",
 					"name": "Nome",
 					"namePlaceholder": "Ex: Maria Silva",
 					"noAddresses": "Nenhum endereço cadastrado.",
