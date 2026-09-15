@@ -7,6 +7,7 @@ export {
 	getWahaClientOptions,
 	InvalidWhatsAppPhoneError,
 	normalizeBrazilianWhatsAppPhone,
+	toWahaBrazilianChatId,
 	WahaClient,
 } from "./WahaClient";
 

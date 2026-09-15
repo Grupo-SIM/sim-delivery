@@ -1,5 +1,10 @@
 import { describe, expect, it, mock } from "bun:test";
-import { InvalidWhatsAppPhoneError, normalizeBrazilianWhatsAppPhone, WahaClient } from "./WahaClient";
+import {
+	InvalidWhatsAppPhoneError,
+	normalizeBrazilianWhatsAppPhone,
+	toWahaBrazilianChatId,
+	WahaClient,
+} from "./WahaClient";
 
 describe("normalizeBrazilianWhatsAppPhone", () => {
 	it("normalizes a formatted Brazilian mobile number", () => {
@@ -8,6 +13,10 @@ describe("normalizeBrazilianWhatsAppPhone", () => {
 
 	it("rejects a number outside the supported E.164 shape", () => {
 		expect(() => normalizeBrazilianWhatsAppPhone("81999999999")).toThrow(InvalidWhatsAppPhoneError);
+	});
+
+	it("uses WAHA's legacy JID without the Brazilian mobile ninth digit", () => {
+		expect(toWahaBrazilianChatId("+55 (83) 98769-0902")).toBe("558387690902@c.us");
 	});
 });
 
@@ -31,5 +40,18 @@ describe("WahaClient", () => {
 		);
 
 		await expect(client.sendText("5581999999999", "message")).rejects.toThrow("Timed out");
+	});
+
+	it("sends text to WAHA's Brazilian legacy chat ID", async () => {
+		const fetch = mock(() => Promise.resolve(new Response(null, { status: 201 })));
+		const client = new WahaClient({ baseUrl: "https://waha.example", session: "default" }, fetch as never);
+
+		await client.sendText("+55 (83) 98769-0902", "message");
+
+		expect(JSON.parse(fetch.mock.calls[0]![1]!.body as string)).toMatchObject({
+			chatId: "558387690902@c.us",
+			session: "default",
+			text: "message",
+		});
 	});
 });

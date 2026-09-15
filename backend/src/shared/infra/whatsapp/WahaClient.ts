@@ -20,6 +20,15 @@ export function normalizeBrazilianWhatsAppPhone(phone: string): string {
 	return digits;
 }
 
+/**
+ * WAHA resolves Brazilian WhatsApp contacts through their legacy JID, which
+ * omits the mobile ninth digit after the country code and DDD.
+ */
+export function toWahaBrazilianChatId(phone: string): string {
+	const recipient = normalizeBrazilianWhatsAppPhone(phone);
+	return `${recipient.slice(0, 4)}${recipient.slice(5)}@c.us`;
+}
+
 export function getWahaClientOptions(): WahaClientOptions {
 	const baseUrl = process.env.WAHA_BASE_URL?.trim();
 	if (!baseUrl) throw new Error("WAHA_BASE_URL is required when WAHA is enabled");
@@ -38,10 +47,9 @@ export class WahaClient {
 	) {}
 
 	async sendText(phone: string, message: string): Promise<void> {
-		const recipient = normalizeBrazilianWhatsAppPhone(phone);
 		const response = await this.fetchImpl(`${this.options.baseUrl.replace(/\/$/, "")}/api/sendText`, {
 			body: JSON.stringify({
-				chatId: `${recipient}@c.us`,
+				chatId: toWahaBrazilianChatId(phone),
 				session: this.options.session,
 				text: message,
 			}),
