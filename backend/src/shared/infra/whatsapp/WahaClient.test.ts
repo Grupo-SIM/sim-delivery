@@ -43,7 +43,9 @@ describe("WahaClient", () => {
 	});
 
 	it("sends text to WAHA's Brazilian legacy chat ID", async () => {
-		const fetch = mock(() => Promise.resolve(new Response(null, { status: 201 })));
+		const fetch = mock((_input: string | URL | Request, _init?: RequestInit) =>
+			Promise.resolve(new Response(null, { status: 201 })),
+		);
 		const client = new WahaClient({ baseUrl: "https://waha.example", session: "default" }, fetch as never);
 
 		await client.sendText("+55 (83) 98769-0902", "message");
@@ -56,7 +58,9 @@ describe("WahaClient", () => {
 	});
 
 	it("falls back to the canonical Brazilian JID when the legacy JID fails", async () => {
-		const fetch = mock(() => Promise.resolve(new Response(null, { status: 500 })));
+		const fetch = mock((_input: string | URL | Request, _init?: RequestInit) =>
+			Promise.resolve(new Response(null, { status: 500 })),
+		);
 		fetch.mockImplementationOnce(() => Promise.resolve(new Response(null, { status: 500 })));
 		fetch.mockImplementationOnce(() => Promise.resolve(new Response(null, { status: 201 })));
 		const client = new WahaClient({ baseUrl: "https://waha.example", session: "default" }, fetch as never);
@@ -66,5 +70,54 @@ describe("WahaClient", () => {
 		expect(fetch).toHaveBeenCalledTimes(2);
 		expect(JSON.parse(fetch.mock.calls[0]![1]!.body as string).chatId).toBe("558387690902@c.us");
 		expect(JSON.parse(fetch.mock.calls[1]![1]!.body as string).chatId).toBe("5583987690902@c.us");
+	});
+
+	it("sends the message as first attachment caption and preserves line breaks", async () => {
+		const fetch = mock((_input: string | URL | Request, _init?: RequestInit) =>
+			Promise.resolve(new Response(null, { status: 201 })),
+		);
+		const client = new WahaClient({ baseUrl: "https://waha.example", session: "delivery" }, fetch as never);
+
+		await client.sendMessage("5581999999999", {
+			attachments: [
+				{ filename: "cardapio.pdf", mimeType: "application/pdf", url: "https://cdn.test/cardapio.pdf" },
+			],
+			text: "Pedido pronto.\nPode retirar.",
+		});
+
+		expect(fetch).toHaveBeenCalledWith(
+			"https://waha.example/api/sendFile",
+			expect.objectContaining({
+				body: JSON.stringify({
+					caption: "Pedido pronto.\nPode retirar.",
+					chatId: "558199999999@c.us",
+					file: {
+						filename: "cardapio.pdf",
+						mimetype: "application/pdf",
+						url: "https://cdn.test/cardapio.pdf",
+					},
+					session: "delivery",
+				}),
+			}),
+		);
+	});
+
+	it("sends later attachments without repeating the caption", async () => {
+		const fetch = mock((_input: string | URL | Request, _init?: RequestInit) =>
+			Promise.resolve(new Response(null, { status: 201 })),
+		);
+		const client = new WahaClient({ baseUrl: "https://waha.example", session: "delivery" }, fetch as never);
+
+		await client.sendMessage("5581999999999", {
+			attachments: [
+				{ filename: "a.png", mimeType: "image/png", url: "https://cdn.test/a.png" },
+				{ filename: "b.webp", mimeType: "image/webp", url: "https://cdn.test/b.webp" },
+			],
+			text: "Pedido pronto",
+		});
+
+		expect(fetch).toHaveBeenCalledTimes(2);
+		expect(JSON.parse(fetch.mock.calls[0]![1]!.body as string).caption).toBe("Pedido pronto");
+		expect(JSON.parse(fetch.mock.calls[1]![1]!.body as string)).not.toHaveProperty("caption");
 	});
 });

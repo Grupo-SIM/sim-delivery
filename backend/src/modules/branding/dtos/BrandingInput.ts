@@ -34,14 +34,32 @@ const ThemeColorSet = t.Object({
 export const ThemeColors = t.Object({ dark: ThemeColorSet, light: ThemeColorSet });
 export type ThemeColors = typeof ThemeColors.static;
 
+export const WhatsAppAttachment = t.Object({
+	filename: t.String({ maxLength: 255, minLength: 1 }),
+	mimeType: t.Union([
+		t.Literal("application/pdf"),
+		t.Literal("image/jpeg"),
+		t.Literal("image/png"),
+		t.Literal("image/webp"),
+	]),
+	url: t.String({ format: "uri", maxLength: 1000 }),
+});
+export type WhatsAppAttachment = typeof WhatsAppAttachment.static;
+
+export const OrderStatusWhatsAppTemplate = t.Object({
+	attachments: t.Optional(t.Array(WhatsAppAttachment, { maxItems: 3 })),
+	message: t.Optional(t.String({ maxLength: 1000 })),
+});
+export type OrderStatusWhatsAppTemplate = typeof OrderStatusWhatsAppTemplate.static;
+
 export const OrderStatusWhatsAppTemplates = t.Object({
-	cancelado: t.Optional(t.String({ maxLength: 1000 })),
-	em_preparo: t.Optional(t.String({ maxLength: 1000 })),
-	entregue: t.Optional(t.String({ maxLength: 1000 })),
-	pronto: t.Optional(t.String({ maxLength: 1000 })),
-	recebido: t.Optional(t.String({ maxLength: 1000 })),
-	retirado: t.Optional(t.String({ maxLength: 1000 })),
-	saiu_para_entrega: t.Optional(t.String({ maxLength: 1000 })),
+	cancelado: t.Optional(OrderStatusWhatsAppTemplate),
+	em_preparo: t.Optional(OrderStatusWhatsAppTemplate),
+	entregue: t.Optional(OrderStatusWhatsAppTemplate),
+	pronto: t.Optional(OrderStatusWhatsAppTemplate),
+	recebido: t.Optional(OrderStatusWhatsAppTemplate),
+	retirado: t.Optional(OrderStatusWhatsAppTemplate),
+	saiu_para_entrega: t.Optional(OrderStatusWhatsAppTemplate),
 });
 export type OrderStatusWhatsAppTemplates = typeof OrderStatusWhatsAppTemplates.static;
 

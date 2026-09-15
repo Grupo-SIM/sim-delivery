@@ -1,7 +1,8 @@
 export { ConsoleWhatsAppProvider } from "./implementations/ConsoleWhatsAppProvider";
 export { DisabledWhatsAppProvider } from "./implementations/DisabledWhatsAppProvider";
 export { WahaWhatsAppProvider } from "./implementations/WahaWhatsAppProvider";
-export { WhatsAppProvider } from "./WhatsAppProvider";
+export { WhatsAppProvider, type WhatsAppSender } from "./WhatsAppProvider";
+export type { WhatsAppAttachment, WhatsAppMessage } from "./WhatsAppMessage";
 export { dispatchWhatsApp, ProcessWhatsAppOutbox, startWhatsAppOutboxWorker } from "./WhatsAppOutbox";
 export {
 	getWahaClientOptions,

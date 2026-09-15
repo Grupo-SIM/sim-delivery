@@ -5,6 +5,7 @@ import { GlobalPlugin } from "@/shared/infra/elysia/global";
 
 const imageTypes = ["image/avif", "image/jpeg", "image/png", "image/webp"];
 const fontTypes = ["font/otf", "font/ttf", "font/woff", "font/woff2"];
+const whatsAppAttachmentTypes = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
 const assetTypes = {
 	banner: imageTypes,
 	"font-display": fontTypes,
@@ -14,9 +15,11 @@ const assetTypes = {
 	product: imageTypes,
 	promotion: imageTypes,
 	unit: imageTypes,
+	whatsapp: whatsAppAttachmentTypes,
 } as const;
 
 const extensionByType: Record<string, string> = {
+	"application/pdf": "pdf",
 	"font/otf": "otf",
 	"font/ttf": "ttf",
 	"font/woff": "woff",
@@ -30,7 +33,7 @@ const extensionByType: Record<string, string> = {
 const UploadReturn = t.Object({ url: t.String({ format: "uri" }) });
 const Filename = t.String({
 	pattern:
-		"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(avif|jpg|otf|png|ttf|webp|woff|woff2)$",
+		"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(avif|jpg|otf|pdf|png|ttf|webp|woff|woff2)$",
 });
 const Asset = t.Union([
 	t.Literal("banner"),
@@ -41,6 +44,7 @@ const Asset = t.Union([
 	t.Literal("product"),
 	t.Literal("promotion"),
 	t.Literal("unit"),
+	t.Literal("whatsapp"),
 ]);
 
 export const MediaController = new Elysia({ prefix: "/media" })

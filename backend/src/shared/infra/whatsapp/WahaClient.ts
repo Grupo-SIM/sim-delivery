@@ -52,10 +52,47 @@ export class WahaClient {
 	) {}
 
 	async sendText(phone: string, message: string): Promise<void> {
+		await this.postForBrazilianChatIds(phone, "/api/sendText", chatId => ({
+			chatId,
+			session: this.options.session,
+			text: message,
+		}));
+	}
+
+	async sendMessage(phone: string, message: WhatsAppMessage): Promise<void> {
+		const attachments = message.attachments ?? [];
+		if (attachments.length === 0) {
+			await this.sendText(phone, message.text);
+			return;
+		}
+
+		for (const [index, attachment] of attachments.entries()) {
+			await this.sendFile(phone, attachment, index === 0 ? message.text : undefined);
+		}
+	}
+
+	private async sendFile(phone: string, attachment: WhatsAppAttachment, caption?: string): Promise<void> {
+		await this.postForBrazilianChatIds(phone, "/api/sendFile", chatId => ({
+			...(caption ? { caption } : {}),
+			chatId,
+			file: {
+				filename: attachment.filename,
+				mimetype: attachment.mimeType,
+				url: attachment.url,
+			},
+			session: this.options.session,
+		}));
+	}
+
+	private async postForBrazilianChatIds(
+		phone: string,
+		path: string,
+		body: (chatId: string) => Record<string, unknown>,
+	): Promise<void> {
 		let response: Response | undefined;
 		for (const chatId of getWahaBrazilianChatIds(phone)) {
-			response = await this.fetchImpl(`${this.options.baseUrl.replace(/\/$/, "")}/api/sendText`, {
-				body: JSON.stringify({ chatId, session: this.options.session, text: message }),
+			response = await this.fetchImpl(`${this.options.baseUrl.replace(/\/$/, "")}${path}`, {
+				body: JSON.stringify(body(chatId)),
 				headers: {
 					...(this.options.apiKey ? { "X-Api-Key": this.options.apiKey } : {}),
 					Accept: "application/json",
@@ -71,3 +108,4 @@ export class WahaClient {
 		throw new Error(`WAHA request failed (${response?.status})`);
 	}
 }
+import type { WhatsAppAttachment, WhatsAppMessage } from "./WhatsAppMessage";

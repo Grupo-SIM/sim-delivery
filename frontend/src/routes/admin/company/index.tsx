@@ -80,7 +80,20 @@ function BrandingPage() {
 				gtmId: branding.gtmId ?? "",
 				metaPixelId: branding.metaPixelId ?? "",
 			});
-			setOrderStatusTemplates({ ...defaultOrderStatusTemplates, ...branding.orderStatusWhatsAppTemplates });
+			setOrderStatusTemplates(
+				Object.fromEntries(
+					ORDER_STATUS_TEMPLATE_KEYS.map(status => {
+						const saved = branding.orderStatusWhatsAppTemplates?.[status];
+						return [
+							status,
+							{
+								attachments: saved?.attachments ?? [],
+								message: saved?.message ?? defaultOrderStatusTemplates[status].message,
+							},
+						];
+					}),
+				) as OrderStatusTemplates,
+			);
 		}
 	}, [branding]);
 
@@ -112,10 +125,13 @@ function BrandingPage() {
 					metaPixelId: tracking.metaPixelId.trim() || undefined,
 					mobileIconUrl: assets.mobileIconUrl.trim() || undefined,
 					orderStatusWhatsAppTemplates: Object.fromEntries(
-						ORDER_STATUS_TEMPLATE_KEYS.flatMap(status => {
-							const template = orderStatusTemplates[status].trim();
-							return template ? [[status, template]] : [];
-						}),
+						ORDER_STATUS_TEMPLATE_KEYS.map(status => [
+							status,
+							{
+								attachments: orderStatusTemplates[status].attachments,
+								message: orderStatusTemplates[status].message.trim() || undefined,
+							},
+						]),
 					),
 					themeColors,
 					unitFallbackImageUrl: assets.unitFallbackImageUrl.trim() || undefined,

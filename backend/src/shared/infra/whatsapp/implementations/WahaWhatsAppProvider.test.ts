@@ -9,13 +9,13 @@ describe("WahaWhatsAppProvider", () => {
 			fetch as unknown as typeof globalThis.fetch,
 		);
 
-		await provider.sendText("+55 (11) 99999-9999", "Pedido pronto");
+		await provider.sendMessage("+55 (11) 99999-9999", { text: "Pedido pronto" });
 
 		expect(fetch).toHaveBeenCalledWith(
 			"http://waha:3000/api/sendText",
 			expect.objectContaining({
 				body: JSON.stringify({
-					chatId: "5511999999999@c.us",
+					chatId: "551199999999@c.us",
 					session: "delivery",
 					text: "Pedido pronto",
 				}),
@@ -33,7 +33,7 @@ describe("WahaWhatsAppProvider", () => {
 			fetch as unknown as typeof globalThis.fetch,
 		);
 
-		await provider.sendText("5511999999999", "Atualização do pedido.");
+		await provider.sendMessage("5511999999999", { text: "Atualização do pedido." });
 
 		expect(fetch).toHaveBeenCalledWith(
 			expect.any(String),
@@ -49,7 +49,7 @@ describe("WahaWhatsAppProvider", () => {
 			) as unknown as typeof globalThis.fetch,
 		);
 
-		await expect(provider.sendText("5511999999999", "Atualização")).rejects.toThrow(
+		await expect(provider.sendMessage("5511999999999", { text: "Atualização" })).rejects.toThrow(
 			"WAHA request failed (400)",
 		);
 	});

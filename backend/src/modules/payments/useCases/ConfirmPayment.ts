@@ -1,7 +1,8 @@
 import { DomainError } from "@/shared/errors";
+import type { OrderStatusWhatsAppTemplate } from "@/modules/branding/dtos";
 import { orderEvents } from "@/shared/infra/OrderEvents";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import { createWhatsAppProvider, type WhatsAppProvider } from "@/shared/infra/whatsapp";
+import { createWhatsAppProvider, type WhatsAppSender } from "@/shared/infra/whatsapp";
 import {
 	dispatchOrderStatusWhatsApp,
 	type OrderStatusEmailSender,
@@ -13,7 +14,7 @@ export class ConfirmPayment {
 	constructor(
 		private readonly prisma: PrismaInstance,
 		private readonly emailSender?: OrderStatusEmailSender,
-		private readonly whatsApp: WhatsAppProvider = createWhatsAppProvider(),
+		private readonly whatsApp: WhatsAppSender = createWhatsAppProvider(),
 	) {}
 
 	async execute(token: string, expectedSimpayPaymentId?: string): Promise<boolean> {
@@ -38,7 +39,10 @@ export class ConfirmPayment {
 
 		const earnedCashbackCents = Math.floor((order.total * order.unit.cashbackPercent) / 100);
 		const earnedLoyaltyPoints = Math.floor((order.total * order.unit.loyaltyPointsRate) / 100);
-		const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
+		const templates = order.company.orderStatusWhatsAppTemplates as Record<
+			string,
+			string | OrderStatusWhatsAppTemplate
+		> | null;
 
 		const confirmed = await this.prisma.$transaction(async tx => {
 			// Webhooks can be retried or delivered concurrently. Claiming the pending

@@ -216,6 +216,7 @@ function makeWorld(opts: WorldOptions = {}) {
 		},
 		order: orderDelegate,
 		payment: paymentDelegate,
+		whatsAppNotification: { upsert: async () => ({}) },
 	};
 
 	const prisma = {
@@ -614,7 +615,7 @@ describe("ConfirmPayment", () => {
 		await new ConfirmPayment(
 			prisma,
 			{ send: async input => void sent.push(input) },
-			{ sendText: async (...input: unknown[]) => void whatsAppSent.push(input) },
+			{ sendMessage: async (...input: unknown[]) => void whatsAppSent.push(input) },
 		).execute("token_1");
 
 		expect(sent).toEqual([
@@ -628,7 +629,10 @@ describe("ConfirmPayment", () => {
 		expect(whatsAppSent).toEqual([
 			[
 				"5581999999999",
-				"Recebemos seu pedido #154 e ele já entrou na fila de preparo.",
+				{
+					attachments: [],
+					text: "Recebemos seu pedido #154 e ele já entrou na fila de preparo.",
+				},
 			],
 		]);
 	});

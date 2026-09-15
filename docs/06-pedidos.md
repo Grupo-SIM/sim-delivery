@@ -71,6 +71,9 @@ O canal WhatsApp usa WAHA. Com `WHATSAPP_DRIVER=waha`, mensagens entram em uma o
 transacional e são reenviadas com backoff até entrega; `console` envia ao log local e
 `disabled` ignora o canal. A instância e sessão WAHA são externas ao projeto e configuradas
 por `WAHA_BASE_URL`, `WAHA_SESSION` e, quando a instância exige autenticação, `WAHA_API_KEY`.
+Cada status aceita texto de até 1.000 caracteres com quebras de linha e até três anexos
+(JPEG, PNG, WebP ou PDF, com 10 MB cada). Quando há anexos, o texto vira legenda do primeiro;
+os demais são enviados na sequência. Texto e anexos são congelados juntos na outbox.
 
 ## Reembolso em cancelamento
 

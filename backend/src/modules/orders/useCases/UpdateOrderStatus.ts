@@ -1,9 +1,10 @@
 import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
+import type { OrderStatusWhatsAppTemplate } from "@/modules/branding/dtos";
 import type { RefundPayment } from "@/modules/payments/useCases";
 import { UserErrors } from "@/modules/users/errors";
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import type { WhatsAppProvider } from "@/shared/infra/whatsapp";
+import type { WhatsAppSender } from "@/shared/infra/whatsapp";
 import type { Role } from "@/shared/permissions";
 import type { OrderReturn, UpdateOrderStatusBody } from "../dtos";
 import { OrderErrors } from "../errors";
@@ -39,7 +40,7 @@ function getReviewUrl(unitSlug: string, orderId: string): string {
 export class UpdateOrderStatus {
 	constructor(
 		private readonly prisma: PrismaInstance,
-		private readonly whatsApp: WhatsAppProvider,
+		private readonly whatsApp: WhatsAppSender,
 		private readonly refundPayment?: RefundPayment,
 		private readonly emailSender?: OrderStatusEmailSender,
 	) {}
@@ -79,7 +80,10 @@ export class UpdateOrderStatus {
 		const notifiesStatusChange = shouldNotify(order.status, status);
 		const notifiesEstimateUpdate =
 			order.status === "em_preparo" && status === "em_preparo" && estimatedMinutes !== undefined;
-		const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
+		const templates = order.company.orderStatusWhatsAppTemplates as Record<
+			string,
+			string | OrderStatusWhatsAppTemplate
+		> | null;
 		const reviewUrl = status === "entregue" || status === "retirado" ? getReviewUrl(order.unit.slug, orderId) : undefined;
 
 		const updated = await this.prisma.$transaction(async tx => {

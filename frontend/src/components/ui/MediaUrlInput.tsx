@@ -15,6 +15,7 @@ const acceptByAsset: Record<MediaAsset, string> = {
 	product: "image/avif,image/jpeg,image/png,image/webp",
 	promotion: "image/avif,image/jpeg,image/png,image/webp",
 	unit: "image/avif,image/jpeg,image/png,image/webp",
+	whatsapp: "image/jpeg,image/png,image/webp,application/pdf",
 };
 
 interface MediaUrlInputProps {
@@ -51,7 +52,7 @@ export function MediaUrlInput({
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [isUploading, setIsUploading] = useState(false);
 	const [localValue, setLocalValue, flushValue] = useDebouncedInput(value, onValueChange);
-	const isImageAsset = !asset.startsWith("font-");
+	const isImageAsset = !asset.startsWith("font-") && asset !== "whatsapp";
 	const dropLabel = isImageAsset ? "Solte imagem aqui" : "Solte fonte aqui";
 
 	async function upload(file: File) {

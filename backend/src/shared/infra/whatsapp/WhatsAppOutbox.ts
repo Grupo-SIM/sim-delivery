@@ -1,20 +1,23 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
-import type { WhatsAppProvider } from "./WhatsAppProvider";
+import type { WhatsAppProvider, WhatsAppSender } from "./WhatsAppProvider";
+import type { WhatsAppAttachment } from "./WhatsAppMessage";
 import { InvalidWhatsAppPhoneError } from "./WahaClient";
 
 type OutboxClient = Pick<PrismaInstance, "whatsAppNotification">;
 
 interface DispatchWhatsAppInput {
+	attachments?: WhatsAppAttachment[];
 	deduplicationKey: string;
 	message: string;
 	orderId: string;
 	orderStatus: string;
 	phone: string;
 	prisma: OutboxClient;
-	provider: WhatsAppProvider;
+	provider: WhatsAppSender;
 }
 
 export async function dispatchWhatsApp({
+	attachments = [],
 	deduplicationKey,
 	message,
 	orderId,
@@ -25,7 +28,14 @@ export async function dispatchWhatsApp({
 }: DispatchWhatsAppInput): Promise<void> {
 	if (provider.deliveryMode === "outbox") {
 		await prisma.whatsAppNotification.upsert({
-			create: { deduplicationKey, message, orderId, orderStatus, recipient: phone },
+			create: {
+				attachments: attachments.map(attachment => ({ ...attachment })),
+				deduplicationKey,
+				message,
+				orderId,
+				orderStatus,
+				recipient: phone,
+			},
 			update: {},
 			where: { deduplicationKey },
 		});
@@ -33,7 +43,7 @@ export async function dispatchWhatsApp({
 	}
 
 	try {
-		await provider.sendText(phone, message);
+		await provider.sendMessage(phone, { attachments, text: message });
 	} catch (error) {
 		console.error("Failed to send direct WhatsApp notification", error);
 	}
@@ -90,7 +100,12 @@ export class ProcessWhatsAppOutbox {
 
 			const attempt = candidate.attempts + 1;
 			try {
-				await this.provider.sendText(candidate.recipient, candidate.message);
+				await this.provider.sendMessage(candidate.recipient, {
+					attachments: Array.isArray(candidate.attachments)
+						? (candidate.attachments as unknown as WhatsAppAttachment[])
+						: [],
+					text: candidate.message,
+				});
 				await this.prisma.whatsAppNotification.updateMany({
 					data: { lastError: null, leaseUntil: null, sentAt: new Date(), status: "sent" },
 					where: { id: candidate.id, leaseUntil, status: "processing" },

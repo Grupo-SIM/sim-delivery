@@ -10,10 +10,17 @@
 			"save": "Salvar"
 		},
 		"admin": {
-			"branding": {
+		"branding": {
+				"addAttachment": "Adicionar anexo",
 				"allColorsCopied": "Cores copiadas de {{mode}}.",
 				"allColorsReset": "Cores restauradas para o padrão.",
 				"allowThemeToggle": "Permitir que cada usuário escolha o tema nas configurações.",
+				"attachmentCount_one": "{{count}} anexo",
+				"attachmentCount_other": "{{count}} anexos",
+				"attachmentRemoved": "Anexo removido. Salve para publicar.",
+				"attachments": "Anexos",
+				"attachmentsHelp": "Até 3 imagens ou PDFs, com 10 MB por arquivo.",
+				"attachmentsUploaded": "Anexo enviado. Salve para publicar.",
 				"assetsSummaryEmpty": "Nenhuma imagem enviada",
 				"colorCopied": "Cor copiada de {{mode}}.",
 				"colorGroups": {
@@ -77,6 +84,7 @@
 				"gtmShort": "GTM",
 				"homepageBannerShort": "Banners da página inicial",
 				"homepageBannerUrls": "Banners da página inicial",
+				"insertOrderId": "Inserir código do pedido",
 				"lightTheme": "Tema claro",
 				"loadError": "Não foi possível carregar as configurações da empresa.",
 				"logoShort": "Logotipo",
@@ -89,7 +97,10 @@
 				"mobileIconUpload": "Enviar ícone mobile",
 				"mobileIconUrl": "URL do ícone do app mobile",
 				"navTitle": "Empresa",
+				"notificationDefaultPreview": "A mensagem padrão deste status será usada.",
 				"notificationPlaceholder": "Ex: Seu pedido {{orderId}} já está sendo preparado com carinho.",
+				"notificationPreview": "Prévia",
+				"notificationsFormattingHelp": "Quebras de linha são preservadas. O texto acompanha o primeiro anexo como legenda.",
 				"notificationsHelp": "Use {{orderId}} para inserir o código do pedido. Deixe um campo vazio para usar mensagem padrão.",
 				"notificationsSummary_one": "{{count}} mensagem personalizada",
 				"notificationsSummary_other": "{{count}} mensagens personalizadas",
@@ -105,6 +116,7 @@
 				},
 				"paletteApplied": "Cores aplicadas. Salve para publicar.",
 				"paletteHint": "As cores são publicadas quando você salvar as configurações da empresa.",
+				"removeAttachment": "Remover {{filename}}",
 				"resetAllColors": "Restaurar cores",
 				"resetColor": "Restaurar {{color}} para a cor padrão",
 				"save": "Salvar configurações",

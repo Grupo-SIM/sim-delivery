@@ -19,6 +19,7 @@ Concluir notificações duráveis de status de pedido e autenticação OTP por W
 - [x] Templates completos de status e SDK regenerado.
 - [x] Fluxo frontend de OTP por WhatsApp.
 - [x] OTP restrito ao login inicial; checkout mantém identificação por e-mail.
+- [x] Editor transacional multiline com prévia e até três anexos de imagem/PDF por status.
 - [x] Testes, hooks de commit e documentação final.
 
 ## Próximo passo

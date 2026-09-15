@@ -1,7 +1,9 @@
 import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
+import type { OrderStatusWhatsAppTemplate } from "@/modules/branding/dtos";
+import { getOrderStatusWhatsAppTemplate } from "@/modules/branding/orderStatusWhatsAppTemplates";
 import { orderEvents } from "@/shared/infra/OrderEvents";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import type { WhatsAppProvider } from "@/shared/infra/whatsapp";
+import type { WhatsAppSender } from "@/shared/infra/whatsapp";
 import {
 	dispatchOrderStatusWhatsApp,
 	sendOrderStatusEmail,
@@ -14,7 +16,7 @@ const INTERVAL_MS = 60_000;
 export class CancelExpiredUnpaidOrders {
 	constructor(
 		private readonly prisma: PrismaInstance,
-		private readonly whatsApp: WhatsAppProvider,
+		private readonly whatsApp: WhatsAppSender,
 	) {}
 
 	async execute(now = new Date()): Promise<number> {
@@ -37,9 +39,12 @@ export class CancelExpiredUnpaidOrders {
 		let cancelled = 0;
 		for (const order of orders) {
 			try {
-				const templates = order.company.orderStatusWhatsAppTemplates as Record<string, string> | null;
+				const templates = order.company.orderStatusWhatsAppTemplates as Record<
+					string,
+					string | OrderStatusWhatsAppTemplate
+				> | null;
 				const message = (
-					templates?.cancelado?.trim() ||
+					getOrderStatusWhatsAppTemplate(templates, "cancelado").message?.trim() ||
 					"Seu pedido {{orderId}} foi cancelado porque o pagamento não foi confirmado em até 1 hora."
 				).replaceAll("{{orderId}}", `#${order.displayNumber}`);
 				const result = await this.prisma.$transaction(async tx => {
@@ -98,7 +103,7 @@ export class CancelExpiredUnpaidOrders {
 
 export function startExpiredUnpaidOrderCancellation(
 	prisma: PrismaInstance,
-	whatsApp: WhatsAppProvider,
+	whatsApp: WhatsAppSender,
 ): () => void {
 	const cancellation = new CancelExpiredUnpaidOrders(prisma, whatsApp);
 	const run = () =>

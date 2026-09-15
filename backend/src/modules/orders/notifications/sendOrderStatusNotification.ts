@@ -1,7 +1,9 @@
 import { OrderStatusEmail } from "@/shared/infra/emails";
+import { getOrderStatusWhatsAppTemplate } from "@/modules/branding/orderStatusWhatsAppTemplates";
+import type { OrderStatusWhatsAppTemplate } from "@/modules/branding/dtos";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { dispatchWhatsApp } from "@/shared/infra/whatsapp";
-import type { WhatsAppProvider } from "@/shared/infra/whatsapp";
+import type { WhatsAppSender } from "@/shared/infra/whatsapp";
 import { formatOrderStatusMessage } from "../order-status-message";
 
 export interface OrderStatusEmailSender {
@@ -24,8 +26,8 @@ interface SendOrderStatusNotificationInput {
 	orderNumber: number;
 	reviewUrl?: string;
 	status: string;
-	templates?: Record<string, string> | null;
-	whatsApp: WhatsAppProvider;
+	templates?: Record<string, string | OrderStatusWhatsAppTemplate> | null;
+	whatsApp: WhatsAppSender;
 }
 
 type SendOrderStatusEmailInput = Omit<SendOrderStatusNotificationInput, "whatsApp">;
@@ -51,7 +53,12 @@ export function getOrderStatusNotificationMessage({
 >): string {
 	return (
 		messageOverride ??
-		formatOrderStatusMessage(templates?.[status]?.trim() || undefined, status, orderNumber, deliveryMethod)
+		formatOrderStatusMessage(
+			getOrderStatusWhatsAppTemplate(templates, status).message?.trim() || undefined,
+			status,
+			orderNumber,
+			deliveryMethod,
+		)
 	);
 }
 
@@ -76,7 +83,17 @@ export async function dispatchOrderStatusWhatsApp({
 		status,
 		templates,
 	});
-	await dispatchWhatsApp({ deduplicationKey, message, orderId, orderStatus: status, phone, prisma, provider: whatsApp });
+	const { attachments = [] } = getOrderStatusWhatsAppTemplate(templates, status);
+	await dispatchWhatsApp({
+		attachments,
+		deduplicationKey,
+		message,
+		orderId,
+		orderStatus: status,
+		phone,
+		prisma,
+		provider: whatsApp,
+	});
 }
 
 export async function sendOrderStatusEmail({
@@ -134,7 +151,12 @@ export async function sendOrderStatusNotification({
 	const deliveries: Promise<void>[] = [];
 
 	if (customer.notificationWhatsApp !== false && phone) {
-		deliveries.push(whatsApp.sendText(phone, message));
+		deliveries.push(
+			whatsApp.sendMessage(phone, {
+				attachments: getOrderStatusWhatsAppTemplate(templates, status).attachments,
+				text: message,
+			}),
+		);
 	}
 	if (customer.notificationEmail !== false && customer.user?.email) {
 		deliveries.push(

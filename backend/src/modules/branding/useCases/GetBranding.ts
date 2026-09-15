@@ -1,5 +1,6 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { BrandingReturn, GetBrandingQuery } from "../dtos";
+import { normalizeOrderStatusWhatsAppTemplates } from "../orderStatusWhatsAppTemplates";
 
 export class GetBranding {
 	constructor(private readonly prisma: PrismaInstance) {}
@@ -53,8 +54,9 @@ export class GetBranding {
 			logoUrl: company?.logoUrl ?? null,
 			metaPixelId: company?.metaPixelId ?? null,
 			mobileIconUrl: company?.mobileIconUrl ?? null,
-			orderStatusWhatsAppTemplates:
-				(company?.orderStatusWhatsAppTemplates as BrandingReturn["orderStatusWhatsAppTemplates"]) ?? null,
+			orderStatusWhatsAppTemplates: normalizeOrderStatusWhatsAppTemplates(
+				company?.orderStatusWhatsAppTemplates,
+			),
 			themeColors: (company?.themeColors as BrandingReturn["themeColors"]) ?? null,
 			unitFallbackImageUrl: company?.unitFallbackImageUrl ?? null,
 		};

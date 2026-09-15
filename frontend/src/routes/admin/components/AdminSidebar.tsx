@@ -78,7 +78,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 
 	async function handleLogout() {
 		await logout();
-		void navigate({ to: "/identify" });
+		void navigate({ search: { redirectTo: undefined }, to: "/identify" });
 	}
 
 	return (

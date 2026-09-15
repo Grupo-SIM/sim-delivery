@@ -1,5 +1,6 @@
 import { WhatsAppProvider } from "../WhatsAppProvider";
 import { WahaClient, type WahaClientOptions } from "../WahaClient";
+import type { WhatsAppMessage } from "../WhatsAppMessage";
 
 /** WAHA provider. Requires a running WAHA instance and an authenticated session. */
 export class WahaWhatsAppProvider extends WhatsAppProvider {
@@ -14,7 +15,7 @@ export class WahaWhatsAppProvider extends WhatsAppProvider {
 		this.client = new WahaClient(options, fetchImpl);
 	}
 
-	sendText(phone: string, message: string): Promise<void> {
-		return this.client.sendText(phone, message);
+	sendMessage(phone: string, message: WhatsAppMessage): Promise<void> {
+		return this.client.sendMessage(phone, message);
 	}
 }

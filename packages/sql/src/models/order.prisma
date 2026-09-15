@@ -63,6 +63,8 @@ model WhatsAppNotification {
     orderId       String?
     recipient     String
     message       String
+    /// Frozen image/PDF metadata delivered with this notification.
+    attachments   Json      @default("[]")
     orderStatus   String
     deduplicationKey String  @unique
     /// pending | processing | sent | failed

@@ -64,7 +64,7 @@ function PasswordResetPage() {
 					{isSuccess ? (
 						<div className="space-y-4">
 							<p className="text-sm">{t("auth.resetPassword.success")}</p>
-							<Button className="w-full" onClick={() => void navigate({ to: "/identify" })} type="button">
+							<Button className="w-full" onClick={() => void navigate({ search: { redirectTo: undefined }, to: "/identify" })} type="button">
 								{t("auth.resetPassword.goToLogin")}
 							</Button>
 						</div>

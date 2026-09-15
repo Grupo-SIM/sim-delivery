@@ -371,7 +371,7 @@ describe("UpdateOrderStatus", () => {
 		const sent: Record<string, string | number | undefined>[] = [];
 
 		const whatsAppSent: unknown[][] = [];
-		const whatsApp = { sendText: async (...input: unknown[]) => void whatsAppSent.push(input) };
+		const whatsApp = { sendMessage: async (...input: unknown[]) => void whatsAppSent.push(input) };
 
 		await new UpdateOrderStatus(prisma, whatsApp, undefined, { send: async input => void sent.push(input) }).execute(
 			"cmp_1",
@@ -390,7 +390,10 @@ describe("UpdateOrderStatus", () => {
 		expect(whatsAppSent).toEqual([
 			[
 				"5581999999999",
-				"Seu pedido #154 já está sendo preparado com carinho. Assim que ficar pronto, seguirá para entrega.",
+				{
+					attachments: [],
+					text: "Seu pedido #154 já está sendo preparado com carinho. Assim que ficar pronto, seguirá para entrega.",
+				},
 			],
 		]);
 	});
@@ -547,8 +550,8 @@ describe("UpdateOrderStatus", () => {
 		});
 		const messages: string[] = [];
 		const whatsApp = {
-			sendText: async (_phone: string, message: string) => {
-				messages.push(message);
+			sendMessage: async (_phone: string, message: { text: string }) => {
+				messages.push(message.text);
 			},
 		};
 
@@ -567,7 +570,7 @@ describe("UpdateOrderStatus", () => {
 		const messages: string[] = [];
 
 		await new UpdateOrderStatus(prisma, {
-			sendText: async (_phone, message) => void messages.push(message),
+			sendMessage: async (_phone, message) => void messages.push(message.text),
 		}).execute("cmp_1", "ord_1", { status: "pronto" });
 
 		expect(messages).toEqual(["Seu pedido #154 está pronto e logo seguirá para entrega."]);
@@ -584,7 +587,7 @@ describe("UpdateOrderStatus", () => {
 		stored.customer.notificationWhatsApp = false;
 		const messages: string[] = [];
 
-		await new UpdateOrderStatus(prisma, { sendText: async () => void messages.push("sent") }).execute(
+		await new UpdateOrderStatus(prisma, { sendMessage: async () => void messages.push("sent") }).execute(
 			"cmp_1",
 			"ord_1",
 			{
@@ -637,7 +640,7 @@ describe("UpdateOrderStatus", () => {
 
 		await new UpdateOrderStatus(
 			prisma,
-			{ sendText: async () => void messages.push("sent") },
+			{ sendMessage: async () => void messages.push("sent") },
 			undefined,
 			{ send: async input => void emails.push(input) },
 		).execute("cmp_1", "ord_1", { status: "em_preparo" });

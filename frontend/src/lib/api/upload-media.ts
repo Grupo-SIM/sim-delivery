@@ -20,7 +20,7 @@ export async function uploadMedia(asset: MediaAsset, file: File): Promise<string
 }
 
 const mediaFilenamePattern =
-	/^\/media\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(?:avif|jpg|otf|png|ttf|webp|woff|woff2))$/;
+	/^\/media\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(?:avif|jpg|otf|pdf|png|ttf|webp|woff|woff2))$/;
 
 export async function deleteMedia(asset: MediaAsset, url: string): Promise<void> {
 	let mediaUrl: URL;

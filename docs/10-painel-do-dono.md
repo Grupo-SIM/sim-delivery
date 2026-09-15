@@ -50,7 +50,8 @@ esboço original — **deduzido** do escopo de televenda/delivery e do benchmark
   editáveis em runtime — divisão em [02](02-whitelabel-e-builds.md).
 
 ### Notificações
-- Configurar mensagens de status por WhatsApp (ver [06](06-pedidos.md)).
+- Configurar mensagens de status por WhatsApp, com texto multiline, prévia e anexos
+  de imagem/PDF (ver [06](06-pedidos.md)).
 
 ## Roadmap (do benchmark — não MVP)
 

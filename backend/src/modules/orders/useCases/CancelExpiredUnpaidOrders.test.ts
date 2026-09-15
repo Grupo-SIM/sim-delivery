@@ -28,7 +28,7 @@ describe("CancelExpiredUnpaidOrders", () => {
 			orderStatusEvent: { create: async (args: unknown) => statusEvents.push(args) },
 		} as unknown as PrismaInstance;
 		const whatsApp = {
-			sendText: async (...args: unknown[]): Promise<void> => {
+			sendMessage: async (...args: unknown[]): Promise<void> => {
 				notifications.push(args);
 			},
 		};
@@ -51,7 +51,10 @@ describe("CancelExpiredUnpaidOrders", () => {
 		expect(notifications).toEqual([
 			[
 				"5511999999999",
-				"Seu pedido #154 foi cancelado porque o pagamento não foi confirmado em até 1 hora.",
+				{
+					attachments: [],
+					text: "Seu pedido #154 foi cancelado porque o pagamento não foi confirmado em até 1 hora.",
+				},
 			],
 		]);
 	});
@@ -76,7 +79,7 @@ describe("CancelExpiredUnpaidOrders", () => {
 			orderStatusEvent: { create: async () => undefined },
 		} as unknown as PrismaInstance;
 		const whatsApp = {
-			sendText: async (...args: unknown[]): Promise<void> => {
+			sendMessage: async (...args: unknown[]): Promise<void> => {
 				notifications.push(args);
 			},
 		};

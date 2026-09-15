@@ -18,7 +18,7 @@ export async function requireSuperAdminBeforeLoad() {
 	}
 	const role = (session.data?.user as { role?: string } | null)?.role ?? null;
 	if (!session.data?.user) {
-		throw redirect({ to: "/identify" });
+		throw redirect({ search: { redirectTo: undefined }, to: "/identify" });
 	}
 	if (!isSuperAdmin(role)) {
 		throw redirect({ to: "/admin" });
