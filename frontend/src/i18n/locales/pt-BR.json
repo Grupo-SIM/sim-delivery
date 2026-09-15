@@ -1708,12 +1708,10 @@
 				"identify": {
 					"changeEmail": "Usar outro e-mail",
 					"changePhone": "Usar outro número",
-					"channels": {
-						"email": "E-mail",
-						"whatsapp": "WhatsApp"
-					},
 					"code": "Código de acesso",
 					"codePlaceholder": "123456",
+					"contact": "Contato",
+					"contactPlaceholder": "E-mail ou número",
 					"email": "E-mail",
 					"emailHint": "Enviaremos um link de acesso. Sem senha, sem complicação.",
 					"errors": {
@@ -1721,6 +1719,7 @@
 						"magicLink": "Este link é inválido ou expirou.",
 						"otpInvalid": "Código inválido ou expirado.",
 						"otpSend": "Não foi possível enviar o código pelo WhatsApp. Tente novamente.",
+						"passwordRequiresEmail": "Para entrar com senha, informe um e-mail válido.",
 						"rateLimited": "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
 						"send": "Não foi possível enviar o link. Tente novamente."
 					},
@@ -1728,6 +1727,7 @@
 					"linkSent": "Enviamos um link de acesso para <strong>{{email}}</strong>. Verifique sua caixa de entrada.",
 					"linkSentTitle": "Confira seu e-mail!",
 					"password": "Senha",
+					"passwordEmailOnly": "Entrada com senha disponível somente por e-mail.",
 					"passwordHint": "Informe seu e-mail e senha para entrar.",
 					"passwordPlaceholder": "Digite sua senha",
 					"phone": "WhatsApp",
