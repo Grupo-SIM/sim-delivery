@@ -6,7 +6,7 @@ import type { PhoneOtpProvider } from "./models/PhoneOtpProvider";
 export enum PhoneOtpProvidersEnum {
 	CONSOLE = "console",
 	TWILIO = "twilio",
-	WAHA = "waha",
+	WHATSAPP = "whatsapp",
 }
 
 export type PhoneOtpProviderKey = `${PhoneOtpProvidersEnum}`;
@@ -14,7 +14,7 @@ export type PhoneOtpProviderKey = `${PhoneOtpProvidersEnum}`;
 export const phoneOtpProviders: Record<PhoneOtpProviderKey, new () => PhoneOtpProvider> = {
 	[PhoneOtpProvidersEnum.CONSOLE]: ConsolePhoneOtpProvider,
 	[PhoneOtpProvidersEnum.TWILIO]: TwilioPhoneOtpProvider,
-	[PhoneOtpProvidersEnum.WAHA]: WahaPhoneOtpProvider,
+	[PhoneOtpProvidersEnum.WHATSAPP]: WahaPhoneOtpProvider,
 };
 
 export { PhoneOtpProvider } from "./models/PhoneOtpProvider";
