@@ -29,6 +29,11 @@ export function toWahaBrazilianChatId(phone: string): string {
 	return `${recipient.slice(0, 4)}${recipient.slice(5)}@c.us`;
 }
 
+export function getWahaBrazilianChatIds(phone: string): [string, string] {
+	const recipient = normalizeBrazilianWhatsAppPhone(phone);
+	return [toWahaBrazilianChatId(recipient), `${recipient}@c.us`];
+}
+
 export function getWahaClientOptions(): WahaClientOptions {
 	const baseUrl = process.env.WAHA_BASE_URL?.trim();
 	if (!baseUrl) throw new Error("WAHA_BASE_URL is required when WAHA is enabled");
@@ -47,21 +52,22 @@ export class WahaClient {
 	) {}
 
 	async sendText(phone: string, message: string): Promise<void> {
-		const response = await this.fetchImpl(`${this.options.baseUrl.replace(/\/$/, "")}/api/sendText`, {
-			body: JSON.stringify({
-				chatId: toWahaBrazilianChatId(phone),
-				session: this.options.session,
-				text: message,
-			}),
-			headers: {
-				...(this.options.apiKey ? { "X-Api-Key": this.options.apiKey } : {}),
-				Accept: "application/json",
-				"Content-Type": "application/json",
-			},
-			method: "POST",
-			signal: AbortSignal.timeout(this.options.timeoutMs ?? 10_000),
-		});
+		let response: Response | undefined;
+		for (const chatId of getWahaBrazilianChatIds(phone)) {
+			response = await this.fetchImpl(`${this.options.baseUrl.replace(/\/$/, "")}/api/sendText`, {
+				body: JSON.stringify({ chatId, session: this.options.session, text: message }),
+				headers: {
+					...(this.options.apiKey ? { "X-Api-Key": this.options.apiKey } : {}),
+					Accept: "application/json",
+					"Content-Type": "application/json",
+				},
+				method: "POST",
+				signal: AbortSignal.timeout(this.options.timeoutMs ?? 10_000),
+			});
 
-		if (!response.ok) throw new Error(`WAHA request failed (${response.status})`);
+			if (response.ok) return;
+		}
+
+		throw new Error(`WAHA request failed (${response?.status})`);
 	}
 }

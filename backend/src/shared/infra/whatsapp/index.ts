@@ -5,6 +5,7 @@ export { WhatsAppProvider } from "./WhatsAppProvider";
 export { dispatchWhatsApp, ProcessWhatsAppOutbox, startWhatsAppOutboxWorker } from "./WhatsAppOutbox";
 export {
 	getWahaClientOptions,
+	getWahaBrazilianChatIds,
 	InvalidWhatsAppPhoneError,
 	normalizeBrazilianWhatsAppPhone,
 	toWahaBrazilianChatId,

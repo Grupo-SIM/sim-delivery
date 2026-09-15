@@ -54,4 +54,17 @@ describe("WahaClient", () => {
 			text: "message",
 		});
 	});
+
+	it("falls back to the canonical Brazilian JID when the legacy JID fails", async () => {
+		const fetch = mock(() => Promise.resolve(new Response(null, { status: 500 })));
+		fetch.mockImplementationOnce(() => Promise.resolve(new Response(null, { status: 500 })));
+		fetch.mockImplementationOnce(() => Promise.resolve(new Response(null, { status: 201 })));
+		const client = new WahaClient({ baseUrl: "https://waha.example", session: "default" }, fetch as never);
+
+		await client.sendText("+55 (83) 98769-0902", "message");
+
+		expect(fetch).toHaveBeenCalledTimes(2);
+		expect(JSON.parse(fetch.mock.calls[0]![1]!.body as string).chatId).toBe("558387690902@c.us");
+		expect(JSON.parse(fetch.mock.calls[1]![1]!.body as string).chatId).toBe("5583987690902@c.us");
+	});
 });
