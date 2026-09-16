@@ -83,13 +83,13 @@ function drawWrappedText(
 }
 
 function drawSeparator(cursor: ReceiptCursor, dashed = false) {
-	cursor.y += 1;
+	cursor.y += 2;
 	cursor.doc.setDrawColor(0, 0, 0);
 	cursor.doc.setLineWidth(0.2);
 	cursor.doc.setLineDashPattern(dashed ? [1.2, 0.8] : [], 0);
 	cursor.doc.line(RECEIPT_MARGIN_MM, cursor.y, RECEIPT_WIDTH_MM - RECEIPT_MARGIN_MM, cursor.y);
 	cursor.doc.setLineDashPattern([], 0);
-	cursor.y += 3;
+	cursor.y += 4;
 }
 
 function drawGiantOrderNumber(cursor: ReceiptCursor, value: string) {
