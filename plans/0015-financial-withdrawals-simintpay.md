@@ -2,9 +2,9 @@
 
 ## Progresso
 
-- [x] API genérica, carteiras empresariais e saques na SIM INT PAY (`simintpay-back` `ca3508f`).
-- [ ] Modelo, permissões e API financeira no Sim Delivery.
-- [ ] OpenAPI, SDK e dashboard financeira.
+- [x] API genérica, carteiras empresariais e saques na SIM INT PAY (`simintpay-back` `0853277`).
+- [x] Modelo, permissões e API financeira no Sim Delivery.
+- [~] OpenAPI, SDK e dashboard financeira.
 - [ ] Reconciliação histórica, testes e validação.
 
 ## Decisões
@@ -18,4 +18,4 @@
 
 ## Próximo passo
 
-Implementar contrato financeiro genérico e persistência de merchants no `simintpay-back`.
+Finalizar dashboard financeira e configuração empresarial.

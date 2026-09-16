@@ -12,6 +12,7 @@ export interface PayingCustomerContext {
 	};
 	/** Customer document digits, when required by the payment method. */
 	document: string | null;
+	merchant: { cnpj: string; externalMerchantId: string; legalName: string } | undefined;
 	order: { id: string; total: number; unitName: string };
 	user: { email: string; id: string; name: string; phoneNumber: string | null };
 }
@@ -78,6 +79,9 @@ export async function resolvePayingCustomer(
 			phone: customer.phone,
 		},
 		document,
+		merchant: company?.cnpj
+			? { cnpj: company.cnpj, externalMerchantId: company.id, legalName: company.name }
+			: undefined,
 		order: { id: order.id, total: order.total, unitName: order.unit.name },
 		user: {
 			email: customer.user.email,

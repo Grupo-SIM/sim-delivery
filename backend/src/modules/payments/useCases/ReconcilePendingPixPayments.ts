@@ -12,7 +12,7 @@ export class ReconcilePendingPixPayments {
 
 	async execute(): Promise<number> {
 		const payments = await this.prisma.payment.findMany({
-			select: { simpayPaymentId: true },
+			select: { order: { select: { company: { select: { cnpj: true, id: true } } } }, simpayPaymentId: true },
 			where: {
 				method: "pix",
 				order: { status: "awaiting_payment" },
@@ -28,7 +28,8 @@ export class ReconcilePendingPixPayments {
 			if (!paymentId) continue;
 
 			try {
-				const remote = await this.simpay.getPixStatusDirect(paymentId);
+				const merchantId = payment.order?.company.cnpj ? payment.order.company.id : undefined;
+				const remote = await this.simpay.getPixStatusDirect(paymentId, merchantId);
 				const result = await applyStatus.execute(paymentId, remote.status);
 				if (result.status !== "pending") reconciled += 1;
 			} catch (error) {

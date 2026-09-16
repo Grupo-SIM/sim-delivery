@@ -28,6 +28,7 @@ import { TagsController } from "./modules/tags/infra";
 import { UnitProductsController } from "./modules/unitProducts/infra";
 import { PublicUnitsController, UnitsController } from "./modules/units/infra";
 import { UsersController } from "./modules/users/infra";
+import { WithdrawalController } from "./modules/withdrawals/infra";
 import { app } from "./shared/infra/elysia";
 
 await mkdir(process.env.STATIC_DIR!, { recursive: true });
@@ -62,4 +63,5 @@ export const server = app.use([
 	PublicReviewsController,
 	ProductReviewsController,
 	PublicProductReviewsController,
+	WithdrawalController,
 ]);

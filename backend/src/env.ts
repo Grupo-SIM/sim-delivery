@@ -68,6 +68,7 @@ export const envSchema = t.Object({
 			format: "uri",
 		}),
 	),
+	SIMPAY_INTERNAL_TOKEN: t.Optional(t.String({ minLength: 16 })),
 	SIMPAY_WEBHOOK_SECRET: t.Optional(t.String({ minLength: 32 })),
 	STATIC_DIR: t.Optional(
 		t.String({

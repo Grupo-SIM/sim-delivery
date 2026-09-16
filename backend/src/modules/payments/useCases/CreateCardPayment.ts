@@ -22,7 +22,7 @@ export class CreateCardPayment {
 			userId,
 			{ cpf: data.holderCpf ?? data.cpf, orderId: data.orderId, slug: data.slug },
 		);
-		const { customer, order, user } = context;
+		const { customer, merchant, order, user } = context;
 
 		let cardToken: string;
 		let brand = "unknown";
@@ -93,7 +93,7 @@ export class CreateCardPayment {
 				name: user.name,
 				price: order.total / 100,
 				token: cardToken,
-			});
+			}, merchant);
 			simpayPaymentId = result.paymentId ?? result.id ?? null;
 			gatewayStatus = result.status;
 		} catch (error) {

@@ -13,6 +13,7 @@ export class GetPaymentStatus {
 
 	async execute(userId: string, token: string): Promise<PaymentStatusReturn> {
 		const payment = await this.prisma.payment.findFirst({
+			include: { order: { select: { company: { select: { cnpj: true, id: true } } } } },
 			where: { order: { customer: { userId } }, token },
 		});
 		if (!payment) throw new DomainError(PaymentErrors.PAYMENT_NOT_FOUND);
@@ -20,10 +21,11 @@ export class GetPaymentStatus {
 
 		let remote: { status: string };
 		try {
+			const merchantId = payment.order?.company.cnpj ? payment.order.company.id : undefined;
 			remote =
 				payment.method === "pix"
-					? await this.simpay.getPixStatusDirect(payment.simpayPaymentId)
-					: await this.simpay.getPaymentStatus(payment.simpayPaymentId);
+					? await this.simpay.getPixStatusDirect(payment.simpayPaymentId, merchantId)
+					: await this.simpay.getPaymentStatus(payment.simpayPaymentId, merchantId);
 		} catch {
 			// Gateway status is best-effort. Preserve pending so a transient status outage
 			// cannot turn an unsettled payment into either approval or rejection.

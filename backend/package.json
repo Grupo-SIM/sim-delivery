@@ -9,6 +9,7 @@
 		"dev": "bun --watch src/main.ts",
 		"export": "bun ./src/generateOpenApi.ts",
 		"inject": "bun ./scripts/inject.ts",
+		"reconcile:simpay-payments": "bun ./scripts/reconcile-simpay-payments.ts",
 		"start": "NODE_ENV=production bun dist/main.js",
 		"test:unit": "bun test --coverage"
 	},

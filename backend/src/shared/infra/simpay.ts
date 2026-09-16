@@ -64,6 +64,42 @@ export interface SimpayPixCreateResponse {
 	message?: string;
 }
 
+export interface SimpayMerchantReference {
+	cnpj: string;
+	externalMerchantId: string;
+	legalName: string;
+}
+
+export interface SimpayWithdrawalSummary {
+	availableBalanceCents: number;
+	blockReason: string | null;
+	canRequest: boolean;
+	feePolicy: { fixedCents: number; percentBasisPoints: number };
+	processingCount: number;
+	processingGrossCents: number;
+}
+
+export interface SimpayWithdrawal {
+	createdAt: string;
+	feeCents: number;
+	grossAmountCents: number;
+	id: string;
+	netAmountCents: number;
+	pixKey: string;
+	rejectionReason: string | null;
+	requestId: string | null;
+	status: string;
+	updatedAt: string;
+}
+
+export interface SimpayReconciliationResult {
+	attributed: number;
+	conflicts: string[];
+	creditedCents: number;
+	dryRun: boolean;
+	skipped: number;
+}
+
 function resolveBaseUrl(): string {
 	const raw = process.env.SIMPAY_API_URL?.trim();
 	const fallback = "https://simpay-back.simintermediacoes.com";
@@ -72,6 +108,14 @@ function resolveBaseUrl(): string {
 }
 
 const headers = { Accept: "application/json", "Content-Type": "application/json" };
+
+function internalHeaders() {
+	return { ...headers, "x-internal-token": process.env.SIMPAY_INTERNAL_TOKEN ?? "" };
+}
+
+function merchantBase(merchantId: string): string {
+	return `${resolveBaseUrl()}/internal/integrations/sim-delivery/merchants/${encodeURIComponent(merchantId)}`;
+}
 
 const APPROVED_PAYMENT_STATUSES = new Set([
 	"APPROVED",
@@ -109,10 +153,22 @@ export function isFailedSimpayStatus(status: unknown): boolean {
 }
 
 export class SimpayClient {
-	async createCardPayment(params: SimpayCardPaymentParams): Promise<SimpayPaymentResponse> {
-		const response = await fetch(`${resolveBaseUrl()}/zero-grau/payments/credit-card`, {
+	async provisionMerchant(merchant: SimpayMerchantReference): Promise<{ id: string }> {
+		const response = await fetch(merchantBase(merchant.externalMerchantId), {
+			body: JSON.stringify({ cnpj: merchant.cnpj, legalName: merchant.legalName }),
+			headers: internalHeaders(),
+			method: "PUT",
+		});
+		const data = await response.json().catch(() => null);
+		if (!response.ok) throw new PaymentProviderError("Simpay", extractPaymentProviderMessage(data) || `Erro ao provisionar merchant (HTTP ${response.status})`, response.status);
+		return data as { id: string };
+	}
+
+	async createCardPayment(params: SimpayCardPaymentParams, merchant?: SimpayMerchantReference): Promise<SimpayPaymentResponse> {
+		if (merchant) await this.provisionMerchant(merchant);
+		const response = await fetch(merchant ? `${merchantBase(merchant.externalMerchantId)}/payments/credit-card` : `${resolveBaseUrl()}/zero-grau/payments/credit-card`, {
 			body: JSON.stringify(params),
-			headers,
+			headers: merchant ? internalHeaders() : headers,
 			method: "POST",
 		});
 		const data = await response.json().catch(() => null);
@@ -128,10 +184,11 @@ export class SimpayClient {
 		return data as SimpayPaymentResponse;
 	}
 
-	async createPixPayment(params: SimpayPixPaymentParams): Promise<SimpayPixCreateResponse> {
-		const response = await fetch(`${resolveBaseUrl()}/zero-grau/payments/pix`, {
+	async createPixPayment(params: SimpayPixPaymentParams, merchant?: SimpayMerchantReference): Promise<SimpayPixCreateResponse> {
+		if (merchant) await this.provisionMerchant(merchant);
+		const response = await fetch(merchant ? `${merchantBase(merchant.externalMerchantId)}/payments/pix` : `${resolveBaseUrl()}/zero-grau/payments/pix`, {
 			body: JSON.stringify(params),
-			headers,
+			headers: merchant ? internalHeaders() : headers,
 			method: "POST",
 		});
 
@@ -157,8 +214,13 @@ export class SimpayClient {
 		return data as SimpayPixCreateResponse;
 	}
 
-	async getPaymentStatus(paymentId: string): Promise<{ paymentId: string; status: string }> {
-		const response = await fetch(`${resolveBaseUrl()}/zero-grau/payments/status/${paymentId}`, { headers });
+	async getPaymentStatus(paymentId: string, merchantId?: string): Promise<{ paymentId: string; status: string }> {
+		const response = await fetch(
+			merchantId
+				? `${merchantBase(merchantId)}/payments/${encodeURIComponent(paymentId)}`
+				: `${resolveBaseUrl()}/zero-grau/payments/status/${paymentId}`,
+			{ headers: merchantId ? internalHeaders() : headers },
+		);
 		const data = await response.json();
 
 		if (!response.ok) {
@@ -168,8 +230,45 @@ export class SimpayClient {
 		return data as { paymentId: string; status: string };
 	}
 
+	async getWithdrawalSummary(merchantId: string): Promise<SimpayWithdrawalSummary> {
+		return this.internalJson(`${merchantBase(merchantId)}/finance/summary`);
+	}
+
+	async quoteWithdrawal(merchantId: string, grossAmountCents: number): Promise<{ feeCents: number; grossAmountCents: number; netAmountCents: number }> {
+		return this.internalJson(`${merchantBase(merchantId)}/finance/withdrawals/quote`, { grossAmountCents });
+	}
+
+	async requestWithdrawal(merchantId: string, body: { grossAmountCents: number; pixKey: string; requestId: string }): Promise<SimpayWithdrawal> {
+		return this.internalJson(`${merchantBase(merchantId)}/finance/withdrawals`, body);
+	}
+
+	async listWithdrawals(merchantId: string, page: number, pageSize: number): Promise<{ items: SimpayWithdrawal[]; meta: { page: number; pageSize: number; totalItems: number; totalPages: number } }> {
+		return this.internalJson(`${merchantBase(merchantId)}/finance/withdrawals?page=${page}&pageSize=${pageSize}`);
+	}
+
+	async getWithdrawal(merchantId: string, withdrawalId: string): Promise<SimpayWithdrawal> {
+		return this.internalJson(`${merchantBase(merchantId)}/finance/withdrawals/${encodeURIComponent(withdrawalId)}`);
+	}
+
+	async reconcilePayments(merchantId: string, paymentIds: string[], dryRun: boolean): Promise<SimpayReconciliationResult> {
+		return this.internalJson(`${merchantBase(merchantId)}/finance/reconciliation/payments`, { dryRun, paymentIds });
+	}
+
+	private async internalJson<T>(url: string, body?: unknown): Promise<T> {
+		const response = await fetch(url, {
+			...(body === undefined ? {} : { body: JSON.stringify(body), method: "POST" }),
+			headers: internalHeaders(),
+		});
+		const data = await response.json().catch(() => null);
+		if (!response.ok) {
+			throw new PaymentProviderError("Simpay", extractPaymentProviderMessage(data) || `Erro na API financeira SIM INT PAY (HTTP ${response.status})`, response.status);
+		}
+		return data as T;
+	}
+
 	/** Queries DOM directly through back-simpay, without waiting for the webhook. */
-	async getPixStatusDirect(paymentId: string): Promise<{ status: string }> {
+	async getPixStatusDirect(paymentId: string, merchantId?: string): Promise<{ status: string }> {
+		if (merchantId) return this.getPaymentStatus(paymentId, merchantId);
 		const response = await fetch(`${resolveBaseUrl()}/zero-grau/payments/pix-status/${paymentId}`, {
 			headers,
 		});

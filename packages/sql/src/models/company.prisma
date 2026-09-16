@@ -37,6 +37,11 @@ model Company {
     ga4Id       String?
     gtmId       String?
     orderBoardStartedAt DateTime?
+    /// Legal and payout configuration for the SIM INT PAY merchant.
+    cnpj String? @unique
+    withdrawalMinimumCents Int?
+    withdrawalPixKey String?
+    simpayMerchantId String?
     createdAt   DateTime @default(now())
     updatedAt  DateTime @updatedAt
 
@@ -57,6 +62,7 @@ model Company {
     users      User[]
     inventoryItems InventoryItem[]
     inventorySettings InventorySettings?
+    withdrawals Withdrawal[]
     feeOverrides CompanyFeeOverride[]
 
     @@map("company")

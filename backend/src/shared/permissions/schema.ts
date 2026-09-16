@@ -20,4 +20,5 @@ export interface PermissionSchema extends PermixDefinition {
 	receiptTemplate: { action: "read" | "update" };
 	reviews: { action: "read" | "create" };
 	branding: { action: "read" | "update" };
+	withdrawals: { action: "read" | "request" | "configure" };
 }

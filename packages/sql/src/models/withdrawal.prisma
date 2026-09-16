@@ -1,0 +1,41 @@
+/// Local audit mirror of a withdrawal owned and settled by SIM INT PAY.
+model Withdrawal {
+    id                   String   @id @default(cuid())
+    companyId            String
+    requestedById        String
+    externalWithdrawalId String?  @unique
+    grossAmountCents     Int
+    feeCents             Int      @default(0)
+    netAmountCents       Int      @default(0)
+    pixKey               String
+	/// submitting | PENDING | APPROVED | COMPLETED | REJECTED
+    status               String   @default("submitting")
+    rejectionReason      String?
+    providerCreatedAt    DateTime?
+    providerUpdatedAt    DateTime?
+    createdAt            DateTime @default(now())
+    updatedAt            DateTime @updatedAt
+
+    company     Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    requestedBy User    @relation(fields: [requestedById], references: [id], onDelete: Restrict)
+    statusEvents WithdrawalStatusEvent[]
+
+    @@index([companyId, createdAt])
+    @@index([companyId, status])
+    @@map("withdrawal")
+}
+
+model WithdrawalStatusEvent {
+    id           String   @id @default(cuid())
+    withdrawalId String
+    providerEventId String @unique
+    fromStatus   String?
+    toStatus     String
+    payload      Json?
+    createdAt    DateTime @default(now())
+
+    withdrawal Withdrawal @relation(fields: [withdrawalId], references: [id], onDelete: Cascade)
+
+    @@index([withdrawalId, createdAt])
+    @@map("withdrawal_status_event")
+}

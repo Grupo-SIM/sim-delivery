@@ -24,6 +24,7 @@ import { TagErrors, TagErrorsStatusCodes } from "@/modules/tags/errors";
 import { UnitProductErrors, UnitProductErrorsStatusCodes } from "@/modules/unitProducts/errors";
 import { UnitErrors, UnitErrorsStatusCodes } from "@/modules/units/errors";
 import { UserErrors, UserErrorsStatusCodes } from "@/modules/users/errors";
+import { WithdrawalErrors, WithdrawalErrorsStatusCodes } from "@/modules/withdrawals/errors";
 
 export const DomainErrors = {
 	...DeliveryErrors,
@@ -48,6 +49,7 @@ export const DomainErrors = {
 	...CepErrors,
 	...InventoryErrors,
 	...PlatformFeeErrors,
+	...WithdrawalErrors,
 } as const;
 export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCodes> = {
 	...DeliveryErrorsStatusCodes,
@@ -72,6 +74,7 @@ export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCo
 	...CepErrorsStatusCodes,
 	...InventoryErrorsStatusCodes,
 	...PlatformFeeErrorsStatusCodes,
+	...WithdrawalErrorsStatusCodes,
 };
 
 export class DomainError extends Error {

@@ -1,7 +1,12 @@
 import Elysia, { t } from "elysia";
 import { CompanyScopeGuard } from "@/modules/users/guards";
+import { WithdrawalErrors } from "@/modules/withdrawals/errors";
+import { isValidDocument } from "@/shared/cpf";
+import { DomainError } from "@/shared/errors";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
-import { CompanyListReturn, CompanyReturn, CreateCompanyBody, UpdateCompanyBody } from "../../dtos";
+import { CompanyListReturn, CompanyReturn, CreateCompanyBody, UpdateCompanyBody, UpdateWithdrawalSettingsBody, WithdrawalSettingsReturn } from "../../dtos";
+import { simpay } from "@/shared/infra/simpay";
+import { CompanyErrors } from "../../errors";
 import { CreateCompany, DeleteCompany, ListCompanies, UpdateCompany } from "../../useCases";
 
 export const CompaniesController = new Elysia({
@@ -44,6 +49,30 @@ export const CompaniesController = new Elysia({
 				{
 					response: CompanyListReturn,
 				},
+			)
+			.patch(
+				"/:companyId/withdrawal-settings",
+				async ({ body, params, prisma, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "withdrawals", "configure");
+					const company = await prisma.company.findUnique({ where: { id: params.companyId } });
+					if (!company) throw new DomainError(CompanyErrors.COMPANY_NOT_FOUND);
+					if (!isValidDocument(body.cnpj)) throw new DomainError(WithdrawalErrors.WITHDRAWAL_INVALID_CNPJ);
+					const companyWithCnpj = await prisma.company.findUnique({ where: { cnpj: body.cnpj } });
+					if (companyWithCnpj && companyWithCnpj.id !== company.id) throw new DomainError(WithdrawalErrors.WITHDRAWAL_CNPJ_TAKEN);
+					let merchant: { id: string };
+					try {
+						merchant = await simpay.provisionMerchant({ cnpj: body.cnpj, externalMerchantId: company.id, legalName: company.name });
+					} catch (error) {
+						throw new DomainError(WithdrawalErrors.WITHDRAWAL_PROVIDER_ERROR, error instanceof Error ? error.message : undefined);
+					}
+					const updated = await prisma.company.update({
+						where: { id: company.id },
+						data: { cnpj: body.cnpj, simpayMerchantId: merchant.id, withdrawalMinimumCents: body.minimumCents, ...(body.pixKey !== undefined && { withdrawalPixKey: body.pixKey.trim() || null }) },
+					});
+					return { cnpj: updated.cnpj!, minimumCents: updated.withdrawalMinimumCents, pixKey: updated.withdrawalPixKey, simpayMerchantId: updated.simpayMerchantId! };
+				},
+				{ body: UpdateWithdrawalSettingsBody, response: WithdrawalSettingsReturn },
 			)
 			.patch(
 				"/:companyId",

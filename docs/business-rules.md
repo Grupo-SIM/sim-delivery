@@ -77,6 +77,25 @@ possui **N unidades** (lojas físicas). Detalhes em
   taxas de receita, margem e recompensas empresariais. Reembolso atribui parcela comercial de modo
   proporcional ao total pago.
 
+## Carteira e saques empresariais
+
+- Cada empresa possui carteira própria na SIM INT PAY, identificada pelo `companyId`; saldo e
+  saques nunca seguem filtro de unidade.
+- SIM INT PAY é fonte de saldo disponível, valores em processamento, taxa, elegibilidade e
+  status. `PENDING` e `APPROVED` permanecem em processamento; `COMPLETED` e `REJECTED` são finais.
+- `superAdmin`, `owner` e `manager` consultam a carteira e solicitam saques. Somente
+  `superAdmin` configura CNPJ, mínimo local opcional e chave Pix padrão.
+- CNPJ válido e único é obrigatório para provisionar a carteira. Mínimo vazio desativa a
+  validação local; a SIM INT PAY ainda valida valor positivo, líquido, saldo e limites próprios.
+- Cotação e solicitação usam valor bruto em centavos. Taxa fixa e percentual são calculadas
+  pela SIM INT PAY e os valores bruto, taxa e líquido ficam congelados no histórico local.
+- Chave Pix informada no último saque criado passa a ser o padrão da empresa.
+- Solicitação local nasce antes da chamada externa e seu id é chave idempotente. Callbacks
+  repetidos são aceitos sem duplicar eventos; consulta direta converge o espelho local quando
+  callback atrasar ou falhar.
+- Retroatribuição de pagamentos confirmados é operação administrativa, começa em dry-run e
+  exige execução explícita após conferência dos conflitos.
+
 ## Índice
 
 1. [Visão geral e domínio](01-visao-geral-e-dominio.md) — produto, tenancy, entidades.

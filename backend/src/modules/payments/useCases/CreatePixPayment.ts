@@ -12,7 +12,7 @@ export class CreatePixPayment {
 	) {}
 
 	async execute(userId: string, data: CreatePixPaymentBody): Promise<PixPaymentReturn> {
-		const { customer, document, order, user } = await resolvePayingCustomer(this.prisma, userId, data);
+		const { customer, document, merchant, order, user } = await resolvePayingCustomer(this.prisma, userId, data);
 		if (!document) throw new DomainError(PaymentErrors.DOCUMENT_REQUIRED);
 
 		// Re-poll the same charge instead of creating a duplicate when the customer
@@ -36,7 +36,7 @@ export class CreatePixPayment {
 			mobile_phone: phone || undefined,
 			name: user.name,
 			price: order.total / 100,
-		});
+		}, merchant);
 
 		// The gateway answers 201 even when DOM declines the charge (e.g. invalid CPF),
 		// leaving the QR fields empty. Surface that as a clear error instead of a broken QR.
