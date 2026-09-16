@@ -1,5 +1,6 @@
 import { LuMinus, LuPlus, LuTrash2 } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
+import { displayedUnitPrice } from "@/lib/platform-fees";
 import { type CartItem, useCartStore } from "@/stores";
 import { money } from "./types";
 
@@ -25,7 +26,7 @@ export function DesktopCartItem({ item }: DesktopCartItemProps) {
 				<div className="flex gap-2">
 					<div className="min-w-0 flex-1">
 						<p className="truncate font-semibold text-sm">{item.title}</p>
-						<p className="text-muted-foreground text-sm">{money.format(item.priceCents / 100)}</p>
+						<p className="text-muted-foreground text-sm">{money.format(displayedUnitPrice(item.priceCents, item.productFees) / 100)}</p>
 					</div>
 					<Button
 						aria-label={`Remover ${item.title}`}

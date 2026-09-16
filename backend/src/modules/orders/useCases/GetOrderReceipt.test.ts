@@ -22,11 +22,14 @@ const receiptOrder = {
 	deliveryFee: 500,
 	deliveryMethod: "delivery",
 	discountCents: 200,
+	feeSnapshots: [],
+	feeTotalCents: 0,
 	displayNumber: 42,
 	estimatedStatusCompletionAt: new Date("2026-08-31T16:15:00.000Z"),
 	id: "ord_1",
 	items: [
 		{
+			feeSnapshots: [],
 			id: "item_1",
 			note: "Sem cebola",
 			optionSnapshots: [
@@ -77,12 +80,14 @@ describe("GetOrderReceipt", () => {
 			companyId: _companyId,
 			customerId: _customerId,
 			estimatedStatusCompletionAt,
+			feeSnapshots: _feeSnapshots,
 			...publicReceiptOrder
 		} = receiptOrder;
 
 		expect(result).toEqual({
 			...publicReceiptOrder,
 			estimatedDeliveryAt: estimatedStatusCompletionAt,
+			fees: [],
 			isFirstOrder: true,
 			template: {
 				blocks: [
@@ -105,6 +110,7 @@ describe("GetOrderReceipt", () => {
 					{ id: "discount", type: "discount" },
 					{ id: "cashback", type: "cashback" },
 					{ id: "loyalty", type: "loyalty" },
+					{ id: "fees", type: "fees" },
 					{ id: "total", type: "total" },
 					{ id: "separator-5", type: "separator" },
 					{ id: "prepared-by", type: "preparedBy" },
@@ -113,6 +119,8 @@ describe("GetOrderReceipt", () => {
 			customer: { cpf: "52998224725", name: "Ana", phone: "85999999999" },
 			items: [
 				{
+					displayTotal: 3600,
+					displayUnitPrice: 1800,
 					id: "item_1",
 					note: "Sem cebola",
 					options: [

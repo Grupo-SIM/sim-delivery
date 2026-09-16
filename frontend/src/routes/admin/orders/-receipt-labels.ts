@@ -20,6 +20,7 @@ export function getOrderReceiptLabels(
 		discount: t("admin.orders.receipt.discount"),
 		estimatedDelivery: t("admin.orders.receipt.estimatedDelivery"),
 		firstOrder: t("admin.orders.receipt.firstOrder"),
+		fees: t("admin.orders.receipt.fees"),
 		loyalty: t("admin.orders.receipt.loyalty"),
 		note: t("admin.orders.receipt.note"),
 		order: t("admin.orders.receipt.order"),

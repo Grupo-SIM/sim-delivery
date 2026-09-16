@@ -4,6 +4,7 @@ import { LuMinus, LuPencil, LuPlus, LuTrash2 } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { formatMoney } from "@/lib/formatMoney";
+import { displayedUnitPrice } from "@/lib/platform-fees";
 import { type CartItem, useCartStore } from "@/stores";
 
 interface CheckoutItemRowProps {
@@ -92,7 +93,7 @@ export function CheckoutItemRow({ item, onEdit }: CheckoutItemRowProps) {
 				</div>
 				<div className="flex min-w-18 flex-col items-end gap-2">
 					<span className="whitespace-nowrap font-semibold text-sm">
-						{formatMoney((item.priceCents * item.quantity) / 100)}
+						{formatMoney((displayedUnitPrice(item.priceCents, item.productFees) * item.quantity) / 100)}
 					</span>
 					<div className="flex items-center overflow-hidden rounded-md border border-border bg-muted/30">
 						<Button

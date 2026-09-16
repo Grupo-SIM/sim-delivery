@@ -56,7 +56,26 @@ possui **N unidades** (lojas físicas). Detalhes em
 - O recibo pode destacar o número do pedido em uma faixa preta, usar divisores contínuos
   ou tracejados e exibir, quando disponíveis, previsão, indicador de primeiro pedido, CPF,
   valor pago online e saldo a cobrar. Cashback, fidelidade, descontos e entrega permanecem
-  linhas financeiras independentes; taxas adicionais ficam fora do escopo até serem modeladas.
+  linhas financeiras independentes. Taxas da plataforma não embutidas aparecem juntas no bloco
+  singleton `fees`; taxas embutidas aparecem somente nos preços visuais dos itens.
+
+## Taxas de plataforma sobre compras
+
+- Somente `superAdmin` cria, edita, ativa ou exclui taxas globais e administra exceções por empresa.
+- Toda empresa herda taxas globais ativas. Exceção empresarial pode sobrescrever valor ou desativar
+  a taxa; remover a exceção restaura herança. Exclusão global é lógica e não altera pedidos antigos.
+- Taxa `product` incide por unidade sobre preço comercial efetivo, incluindo promoção e opções.
+  Taxa `order` incide uma vez sobre subtotal comercial e aceita apenas exibição `checkout_only`.
+- Valor fixo usa centavos; percentual usa basis points e arredonda por unidade. Taxas acumulam sem
+  incidência entre si e preservam preço e margem cadastrados pelo lojista.
+- Total: `max(0, subtotal − cupom − cashback − fidelidade) + frete + taxas`. Créditos nunca cobrem
+  frete ou taxas. Cashback e fidelidade futuros ignoram taxas.
+- `product_explicit` mostra base e taxa no produto; `embedded` mostra preço visual acrescido sem
+  expor linha de taxa; `checkout_only` mantém catálogo base e detalha todas as taxas não embutidas
+  no checkout.
+- Pedido mantém subtotal e itens comerciais separados, grava snapshots completos das taxas e exclui
+  taxas de receita, margem e recompensas empresariais. Reembolso atribui parcela comercial de modo
+  proporcional ao total pago.
 
 ## Índice
 

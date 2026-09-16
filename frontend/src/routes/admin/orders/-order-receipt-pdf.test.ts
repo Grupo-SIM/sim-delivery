@@ -31,6 +31,7 @@ const labels: OrderReceiptLabels = {
 	delivery: "ENTREGA",
 	deliveryFee: "Entrega",
 	discount: "Descontos",
+	fees: "Taxas",
 	estimatedDelivery: "Entrega prevista",
 	firstOrder: "Primeiro pedido!",
 	loyalty: "Fidelidade",
@@ -93,12 +94,16 @@ const receipt: GetOrdersByOrderIdReceipt200 = {
 	deliveryFee: 500,
 	deliveryMethod: "delivery",
 	discountCents: 200,
+	feeTotalCents: 0,
+	fees: [],
 	displayNumber: 42,
 	estimatedDeliveryAt: new Date("2026-08-31T16:15:00.000Z"),
 	id: "ord_1",
 	isFirstOrder: true,
 	items: [
 		{
+			displayTotal: 3600,
+			displayUnitPrice: 1800,
 			id: "item_1",
 			note: "Sem cebola",
 			options: [

@@ -3,6 +3,7 @@ import { RefundPayment } from "@/modules/payments/useCases";
 import { calculatePlatformFees } from "@/modules/platformFees/calculateFees";
 import { listEffectiveFees } from "@/modules/platformFees/effectiveFees";
 import { AuthGuard, CompanyScopeGuard } from "@/modules/users/guards";
+import { DomainError } from "@/shared/errors";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
 import { orderEvents } from "@/shared/infra/OrderEvents";
 import { simpay } from "@/shared/infra/simpay";
@@ -30,6 +31,7 @@ import {
 	ListOrders,
 	UpdateOrderStatus,
 } from "../../useCases";
+import { OrderErrors } from "../../errors";
 
 const whatsApp = createWhatsAppProvider();
 const encoder = new TextEncoder();
@@ -99,16 +101,51 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 			)
 			.post(
 				"/fees/quote",
-				async ({ body, prisma }) => {
+				async ({ body, prisma }): Promise<QuoteOrderFeesReturn> => {
 					const company = await prisma.company.findUnique({ select: { id: true }, where: { slug: body.slug } });
 					if (!company) return { embeddedFeeTotalCents: 0, feeTotalCents: 0, fees: [], visibleFeeTotalCents: 0 };
-					const calculated = calculatePlatformFees(await listEffectiveFees(prisma, company.id), body.items);
+					const unit = await prisma.unit.findFirst({ select: { id: true }, where: { active: true, companyId: company.id, slug: body.unitSlug } });
+					if (!unit) return { embeddedFeeTotalCents: 0, feeTotalCents: 0, fees: [], visibleFeeTotalCents: 0 };
+					const associations = await prisma.unitProduct.findMany({
+						include: {
+							additionalOptions: true,
+							optionOverrides: true,
+							product: { include: { optionGroups: { include: { options: true } } } },
+						},
+						where: { id: { in: body.items.map(item => item.unitProductId) }, unitId: unit.id },
+					});
+					const resolvedItems = body.items.flatMap((item, index) => {
+						const association = associations.find(candidate => candidate.id === item.unitProductId);
+						if (!association) return [];
+						const overrides = new Map(association.optionOverrides.map(value => [value.optionId, value]));
+						let optionDelta = 0;
+						for (const group of association.product.optionGroups) {
+							const options = [
+								...group.options.map(option => ({ ...option, priceDeltaCents: overrides.get(option.id)?.priceDeltaCents ?? option.priceDeltaCents })),
+								...association.additionalOptions.filter(option => option.groupId === group.id),
+							];
+							const deltas = (item.options ?? []).flatMap(selection => {
+								const option = options.find(candidate => candidate.id === selection.optionId);
+								return option ? Array.from({ length: selection.quantity }, () => option.priceDeltaCents) : [];
+							});
+							if (group.priceRule === "highest") optionDelta += deltas.length ? Math.max(...deltas) : 0;
+							else if (group.priceRule === "average") optionDelta += deltas.length ? Math.round(deltas.reduce((sum, value) => sum + value, 0) / deltas.length) : 0;
+							else optionDelta += deltas.reduce((sum, value) => sum + value, 0);
+						}
+						return [{
+							key: String(index),
+							quantity: item.quantity,
+							unitPrice: (association.promotionalPriceCents ?? association.priceCentsOverride ?? association.product.basePriceCents) + optionDelta,
+						}];
+					});
+					if (resolvedItems.length !== body.items.length) throw new DomainError(OrderErrors.INVALID_ITEM);
+					const calculated = calculatePlatformFees(await listEffectiveFees(prisma, company.id), resolvedItems);
 					return {
 						embeddedFeeTotalCents: calculated.fees
 							.filter(fee => fee.displayMode === "embedded")
 							.reduce((sum, fee) => sum + fee.amountCents, 0),
 						feeTotalCents: calculated.feeTotalCents,
-						fees: calculated.fees,
+						fees: calculated.fees.map(({ value, ...fee }) => ({ ...fee, configuredValue: value })),
 						visibleFeeTotalCents: calculated.fees
 							.filter(fee => fee.displayMode !== "embedded")
 							.reduce((sum, fee) => sum + fee.amountCents, 0),

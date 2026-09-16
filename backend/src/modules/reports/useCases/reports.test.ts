@@ -10,7 +10,7 @@ import { GetRevenueSummary } from "./GetRevenueSummary";
 type Where = Record<string, unknown>;
 
 function makeRevenuePrisma(
-	rows: { companyId: string; createdAt: Date; status: string; total: number; unitId: string }[],
+	rows: { companyId: string; createdAt: Date; feeTotalCents?: number; status: string; total: number; unitId: string }[],
 	items: { costCents: number | null; netRevenueCents: number | null; total: number }[] = [],
 ) {
 	const calls: Where[] = [];
@@ -36,7 +36,10 @@ function makeRevenuePrisma(
 
 				return {
 					_count: { id: matched.length },
-					_sum: { total: matched.length > 0 ? matched.reduce((sum, row) => sum + row.total, 0) : null },
+					_sum: {
+						feeTotalCents: matched.length > 0 ? matched.reduce((sum, row) => sum + (row.feeTotalCents ?? 0), 0) : null,
+						total: matched.length > 0 ? matched.reduce((sum, row) => sum + row.total, 0) : null,
+					},
 				};
 			},
 		},
@@ -73,6 +76,16 @@ describe("GetRevenueSummary", () => {
 		const result = await new GetRevenueSummary(prisma).execute("cmp_1", {});
 
 		expect(result).toMatchObject({ averageOrderValue: 1000, orderCount: 1, totalRevenue: 1000 });
+	});
+
+	it("excludes platform fees from merchant revenue", async () => {
+		const { prisma } = makeRevenuePrisma([
+			{ companyId: "cmp_1", createdAt: now, feeTotalCents: 200, status: "entregue", total: 2200, unitId: "unit_1" },
+		]);
+
+		const result = await new GetRevenueSummary(prisma).execute("cmp_1", {});
+
+		expect(result).toMatchObject({ averageOrderValue: 2000, totalRevenue: 2000 });
 	});
 
 	it("returns zeroes when nothing matches", async () => {

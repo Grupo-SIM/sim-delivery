@@ -8,9 +8,10 @@ import type {
 	UpdatePlatformFeeBody,
 	UpsertCompanyFeeOverrideBody,
 } from "../dtos";
+import { PlatformFeeErrors } from "../errors";
 
-const INVALID_FEE = "INVALID_PLATFORM_FEE";
-const FEE_NOT_FOUND = "PLATFORM_FEE_NOT_FOUND";
+const INVALID_FEE = PlatformFeeErrors.INVALID_PLATFORM_FEE;
+const FEE_NOT_FOUND = PlatformFeeErrors.PLATFORM_FEE_NOT_FOUND;
 
 function normalizedName(name: string) {
 	return name.trim().replace(/\s+/g, " ");

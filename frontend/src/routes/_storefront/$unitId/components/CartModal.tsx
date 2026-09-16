@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Modal } from "@/components/ui/Modal";
 import { closeActiveModalHistory } from "@/hooks/use-modal-history";
-import { cartTotalCents, showToast, useCartStore } from "@/stores";
+import { cartDisplayTotalCents, showToast, useCartStore } from "@/stores";
 import { CartItemRow } from "./CartItemRow";
 import { CartSuggestions } from "./CartSuggestions";
 import { ProductDetailsModal } from "./ProductDetailsModal";
@@ -47,7 +47,7 @@ export function CartModal({
 		showToast(t("store.cart.clear"), "info");
 	}
 
-	const total = cartTotalCents(items);
+	const total = cartDisplayTotalCents(items);
 	const belowMin = minOrderCents > 0 && total < minOrderCents;
 
 	return (

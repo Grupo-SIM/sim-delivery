@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { ProductFee } from "@/lib/platform-fees";
+import { displayedUnitPrice } from "@/lib/platform-fees";
 
 export interface SelectedOption {
 	groupId: string;
@@ -22,6 +24,7 @@ export interface CartItem {
 	/** Total price in cents including option deltas (base + Σ deltas*qty). */
 	priceCents: number;
 	productId: string;
+	productFees?: ProductFee[];
 	quantity: number;
 	title: string;
 }
@@ -129,4 +132,11 @@ export function cartCount(items: CartItem[]) {
 /** Cart subtotal in cents. */
 export function cartTotalCents(items: CartItem[]) {
 	return items.reduce((sum, line) => sum + line.priceCents * line.quantity, 0);
+}
+
+export function cartDisplayTotalCents(items: CartItem[]) {
+	return items.reduce(
+		(sum, line) => sum + displayedUnitPrice(line.priceCents, line.productFees) * line.quantity,
+		0,
+	);
 }

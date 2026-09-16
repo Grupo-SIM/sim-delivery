@@ -48,10 +48,14 @@ export const AdminOrderReturn = t.Object({
 	deliveryMethod: t.String(),
 	displayNumber: t.Integer(),
 	discountCents: t.Integer(),
+	feeTotalCents: t.Integer(),
+	fees: t.Array(OrderFeeReturn),
 	estimatedStatusCompletionAt: __nullable__(t.Date()),
 	id: t.String(),
 	items: t.Array(
 		t.Object({
+			displayTotal: t.Integer(),
+			displayUnitPrice: t.Integer(),
 			id: t.String(),
 			imageUrl: __nullable__(t.String()),
 			note: __nullable__(t.String()),

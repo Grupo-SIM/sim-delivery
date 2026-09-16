@@ -560,6 +560,7 @@
 					"errorTitle": "Falha ao imprimir",
 					"estimatedDelivery": "Entrega prevista",
 					"firstOrder": "Primeiro pedido!",
+					"fees": "Taxas",
 					"loyalty": "Fidelidade",
 					"note": "OBSERVAÇÃO",
 					"order": "PEDIDO",
@@ -904,6 +905,10 @@
 					"firstOrder": {
 						"description": "Aviso exibido somente na primeira compra",
 						"label": "Indicador de primeiro pedido"
+					},
+					"fees": {
+						"description": "Taxas não embutidas cobradas no pedido",
+						"label": "Taxas da plataforma"
 					},
 					"items": {
 						"description": "Produtos, adicionais e observações",
@@ -1842,6 +1847,8 @@
 					"freightCalculating": "Calculando frete…",
 					"freightError": "Não foi possível calcular o frete para este endereço.",
 					"freightEta": "Previsão de entrega: {{min}}–{{max}} min",
+					"feesError": "Não foi possível calcular as taxas. Tente novamente.",
+					"feesTotal": "Total de taxas",
 					"itemNotePlaceholder": "Ex: sem cebola, molho à parte",
 					"itemsSubtotal": "Subtotal dos itens",
 					"loyalty": "Pontos de fidelidade",

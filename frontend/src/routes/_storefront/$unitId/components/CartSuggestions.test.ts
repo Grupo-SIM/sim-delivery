@@ -13,6 +13,7 @@ function makeItem(id: string, cashbackPercent: number | null = null): MenuItem {
 		optionGroups: [],
 		popularity: 0,
 		priceCents: 1000,
+		productFees: [],
 		productId: `product-${id}`,
 		productSlug: id,
 		ratingAverage: null,

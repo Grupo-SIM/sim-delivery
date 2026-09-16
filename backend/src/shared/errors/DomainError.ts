@@ -11,6 +11,7 @@ import { InventoryErrors, InventoryErrorsStatusCodes } from "@/modules/inventory
 import { LoyaltyErrors, LoyaltyErrorsStatusCodes } from "@/modules/loyalty/errors";
 import { OrderErrors, OrderErrorsStatusCodes } from "@/modules/orders/errors";
 import { PaymentErrors, PaymentErrorsStatusCodes } from "@/modules/payments/errors";
+import { PlatformFeeErrors, PlatformFeeErrorsStatusCodes } from "@/modules/platformFees/errors";
 import { ProductReviewErrors, ProductReviewErrorsStatusCodes } from "@/modules/productReviews/errors";
 import { ProductErrors, ProductErrorsStatusCodes } from "@/modules/products/errors";
 import {
@@ -46,6 +47,7 @@ export const DomainErrors = {
 	...ProductReviewErrors,
 	...CepErrors,
 	...InventoryErrors,
+	...PlatformFeeErrors,
 } as const;
 export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCodes> = {
 	...DeliveryErrorsStatusCodes,
@@ -69,6 +71,7 @@ export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCo
 	...ProductReviewErrorsStatusCodes,
 	...CepErrorsStatusCodes,
 	...InventoryErrorsStatusCodes,
+	...PlatformFeeErrorsStatusCodes,
 };
 
 export class DomainError extends Error {

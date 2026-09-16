@@ -21,6 +21,7 @@ export const defaultReceiptTemplate: ReceiptTemplate = {
 		{ id: "discount", type: "discount" },
 		{ id: "cashback", type: "cashback" },
 		{ id: "loyalty", type: "loyalty" },
+		{ id: "fees", type: "fees" },
 		{ id: "total", type: "total" },
 		{ id: "separator-5", type: "separator" },
 		{ id: "prepared-by", type: "preparedBy" },

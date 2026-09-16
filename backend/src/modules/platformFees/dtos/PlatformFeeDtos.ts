@@ -36,11 +36,11 @@ export type UpsertCompanyFeeOverrideBody = typeof UpsertCompanyFeeOverrideBody.s
 
 export const PlatformFeeReturn = t.Object({
 	active: t.Boolean(),
-	applicationScope: FeeApplicationScope,
-	calculationType: FeeCalculationType,
+	applicationScope: t.String(),
+	calculationType: t.String(),
 	companyOverrideCount: t.Integer(),
 	createdAt: t.Date(),
-	displayMode: FeeDisplayMode,
+	displayMode: t.String(),
 	id: t.String(),
 	name: t.String(),
 	updatedAt: t.Date(),
@@ -48,6 +48,7 @@ export const PlatformFeeReturn = t.Object({
 });
 export type PlatformFeeReturn = typeof PlatformFeeReturn.static;
 export const PlatformFeeListReturn = t.Array(PlatformFeeReturn);
+export type PlatformFeeListReturn = typeof PlatformFeeListReturn.static;
 
 export const CompanyFeeOverrideReturn = t.Object({
 	active: t.Boolean(),
@@ -59,14 +60,16 @@ export const CompanyFeeOverrideReturn = t.Object({
 });
 export type CompanyFeeOverrideReturn = typeof CompanyFeeOverrideReturn.static;
 export const CompanyFeeOverrideListReturn = t.Array(CompanyFeeOverrideReturn);
+export type CompanyFeeOverrideListReturn = typeof CompanyFeeOverrideListReturn.static;
 
 export const EffectiveFeeReturn = t.Object({
-	applicationScope: FeeApplicationScope,
-	calculationType: FeeCalculationType,
-	displayMode: FeeDisplayMode,
+	applicationScope: t.String(),
+	calculationType: t.String(),
+	displayMode: t.String(),
 	id: t.String(),
 	name: t.String(),
 	value: t.Integer(),
 });
 export type EffectiveFeeReturn = typeof EffectiveFeeReturn.static;
 export const EffectiveFeeListReturn = t.Array(EffectiveFeeReturn);
+export type EffectiveFeeListReturn = typeof EffectiveFeeListReturn.static;

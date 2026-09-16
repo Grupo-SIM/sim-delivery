@@ -167,6 +167,9 @@ function CheckoutPage() {
 
 	function handlePlaceOrder() {
 		if (!activeCustomer || !savedAddress || cartItems.length === 0) return;
+		const subtotalAfterCoupon = Math.max(0, cartTotalCents(cartItems) - Number(appliedCoupon?.discountCents ?? 0));
+		const appliedCashbackCents = Math.min(cashbackRedeemCents, subtotalAfterCoupon);
+		const appliedLoyaltyPoints = Math.min(loyaltyRedeemPoints, subtotalAfterCoupon - appliedCashbackCents);
 		placeOrder(
 			{
 				data: {
@@ -183,8 +186,8 @@ function CheckoutPage() {
 						quantity: item.quantity,
 						unitProductId: item.id,
 					})),
-					redeemCashbackCents: cashbackRedeemCents > 0 ? cashbackRedeemCents : undefined,
-					redeemLoyaltyPoints: loyaltyRedeemPoints > 0 ? loyaltyRedeemPoints : undefined,
+					redeemCashbackCents: appliedCashbackCents > 0 ? appliedCashbackCents : undefined,
+					redeemLoyaltyPoints: appliedLoyaltyPoints > 0 ? appliedLoyaltyPoints : undefined,
 					slug: slug ?? "",
 					unitSlug,
 				},
@@ -296,6 +299,7 @@ function CheckoutPage() {
 						subtotal={cartTotalCents(cartItems)}
 						unitDeliveryFee={Number(unit?.deliveryFee ?? 0)}
 						unitId={unitId}
+						unitSlug={unitSlug}
 					/>
 				</>
 			)}

@@ -14,6 +14,7 @@ interface MetricsOrder {
 	customerId: string;
 	deliveryMethod: string;
 	discountCents: number;
+	feeTotalCents: number;
 	cashbackCentsRedeemed: number;
 	loyaltyPointsRedeemed: number;
 	items: { costCents: number | null; netRevenueCents: number | null; total: number }[];
@@ -116,7 +117,7 @@ export class GetBusinessMetrics {
 			if (globalFirst && periodFirst && globalFirst.getTime() === periodFirst.getTime()) newCustomers += 1;
 		}
 		const returningCustomers = customerIds.length - newCustomers;
-		const totalRevenue = completed.reduce((sum, order) => sum + order.total, 0);
+		const totalRevenue = completed.reduce((sum, order) => sum + order.total - (order.feeTotalCents ?? 0), 0);
 
 		return {
 			newCustomers,
@@ -142,7 +143,7 @@ export class GetBusinessMetrics {
 			discountCents += order.discountCents;
 			cashbackRedeemedCents += order.cashbackCentsRedeemed;
 			loyaltyPointsRedeemed += order.loyaltyPointsRedeemed;
-			grossRevenueCents += order.total + order.discountCents + order.cashbackCentsRedeemed;
+			grossRevenueCents += order.total - (order.feeTotalCents ?? 0) + order.discountCents + order.cashbackCentsRedeemed;
 			if (order.couponId && order.coupon) {
 				couponOrderCount += 1;
 				const row = byCoupon.get(order.couponId) ?? {
@@ -154,7 +155,7 @@ export class GetBusinessMetrics {
 				};
 				row.orderCount += 1;
 				row.discountCents += order.discountCents;
-				row.revenueCents += order.total;
+				row.revenueCents += order.total - (order.feeTotalCents ?? 0);
 				byCoupon.set(order.couponId, row);
 			}
 		}
@@ -192,13 +193,13 @@ export class GetBusinessMetrics {
 			const hourKey = String(order.createdAt.getHours());
 			const hourRow = byHour.get(hourKey) ?? { orderCount: 0, revenueCents: 0 };
 			hourRow.orderCount += 1;
-			hourRow.revenueCents += order.total;
+			hourRow.revenueCents += order.total - (order.feeTotalCents ?? 0);
 			byHour.set(hourKey, hourRow);
 
 			const weekdayKey = String((order.createdAt.getDay() + 6) % 7);
 			const weekdayRow = byWeekday.get(weekdayKey) ?? { orderCount: 0, revenueCents: 0 };
 			weekdayRow.orderCount += 1;
-			weekdayRow.revenueCents += order.total;
+			weekdayRow.revenueCents += order.total - (order.feeTotalCents ?? 0);
 			byWeekday.set(weekdayKey, weekdayRow);
 		}
 
@@ -251,7 +252,7 @@ export class GetBusinessMetrics {
 				unitName: order.unit.name,
 			};
 			row.orderCount += 1;
-			row.netRevenueCents += order.total;
+			row.netRevenueCents += order.total - (order.feeTotalCents ?? 0);
 			for (const item of order.items) {
 				if (item.costCents === null) continue;
 				row.knownCostCents += item.costCents;

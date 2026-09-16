@@ -21,6 +21,7 @@ export const ReceiptBlockType = t.Union([
 	t.Literal("discount"),
 	t.Literal("cashback"),
 	t.Literal("loyalty"),
+	t.Literal("fees"),
 	t.Literal("total"),
 	t.Literal("preparedBy"),
 	t.Literal("separator"),

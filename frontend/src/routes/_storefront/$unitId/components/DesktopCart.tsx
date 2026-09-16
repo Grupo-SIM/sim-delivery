@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/ScrollArea";
-import { cartCount, cartTotalCents, useCartStore, useDeliveryMethodStore } from "@/stores";
+import { cartCount, cartDisplayTotalCents, useCartStore, useDeliveryMethodStore } from "@/stores";
 import { DesktopCartItem } from "./DesktopCartItem";
 import { money } from "./types";
 
@@ -20,7 +20,7 @@ export function DesktopCart({ deliveryFee, minOrderCents, unitId, unitSlug }: De
 	const items = useCartStore(state => state.items);
 	const storedMethod = useDeliveryMethodStore(state => state.methods[unitId]);
 	const count = cartCount(items);
-	const total = cartTotalCents(items);
+	const total = cartDisplayTotalCents(items);
 	const isDelivery = storedMethod !== "pickup";
 	const belowMin = isDelivery && minOrderCents > 0 && total < minOrderCents;
 	const isCurrentUnit = cartUnitId === unitId;

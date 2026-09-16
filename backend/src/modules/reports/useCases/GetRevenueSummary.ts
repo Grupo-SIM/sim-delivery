@@ -18,7 +18,7 @@ export class GetRevenueSummary {
 
 		const agg = await this.prisma.order.aggregate({
 			_count: { id: true },
-			_sum: { total: true },
+			_sum: { feeTotalCents: true, total: true },
 			where: {
 				...(companyId ? { companyId } : {}),
 				status: { in: COMPLETED },
@@ -30,7 +30,7 @@ export class GetRevenueSummary {
 		});
 
 		const orderCount = agg._count.id;
-		const totalRevenue = agg._sum.total ?? 0;
+		const totalRevenue = (agg._sum.total ?? 0) - (agg._sum.feeTotalCents ?? 0);
 		const averageOrderValue = orderCount > 0 ? Math.round(totalRevenue / orderCount) : 0;
 		const items = await this.prisma.orderItem.findMany({
 			select: { costCents: true, netRevenueCents: true, total: true },

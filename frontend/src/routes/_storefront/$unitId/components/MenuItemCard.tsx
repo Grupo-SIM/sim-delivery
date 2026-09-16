@@ -3,6 +3,7 @@ import { LuImageOff, LuPlus } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { StarRating } from "@/components/ui/StarRating";
+import { displayedUnitPrice, feeUnitAmount, normalizeProductFees } from "@/lib/platform-fees";
 import { hasPriceVariation } from "./product-options";
 import { type MenuItem, money } from "./types";
 
@@ -15,7 +16,9 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 	const { t } = useTranslation();
 	const showFromPrice = hasPriceVariation(item.optionGroups);
 
-	const displayPrice = money.format(Number(item.fromPriceCents) / 100);
+	const displayPriceCents = displayedUnitPrice(Number(item.fromPriceCents), item.productFees);
+	const productFees = normalizeProductFees(item.productFees);
+	const displayPrice = money.format(displayPriceCents / 100);
 	const isPromotional = Number(item.priceCents) < Number(item.regularPriceCents);
 
 	return (
@@ -75,6 +78,13 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 							<span className="block text-[11px] text-muted-foreground">{t("store.product.from")}</span>
 						)}
 						<span className="font-bold text-lg">{displayPrice}</span>
+						{productFees
+							.filter(fee => fee.displayMode === "product_explicit")
+							.map(fee => (
+								<span className="block text-muted-foreground text-xs" key={fee.id}>
+									+ {fee.name}: {money.format(feeUnitAmount(Number(item.fromPriceCents), fee) / 100)}
+								</span>
+							))}
 						{isPromotional && (
 							<Badge className="ml-2 border-success/30 bg-success/10 text-success">Oferta</Badge>
 						)}

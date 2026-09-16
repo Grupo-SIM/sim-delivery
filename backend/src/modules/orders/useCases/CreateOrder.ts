@@ -418,16 +418,16 @@ export class CreateOrder {
 
 			return {
 				...order,
-				fees: order.feeSnapshots,
+				fees: order.feeSnapshots ?? [],
 				items: order.items.map(item => {
-					const embeddedFeeCents = item.feeSnapshots
-						.filter(fee => order.feeSnapshots.find(snapshot => snapshot.id === fee.orderFeeSnapshotId)?.displayMode === "embedded")
+					const embeddedFeeCents = (item.feeSnapshots ?? [])
+						.filter(fee => (order.feeSnapshots ?? []).find(snapshot => snapshot.id === fee.orderFeeSnapshotId)?.displayMode === "embedded")
 						.reduce((sum, fee) => sum + fee.amountCents, 0);
 					return {
 						...item,
 						displayTotal: item.total + embeddedFeeCents,
 						displayUnitPrice: item.unitPrice + Math.round(embeddedFeeCents / item.quantity),
-						fees: item.feeSnapshots,
+						fees: item.feeSnapshots ?? [],
 						options: item.optionSnapshots,
 					};
 				}),
@@ -452,16 +452,16 @@ export class CreateOrder {
 
 		return {
 			...order,
-			fees: order.feeSnapshots,
+			fees: order.feeSnapshots ?? [],
 			items: order.items.map(item => {
-				const embeddedFeeCents = item.feeSnapshots
-					.filter(fee => order.feeSnapshots.find(snapshot => snapshot.id === fee.orderFeeSnapshotId)?.displayMode === "embedded")
+				const embeddedFeeCents = (item.feeSnapshots ?? [])
+					.filter(fee => (order.feeSnapshots ?? []).find(snapshot => snapshot.id === fee.orderFeeSnapshotId)?.displayMode === "embedded")
 					.reduce((sum, fee) => sum + fee.amountCents, 0);
 				return {
 					...item,
 					displayTotal: item.total + embeddedFeeCents,
 					displayUnitPrice: item.unitPrice + Math.round(embeddedFeeCents / item.quantity),
-					fees: item.feeSnapshots,
+					fees: item.feeSnapshots ?? [],
 					options: item.optionSnapshots,
 				};
 			}),

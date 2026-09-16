@@ -34,6 +34,7 @@ interface OrderRow {
 	cashbackPercent: number;
 	customerId: string;
 	displayNumber: number;
+	feeTotalCents?: number;
 	id: string;
 	loyaltyPointsRate: number;
 	status?: string;
@@ -659,6 +660,18 @@ describe("ConfirmPayment", () => {
 
 		expect(cashbackLedger[0]).toMatchObject({ amount: 69 });
 		expect(loyaltyLedger[0]).toMatchObject({ amount: 29 });
+	});
+
+	it("does not award cashback or loyalty over platform fees", async () => {
+		const { cashbackLedger, loyaltyLedger, prisma } = makeWorld({
+			orders: [{ ...baseOrder, feeTotalCents: 1000, total: 6000 }],
+			payments: [{ amount: 6000, id: "pay_1", method: "pix", orderId: "order_1", pixContent: "c", pixQrcode: "q", simpayPaymentId: "simpay_1", status: "pending", token: "token_1" }],
+		});
+
+		await new ConfirmPayment(prisma).execute("token_1");
+
+		expect(cashbackLedger[0]).toMatchObject({ amount: 500 });
+		expect(loyaltyLedger[0]).toMatchObject({ amount: 250 });
 	});
 
 	it("skips the ledgers when the unit grants no rewards", async () => {

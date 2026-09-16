@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { type PostCustomersMe200, postPublicCouponsValidate, usePostPublicFreightSimulate } from "@/lib/api";
+import {
+	type PostCustomersMe200,
+	postPublicCouponsValidate,
+	usePostOrdersFeesQuote,
+	usePostPublicFreightSimulate,
+} from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
 import type { AppliedCoupon, CartItem } from "@/stores";
 import { CheckoutItemRow } from "./CheckoutItemRow";
@@ -34,6 +39,7 @@ interface OrderReviewProps {
 	subtotal: number;
 	unitDeliveryFee: number;
 	unitId: string;
+	unitSlug: string;
 	slug: string;
 }
 
@@ -59,6 +65,7 @@ export function OrderReview({
 	subtotal,
 	unitDeliveryFee,
 	unitId,
+	unitSlug,
 	slug,
 }: OrderReviewProps) {
 	const { t } = useTranslation();
@@ -71,6 +78,27 @@ export function OrderReview({
 		isPending: isSimulatingFreight,
 		mutate: simulateFreight,
 	} = usePostPublicFreightSimulate();
+	const {
+		data: feeQuote,
+		error: feeQuoteError,
+		isPending: isQuotingFees,
+		mutate: quoteFees,
+	} = usePostOrdersFeesQuote();
+
+	useEffect(() => {
+		if (items.length === 0 || !slug) return;
+		quoteFees({
+			data: {
+				items: items.map(item => ({
+					options: item.options.map(option => ({ optionId: option.optionId, quantity: option.quantity })),
+					quantity: item.quantity,
+					unitProductId: item.id,
+				})),
+				slug,
+				unitSlug,
+			},
+		});
+	}, [items, quoteFees, slug, unitSlug]);
 
 	useEffect(() => {
 		if (deliveryMethod !== "delivery" || address?.latitude == null || address?.longitude == null) return;
@@ -87,10 +115,13 @@ export function OrderReview({
 	const blockedByFreight =
 		deliveryMethod === "delivery" && hasCoordinates && (isSimulatingFreight || !!freightError);
 	const discountCents = Number(appliedCoupon?.discountCents ?? 0);
-	const total = Math.max(
-		0,
-		subtotal + deliveryFee - discountCents - cashbackRedeemCents - loyaltyRedeemPoints,
-	);
+	const feeTotalCents = Number(feeQuote?.feeTotalCents ?? 0);
+	const embeddedFeeTotalCents = Number(feeQuote?.embeddedFeeTotalCents ?? 0);
+	const subtotalAfterCoupon = Math.max(0, subtotal - discountCents);
+	const appliedCashbackCents = Math.min(cashbackRedeemCents, subtotalAfterCoupon);
+	const appliedLoyaltyPoints = Math.min(loyaltyRedeemPoints, subtotalAfterCoupon - appliedCashbackCents);
+	const remainingSubtotal = subtotalAfterCoupon - appliedCashbackCents - appliedLoyaltyPoints;
+	const total = remainingSubtotal + deliveryFee + feeTotalCents;
 
 	async function handleApplyCoupon() {
 		if (!couponInput.trim()) return;
@@ -239,7 +270,7 @@ export function OrderReview({
 						{t("store.checkout.order.cashbackBalance", { amount: formatMoney(cashbackBalanceCents / 100) })}
 					</span>
 					<Button
-						onClick={() => onChangeCashbackRedeem(cashbackRedeemCents > 0 ? 0 : cashbackBalanceCents)}
+						onClick={() => onChangeCashbackRedeem(cashbackRedeemCents > 0 ? 0 : Math.min(cashbackBalanceCents, subtotalAfterCoupon))}
 						size="sm"
 						type="button"
 						variant={cashbackRedeemCents > 0 ? "default" : "outline"}
@@ -260,7 +291,7 @@ export function OrderReview({
 						})}
 					</span>
 					<Button
-						onClick={() => onChangeLoyaltyRedeem(loyaltyRedeemPoints > 0 ? 0 : loyaltyBalancePoints)}
+						onClick={() => onChangeLoyaltyRedeem(loyaltyRedeemPoints > 0 ? 0 : Math.min(loyaltyBalancePoints, subtotalAfterCoupon - appliedCashbackCents))}
 						size="sm"
 						type="button"
 						variant={loyaltyRedeemPoints > 0 ? "default" : "outline"}
@@ -273,10 +304,25 @@ export function OrderReview({
 			)}
 
 			<section className="space-y-2 border-border border-t pt-4 text-sm">
+				{feeQuoteError && <p className="text-destructive">{t("store.checkout.order.feesError")}</p>}
 				<div className="flex justify-between">
 					<span className="text-muted-foreground">{t("store.checkout.order.itemsSubtotal")}</span>
-					<span>{formatMoney(subtotal / 100)}</span>
+					<span>{formatMoney((subtotal + embeddedFeeTotalCents) / 100)}</span>
 				</div>
+				{feeQuote?.fees
+					.filter(fee => fee.displayMode !== "embedded")
+					.map(fee => (
+						<div className="flex justify-between" key={fee.id}>
+							<span className="text-muted-foreground">{fee.name}</span>
+							<span>+{formatMoney(Number(fee.amountCents) / 100)}</span>
+						</div>
+					))}
+				{Number(feeQuote?.visibleFeeTotalCents ?? 0) > 0 && (
+					<div className="flex justify-between font-medium">
+						<span>{t("store.checkout.order.feesTotal")}</span>
+						<span>{formatMoney(Number(feeQuote?.visibleFeeTotalCents ?? 0) / 100)}</span>
+					</div>
+				)}
 				{deliveryMethod === "delivery" && (
 					<div className="flex justify-between">
 						<span className="text-muted-foreground">{t("store.cart.deliveryFee")}</span>
@@ -293,16 +339,16 @@ export function OrderReview({
 						<span>−{formatMoney(discountCents / 100)}</span>
 					</div>
 				)}
-				{cashbackRedeemCents > 0 && (
+				{appliedCashbackCents > 0 && (
 					<div className="flex justify-between text-success">
 						<span>{t("store.checkout.order.cashbackRedeemed")}</span>
-						<span>−{formatMoney(cashbackRedeemCents / 100)}</span>
+						<span>−{formatMoney(appliedCashbackCents / 100)}</span>
 					</div>
 				)}
-				{loyaltyRedeemPoints > 0 && (
+				{appliedLoyaltyPoints > 0 && (
 					<div className="flex justify-between text-success">
 						<span>{t("store.checkout.order.loyaltyRedeemed")}</span>
-						<span>−{formatMoney(loyaltyRedeemPoints / 100)}</span>
+						<span>−{formatMoney(appliedLoyaltyPoints / 100)}</span>
 					</div>
 				)}
 				<div className="flex justify-between border-border border-t pt-3 font-bold text-base">
@@ -313,7 +359,7 @@ export function OrderReview({
 
 			<Button
 				className="w-full"
-				disabled={isPending || blockedByFreight || !address}
+				disabled={isPending || isQuotingFees || !!feeQuoteError || !feeQuote || blockedByFreight || !address}
 				onClick={onSubmit}
 				type="button"
 			>

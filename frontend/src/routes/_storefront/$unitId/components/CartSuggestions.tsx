@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/ScrollArea";
+import { normalizeProductFees } from "@/lib/platform-fees";
 import { showToast, useCartStore } from "@/stores";
 import { type MenuItem, type MenuSection, money } from "./types";
 
@@ -51,6 +52,7 @@ export function CartSuggestions({ onSelect, sections, unitId }: CartSuggestionsP
 			imageUrl: item.imageUrl,
 			options: [],
 			priceCents: Number(item.priceCents),
+			productFees: normalizeProductFees(item.productFees),
 			productId: item.productId,
 			title: item.title,
 		});

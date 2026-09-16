@@ -20,7 +20,8 @@ export class GetOrderReceipt {
 				address: true,
 				company: { select: { receiptTemplate: true } },
 				customer: { include: { user: { select: { name: true, phoneNumber: true } } } },
-				items: { include: { optionSnapshots: true } },
+				feeSnapshots: { include: { itemFees: true } },
+				items: { include: { feeSnapshots: true, optionSnapshots: true } },
 				payment: { select: { amount: true, method: true, refundedAmount: true, status: true } },
 				preparedBy: { select: { id: true, name: true } },
 				unit: { select: { id: true, name: true } },
@@ -65,11 +66,24 @@ export class GetOrderReceipt {
 			deliveryFee: order.deliveryFee,
 			deliveryMethod: order.deliveryMethod,
 			discountCents: order.discountCents,
+			feeTotalCents: order.feeTotalCents,
+			fees: order.feeSnapshots.map(fee => ({
+				amountCents: fee.amountCents,
+				displayMode: fee.displayMode,
+				id: fee.id,
+				name: fee.name,
+			})),
 			displayNumber: order.displayNumber,
 			estimatedDeliveryAt: order.estimatedStatusCompletionAt,
 			id: order.id,
 			isFirstOrder: previousOrders === 0,
-			items: order.items.map(item => ({
+			items: order.items.map(item => {
+				const embeddedFeeCents = item.feeSnapshots
+					.filter(itemFee => order.feeSnapshots.find(fee => fee.id === itemFee.orderFeeSnapshotId)?.displayMode === "embedded")
+					.reduce((sum, itemFee) => sum + itemFee.amountCents, 0);
+				return {
+				displayTotal: item.total + embeddedFeeCents,
+				displayUnitPrice: item.unitPrice + Math.round(embeddedFeeCents / item.quantity),
 				id: item.id,
 				note: item.note,
 				options: item.optionSnapshots.map(option => ({
@@ -82,7 +96,8 @@ export class GetOrderReceipt {
 				quantity: item.quantity,
 				total: item.total,
 				unitPrice: item.unitPrice,
-			})),
+			};
+			}),
 			loyaltyPointsRedeemed: order.loyaltyPointsRedeemed,
 			payment: order.payment,
 			preparedBy: order.preparedBy,

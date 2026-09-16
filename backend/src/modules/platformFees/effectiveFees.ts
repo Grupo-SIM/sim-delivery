@@ -5,6 +5,8 @@ export async function listEffectiveFees(
 	prisma: PrismaInstance,
 	companyId: string,
 ): Promise<EffectiveFeeReturn[]> {
+	// Keeps lightweight test/local adapters compatible; production Prisma always exposes this model.
+	if (!prisma.platformFee) return [];
 	const fees = await prisma.platformFee.findMany({
 		include: { companyOverrides: { where: { companyId } } },
 		orderBy: { createdAt: "asc" },

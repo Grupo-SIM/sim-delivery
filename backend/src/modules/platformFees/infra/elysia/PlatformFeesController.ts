@@ -17,7 +17,11 @@ import { PlatformFees } from "../../useCases";
 async function requireSuperAdmin(request: Request, prisma: PrismaInstance) {
 	const auth = await AuthGuard.execute(request.headers);
 	const user = await prisma.user.findUnique({ select: { role: true }, where: { id: auth.userId } });
-	if (user?.role !== "superAdmin") throw new DomainError(UserErrors.FORBIDDEN);
+	requireSuperAdminRole(user?.role);
+}
+
+export function requireSuperAdminRole(role: string | undefined) {
+	if (role !== "superAdmin") throw new DomainError(UserErrors.FORBIDDEN);
 }
 
 export const PlatformFeesController = new Elysia({ detail: { tags: ["Platform Fees"] } })

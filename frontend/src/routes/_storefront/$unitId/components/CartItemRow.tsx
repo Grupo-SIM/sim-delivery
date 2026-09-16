@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { displayedUnitPrice } from "@/lib/platform-fees";
 import { type CartItem, useCartStore } from "@/stores";
 import { money } from "./types";
 
@@ -36,7 +37,7 @@ export function CartItemRow({ item, onEdit }: CartItemRowProps) {
 				<div className="flex items-start justify-between gap-2">
 					<p className="truncate font-medium">{item.title}</p>
 					<span className="shrink-0 font-semibold text-sm">
-						{money.format((item.priceCents * item.quantity) / 100)}
+						{money.format((displayedUnitPrice(item.priceCents, item.productFees) * item.quantity) / 100)}
 					</span>
 				</div>
 

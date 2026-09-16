@@ -18,9 +18,10 @@ const baseUnitProduct = { id: "up_1", priceCentsOverride: null, product: basePro
 
 function makeOrderPrisma(
 	opts: {
-		company?: typeof baseCompany | null;
 		address?: typeof baseAddress | null;
+		company?: typeof baseCompany | null;
 		customer?: typeof baseCustomer | null;
+		platformFees?: Array<Record<string, unknown> & { id: string }>;
 		unit?: typeof baseUnit | null;
 		unitProducts?: (typeof baseUnitProduct)[];
 	} = {},
@@ -29,6 +30,7 @@ function makeOrderPrisma(
 		address = baseAddress,
 		company = baseCompany,
 		customer = baseCustomer,
+		platformFees = [],
 		unit = baseUnit,
 		unitProducts = [baseUnitProduct],
 	} = opts;
@@ -36,6 +38,15 @@ function makeOrderPrisma(
 	const orders: object[] = [];
 	const orderItems: object[] = [];
 	const orderItemOptions: object[] = [];
+	const orderFeeSnapshots: Array<Record<string, unknown> & { id: string }> = [];
+	const orderItemFeeSnapshots: Array<Record<string, unknown>> = [];
+	const itemsWithFees = () =>
+		orderItems.map(item => ({
+			...item,
+			feeSnapshots: orderItemFeeSnapshots.filter(
+				fee => fee.orderItemId === (item as { id: string }).id,
+			),
+		}));
 
 	const prisma = {
 		$transaction: async (fn: (tx: unknown) => Promise<unknown>) => {
@@ -43,8 +54,8 @@ function makeOrderPrisma(
 				inventoryReservation: { createMany: async () => ({ count: 0 }) },
 				localOptionRecipeIngredient: { findMany: async () => [] },
 				optionRecipeIngredient: { findMany: async () => [] },
-		order: {
-			create: async ({ data }: { data: object }) => {
+				order: {
+					create: async ({ data }: { data: object }) => {
 						const o = {
 							cancelReason: null,
 							createdAt: new Date(),
@@ -56,7 +67,24 @@ function makeOrderPrisma(
 						orders.push(o);
 						return o;
 					},
-					findUniqueOrThrow: async () => ({ ...(orders[0] as object), items: orderItems }),
+					findUniqueOrThrow: async () => ({
+						...(orders[0] as object),
+						feeSnapshots: orderFeeSnapshots,
+						items: itemsWithFees(),
+					}),
+				},
+				orderFeeSnapshot: {
+					create: async ({ data }: { data: Record<string, unknown> }) => {
+						const snapshot = { ...data, id: `ofs_${orderFeeSnapshots.length + 1}` };
+						orderFeeSnapshots.push(snapshot);
+						return snapshot;
+					},
+				},
+				orderItemFeeSnapshot: {
+					createMany: async ({ data }: { data: Array<Record<string, unknown>> }) => {
+						orderItemFeeSnapshots.push(...data);
+						return { count: data.length };
+					},
 				},
 				orderItem: {
 					create: async ({ data }: { data: object }) => {
@@ -110,9 +138,12 @@ function makeOrderPrisma(
 						(candidate as { customerId?: string }).customerId === where.customerId &&
 						(candidate as { idempotencyKey?: string }).idempotencyKey === where.idempotencyKey,
 				);
-				return order ? { ...(order as object), items: orderItems } : null;
+				return order
+					? { ...(order as object), feeSnapshots: orderFeeSnapshots, items: itemsWithFees() }
+					: null;
 			},
 		},
+		platformFee: { findMany: async () => platformFees },
 		unit: {
 			findFirst: async ({ where }: { where: { active: boolean; companyId: string; slug: string } }) =>
 				unit?.active === where.active && unit?.companyId === where.companyId && unit?.slug === where.slug
@@ -125,7 +156,7 @@ function makeOrderPrisma(
 		},
 	} as unknown as PrismaInstance;
 
-	return { orderItemOptions, orderItems, orders, prisma };
+	return { orderFeeSnapshots, orderItemFeeSnapshots, orderItemOptions, orderItems, orders, prisma };
 }
 
 const baseBody = {
@@ -216,6 +247,40 @@ describe("CreateOrder", () => {
 		const { orders, prisma } = makeOrderPrisma({ unitProducts: [overrideProduct] });
 		await new CreateOrder(prisma).execute("user_1", baseBody);
 		expect(orders[0]).toMatchObject({ subtotal: 1600, total: 2100 });
+	});
+
+	it("adds stacked fees without reducing merchant prices and stores snapshots", async () => {
+		const { orderFeeSnapshots, orderItemFeeSnapshots, orders, prisma } = makeOrderPrisma({
+			platformFees: [
+				{
+					active: true,
+					applicationScope: "product",
+					calculationType: "percentage",
+					companyOverrides: [],
+					displayMode: "embedded",
+					id: "fee_percent",
+					name: "Serviço",
+					value: 500,
+				},
+				{
+					active: true,
+					applicationScope: "order",
+					calculationType: "fixed",
+					companyOverrides: [],
+					displayMode: "checkout_only",
+					id: "fee_order",
+					name: "Operação",
+					value: 75,
+				},
+			],
+		});
+
+		const result = await new CreateOrder(prisma).execute("user_1", baseBody);
+
+		expect(orders[0]).toMatchObject({ feeTotalCents: 175, subtotal: 2000, total: 2675 });
+		expect(orderFeeSnapshots).toHaveLength(2);
+		expect(orderItemFeeSnapshots).toHaveLength(1);
+		expect(result.items[0]).toMatchObject({ displayTotal: 2100, total: 2000, unitPrice: 1000 });
 	});
 
 	it("requires an address for every order", async () => {

@@ -26,6 +26,9 @@ export function OrderSummaryModal({ onClose, onEditEstimate, order, view }: Orde
 	const discount = order ? Number(order.discountCents) : 0;
 	const cashbackRedeemed = order ? Number(order.cashbackCentsRedeemed) : 0;
 	const loyaltyRedeemed = order ? Number(order.loyaltyPointsRedeemed) : 0;
+	const embeddedFees = order?.fees.filter(fee => fee.displayMode === "embedded") ?? [];
+	const visibleFees = order?.fees.filter(fee => fee.displayMode !== "embedded") ?? [];
+	const embeddedFeeTotal = embeddedFees.reduce((sum, fee) => sum + Number(fee.amountCents), 0);
 	const couponDetail = order?.couponCode
 		? order.couponType === "percent"
 			? `${order.couponCode} · ${Number(order.couponValue)}%`
@@ -131,7 +134,7 @@ export function OrderSummaryModal({ onClose, onEditEstimate, order, view }: Orde
 												</p>
 												{showCustomerFinancials && (
 													<span className="shrink-0 whitespace-nowrap font-semibold text-sm">
-														{formatMoney(Number(item.total) / 100)}
+												{formatMoney(Number(item.displayTotal) / 100)}
 													</span>
 												)}
 											</div>
@@ -171,8 +174,14 @@ export function OrderSummaryModal({ onClose, onEditEstimate, order, view }: Orde
 						<section className="space-y-2 border-border border-t pt-4 text-sm">
 							<div className="flex justify-between">
 								<span className="text-muted-foreground">{t("store.checkout.order.itemsSubtotal")}</span>
-								<span>{formatMoney(subtotal / 100)}</span>
+								<span>{formatMoney((subtotal + embeddedFeeTotal) / 100)}</span>
 							</div>
+							{visibleFees.map(fee => (
+								<div className="flex justify-between" key={fee.id}>
+									<span className="text-muted-foreground">{fee.name}</span>
+									<span>+{formatMoney(Number(fee.amountCents) / 100)}</span>
+								</div>
+							))}
 							{order.deliveryMethod === "delivery" && (
 								<div className="flex justify-between">
 									<span className="text-muted-foreground">{t("store.cart.deliveryFee")}</span>

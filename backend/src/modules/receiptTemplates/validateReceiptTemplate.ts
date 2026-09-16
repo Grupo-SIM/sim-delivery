@@ -4,7 +4,7 @@ const singletonTypes = new Set([
 	"unitName", "orderNumber", "status", "date", "estimatedDelivery", "firstOrder", "deliveryMethod",
 	"customerName", "customerPhone", "customerCpf", "address", "items", "payment", "paymentAmount",
 	"amountDue", "subtotal", "deliveryFee", "discount", "cashback", "loyalty", "total",
-	"preparedBy",
+	"preparedBy", "fees",
 ]);
 const allowedTypes = new Set([...singletonTypes, "separator", "text"]);
 const allowedAlignments = new Set(["left", "center", "right"]);

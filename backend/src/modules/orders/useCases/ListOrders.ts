@@ -54,7 +54,8 @@ export class ListOrders {
 				coupon: { select: { code: true, type: true, value: true } },
 				customer: { include: { user: true } },
 				delivery: { select: { courier: { select: { name: true } }, courierId: true, id: true } },
-				items: { include: { optionSnapshots: true } },
+				feeSnapshots: true,
+				items: { include: { feeSnapshots: true, optionSnapshots: true } },
 				payment: { select: { status: true } },
 				preparedBy: { select: { id: true, name: true } },
 				unit: true,
@@ -113,13 +114,22 @@ export class ListOrders {
 			deliveryMethod: o.deliveryMethod,
 			displayNumber: o.displayNumber,
 			discountCents: o.discountCents,
+			feeTotalCents: o.feeTotalCents,
+			fees: o.feeSnapshots ?? [],
 			estimatedStatusCompletionAt: o.estimatedStatusCompletionAt,
 			id: o.id,
-			items: o.items.map(item => ({
-				...item,
-				imageUrl: imageUrlByProductId.get(item.productId) ?? null,
-				options: item.optionSnapshots,
-			})),
+			items: o.items.map(item => {
+				const embeddedFeeCents = (item.feeSnapshots ?? [])
+					.filter(itemFee => (o.feeSnapshots ?? []).find(fee => fee.id === itemFee.orderFeeSnapshotId)?.displayMode === "embedded")
+					.reduce((sum, itemFee) => sum + itemFee.amountCents, 0);
+				return {
+					...item,
+					displayTotal: item.total + embeddedFeeCents,
+					displayUnitPrice: item.unitPrice + Math.round(embeddedFeeCents / item.quantity),
+					imageUrl: imageUrlByProductId.get(item.productId) ?? null,
+					options: item.optionSnapshots,
+				};
+			}),
 			loyaltyPointsRedeemed: o.loyaltyPointsRedeemed,
 			payment: o.payment ? { status: o.payment.status } : null,
 			preparedBy: o.preparedBy,

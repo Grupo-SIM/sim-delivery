@@ -19,6 +19,7 @@ export interface OrderReceiptLabels {
 	discount: string;
 	estimatedDelivery: string;
 	firstOrder: string;
+	fees: string;
 	loyalty: string;
 	note: string;
 	order: string;
@@ -217,7 +218,7 @@ function drawReceipt(doc: jsPDF, receipt: GetOrdersByOrderIdReceipt200, labels: 
 				break;
 			case "items":
 				for (const item of receipt.items) {
-					drawAmountRow(cursor, `${item.quantity}× ${item.productName}`, formatMoney(item.total), true);
+					drawAmountRow(cursor, `${item.quantity}× ${item.productName}`, formatMoney(item.displayTotal), true);
 					const groups = new Map<string, string[]>();
 					for (const option of item.options) {
 						const optionPrice = Number(option.priceDeltaCents);
@@ -272,6 +273,14 @@ function drawReceipt(doc: jsPDF, receipt: GetOrdersByOrderIdReceipt200, labels: 
 			case "loyalty":
 				drawAmountRow(cursor, labels.loyalty, `-${formatMoney(receipt.loyaltyPointsRedeemed)}`);
 				break;
+			case "fees": {
+				const visibleFees = receipt.fees.filter(fee => fee.displayMode !== "embedded");
+				if (visibleFees.length > 0) {
+					drawWrappedText(cursor, labels.fees, { style: "bold" });
+					for (const fee of visibleFees) drawAmountRow(cursor, fee.name, formatMoney(fee.amountCents));
+				}
+				break;
+			}
 			case "total":
 				cursor.y += 1;
 				drawAmountRow(cursor, labels.total, formatMoney(receipt.total), true);

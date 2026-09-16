@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { cartCount, cartTotalCents, useCartStore, useDeliveryMethodStore } from "@/stores";
+import { cartCount, cartDisplayTotalCents, useCartStore, useDeliveryMethodStore } from "@/stores";
 import { CartModal } from "./CartModal";
 import { type MenuSection, money } from "./types";
 
@@ -28,7 +28,7 @@ export function CartBar({ categoryNavDocked, deliveryFee, minOrderCents, section
 		return null;
 	}
 
-	const total = cartTotalCents(items);
+	const total = cartDisplayTotalCents(items);
 	// Min order only applies to delivery orders (default when no method stored)
 	const isDelivery = storedMethod !== "pickup";
 	const belowMin = isDelivery && minOrderCents > 0 && total < minOrderCents;

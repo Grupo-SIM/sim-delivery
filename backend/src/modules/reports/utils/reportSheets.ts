@@ -27,6 +27,7 @@ export interface ExportableOrder {
 	deliveryFee: number;
 	deliveryMethod: string;
 	discountCents: number;
+	feeTotalCents?: number;
 	id: string;
 	items: { optionSnapshots: { optionName: string }[]; productName: string; quantity: number }[];
 	status: string;
@@ -170,7 +171,7 @@ function buildOrdersSheet(orders: ExportableOrder[]): SheetData {
 				money(order.subtotal),
 				money(order.deliveryFee),
 				money(order.discountCents),
-				money(order.total),
+				money(Math.max(0, order.total - (order.feeTotalCents ?? 0))),
 			],
 		),
 	];

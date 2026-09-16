@@ -22,6 +22,7 @@ export class GetDashboardAnalytics {
 				createdAt: true,
 				deliveryFee: true,
 				deliveryMethod: true,
+				feeTotalCents: true,
 				total: true,
 				unitId: true,
 			},
@@ -75,7 +76,7 @@ export class GetDashboardAnalytics {
 			};
 
 			row.orderCount += 1;
-			row.totalRevenue += order.total;
+			row.totalRevenue += Math.max(0, order.total - (order.feeTotalCents ?? 0));
 			deliveryRadiusPerformance.set(key, row);
 		}
 

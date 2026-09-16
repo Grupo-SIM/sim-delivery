@@ -9,6 +9,7 @@ import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { closeActiveModalHistory } from "@/hooks/use-modal-history";
 import type { CartItem, SelectedOption } from "@/stores";
 import { showToast, useCartStore } from "@/stores";
+import { displayedUnitPrice, feeUnitAmount, normalizeProductFees } from "@/lib/platform-fees";
 import { OptionImagePreviewModal } from "../OptionImagePreviewModal";
 import { applyOptionQuantity, findInvalidGroup, isGroupComplete, optionsPriceDelta } from "../product-options";
 import { type MenuItem, money } from "../types";
@@ -135,7 +136,9 @@ export function ProductDetailsModal({
 	if (!item) return null;
 	const selectedItem = item;
 	const delta = optionsPriceDelta(selectedItem.optionGroups, options);
-	const totalCents = (Number(selectedItem.priceCents) + delta) * quantity;
+	const merchantUnitPrice = Number(selectedItem.priceCents) + delta;
+	const productFees = normalizeProductFees(selectedItem.productFees);
+	const totalCents = displayedUnitPrice(merchantUnitPrice, productFees) * quantity;
 	const invalidGroup = findInvalidGroup(selectedItem.optionGroups, options);
 
 	function setOptionQuantity(groupId: string, option: ProductOption, nextQuantity: number) {
@@ -171,6 +174,7 @@ export function ProductDetailsModal({
 			imageUrl: selectedItem.imageUrl,
 			options,
 			priceCents: Number(selectedItem.priceCents) + delta,
+			productFees,
 			productId: selectedItem.productId,
 			title: selectedItem.title,
 		};
@@ -285,7 +289,14 @@ export function ProductDetailsModal({
 						<Button className="gap-3" disabled={Boolean(invalidGroup)} onClick={add} type="button">
 							<FaCartShopping aria-hidden="true" />
 							<span>{t("store.cart.add")}</span>
-							<span>{money.format(totalCents / 100)}</span>
+							<div className="text-right">
+								<span>{money.format(totalCents / 100)}</span>
+								{productFees.filter(fee => fee.displayMode === "product_explicit").map(fee => (
+									<span className="block font-normal text-muted-foreground text-xs" key={fee.id}>
+										+ {fee.name}: {money.format((feeUnitAmount(merchantUnitPrice, fee) * quantity) / 100)}
+									</span>
+								))}
+							</div>
 						</Button>
 					</div>
 				</div>

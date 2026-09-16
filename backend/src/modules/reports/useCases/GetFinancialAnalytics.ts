@@ -11,6 +11,7 @@ interface FinancialOrder {
 	deliveryFee: number;
 	deliveryMethod: string;
 	discountCents: number;
+	feeTotalCents: number;
 	items: { costCents: number | null; netRevenueCents: number | null; total: number }[];
 	payment: { confirmedAt: Date | null; method: string; status: string } | null;
 	refundedCents: number;
@@ -20,6 +21,7 @@ interface FinancialOrder {
 }
 
 interface CancelledOrder {
+	feeTotalCents: number;
 	items: { costCents: number | null }[];
 	payment: { status: string } | null;
 	refundedCents: number;
@@ -46,6 +48,14 @@ function cancellationStage(order: CancelledOrder): { at: Date; stage: string } {
 function amountChange(current: number, previous: number) {
 	if (previous === 0) return null;
 	return ((current - previous) / previous) * 100;
+}
+
+function merchantAmount(order: { feeTotalCents: number; total: number }) {
+	return Math.max(0, order.total - (order.feeTotalCents ?? 0));
+}
+
+function merchantRefund(order: { feeTotalCents: number; refundedCents: number; total: number }) {
+	return order.total > 0 ? Math.round((order.refundedCents * merchantAmount(order)) / order.total) : 0;
 }
 
 function emptySummary(): {
@@ -108,12 +118,12 @@ function summarize(orders: FinancialOrder[]) {
 	const summary = emptySummary();
 	for (const order of orders) {
 		summary.orderCount += 1;
-		summary.netRevenueCents += order.total;
+		summary.netRevenueCents += merchantAmount(order);
 		summary.deliveryFeeCents += order.deliveryFee;
 		summary.discountCents += order.discountCents;
 		summary.cashbackRedeemedCents += order.cashbackCentsRedeemed;
-		summary.grossRevenueCents += order.total + order.discountCents + order.cashbackCentsRedeemed;
-		summary.refundedCents += order.refundedCents;
+		summary.grossRevenueCents += merchantAmount(order) + order.discountCents + order.cashbackCentsRedeemed;
+		summary.refundedCents += merchantRefund(order);
 		for (const item of order.items) {
 			const revenue = item.netRevenueCents ?? item.total;
 			if (item.costCents === null) summary.unknownCostRevenueCents += revenue;
@@ -141,17 +151,17 @@ function summarizeCancellations(orders: CancelledOrder[]) {
 	const byStage = new Map<string, { lostRevenueCents: number; orderCount: number }>();
 	for (const order of orders) {
 		cancellation.canceledOrderCount += 1;
-		cancellation.lostRevenueCents += order.total;
-		cancellation.refundedCents += order.refundedCents;
+		cancellation.lostRevenueCents += merchantAmount(order);
+		cancellation.refundedCents += merchantRefund(order);
 		if (order.refundedCents > 0) cancellation.refundedOrderCount += 1;
 		if (order.payment?.status === "confirmed" && order.refundedCents === 0)
-			cancellation.pendingRefundCents += order.total;
+			cancellation.pendingRefundCents += merchantAmount(order);
 		for (const item of order.items) cancellation.wastedCostCents += item.costCents ?? 0;
 
 		const { stage } = cancellationStage(order);
 		const row = byStage.get(stage) ?? { lostRevenueCents: 0, orderCount: 0 };
 		row.orderCount += 1;
-		row.lostRevenueCents += order.total;
+		row.lostRevenueCents += merchantAmount(order);
 		byStage.set(stage, row);
 	}
 	cancellation.averageCanceledTicket = cancellation.canceledOrderCount
@@ -164,7 +174,7 @@ function summarizeCancellations(orders: CancelledOrder[]) {
 }
 
 function summarizePaymentAbandonment(orders: CancelledOrder[]) {
-	const abandonedValueCents = orders.reduce((total, order) => total + order.total, 0);
+	const abandonedValueCents = orders.reduce((total, order) => total + merchantAmount(order), 0);
 	return {
 		abandonedOrderCount: orders.length,
 		abandonedValueCents,
@@ -285,7 +295,7 @@ export class GetFinancialAnalytics {
 			if (!row) continue;
 			const orderSummary = summarize([order]);
 			row.orderCount += 1;
-			row.netRevenueCents += order.total - order.refundedCents;
+			row.netRevenueCents += merchantAmount(order) - merchantRefund(order);
 			row.grossProfitCents += orderSummary.grossProfitCents;
 		}
 		const byPayment = new Map<string, { method: string; netRevenueCents: number; orderCount: number }>();
@@ -297,7 +307,7 @@ export class GetFinancialAnalytics {
 			] as const) {
 				const row = map.get(method) ?? { method, netRevenueCents: 0, orderCount: 0 };
 				row.orderCount += 1;
-				row.netRevenueCents += order.total;
+				row.netRevenueCents += merchantAmount(order);
 				map.set(method, row);
 			}
 		}

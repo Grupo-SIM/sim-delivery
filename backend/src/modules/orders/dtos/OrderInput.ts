@@ -69,12 +69,15 @@ export type CreateOrderBody = typeof CreateOrderBody.static;
 export const QuoteOrderFeesBody = t.Object({
 	items: t.Array(
 		t.Object({
-			key: t.String({ minLength: 1 }),
+			options: t.Optional(
+				t.Array(t.Object({ optionId: t.String({ minLength: 1 }), quantity: t.Integer({ minimum: 1 }) })),
+			),
 			quantity: t.Integer({ minimum: 1 }),
-			unitPrice: t.Integer({ minimum: 0 }),
+			unitProductId: t.String({ minLength: 1 }),
 		}),
 		{ minItems: 1 },
 	),
 	slug: t.String({ minLength: 1 }),
+	unitSlug: t.String({ minLength: 1 }),
 });
 export type QuoteOrderFeesBody = typeof QuoteOrderFeesBody.static;
