@@ -132,12 +132,24 @@ function makeOrderPrisma(
 				customer?.companyId === where.companyId && customer?.userId === where.userId ? customer : null,
 		},
 		order: {
-			findFirst: async ({ where }: { where: { customerId: string; idempotencyKey: string } }) => {
-				const order = orders.find(
-					candidate =>
-						(candidate as { customerId?: string }).customerId === where.customerId &&
-						(candidate as { idempotencyKey?: string }).idempotencyKey === where.idempotencyKey,
-				);
+			findFirst: async ({ where }: { where: { createdAt?: { gte: Date }; customerId: string; idempotencyKey?: string; status?: string; unitId?: string } }) => {
+				const order = orders.find(candidate => {
+					const value = candidate as {
+						createdAt?: Date;
+						customerId?: string;
+						idempotencyKey?: string;
+						status?: string;
+						unitId?: string;
+					};
+					if (value.customerId !== where.customerId) return false;
+					if (where.idempotencyKey) return value.idempotencyKey === where.idempotencyKey;
+					return (
+						value.createdAt !== undefined &&
+						value.createdAt >= where.createdAt!.gte &&
+						value.status === where.status &&
+						value.unitId === where.unitId
+					);
+				});
 				return order
 					? { ...(order as object), feeSnapshots: orderFeeSnapshots, items: itemsWithFees() }
 					: null;
@@ -237,6 +249,35 @@ describe("CreateOrder", () => {
 
 		expect(orders).toHaveLength(1);
 		expect(retry.id).toBe(first.id);
+	});
+
+	it("recovers a valid unpaid order when checkout receives a new idempotency key", async () => {
+		const { orders, prisma } = makeOrderPrisma();
+		const createOrder = new CreateOrder(prisma);
+
+		const first = await createOrder.execute("user_1", baseBody);
+		const recovered = await createOrder.execute("user_1", {
+			...baseBody,
+			idempotencyKey: "00000000-0000-4000-8000-000000000002",
+		});
+
+		expect(orders).toHaveLength(1);
+		expect(first.status).toBe("awaiting_payment");
+		expect(recovered.id).toBe(first.id);
+	});
+
+	it("does not recover an unpaid order after its one-hour reservation expires", async () => {
+		const { orders, prisma } = makeOrderPrisma();
+		const createOrder = new CreateOrder(prisma);
+
+		await createOrder.execute("user_1", baseBody);
+		(orders[0] as { createdAt: Date }).createdAt = new Date(Date.now() - 60 * 60 * 1_000 - 1);
+		await createOrder.execute("user_1", {
+			...baseBody,
+			idempotencyKey: "00000000-0000-4000-8000-000000000002",
+		});
+
+		expect(orders).toHaveLength(2);
 	});
 
 	it("uses priceCentsOverride when set", async () => {

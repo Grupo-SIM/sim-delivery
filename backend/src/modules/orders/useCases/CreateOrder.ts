@@ -44,6 +44,11 @@ export class CreateOrder {
 		if (!customer) throw new DomainError(OrderErrors.CUSTOMER_NOT_FOUND);
 		const existingOrder = await this.findOrderByIdempotencyKey(customer.id, idempotencyKey);
 		if (existingOrder) return existingOrder;
+		// A customer can leave checkout before entering payment details and return with a
+		// new cart idempotency key. Reuse the still-valid reservation instead of holding
+		// stock for both orders until the expiry job releases one of them.
+		const pendingOrder = await this.findActiveUnpaidOrder(customer.id, unitId);
+		if (pendingOrder) return pendingOrder;
 
 		if (deliveryMethod === "delivery") {
 			const address = await this.prisma.address.findFirst({
@@ -449,6 +454,40 @@ export class CreateOrder {
 				items: { include: { feeSnapshots: true, optionSnapshots: true } },
 			},
 			where: { customerId, idempotencyKey },
+		});
+		if (!order) return null;
+
+		return {
+			...order,
+			fees: order.feeSnapshots ?? [],
+			items: order.items.map(item => {
+				const embeddedFeeCents = (item.feeSnapshots ?? [])
+					.filter(fee => (order.feeSnapshots ?? []).find(snapshot => snapshot.id === fee.orderFeeSnapshotId)?.displayMode === "embedded")
+					.reduce((sum, fee) => sum + fee.amountCents, 0);
+				return {
+					...item,
+					displayTotal: item.total + embeddedFeeCents,
+					displayUnitPrice: item.unitPrice + Math.round(embeddedFeeCents / item.quantity),
+					fees: item.feeSnapshots ?? [],
+					options: item.optionSnapshots,
+				};
+			}),
+		};
+	}
+
+	private async findActiveUnpaidOrder(customerId: string, unitId: string): Promise<OrderReturn | null> {
+		const order = await this.prisma.order.findFirst({
+			include: {
+				feeSnapshots: { include: { itemFees: true } },
+				items: { include: { feeSnapshots: true, optionSnapshots: true } },
+			},
+			orderBy: { createdAt: "desc" },
+			where: {
+				createdAt: { gte: new Date(Date.now() - 60 * 60 * 1_000) },
+				customerId,
+				status: "awaiting_payment",
+				unitId,
+			},
 		});
 		if (!order) return null;
 
