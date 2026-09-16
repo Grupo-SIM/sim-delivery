@@ -4,8 +4,8 @@
 
 - [x] API genérica, carteiras empresariais e saques na SIM INT PAY (`simintpay-back` `0853277`).
 - [x] Modelo, permissões e API financeira no Sim Delivery.
-- [~] OpenAPI, SDK e dashboard financeira.
-- [ ] Reconciliação histórica, testes e validação.
+- [x] OpenAPI, SDK e dashboard financeira.
+- [~] Reconciliação histórica, testes e validação.
 
 ## Decisões
 
@@ -18,4 +18,4 @@
 
 ## Próximo passo
 
-Finalizar dashboard financeira e configuração empresarial.
+Finalizar reconciliação, testes e validação dos dois serviços.

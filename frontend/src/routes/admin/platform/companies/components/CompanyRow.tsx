@@ -1,9 +1,11 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LuLandmark, LuPencil, LuTrash2 } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Input } from "@/components/ui/input";
+import { Tooltip } from "@/components/ui/Tooltip";
 import {
 	type GetCompanies200,
 	getCompaniesQueryKey,
@@ -11,6 +13,7 @@ import {
 	usePatchCompaniesByCompanyId,
 } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
+import { WithdrawalSettingsModal } from "./WithdrawalSettingsModal";
 
 interface CompanyRowProps {
 	company: GetCompanies200[number];
@@ -23,6 +26,7 @@ export function CompanyRow({ company }: CompanyRowProps) {
 	const [name, setName] = useState(company.name);
 	const [slug, setSlug] = useState(company.slug);
 	const [error, setError] = useState<string | null>(null);
+	const [financialOpen, setFinancialOpen] = useState(false);
 
 	const update = usePatchCompaniesByCompanyId();
 	const remove = useDeleteCompaniesByCompanyId();
@@ -74,21 +78,28 @@ export function CompanyRow({ company }: CompanyRowProps) {
 				</td>
 				<td className="px-4 py-3 text-right">
 					<div className="flex justify-end gap-2">
-						<Button onClick={() => setEditing(true)} size="sm" type="button" variant="outline">
-							{t("admin.companies.edit.action")}
-						</Button>
+						<Tooltip content="Configuração financeira">
+							<Button aria-label="Configuração financeira" onClick={() => setFinancialOpen(true)} size="icon" type="button" variant="outline"><LuLandmark /></Button>
+						</Tooltip>
+						<Tooltip content={t("admin.companies.edit.action")}>
+							<Button aria-label={t("admin.companies.edit.action")} onClick={() => setEditing(true)} size="icon" type="button" variant="outline"><LuPencil /></Button>
+						</Tooltip>
 						<ConfirmActionButton
+							aria-label={t("admin.companies.row.delete")}
 							confirmation={t("admin.companies.row.deleteConfirm", { name: company.name })}
 							confirmLabel={t("admin.companies.row.delete")}
 							disabled={remove.isPending}
+							idleIcon={<LuTrash2 />}
 							onConfirm={del}
-							size="sm"
+							size="icon"
+							tooltip={t("admin.companies.row.delete")}
 							type="button"
 							variant="outline"
 						>
-							{t("admin.companies.row.delete")}
+							<span className="sr-only">{t("admin.companies.row.delete")}</span>
 						</ConfirmActionButton>
 					</div>
+					<WithdrawalSettingsModal company={company} isOpen={financialOpen} onClose={() => setFinancialOpen(false)} />
 				</td>
 			</tr>
 		);

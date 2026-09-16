@@ -1574,6 +1574,15 @@
 					},
 					"title": "WhatsApp — {{name}}"
 				}
+			},
+			"withdrawals": {
+				"status": {
+					"APPROVED": "Aprovado",
+					"COMPLETED": "Concluído",
+					"PENDING": "Pendente",
+					"REJECTED": "Rejeitado",
+					"submitting": "Enviando"
+				}
 			}
 		},
 		"auth": {

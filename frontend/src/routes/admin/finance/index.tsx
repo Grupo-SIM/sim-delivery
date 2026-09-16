@@ -11,6 +11,8 @@ import { StatCard } from "@/components/ui/StatCard";
 import {
 	exportReports,
 	type GetReportsFinancialQueryParamsGroupByEnumKey,
+	useGetFinanceWallet,
+	useGetFinanceWithdrawals,
 	useGetReportsBusiness,
 	useGetReportsFinancial,
 } from "@/lib/api";
@@ -29,6 +31,9 @@ import {
 	OperationsMetrics,
 	PaymentAbandonmentSummary,
 	UnitComparisonTable,
+	WithdrawalHistory,
+	WithdrawalRequestModal,
+	WithdrawalSummary,
 } from "./components";
 
 const formatCents = (cents: number) =>
@@ -38,6 +43,10 @@ function FinancePage() {
 	const [period, setPeriod] = useState<DashboardPeriodSelection>("month");
 	const [dateRange, setDateRange] = useState<{ endDate: string; startDate: string } | null>(null);
 	const [unitId, setUnitId] = useState("");
+	const [withdrawalOpen, setWithdrawalOpen] = useState(false);
+	const [withdrawalPage, setWithdrawalPage] = useState(1);
+	const wallet = useGetFinanceWallet();
+	const withdrawalHistory = useGetFinanceWithdrawals({ page: withdrawalPage, pageSize: 10 });
 	const queryPeriod = period === "custom" ? undefined : period;
 	const groupBy: GetReportsFinancialQueryParamsGroupByEnumKey =
 		queryPeriod === "today" || queryPeriod === "yesterday"
@@ -145,6 +154,8 @@ function FinancePage() {
 
 	return (
 		<Container className="space-y-6 py-8">
+			<WithdrawalSummary isError={wallet.isError} isPending={wallet.isPending} onRequest={() => setWithdrawalOpen(true)} summary={wallet.data} />
+			{wallet.data && <WithdrawalRequestModal isOpen={withdrawalOpen} onClose={() => setWithdrawalOpen(false)} summary={wallet.data} />}
 			<div className="flex flex-wrap items-end justify-between gap-4">
 				<SectionHeading
 					subtitle="Resultado consolidado por competência financeira."
@@ -341,6 +352,7 @@ function FinancePage() {
 					})) ?? []
 				}
 			/>
+			<WithdrawalHistory data={withdrawalHistory.data} isError={withdrawalHistory.isError} isPending={withdrawalHistory.isPending} onPageChange={setWithdrawalPage} />
 		</Container>
 	);
 }
