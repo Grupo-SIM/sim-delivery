@@ -10,7 +10,7 @@ Manter a sessão WAHA geral para OTP e fallback, enquanto cada unidade pode cone
 - [x] Adicionar endpoints, autorização e fallback do contato público.
 - [x] Rotear outbox pela sessão da unidade com fallback geral.
 - [x] Criar modal administrativo de conexão e QR Code.
-- [~] Regenerar contratos, documentar, testar e validar.
+- [x] Regenerar contratos, documentar, testar e validar.
 
 ## Decisões
 

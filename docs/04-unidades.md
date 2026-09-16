@@ -7,6 +7,9 @@ restrita a `owner`/`manager` (ver [03-papeis-e-permissoes.md](03-papeis-e-permis
 
 - **Nome** (ex.: "JB Centro").
 - **Telefone** / WhatsApp de atendimento.
+- **WhatsApp transacional**: sessão WAHA própria, conectada por QR Code no painel. O número
+  público de atendimento pode ser configurado separadamente; sem valor explícito, usa o
+  número identificado na sessão conectada.
 - **Localização**: endereço completo + coordenadas (para frete/mapa).
 - **Horário de funcionamento**:
   - **Geral** (padrão semanal).
@@ -26,6 +29,8 @@ restrita a `owner`/`manager` (ver [03-papeis-e-permissoes.md](03-papeis-e-permis
   como indisponível.
 - Override manual **prevalece** sobre o cálculo automático de aberto/fechado.
 - Uma unidade pertence a exatamente uma empresa (`companyId`); nunca compartilhada.
+- Cada unidade possui no máximo uma sessão WAHA transacional. Owner, manager atribuído à
+  unidade e superAdmin podem conectá-la ou desconectá-la.
 - Taxa de entrega e cashback da unidade são o **default**; produto pode sobrepor cashback.
 
 ## Regras comportamentais

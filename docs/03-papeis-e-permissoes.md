@@ -29,6 +29,7 @@ Legenda: ✅ total · 🟡 limitado/escopado · ⛔ nenhum.
 | Criar/editar empresa | ✅ | ⛔ | ⛔ | ⛔ | ⛔ | ⛔ | ⛔ |
 | Gerir variantes/branding | ✅ | ✅ | ⛔ | ⛔ | ⛔ | ⛔ | ⛔ |
 | Gerir unidades | ✅ | ✅ | ⛔ | ⛔ | ⛔ | ⛔ | ⛔ |
+| Conectar WhatsApp da unidade | ✅ | ✅ | ✅ unidades atribuídas | ⛔ | ⛔ | ⛔ | ⛔ |
 | Gerir cardápio (produtos/categorias/tags) | ✅ | ✅ | ✅ | ⛔ | ⛔ | ⛔ | ⛔ |
 | Pausar/retomar venda de produto | ✅ | ✅ | ✅ | ✅ | ⛔ | ⛔ | ⛔ |
 | Gerir cupons/promoções | ✅ | ✅ | ✅ | 🟡 aplicar | ⛔ | ⛔ | ⛔ |

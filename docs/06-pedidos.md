@@ -69,8 +69,12 @@ acompanhamento será por WhatsApp (ver [08](08-app-cliente.md)).
 
 O canal WhatsApp usa WAHA. Com `WHATSAPP_DRIVER=waha`, mensagens entram em uma outbox
 transacional e são reenviadas com backoff até entrega; `console` envia ao log local e
-`disabled` ignora o canal. A instância e sessão WAHA são externas ao projeto e configuradas
-por `WAHA_BASE_URL`, `WAHA_SESSION` e, quando a instância exige autenticação, `WAHA_API_KEY`.
+`disabled` ignora o canal. A instância WAHA é externa ao projeto e configurada por
+`WAHA_BASE_URL` e, quando exige autenticação, `WAHA_API_KEY`. `WAHA_SESSION` identifica a
+sessão geral usada por OTP e como fallback. Cada unidade pode criar pelo painel uma sessão
+`sim-delivery_<company-slug>_<unit-slug>` para seus pedidos. Se essa sessão não estiver
+operacional, a entrega usa a sessão geral; falhas transitórias ao consultar WAHA continuam
+na política de retry da outbox.
 Cada status aceita texto de até 1.000 caracteres com quebras de linha e até três anexos
 (JPEG, PNG, WebP ou PDF, com 10 MB cada). Quando há anexos, o texto vira legenda do primeiro;
 os demais são enviados na sequência. Texto e anexos são congelados juntos na outbox.
