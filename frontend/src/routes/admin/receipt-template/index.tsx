@@ -47,28 +47,22 @@ function ReceiptTemplatePage() {
 	}
 
 	return (
-		<Container className="space-y-6 py-8" size="full">
+		<Container className="flex flex-col gap-6 py-8 lg:h-dvh lg:min-h-0 lg:overflow-hidden" size="full">
 			<SectionHeading subtitle={t("admin.receiptTemplate.subtitle")} title={t("admin.receiptTemplate.title")} />
 			{query.isPending ? (
-				<div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
+				<div className="grid gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_400px]">
 					<div className="space-y-3"><Skeleton className="h-32" /><Skeleton className="h-72" /></div>
-					<Skeleton className="h-[720px]" />
+					<Skeleton className="h-[720px] lg:h-full" />
 				</div>
 			) : query.isError ? (
 				<ErrorState title={t("admin.receiptTemplate.loadError")} />
 			) : (
-				<>
-					<div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
-						<div>
-							<div className="mb-4">
-								<h3 className="font-bold text-lg">{t("admin.receiptTemplate.editor.title")}</h3>
-								<p className="text-muted-foreground text-sm">{t("admin.receiptTemplate.editor.subtitle")}</p>
-							</div>
+				<div className="grid gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_400px]">
+					<div className="flex min-h-0 flex-col gap-4">
+						<div className="flex min-h-0 flex-1 flex-col">
 							<ReceiptTemplateEditor onChange={setTemplate} template={template} />
 						</div>
-						<div className="lg:sticky lg:top-6"><ReceiptPreview template={template} /></div>
-					</div>
-					<div className="sticky bottom-4 z-30 flex flex-wrap justify-end gap-3 rounded-xl border border-border bg-card/95 p-3 shadow-xl backdrop-blur">
+						<div className="z-30 flex shrink-0 flex-wrap justify-end gap-3 rounded-xl border border-border bg-card/95 p-3 shadow-xl backdrop-blur">
 						<Button disabled={update.isPending} onClick={restoreDefault} type="button" variant="outline">
 							<LuRotateCcw className="size-4" />{t("admin.receiptTemplate.restore.action")}
 						</Button>
@@ -76,8 +70,10 @@ function ReceiptTemplatePage() {
 							<LuSave className="size-4" />
 							{update.isPending ? t("admin.receiptTemplate.save.pending") : t("admin.receiptTemplate.save.action")}
 						</Button>
+						</div>
 					</div>
-				</>
+					<div className="min-h-0"><ReceiptPreview template={template} /></div>
+				</div>
 			)}
 		</Container>
 	);

@@ -954,10 +954,6 @@
 						"label": "Nome da unidade"
 					}
 				},
-				"editor": {
-					"subtitle": "Arraste os blocos. Remova o que não precisa. A ordem abaixo será usada na impressão.",
-					"title": "Montagem do recibo"
-				},
 				"library": {
 					"subtitle": "Seções removidas podem ser adicionadas novamente. Textos e linhas podem aparecer várias vezes.",
 					"title": "Adicionar conteúdo"

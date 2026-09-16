@@ -11,6 +11,7 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import { useTranslation } from "react-i18next";
 import { LuMinus, LuPlus, LuType } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/ScrollArea";
 import { verticalListModifiers } from "@/lib/dnd-modifiers";
 import { createBlockMeta, DYNAMIC_BLOCK_TYPES } from "./receipt-template";
 import { ReceiptBlockRow } from "./ReceiptBlockRow";
@@ -54,8 +55,8 @@ export function ReceiptTemplateEditor({ onChange, template }: ReceiptTemplateEdi
 	}
 
 	return (
-		<div className="space-y-5">
-			<div className="rounded-xl border border-dashed border-primary/40 bg-primary/5 p-4">
+		<div className="flex min-h-0 flex-1 flex-col gap-5">
+			<div className="shrink-0 rounded-xl border border-dashed border-primary/40 bg-primary/5 p-4">
 				<p className="font-semibold text-sm">{t("admin.receiptTemplate.library.title")}</p>
 				<p className="mt-1 text-muted-foreground text-xs">{t("admin.receiptTemplate.library.subtitle")}</p>
 				<div className="mt-3 flex flex-wrap gap-2">
@@ -76,21 +77,23 @@ export function ReceiptTemplateEditor({ onChange, template }: ReceiptTemplateEdi
 				</div>
 			</div>
 
-			<DndContext collisionDetection={closestCenter} modifiers={verticalListModifiers} onDragEnd={handleDragEnd} sensors={sensors}>
-				<SortableContext items={template.blocks} strategy={verticalListSortingStrategy}>
-					<div className="space-y-2">
-						{template.blocks.map(block => (
-							<ReceiptBlockRow
-								block={block}
-								key={block.id}
-								meta={meta[block.type]}
-								onChange={next => onChange({ blocks: template.blocks.map(item => item.id === block.id ? next : item) })}
-								onRemove={() => onChange({ blocks: template.blocks.filter(item => item.id !== block.id) })}
-							/>
-						))}
-					</div>
-				</SortableContext>
-			</DndContext>
+			<ScrollArea className="min-h-0 flex-1 overflow-y-auto pr-2">
+				<DndContext collisionDetection={closestCenter} modifiers={verticalListModifiers} onDragEnd={handleDragEnd} sensors={sensors}>
+					<SortableContext items={template.blocks} strategy={verticalListSortingStrategy}>
+						<div className="space-y-2">
+							{template.blocks.map(block => (
+								<ReceiptBlockRow
+									block={block}
+									key={block.id}
+									meta={meta[block.type]}
+									onChange={next => onChange({ blocks: template.blocks.map(item => item.id === block.id ? next : item) })}
+									onRemove={() => onChange({ blocks: template.blocks.filter(item => item.id !== block.id) })}
+								/>
+							))}
+						</div>
+					</SortableContext>
+				</DndContext>
+			</ScrollArea>
 		</div>
 	);
 }

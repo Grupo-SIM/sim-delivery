@@ -25,16 +25,16 @@ export function ReceiptPreview({ template }: { template: ReceiptTemplate }) {
 	}, [t, template]);
 
 	return (
-		<div className="relative overflow-hidden rounded-xl border border-zinc-700 bg-zinc-900 p-4 shadow-2xl sm:p-6">
+		<div className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-zinc-700 bg-zinc-900 p-4 shadow-2xl sm:p-6">
 			<div className="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(#71717a_0.7px,transparent_0.7px)] [background-size:7px_7px]" />
 			<div className="relative mb-4 flex items-center justify-between text-zinc-300 text-xs uppercase tracking-[0.2em]">
 				<span>{t("admin.receiptTemplate.preview.title")}</span>
 				<span className="rounded-full border border-zinc-600 px-2 py-1">80 mm</span>
 			</div>
-			<div className="relative mx-auto w-full max-w-[340px] bg-white p-1 shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
+			<div className="relative mx-auto min-h-0 w-full max-w-[340px] flex-1 bg-white p-1 shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
 				{url && (
 					<iframe
-						className="h-[640px] w-full border-0 bg-white"
+						className="h-[640px] w-full border-0 bg-white lg:h-full"
 						src={`${url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
 						title={t("admin.receiptTemplate.preview.frameTitle")}
 					/>
