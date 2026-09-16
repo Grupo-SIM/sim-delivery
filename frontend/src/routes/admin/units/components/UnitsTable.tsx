@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuBookOpen, LuClock, LuDoorClosed, LuImages, LuSettings, LuSlash, LuTruck } from "react-icons/lu";
+import { LuBookOpen, LuClock, LuDoorClosed, LuImages, LuMessageCircle, LuSettings, LuSlash, LuTruck } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { buttonClassName } from "@/components/ui/button-styles";
@@ -10,11 +10,13 @@ import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { type GetUnits200, getUnitsQueryKey, usePatchUnitsByUnitId } from "@/lib/api";
+import { authClient } from "@/lib/auth-client";
 import { showAlert, showToast } from "@/stores";
 import { UnitDeliveryZonesEditor } from "./UnitDeliveryZonesEditor";
 import { UnitEditor } from "./UnitEditor";
 import { UnitHoursEditor } from "./UnitHoursEditor";
 import { UnitPromotionalImagesEditor } from "./UnitPromotionalImagesEditor";
+import { UnitWhatsAppEditor } from "./UnitWhatsAppEditor";
 
 interface UnitsTableProps {
 	units: GetUnits200;
@@ -23,11 +25,14 @@ interface UnitsTableProps {
 export function UnitsTable({ units }: UnitsTableProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
+	const { data: session } = authClient.useSession();
 	const update = usePatchUnitsByUnitId();
 	const [hoursUnitId, setHoursUnitId] = useState<string | null>(null);
 	const [editorUnit, setEditorUnit] = useState<GetUnits200[number] | null>(null);
 	const [zonesUnit, setZonesUnit] = useState<GetUnits200[number] | null>(null);
 	const [promotionsUnit, setPromotionsUnit] = useState<GetUnits200[number] | null>(null);
+	const [whatsAppUnit, setWhatsAppUnit] = useState<GetUnits200[number] | null>(null);
+	const canManageWhatsApp = ["manager", "owner", "superAdmin"].includes(session?.user.role ?? "");
 
 	if (units.length === 0) {
 		return <EmptyState title={t("admin.units.empty")} />;
@@ -150,6 +155,17 @@ export function UnitsTable({ units }: UnitsTableProps) {
 												<LuTruck className="h-4 w-4" />
 											</Button>
 										</Tooltip>
+										{canManageWhatsApp && <Tooltip content={t("admin.units.whatsApp.action")}>
+											<Button
+												aria-label={t("admin.units.whatsApp.action")}
+												onClick={() => setWhatsAppUnit(unit)}
+												size="icon"
+												type="button"
+												variant="outline"
+											>
+												<LuMessageCircle className="h-4 w-4" />
+											</Button>
+										</Tooltip>}
 										<Tooltip
 											content={t(unit.active ? "admin.units.row.deactivate" : "admin.units.row.activate")}
 										>
@@ -184,6 +200,7 @@ export function UnitsTable({ units }: UnitsTableProps) {
 			<UnitEditor onClose={() => setEditorUnit(null)} unit={editorUnit} />
 			<UnitDeliveryZonesEditor onClose={() => setZonesUnit(null)} unit={zonesUnit} />
 			<UnitPromotionalImagesEditor onClose={() => setPromotionsUnit(null)} unit={promotionsUnit} />
+			<UnitWhatsAppEditor onClose={() => setWhatsAppUnit(null)} unit={whatsAppUnit} />
 		</>
 	);
 }
