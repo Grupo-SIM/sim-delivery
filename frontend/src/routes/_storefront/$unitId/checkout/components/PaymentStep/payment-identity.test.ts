@@ -1,9 +1,15 @@
 import { describe, expect, it } from "bun:test";
-import { hasCompletePaymentIdentity } from "./payment-identity";
+import { getBrazilianMobileDigits, hasCompletePaymentIdentity, toBrazilianMobilePhone } from "./payment-identity";
 
 describe("hasCompletePaymentIdentity", () => {
 	it("accepts a full name, valid CPF, and Brazilian mobile number", () => {
 		expect(hasCompletePaymentIdentity("Maria da Silva", "529.982.247-25", "+55 (81) 99999-9999")).toBe(true);
+	});
+
+	it("accepts the local digits returned by the Brazilian phone mask", () => {
+		expect(hasCompletePaymentIdentity("Maria da Silva", "529.982.247-25", "81999999999")).toBe(true);
+		expect(getBrazilianMobileDigits("5581999999999")).toBe("81999999999");
+		expect(toBrazilianMobilePhone("81999999999")).toBe("5581999999999");
 	});
 
 	it("keeps payment blocked when the name is incomplete", () => {

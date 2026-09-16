@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { MaskedInput } from "@/components/ui/MaskedInput";
-import { hasCompletePaymentIdentity } from "./payment-identity";
+import { getBrazilianMobileDigits, hasCompletePaymentIdentity, toBrazilianMobilePhone } from "./payment-identity";
 
 interface PaymentIdentityFormProps {
 	initialCpf: string | null;
@@ -25,7 +25,7 @@ export function PaymentIdentityForm({
 	const { t } = useTranslation();
 	const [name, setName] = useDebouncedInput(initialName, () => undefined);
 	const [cpf, setCpf] = useState(initialCpf ?? "");
-	const [phone, setPhone] = useState(initialPhone ?? "");
+	const [phone, setPhone] = useState(getBrazilianMobileDigits(initialPhone));
 	const cpfDigits = cpf.replace(/\D/g, "");
 	const phoneDigits = phone.replace(/\D/g, "");
 	const canSubmit = hasCompletePaymentIdentity(name, cpf, phone);
@@ -36,7 +36,7 @@ export function PaymentIdentityForm({
 			onSubmit={event => {
 				event.preventDefault();
 				if (!canSubmit) return;
-				onSubmit({ cpf: cpfDigits, name: name.trim(), phone: phoneDigits });
+				onSubmit({ cpf: cpfDigits, name: name.trim(), phone: toBrazilianMobilePhone(phoneDigits) });
 			}}
 		>
 			<div className="space-y-1">
