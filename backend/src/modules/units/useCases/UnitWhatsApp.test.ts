@@ -48,7 +48,7 @@ function world(saved = connection()) {
 		logoutSession: mock(() => Promise.resolve({ name: saved.sessionName, status: "STOPPED" })),
 		startSession: mock(() => Promise.resolve({ name: saved.sessionName, status: "STARTING" })),
 	};
-	return { prisma, service: new UnitWhatsApp(prisma, waha as unknown as WahaClient), update, upsert, waha };
+	return { prisma, service: new UnitWhatsApp(prisma, () => waha as unknown as WahaClient), update, upsert, waha };
 }
 
 describe("UnitWhatsApp", () => {
@@ -56,6 +56,15 @@ describe("UnitWhatsApp", () => {
 		expect(buildUnitWhatsAppSessionName("bliss-cookie", "shopping-recife")).toBe(
 			"sim-delivery_bliss-cookie_shopping-recife",
 		);
+	});
+
+	it("does not initialize WAHA while registering the use case", () => {
+		const { prisma } = world();
+		const createWahaClient = mock(() => ({}) as WahaClient);
+
+		new UnitWhatsApp(prisma, createWahaClient);
+
+		expect(createWahaClient).not.toHaveBeenCalled();
 	});
 
 	it("keeps the stored session name and synchronizes the connected phone", async () => {

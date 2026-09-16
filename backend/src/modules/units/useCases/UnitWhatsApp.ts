@@ -35,9 +35,11 @@ function asReturn(connection: UnitConnection, status = connection.lastStatus): U
 }
 
 export class UnitWhatsApp {
+	private waha: WahaClient | undefined;
+
 	constructor(
 		private readonly prisma: PrismaInstance,
-		private readonly waha = new WahaClient(getWahaClientOptions()),
+		private readonly createWahaClient: () => WahaClient = () => new WahaClient(getWahaClientOptions()),
 	) {}
 
 	async get(companyId: string | null, unitId: string): Promise<UnitWhatsAppReturn> {
@@ -55,7 +57,7 @@ export class UnitWhatsApp {
 		}
 
 		try {
-			return asReturn(await this.sync(connection, await this.waha.getSession(connection.sessionName)));
+			return asReturn(await this.sync(connection, await this.getWaha().getSession(connection.sessionName)));
 		} catch (error) {
 			const failed = await this.prisma.unitWhatsAppConnection.update({
 				data: { lastError: "Não foi possível consultar a sessão WAHA.", lastSyncedAt: new Date() },
@@ -77,19 +79,19 @@ export class UnitWhatsApp {
 		try {
 			let session: WahaSessionInfo;
 			try {
-				session = await this.waha.getSession(connection.sessionName);
+				session = await this.getWaha().getSession(connection.sessionName);
 				this.assertOwnership(session, unit.companyId, unitId);
-				if (session.status === "STOPPED") session = await this.waha.startSession(connection.sessionName);
+				if (session.status === "STOPPED") session = await this.getWaha().startSession(connection.sessionName);
 			} catch (error) {
 				if (!(error instanceof WahaRequestError) || error.status !== 404) throw error;
 				try {
-					session = await this.waha.createSession(connection.sessionName, {
+					session = await this.getWaha().createSession(connection.sessionName, {
 						[COMPANY_METADATA]: unit.companyId,
 						[UNIT_METADATA]: unitId,
 					});
 				} catch (createError) {
 					if (!(createError instanceof WahaRequestError) || createError.status !== 409) throw createError;
-					session = await this.waha.getSession(connection.sessionName);
+					session = await this.getWaha().getSession(connection.sessionName);
 					this.assertOwnership(session, unit.companyId, unitId);
 				}
 			}
@@ -109,7 +111,7 @@ export class UnitWhatsApp {
 		const connection = await this.prisma.unitWhatsAppConnection.findUnique({ where: { unitId } });
 		if (!connection) throw new DomainError(UnitErrors.WHATSAPP_NOT_CONFIGURED);
 		try {
-			return await this.waha.getQrDataUrl(connection.sessionName);
+			return await this.getWaha().getQrDataUrl(connection.sessionName);
 		} catch {
 			throw new DomainError(UnitErrors.WHATSAPP_UNAVAILABLE);
 		}
@@ -120,7 +122,7 @@ export class UnitWhatsApp {
 		const connection = await this.prisma.unitWhatsAppConnection.findUnique({ where: { unitId } });
 		if (!connection) throw new DomainError(UnitErrors.WHATSAPP_NOT_CONFIGURED);
 		try {
-			return asReturn(await this.sync(connection, await this.waha.logoutSession(connection.sessionName)));
+			return asReturn(await this.sync(connection, await this.getWaha().logoutSession(connection.sessionName)));
 		} catch {
 			throw new DomainError(UnitErrors.WHATSAPP_UNAVAILABLE);
 		}
@@ -131,6 +133,10 @@ export class UnitWhatsApp {
 		if (metadata?.[COMPANY_METADATA] !== companyId || metadata?.[UNIT_METADATA] !== unitId) {
 			throw new DomainError(UnitErrors.WHATSAPP_SESSION_CONFLICT);
 		}
+	}
+
+	private getWaha(): WahaClient {
+		return (this.waha ??= this.createWahaClient());
 	}
 
 	private async requireUnit(companyId: string | null, unitId: string) {
