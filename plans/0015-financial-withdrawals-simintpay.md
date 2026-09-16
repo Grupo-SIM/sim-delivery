@@ -2,10 +2,10 @@
 
 ## Progresso
 
-- [x] API genérica, carteiras empresariais e saques na SIM INT PAY (`simintpay-back` `0853277`).
+- [x] API genérica, carteiras empresariais e saques na SIM INT PAY (`simintpay-back` `361d849`).
 - [x] Modelo, permissões e API financeira no Sim Delivery.
 - [x] OpenAPI, SDK e dashboard financeira.
-- [~] Reconciliação histórica, testes e validação.
+- [x] Reconciliação histórica, testes e validação.
 
 ## Decisões
 
@@ -18,4 +18,4 @@
 
 ## Próximo passo
 
-Finalizar reconciliação, testes e validação dos dois serviços.
+Implantar SIM INT PAY antes do Sim Delivery; aplicar migrações localmente por ambiente e executar reconciliação primeiro em dry-run. Nenhuma operação remota foi executada.
