@@ -2,7 +2,7 @@
 
 ## Progresso
 
-- [ ] API genérica, carteiras empresariais e saques na SIM INT PAY.
+- [x] API genérica, carteiras empresariais e saques na SIM INT PAY (`simintpay-back` `ca3508f`).
 - [ ] Modelo, permissões e API financeira no Sim Delivery.
 - [ ] OpenAPI, SDK e dashboard financeira.
 - [ ] Reconciliação histórica, testes e validação.
