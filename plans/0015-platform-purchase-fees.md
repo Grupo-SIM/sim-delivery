@@ -6,8 +6,8 @@ Adicionar taxas globais, geridas por super admins, herdadas por todas as empresa
 
 ## Progresso
 
-- [~] Modelar taxas, sobrescritas, snapshots e migração.
-- [ ] Implementar cálculo compartilhado, cotação e criação de pedido.
+- [x] Modelar taxas, sobrescritas, snapshots e migração.
+- [~] Implementar cálculo compartilhado, cotação e criação de pedido.
 - [ ] Criar API administrativa exclusiva de super admin.
 - [ ] Expor taxas efetivas no cardápio e regenerar contratos.
 - [ ] Aplicar preços e detalhamento no storefront e checkout.

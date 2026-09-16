@@ -57,6 +57,7 @@ model Company {
     users      User[]
     inventoryItems InventoryItem[]
     inventorySettings InventorySettings?
+    feeOverrides CompanyFeeOverride[]
 
     @@map("company")
 }

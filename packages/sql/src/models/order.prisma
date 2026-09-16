@@ -18,6 +18,8 @@ model Order {
     discountCents         Int      @default(0)
     cashbackCentsRedeemed Int      @default(0)
     loyaltyPointsRedeemed Int      @default(0)
+    /// Platform surcharges charged on top of merchant prices.
+    feeTotalCents         Int      @default(0)
     total                 Int
     /// "delivery" or "pickup"
     deliveryMethod String
@@ -48,6 +50,7 @@ model Order {
     inventoryMovements InventoryMovement[]
     inventoryReservations InventoryReservation[]
     whatsAppNotifications WhatsAppNotification[]
+    feeSnapshots    OrderFeeSnapshot[]
 
     @@index([companyId, status])
     @@index([companyId, status, createdAt])
@@ -127,6 +130,7 @@ model OrderItem {
     order           Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
     optionSnapshots OrderItemOption[]
     inventoryReservations InventoryReservation[]
+    feeSnapshots          OrderItemFeeSnapshot[]
 
     @@index([orderId])
     @@map("order_item")

@@ -1,0 +1,81 @@
+/// Global platform surcharge inherited by every company unless overridden.
+model PlatformFee {
+    id                  String   @id @default(cuid())
+    name                String
+    /// Lower-cased trimmed name used for case-insensitive uniqueness.
+    nameKey             String   @unique
+    /// product | order
+    applicationScope    String
+    /// fixed | percentage
+    calculationType     String
+    /// Fixed cents or percentage basis points, according to calculationType.
+    value               Int
+    /// product_explicit | embedded | checkout_only
+    displayMode         String
+    active              Boolean  @default(true)
+    deletedAt           DateTime?
+    createdAt           DateTime @default(now())
+    updatedAt           DateTime @updatedAt
+
+    companyOverrides CompanyFeeOverride[]
+    orderSnapshots   OrderFeeSnapshot[]
+
+    @@index([active, deletedAt])
+    @@map("platform_fee")
+}
+
+/// Sparse company-specific value and activation override for a platform fee.
+model CompanyFeeOverride {
+    feeId         String
+    companyId     String
+    valueOverride Int?
+    active        Boolean
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+
+    fee     PlatformFee @relation(fields: [feeId], references: [id], onDelete: Cascade)
+    company Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+    @@id([feeId, companyId])
+    @@index([companyId])
+    @@map("company_fee_override")
+}
+
+/// Immutable aggregate snapshot of one fee charged on one order.
+model OrderFeeSnapshot {
+    id               String   @id @default(cuid())
+    orderId          String
+    platformFeeId    String?
+    name             String
+    applicationScope String
+    calculationType  String
+    configuredValue  Int
+    displayMode      String
+    amountCents      Int
+    createdAt        DateTime @default(now())
+
+    order       Order                  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+    platformFee PlatformFee?           @relation(fields: [platformFeeId], references: [id], onDelete: SetNull)
+    itemFees    OrderItemFeeSnapshot[]
+
+    @@index([orderId])
+    @@index([platformFeeId])
+    @@map("order_fee_snapshot")
+}
+
+/// Immutable per-item allocation for a product-scoped order fee snapshot.
+model OrderItemFeeSnapshot {
+    id                 String   @id @default(cuid())
+    orderFeeSnapshotId String
+    orderItemId        String
+    unitAmountCents    Int
+    amountCents        Int
+    createdAt          DateTime @default(now())
+
+    orderFeeSnapshot OrderFeeSnapshot @relation(fields: [orderFeeSnapshotId], references: [id], onDelete: Cascade)
+    orderItem        OrderItem        @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+
+    @@unique([orderFeeSnapshotId, orderItemId])
+    @@index([orderItemId])
+    @@map("order_item_fee_snapshot")
+}
