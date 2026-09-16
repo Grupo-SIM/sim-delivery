@@ -13,6 +13,7 @@ import { LoyaltyController } from "./modules/loyalty/infra";
 import { MediaController } from "./modules/media/infra/elysia";
 import { OrdersController } from "./modules/orders/infra";
 import { PaymentsController } from "./modules/payments/infra";
+import { PlatformFeesController } from "./modules/platformFees/infra";
 import {
 	ProductReviewsController,
 	PublicProductReviewsController,
@@ -55,6 +56,7 @@ export const server = app.use([
 	DeliveriesController,
 	OrdersController,
 	PaymentsController,
+	PlatformFeesController,
 	ReportsController,
 	ReviewsController,
 	PublicReviewsController,

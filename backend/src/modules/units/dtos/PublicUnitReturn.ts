@@ -1,5 +1,6 @@
 import { t } from "elysia";
 import { PromotionalImageReturn } from "@/modules/promotionalImages/dtos";
+import { EffectiveFeeReturn } from "@/modules/platformFees/dtos";
 
 const PublicUnitHoursReturn = t.Object({
 	closed: t.Boolean(),
@@ -16,6 +17,7 @@ export const PublicUnitReturn = t.Object({
 	deliveryFee: t.Integer(),
 	deliveryMethods: t.Array(t.String()),
 	facebookUrl: t.Nullable(t.String()),
+	fees: t.Array(EffectiveFeeReturn),
 	hours: t.Array(PublicUnitHoursReturn),
 	id: t.String(),
 	imageUrl: t.Nullable(t.String()),

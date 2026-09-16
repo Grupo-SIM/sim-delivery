@@ -1,4 +1,5 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
+import { listEffectiveFees } from "@/modules/platformFees/effectiveFees";
 import type { PublicMenuReturn, PublicMenuSectionReturn } from "../dtos";
 
 /**
@@ -23,6 +24,9 @@ export class ListPublicMenu {
 		if (!unit) {
 			return [];
 		}
+		const productFees = (await listEffectiveFees(this.prisma, company.id)).filter(
+			fee => fee.applicationScope === "product",
+		);
 
 		const associations = await this.prisma.unitProduct.findMany({
 			include: {
@@ -192,6 +196,7 @@ export class ListPublicMenu {
 						sortOrder: g.sortOrder,
 					})),
 					popularity: product.popularity,
+					productFees,
 					priceCents: basePriceCents,
 					productId: product.id,
 					productSlug: product.slug,

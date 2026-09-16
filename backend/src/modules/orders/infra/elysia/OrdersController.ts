@@ -1,5 +1,7 @@
 import Elysia, { t } from "elysia";
 import { RefundPayment } from "@/modules/payments/useCases";
+import { calculatePlatformFees } from "@/modules/platformFees/calculateFees";
+import { listEffectiveFees } from "@/modules/platformFees/effectiveFees";
 import { AuthGuard, CompanyScopeGuard } from "@/modules/users/guards";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
 import { orderEvents } from "@/shared/infra/OrderEvents";
@@ -9,6 +11,8 @@ import {
 	AdminOrderListReturn,
 	CloseOrdersDayReturn,
 	CreateOrderBody,
+	QuoteOrderFeesBody,
+	QuoteOrderFeesReturn,
 	CustomerOrderListReturn,
 	CustomerOrderTrackingReturn,
 	GetCustomerOrderQuery,
@@ -92,6 +96,25 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 					return new Response(stream, { headers: sseHeaders });
 				},
 				{ query: t.Object({ unitId: t.Optional(t.String({ minLength: 1 })) }) },
+			)
+			.post(
+				"/fees/quote",
+				async ({ body, prisma }) => {
+					const company = await prisma.company.findUnique({ select: { id: true }, where: { slug: body.slug } });
+					if (!company) return { embeddedFeeTotalCents: 0, feeTotalCents: 0, fees: [], visibleFeeTotalCents: 0 };
+					const calculated = calculatePlatformFees(await listEffectiveFees(prisma, company.id), body.items);
+					return {
+						embeddedFeeTotalCents: calculated.fees
+							.filter(fee => fee.displayMode === "embedded")
+							.reduce((sum, fee) => sum + fee.amountCents, 0),
+						feeTotalCents: calculated.feeTotalCents,
+						fees: calculated.fees,
+						visibleFeeTotalCents: calculated.fees
+							.filter(fee => fee.displayMode !== "embedded")
+							.reduce((sum, fee) => sum + fee.amountCents, 0),
+					};
+				},
+				{ body: QuoteOrderFeesBody, response: QuoteOrderFeesReturn },
 			)
 			.get(
 				"/",

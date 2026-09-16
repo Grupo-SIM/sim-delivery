@@ -1,4 +1,5 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
+import { listEffectiveFees } from "@/modules/platformFees/effectiveFees";
 import type { PublicUnitListReturn } from "../dtos";
 import { isUnitOpen } from "../isUnitOpen";
 
@@ -19,7 +20,7 @@ export class ListPublicUnits {
 			return [];
 		}
 
-		const [units, ratings] = await Promise.all([
+		const [units, ratings, fees] = await Promise.all([
 			this.prisma.unit.findMany({
 				include: {
 					hours: true,
@@ -38,6 +39,7 @@ export class ListPublicUnits {
 				by: ["orderId"],
 				where: { companyId: company.id },
 			}),
+			listEffectiveFees(this.prisma, company.id),
 		]);
 		const reviewedOrders = await this.prisma.order.findMany({
 			select: { id: true, unitId: true },
@@ -64,6 +66,7 @@ export class ListPublicUnits {
 				deliveryFee: unit.deliveryFee,
 				deliveryMethods: unit.deliveryMethods,
 				facebookUrl: unit.facebookUrl,
+				fees,
 				hours: hours.map(({ closed, closesAt, opensAt, weekday }) => ({
 					closed,
 					closesAt,

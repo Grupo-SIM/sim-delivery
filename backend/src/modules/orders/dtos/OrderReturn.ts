@@ -1,6 +1,35 @@
 import { t } from "elysia";
 import { __nullable__ } from "sql/typebox";
 
+export const OrderFeeReturn = t.Object({
+	amountCents: t.Integer(),
+	applicationScope: t.String(),
+	calculationType: t.String(),
+	configuredValue: t.Integer(),
+	displayMode: t.String(),
+	id: t.String(),
+	name: t.String(),
+});
+
+export const QuoteOrderFeesReturn = t.Object({
+	embeddedFeeTotalCents: t.Integer(),
+	feeTotalCents: t.Integer(),
+	fees: t.Array(
+		t.Object({
+			...OrderFeeReturn.properties,
+			items: t.Array(
+				t.Object({
+					amountCents: t.Integer(),
+					itemKey: t.String(),
+					unitAmountCents: t.Integer(),
+				}),
+			),
+		}),
+	),
+	visibleFeeTotalCents: t.Integer(),
+});
+export type QuoteOrderFeesReturn = typeof QuoteOrderFeesReturn.static;
+
 export const AdminOrderReturn = t.Object({
 	addressId: __nullable__(t.String()),
 	cancelReason: __nullable__(t.String()),
@@ -69,6 +98,9 @@ export const AdminOrderListReturn = t.Array(AdminOrderReturn);
 export type AdminOrderListReturn = typeof AdminOrderListReturn.static;
 
 export const OrderItemReturn = t.Object({
+	displayTotal: t.Optional(t.Integer()),
+	displayUnitPrice: t.Optional(t.Integer()),
+	fees: t.Optional(t.Array(t.Object({ amountCents: t.Integer(), unitAmountCents: t.Integer() }))),
 	id: t.String(),
 	note: __nullable__(t.String()),
 	options: t.Array(
@@ -102,6 +134,8 @@ export const OrderReturn = t.Object({
 	deliveryMethod: t.String(),
 	displayNumber: t.Integer(),
 	discountCents: t.Integer(),
+	feeTotalCents: t.Integer(),
+	fees: t.Optional(t.Array(OrderFeeReturn)),
 	estimatedStatusCompletionAt: __nullable__(t.Date()),
 	id: t.String(),
 	items: t.Array(OrderItemReturn),

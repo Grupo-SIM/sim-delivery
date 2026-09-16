@@ -4,6 +4,8 @@ import { ValidateCoupon } from "@/modules/coupons/useCases";
 import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
 import { LoyaltyErrors } from "@/modules/loyalty/errors";
 import { GetLoyaltyBalance } from "@/modules/loyalty/useCases";
+import { calculatePlatformFees } from "@/modules/platformFees/calculateFees";
+import { listEffectiveFees } from "@/modules/platformFees/effectiveFees";
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CreateOrderBody, OrderReturn } from "../dtos";
@@ -116,7 +118,7 @@ export class CreateOrder {
 			excludedByAssociation.set(exclusion.unitProductId, ids);
 		}
 
-		const resolvedItems = items.map(item => {
+		const resolvedItems = items.map((item, lineIndex) => {
 			const assoc = unitProducts.find(up => up.id === item.unitProductId);
 			if (!assoc) throw new DomainError(OrderErrors.INVALID_ITEM);
 			const selections = item.options ?? [];
@@ -214,6 +216,7 @@ export class CreateOrder {
 				(assoc.promotionalPriceCents ?? assoc.priceCentsOverride ?? assoc.product.basePriceCents) +
 				optionDelta;
 			return {
+				lineIndex,
 				legacyStock: assoc.stock,
 				note: item.note ?? null,
 				options: snapshots,
@@ -229,6 +232,15 @@ export class CreateOrder {
 
 		const subtotal = resolvedItems.reduce((sum, i) => sum + i.total, 0);
 		const deliveryFee = deliveryMethod === "delivery" ? unit.deliveryFee : 0;
+		const effectiveFees = await listEffectiveFees(this.prisma, company.id);
+		const calculatedFees = calculatePlatformFees(
+			effectiveFees,
+			resolvedItems.map(item => ({
+				key: String(item.lineIndex),
+				quantity: item.quantity,
+				unitPrice: item.unitPrice,
+			})),
+		);
 
 		let couponId: string | null = null;
 		let discountCents = 0;
@@ -257,10 +269,12 @@ export class CreateOrder {
 			loyaltyPointsRedeemed = redeemLoyaltyPoints;
 		}
 
-		const total = Math.max(
-			0,
-			subtotal + deliveryFee - discountCents - cashbackCentsRedeemed - loyaltyPointsRedeemed,
-		);
+		let remainingSubtotal = Math.max(0, subtotal - discountCents);
+		cashbackCentsRedeemed = Math.min(cashbackCentsRedeemed, remainingSubtotal);
+		remainingSubtotal -= cashbackCentsRedeemed;
+		loyaltyPointsRedeemed = Math.min(loyaltyPointsRedeemed, remainingSubtotal);
+		remainingSubtotal -= loyaltyPointsRedeemed;
+		const total = remainingSubtotal + deliveryFee + calculatedFees.feeTotalCents;
 
 		try {
 			const order = await this.prisma.$transaction(async tx => {
@@ -276,6 +290,7 @@ export class CreateOrder {
 					discountCents,
 					idempotencyKey,
 					loyaltyPointsRedeemed,
+					feeTotalCents: calculatedFees.feeTotalCents,
 					subtotal,
 					total,
 					unitId,
@@ -326,6 +341,7 @@ export class CreateOrder {
 					data: {
 						...item,
 						legacyStock: undefined,
+						lineIndex: undefined,
 						options: undefined,
 						orderId: created.id,
 						selectedOptions: undefined,
@@ -335,6 +351,31 @@ export class CreateOrder {
 				if (item.options.length > 0) {
 					await tx.orderItemOption.createMany({
 						data: item.options.map(option => ({ ...option, orderItemId: orderItem.id })),
+					});
+				}
+			}
+
+			for (const fee of calculatedFees.fees) {
+				const snapshot = await tx.orderFeeSnapshot.create({
+					data: {
+						amountCents: fee.amountCents,
+						applicationScope: fee.applicationScope,
+						calculationType: fee.calculationType,
+						configuredValue: fee.value,
+						displayMode: fee.displayMode,
+						name: fee.name,
+						orderId: created.id,
+						platformFeeId: fee.id,
+					},
+				});
+				if (fee.items.length > 0) {
+					await tx.orderItemFeeSnapshot.createMany({
+						data: fee.items.map(itemFee => ({
+							amountCents: itemFee.amountCents,
+							orderFeeSnapshotId: snapshot.id,
+							orderItemId: createdItems[Number(itemFee.itemKey)]!.id,
+							unitAmountCents: itemFee.unitAmountCents,
+						})),
 					});
 				}
 			}
@@ -367,14 +408,29 @@ export class CreateOrder {
 			}
 
 				return tx.order.findUniqueOrThrow({
-					include: { items: { include: { optionSnapshots: true } } },
+					include: {
+						feeSnapshots: { include: { itemFees: true } },
+						items: { include: { feeSnapshots: true, optionSnapshots: true } },
+					},
 					where: { id: created.id },
 				});
 			});
 
 			return {
 				...order,
-				items: order.items.map(item => ({ ...item, options: item.optionSnapshots })),
+				fees: order.feeSnapshots,
+				items: order.items.map(item => {
+					const embeddedFeeCents = item.feeSnapshots
+						.filter(fee => order.feeSnapshots.find(snapshot => snapshot.id === fee.orderFeeSnapshotId)?.displayMode === "embedded")
+						.reduce((sum, fee) => sum + fee.amountCents, 0);
+					return {
+						...item,
+						displayTotal: item.total + embeddedFeeCents,
+						displayUnitPrice: item.unitPrice + Math.round(embeddedFeeCents / item.quantity),
+						fees: item.feeSnapshots,
+						options: item.optionSnapshots,
+					};
+				}),
 			};
 		} catch (error) {
 			if (!isDuplicateIdempotencyKeyError(error)) throw error;
@@ -386,14 +442,29 @@ export class CreateOrder {
 
 	private async findOrderByIdempotencyKey(customerId: string, idempotencyKey: string): Promise<OrderReturn | null> {
 		const order = await this.prisma.order.findFirst({
-			include: { items: { include: { optionSnapshots: true } } },
+			include: {
+				feeSnapshots: { include: { itemFees: true } },
+				items: { include: { feeSnapshots: true, optionSnapshots: true } },
+			},
 			where: { customerId, idempotencyKey },
 		});
 		if (!order) return null;
 
 		return {
 			...order,
-			items: order.items.map(item => ({ ...item, options: item.optionSnapshots })),
+			fees: order.feeSnapshots,
+			items: order.items.map(item => {
+				const embeddedFeeCents = item.feeSnapshots
+					.filter(fee => order.feeSnapshots.find(snapshot => snapshot.id === fee.orderFeeSnapshotId)?.displayMode === "embedded")
+					.reduce((sum, fee) => sum + fee.amountCents, 0);
+				return {
+					...item,
+					displayTotal: item.total + embeddedFeeCents,
+					displayUnitPrice: item.unitPrice + Math.round(embeddedFeeCents / item.quantity),
+					fees: item.feeSnapshots,
+					options: item.optionSnapshots,
+				};
+			}),
 		};
 	}
 }

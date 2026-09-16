@@ -65,3 +65,16 @@ export const CreateOrderBody = t.Object({
 	unitSlug: t.String({ minLength: 1 }),
 });
 export type CreateOrderBody = typeof CreateOrderBody.static;
+
+export const QuoteOrderFeesBody = t.Object({
+	items: t.Array(
+		t.Object({
+			key: t.String({ minLength: 1 }),
+			quantity: t.Integer({ minimum: 1 }),
+			unitPrice: t.Integer({ minimum: 0 }),
+		}),
+		{ minItems: 1 },
+	),
+	slug: t.String({ minLength: 1 }),
+});
+export type QuoteOrderFeesBody = typeof QuoteOrderFeesBody.static;

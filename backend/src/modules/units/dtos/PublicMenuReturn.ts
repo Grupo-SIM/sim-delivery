@@ -1,4 +1,5 @@
 import { t } from "elysia";
+import { EffectiveFeeReturn } from "@/modules/platformFees/dtos";
 
 export const PublicOptionReturn = t.Object({
 	description: t.String(),
@@ -33,6 +34,7 @@ export const PublicMenuItemReturn = t.Object({
 	imageUrl: t.String(),
 	optionGroups: t.Array(PublicOptionGroupReturn),
 	popularity: t.Integer(),
+	productFees: t.Array(EffectiveFeeReturn),
 	priceCents: t.Integer(),
 	productId: t.String(),
 	productSlug: t.String(),
