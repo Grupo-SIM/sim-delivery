@@ -548,18 +548,23 @@
 					"action": "Imprimir",
 					"address": "Endereço",
 					"addressMissing": "ENDEREÇO NÃO INFORMADO",
+					"amountDue": "Cobrar do cliente",
 					"cashback": "Cashback",
 					"customer": "Cliente",
+					"customerCpf": "CPF na nota",
 					"date": "Data",
 					"delivery": "ENTREGA",
 					"deliveryFee": "Entrega",
 					"discount": "Descontos",
 					"error": "Não foi possível preparar o recibo. Tente novamente.",
 					"errorTitle": "Falha ao imprimir",
+					"estimatedDelivery": "Entrega prevista",
+					"firstOrder": "Primeiro pedido!",
 					"loyalty": "Fidelidade",
 					"note": "OBSERVAÇÃO",
 					"order": "PEDIDO",
 					"payment": "Pagamento",
+					"paymentAmount": "Pagamento online",
 					"paymentMethod": {
 						"credit_card": "Cartão de crédito",
 						"pix": "PIX"
@@ -856,9 +861,17 @@
 						"description": "Endereço completo quando for entrega",
 						"label": "Endereço"
 					},
+					"amountDue": {
+						"description": "Saldo restante após o pagamento online",
+						"label": "Cobrar do cliente"
+					},
 					"cashback": {
 						"description": "Crédito de cashback usado",
 						"label": "Cashback"
+					},
+					"customerCpf": {
+						"description": "CPF informado pelo cliente no pagamento",
+						"label": "CPF na nota"
 					},
 					"customerName": {
 						"description": "Nome de quem fez o pedido",
@@ -884,6 +897,14 @@
 						"description": "Descontos aplicados ao pedido",
 						"label": "Descontos"
 					},
+					"estimatedDelivery": {
+						"description": "Horário previsto configurado no pedido",
+						"label": "Entrega prevista"
+					},
+					"firstOrder": {
+						"description": "Aviso exibido somente na primeira compra",
+						"label": "Indicador de primeiro pedido"
+					},
 					"items": {
 						"description": "Produtos, adicionais e observações",
 						"label": "Itens do pedido"
@@ -899,6 +920,10 @@
 					"payment": {
 						"description": "Método e situação do pagamento",
 						"label": "Pagamento"
+					},
+					"paymentAmount": {
+						"description": "Valor já coberto pelo pagamento online",
+						"label": "Valor pago online"
 					},
 					"preparedBy": {
 						"description": "Funcionário responsável pelo preparo",
@@ -939,6 +964,11 @@
 				},
 				"loadError": "Não foi possível carregar o modelo do recibo.",
 				"navTitle": "Recibo impresso",
+				"orderNumber": {
+					"giant": "Gigante com fundo preto",
+					"normal": "Normal",
+					"style": "Apresentação do número"
+				},
 				"preview": {
 					"frameTitle": "Prévia do recibo térmico",
 					"title": "Prévia real"
@@ -953,6 +983,11 @@
 					"error": "Não foi possível salvar o modelo do recibo.",
 					"pending": "Salvando...",
 					"success": "Modelo do recibo salvo."
+				},
+				"separator": {
+					"dashed": "Tracejado",
+					"solid": "Contínuo",
+					"style": "Estilo da linha"
 				},
 				"subtitle": "Defina exatamente o que sai na bobina e em qual ordem.",
 				"text": {

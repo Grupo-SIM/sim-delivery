@@ -24,7 +24,8 @@ describe("receipt templates", () => {
 		} as unknown as PrismaInstance;
 		const blocks = [
 			{ align: "center" as const, content: "Obrigado!", id: "text-1", type: "text" as const },
-			{ id: "separator-1", type: "separator" as const },
+			{ id: "separator-1", separatorStyle: "dashed" as const, type: "separator" as const },
+			{ id: "order-number", orderNumberStyle: "giant" as const, type: "orderNumber" as const },
 			{ id: "items", type: "items" as const },
 		];
 		expect(await new UpdateReceiptTemplate(prisma).execute({ blocks, companyId: "cmp_1" })).toEqual({ blocks });

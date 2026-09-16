@@ -23,16 +23,21 @@ beforeAll(async () => {
 const labels: OrderReceiptLabels = {
 	address: "Endereço",
 	addressMissing: "ENDEREÇO NÃO INFORMADO",
+	amountDue: "Cobrar do cliente",
 	cashback: "Cashback",
 	customer: "Cliente",
+	customerCpf: "CPF na nota",
 	date: "Data",
 	delivery: "ENTREGA",
 	deliveryFee: "Entrega",
 	discount: "Descontos",
+	estimatedDelivery: "Entrega prevista",
+	firstOrder: "Primeiro pedido!",
 	loyalty: "Fidelidade",
 	note: "OBSERVAÇÃO",
 	order: "PEDIDO",
 	payment: "Pagamento",
+	paymentAmount: "Pagamento online",
 	paymentMethod: "PIX",
 	paymentMissing: "Pagamento não informado",
 	paymentStatus: "Confirmado",
@@ -84,12 +89,14 @@ const receipt: GetOrdersByOrderIdReceipt200 = {
 	},
 	cashbackCentsRedeemed: 100,
 	createdAt: new Date("2026-08-31T15:30:00.000Z"),
-	customer: { name: "Ana", phone: "85999999999" },
+	customer: { cpf: "52998224725", name: "Ana", phone: "85999999999" },
 	deliveryFee: 500,
 	deliveryMethod: "delivery",
 	discountCents: 200,
 	displayNumber: 42,
+	estimatedDeliveryAt: new Date("2026-08-31T16:15:00.000Z"),
 	id: "ord_1",
+	isFirstOrder: true,
 	items: [
 		{
 			id: "item_1",
@@ -109,7 +116,7 @@ const receipt: GetOrdersByOrderIdReceipt200 = {
 		},
 	],
 	loyaltyPointsRedeemed: 50,
-	payment: { method: "pix", status: "confirmed" },
+	payment: { amount: 3750, method: "pix", refundedAmount: 0, status: "confirmed" },
 	preparedBy: { id: "staff_1", name: "Carlos" },
 	status: "em_preparo",
 	subtotal: 3600,
@@ -142,7 +149,7 @@ describe("createOrderReceiptPdf", () => {
 				address: null,
 				deliveryFee: 0,
 				deliveryMethod: "pickup",
-				payment: { method: "credit_card", status: "pending" },
+				payment: { amount: 3750, method: "credit_card", refundedAmount: 0, status: "pending" },
 			},
 			{ ...labels, paymentMethod: "Cartão de crédito", paymentStatus: "Pendente" },
 		);
@@ -175,6 +182,38 @@ describe("createOrderReceiptPdf", () => {
 		expect(document.output()).toContain("Bacon");
 		expect(document.output()).not.toContain("Unidade Centro");
 		expect(document.output()).not.toContain("Subtotal");
+	});
+
+	it("renders dispatch indicators, giant number, dashed divider, CPF and payment balances", () => {
+		const document = createOrderReceiptPdf(
+			{
+				...receipt,
+				template: {
+					blocks: [
+						{ id: "order-number", orderNumberStyle: "giant", type: "orderNumber" },
+						{ id: "first-order", type: "firstOrder" },
+						{ id: "estimated-delivery", type: "estimatedDelivery" },
+						{ id: "cpf", type: "customerCpf" },
+						{ id: "separator", separatorStyle: "dashed", type: "separator" },
+						{ id: "payment", type: "payment" },
+						{ id: "payment-amount", type: "paymentAmount" },
+						{ id: "cashback", type: "cashback" },
+						{ id: "loyalty", type: "loyalty" },
+						{ id: "amount-due", type: "amountDue" },
+					],
+				},
+			},
+			labels,
+		);
+
+		const output = document.output();
+		expect(output).toContain("Primeiro pedido!");
+		expect(output).toContain("Entrega prevista");
+		expect(output).toContain("529.982.247-25");
+		expect(output).toContain("Pagamento online");
+		expect(output).toContain("Cobrar do cliente");
+		expect(output).toContain("Cashback");
+		expect(output).toContain("Fidelidade");
 	});
 
 	it("grows page height and preserves the final marker for long content", () => {

@@ -5,7 +5,7 @@ import type { ReceiptBlockMeta, ReceiptBlockType, ReceiptTemplate } from "./type
 export const DEFAULT_RECEIPT_TEMPLATE: ReceiptTemplate = {
 	blocks: [
 		{ id: "unit-name", type: "unitName" },
-		{ id: "order-number", type: "orderNumber" },
+		{ id: "order-number", orderNumberStyle: "normal", type: "orderNumber" },
 		{ id: "status", type: "status" },
 		{ id: "date", type: "date" },
 		{ id: "separator-1", type: "separator" },
@@ -34,12 +34,17 @@ export const DYNAMIC_BLOCK_TYPES: ReceiptBlockType[] = [
 	"orderNumber",
 	"status",
 	"date",
+	"estimatedDelivery",
+	"firstOrder",
 	"deliveryMethod",
 	"customerName",
 	"customerPhone",
+	"customerCpf",
 	"address",
 	"items",
 	"payment",
+	"paymentAmount",
+	"amountDue",
 	"subtotal",
 	"deliveryFee",
 	"discount",
@@ -55,6 +60,10 @@ export function createBlockMeta(t: TFunction): Record<ReceiptBlockType, ReceiptB
 			description: t("admin.receiptTemplate.blocks.address.description"),
 			label: t("admin.receiptTemplate.blocks.address.label"),
 		},
+		amountDue: {
+			description: t("admin.receiptTemplate.blocks.amountDue.description"),
+			label: t("admin.receiptTemplate.blocks.amountDue.label"),
+		},
 		cashback: {
 			description: t("admin.receiptTemplate.blocks.cashback.description"),
 			label: t("admin.receiptTemplate.blocks.cashback.label"),
@@ -62,6 +71,10 @@ export function createBlockMeta(t: TFunction): Record<ReceiptBlockType, ReceiptB
 		customerName: {
 			description: t("admin.receiptTemplate.blocks.customerName.description"),
 			label: t("admin.receiptTemplate.blocks.customerName.label"),
+		},
+		customerCpf: {
+			description: t("admin.receiptTemplate.blocks.customerCpf.description"),
+			label: t("admin.receiptTemplate.blocks.customerCpf.label"),
 		},
 		customerPhone: {
 			description: t("admin.receiptTemplate.blocks.customerPhone.description"),
@@ -83,6 +96,14 @@ export function createBlockMeta(t: TFunction): Record<ReceiptBlockType, ReceiptB
 			description: t("admin.receiptTemplate.blocks.discount.description"),
 			label: t("admin.receiptTemplate.blocks.discount.label"),
 		},
+		estimatedDelivery: {
+			description: t("admin.receiptTemplate.blocks.estimatedDelivery.description"),
+			label: t("admin.receiptTemplate.blocks.estimatedDelivery.label"),
+		},
+		firstOrder: {
+			description: t("admin.receiptTemplate.blocks.firstOrder.description"),
+			label: t("admin.receiptTemplate.blocks.firstOrder.label"),
+		},
 		items: {
 			description: t("admin.receiptTemplate.blocks.items.description"),
 			label: t("admin.receiptTemplate.blocks.items.label"),
@@ -98,6 +119,10 @@ export function createBlockMeta(t: TFunction): Record<ReceiptBlockType, ReceiptB
 		payment: {
 			description: t("admin.receiptTemplate.blocks.payment.description"),
 			label: t("admin.receiptTemplate.blocks.payment.label"),
+		},
+		paymentAmount: {
+			description: t("admin.receiptTemplate.blocks.paymentAmount.description"),
+			label: t("admin.receiptTemplate.blocks.paymentAmount.label"),
 		},
 		preparedBy: {
 			description: t("admin.receiptTemplate.blocks.preparedBy.description"),
@@ -131,15 +156,26 @@ export function createBlockMeta(t: TFunction): Record<ReceiptBlockType, ReceiptB
 }
 
 export const SAMPLE_RECEIPT: GetOrdersByOrderIdReceipt200 = {
-	address: null,
+	address: {
+		addressLine: "Rua das Rosas",
+		city: "Rio Branco",
+		complement: "Apto 2",
+		neighborhood: "Jardim Primavera",
+		number: "292",
+		reference: null,
+		state: "AC",
+		zipCode: "69919-602",
+	},
 	cashbackCentsRedeemed: 0,
 	createdAt: new Date("2026-09-14T14:39:00.000Z"),
-	customer: { name: "Vender Teste", phone: "(81) 99999-9999" },
+	customer: { cpf: "05041757267", name: "Neto Araujo", phone: "0800 705 1020" },
 	deliveryFee: 0,
-	deliveryMethod: "pickup",
+	deliveryMethod: "delivery",
 	discountCents: 0,
 	displayNumber: 18,
+	estimatedDeliveryAt: new Date("2026-09-14T15:23:00.000Z"),
 	id: "preview",
+	isFirstOrder: true,
 	items: [
 		{
 			id: "preview-item",
@@ -152,7 +188,7 @@ export const SAMPLE_RECEIPT: GetOrdersByOrderIdReceipt200 = {
 		},
 	],
 	loyaltyPointsRedeemed: 0,
-	payment: { method: "pix", status: "confirmed" },
+	payment: { amount: 2490, method: "pix", refundedAmount: 0, status: "confirmed" },
 	preparedBy: { id: "preview-staff", name: "João" },
 	status: "entregue",
 	subtotal: 2490,

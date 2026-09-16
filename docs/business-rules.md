@@ -53,6 +53,10 @@ possui **N unidades** (lojas físicas). Detalhes em
   responsável) aparece no máximo uma vez;
   textos personalizados e linhas divisórias podem aparecer várias vezes. Qualquer bloco
   pode ser removido, reordenado e posteriormente adicionado novamente.
+- O recibo pode destacar o número do pedido em uma faixa preta, usar divisores contínuos
+  ou tracejados e exibir, quando disponíveis, previsão, indicador de primeiro pedido, CPF,
+  valor pago online e saldo a cobrar. Cashback, fidelidade, descontos e entrega permanecem
+  linhas financeiras independentes; taxas adicionais ficam fora do escopo até serem modeladas.
 
 ## Índice
 

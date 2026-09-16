@@ -17,12 +17,13 @@ export const OrderReceiptReturn = t.Object({
 	),
 	cashbackCentsRedeemed: t.Integer(),
 	createdAt: t.Date(),
-	customer: t.Object({ name: t.String(), phone: __nullable__(t.String()) }),
+	customer: t.Object({ cpf: __nullable__(t.String()), name: t.String(), phone: __nullable__(t.String()) }),
 	deliveryFee: t.Integer(),
 	deliveryMethod: t.String(),
 	discountCents: t.Integer(),
 	displayNumber: t.Integer(),
 	id: t.String(),
+	isFirstOrder: t.Boolean(),
 	items: t.Array(
 		t.Object({
 			id: t.String(),
@@ -42,8 +43,11 @@ export const OrderReceiptReturn = t.Object({
 		}),
 	),
 	loyaltyPointsRedeemed: t.Integer(),
-	payment: __nullable__(t.Object({ method: t.String(), status: t.String() })),
+	payment: __nullable__(
+		t.Object({ amount: t.Integer(), method: t.String(), refundedAmount: t.Integer(), status: t.String() }),
+	),
 	preparedBy: __nullable__(t.Object({ id: t.String(), name: t.String() })),
+	estimatedDeliveryAt: __nullable__(t.Date()),
 	status: t.String(),
 	subtotal: t.Integer(),
 	template: ReceiptTemplate,

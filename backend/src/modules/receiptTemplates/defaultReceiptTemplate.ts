@@ -3,7 +3,7 @@ import type { ReceiptTemplate } from "./dtos";
 export const defaultReceiptTemplate: ReceiptTemplate = {
 	blocks: [
 		{ id: "unit-name", type: "unitName" },
-		{ id: "order-number", type: "orderNumber" },
+		{ id: "order-number", orderNumberStyle: "normal", type: "orderNumber" },
 		{ id: "status", type: "status" },
 		{ id: "date", type: "date" },
 		{ id: "separator-1", type: "separator" },

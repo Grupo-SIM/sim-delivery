@@ -17,11 +17,13 @@ const receiptOrder = {
 	companyId: "cmp_1",
 	company: { receiptTemplate: null },
 	createdAt: new Date("2026-08-31T15:30:00.000Z"),
-	customer: { phone: "85999999999", user: { name: "Ana", phoneNumber: null } },
+	customer: { cpf: "52998224725", phone: "85999999999", user: { name: "Ana", phoneNumber: null } },
+	customerId: "cust_1",
 	deliveryFee: 500,
 	deliveryMethod: "delivery",
 	discountCents: 200,
 	displayNumber: 42,
+	estimatedStatusCompletionAt: new Date("2026-08-31T16:15:00.000Z"),
 	id: "ord_1",
 	items: [
 		{
@@ -42,7 +44,7 @@ const receiptOrder = {
 		},
 	],
 	loyaltyPointsRedeemed: 50,
-	payment: { method: "pix", status: "confirmed" },
+	payment: { amount: 3750, method: "pix", refundedAmount: 0, status: "confirmed" },
 	preparedBy: { id: "staff_1", name: "Carlos" },
 	status: "em_preparo",
 	subtotal: 3600,
@@ -50,10 +52,11 @@ const receiptOrder = {
 	unit: { id: "unit_1", name: "Unidade Centro" },
 };
 
-function makePrisma(order: typeof receiptOrder | null = receiptOrder) {
+function makePrisma(order: typeof receiptOrder | null = receiptOrder, previousOrderCount = 0) {
 	let receivedWhere: Record<string, unknown> | undefined;
 	const prisma = {
 		order: {
+			count: async () => previousOrderCount,
 			findFirst: async ({ where }: { where: Record<string, unknown> }) => {
 				receivedWhere = where;
 				if (!order || where.id !== order.id) return null;
@@ -69,14 +72,22 @@ describe("GetOrderReceipt", () => {
 	it("returns a complete receipt without mutating the order", async () => {
 		const { prisma } = makePrisma();
 		const result = await new GetOrderReceipt(prisma).execute("cmp_1", "ord_1", "manager", "staff_1");
-		const { company: _company, companyId: _companyId, ...publicReceiptOrder } = receiptOrder;
+		const {
+			company: _company,
+			companyId: _companyId,
+			customerId: _customerId,
+			estimatedStatusCompletionAt,
+			...publicReceiptOrder
+		} = receiptOrder;
 
 		expect(result).toEqual({
 			...publicReceiptOrder,
+			estimatedDeliveryAt: estimatedStatusCompletionAt,
+			isFirstOrder: true,
 			template: {
 				blocks: [
 					{ id: "unit-name", type: "unitName" },
-					{ id: "order-number", type: "orderNumber" },
+					{ id: "order-number", orderNumberStyle: "normal", type: "orderNumber" },
 					{ id: "status", type: "status" },
 					{ id: "date", type: "date" },
 					{ id: "separator-1", type: "separator" },
@@ -99,7 +110,7 @@ describe("GetOrderReceipt", () => {
 					{ id: "prepared-by", type: "preparedBy" },
 				],
 			},
-			customer: { name: "Ana", phone: "85999999999" },
+			customer: { cpf: "52998224725", name: "Ana", phone: "85999999999" },
 			items: [
 				{
 					id: "item_1",
@@ -127,6 +138,12 @@ describe("GetOrderReceipt", () => {
 		const result = await new GetOrderReceipt(prisma).execute("cmp_1", "ord_1", "attendant", "staff_2");
 		expect(result.address).toBeNull();
 		expect(result.deliveryMethod).toBe("pickup");
+	});
+
+	it("marks customers with previous company orders as returning", async () => {
+		const { prisma } = makePrisma(receiptOrder, 1);
+		const result = await new GetOrderReceipt(prisma).execute("cmp_1", "ord_1", "manager", "staff_1");
+		expect(result.isFirstOrder).toBe(false);
 	});
 
 	it("returns ORDER_NOT_FOUND for another tenant", async () => {

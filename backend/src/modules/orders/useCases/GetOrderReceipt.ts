@@ -21,7 +21,7 @@ export class GetOrderReceipt {
 				company: { select: { receiptTemplate: true } },
 				customer: { include: { user: { select: { name: true, phoneNumber: true } } } },
 				items: { include: { optionSnapshots: true } },
-				payment: { select: { method: true, status: true } },
+				payment: { select: { amount: true, method: true, refundedAmount: true, status: true } },
 				preparedBy: { select: { id: true, name: true } },
 				unit: { select: { id: true, name: true } },
 			},
@@ -33,6 +33,14 @@ export class GetOrderReceipt {
 		});
 
 		if (!order) throw new DomainError(OrderErrors.ORDER_NOT_FOUND);
+		const previousOrders = await this.prisma.order.count({
+			where: {
+				companyId: order.companyId,
+				customerId: order.customerId,
+				displayNumber: { lt: order.displayNumber },
+				status: { not: "cancelado" },
+			},
+		});
 
 		return {
 			address: order.address
@@ -50,6 +58,7 @@ export class GetOrderReceipt {
 			cashbackCentsRedeemed: order.cashbackCentsRedeemed,
 			createdAt: order.createdAt,
 			customer: {
+				cpf: order.customer.cpf,
 				name: order.customer.user.name ?? "",
 				phone: order.customer.phone ?? order.customer.user.phoneNumber ?? null,
 			},
@@ -57,7 +66,9 @@ export class GetOrderReceipt {
 			deliveryMethod: order.deliveryMethod,
 			discountCents: order.discountCents,
 			displayNumber: order.displayNumber,
+			estimatedDeliveryAt: order.estimatedStatusCompletionAt,
 			id: order.id,
+			isFirstOrder: previousOrders === 0,
 			items: order.items.map(item => ({
 				id: item.id,
 				note: item.note,

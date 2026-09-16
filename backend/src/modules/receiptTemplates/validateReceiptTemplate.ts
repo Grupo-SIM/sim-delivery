@@ -1,13 +1,16 @@
 import type { ReceiptTemplate } from "./dtos";
 
 const singletonTypes = new Set([
-	"unitName", "orderNumber", "status", "date", "deliveryMethod", "customerName", "customerPhone",
-	"address", "items", "payment", "subtotal", "deliveryFee", "discount", "cashback", "loyalty", "total",
+	"unitName", "orderNumber", "status", "date", "estimatedDelivery", "firstOrder", "deliveryMethod",
+	"customerName", "customerPhone", "customerCpf", "address", "items", "payment", "paymentAmount",
+	"amountDue", "subtotal", "deliveryFee", "discount", "cashback", "loyalty", "total",
 	"preparedBy",
 ]);
 const allowedTypes = new Set([...singletonTypes, "separator", "text"]);
 const allowedAlignments = new Set(["left", "center", "right"]);
 const allowedSizes = new Set(["small", "normal", "large"]);
+const allowedOrderNumberStyles = new Set(["normal", "giant"]);
+const allowedSeparatorStyles = new Set(["solid", "dashed"]);
 
 export function isValidReceiptTemplate(value: unknown): value is ReceiptTemplate {
 	if (!value || typeof value !== "object" || !("blocks" in value) || !Array.isArray(value.blocks)) return false;
@@ -21,6 +24,8 @@ export function isValidReceiptTemplate(value: unknown): value is ReceiptTemplate
 		if ("size" in block && block.size !== undefined && !allowedSizes.has(String(block.size))) return false;
 		if ("bold" in block && block.bold !== undefined && typeof block.bold !== "boolean") return false;
 		if ("content" in block && block.content !== undefined && (typeof block.content !== "string" || block.content.length > 500)) return false;
+		if ("orderNumberStyle" in block && block.orderNumberStyle !== undefined && !allowedOrderNumberStyles.has(String(block.orderNumberStyle))) return false;
+		if ("separatorStyle" in block && block.separatorStyle !== undefined && !allowedSeparatorStyles.has(String(block.separatorStyle))) return false;
 		if (ids.has(block.id)) return false;
 		ids.add(block.id);
 		if (singletonTypes.has(block.type)) {

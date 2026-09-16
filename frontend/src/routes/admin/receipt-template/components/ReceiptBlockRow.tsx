@@ -58,6 +58,38 @@ export function ReceiptBlockRow({ block, meta, onChange, onRemove }: ReceiptBloc
 				</Tooltip>
 			</div>
 
+			{block.type === "orderNumber" && (
+				<div className="mt-4 space-y-2 border-border/70 border-t pt-4">
+					<span className="font-medium text-sm">{t("admin.receiptTemplate.orderNumber.style")}</span>
+					<CustomSelect
+						onChange={orderNumberStyle =>
+							onChange({ ...block, orderNumberStyle: orderNumberStyle as ReceiptBlock["orderNumberStyle"] })
+						}
+						options={[
+							{ label: t("admin.receiptTemplate.orderNumber.normal"), value: "normal" },
+							{ label: t("admin.receiptTemplate.orderNumber.giant"), value: "giant" },
+						]}
+						value={block.orderNumberStyle ?? "normal"}
+					/>
+				</div>
+			)}
+
+			{block.type === "separator" && (
+				<div className="mt-4 space-y-2 border-border/70 border-t pt-4">
+					<span className="font-medium text-sm">{t("admin.receiptTemplate.separator.style")}</span>
+					<CustomSelect
+						onChange={separatorStyle =>
+							onChange({ ...block, separatorStyle: separatorStyle as ReceiptBlock["separatorStyle"] })
+						}
+						options={[
+							{ label: t("admin.receiptTemplate.separator.solid"), value: "solid" },
+							{ label: t("admin.receiptTemplate.separator.dashed"), value: "dashed" },
+						]}
+						value={block.separatorStyle ?? "solid"}
+					/>
+				</div>
+			)}
+
 			{block.type === "text" && (
 				<div className="mt-4 grid gap-3 border-border/70 border-t pt-4 sm:grid-cols-2">
 					<TextField

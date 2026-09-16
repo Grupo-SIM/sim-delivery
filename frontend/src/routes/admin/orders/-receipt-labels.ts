@@ -10,16 +10,21 @@ export function getOrderReceiptLabels(
 	return {
 		address: t("admin.orders.receipt.address"),
 		addressMissing: t("admin.orders.receipt.addressMissing"),
+		amountDue: t("admin.orders.receipt.amountDue"),
 		cashback: t("admin.orders.receipt.cashback"),
 		customer: t("admin.orders.receipt.customer"),
+		customerCpf: t("admin.orders.receipt.customerCpf"),
 		date: t("admin.orders.receipt.date"),
 		delivery: t("admin.orders.receipt.delivery"),
 		deliveryFee: t("admin.orders.receipt.deliveryFee"),
 		discount: t("admin.orders.receipt.discount"),
+		estimatedDelivery: t("admin.orders.receipt.estimatedDelivery"),
+		firstOrder: t("admin.orders.receipt.firstOrder"),
 		loyalty: t("admin.orders.receipt.loyalty"),
 		note: t("admin.orders.receipt.note"),
 		order: t("admin.orders.receipt.order"),
 		payment: t("admin.orders.receipt.payment"),
+		paymentAmount: t("admin.orders.receipt.paymentAmount"),
 		paymentMethod: paymentMethod
 			? t(`admin.orders.receipt.paymentMethod.${paymentMethod}`, { defaultValue: paymentMethod })
 			: "",
