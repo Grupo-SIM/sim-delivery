@@ -931,8 +931,8 @@
 						"label": "Valor pago online"
 					},
 					"preparedBy": {
-						"description": "Funcionários responsáveis pelo preparo e pela entrega",
-						"label": "Responsáveis pelo preparo e entrega"
+						"description": "Funcionários responsáveis pelas etapas do pedido",
+						"label": "Responsáveis pelo pedido"
 					},
 					"separator": {
 						"description": "Linha horizontal para dividir seções",
