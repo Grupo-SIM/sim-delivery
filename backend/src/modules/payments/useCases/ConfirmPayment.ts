@@ -32,7 +32,7 @@ export class ConfirmPayment {
 						user: { select: { email: true, phoneNumber: true } },
 					},
 				},
-				unit: true,
+				unit: { include: { whatsAppConnection: { select: { sessionName: true } } } },
 			},
 			where: { id: payment.orderId },
 		});
@@ -65,6 +65,7 @@ export class ConfirmPayment {
 				data: { orderId: order.id, status: "recebido" },
 			});
 			await dispatchOrderStatusWhatsApp({
+				companyId: order.companyId,
 				customer: order.customer,
 				deduplicationKey: statusEvent?.id
 					? `order-status:${statusEvent.id}`
@@ -75,6 +76,8 @@ export class ConfirmPayment {
 				prisma: tx,
 				status: "recebido",
 				templates,
+				unitId: order.unitId,
+				unitWhatsAppSession: order.unit.whatsAppConnection?.sessionName,
 				whatsApp: this.whatsApp,
 			});
 

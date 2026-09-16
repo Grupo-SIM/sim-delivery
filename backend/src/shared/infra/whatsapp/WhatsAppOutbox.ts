@@ -7,6 +7,7 @@ type OutboxClient = Pick<PrismaInstance, "whatsAppNotification">;
 
 interface DispatchWhatsAppInput {
 	attachments?: WhatsAppAttachment[];
+	companyId: string;
 	deduplicationKey: string;
 	message: string;
 	orderId: string;
@@ -14,10 +15,13 @@ interface DispatchWhatsAppInput {
 	phone: string;
 	prisma: OutboxClient;
 	provider: WhatsAppSender;
+	sessionName?: string | null;
+	unitId: string;
 }
 
 export async function dispatchWhatsApp({
 	attachments = [],
+	companyId,
 	deduplicationKey,
 	message,
 	orderId,
@@ -25,16 +29,21 @@ export async function dispatchWhatsApp({
 	phone,
 	prisma,
 	provider,
+	sessionName,
+	unitId,
 }: DispatchWhatsAppInput): Promise<void> {
 	if (provider.deliveryMode === "outbox") {
 		await prisma.whatsAppNotification.upsert({
 			create: {
 				attachments: attachments.map(attachment => ({ ...attachment })),
+				companyId,
 				deduplicationKey,
 				message,
 				orderId,
 				orderStatus,
 				recipient: phone,
+				sessionName,
+				unitId,
 			},
 			update: {},
 			where: { deduplicationKey },
@@ -100,12 +109,21 @@ export class ProcessWhatsAppOutbox {
 
 			const attempt = candidate.attempts + 1;
 			try {
-				await this.provider.sendMessage(candidate.recipient, {
-					attachments: Array.isArray(candidate.attachments)
-						? (candidate.attachments as unknown as WhatsAppAttachment[])
-						: [],
-					text: candidate.message,
-				});
+				let sessionName = candidate.sessionName ?? undefined;
+				if (sessionName && this.provider.getSessionStatus) {
+					const sessionStatus = await this.provider.getSessionStatus(sessionName);
+					if (sessionStatus !== "WORKING") sessionName = undefined;
+				}
+				await this.provider.sendMessage(
+					candidate.recipient,
+					{
+						attachments: Array.isArray(candidate.attachments)
+							? (candidate.attachments as unknown as WhatsAppAttachment[])
+							: [],
+						text: candidate.message,
+					},
+					sessionName,
+				);
 				await this.prisma.whatsAppNotification.updateMany({
 					data: { lastError: null, leaseUntil: null, sentAt: new Date(), status: "sent" },
 					where: { id: candidate.id, leaseUntil, status: "processing" },

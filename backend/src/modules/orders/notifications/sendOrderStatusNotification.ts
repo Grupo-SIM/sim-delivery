@@ -18,6 +18,7 @@ export interface OrderStatusNotificationCustomer {
 }
 
 interface SendOrderStatusNotificationInput {
+	companyId: string;
 	customer: OrderStatusNotificationCustomer;
 	deliveryMethod: string;
 	emailSender?: OrderStatusEmailSender;
@@ -26,11 +27,16 @@ interface SendOrderStatusNotificationInput {
 	orderNumber: number;
 	reviewUrl?: string;
 	status: string;
+	unitId: string;
+	unitWhatsAppSession?: string | null;
 	templates?: Record<string, string | OrderStatusWhatsAppTemplate> | null;
 	whatsApp: WhatsAppSender;
 }
 
-type SendOrderStatusEmailInput = Omit<SendOrderStatusNotificationInput, "whatsApp">;
+type SendOrderStatusEmailInput = Omit<
+	SendOrderStatusNotificationInput,
+	"companyId" | "unitId" | "unitWhatsAppSession" | "whatsApp"
+>;
 
 interface DispatchOrderStatusWhatsAppInput extends SendOrderStatusNotificationInput {
 	deduplicationKey: string;
@@ -64,6 +70,7 @@ export function getOrderStatusNotificationMessage({
 
 export async function dispatchOrderStatusWhatsApp({
 	customer,
+	companyId,
 	deduplicationKey,
 	deliveryMethod,
 	message: messageOverride,
@@ -73,6 +80,8 @@ export async function dispatchOrderStatusWhatsApp({
 	status,
 	templates,
 	whatsApp,
+	unitId,
+	unitWhatsAppSession,
 }: DispatchOrderStatusWhatsAppInput): Promise<void> {
 	const phone = customer.phone ?? customer.user?.phoneNumber;
 	if (customer.notificationWhatsApp === false || !phone) return;
@@ -86,6 +95,7 @@ export async function dispatchOrderStatusWhatsApp({
 	const { attachments = [] } = getOrderStatusWhatsAppTemplate(templates, status);
 	await dispatchWhatsApp({
 		attachments,
+		companyId,
 		deduplicationKey,
 		message,
 		orderId,
@@ -93,6 +103,8 @@ export async function dispatchOrderStatusWhatsApp({
 		phone,
 		prisma,
 		provider: whatsApp,
+		sessionName: unitWhatsAppSession,
+		unitId,
 	});
 }
 

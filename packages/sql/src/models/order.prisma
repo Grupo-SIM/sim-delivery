@@ -61,6 +61,10 @@ model Order {
 model WhatsAppNotification {
     id            String    @id @default(cuid())
     orderId       String?
+    companyId     String?
+    unitId        String?
+    /// Unit session selected when the notification entered the outbox. Null uses the global session.
+    sessionName   String?
     recipient     String
     message       String
     /// Frozen image/PDF metadata delivered with this notification.
@@ -77,11 +81,14 @@ model WhatsAppNotification {
     createdAt     DateTime  @default(now())
     updatedAt     DateTime  @updatedAt
 
-    order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+    order   Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+    company Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+    unit    Unit?    @relation(fields: [unitId], references: [id], onDelete: SetNull)
 
     @@index([status, nextAttemptAt])
     @@index([status, leaseUntil])
     @@index([orderId])
+    @@index([companyId, unitId])
     @@map("whatsapp_notification")
 }
 

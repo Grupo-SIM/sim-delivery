@@ -52,6 +52,8 @@ model Company {
     reviews    Review[]
     tags       Tag[]
     units      Unit[]
+    unitWhatsAppConnections UnitWhatsAppConnection[]
+    whatsAppNotifications WhatsAppNotification[]
     users      User[]
     inventoryItems InventoryItem[]
     inventorySettings InventorySettings?

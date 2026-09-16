@@ -59,6 +59,7 @@ describe("createPermissions matrix", () => {
 		expect(superAdmin.check("units", "delete")).toBe(true);
 		expect(superAdmin.check("units", "read")).toBe(true);
 		expect(superAdmin.check("units", "update")).toBe(true);
+		expect(superAdmin.check("unitWhatsApp", "manage")).toBe(true);
 		expect(createPermissions("owner").check("company", "create")).toBe(false);
 		expect(createPermissions("owner").check("company", "read")).toBe(false);
 		expect(createPermissions("manager").check("company", "delete")).toBe(false);
@@ -71,10 +72,12 @@ describe("createPermissions matrix", () => {
 			expect(permix.check("reports", "read")).toBe(true);
 			expect(permix.check("receiptTemplate", "update")).toBe(true);
 			expect(permix.check("staff", "invite")).toBe(true);
+			expect(permix.check("unitWhatsApp", "manage")).toBe(true);
 		}
 		expect(createPermissions("owner").check("units", "create")).toBe(true);
 		expect(createPermissions("manager").check("units", "create")).toBe(false);
 		expect(createPermissions("manager").check("units", "update")).toBe(false);
+		expect(createPermissions("attendant").check("unitWhatsApp", "manage")).toBe(false);
 	});
 
 	it("only owner and superAdmin may update branding", () => {

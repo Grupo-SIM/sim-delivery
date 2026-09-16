@@ -8,6 +8,8 @@ import {
 	SetUnitHoursBody,
 	UnitHoursListReturn,
 	UnitReturn,
+	UnitWhatsAppQrReturn,
+	UnitWhatsAppReturn,
 	UnitWithStatusListReturn,
 	UpdateUnitBody,
 } from "../../dtos";
@@ -20,6 +22,7 @@ import {
 	SetDeliveryZones,
 	SetUnitHours,
 	UpdateUnit,
+	UnitWhatsApp,
 } from "../../useCases";
 
 export const UnitsController = new Elysia({
@@ -41,6 +44,7 @@ export const UnitsController = new Elysia({
 				setDeliveryZones: new SetDeliveryZones(prisma),
 				setUnitHours: new SetUnitHours(prisma),
 				updateUnit: new UpdateUnit(prisma),
+				unitWhatsApp: new UnitWhatsApp(prisma),
 			}))
 			.get(
 				"/",
@@ -72,6 +76,47 @@ export const UnitsController = new Elysia({
 					return updateUnit.execute(scope.companyId, params.unitId, body);
 				},
 				{ body: UpdateUnitBody, response: UnitReturn },
+			)
+			.get(
+				"/:unitId/whatsapp",
+				async ({ params, request, unitWhatsApp }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "unitWhatsApp", "read");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
+					return unitWhatsApp.get(scope.companyId, params.unitId);
+				},
+				{ response: UnitWhatsAppReturn },
+			)
+			.post(
+				"/:unitId/whatsapp/session",
+				async ({ params, request, unitWhatsApp }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "unitWhatsApp", "manage");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
+					return unitWhatsApp.connect(scope.companyId, params.unitId);
+				},
+				{ response: UnitWhatsAppReturn },
+			)
+			.get(
+				"/:unitId/whatsapp/qr",
+				async ({ params, request, set, unitWhatsApp }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "unitWhatsApp", "read");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
+					set.headers["Cache-Control"] = "no-store";
+					return { dataUrl: await unitWhatsApp.qr(scope.companyId, params.unitId) };
+				},
+				{ response: UnitWhatsAppQrReturn },
+			)
+			.post(
+				"/:unitId/whatsapp/disconnect",
+				async ({ params, request, unitWhatsApp }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "unitWhatsApp", "manage");
+					CompanyScopeGuard.authorizeUnit(scope, params.unitId);
+					return unitWhatsApp.disconnect(scope.companyId, params.unitId);
+				},
+				{ response: UnitWhatsAppReturn },
 			)
 			.get(
 				"/:unitId/hours",

@@ -34,6 +34,7 @@ export function createPermissions(role: Role) {
 			reviews: { create: true, read: true },
 			staff: { assignOperational: true, invite: true, inviteOwner: true, read: true, remove: true, setRole: true },
 			units: { create: true, delete: true, read: true, update: true },
+			unitWhatsApp: { manage: true, read: true },
 		});
 		return permix;
 	}
@@ -107,6 +108,10 @@ export function createPermissions(role: Role) {
 			delete: isOwner,
 			read: staffRead || isCustomer,
 			update: isOwner,
+		},
+		unitWhatsApp: {
+			manage: mgmt,
+			read: mgmt,
 		},
 	});
 

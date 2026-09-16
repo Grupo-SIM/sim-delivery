@@ -62,8 +62,30 @@ model Unit {
     inventoryBalances UnitInventoryBalance[]
     inventoryMovements InventoryMovement[]
     inventoryReservations InventoryReservation[]
+    whatsAppConnection UnitWhatsAppConnection?
+    whatsAppNotifications WhatsAppNotification[]
 
     @@index([companyId])
     @@unique([companyId, slug])
     @@map("unit")
+}
+
+/// WAHA session dedicated to transactional messages sent on behalf of one unit.
+model UnitWhatsAppConnection {
+    id             String   @id @default(cuid())
+    companyId      String
+    unitId         String   @unique
+    sessionName    String   @unique
+    connectedPhone String?
+    lastStatus     String?
+    lastError      String?
+    lastSyncedAt   DateTime?
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+
+    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    unit    Unit    @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+    @@index([companyId])
+    @@map("unit_whatsapp_connection")
 }

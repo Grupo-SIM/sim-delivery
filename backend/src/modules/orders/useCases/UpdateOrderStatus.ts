@@ -59,7 +59,7 @@ export class UpdateOrderStatus {
 				company: { select: { orderStatusWhatsAppTemplates: true } },
 				customer: { include: { user: { select: { email: true, phoneNumber: true } } } },
 				payment: { select: { status: true } },
-				unit: { select: { slug: true } },
+				unit: { select: { slug: true, whatsAppConnection: { select: { sessionName: true } } } },
 			},
 			where: { ...(companyId ? { companyId } : {}), id: orderId },
 		});
@@ -135,6 +135,7 @@ export class UpdateOrderStatus {
 			}
 			if (notifiesStatusChange || notifiesEstimateUpdate) {
 				await dispatchOrderStatusWhatsApp({
+					companyId: order.companyId,
 					customer: order.customer,
 					deduplicationKey: statusEventId
 						? `order-status:${statusEventId}`
@@ -145,6 +146,8 @@ export class UpdateOrderStatus {
 					prisma: tx,
 					status,
 					templates,
+					unitId: order.unitId,
+					unitWhatsAppSession: order.unit.whatsAppConnection?.sessionName,
 					whatsApp: this.whatsApp,
 				});
 			}

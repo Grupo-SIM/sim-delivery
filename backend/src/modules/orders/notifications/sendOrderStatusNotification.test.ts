@@ -7,6 +7,7 @@ describe("dispatchOrderStatusWhatsApp", () => {
 	it("stores a frozen message in the WAHA outbox", async () => {
 		const upsert = mock(() => Promise.resolve());
 		await dispatchOrderStatusWhatsApp({
+			companyId: "company_1",
 			customer: { notificationWhatsApp: true, phone: "5581999999999" },
 			deduplicationKey: "order-status:event_1",
 			deliveryMethod: "delivery",
@@ -22,6 +23,8 @@ describe("dispatchOrderStatusWhatsApp", () => {
 					message: "Pedido {{orderId}} pronto.\nPode retirar.",
 				},
 			},
+			unitId: "unit_1",
+			unitWhatsAppSession: "sim-delivery_company_unit",
 			whatsApp: { deliveryMode: "outbox", sendMessage: async () => {} } as WhatsAppSender,
 		});
 
@@ -30,11 +33,14 @@ describe("dispatchOrderStatusWhatsApp", () => {
 				attachments: [
 					{ filename: "pedido.pdf", mimeType: "application/pdf", url: "https://cdn.test/pedido.pdf" },
 				],
+				companyId: "company_1",
 				deduplicationKey: "order-status:event_1",
 				message: "Pedido #154 pronto.\nPode retirar.",
 				orderId: "order_1",
 				orderStatus: "pronto",
 				recipient: "5581999999999",
+				sessionName: "sim-delivery_company_unit",
+				unitId: "unit_1",
 			},
 			update: {},
 			where: { deduplicationKey: "order-status:event_1" },
@@ -44,6 +50,7 @@ describe("dispatchOrderStatusWhatsApp", () => {
 	it("does not enqueue after customer opt-out", async () => {
 		const upsert = mock(() => Promise.resolve());
 		await dispatchOrderStatusWhatsApp({
+			companyId: "company_1",
 			customer: { notificationWhatsApp: false, phone: "5581999999999" },
 			deduplicationKey: "order-status:event_1",
 			deliveryMethod: "delivery",
@@ -51,6 +58,7 @@ describe("dispatchOrderStatusWhatsApp", () => {
 			orderNumber: 154,
 			prisma: { whatsAppNotification: { upsert } } as unknown as PrismaInstance,
 			status: "pronto",
+			unitId: "unit_1",
 			whatsApp: { deliveryMode: "outbox", sendMessage: async () => {} } as WhatsAppSender,
 		});
 

@@ -9,3 +9,4 @@ export * from "./SetDeliveryZones";
 export * from "./SetUnitHours";
 export * from "./SimulateFreight";
 export * from "./UpdateUnit";
+export * from "./UnitWhatsApp";

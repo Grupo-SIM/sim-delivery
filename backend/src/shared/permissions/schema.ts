@@ -8,6 +8,7 @@ import type { PermixDefinition } from "permix";
 export interface PermissionSchema extends PermixDefinition {
 	company: { action: "read" | "create" | "update" | "delete" };
 	units: { action: "read" | "create" | "update" | "delete" };
+	unitWhatsApp: { action: "read" | "manage" };
 	menu: { action: "read" | "create" | "update" | "updateAvailability" | "delete" };
 	orders: { action: "read" | "create" | "print" | "updateStatus" };
 	customers: { action: "read" | "update" };

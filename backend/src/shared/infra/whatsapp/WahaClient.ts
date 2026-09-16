@@ -5,12 +5,37 @@ export interface WahaClientOptions {
 	timeoutMs?: number;
 }
 
+export const WAHA_SESSION_STATUSES = [
+	"STOPPED",
+	"STARTING",
+	"SCAN_QR_CODE",
+	"PASSKEY_REQUIRED",
+	"PASSKEY_CONFIRMATION_REQUIRED",
+	"WORKING",
+	"FAILED",
+] as const;
+export type WahaSessionStatus = (typeof WAHA_SESSION_STATUSES)[number];
+
+export interface WahaSessionInfo {
+	config?: { metadata?: Record<string, string> };
+	me?: { id: string; pushName?: string };
+	name: string;
+	status: WahaSessionStatus;
+}
+
 type Fetch = typeof globalThis.fetch;
 
 export class InvalidWhatsAppPhoneError extends Error {
 	constructor() {
 		super("Invalid Brazilian WhatsApp phone number");
 		this.name = "InvalidWhatsAppPhoneError";
+	}
+}
+
+export class WahaRequestError extends Error {
+	constructor(readonly status: number) {
+		super(`WAHA request failed (${status})`);
+		this.name = "WahaRequestError";
 	}
 }
 
@@ -51,27 +76,62 @@ export class WahaClient {
 		private readonly fetchImpl: Fetch = globalThis.fetch,
 	) {}
 
-	async sendText(phone: string, message: string): Promise<void> {
+	async createSession(session: string, metadata: Record<string, string>): Promise<WahaSessionInfo> {
+		return this.requestJson<WahaSessionInfo>("/api/sessions", {
+			body: JSON.stringify({ config: { metadata }, name: session, start: true }),
+			method: "POST",
+		});
+	}
+
+	async startSession(session: string): Promise<WahaSessionInfo> {
+		return this.requestJson<WahaSessionInfo>(`/api/sessions/${encodeURIComponent(session)}/start`, {
+			method: "POST",
+		});
+	}
+
+	async getSession(session: string): Promise<WahaSessionInfo> {
+		return this.requestJson<WahaSessionInfo>(`/api/sessions/${encodeURIComponent(session)}`);
+	}
+
+	async getQrDataUrl(session: string): Promise<string> {
+		const response = await this.request(`/api/${encodeURIComponent(session)}/auth/qr?format=image`);
+		const mimeType = response.headers.get("content-type")?.split(";")[0] || "image/png";
+		const encoded = Buffer.from(await response.arrayBuffer()).toString("base64");
+		return `data:${mimeType};base64,${encoded}`;
+	}
+
+	async logoutSession(session: string): Promise<WahaSessionInfo> {
+		return this.requestJson<WahaSessionInfo>(`/api/sessions/${encodeURIComponent(session)}/logout`, {
+			method: "POST",
+		});
+	}
+
+	async sendText(phone: string, message: string, session = this.options.session): Promise<void> {
 		await this.postForBrazilianChatIds(phone, "/api/sendText", chatId => ({
 			chatId,
-			session: this.options.session,
+			session,
 			text: message,
 		}));
 	}
 
-	async sendMessage(phone: string, message: WhatsAppMessage): Promise<void> {
+	async sendMessage(phone: string, message: WhatsAppMessage, session = this.options.session): Promise<void> {
 		const attachments = message.attachments ?? [];
 		if (attachments.length === 0) {
-			await this.sendText(phone, message.text);
+			await this.sendText(phone, message.text, session);
 			return;
 		}
 
 		for (const [index, attachment] of attachments.entries()) {
-			await this.sendFile(phone, attachment, index === 0 ? message.text : undefined);
+			await this.sendFile(phone, attachment, index === 0 ? message.text : undefined, session);
 		}
 	}
 
-	private async sendFile(phone: string, attachment: WhatsAppAttachment, caption?: string): Promise<void> {
+	private async sendFile(
+		phone: string,
+		attachment: WhatsAppAttachment,
+		caption: string | undefined,
+		session: string,
+	): Promise<void> {
 		await this.postForBrazilianChatIds(phone, "/api/sendFile", chatId => ({
 			...(caption ? { caption } : {}),
 			chatId,
@@ -80,8 +140,27 @@ export class WahaClient {
 				mimetype: attachment.mimeType,
 				url: attachment.url,
 			},
-			session: this.options.session,
+			session,
 		}));
+	}
+
+	private async request(path: string, init: RequestInit = {}): Promise<Response> {
+		const response = await this.fetchImpl(`${this.options.baseUrl.replace(/\/$/, "")}${path}`, {
+			...init,
+			headers: {
+				...(this.options.apiKey ? { "X-Api-Key": this.options.apiKey } : {}),
+				Accept: "application/json, image/png",
+				...(init.body ? { "Content-Type": "application/json" } : {}),
+				...init.headers,
+			},
+			signal: AbortSignal.timeout(this.options.timeoutMs ?? 10_000),
+		});
+		if (!response.ok) throw new WahaRequestError(response.status);
+		return response;
+	}
+
+	private async requestJson<T>(path: string, init: RequestInit = {}): Promise<T> {
+		return (await this.request(path, init)).json() as Promise<T>;
 	}
 
 	private async postForBrazilianChatIds(
@@ -105,7 +184,7 @@ export class WahaClient {
 			if (response.ok) return;
 		}
 
-		throw new Error(`WAHA request failed (${response?.status})`);
+		throw new WahaRequestError(response?.status ?? 0);
 	}
 }
 import type { WhatsAppAttachment, WhatsAppMessage } from "./WhatsAppMessage";

@@ -32,6 +32,7 @@ export class CancelExpiredUnpaidOrders {
 						user: { select: { email: true, phoneNumber: true } },
 					},
 				},
+				unit: { select: { whatsAppConnection: { select: { sessionName: true } } } },
 			},
 			where: { createdAt: { lt: expiresAt }, status: "awaiting_payment" },
 		});
@@ -63,6 +64,7 @@ export class CancelExpiredUnpaidOrders {
 							data: { orderId: order.id, status: "cancelado" },
 						});
 						await dispatchOrderStatusWhatsApp({
+							companyId: order.companyId,
 							customer: order.customer,
 							deduplicationKey: statusEvent?.id
 								? `order-status:${statusEvent.id}`
@@ -74,6 +76,8 @@ export class CancelExpiredUnpaidOrders {
 							prisma: tx,
 							status: "cancelado",
 							templates,
+							unitId: order.unitId,
+							unitWhatsAppSession: order.unit.whatsAppConnection?.sessionName,
 							whatsApp: this.whatsApp,
 						});
 					}

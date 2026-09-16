@@ -10,6 +10,8 @@ function prismaWith(
 		id: string;
 		imageUrl?: string | null;
 		isOpenManual: boolean | null;
+		whatsApp?: string | null;
+		whatsAppConnection?: { connectedPhone: string | null } | null;
 		hours?: Array<{
 			closed: boolean;
 			closesAt: string | null;
@@ -34,7 +36,12 @@ function prismaWith(
 			findMany: async ({ where }: { where: { companyId: string } }) =>
 				units
 					.filter(unit => unit.companyId === where.companyId)
-					.map(unit => ({ ...unit, hours: unit.hours ?? [], promotionalImages: [] })),
+					.map(unit => ({
+						...unit,
+						hours: unit.hours ?? [],
+						promotionalImages: [],
+						whatsAppConnection: unit.whatsAppConnection ?? null,
+					})),
 		},
 	} as unknown as PrismaInstance;
 }
@@ -76,5 +83,30 @@ describe("ListPublicUnits", () => {
 			ratingCount: 0,
 			slug: "ipes",
 		});
+	});
+
+	it("uses the connected number only when no public WhatsApp was configured", async () => {
+		const prisma = prismaWith({ id: "c1", slug: "bliss" }, [
+			{
+				companyId: "c1",
+				id: "u1",
+				isOpenManual: true,
+				slug: "centro",
+				whatsApp: null,
+				whatsAppConnection: { connectedPhone: "+5581999999999" },
+			},
+			{
+				companyId: "c1",
+				id: "u2",
+				isOpenManual: true,
+				slug: "norte",
+				whatsApp: "+5581888888888",
+				whatsAppConnection: { connectedPhone: "+5581777777777" },
+			},
+		]);
+
+		const result = await new ListPublicUnits(prisma).execute("bliss");
+
+		expect(result.map(unit => unit.whatsApp)).toEqual(["+5581999999999", "+5581888888888"]);
 	});
 });

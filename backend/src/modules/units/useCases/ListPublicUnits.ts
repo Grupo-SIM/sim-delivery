@@ -23,6 +23,7 @@ export class ListPublicUnits {
 			this.prisma.unit.findMany({
 				include: {
 					hours: true,
+					whatsAppConnection: { select: { connectedPhone: true } },
 					promotionalImages: {
 						include: { promotionalImage: true },
 						orderBy: [{ position: "asc" }, { createdAt: "asc" }],
@@ -54,7 +55,7 @@ export class ListPublicUnits {
 			ratingsByUnit.set(unitId, entry);
 		}
 
-		return units.map(({ hours, promotionalImages, ...unit }) => {
+		return units.map(({ hours, promotionalImages, whatsAppConnection, ...unit }) => {
 			const rating = ratingsByUnit.get(unit.id);
 			return {
 				addressLine: unit.addressLine,
@@ -83,7 +84,7 @@ export class ListPublicUnits {
 				ratingAverage: rating ? rating.sum / rating.count : null,
 				ratingCount: rating?.count ?? 0,
 				slug: unit.slug,
-				whatsApp: unit.whatsApp,
+				whatsApp: unit.whatsApp ?? whatsAppConnection?.connectedPhone ?? null,
 				xUrl: unit.xUrl,
 			};
 		});

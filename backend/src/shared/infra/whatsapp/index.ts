@@ -11,6 +11,9 @@ export {
 	normalizeBrazilianWhatsAppPhone,
 	toWahaBrazilianChatId,
 	WahaClient,
+	WahaRequestError,
+	type WahaSessionInfo,
+	type WahaSessionStatus,
 } from "./WahaClient";
 
 import { ConsoleWhatsAppProvider } from "./implementations/ConsoleWhatsAppProvider";

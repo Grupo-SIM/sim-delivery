@@ -21,6 +21,51 @@ describe("normalizeBrazilianWhatsAppPhone", () => {
 });
 
 describe("WahaClient", () => {
+	it("creates and starts a named session with tenant metadata", async () => {
+		const fetch = mock((_input: string | URL | Request, _init?: RequestInit) =>
+			Promise.resolve(Response.json({ name: "sim-delivery_acme_centro", status: "STARTING" }, { status: 201 })),
+		);
+		const client = new WahaClient(
+			{ apiKey: "secret", baseUrl: "https://waha.example/", session: "general" },
+			fetch as never,
+		);
+
+		await client.createSession("sim-delivery_acme_centro", {
+			"sim-delivery.companyId": "company_1",
+			"sim-delivery.unitId": "unit_1",
+		});
+
+		expect(fetch).toHaveBeenCalledWith(
+			"https://waha.example/api/sessions",
+			expect.objectContaining({
+				body: JSON.stringify({
+					config: {
+						metadata: {
+							"sim-delivery.companyId": "company_1",
+							"sim-delivery.unitId": "unit_1",
+						},
+					},
+					name: "sim-delivery_acme_centro",
+					start: true,
+				}),
+				headers: expect.objectContaining({ "X-Api-Key": "secret" }),
+				method: "POST",
+			}),
+		);
+	});
+
+	it("returns the current QR as a non-persisted data URL", async () => {
+		const fetch = mock((_input: string | URL | Request, _init?: RequestInit) =>
+			Promise.resolve(new Response(new Uint8Array([1, 2, 3]), { headers: { "Content-Type": "image/png" } })),
+		);
+		const client = new WahaClient({ baseUrl: "https://waha.example", session: "general" }, fetch as never);
+
+		expect(await client.getQrDataUrl("sim-delivery_acme_centro")).toBe("data:image/png;base64,AQID");
+		expect(fetch.mock.calls[0]?.[0]).toBe(
+			"https://waha.example/api/sim-delivery_acme_centro/auth/qr?format=image",
+		);
+	});
+
 	it("does not expose WAHA response content in errors", async () => {
 		const client = new WahaClient(
 			{ apiKey: "secret", baseUrl: "https://waha.example", session: "default" },
@@ -55,6 +100,17 @@ describe("WahaClient", () => {
 			session: "default",
 			text: "message",
 		});
+	});
+
+	it("overrides the global session for a unit delivery", async () => {
+		const fetch = mock((_input: string | URL | Request, _init?: RequestInit) =>
+			Promise.resolve(new Response(null, { status: 201 })),
+		);
+		const client = new WahaClient({ baseUrl: "https://waha.example", session: "general" }, fetch as never);
+
+		await client.sendText("5581999999999", "message", "sim-delivery_acme_centro");
+
+		expect(JSON.parse(fetch.mock.calls[0]![1]!.body as string).session).toBe("sim-delivery_acme_centro");
 	});
 
 	it("falls back to the canonical Brazilian JID when the legacy JID fails", async () => {
