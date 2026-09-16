@@ -93,15 +93,15 @@ function drawSeparator(cursor: ReceiptCursor, dashed = false) {
 }
 
 function drawGiantOrderNumber(cursor: ReceiptCursor, value: string) {
-	cursor.y += 1;
 	const boxHeight = 13;
+	cursor.y -= 2;
 	cursor.doc.setFillColor(0, 0, 0);
 	cursor.doc.rect(RECEIPT_MARGIN_MM, cursor.y, CONTENT_WIDTH_MM, boxHeight, "F");
 	setTextStyle(cursor.doc, value.length > 6 ? 20 : 28, "bold");
 	cursor.doc.setTextColor(255, 255, 255);
 	cursor.doc.text(value, RECEIPT_WIDTH_MM / 2, cursor.y + 9.5, { align: "center" });
 	cursor.doc.setTextColor(0, 0, 0);
-	cursor.y += boxHeight + 1;
+	cursor.y += boxHeight + 2;
 }
 
 function drawAmountRow(cursor: ReceiptCursor, label: string, value: string, bold = false) {
