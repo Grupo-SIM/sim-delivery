@@ -54,7 +54,7 @@ export const CreateOrderItemBody = t.Object({
 });
 export type CreateOrderItemBody = typeof CreateOrderItemBody.static;
 export const CreateOrderBody = t.Object({
-	addressId: t.String({ minLength: 1 }),
+	addressId: t.Optional(t.Nullable(t.String({ minLength: 1 }))),
 	couponCode: t.Optional(t.String()),
 	deliveryMethod: t.Union([t.Literal("delivery"), t.Literal("pickup")]),
 	idempotencyKey: t.String({ format: "uuid" }),

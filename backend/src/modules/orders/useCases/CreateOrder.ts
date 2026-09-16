@@ -45,10 +45,12 @@ export class CreateOrder {
 		const existingOrder = await this.findOrderByIdempotencyKey(customer.id, idempotencyKey);
 		if (existingOrder) return existingOrder;
 
-		const address = await this.prisma.address.findFirst({
-			where: { customerId: customer.id, deletedAt: null, id: addressId },
-		});
-		if (!address) throw new DomainError(OrderErrors.DELIVERY_ADDRESS_REQUIRED);
+		if (deliveryMethod === "delivery") {
+			const address = await this.prisma.address.findFirst({
+				where: { customerId: customer.id, deletedAt: null, id: addressId ?? undefined },
+			});
+			if (!address) throw new DomainError(OrderErrors.DELIVERY_ADDRESS_REQUIRED);
+		}
 
 		// Resolve prices from unit product associations
 		const unitProducts = (await this.prisma.unitProduct.findMany({

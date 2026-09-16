@@ -172,7 +172,7 @@ export function OrderReview({
 				</section>
 			)}
 
-			{
+			{deliveryMethod === "delivery" && (
 				<section className="space-y-2">
 					<span className="font-semibold text-sm">
 						{t("store.checkout.order.deliveryAddress")} <span className="text-destructive">*</span>
@@ -223,7 +223,13 @@ export function OrderReview({
 						</>
 					)}
 				</section>
-			}
+			)}
+
+			{deliveryMethod === "pickup" && (
+				<section className="rounded-lg border border-primary/25 bg-primary/5 p-3 text-sm">
+					<p className="text-muted-foreground">{t("store.checkout.order.pickupDetails")}</p>
+				</section>
+			)}
 
 			<section className="space-y-2">
 				<span className="font-semibold text-sm">{t("store.checkout.order.coupon")}</span>
@@ -359,7 +365,14 @@ export function OrderReview({
 
 			<Button
 				className="w-full"
-				disabled={isPending || isQuotingFees || !!feeQuoteError || !feeQuote || blockedByFreight || !address}
+				disabled={
+					isPending ||
+					isQuotingFees ||
+					!!feeQuoteError ||
+					!feeQuote ||
+					blockedByFreight ||
+					(deliveryMethod === "delivery" && !address)
+				}
 				onClick={onSubmit}
 				type="button"
 			>

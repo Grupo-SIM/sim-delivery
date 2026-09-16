@@ -69,6 +69,9 @@ function CheckoutPage() {
 	const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>(() =>
 		getMethod(unitId, availableMethods),
 	);
+	const resolvedDeliveryMethod = availableMethods.includes(deliveryMethod)
+		? deliveryMethod
+		: getMethod(unitId, availableMethods);
 	const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(() => getStoredCoupon(unitId));
 	const [cashbackRedeemCents, setCashbackRedeemCents] = useState(0);
 	const [loyaltyRedeemPoints, setLoyaltyRedeemPoints] = useState(0);
@@ -81,6 +84,11 @@ function CheckoutPage() {
 	useEffect(() => {
 		setAppliedCoupon(getStoredCoupon(unitId));
 	}, [getStoredCoupon, unitId]);
+
+	useEffect(() => {
+		if (!unitId) return;
+		setDeliveryMethod(resolvedDeliveryMethod);
+	}, [resolvedDeliveryMethod, unitId]);
 
 	const createAddress = usePostCustomersMeAddresses({
 		// Customer response is stored locally after submit. Avoid Kubb's broad
@@ -166,16 +174,17 @@ function CheckoutPage() {
 	}
 
 	function handlePlaceOrder() {
-		if (!activeCustomer || !savedAddress || cartItems.length === 0) return;
+		if (!activeCustomer || (resolvedDeliveryMethod === "delivery" && !savedAddress) || cartItems.length === 0)
+			return;
 		const subtotalAfterCoupon = Math.max(0, cartTotalCents(cartItems) - Number(appliedCoupon?.discountCents ?? 0));
 		const appliedCashbackCents = Math.min(cashbackRedeemCents, subtotalAfterCoupon);
 		const appliedLoyaltyPoints = Math.min(loyaltyRedeemPoints, subtotalAfterCoupon - appliedCashbackCents);
 		placeOrder(
 			{
 				data: {
-					addressId: savedAddress.id,
+					addressId: resolvedDeliveryMethod === "delivery" ? savedAddress?.id : null,
 					couponCode: appliedCoupon?.code,
-					deliveryMethod,
+					deliveryMethod: resolvedDeliveryMethod,
 					idempotencyKey: getCheckoutIdempotencyKey(),
 					items: cartItems.map(item => ({
 						note: item.note || undefined,
@@ -282,7 +291,7 @@ function CheckoutPage() {
 						availableMethods={availableMethods}
 						cashbackBalanceCents={cashbackBalanceCents}
 						cashbackRedeemCents={cashbackRedeemCents}
-						deliveryMethod={deliveryMethod}
+						deliveryMethod={resolvedDeliveryMethod}
 						isPending={isPendingOrder}
 						items={cartItems}
 						loyaltyBalancePoints={loyaltyBalancePoints}

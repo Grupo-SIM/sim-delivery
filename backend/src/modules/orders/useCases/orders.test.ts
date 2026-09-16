@@ -283,17 +283,21 @@ describe("CreateOrder", () => {
 		expect(result.items[0]).toMatchObject({ displayTotal: 2100, total: 2000, unitPrice: 1000 });
 	});
 
-	it("requires an address for every order", async () => {
+	it("requires an address for delivery orders", async () => {
 		const { prisma } = makeOrderPrisma({ address: null });
 		await expect(new CreateOrder(prisma).execute("user_1", baseBody)).rejects.toThrow(
 			"DELIVERY_ADDRESS_REQUIRED",
 		);
 	});
 
-	it("sets deliveryFee to 0 for pickup", async () => {
-		const { orders, prisma } = makeOrderPrisma();
-		await new CreateOrder(prisma).execute("user_1", { ...baseBody, deliveryMethod: "pickup" });
-		expect(orders[0]).toMatchObject({ deliveryFee: 0, total: 2000 });
+	it("creates pickup orders without an address or delivery fee", async () => {
+		const { orders, prisma } = makeOrderPrisma({ address: null });
+		await new CreateOrder(prisma).execute("user_1", {
+			...baseBody,
+			addressId: null,
+			deliveryMethod: "pickup",
+		});
+		expect(orders[0]).toMatchObject({ addressId: null, deliveryFee: 0, total: 2000 });
 	});
 
 	it("confirms a zero-value order without creating a payment", async () => {
