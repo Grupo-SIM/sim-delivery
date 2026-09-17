@@ -786,11 +786,11 @@ describe("UpdateOrderStatus", () => {
 		expect(stored.cancelReason).toBeNull();
 	});
 
-	it("throws CANCEL_REASON_REQUIRED when cancelling without reason", async () => {
-		const { prisma } = makeUpdateStatusPrisma({ companyId: "cmp_1", id: "ord_1", status: "recebido" });
-		await expect(
-			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "cancelado" }),
-		).rejects.toThrow("CANCEL_REASON_REQUIRED");
+	it("cancels without a reason", async () => {
+		const { prisma, stored } = makeUpdateStatusPrisma({ companyId: "cmp_1", id: "ord_1", status: "recebido" });
+		await new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "cancelado" });
+		expect(stored.status).toBe("cancelado");
+		expect(stored.cancelReason).toBeNull();
 	});
 
 	it("cancels with reason", async () => {

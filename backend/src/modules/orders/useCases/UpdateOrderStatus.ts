@@ -68,7 +68,6 @@ export class UpdateOrderStatus {
 			throw new DomainError(UserErrors.FORBIDDEN);
 		}
 
-		if (status === "cancelado" && !cancelReason) throw new DomainError(OrderErrors.CANCEL_REASON_REQUIRED);
 		if (status === "problema" && !problemReason) throw new DomainError(OrderErrors.INVALID_TRANSITION);
 		if (order.deliveryMethod === "pickup" && status === "saiu_para_entrega")
 			throw new DomainError(OrderErrors.INVALID_TRANSITION);
@@ -117,7 +116,7 @@ export class UpdateOrderStatus {
 				await InventoryLifecycle.consume(tx, orderId, preparedById ?? undefined);
 			const result = await tx.order.update({
 				data: {
-					cancelReason: status === "cancelado" ? cancelReason : null,
+					cancelReason: status === "cancelado" ? cancelReason || null : null,
 					estimatedStatusCompletionAt:
 						estimatedMinutes !== undefined && ESTIMABLE_STATUSES.has(status)
 							? new Date(Date.now() + estimatedMinutes * 60_000)

@@ -38,8 +38,8 @@ export function FinalizeOrderModal({
 	}
 
 	function handleConfirm() {
-		if (!selected || (selected === "cancelado" && !cancelReason.trim())) return;
-		onConfirm(selected, selected === "cancelado" ? cancelReason.trim() : undefined);
+		if (!selected) return;
+		onConfirm(selected, selected === "cancelado" ? cancelReason.trim() || undefined : undefined);
 	}
 
 	return (
@@ -89,12 +89,14 @@ export function FinalizeOrderModal({
 						{t("admin.orders.updateStatus.cancel")}
 					</Button>
 					<Button
-						disabled={!selected || isPending || (selected === "cancelado" && !cancelReason.trim())}
+						disabled={!selected || isPending}
 						onClick={handleConfirm}
 						type="button"
 						variant={selected === "cancelado" ? "destructive" : "default"}
 					>
-						{isPending ? t("admin.orders.updateStatus.saving") : t("admin.orders.kanban.finalize.confirm")}
+						{isPending
+							? t("admin.orders.updateStatus.saving")
+							: t("admin.orders.kanban.finalize.confirm")}
 					</Button>
 				</div>
 			</div>
