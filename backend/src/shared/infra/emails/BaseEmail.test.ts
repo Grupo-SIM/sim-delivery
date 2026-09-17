@@ -43,12 +43,14 @@ describe("email classes", () => {
 		const magicEmail = new MagicLinkEmail({ to: "maria@example.com", url: "https://example.com/magic" });
 		const statusEmail = new OrderStatusEmail({
 			message: "Seu pedido foi cancelado.",
+			orderId: "order_1",
 			orderNumber: 154,
 			status: "cancelado",
 			to: "maria@example.com",
 		});
 		const reviewEmail = new OrderStatusEmail({
 			message: "Seu pedido #154 foi entregue. Bom apetite!",
+			orderId: "order_1",
 			orderNumber: 154,
 			reviewUrl: "https://example.com/centro/rate?orderId=order_1",
 			status: "entregue",
@@ -64,8 +66,16 @@ describe("email classes", () => {
 
 		expect(magic.messages[0]).toMatchObject({ subject: "Seu link de acesso", to: "maria@example.com" });
 		expect(status.messages[0]).toMatchObject({
-			subject: "Pedido #154 — Cancelado",
+			inReplyTo: "<order-order_1@example.com>",
+			references: "<order-order_1@example.com>",
+			subject: "Pedido #154",
 			text: "Seu pedido foi cancelado.",
+		});
+		expect(status.messages[0]?.messageId).toMatch(/^<order-order_1-[\w-]+@example\.com>$/);
+		expect(status.messages[1]).toMatchObject({
+			inReplyTo: "<order-order_1@example.com>",
+			references: "<order-order_1@example.com>",
+			subject: "Pedido #154",
 		});
 		expect(status.messages[0]?.html).toContain("Atualização do pedido");
 		expect(status.messages[0]?.html).not.toContain("Status:");

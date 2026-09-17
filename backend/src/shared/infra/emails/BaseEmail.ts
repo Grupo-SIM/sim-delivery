@@ -5,6 +5,9 @@ export interface EmailTransport {
 	sendMail(message: {
 		from: string;
 		html?: string;
+		inReplyTo?: string;
+		messageId?: string;
+		references?: string;
 		subject: string;
 		text: string;
 		to: string;
@@ -33,10 +36,25 @@ export abstract class BaseEmail {
 		return address?.includes("<") ? address : `"${emailBranding.companyName}" <${address}>`;
 	}
 
+	protected get inReplyTo(): string | undefined {
+		return undefined;
+	}
+
+	protected get messageId(): string | undefined {
+		return undefined;
+	}
+
+	protected get references(): string | undefined {
+		return undefined;
+	}
+
 	async send(): Promise<void> {
 		await this.transport.sendMail({
 			from: this.from,
 			html: this.html ? await this.html : undefined,
+			inReplyTo: this.inReplyTo,
+			messageId: this.messageId,
+			references: this.references,
 			subject: this.subject,
 			text: this.text,
 			to: this.to,

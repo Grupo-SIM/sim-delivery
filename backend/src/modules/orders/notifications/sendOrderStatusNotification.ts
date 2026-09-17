@@ -8,7 +8,7 @@ import type { WhatsAppSender } from "@/shared/infra/whatsapp";
 import { formatOrderStatusMessage } from "../order-status-message";
 
 export interface OrderStatusEmailSender {
-	send(input: { message: string; orderNumber: number; reviewUrl?: string; status: string; to: string }): Promise<void>;
+	send(input: { message: string; orderId: string; orderNumber: number; reviewUrl?: string; status: string; to: string }): Promise<void>;
 }
 
 export interface OrderStatusNotificationCustomer {
@@ -158,6 +158,7 @@ export async function sendOrderStatusEmail({
 	try {
 		await emailSender.send({
 			message,
+			orderId,
 			orderNumber,
 			...(reviewUrl ? { reviewUrl } : {}),
 			status,
@@ -215,6 +216,7 @@ export async function sendOrderStatusNotification({
 		deliveries.push(
 			emailSender.send({
 				message: emailMessage,
+				orderId,
 				orderNumber,
 				...(reviewUrl ? { reviewUrl } : {}),
 				status,

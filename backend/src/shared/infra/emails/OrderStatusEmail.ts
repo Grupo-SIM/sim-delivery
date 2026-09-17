@@ -4,38 +4,44 @@ import { BaseEmail } from "./BaseEmail";
 
 interface OrderStatusEmailInput {
 	message: string;
+	orderId: string;
 	orderNumber: number;
 	reviewUrl?: string;
 	status: string;
 	to: string;
 }
 
-const STATUS_LABELS: Record<string, string> = {
-	cancelado: "Cancelado",
-	em_preparo: "Em preparo",
-	entregue: "Entregue",
-	pronto: "Pronto",
-	recebido: "Recebido",
-	retirado: "Retirado",
-	saiu_para_entrega: "Saiu para entrega",
-};
-
 export class OrderStatusEmail extends BaseEmail {
 	private readonly message: string;
+	private readonly messageIdValue: string;
 	private readonly orderNumber: number;
 	private readonly reviewUrl?: string;
-	private readonly status: string;
+	private readonly threadId: string;
 
-	constructor({ message, orderNumber, reviewUrl, status, to }: OrderStatusEmailInput) {
+	constructor({ message, orderId, orderNumber, reviewUrl, to }: OrderStatusEmailInput) {
 		super(to);
 		this.message = message.replace(new RegExp(`\\s*#${orderNumber}\\b`, "g"), "");
+		const domain = this.getMessageIdDomain();
+		this.threadId = `<order-${orderId}@${domain}>`;
+		this.messageIdValue = `<order-${orderId}-${crypto.randomUUID()}@${domain}>`;
 		this.orderNumber = orderNumber;
 		this.reviewUrl = reviewUrl;
-		this.status = status;
 	}
 
 	protected get subject(): string {
-		return `Pedido #${this.orderNumber} — ${STATUS_LABELS[this.status] ?? this.status}`;
+		return `Pedido #${this.orderNumber}`;
+	}
+
+	protected override get inReplyTo(): string {
+		return this.threadId;
+	}
+
+	protected override get messageId(): string {
+		return this.messageIdValue;
+	}
+
+	protected override get references(): string {
+		return this.threadId;
 	}
 
 	protected get text(): string {
@@ -50,5 +56,11 @@ export class OrderStatusEmail extends BaseEmail {
 				reviewUrl: this.reviewUrl,
 			}),
 		);
+	}
+
+	private getMessageIdDomain(): string {
+		const address = process.env.MAIL_FROM ?? process.env.MAIL_USER ?? "localhost";
+		const mailbox = address.match(/<([^>]+)>/)?.[1] ?? address;
+		return mailbox.split("@")[1]?.trim() || "localhost";
 	}
 }
