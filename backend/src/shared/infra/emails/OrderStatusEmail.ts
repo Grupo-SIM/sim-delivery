@@ -8,6 +8,8 @@ interface OrderStatusEmailInput {
 	orderNumber: number;
 	reviewUrl?: string;
 	status: string;
+	subtitle?: string;
+	title?: string;
 	to: string;
 }
 
@@ -18,7 +20,10 @@ export class OrderStatusEmail extends BaseEmail {
 	private readonly reviewUrl?: string;
 	private readonly threadId: string;
 
-	constructor({ message, orderId, orderNumber, reviewUrl, to }: OrderStatusEmailInput) {
+	private readonly subtitle: string;
+	private readonly title: string;
+
+	constructor({ message, orderId, orderNumber, reviewUrl, subtitle = "Acompanhe seu pedido", title, to }: OrderStatusEmailInput) {
 		super(to);
 		this.message = message.replace(new RegExp(`\\s*#${orderNumber}\\b`, "g"), "");
 		const domain = this.getMessageIdDomain();
@@ -26,6 +31,8 @@ export class OrderStatusEmail extends BaseEmail {
 		this.messageIdValue = `<order-${orderId}-${crypto.randomUUID()}@${domain}>`;
 		this.orderNumber = orderNumber;
 		this.reviewUrl = reviewUrl;
+		this.subtitle = subtitle;
+		this.title = title || `Atualização do pedido #${orderNumber}`;
 	}
 
 	protected get subject(): string {
@@ -45,15 +52,16 @@ export class OrderStatusEmail extends BaseEmail {
 	}
 
 	protected get text(): string {
-		return `${this.message}${this.reviewUrl ? `\n\nAvalie seu pedido: ${this.reviewUrl}` : ""}`;
+		return `${this.subtitle}\n${this.title}\n\n${this.message}${this.reviewUrl ? `\n\nAvalie seu pedido: ${this.reviewUrl}` : ""}`;
 	}
 
 	protected override get html(): Promise<string> {
 		return render(
 			OrderStatusEmailTemplate({
 				message: this.message,
-				orderNumber: this.orderNumber,
 				reviewUrl: this.reviewUrl,
+				subtitle: this.subtitle,
+				title: this.title,
 			}),
 		);
 	}

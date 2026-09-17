@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { LuMail, LuMessageSquare } from "react-icons/lu";
 import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
 import {
+	defaultOrderStatusEmailTemplates,
 	defaultOrderStatusTemplates,
 	ORDER_STATUS_TEMPLATE_KEYS,
 	type OrderStatusEmailTemplates,
@@ -35,7 +36,11 @@ export function NotificationTemplatesSection({
 			(template.message.trim() && template.message !== defaultOrderStatusTemplates[status].message)
 		);
 	}).length;
-	const emailCustomized = ORDER_STATUS_TEMPLATE_KEYS.filter(status => emailTemplates[status].message.trim()).length;
+	const emailCustomized = ORDER_STATUS_TEMPLATE_KEYS.filter(status => {
+		const template = emailTemplates[status];
+		const fallback = defaultOrderStatusEmailTemplates[status];
+		return template.message !== fallback.message || template.subtitle !== fallback.subtitle || template.title !== fallback.title;
+	}).length;
 
 	return <>
 		<CollapsibleSection
@@ -73,7 +78,7 @@ export function NotificationTemplatesSection({
 				{ORDER_STATUS_TEMPLATE_KEYS.map(status => (
 					<EmailTemplateEditor
 						companyName={companyName}
-						defaultMessage={defaultOrderStatusTemplates[status].message}
+						defaultTemplate={defaultOrderStatusEmailTemplates[status]}
 						key={status}
 						label={t(`admin.branding.orderStatus.${status}`)}
 						logoUrl={logoUrl}

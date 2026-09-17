@@ -8,7 +8,16 @@ import type { WhatsAppSender } from "@/shared/infra/whatsapp";
 import { formatOrderStatusMessage } from "../order-status-message";
 
 export interface OrderStatusEmailSender {
-	send(input: { message: string; orderId: string; orderNumber: number; reviewUrl?: string; status: string; to: string }): Promise<void>;
+	send(input: {
+		message: string;
+		orderId: string;
+		orderNumber: number;
+		reviewUrl?: string;
+		status: string;
+		subtitle: string;
+		title: string;
+		to: string;
+	}): Promise<void>;
 }
 
 export interface OrderStatusNotificationCustomer {
@@ -91,6 +100,19 @@ export function getOrderStatusEmailMessage({
 	return formatOrderStatusMessage(template, status, orderNumber, deliveryMethod, cancelReason);
 }
 
+export function getOrderStatusEmailContent(
+	emailTemplates: Record<string, OrderStatusEmailTemplate> | null | undefined,
+	status: string,
+	orderNumber: number,
+) {
+	const template = getOrderStatusEmailTemplate(emailTemplates, status);
+	const replaceOrderId = (value: string) => value.replaceAll("{{orderId}}", `#${orderNumber}`).replaceAll("{{orderNumber}}", `#${orderNumber}`);
+	return {
+		subtitle: replaceOrderId(template.subtitle?.trim() || "Acompanhe seu pedido"),
+		title: replaceOrderId(template.title?.trim() || "Atualização do pedido {{orderId}}"),
+	};
+}
+
 export async function dispatchOrderStatusWhatsApp({
 	cancelReason,
 	customer,
@@ -140,6 +162,7 @@ export async function sendOrderStatusEmail({
 	emailTemplates,
 	emailSender = defaultEmailSender,
 	message: messageOverride,
+	orderId,
 	orderNumber,
 	reviewUrl,
 	status,
@@ -155,6 +178,7 @@ export async function sendOrderStatusEmail({
 		status,
 		templates,
 	});
+	const content = getOrderStatusEmailContent(emailTemplates, status, orderNumber);
 	try {
 		await emailSender.send({
 			message,
@@ -162,6 +186,7 @@ export async function sendOrderStatusEmail({
 			orderNumber,
 			...(reviewUrl ? { reviewUrl } : {}),
 			status,
+			...content,
 			to: customer.user.email,
 		});
 	} catch (error) {
@@ -201,6 +226,7 @@ export async function sendOrderStatusNotification({
 		status,
 		templates,
 	});
+	const emailContent = getOrderStatusEmailContent(emailTemplates, status, orderNumber);
 	const phone = customer.phone ?? customer.user?.phoneNumber;
 	const deliveries: Promise<void>[] = [];
 
@@ -220,6 +246,7 @@ export async function sendOrderStatusNotification({
 				orderNumber,
 				...(reviewUrl ? { reviewUrl } : {}),
 				status,
+				...emailContent,
 				to: customer.user.email,
 			}),
 		);

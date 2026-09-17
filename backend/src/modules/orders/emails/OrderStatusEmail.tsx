@@ -3,13 +3,14 @@ import { EmailButton, EmailLayout, emailColors } from "@/modules/users/emails/co
 
 interface OrderStatusEmailProps {
 	message: string;
-	orderNumber: number;
 	reviewUrl?: string;
+	subtitle: string;
+	title: string;
 }
 
-export function OrderStatusEmailTemplate({ message, orderNumber, reviewUrl }: OrderStatusEmailProps) {
+export function OrderStatusEmailTemplate({ message, orderNumber, reviewUrl, subtitle, title }: OrderStatusEmailProps) {
 	return (
-		<EmailLayout preview={`Atualização do pedido #${orderNumber}`}>
+		<EmailLayout preview={title}>
 			<Text
 				style={{
 					color: emailColors.primary,
@@ -20,7 +21,7 @@ export function OrderStatusEmailTemplate({ message, orderNumber, reviewUrl }: Or
 					textTransform: "uppercase",
 				}}
 			>
-				Acompanhe seu pedido
+				{subtitle}
 			</Text>
 			<Heading
 				style={{
@@ -31,7 +32,7 @@ export function OrderStatusEmailTemplate({ message, orderNumber, reviewUrl }: Or
 					margin: "0 0 12px",
 				}}
 			>
-				Atualização do pedido #{orderNumber}
+				{title}
 			</Heading>
 
 			<Text

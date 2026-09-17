@@ -1,9 +1,19 @@
 import { describe, expect, it, mock } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { WhatsAppSender } from "@/shared/infra/whatsapp";
-import { dispatchOrderStatusWhatsApp } from "./sendOrderStatusNotification";
+import { dispatchOrderStatusWhatsApp, getOrderStatusEmailContent } from "./sendOrderStatusNotification";
 
 describe("dispatchOrderStatusWhatsApp", () => {
+	it("formats the editable email title and subtitle", () => {
+		expect(
+			getOrderStatusEmailContent(
+				{ pronto: { subtitle: "Acompanhe {{orderId}}", title: "Pedido {{orderNumber}} pronto" } },
+				"pronto",
+				154,
+			),
+		).toEqual({ subtitle: "Acompanhe #154", title: "Pedido #154 pronto" });
+	});
+
 	it("stores a frozen message in the WAHA outbox", async () => {
 		const upsert = mock(() => Promise.resolve());
 		await dispatchOrderStatusWhatsApp({

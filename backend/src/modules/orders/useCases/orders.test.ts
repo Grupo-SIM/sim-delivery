@@ -492,8 +492,11 @@ describe("UpdateOrderStatus", () => {
 		expect(sent).toEqual([
 			{
 				message: "Seu pedido #154 já está sendo preparado com carinho. Assim que ficar pronto, seguirá para entrega.",
+				orderId: "ord_1",
 				orderNumber: 154,
 				status: "em_preparo",
+				subtitle: "Acompanhe seu pedido",
+				title: "Atualização do pedido #154",
 				to: "cliente@example.com",
 			},
 		]);

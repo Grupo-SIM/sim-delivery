@@ -15,6 +15,7 @@ import {
 	BrandAssetsSection,
 	type BrandAssetsState,
 	defaultOrderStatusTemplates,
+	defaultOrderStatusEmailTemplates,
 	emptyOrderStatusEmailTemplates,
 	emptyBrandAssets,
 	emptyFonts,
@@ -102,7 +103,11 @@ function BrandingPage() {
 				Object.fromEntries(
 					ORDER_STATUS_TEMPLATE_KEYS.map(status => [
 						status,
-						{ message: branding.orderStatusEmailTemplates?.[status]?.message ?? "" },
+						{
+							message: branding.orderStatusEmailTemplates?.[status]?.message ?? defaultOrderStatusEmailTemplates[status].message,
+							subtitle: branding.orderStatusEmailTemplates?.[status]?.subtitle ?? defaultOrderStatusEmailTemplates[status].subtitle,
+							title: branding.orderStatusEmailTemplates?.[status]?.title ?? defaultOrderStatusEmailTemplates[status].title,
+						},
 					]),
 				) as OrderStatusEmailTemplates,
 			);
@@ -139,7 +144,11 @@ function BrandingPage() {
 					orderStatusEmailTemplates: Object.fromEntries(
 						ORDER_STATUS_TEMPLATE_KEYS.map(status => [
 							status,
-							{ message: orderStatusEmailTemplates[status].message.trim() || undefined },
+							{
+								message: orderStatusEmailTemplates[status].message.trim() || undefined,
+								subtitle: orderStatusEmailTemplates[status].subtitle.trim() || undefined,
+								title: orderStatusEmailTemplates[status].title.trim() || undefined,
+							},
 						]),
 					),
 					orderStatusWhatsAppTemplates: Object.fromEntries(

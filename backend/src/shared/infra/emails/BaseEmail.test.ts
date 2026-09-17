@@ -69,7 +69,7 @@ describe("email classes", () => {
 			inReplyTo: "<order-order_1@example.com>",
 			references: "<order-order_1@example.com>",
 			subject: "Pedido #154",
-			text: "Seu pedido foi cancelado.",
+			text: "Acompanhe seu pedido\nAtualização do pedido #154\n\nSeu pedido foi cancelado.",
 		});
 		expect(status.messages[0]?.messageId).toMatch(/^<order-order_1-[\w-]+@example\.com>$/);
 		expect(status.messages[1]).toMatchObject({
@@ -82,7 +82,7 @@ describe("email classes", () => {
 		expect(status.messages[0]?.html).toContain("Zero Grau");
 		expect(status.messages[0]?.html).toContain("Todos os direitos reservados.");
 		expect(status.messages[1]).toMatchObject({
-			text: "Seu pedido foi entregue. Bom apetite!\n\nAvalie seu pedido: https://example.com/centro/rate?orderId=order_1",
+			text: "Acompanhe seu pedido\nAtualização do pedido #154\n\nSeu pedido foi entregue. Bom apetite!\n\nAvalie seu pedido: https://example.com/centro/rate?orderId=order_1",
 		});
 		expect(status.messages[1]?.html).toContain("Seu pedido foi entregue. Bom apetite!");
 		expect(status.messages[1]?.html).not.toContain("Seu pedido #154 foi entregue.");

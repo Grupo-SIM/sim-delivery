@@ -10,7 +10,7 @@ import type { OrderStatusEmailTemplate } from "./types";
 
 interface EmailTemplateEditorProps {
 	companyName: string;
-	defaultMessage: string;
+	defaultTemplate: OrderStatusEmailTemplate;
 	label: string;
 	logoUrl: string;
 	onChange: (template: OrderStatusEmailTemplate) => void;
@@ -19,7 +19,7 @@ interface EmailTemplateEditorProps {
 
 export function EmailTemplateEditor({
 	companyName,
-	defaultMessage,
+	defaultTemplate,
 	label,
 	logoUrl,
 	onChange,
@@ -29,8 +29,12 @@ export function EmailTemplateEditor({
 	const [isOpen, setIsOpen] = useState(false);
 	const contentId = useId();
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
-	const [message, setMessage, flushMessage] = useDebouncedInput(template.message, value => onChange({ message: value }));
-	const previewMessage = (message || defaultMessage).replaceAll("{{orderId}}", "#154");
+	const [message, setMessage, flushMessage] = useDebouncedInput(template.message, value => onChange({ ...template, message: value }));
+	const [subtitle, setSubtitle, flushSubtitle] = useDebouncedInput(template.subtitle, value => onChange({ ...template, subtitle: value }));
+	const [title, setTitle, flushTitle] = useDebouncedInput(template.title, value => onChange({ ...template, title: value }));
+	const previewMessage = message.replaceAll("{{orderId}}", "#154");
+	const previewSubtitle = subtitle.replaceAll("{{orderId}}", "#154");
+	const previewTitle = title.replaceAll("{{orderId}}", "#154");
 
 	function insertOrderId() {
 		const textarea = textareaRef.current;
@@ -55,7 +59,7 @@ export function EmailTemplateEditor({
 			>
 				<span className="min-w-0 flex-1">
 					<span className="block font-semibold text-sm">{label}</span>
-					<span className="block truncate text-muted-foreground text-xs">{message || defaultMessage}</span>
+					<span className="block truncate text-muted-foreground text-xs">{title || defaultTemplate.title}</span>
 				</span>
 				<span className="hidden shrink-0 text-muted-foreground text-sm sm:inline">
 					{isOpen ? t("actions.minimize") : t("actions.expand")}
@@ -65,7 +69,29 @@ export function EmailTemplateEditor({
 			{isOpen && (
 				<div className="grid gap-4 border-border border-t p-4 lg:grid-cols-[minmax(0,1fr)_minmax(15rem,0.72fr)]" id={contentId}>
 					<div className="space-y-3">
-						<Label className="sr-only" htmlFor={`email-template-${label}`}>{label}</Label>
+						<Label htmlFor={`email-title-${label}`}>{t("admin.branding.emailTitle")}</Label>
+						<input
+							className={cn("w-full rounded-md border border-input bg-background px-3 py-2 text-foreground text-sm shadow-xs outline-none transition-colors", "placeholder:text-muted-foreground/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/20")}
+							id={`email-title-${label}`}
+							maxLength={200}
+							name={`email-title-${label}`}
+							onBlur={flushTitle}
+							onChange={event => setTitle(event.currentTarget.value)}
+							placeholder={defaultTemplate.title}
+							value={title}
+						/>
+						<Label htmlFor={`email-subtitle-${label}`}>{t("admin.branding.emailSubtitle")}</Label>
+						<input
+							className={cn("w-full rounded-md border border-input bg-background px-3 py-2 text-foreground text-sm shadow-xs outline-none transition-colors", "placeholder:text-muted-foreground/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/20")}
+							id={`email-subtitle-${label}`}
+							maxLength={200}
+							name={`email-subtitle-${label}`}
+							onBlur={flushSubtitle}
+							onChange={event => setSubtitle(event.currentTarget.value)}
+							placeholder={defaultTemplate.subtitle}
+							value={subtitle}
+						/>
+						<Label htmlFor={`email-template-${label}`}>{t("admin.branding.emailText")}</Label>
 						<textarea
 							className={cn("min-h-32 w-full resize-y rounded-md border border-input bg-background px-3 py-2 text-foreground text-sm shadow-xs outline-none transition-colors", "placeholder:text-muted-foreground/60 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/20")}
 							id={`email-template-${label}`}
@@ -73,7 +99,7 @@ export function EmailTemplateEditor({
 							name={`email-template-${label}`}
 							onBlur={flushMessage}
 							onChange={event => setMessage(event.currentTarget.value)}
-							placeholder={t("admin.branding.emailNotificationPlaceholder")}
+							placeholder={defaultTemplate.message}
 							ref={textareaRef}
 							value={message}
 						/>
@@ -81,10 +107,11 @@ export function EmailTemplateEditor({
 							<Button className="gap-2" onClick={insertOrderId} size="sm" type="button" variant="outline"><LuBraces className="size-4" />{t("admin.branding.insertOrderId")}</Button>
 							<span className="text-muted-foreground text-xs">{message.length}/1000</span>
 						</div>
+						<p className="text-muted-foreground text-xs">{t("admin.branding.emailFormattingHelp")}</p>
 					</div>
 					<div className="space-y-2">
 						<div className="flex items-center gap-2 font-semibold text-muted-foreground text-xs uppercase tracking-wide"><LuEye className="size-4" />{t("admin.branding.notificationPreview")}</div>
-						<EmailMessagePreview companyName={companyName} logoUrl={logoUrl} message={previewMessage} orderNumber={154} />
+						<EmailMessagePreview companyName={companyName} logoUrl={logoUrl} message={previewMessage} subtitle={previewSubtitle} title={previewTitle} />
 					</div>
 				</div>
 			)}

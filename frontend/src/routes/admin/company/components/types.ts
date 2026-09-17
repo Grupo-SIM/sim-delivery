@@ -21,18 +21,20 @@ export type OrderStatusTemplates = Record<OrderStatusTemplateKey, OrderStatusTem
 
 export interface OrderStatusEmailTemplate {
 	message: string;
+	subtitle: string;
+	title: string;
 }
 
 export type OrderStatusEmailTemplates = Record<OrderStatusTemplateKey, OrderStatusEmailTemplate>;
 
 export const emptyOrderStatusEmailTemplates: OrderStatusEmailTemplates = {
-	cancelado: { message: "" },
-	em_preparo: { message: "" },
-	entregue: { message: "" },
-	pronto: { message: "" },
-	recebido: { message: "" },
-	retirado: { message: "" },
-	saiu_para_entrega: { message: "" },
+	cancelado: { message: "", subtitle: "", title: "" },
+	em_preparo: { message: "", subtitle: "", title: "" },
+	entregue: { message: "", subtitle: "", title: "" },
+	pronto: { message: "", subtitle: "", title: "" },
+	recebido: { message: "", subtitle: "", title: "" },
+	retirado: { message: "", subtitle: "", title: "" },
+	saiu_para_entrega: { message: "", subtitle: "", title: "" },
 };
 
 export const defaultOrderStatusTemplates: OrderStatusTemplates = {
@@ -50,6 +52,13 @@ export const defaultOrderStatusTemplates: OrderStatusTemplates = {
 		message: "Seu pedido {{orderId}} saiu para entrega e está a caminho.",
 	},
 };
+
+export const defaultOrderStatusEmailTemplates: OrderStatusEmailTemplates = Object.fromEntries(
+	ORDER_STATUS_TEMPLATE_KEYS.map(status => [
+		status,
+		{ message: defaultOrderStatusTemplates[status].message, subtitle: "Acompanhe seu pedido", title: "Atualização do pedido {{orderId}}" },
+	]),
+) as OrderStatusEmailTemplates;
 
 export interface BrandAssetsState {
 	homepageBannerUrls: string[];

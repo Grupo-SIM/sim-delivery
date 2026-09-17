@@ -65,6 +65,8 @@ export type OrderStatusWhatsAppTemplates = typeof OrderStatusWhatsAppTemplates.s
 
 export const OrderStatusEmailTemplate = t.Object({
 	message: t.Optional(t.String({ maxLength: 1000 })),
+	subtitle: t.Optional(t.String({ maxLength: 200 })),
+	title: t.Optional(t.String({ maxLength: 200 })),
 });
 export type OrderStatusEmailTemplate = typeof OrderStatusEmailTemplate.static;
 
