@@ -1,4 +1,5 @@
 import { isValidCpf } from "@/lib/cpf";
+import { getBrazilianMobileDigits, toBrazilianMobilePhone } from "@/lib/brazilian-phone";
 
 export function hasCompletePaymentIdentity(name: string, cpf: string | null, phone: string | null) {
 	const hasFullName = name.trim().split(/\s+/).filter(Boolean).length >= 2;
@@ -7,11 +8,4 @@ export function hasCompletePaymentIdentity(name: string, cpf: string | null, pho
 	return hasFullName && hasCpf && hasPhone;
 }
 
-export function getBrazilianMobileDigits(phone: string | null): string {
-	const digits = phone?.replace(/\D/g, "") ?? "";
-	return digits.length === 13 && digits.startsWith("55") ? digits.slice(2) : digits;
-}
-
-export function toBrazilianMobilePhone(phone: string | null): string {
-	return `55${getBrazilianMobileDigits(phone)}`;
-}
+export { getBrazilianMobileDigits, toBrazilianMobilePhone };

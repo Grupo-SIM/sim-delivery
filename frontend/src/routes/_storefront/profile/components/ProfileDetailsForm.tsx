@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { MaskedInput } from "@/components/ui/MaskedInput";
+
+import { getBrazilianMobileDigits, toBrazilianMobilePhone } from "@/lib/brazilian-phone";
 import { isValidCpf } from "@/lib/cpf";
 import type { AuthUser } from "@/stores/auth";
 
@@ -19,26 +21,27 @@ export function ProfileDetailsForm({ customer, isSaving, onSave, user }: Profile
 	const [name, setName] = useState(user.name);
 	const hasTemporaryPhoneEmail = user.email.endsWith("@phone.local");
 	const [email, setEmail] = useState(hasTemporaryPhoneEmail ? "" : user.email);
-	const [phone, setPhone] = useState(customer?.phone ?? "");
+	const [phone, setPhone] = useState(getBrazilianMobileDigits(customer?.phone));
 	const [cpf, setCpf] = useState(customer?.cpf ?? "");
 
 	useEffect(() => setName(user.name), [user.name]);
 	useEffect(() => setEmail(hasTemporaryPhoneEmail ? "" : user.email), [hasTemporaryPhoneEmail, user.email]);
 	useEffect(() => {
-		setPhone(customer?.phone ?? "");
+		setPhone(getBrazilianMobileDigits(customer?.phone));
 		setCpf(customer?.cpf ?? "");
 	}, [customer?.cpf, customer?.phone]);
 
 	const trimmedName = name.trim();
 	const trimmedEmail = email.trim();
-	const phoneDigits = phone.replace(/\D/g, "");
+	const phoneDigits = getBrazilianMobileDigits(phone);
+	const normalizedPhone = toBrazilianMobilePhone(phoneDigits);
 	const cpfDigits = cpf.replace(/\D/g, "");
 	const dirty =
 		trimmedName !== user.name ||
 		(hasTemporaryPhoneEmail && Boolean(trimmedEmail)) ||
-		phoneDigits !== (customer?.phone ?? "") ||
+		normalizedPhone !== toBrazilianMobilePhone(customer?.phone) ||
 		cpfDigits !== (customer?.cpf ?? "");
-	const validPhone = phoneDigits.length === 13;
+	const validPhone = phoneDigits.length === 11;
 	const validCpf = isValidCpf(cpfDigits);
 
 	return (
@@ -46,7 +49,7 @@ export function ProfileDetailsForm({ customer, isSaving, onSave, user }: Profile
 			className="space-y-4 rounded-xl border border-border bg-card p-5"
 			onSubmit={event => {
 				event.preventDefault();
-				onSave({ cpf: cpfDigits, email: trimmedEmail, name: trimmedName, phone: phoneDigits });
+				onSave({ cpf: cpfDigits, email: trimmedEmail, name: trimmedName, phone: normalizedPhone });
 			}}
 		>
 			<h2 className="font-semibold text-lg">{t("store.account.profile.personalData")}</h2>
