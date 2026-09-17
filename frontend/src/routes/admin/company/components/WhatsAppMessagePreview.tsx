@@ -51,6 +51,8 @@ function renderBlock(block: WhatsAppMessageBlock, index: number): ReactNode {
 		);
 	}
 
+	if (block.type !== "ordered-list" && block.type !== "unordered-list") return null;
+
 	const List = block.type === "ordered-list" ? "ol" : "ul";
 	return (
 		<List className="list-outside space-y-1 pl-5" key={key}>
