@@ -60,7 +60,12 @@
 				"darkTheme": "Tema escuro",
 				"defaultTheme": "Tema padrão da empresa",
 				"defaultThemeHint": "Usado para todos quando a troca estiver desabilitada.",
+				"cancelReasonPreview": "Produto indisponível.",
 				"editPalette": "Editar paleta de cores",
+				"emailNotificationPlaceholder": "Ex: Seu pedido {{orderId}} já está sendo preparado com carinho.",
+				"emailNotificationsHelp": "Use {{orderId}} para inserir o código do pedido. Deixe um campo vazio para usar a mensagem padrão.",
+				"emailNotificationsSummary": "Corpo e prévia de todos os e-mails de pedido",
+				"emailPreviewCompanyName": "Sua empresa",
 				"fontDisplay": "Fonte de destaque",
 				"fontDisplayPreview": "Prévia da fonte de destaque",
 				"fontFamily": "Fonte do texto",
@@ -85,6 +90,7 @@
 				"homepageBannerShort": "Banners da página inicial",
 				"homepageBannerUrls": "Banners da página inicial",
 				"insertOrderId": "Inserir código do pedido",
+				"insertCancelReason": "Inserir motivo do cancelamento",
 				"lightTheme": "Tema claro",
 				"loadError": "Não foi possível carregar as configurações da empresa.",
 				"logoShort": "Logotipo",
@@ -100,8 +106,8 @@
 				"notificationDefaultPreview": "A mensagem padrão deste status será usada.",
 				"notificationPlaceholder": "Ex: Seu pedido {{orderId}} já está sendo preparado com carinho.",
 				"notificationPreview": "Prévia",
-				"notificationsFormattingHelp": "Quebras de linha são preservadas. O texto acompanha o primeiro anexo como legenda.",
-				"notificationsHelp": "Use {{orderId}} para inserir o código do pedido. Deixe um campo vazio para usar mensagem padrão.",
+				"notificationsFormattingHelp": "Use *negrito*, _itálico_, ~riscado~, ```código```, - listas, 1. listas numeradas e > citações. O texto acompanha o primeiro anexo como legenda.",
+				"notificationsHelp": "Use {{orderId}} para inserir o código do pedido e {{reason}} para o motivo do cancelamento. Deixe um campo vazio para usar mensagem padrão.",
 				"notificationsSummary_one": "{{count}} mensagem personalizada",
 				"notificationsSummary_other": "{{count}} mensagens personalizadas",
 				"notificationsSummaryEmpty": "Mensagens padrão",
@@ -124,6 +130,7 @@
 				"saveSuccess": "Configurações da empresa atualizadas.",
 				"saving": "Salvando...",
 				"sectionAssets": "Logotipo e imagens",
+				"sectionEmailNotifications": "Notificações por e-mail",
 				"sectionFooter": "Rodapé da loja",
 				"sectionNotifications": "Notificações por WhatsApp",
 				"sectionTheme": "Tema e cores",
@@ -535,6 +542,23 @@
 				"items": "{{count}} item(s)",
 				"kanban": {
 					"emptyColumn": "Sem pedidos",
+					"finalize": {
+						"confirm": "Confirmar intenção",
+						"description": "Escolha como este pedido foi concluído antes de movê-lo para Finalizado.",
+						"options": {
+							"cancelado": {
+								"description": "Encerra o pedido sem concluir a entrega ou retirada."
+							},
+							"entregue": {
+								"description": "Confirma que o pedido chegou ao cliente."
+							},
+							"retirado": {
+								"description": "Confirma que o cliente retirou o pedido na unidade."
+							}
+						},
+						"success": "Pedido movido para Finalizado.",
+						"title": "Como este pedido foi finalizado?"
+					},
 					"finalized": "Finalizado"
 				},
 				"loadError": "Não foi possível carregar os pedidos.",
@@ -1655,6 +1679,8 @@
 					"title": "Meus pedidos"
 				},
 				"preferences": {
+					"appearance": "Aparência",
+					"appearanceHint": "Escolha o tema usado neste dispositivo.",
 					"email": "E-mail",
 					"emailHint": "Receba novidades e mudanças de status no seu e-mail.",
 					"orderUpdates": {
@@ -1666,6 +1692,11 @@
 					"saveError": "Não foi possível salvar as preferências.",
 					"saving": "Salvando...",
 					"subtitle": "Personalize sua experiência e como você recebe comunicações.",
+					"theme": "Tema",
+					"themeDark": "Tema escuro",
+					"themeLight": "Tema claro",
+					"themeSaved": "Tema atualizado!",
+					"themeSaveError": "Não foi possível salvar o tema. Tente novamente.",
 					"title": "Preferências da conta",
 					"whatsApp": "WhatsApp",
 					"whatsAppHint": "Receba atualizações rápidas pelo WhatsApp."
@@ -1677,8 +1708,6 @@
 					"addresses": "Endereços",
 					"addressSaved": "Endereço salvo.",
 					"addressSaveError": "Não foi possível salvar o endereço.",
-					"appearance": "Aparência",
-					"appearanceHint": "Escolha o tema usado neste dispositivo.",
 					"cardDeleted": "Cartão excluído.",
 					"cardDeleteError": "Não foi possível excluir o cartão.",
 					"cardExpiry": "Validade {{month}}/{{year}}",
@@ -1733,12 +1762,6 @@
 					"security": "Segurança",
 					"setDefault": "Definir como padrão",
 					"subtitle": "Gerencie seus dados.",
-					"theme": "Tema",
-					"themeCompanyControlled": "Esta empresa definiu um único tema para todos os usuários.",
-					"themeDark": "Tema escuro",
-					"themeLight": "Tema claro",
-					"themeSaved": "Tema atualizado!",
-					"themeSaveError": "Não foi possível salvar o tema. Tente novamente.",
 					"title": "Meu perfil"
 				},
 				"signIn": "Entrar",

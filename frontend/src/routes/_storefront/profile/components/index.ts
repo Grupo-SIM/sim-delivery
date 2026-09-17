@@ -4,5 +4,3 @@ export { ProfileSecurityForm } from "./ProfileSecurityForm";
 export { ProfileSkeleton } from "./ProfileSkeleton";
 export { ProfileSummaryCard } from "./ProfileSummaryCard";
 export { SavedCardsSection } from "./SavedCardsSection";
-
-export * from "./ThemePreferenceForm";

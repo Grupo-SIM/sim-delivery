@@ -4,8 +4,6 @@ import { useTranslation } from "react-i18next";
 import type { AddressValue } from "@/components/address";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { useLiveBranding } from "@/hooks/use-live-branding";
-import { useThemePreference } from "@/hooks/use-theme-preference";
 import {
 	setPassword,
 	useDeleteCustomersMeAddressesByAddressId,
@@ -26,7 +24,6 @@ import {
 	ProfileSkeleton,
 	ProfileSummaryCard,
 	SavedCardsSection,
-	ThemePreferenceForm,
 } from "./components";
 
 function profileAddressData(address: AddressValue) {
@@ -69,9 +66,6 @@ function ProfilePage() {
 	const deleteAddress = useDeleteCustomersMeAddressesByAddressId();
 	const [savingDetails, setSavingDetails] = useState(false);
 	const [savingPassword, setSavingPassword] = useState(false);
-	const [savingTheme, setSavingTheme] = useState(false);
-	const { allowThemeToggle, defaultTheme } = useLiveBranding();
-	const { mode, saveThemePreference } = useThemePreference(allowThemeToggle, defaultTheme);
 
 	useEffect(() => {
 		if (hydrated && !isAuthenticated) void navigate({ search: { redirectTo: "/profile" }, to: "/identify" });
@@ -147,18 +141,6 @@ function ProfilePage() {
 		}
 	}
 
-	async function handleThemeChange(nextMode: "dark" | "light") {
-		setSavingTheme(true);
-		try {
-			await saveThemePreference(nextMode);
-			showToast(t("store.account.profile.themeSaved"), "positive");
-		} catch {
-			showToast(t("store.account.profile.themeSaveError"), "negative");
-		} finally {
-			setSavingTheme(false);
-		}
-	}
-
 	async function handleCreateAddress(address: AddressValue) {
 		try {
 			await createAddress.mutateAsync({ data: { ...profileAddressData(address), slug: slug ?? "" } });
@@ -227,13 +209,6 @@ function ProfilePage() {
 				onUpdate={handleUpdateAddress}
 			/>
 			<SavedCardsSection />
-			{allowThemeToggle && (
-				<ThemePreferenceForm
-					isSaving={savingTheme}
-					mode={mode}
-					onChange={handleThemeChange}
-				/>
-			)}
 		</Container>
 	);
 }

@@ -6,9 +6,12 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useLiveBranding } from "@/hooks/use-live-branding";
+import { useThemePreference } from "@/hooks/use-theme-preference";
 import { useGetCustomersMe, usePatchCustomersMeNotificationPreferences } from "@/lib/api";
 import { slug } from "@/lib/variant";
-import { useAuthStore } from "@/stores/auth";
+import { showToast, useAuthStore } from "@/stores";
+import { ThemePreferenceForm } from "./components";
 
 function PreferencesPage() {
 	const { t } = useTranslation();
@@ -24,6 +27,9 @@ function PreferencesPage() {
 	const [whatsApp, setWhatsApp] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [saved, setSaved] = useState(false);
+	const [savingTheme, setSavingTheme] = useState(false);
+	const { allowThemeToggle, defaultTheme } = useLiveBranding();
+	const { mode, saveThemePreference } = useThemePreference(allowThemeToggle, defaultTheme);
 
 	useEffect(() => {
 		if (hydrated && !isAuthenticated) void navigate({ search: { redirectTo: "/preferences" }, to: "/identify" });
@@ -54,6 +60,18 @@ function PreferencesPage() {
 				onSuccess: () => setSaved(true),
 			},
 		);
+	}
+
+	async function handleThemeChange(nextMode: "dark" | "light") {
+		setSavingTheme(true);
+		try {
+			await saveThemePreference(nextMode);
+			showToast(t("store.account.preferences.themeSaved"), "positive");
+		} catch {
+			showToast(t("store.account.preferences.themeSaveError"), "negative");
+		} finally {
+			setSavingTheme(false);
+		}
 	}
 
 	return (
@@ -93,6 +111,9 @@ function PreferencesPage() {
 						: t("store.account.preferences.save")}
 				</Button>
 			</div>
+			{allowThemeToggle && (
+				<ThemePreferenceForm isSaving={savingTheme} mode={mode} onChange={handleThemeChange} />
+			)}
 		</Container>
 	);
 }

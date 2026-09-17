@@ -1,6 +1,6 @@
 import { t } from "elysia";
 import { __nullable__ } from "sql/typebox";
-import { OrderStatusWhatsAppTemplates, ThemeColors, ThemeMode } from "./BrandingInput";
+import { OrderStatusEmailTemplates, OrderStatusWhatsAppTemplates, ThemeColors, ThemeMode } from "./BrandingInput";
 
 export const BrandingReturn = t.Object({
 	allowThemeToggle: t.Boolean(),
@@ -22,6 +22,7 @@ export const BrandingReturn = t.Object({
 	logoUrl: __nullable__(t.String()),
 	metaPixelId: __nullable__(t.String()),
 	mobileIconUrl: __nullable__(t.String()),
+	orderStatusEmailTemplates: __nullable__(OrderStatusEmailTemplates),
 	orderStatusWhatsAppTemplates: __nullable__(OrderStatusWhatsAppTemplates),
 	themeColors: __nullable__(ThemeColors),
 	unitFallbackImageUrl: __nullable__(t.String()),

@@ -1,5 +1,6 @@
 export * from "./AssignCourierModal";
 export * from "./AssignKitchenModal";
+export * from "./FinalizeOrderModal";
 export * from "./OrderKanbanCard";
 export * from "./OrderReceiptButton";
 export * from "./OrderRow";

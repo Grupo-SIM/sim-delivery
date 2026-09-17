@@ -1,6 +1,5 @@
 import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
-import type { OrderStatusWhatsAppTemplate } from "@/modules/branding/dtos";
-import { getOrderStatusWhatsAppTemplate } from "@/modules/branding/orderStatusWhatsAppTemplates";
+import type { OrderStatusEmailTemplate, OrderStatusWhatsAppTemplate } from "@/modules/branding/dtos";
 import { orderEvents } from "@/shared/infra/OrderEvents";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { WhatsAppSender } from "@/shared/infra/whatsapp";
@@ -23,7 +22,7 @@ export class CancelExpiredUnpaidOrders {
 		const expiresAt = new Date(now.getTime() - EXPIRATION_MS);
 		const orders = await this.prisma.order.findMany({
 			include: {
-				company: { select: { orderStatusWhatsAppTemplates: true } },
+				company: { select: { orderStatusEmailTemplates: true, orderStatusWhatsAppTemplates: true } },
 				customer: {
 					select: {
 						notificationEmail: true,
@@ -44,10 +43,7 @@ export class CancelExpiredUnpaidOrders {
 					string,
 					string | OrderStatusWhatsAppTemplate
 				> | null;
-				const message = (
-					getOrderStatusWhatsAppTemplate(templates, "cancelado").message?.trim() ||
-					"Seu pedido {{orderId}} foi cancelado porque o pagamento não foi confirmado em até 1 hora."
-				).replaceAll("{{orderId}}", `#${order.displayNumber}`);
+				const emailTemplates = order.company.orderStatusEmailTemplates as Record<string, OrderStatusEmailTemplate> | null;
 				const result = await this.prisma.$transaction(async tx => {
 					const changed = await tx.order.updateMany({
 						data: { cancelReason: CANCELLATION_REASON, status: "cancelado" },
@@ -64,20 +60,20 @@ export class CancelExpiredUnpaidOrders {
 							data: { orderId: order.id, status: "cancelado" },
 						});
 						await dispatchOrderStatusWhatsApp({
+							cancelReason: CANCELLATION_REASON,
 							companyId: order.companyId,
 							customer: order.customer,
 							deduplicationKey: statusEvent?.id
 								? `order-status:${statusEvent.id}`
 								: `expired-cancellation:${order.id}`,
 							deliveryMethod: order.deliveryMethod,
-							message,
 							orderId: order.id,
 							orderNumber: order.displayNumber,
 							prisma: tx,
 							status: "cancelado",
 							templates,
 							unitId: order.unitId,
-							unitWhatsAppSession: order.unit.whatsAppConnection?.sessionName,
+							unitWhatsAppSession: order.unit?.whatsAppConnection?.sessionName,
 							whatsApp: this.whatsApp,
 						});
 					}
@@ -90,11 +86,13 @@ export class CancelExpiredUnpaidOrders {
 
 				await sendOrderStatusEmail({
 					customer: order.customer,
+					cancelReason: CANCELLATION_REASON,
 					deliveryMethod: order.deliveryMethod,
-					message,
+					emailTemplates,
 					orderId: order.id,
 					orderNumber: order.displayNumber,
 					status: "cancelado",
+					templates,
 				});
 			} catch (error) {
 				console.error(`Failed to cancel expired unpaid order ${order.id}`, error);

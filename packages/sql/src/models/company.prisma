@@ -30,6 +30,7 @@ model Company {
     allowThemeToggle Boolean @default(true)
     /// Per-company WhatsApp messages keyed by order status.
     orderStatusWhatsAppTemplates Json?
+    orderStatusEmailTemplates    Json?
     /// Ordered receipt layout blocks configured by company managers.
     receiptTemplate Json?
     /// Marketing tracking IDs injected into the store at runtime.

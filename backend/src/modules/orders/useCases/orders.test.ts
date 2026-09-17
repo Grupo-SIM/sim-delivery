@@ -588,6 +588,21 @@ describe("UpdateOrderStatus", () => {
 		expect(stored.status).toBe("entregue");
 	});
 
+	it("does not send a pickup order out for delivery", async () => {
+		const { prisma, stored } = makeUpdateStatusPrisma({
+			companyId: "cmp_1",
+			deliveryMethod: "pickup",
+			id: "ord_1",
+			status: "pronto",
+		});
+
+		await expect(
+			new UpdateOrderStatus(prisma, noopWhatsApp).execute("cmp_1", "ord_1", { status: "saiu_para_entrega" }),
+		).rejects.toThrow("INVALID_TRANSITION");
+
+		expect(stored.status).toBe("pronto");
+	});
+
 	it("emails pickup completion as collected", async () => {
 		const { prisma, stored } = makeUpdateStatusPrisma({
 			companyId: "cmp_1",

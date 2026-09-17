@@ -1,5 +1,6 @@
 const DEFAULT_ORDER_STATUS_MESSAGES: Record<string, Record<string, string>> = {
 	delivery: {
+		cancelado: "Seu pedido {{orderNumber}} foi cancelado.\nMotivo: {{reason}}",
 		em_preparo: "Seu pedido {{orderNumber}} já está sendo preparado com carinho. Assim que ficar pronto, seguirá para entrega.",
 		entregue: "Seu pedido {{orderNumber}} chegou até você. Esperamos que aproveite cada detalhe!",
 		pronto: "Seu pedido {{orderNumber}} está pronto e logo seguirá para entrega.",
@@ -7,6 +8,7 @@ const DEFAULT_ORDER_STATUS_MESSAGES: Record<string, Record<string, string>> = {
 		saiu_para_entrega: "Seu pedido {{orderNumber}} saiu para entrega e está a caminho.",
 	},
 	pickup: {
+		cancelado: "Seu pedido {{orderNumber}} foi cancelado.\nMotivo: {{reason}}",
 		entregue: "Seu pedido {{orderNumber}} foi retirado. Esperamos que aproveite cada detalhe!",
 		em_preparo: "Seu pedido {{orderNumber}} já está sendo preparado com carinho. Avisaremos assim que estiver pronto para retirada.",
 		pronto: "Seu pedido {{orderNumber}} está pronto para retirada. Esperamos você!",
@@ -20,13 +22,20 @@ export function formatOrderStatusMessage(
 	status: string,
 	orderNumber: number,
 	deliveryMethod = "delivery",
+	cancelReason?: string | null,
 ): string {
 	const orderReference = `#${orderNumber}`;
-	return (
+	const message = (
 		template ??
 		DEFAULT_ORDER_STATUS_MESSAGES[deliveryMethod]?.[status] ??
 		`Atualização do pedido ${orderReference}: ${status}.`
 	)
 		.replaceAll("{{orderId}}", orderReference)
 		.replaceAll("{{orderNumber}}", orderReference);
+	const reason = cancelReason?.trim();
+	return message
+		.replaceAll("Motivo: {{reason}}", reason ? `Motivo: ${reason}` : "")
+		.replaceAll("{{reason}}", reason ?? "")
+		.replace(/\n{3,}/g, "\n\n")
+		.trimEnd();
 }

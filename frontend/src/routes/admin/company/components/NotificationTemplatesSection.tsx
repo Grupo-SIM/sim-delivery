@@ -1,15 +1,32 @@
 import { useTranslation } from "react-i18next";
-import { LuMessageSquare } from "react-icons/lu";
+import { LuMail, LuMessageSquare } from "react-icons/lu";
 import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
-import { defaultOrderStatusTemplates, ORDER_STATUS_TEMPLATE_KEYS, type OrderStatusTemplates } from "./types";
+import {
+	defaultOrderStatusTemplates,
+	ORDER_STATUS_TEMPLATE_KEYS,
+	type OrderStatusEmailTemplates,
+	type OrderStatusTemplates,
+} from "./types";
+import { EmailTemplateEditor } from "./EmailTemplateEditor";
 import { WhatsAppTemplateEditor } from "./WhatsAppTemplateEditor";
 
 interface NotificationTemplatesSectionProps {
+	companyName: string;
+	emailTemplates: OrderStatusEmailTemplates;
+	logoUrl: string;
+	onEmailChange: (changes: Partial<OrderStatusEmailTemplates>) => void;
 	onChange: (changes: Partial<OrderStatusTemplates>) => void;
 	templates: OrderStatusTemplates;
 }
 
-export function NotificationTemplatesSection({ onChange, templates }: NotificationTemplatesSectionProps) {
+export function NotificationTemplatesSection({
+	companyName,
+	emailTemplates,
+	logoUrl,
+	onChange,
+	onEmailChange,
+	templates,
+}: NotificationTemplatesSectionProps) {
 	const { t } = useTranslation();
 	const customized = ORDER_STATUS_TEMPLATE_KEYS.filter(status => {
 		const template = templates[status];
@@ -18,8 +35,9 @@ export function NotificationTemplatesSection({ onChange, templates }: Notificati
 			(template.message.trim() && template.message !== defaultOrderStatusTemplates[status].message)
 		);
 	}).length;
+	const emailCustomized = ORDER_STATUS_TEMPLATE_KEYS.filter(status => emailTemplates[status].message.trim()).length;
 
-	return (
+	return <>
 		<CollapsibleSection
 			icon={LuMessageSquare}
 			summary={
@@ -36,6 +54,7 @@ export function NotificationTemplatesSection({ onChange, templates }: Notificati
 			<div className="grid gap-4">
 				{ORDER_STATUS_TEMPLATE_KEYS.map(status => (
 					<WhatsAppTemplateEditor
+						allowReasonSlot={status === "cancelado"}
 						key={status}
 						label={t(`admin.branding.orderStatus.${status}`)}
 						onChange={template => onChange({ [status]: template })}
@@ -44,5 +63,25 @@ export function NotificationTemplatesSection({ onChange, templates }: Notificati
 				))}
 			</div>
 		</CollapsibleSection>
-	);
+		<CollapsibleSection
+			icon={LuMail}
+			summary={t("admin.branding.emailNotificationsSummary", { count: emailCustomized })}
+			title={t("admin.branding.sectionEmailNotifications")}
+		>
+			<p className="text-muted-foreground text-sm">{t("admin.branding.emailNotificationsHelp")}</p>
+			<div className="grid gap-4">
+				{ORDER_STATUS_TEMPLATE_KEYS.map(status => (
+					<EmailTemplateEditor
+						companyName={companyName}
+						defaultMessage={defaultOrderStatusTemplates[status].message}
+						key={status}
+						label={t(`admin.branding.orderStatus.${status}`)}
+						logoUrl={logoUrl}
+						onChange={template => onEmailChange({ [status]: template })}
+						template={emailTemplates[status]}
+					/>
+				))}
+			</div>
+		</CollapsibleSection>
+	</>;
 }

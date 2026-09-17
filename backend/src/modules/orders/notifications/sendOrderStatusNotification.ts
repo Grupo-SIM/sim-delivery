@@ -1,6 +1,7 @@
 import { OrderStatusEmail } from "@/shared/infra/emails";
+import { getOrderStatusEmailTemplate } from "@/modules/branding/orderStatusEmailTemplates";
 import { getOrderStatusWhatsAppTemplate } from "@/modules/branding/orderStatusWhatsAppTemplates";
-import type { OrderStatusWhatsAppTemplate } from "@/modules/branding/dtos";
+import type { OrderStatusEmailTemplate, OrderStatusWhatsAppTemplate } from "@/modules/branding/dtos";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { dispatchWhatsApp } from "@/shared/infra/whatsapp";
 import type { WhatsAppSender } from "@/shared/infra/whatsapp";
@@ -18,9 +19,11 @@ export interface OrderStatusNotificationCustomer {
 }
 
 interface SendOrderStatusNotificationInput {
+	cancelReason?: string | null;
 	companyId: string;
 	customer: OrderStatusNotificationCustomer;
 	deliveryMethod: string;
+	emailTemplates?: Record<string, OrderStatusEmailTemplate> | null;
 	emailSender?: OrderStatusEmailSender;
 	message?: string;
 	orderId: string;
@@ -48,6 +51,7 @@ const defaultEmailSender: OrderStatusEmailSender = {
 };
 
 export function getOrderStatusNotificationMessage({
+	cancelReason,
 	deliveryMethod,
 	message: messageOverride,
 	orderNumber,
@@ -55,7 +59,7 @@ export function getOrderStatusNotificationMessage({
 	templates,
 }: Pick<
 	SendOrderStatusNotificationInput,
-	"deliveryMethod" | "message" | "orderNumber" | "status" | "templates"
+	"cancelReason" | "deliveryMethod" | "message" | "orderNumber" | "status" | "templates"
 >): string {
 	return (
 		messageOverride ??
@@ -64,11 +68,31 @@ export function getOrderStatusNotificationMessage({
 			status,
 			orderNumber,
 			deliveryMethod,
+			cancelReason,
 		)
 	);
 }
 
+export function getOrderStatusEmailMessage({
+	cancelReason,
+	deliveryMethod,
+	emailTemplates,
+	message: messageOverride,
+	orderNumber,
+	status,
+	templates,
+}: Pick<
+	SendOrderStatusNotificationInput,
+	"cancelReason" | "deliveryMethod" | "emailTemplates" | "message" | "orderNumber" | "status" | "templates"
+>): string {
+	const emailTemplate = getOrderStatusEmailTemplate(emailTemplates, status).message?.trim();
+	const whatsAppTemplate = getOrderStatusWhatsAppTemplate(templates, status).message?.trim();
+	const template = messageOverride ?? (emailTemplate || whatsAppTemplate || undefined);
+	return formatOrderStatusMessage(template, status, orderNumber, deliveryMethod, cancelReason);
+}
+
 export async function dispatchOrderStatusWhatsApp({
+	cancelReason,
 	customer,
 	companyId,
 	deduplicationKey,
@@ -86,6 +110,7 @@ export async function dispatchOrderStatusWhatsApp({
 	const phone = customer.phone ?? customer.user?.phoneNumber;
 	if (customer.notificationWhatsApp === false || !phone) return;
 	const message = getOrderStatusNotificationMessage({
+		cancelReason,
 		deliveryMethod,
 		message: messageOverride,
 		orderNumber,
@@ -109,8 +134,10 @@ export async function dispatchOrderStatusWhatsApp({
 }
 
 export async function sendOrderStatusEmail({
+	cancelReason,
 	customer,
 	deliveryMethod,
+	emailTemplates,
 	emailSender = defaultEmailSender,
 	message: messageOverride,
 	orderNumber,
@@ -119,8 +146,10 @@ export async function sendOrderStatusEmail({
 	templates,
 }: SendOrderStatusEmailInput): Promise<void> {
 	if (customer.notificationEmail === false || !customer.user?.email) return;
-	const message = getOrderStatusNotificationMessage({
+	const message = getOrderStatusEmailMessage({
+		cancelReason,
 		deliveryMethod,
+		emailTemplates,
 		message: messageOverride,
 		orderNumber,
 		status,
@@ -141,8 +170,10 @@ export async function sendOrderStatusEmail({
 
 /** Sends one order update through every notification channel enabled by the customer. */
 export async function sendOrderStatusNotification({
+	cancelReason,
 	customer,
 	deliveryMethod,
+	emailTemplates,
 	emailSender = defaultEmailSender,
 	message: messageOverride,
 	orderId,
@@ -152,8 +183,18 @@ export async function sendOrderStatusNotification({
 	templates,
 	whatsApp,
 }: SendOrderStatusNotificationInput): Promise<void> {
-	const message = getOrderStatusNotificationMessage({
+	const whatsAppMessage = getOrderStatusNotificationMessage({
+		cancelReason,
 		deliveryMethod,
+		message: messageOverride,
+		orderNumber,
+		status,
+		templates,
+	});
+	const emailMessage = getOrderStatusEmailMessage({
+		cancelReason,
+		deliveryMethod,
+		emailTemplates,
 		message: messageOverride,
 		orderNumber,
 		status,
@@ -166,14 +207,14 @@ export async function sendOrderStatusNotification({
 		deliveries.push(
 			whatsApp.sendMessage(phone, {
 				attachments: getOrderStatusWhatsAppTemplate(templates, status).attachments,
-				text: message,
+				text: whatsAppMessage,
 			}),
 		);
 	}
 	if (customer.notificationEmail !== false && customer.user?.email) {
 		deliveries.push(
 			emailSender.send({
-				message,
+				message: emailMessage,
 				orderNumber,
 				...(reviewUrl ? { reviewUrl } : {}),
 				status,

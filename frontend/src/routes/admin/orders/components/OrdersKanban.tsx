@@ -18,6 +18,7 @@ import {
 import { showAlert, showToast } from "@/stores";
 import { OrderKanbanCard } from "./OrderKanbanCard";
 import { OrderStatusBadge } from "./OrderStatusBadge";
+import { FinalizeOrderModal } from "./FinalizeOrderModal";
 import { PhaseEstimateModal } from "./PhaseEstimateModal";
 
 const KANBAN_STATUSES = [
@@ -65,10 +66,6 @@ function isFinalizedStatus(status: KanbanStatus): status is FinalizedStatus {
 	return FINALIZED_STATUSES.includes(status as FinalizedStatus);
 }
 
-function getFinalizedStatus(): FinalizedStatus {
-	return "entregue";
-}
-
 interface OrdersKanbanProps {
 	orders: GetOrders200;
 	role: string | null;
@@ -84,6 +81,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 	const scrollSpeedRef = useRef(0);
 	const [draggedOrderId, setDraggedOrderId] = useState<string | null>(null);
 	const [dragOverStatus, setDragOverStatus] = useState<string | null>(null);
+	const [finalizeOrder, setFinalizeOrder] = useState<GetOrders200[number] | null>(null);
 	const [problemOrderId, setProblemOrderId] = useState<string | null>(null);
 	const [phaseEstimate, setPhaseEstimate] = useState<{
 		orderId: string;
@@ -182,6 +180,11 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 					"Não é possível voltar um pedido para Aguardando pagamento pelo kanban. Esse status é controlado pelo pagamento.",
 			});
 		}
+		if (order.deliveryMethod === "pickup" && status === "saiu_para_entrega") {
+			return t("admin.orders.updateStatus.errors.pickupCannotLeaveForDelivery", {
+				defaultValue: "Pedido para retirada não pode ser enviado para entrega.",
+			});
+		}
 		if (status === "problema") return null;
 		if (status === "cancelado") return null;
 
@@ -192,6 +195,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 		const order = orders.find(candidate => candidate.id === orderId);
 		if (!order) return;
 		if (order.status === status) return;
+		if (isFinalizedStatus(order.status as KanbanStatus) && isFinalizedStatus(status)) return;
 		const blockReason = getMoveBlockReason(order, status);
 		if (blockReason) {
 			showStatusAlert(blockReason);
@@ -200,6 +204,10 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 		if (!isMovableStatus(status)) return;
 		if (status === "problema") {
 			setProblemOrderId(orderId);
+			return;
+		}
+		if (isFinalizedStatus(status)) {
+			setFinalizeOrder(order);
 			return;
 		}
 		if (status === "em_preparo") {
@@ -317,7 +325,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 									if (order)
 										moveOrder(
 											order.id,
-										column.kind === "finalized" ? getFinalizedStatus() : column.status,
+										column.kind === "finalized" ? "entregue" : column.status,
 										);
 								}}
 							>
@@ -435,6 +443,33 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 				}}
 				orderId={phaseEstimate?.orderId}
 				status={phaseEstimate?.status ?? "em_preparo"}
+			/>
+			<FinalizeOrderModal
+				deliveryMethod={finalizeOrder?.deliveryMethod ?? "delivery"}
+				isOpen={finalizeOrder !== null}
+				isPending={patchStatus.isPending}
+				onClose={() => setFinalizeOrder(null)}
+				onConfirm={(status, cancelReason) => {
+					if (!finalizeOrder) return;
+					patchStatus.mutate(
+						{ data: { cancelReason, status }, orderId: finalizeOrder.id },
+						{
+							onError: () =>
+								void showAlert(
+									t("admin.orders.updateStatus.errors.generic", {
+										defaultValue: "Não foi possível atualizar o status agora. Atualize a página e tente novamente.",
+									}),
+									t("admin.orders.updateStatus.errorTitle", { defaultValue: "Falha ao atualizar" }),
+								),
+							onSuccess: () => {
+								void queryClient.invalidateQueries({ queryKey: getOrdersQueryKey() });
+								showToast(t("admin.orders.kanban.finalize.success"), "positive");
+								window.history.back();
+							},
+						},
+					);
+				}}
+				orderId={finalizeOrder?.id}
 			/>
 		</>
 	);

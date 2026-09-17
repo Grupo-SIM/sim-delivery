@@ -63,6 +63,22 @@ export const OrderStatusWhatsAppTemplates = t.Object({
 });
 export type OrderStatusWhatsAppTemplates = typeof OrderStatusWhatsAppTemplates.static;
 
+export const OrderStatusEmailTemplate = t.Object({
+	message: t.Optional(t.String({ maxLength: 1000 })),
+});
+export type OrderStatusEmailTemplate = typeof OrderStatusEmailTemplate.static;
+
+export const OrderStatusEmailTemplates = t.Object({
+	cancelado: t.Optional(OrderStatusEmailTemplate),
+	em_preparo: t.Optional(OrderStatusEmailTemplate),
+	entregue: t.Optional(OrderStatusEmailTemplate),
+	pronto: t.Optional(OrderStatusEmailTemplate),
+	recebido: t.Optional(OrderStatusEmailTemplate),
+	retirado: t.Optional(OrderStatusEmailTemplate),
+	saiu_para_entrega: t.Optional(OrderStatusEmailTemplate),
+});
+export type OrderStatusEmailTemplates = typeof OrderStatusEmailTemplates.static;
+
 export const ThemeMode = t.Union([t.Literal("dark"), t.Literal("light")]);
 export type ThemeMode = typeof ThemeMode.static;
 
@@ -85,6 +101,7 @@ export const UpdateBrandingBody = t.Object({
 	logoUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
 	metaPixelId: t.Optional(t.String({ maxLength: 50 })),
 	mobileIconUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),
+	orderStatusEmailTemplates: t.Optional(OrderStatusEmailTemplates),
 	orderStatusWhatsAppTemplates: t.Optional(OrderStatusWhatsAppTemplates),
 	themeColors: t.Optional(ThemeColors),
 	unitFallbackImageUrl: t.Optional(t.String({ format: "uri", maxLength: 1000 })),

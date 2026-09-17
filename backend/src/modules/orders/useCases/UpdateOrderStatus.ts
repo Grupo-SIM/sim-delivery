@@ -1,5 +1,5 @@
 import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
-import type { OrderStatusWhatsAppTemplate } from "@/modules/branding/dtos";
+import type { OrderStatusEmailTemplate, OrderStatusWhatsAppTemplate } from "@/modules/branding/dtos";
 import type { RefundPayment } from "@/modules/payments/useCases";
 import { UserErrors } from "@/modules/users/errors";
 import { DomainError } from "@/shared/errors";
@@ -14,7 +14,7 @@ import {
 	sendOrderStatusEmail,
 } from "../notifications/sendOrderStatusNotification";
 
-const NOTIFIABLE = new Set(["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue", "retirado"]);
+const NOTIFIABLE = new Set(["recebido", "em_preparo", "pronto", "saiu_para_entrega", "entregue", "retirado", "cancelado"]);
 const ESTIMABLE_STATUSES = new Set(["em_preparo"]);
 const STATUS_SEQUENCE = [
 	"recebido",
@@ -56,7 +56,7 @@ export class UpdateOrderStatus {
 
 		const order = await this.prisma.order.findFirst({
 			include: {
-				company: { select: { orderStatusWhatsAppTemplates: true } },
+				company: { select: { orderStatusEmailTemplates: true, orderStatusWhatsAppTemplates: true } },
 				customer: { include: { user: { select: { email: true, phoneNumber: true } } } },
 				payment: { select: { status: true } },
 				unit: { select: { slug: true, whatsAppConnection: { select: { sessionName: true } } } },
@@ -70,6 +70,8 @@ export class UpdateOrderStatus {
 
 		if (status === "cancelado" && !cancelReason) throw new DomainError(OrderErrors.CANCEL_REASON_REQUIRED);
 		if (status === "problema" && !problemReason) throw new DomainError(OrderErrors.INVALID_TRANSITION);
+		if (order.deliveryMethod === "pickup" && status === "saiu_para_entrega")
+			throw new DomainError(OrderErrors.INVALID_TRANSITION);
 
 		if (preparedById) {
 			const kitchenMember = await this.prisma.user.findFirst({
@@ -84,6 +86,7 @@ export class UpdateOrderStatus {
 			string,
 			string | OrderStatusWhatsAppTemplate
 		> | null;
+		const emailTemplates = order.company.orderStatusEmailTemplates as Record<string, OrderStatusEmailTemplate> | null;
 		const reviewUrl = status === "entregue" || status === "retirado" ? getReviewUrl(order.unit.slug, orderId) : undefined;
 
 		const updated = await this.prisma.$transaction(async tx => {
@@ -135,6 +138,7 @@ export class UpdateOrderStatus {
 			}
 			if (notifiesStatusChange || notifiesEstimateUpdate) {
 				await dispatchOrderStatusWhatsApp({
+					cancelReason,
 					companyId: order.companyId,
 					customer: order.customer,
 					deduplicationKey: statusEventId
@@ -166,9 +170,11 @@ export class UpdateOrderStatus {
 
 		if (notifiesStatusChange || notifiesEstimateUpdate) {
 			await sendOrderStatusEmail({
+				cancelReason,
 				customer: order.customer,
 				deliveryMethod: order.deliveryMethod,
 				emailSender: this.emailSender,
+				emailTemplates,
 				orderId,
 				orderNumber: order.displayNumber,
 				reviewUrl,

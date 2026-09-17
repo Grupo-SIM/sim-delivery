@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/errors";
-import type { OrderStatusWhatsAppTemplate } from "@/modules/branding/dtos";
+import type { OrderStatusEmailTemplate, OrderStatusWhatsAppTemplate } from "@/modules/branding/dtos";
 import { orderEvents } from "@/shared/infra/OrderEvents";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { createWhatsAppProvider, type WhatsAppSender } from "@/shared/infra/whatsapp";
@@ -23,7 +23,7 @@ export class ConfirmPayment {
 
 		const order = await this.prisma.order.findUniqueOrThrow({
 			include: {
-				company: { select: { orderStatusWhatsAppTemplates: true } },
+				company: { select: { orderStatusEmailTemplates: true, orderStatusWhatsAppTemplates: true } },
 				customer: {
 					select: {
 						notificationEmail: true,
@@ -44,6 +44,7 @@ export class ConfirmPayment {
 			string,
 			string | OrderStatusWhatsAppTemplate
 		> | null;
+		const emailTemplates = order.company.orderStatusEmailTemplates as Record<string, OrderStatusEmailTemplate> | null;
 
 		const confirmed = await this.prisma.$transaction(async tx => {
 			// Webhooks can be retried or delivered concurrently. Claiming the pending
@@ -114,6 +115,7 @@ export class ConfirmPayment {
 			customer: order.customer,
 			deliveryMethod: order.deliveryMethod,
 			emailSender: this.emailSender,
+			emailTemplates,
 			orderId: order.id,
 			orderNumber: order.displayNumber,
 			status: "recebido",

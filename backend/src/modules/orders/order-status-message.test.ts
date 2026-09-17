@@ -20,4 +20,16 @@ describe("formatOrderStatusMessage", () => {
 	])("formats the %s pickup message", (status, expected) => {
 		expect(formatOrderStatusMessage(undefined, status, 154, "pickup")).toBe(expected);
 	});
+
+	it("inserts the cancellation reason when the template uses its slot", () => {
+		expect(formatOrderStatusMessage("Seu pedido {{orderId}} foi cancelado.\nMotivo: {{reason}}", "cancelado", 154, "delivery", "Produto indisponível.")).toBe(
+			"Seu pedido #154 foi cancelado.\nMotivo: Produto indisponível.",
+		);
+	});
+
+	it("omits the cancellation reason when it is unavailable", () => {
+		expect(formatOrderStatusMessage("Seu pedido {{orderId}} foi cancelado.\nMotivo: {{reason}}", "cancelado", 154)).toBe(
+			"Seu pedido #154 foi cancelado.",
+		);
+	});
 });

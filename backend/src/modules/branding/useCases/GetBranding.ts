@@ -1,6 +1,7 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { BrandingReturn, GetBrandingQuery } from "../dtos";
 import { normalizeOrderStatusWhatsAppTemplates } from "../orderStatusWhatsAppTemplates";
+import { normalizeOrderStatusEmailTemplates } from "../orderStatusEmailTemplates";
 
 export class GetBranding {
 	constructor(private readonly prisma: PrismaInstance) {}
@@ -27,6 +28,7 @@ export class GetBranding {
 				metaPixelId: true,
 				mobileIconUrl: true,
 				name: true,
+				orderStatusEmailTemplates: true,
 				orderStatusWhatsAppTemplates: true,
 				themeColors: true,
 				unitFallbackImageUrl: true,
@@ -54,6 +56,7 @@ export class GetBranding {
 			logoUrl: company?.logoUrl ?? null,
 			metaPixelId: company?.metaPixelId ?? null,
 			mobileIconUrl: company?.mobileIconUrl ?? null,
+			orderStatusEmailTemplates: normalizeOrderStatusEmailTemplates(company?.orderStatusEmailTemplates),
 			orderStatusWhatsAppTemplates: normalizeOrderStatusWhatsAppTemplates(
 				company?.orderStatusWhatsAppTemplates,
 			),

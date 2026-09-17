@@ -3,6 +3,7 @@ import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { BrandingReturn, UpdateBrandingDTO } from "../dtos";
 import { normalizeOrderStatusWhatsAppTemplates } from "../orderStatusWhatsAppTemplates";
+import { normalizeOrderStatusEmailTemplates } from "../orderStatusEmailTemplates";
 
 export class UpdateBranding {
 	constructor(private readonly prisma: PrismaInstance) {}
@@ -27,6 +28,7 @@ export class UpdateBranding {
 		logoUrl,
 		metaPixelId,
 		mobileIconUrl,
+		orderStatusEmailTemplates,
 		orderStatusWhatsAppTemplates,
 		themeColors,
 		unitFallbackImageUrl,
@@ -53,6 +55,7 @@ export class UpdateBranding {
 				logoUrl,
 				metaPixelId,
 				mobileIconUrl,
+				orderStatusEmailTemplates,
 				orderStatusWhatsAppTemplates,
 				themeColors,
 				unitFallbackImageUrl,
@@ -77,6 +80,7 @@ export class UpdateBranding {
 				metaPixelId: true,
 				mobileIconUrl: true,
 				name: true,
+				orderStatusEmailTemplates: true,
 				orderStatusWhatsAppTemplates: true,
 				themeColors: true,
 				unitFallbackImageUrl: true,
@@ -104,6 +108,7 @@ export class UpdateBranding {
 			logoUrl: company.logoUrl ?? null,
 			metaPixelId: company.metaPixelId ?? null,
 			mobileIconUrl: company.mobileIconUrl ?? null,
+			orderStatusEmailTemplates: normalizeOrderStatusEmailTemplates(company.orderStatusEmailTemplates),
 			orderStatusWhatsAppTemplates: normalizeOrderStatusWhatsAppTemplates(
 				company.orderStatusWhatsAppTemplates,
 			),

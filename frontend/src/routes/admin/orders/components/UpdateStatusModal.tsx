@@ -66,7 +66,9 @@ export function UpdateStatusModal({
 	const [refundMethod, setRefundMethod] = useState<RefundMethodEnumKey>("manual");
 	const [refundAmount, setRefundAmount] = useState(orderTotal);
 
-	const nexts = MANUAL_STATUSES.filter(status => status !== currentStatus);
+	const nexts = MANUAL_STATUSES.filter(
+		status => status !== currentStatus && !(deliveryMethod === "pickup" && status === "saiu_para_entrega"),
+	);
 	const hasOptions = nexts.length > 0;
 	const canRefund = paymentStatus === "confirmed";
 

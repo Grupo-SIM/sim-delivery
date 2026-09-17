@@ -1,5 +1,9 @@
 import type { ReactNode } from "react";
-import { parseWhatsAppMessage, type WhatsAppMessageSegment } from "./whatsapp-message-format";
+import {
+	parseWhatsAppMessageBlocks,
+	type WhatsAppMessageBlock,
+	type WhatsAppMessageSegment,
+} from "./whatsapp-message-format";
 
 interface WhatsAppMessagePreviewProps {
 	message: string;
@@ -23,5 +27,36 @@ function renderSegments(segments: WhatsAppMessageSegment[]): ReactNode[] {
 }
 
 export function WhatsAppMessagePreview({ message }: WhatsAppMessagePreviewProps) {
-	return <>{renderSegments(parseWhatsAppMessage(message))}</>;
+	return (
+		<div className="space-y-2 break-words">
+			{parseWhatsAppMessageBlocks(message).map((block, index) => renderBlock(block, index))}
+		</div>
+	);
+}
+
+function renderBlock(block: WhatsAppMessageBlock, index: number): ReactNode {
+	const key = `${block.type}-${index}`;
+	if (block.type === "paragraph") {
+		return (
+			<p className="whitespace-pre-wrap" key={key}>
+				{renderSegments(block.segments)}
+			</p>
+		);
+	}
+	if (block.type === "quote") {
+		return (
+			<blockquote className="border-current/30 border-l-2 pl-2" key={key}>
+				{renderSegments(block.segments)}
+			</blockquote>
+		);
+	}
+
+	const List = block.type === "ordered-list" ? "ol" : "ul";
+	return (
+		<List className="list-outside space-y-1 pl-5" key={key}>
+			{block.items.map(item => (
+				<li key={`${key}-${JSON.stringify(item)}`}>{renderSegments(item)}</li>
+			))}
+		</List>
+	);
 }

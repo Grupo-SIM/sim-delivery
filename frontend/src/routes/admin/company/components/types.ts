@@ -19,8 +19,24 @@ export interface OrderStatusTemplate {
 }
 export type OrderStatusTemplates = Record<OrderStatusTemplateKey, OrderStatusTemplate>;
 
+export interface OrderStatusEmailTemplate {
+	message: string;
+}
+
+export type OrderStatusEmailTemplates = Record<OrderStatusTemplateKey, OrderStatusEmailTemplate>;
+
+export const emptyOrderStatusEmailTemplates: OrderStatusEmailTemplates = {
+	cancelado: { message: "" },
+	em_preparo: { message: "" },
+	entregue: { message: "" },
+	pronto: { message: "" },
+	recebido: { message: "" },
+	retirado: { message: "" },
+	saiu_para_entrega: { message: "" },
+};
+
 export const defaultOrderStatusTemplates: OrderStatusTemplates = {
-	cancelado: { attachments: [], message: "Seu pedido {{orderId}} foi cancelado." },
+	cancelado: { attachments: [], message: "Seu pedido {{orderId}} foi cancelado.\nMotivo: {{reason}}" },
 	em_preparo: { attachments: [], message: "Seu pedido {{orderId}} já está sendo preparado com carinho." },
 	entregue: { attachments: [], message: "Seu pedido {{orderId}} chegou até você. Bom apetite!" },
 	pronto: { attachments: [], message: "Seu pedido {{orderId}} está pronto." },

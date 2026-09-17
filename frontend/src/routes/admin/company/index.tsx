@@ -15,6 +15,7 @@ import {
 	BrandAssetsSection,
 	type BrandAssetsState,
 	defaultOrderStatusTemplates,
+	emptyOrderStatusEmailTemplates,
 	emptyBrandAssets,
 	emptyFonts,
 	emptyFooter,
@@ -25,6 +26,7 @@ import {
 	NotificationTemplatesSection,
 	ORDER_STATUS_TEMPLATE_KEYS,
 	type OrderStatusTemplates,
+	type OrderStatusEmailTemplates,
 	ThemeSection,
 	TrackingSection,
 	type TrackingState,
@@ -49,6 +51,8 @@ function BrandingPage() {
 	const [tracking, setTracking] = useState<TrackingState>(emptyTracking);
 	const [orderStatusTemplates, setOrderStatusTemplates] =
 		useState<OrderStatusTemplates>(defaultOrderStatusTemplates);
+	const [orderStatusEmailTemplates, setOrderStatusEmailTemplates] =
+		useState<OrderStatusEmailTemplates>(emptyOrderStatusEmailTemplates);
 
 	useEffect(() => {
 		if (branding) {
@@ -94,6 +98,14 @@ function BrandingPage() {
 					}),
 				) as OrderStatusTemplates,
 			);
+			setOrderStatusEmailTemplates(
+				Object.fromEntries(
+					ORDER_STATUS_TEMPLATE_KEYS.map(status => [
+						status,
+						{ message: branding.orderStatusEmailTemplates?.[status]?.message ?? "" },
+					]),
+				) as OrderStatusEmailTemplates,
+			);
 		}
 	}, [branding]);
 
@@ -124,6 +136,12 @@ function BrandingPage() {
 					logoUrl: assets.logoUrl.trim() || undefined,
 					metaPixelId: tracking.metaPixelId.trim() || undefined,
 					mobileIconUrl: assets.mobileIconUrl.trim() || undefined,
+					orderStatusEmailTemplates: Object.fromEntries(
+						ORDER_STATUS_TEMPLATE_KEYS.map(status => [
+							status,
+							{ message: orderStatusEmailTemplates[status].message.trim() || undefined },
+						]),
+					),
 					orderStatusWhatsAppTemplates: Object.fromEntries(
 						ORDER_STATUS_TEMPLATE_KEYS.map(status => [
 							status,
@@ -186,7 +204,11 @@ function BrandingPage() {
 					/>
 
 					<NotificationTemplatesSection
+						companyName={branding.companyName ?? t("admin.branding.emailPreviewCompanyName")}
+						emailTemplates={orderStatusEmailTemplates}
+						logoUrl={assets.logoUrl}
 						onChange={changes => setOrderStatusTemplates(current => ({ ...current, ...changes }))}
+						onEmailChange={changes => setOrderStatusEmailTemplates(current => ({ ...current, ...changes }))}
 						templates={orderStatusTemplates}
 					/>
 

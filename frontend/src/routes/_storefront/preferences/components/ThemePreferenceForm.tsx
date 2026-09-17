@@ -14,17 +14,17 @@ export function ThemePreferenceForm({ isSaving, mode, onChange }: ThemePreferenc
 	return (
 		<section className="space-y-4 rounded-xl border border-border bg-card p-5">
 			<div>
-				<h2 className="font-semibold text-lg">{t("store.account.profile.appearance")}</h2>
-				<p className="text-muted-foreground text-sm">{t("store.account.profile.appearanceHint")}</p>
+				<h2 className="font-semibold text-lg">{t("store.account.preferences.appearance")}</h2>
+				<p className="text-muted-foreground text-sm">{t("store.account.preferences.appearanceHint")}</p>
 			</div>
 			<div>
-				<p className="mb-2 font-medium text-sm">{t("store.account.profile.theme")}</p>
+				<p className="mb-2 font-medium text-sm">{t("store.account.preferences.theme")}</p>
 				<CustomSelect
 					className={isSaving ? "pointer-events-none opacity-50" : undefined}
 					onChange={value => onChange(value as ThemeMode)}
 					options={[
-						{ label: t("store.account.profile.themeLight"), value: "light" },
-						{ label: t("store.account.profile.themeDark"), value: "dark" },
+						{ label: t("store.account.preferences.themeLight"), value: "light" },
+						{ label: t("store.account.preferences.themeDark"), value: "dark" },
 					]}
 					value={mode}
 				/>
