@@ -7,6 +7,7 @@ import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { cn } from "@/lib/utils";
 import type { OrderStatusTemplate } from "./types";
 import { WhatsAppTemplateAttachments } from "./WhatsAppTemplateAttachments";
+import { WhatsAppMessagePreview } from "./WhatsAppMessagePreview";
 
 interface WhatsAppTemplateEditorProps {
 	label: string;
@@ -98,10 +99,12 @@ export function WhatsAppTemplateEditor({ label, onChange, template }: WhatsAppTe
 						<div className="rounded-xl bg-[#efeae2] p-3 dark:bg-[#0b141a]">
 							<div className="ml-auto max-w-[92%] rounded-lg rounded-tr-sm bg-[#d9fdd3] px-3 py-2 text-[#111b21] text-sm shadow-sm dark:bg-[#005c4b] dark:text-[#e9edef]">
 								<p className="whitespace-pre-wrap break-words">
-									{(message || t("admin.branding.notificationDefaultPreview")).replaceAll(
-										"{{orderId}}",
-										"#154",
-									)}
+									<WhatsAppMessagePreview
+										message={(message || t("admin.branding.notificationDefaultPreview")).replaceAll(
+											"{{orderId}}",
+											"#154",
+										)}
+									/>
 								</p>
 								{template.attachments.length > 0 && (
 									<p className="mt-2 border-black/10 border-t pt-2 text-xs opacity-70 dark:border-white/10">
@@ -111,7 +114,6 @@ export function WhatsAppTemplateEditor({ label, onChange, template }: WhatsAppTe
 							</div>
 						</div>
 					</div>
-				</div>
 				</div>
 			)}
 		</section>
