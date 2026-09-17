@@ -1656,13 +1656,19 @@
 				},
 				"preferences": {
 					"email": "E-mail",
+					"emailHint": "Receba novidades e mudanças de status no seu e-mail.",
+					"orderUpdates": {
+						"subtitle": "Defina os canais usados para acompanhar seus pedidos.",
+						"title": "Atualizações de pedidos"
+					},
 					"save": "Salvar preferências",
 					"saved": "Preferências atualizadas!",
 					"saveError": "Não foi possível salvar as preferências.",
 					"saving": "Salvando...",
-					"subtitle": "Escolha como receber atualizações dos seus pedidos.",
-					"title": "Preferências",
-					"whatsApp": "WhatsApp"
+					"subtitle": "Personalize sua experiência e como você recebe comunicações.",
+					"title": "Preferências da conta",
+					"whatsApp": "WhatsApp",
+					"whatsAppHint": "Receba atualizações rápidas pelo WhatsApp."
 				},
 				"profile": {
 					"addAddress": "Adicionar endereço",

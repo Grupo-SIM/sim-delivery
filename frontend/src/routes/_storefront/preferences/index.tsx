@@ -63,18 +63,28 @@ function PreferencesPage() {
 				title={t("store.account.preferences.title")}
 			/>
 			<div className="space-y-4 rounded-xl border border-border bg-card p-5">
-				{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
-				{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
-				{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
-				<label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3">
-					<Checkbox checked={email} onChange={event => setEmail(event.currentTarget.checked)} />
-					<span>{t("store.account.preferences.email")}</span>
-				</label>
-				{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
-				<label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3">
-					<Checkbox checked={whatsApp} onChange={event => setWhatsApp(event.currentTarget.checked)} />
-					<span>{t("store.account.preferences.whatsApp")}</span>
-				</label>
+				<div>
+					<h2 className="font-semibold text-lg">{t("store.account.preferences.orderUpdates.title")}</h2>
+					<p className="mt-1 text-muted-foreground text-sm">{t("store.account.preferences.orderUpdates.subtitle")}</p>
+				</div>
+				<div className="space-y-3">
+					{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
+					<label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3">
+						<Checkbox checked={email} onChange={event => setEmail(event.currentTarget.checked)} />
+						<div>
+							<p className="font-medium text-sm">{t("store.account.preferences.email")}</p>
+							<p className="text-muted-foreground text-sm">{t("store.account.preferences.emailHint")}</p>
+						</div>
+					</label>
+					{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
+					<label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3">
+						<Checkbox checked={whatsApp} onChange={event => setWhatsApp(event.currentTarget.checked)} />
+						<div>
+							<p className="font-medium text-sm">{t("store.account.preferences.whatsApp")}</p>
+							<p className="text-muted-foreground text-sm">{t("store.account.preferences.whatsAppHint")}</p>
+						</div>
+					</label>
+				</div>
 				{error && <p className="text-destructive text-sm">{error}</p>}
 				{saved && <p className="text-primary text-sm">{t("store.account.preferences.saved")}</p>}
 				<Button disabled={updatePreferences.isPending} onClick={handleSave} type="button">
