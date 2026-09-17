@@ -1561,7 +1561,6 @@
 					"qrError": "Não foi possível carregar o QR Code.",
 					"refresh": "Atualizar",
 					"scanHint": "No WhatsApp, abra Aparelhos conectados e escaneie este QR Code.",
-					"session": "Sessão: {{session}}",
 					"status": {
 						"FAILED": "Falhou",
 						"PASSKEY_CONFIRMATION_REQUIRED": "Confirmação necessária",

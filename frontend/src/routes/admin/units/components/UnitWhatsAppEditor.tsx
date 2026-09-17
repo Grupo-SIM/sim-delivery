@@ -137,11 +137,6 @@ export function UnitWhatsAppEditor({ onClose, unit }: UnitWhatsAppEditorProps) {
 							</div>
 							<Badge tone={status ? statusTones[status] : "neutral"}>{statusLabel}</Badge>
 						</div>
-						{statusQuery.data?.sessionName && (
-							<p className="mt-3 break-all text-muted-foreground text-xs">
-								{t("admin.units.whatsApp.session", { session: statusQuery.data.sessionName })}
-							</p>
-						)}
 					</div>
 
 					{status === "SCAN_QR_CODE" && (
