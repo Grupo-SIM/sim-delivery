@@ -227,12 +227,13 @@ function ProfilePage() {
 				onUpdate={handleUpdateAddress}
 			/>
 			<SavedCardsSection />
-			<ThemePreferenceForm
-				disabled={!allowThemeToggle}
-				isSaving={savingTheme}
-				mode={mode}
-				onChange={handleThemeChange}
-			/>
+			{allowThemeToggle && (
+				<ThemePreferenceForm
+					isSaving={savingTheme}
+					mode={mode}
+					onChange={handleThemeChange}
+				/>
+			)}
 		</Container>
 	);
 }
