@@ -75,8 +75,8 @@ export function Modal({
 					style={{ maxWidth }}
 				>
 					<div
-						className={`scrollbar-none max-h-[calc(100dvh-2rem)] overflow-x-hidden p-5 sm:p-7 ${
-							scrollable ? "overflow-y-auto" : "flex flex-col overflow-y-hidden"
+					className={`scrollbar-none max-h-[calc(100dvh-2rem)] overflow-x-hidden p-5 sm:p-7 ${
+							scrollable ? "overflow-y-auto" : "flex h-[calc(100dvh-2rem)] flex-col overflow-y-hidden"
 						}`}
 						ref={setContentRef}
 					>
