@@ -31,6 +31,7 @@ export function mergeLiveBranding(
 		footerSupportEmail: data.footerSupportEmail,
 		footerText: data.footerText,
 		footerWhatsApp: data.footerWhatsApp,
+		whatsAppEnabled: data.whatsAppEnabled,
 		ga4Id: data.ga4Id,
 		gtmId: data.gtmId,
 		logoUrl: data.logoUrl ?? staticValues.logoUrl,

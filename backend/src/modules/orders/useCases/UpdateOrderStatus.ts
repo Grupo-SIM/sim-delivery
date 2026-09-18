@@ -56,7 +56,7 @@ export class UpdateOrderStatus {
 
 		const order = await this.prisma.order.findFirst({
 			include: {
-				company: { select: { orderStatusEmailTemplates: true, orderStatusWhatsAppTemplates: true } },
+				company: { select: { orderStatusEmailTemplates: true, orderStatusWhatsAppTemplates: true, whatsAppConnection: { select: { sessionName: true } } } },
 				customer: { include: { user: { select: { email: true, phoneNumber: true } } } },
 				payment: { select: { status: true } },
 				unit: { select: { slug: true, whatsAppConnection: { select: { sessionName: true } } } },
@@ -150,6 +150,7 @@ export class UpdateOrderStatus {
 					status,
 					templates,
 					unitId: order.unitId,
+					companyWhatsAppSession: order.company.whatsAppConnection?.sessionName,
 					unitWhatsAppSession: order.unit.whatsAppConnection?.sessionName,
 					whatsApp: this.whatsApp,
 				});

@@ -40,6 +40,7 @@ interface SendOrderStatusNotificationInput {
 	reviewUrl?: string;
 	status: string;
 	unitId: string;
+	companyWhatsAppSession?: string | null;
 	unitWhatsAppSession?: string | null;
 	templates?: Record<string, string | OrderStatusWhatsAppTemplate> | null;
 	whatsApp: WhatsAppSender;
@@ -47,7 +48,7 @@ interface SendOrderStatusNotificationInput {
 
 type SendOrderStatusEmailInput = Omit<
 	SendOrderStatusNotificationInput,
-	"companyId" | "unitId" | "unitWhatsAppSession" | "whatsApp"
+	"companyId" | "companyWhatsAppSession" | "unitId" | "unitWhatsAppSession" | "whatsApp"
 >;
 
 interface DispatchOrderStatusWhatsAppInput extends SendOrderStatusNotificationInput {
@@ -128,6 +129,7 @@ export async function dispatchOrderStatusWhatsApp({
 	whatsApp,
 	unitId,
 	unitWhatsAppSession,
+	companyWhatsAppSession,
 }: DispatchOrderStatusWhatsAppInput): Promise<void> {
 	const phone = customer.phone ?? customer.user?.phoneNumber;
 	if (customer.notificationWhatsApp === false || !phone) return;
@@ -150,7 +152,7 @@ export async function dispatchOrderStatusWhatsApp({
 		phone,
 		prisma,
 		provider: whatsApp,
-		sessionName: unitWhatsAppSession,
+		sessionName: unitWhatsAppSession ?? companyWhatsAppSession,
 		unitId,
 	});
 }

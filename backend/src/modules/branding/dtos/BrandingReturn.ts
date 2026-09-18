@@ -26,5 +26,6 @@ export const BrandingReturn = t.Object({
 	orderStatusWhatsAppTemplates: __nullable__(OrderStatusWhatsAppTemplates),
 	themeColors: __nullable__(ThemeColors),
 	unitFallbackImageUrl: __nullable__(t.String()),
+	whatsAppEnabled: t.Boolean(),
 });
 export type BrandingReturn = typeof BrandingReturn.static;

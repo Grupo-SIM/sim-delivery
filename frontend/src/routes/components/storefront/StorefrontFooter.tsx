@@ -8,7 +8,7 @@ export function StorefrontFooter({ branding }: StorefrontFooterProps) {
 	const companyName = branding?.companyName ?? "JB Delivery";
 	const year = new Date().getFullYear();
 	const contactItems = [
-		branding?.footerWhatsApp && {
+		branding?.whatsAppEnabled && branding.footerWhatsApp && {
 			href: `https://wa.me/${branding.footerWhatsApp.replace(/\D/g, "")}`,
 			label: branding.footerWhatsApp,
 		},

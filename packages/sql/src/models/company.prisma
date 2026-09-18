@@ -58,6 +58,7 @@ model Company {
     reviews    Review[]
     tags       Tag[]
     units      Unit[]
+    whatsAppConnection CompanyWhatsAppConnection?
     unitWhatsAppConnections UnitWhatsAppConnection[]
     whatsAppNotifications WhatsAppNotification[]
     users      User[]
@@ -67,4 +68,19 @@ model Company {
     feeOverrides CompanyFeeOverride[]
 
     @@map("company")
+}
+
+/// WAHA session used for login OTP and as the notification fallback for a company.
+model CompanyWhatsAppConnection {
+    id             String   @id @default(cuid())
+    companyId      String   @unique
+    sessionName    String   @unique
+    connectedPhone String?
+    lastStatus     String?
+    lastError      String?
+    lastSyncedAt   DateTime?
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    @@map("company_whatsapp_connection")
 }

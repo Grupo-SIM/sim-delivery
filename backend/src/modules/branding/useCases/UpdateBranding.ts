@@ -84,6 +84,7 @@ export class UpdateBranding {
 				orderStatusWhatsAppTemplates: true,
 				themeColors: true,
 				unitFallbackImageUrl: true,
+				whatsAppConnection: { select: { id: true } },
 			},
 			where: { id: companyId },
 		});
@@ -114,6 +115,7 @@ export class UpdateBranding {
 			),
 			themeColors: (company.themeColors as BrandingReturn["themeColors"]) ?? null,
 			unitFallbackImageUrl: company.unitFallbackImageUrl ?? null,
+			whatsAppEnabled: Boolean(company.whatsAppConnection),
 		};
 	}
 }

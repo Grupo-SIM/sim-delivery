@@ -13,6 +13,7 @@ import { slug } from "@/lib/variant";
 import { showToast } from "@/stores";
 import {
 	BrandAssetsSection,
+	CompanyWhatsAppEditor,
 	type BrandAssetsState,
 	defaultOrderStatusTemplates,
 	defaultOrderStatusEmailTemplates,
@@ -50,6 +51,7 @@ function BrandingPage() {
 	const [fonts, setFonts] = useState<FontsState>(emptyFonts);
 	const [footer, setFooter] = useState<FooterState>(emptyFooter);
 	const [tracking, setTracking] = useState<TrackingState>(emptyTracking);
+	const [whatsAppOpen, setWhatsAppOpen] = useState(false);
 	const [orderStatusTemplates, setOrderStatusTemplates] =
 		useState<OrderStatusTemplates>(defaultOrderStatusTemplates);
 	const [orderStatusEmailTemplates, setOrderStatusEmailTemplates] =
@@ -210,25 +212,29 @@ function BrandingPage() {
 					<FooterSection
 						footer={footer}
 						onChange={changes => setFooter(current => ({ ...current, ...changes }))}
+						whatsAppEnabled={branding.whatsAppEnabled}
 					/>
 
-					<NotificationTemplatesSection
+					{branding.whatsAppEnabled && <NotificationTemplatesSection
 						companyName={branding.companyName ?? t("admin.branding.emailPreviewCompanyName")}
 						emailTemplates={orderStatusEmailTemplates}
 						logoUrl={assets.logoUrl}
 						onChange={changes => setOrderStatusTemplates(current => ({ ...current, ...changes }))}
 						onEmailChange={changes => setOrderStatusEmailTemplates(current => ({ ...current, ...changes }))}
 						templates={orderStatusTemplates}
-					/>
+					/>}
 
 					<TrackingSection
 						onChange={changes => setTracking(current => ({ ...current, ...changes }))}
 						tracking={tracking}
 					/>
 
+					<Button className="w-fit" onClick={() => setWhatsAppOpen(true)} type="button" variant="outline">Configurar WhatsApp global</Button>
+
 					<Button className="ml-auto flex w-fit" disabled={put.isPending} onClick={save} type="button">
 						{put.isPending ? t("admin.branding.saving") : t("admin.branding.save")}
 					</Button>
+					<CompanyWhatsAppEditor onClose={() => setWhatsAppOpen(false)} open={whatsAppOpen} />
 				</div>
 			)}
 		</Container>

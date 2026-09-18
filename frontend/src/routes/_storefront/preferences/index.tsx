@@ -28,7 +28,7 @@ function PreferencesPage() {
 	const [error, setError] = useState<string | null>(null);
 	const [saved, setSaved] = useState(false);
 	const [savingTheme, setSavingTheme] = useState(false);
-	const { allowThemeToggle, defaultTheme } = useLiveBranding();
+	const { allowThemeToggle, defaultTheme, whatsAppEnabled } = useLiveBranding();
 	const { mode, saveThemePreference } = useThemePreference(allowThemeToggle, defaultTheme);
 
 	useEffect(() => {
@@ -54,7 +54,7 @@ function PreferencesPage() {
 		setError(null);
 		setSaved(false);
 		updatePreferences.mutate(
-			{ data: { email, whatsApp } },
+			{ data: { email, whatsApp: whatsAppEnabled ? whatsApp : false } },
 			{
 				onError: () => setError(t("store.account.preferences.saveError")),
 				onSuccess: () => setSaved(true),
@@ -95,6 +95,7 @@ function PreferencesPage() {
 						</div>
 					</label>
 					{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
+					{whatsAppEnabled && <>
 					<label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3">
 						<Checkbox checked={whatsApp} onChange={event => setWhatsApp(event.currentTarget.checked)} />
 						<div>
@@ -102,6 +103,7 @@ function PreferencesPage() {
 							<p className="text-muted-foreground text-sm">{t("store.account.preferences.whatsAppHint")}</p>
 						</div>
 					</label>
+					</>}
 				</div>
 				{error && <p className="text-destructive text-sm">{error}</p>}
 				{saved && <p className="text-primary text-sm">{t("store.account.preferences.saved")}</p>}

@@ -23,7 +23,7 @@ export class ConfirmPayment {
 
 		const order = await this.prisma.order.findUniqueOrThrow({
 			include: {
-				company: { select: { orderStatusEmailTemplates: true, orderStatusWhatsAppTemplates: true } },
+				company: { select: { orderStatusEmailTemplates: true, orderStatusWhatsAppTemplates: true, whatsAppConnection: { select: { sessionName: true } } } },
 				customer: {
 					select: {
 						notificationEmail: true,
@@ -78,8 +78,9 @@ export class ConfirmPayment {
 				prisma: tx,
 				status: "recebido",
 				templates,
-				unitId: order.unitId,
-				unitWhatsAppSession: order.unit.whatsAppConnection?.sessionName,
+					unitId: order.unitId,
+					companyWhatsAppSession: order.company.whatsAppConnection?.sessionName,
+					unitWhatsAppSession: order.unit.whatsAppConnection?.sessionName,
 				whatsApp: this.whatsApp,
 			});
 

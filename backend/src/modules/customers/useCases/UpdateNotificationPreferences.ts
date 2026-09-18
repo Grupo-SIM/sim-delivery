@@ -7,11 +7,17 @@ export class UpdateNotificationPreferences {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(userId: string, data: UpdateNotificationPreferencesBody): Promise<CustomerReturn> {
-		const customer = await this.prisma.customer.findUnique({ where: { userId } });
+		const customer = await this.prisma.customer.findUnique({
+			where: { userId },
+			include: { company: { select: { whatsAppConnection: { select: { id: true } } } } },
+		});
 		if (!customer) throw new DomainError(CustomerErrors.CUSTOMER_NOT_FOUND);
 
 		return this.prisma.customer.update({
-			data: { notificationEmail: data.email, notificationWhatsApp: data.whatsApp },
+			data: {
+				notificationEmail: data.email,
+				notificationWhatsApp: customer.company.whatsAppConnection ? data.whatsApp : false,
+			},
 			include: { addresses: { orderBy: { isDefault: "desc" }, where: { deletedAt: null } } },
 			where: { id: customer.id },
 		});

@@ -7,9 +7,10 @@ import type { FooterState } from "./types";
 interface FooterSectionProps {
 	footer: FooterState;
 	onChange: (changes: Partial<FooterState>) => void;
+	whatsAppEnabled: boolean;
 }
 
-export function FooterSection({ footer, onChange }: FooterSectionProps) {
+export function FooterSection({ footer, onChange, whatsAppEnabled }: FooterSectionProps) {
 	const { t } = useTranslation();
 	const summary =
 		footer.text.trim() ||
@@ -30,12 +31,12 @@ export function FooterSection({ footer, onChange }: FooterSectionProps) {
 				placeholder={t("admin.branding.footerPaymentMethodsPlaceholder")}
 				value={footer.paymentMethods}
 			/>
-			<TextField
+			{whatsAppEnabled && <TextField
 				label={t("admin.branding.footerWhatsApp")}
 				onValueChange={whatsApp => onChange({ whatsApp })}
 				placeholder={t("admin.branding.footerWhatsAppPlaceholder")}
 				value={footer.whatsApp}
-			/>
+			/>}
 			<TextField
 				label={t("admin.branding.footerSupportEmail")}
 				onValueChange={supportEmail => onChange({ supportEmail })}
