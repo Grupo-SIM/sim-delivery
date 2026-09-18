@@ -11,4 +11,5 @@ export interface StorefrontBranding {
 	footerText?: string | null;
 	footerWhatsApp?: string | null;
 	logoUrl?: string | null;
+	whatsAppEnabled?: boolean;
 }
