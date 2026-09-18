@@ -174,7 +174,7 @@ function CheckoutPage() {
 	}
 
 	function handlePlaceOrder() {
-		if (!activeCustomer || (resolvedDeliveryMethod === "delivery" && !savedAddress) || cartItems.length === 0)
+		if ((resolvedDeliveryMethod === "delivery" && !savedAddress) || cartItems.length === 0)
 			return;
 		const subtotalAfterCoupon = Math.max(0, cartTotalCents(cartItems) - Number(appliedCoupon?.discountCents ?? 0));
 		const appliedCashbackCents = Math.min(cashbackRedeemCents, subtotalAfterCoupon);
