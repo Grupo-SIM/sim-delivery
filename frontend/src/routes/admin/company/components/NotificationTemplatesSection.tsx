@@ -29,13 +29,6 @@ export function NotificationTemplatesSection({
 	templates,
 }: NotificationTemplatesSectionProps) {
 	const { t } = useTranslation();
-	const customized = ORDER_STATUS_TEMPLATE_KEYS.filter(status => {
-		const template = templates[status];
-		return (
-			template.attachments.length > 0 ||
-			(template.message.trim() && template.message !== defaultOrderStatusTemplates[status].message)
-		);
-	}).length;
 	const emailCustomized = ORDER_STATUS_TEMPLATE_KEYS.filter(status => {
 		const template = emailTemplates[status];
 		const fallback = defaultOrderStatusEmailTemplates[status];
@@ -45,11 +38,7 @@ export function NotificationTemplatesSection({
 	return <>
 		<CollapsibleSection
 			icon={LuMessageSquare}
-			summary={
-				customized
-					? t("admin.branding.notificationsSummary", { count: customized })
-					: t("admin.branding.notificationsSummaryEmpty")
-			}
+			summary={t("admin.branding.notificationsSummary")}
 			title={t("admin.branding.sectionNotifications")}
 		>
 			<div className="space-y-1">

@@ -112,9 +112,7 @@
 				"notificationPreview": "Prévia",
 				"notificationsFormattingHelp": "Use *negrito*, _itálico_, ~riscado~, ```código```, - listas, 1. listas numeradas e > citações. O texto acompanha o primeiro anexo como legenda.",
 				"notificationsHelp": "Use {{orderId}} para inserir o código do pedido e {{reason}} para o motivo do cancelamento. Deixe um campo vazio para usar mensagem padrão.",
-				"notificationsSummary_one": "{{count}} mensagem personalizada",
-				"notificationsSummary_other": "{{count}} mensagens personalizadas",
-				"notificationsSummaryEmpty": "Mensagens padrão",
+				"notificationsSummary": "Mensagens enviadas a cada atualização do pedido",
 				"orderStatus": {
 					"cancelado": "Pedido cancelado",
 					"em_preparo": "Pedido em preparo",
