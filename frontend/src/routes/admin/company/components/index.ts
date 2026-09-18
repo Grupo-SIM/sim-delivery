@@ -1,6 +1,6 @@
 export * from "./BrandAssetsSection";
+export * from "./CompanyWhatsAppEditor";
 export * from "./EmailMessagePreview";
-export * from "./EmailTemplateEditor";
 export * from "./FontField";
 export * from "./FooterSection";
 export * from "./NotificationTemplatesSection";

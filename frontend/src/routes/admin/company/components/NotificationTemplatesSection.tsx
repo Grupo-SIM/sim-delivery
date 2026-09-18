@@ -1,15 +1,15 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuMail, LuMessageSquare } from "react-icons/lu";
+import { LuBell } from "react-icons/lu";
 import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
 import {
-	defaultOrderStatusEmailTemplates,
-	defaultOrderStatusTemplates,
 	ORDER_STATUS_TEMPLATE_KEYS,
 	type OrderStatusEmailTemplates,
+	type OrderStatusTemplateKey,
 	type OrderStatusTemplates,
 } from "./types";
-import { EmailTemplateEditor } from "./EmailTemplateEditor";
-import { WhatsAppTemplateEditor } from "./WhatsAppTemplateEditor";
+import { NotificationTemplateModal } from "./NotificationTemplateModal";
+import { NotificationTemplateRow } from "./NotificationTemplateRow";
 
 interface NotificationTemplatesSectionProps {
 	companyName: string;
@@ -29,53 +29,41 @@ export function NotificationTemplatesSection({
 	templates,
 }: NotificationTemplatesSectionProps) {
 	const { t } = useTranslation();
-	const emailCustomized = ORDER_STATUS_TEMPLATE_KEYS.filter(status => {
-		const template = emailTemplates[status];
-		const fallback = defaultOrderStatusEmailTemplates[status];
-		return template.message !== fallback.message || template.subtitle !== fallback.subtitle || template.title !== fallback.title;
-	}).length;
+	const [selectedStatus, setSelectedStatus] = useState<OrderStatusTemplateKey | null>(null);
 
 	return <>
 		<CollapsibleSection
-			icon={LuMessageSquare}
+			icon={LuBell}
 			summary={t("admin.branding.notificationsSummary")}
 			title={t("admin.branding.sectionNotifications")}
 		>
-			<div className="space-y-1">
-				<p className="text-muted-foreground text-sm">{t("admin.branding.notificationsHelp")}</p>
-				<p className="text-muted-foreground text-xs">{t("admin.branding.notificationsFormattingHelp")}</p>
-			</div>
-			<div className="grid gap-4">
+			<p className="text-muted-foreground text-sm">{t("admin.branding.notificationsHelp")}</p>
+			<ul className="grid gap-3">
 				{ORDER_STATUS_TEMPLATE_KEYS.map(status => (
-					<WhatsAppTemplateEditor
-						allowReasonSlot={status === "cancelado"}
+					<NotificationTemplateRow
 						key={status}
 						label={t(`admin.branding.orderStatus.${status}`)}
-						onChange={template => onChange({ [status]: template })}
-						template={templates[status]}
+						onEdit={() => setSelectedStatus(status)}
 					/>
 				))}
-			</div>
+			</ul>
 		</CollapsibleSection>
-		<CollapsibleSection
-			icon={LuMail}
-			summary={t("admin.branding.emailNotificationsSummary", { count: emailCustomized })}
-			title={t("admin.branding.sectionEmailNotifications")}
-		>
-			<p className="text-muted-foreground text-sm">{t("admin.branding.emailNotificationsHelp")}</p>
-			<div className="grid gap-4">
-				{ORDER_STATUS_TEMPLATE_KEYS.map(status => (
-					<EmailTemplateEditor
-						companyName={companyName}
-						defaultTemplate={defaultOrderStatusEmailTemplates[status]}
-						key={status}
-						label={t(`admin.branding.orderStatus.${status}`)}
-						logoUrl={logoUrl}
-						onChange={template => onEmailChange({ [status]: template })}
-						template={emailTemplates[status]}
-					/>
-				))}
-			</div>
-		</CollapsibleSection>
+		{selectedStatus && (
+			<NotificationTemplateModal
+				allowReasonSlot={selectedStatus === "cancelado"}
+				companyName={companyName}
+				emailTemplate={emailTemplates[selectedStatus]}
+				key={selectedStatus}
+				label={t(`admin.branding.orderStatus.${selectedStatus}`)}
+				logoUrl={logoUrl}
+				onClose={() => setSelectedStatus(null)}
+				onSave={(emailTemplate, whatsAppTemplate) => {
+					onChange({ [selectedStatus]: whatsAppTemplate });
+					onEmailChange({ [selectedStatus]: emailTemplate });
+				}}
+				status={selectedStatus}
+				whatsAppTemplate={templates[selectedStatus]}
+			/>
+		)}
 	</>;
 }
