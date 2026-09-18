@@ -22,7 +22,7 @@ export class CancelExpiredUnpaidOrders {
 		const expiresAt = new Date(now.getTime() - EXPIRATION_MS);
 		const orders = await this.prisma.order.findMany({
 			include: {
-				company: { select: { orderStatusEmailTemplates: true, orderStatusWhatsAppTemplates: true, whatsAppConnection: { select: { sessionName: true } } } },
+				company: { select: { orderStatusEmailTemplates: true, orderStatusWhatsAppTemplates: true, whatsAppConnection: { select: { connectedPhone: true, sessionName: true } } } },
 				customer: {
 					select: {
 						notificationEmail: true,
@@ -31,7 +31,7 @@ export class CancelExpiredUnpaidOrders {
 						user: { select: { email: true, phoneNumber: true } },
 					},
 				},
-				unit: { select: { whatsAppConnection: { select: { sessionName: true } } } },
+				unit: { select: { whatsAppConnection: { select: { connectedPhone: true, sessionName: true } } } },
 			},
 			where: { createdAt: { lt: expiresAt }, status: "awaiting_payment" },
 		});
@@ -73,8 +73,12 @@ export class CancelExpiredUnpaidOrders {
 							status: "cancelado",
 							templates,
 							unitId: order.unitId,
-							companyWhatsAppSession: order.company.whatsAppConnection?.sessionName,
-							unitWhatsAppSession: order.unit?.whatsAppConnection?.sessionName,
+							companyWhatsAppSession: order.company.whatsAppConnection?.connectedPhone
+								? order.company.whatsAppConnection.sessionName
+								: null,
+							unitWhatsAppSession: order.unit?.whatsAppConnection?.connectedPhone
+								? order.unit.whatsAppConnection.sessionName
+								: null,
 							whatsApp: this.whatsApp,
 						});
 					}

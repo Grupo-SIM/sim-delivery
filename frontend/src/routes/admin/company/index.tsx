@@ -215,14 +215,14 @@ function BrandingPage() {
 						whatsAppEnabled={branding.whatsAppEnabled}
 					/>
 
-					{branding.whatsAppEnabled && <NotificationTemplatesSection
+					<NotificationTemplatesSection
 						companyName={branding.companyName ?? t("admin.branding.emailPreviewCompanyName")}
 						emailTemplates={orderStatusEmailTemplates}
 						logoUrl={assets.logoUrl}
 						onChange={changes => setOrderStatusTemplates(current => ({ ...current, ...changes }))}
 						onEmailChange={changes => setOrderStatusEmailTemplates(current => ({ ...current, ...changes }))}
 						templates={orderStatusTemplates}
-					/>}
+					/>
 
 					<TrackingSection
 						onChange={changes => setTracking(current => ({ ...current, ...changes }))}

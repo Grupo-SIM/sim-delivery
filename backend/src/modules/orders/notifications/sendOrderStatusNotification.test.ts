@@ -74,4 +74,22 @@ describe("dispatchOrderStatusWhatsApp", () => {
 
 		expect(upsert).not.toHaveBeenCalled();
 	});
+
+	it("does not enqueue before a company or unit WhatsApp session is configured", async () => {
+		const upsert = mock(() => Promise.resolve());
+		await dispatchOrderStatusWhatsApp({
+			companyId: "company_1",
+			customer: { notificationWhatsApp: true, phone: "5581999999999" },
+			deduplicationKey: "order-status:event_1",
+			deliveryMethod: "delivery",
+			orderId: "order_1",
+			orderNumber: 154,
+			prisma: { whatsAppNotification: { upsert } } as unknown as PrismaInstance,
+			status: "pronto",
+			unitId: "unit_1",
+			whatsApp: { deliveryMode: "outbox", sendMessage: async () => {} } as WhatsAppSender,
+		});
+
+		expect(upsert).not.toHaveBeenCalled();
+	});
 });

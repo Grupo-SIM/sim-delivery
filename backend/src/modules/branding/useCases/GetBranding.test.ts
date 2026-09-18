@@ -11,6 +11,7 @@ interface CompanyRow {
 	slug: string;
 	themeColors: unknown;
 	unitFallbackImageUrl: string | null;
+	whatsAppConnection?: { connectedPhone: string | null } | null;
 }
 
 const baseCompany: CompanyRow = {
@@ -57,6 +58,19 @@ describe("GetBranding", () => {
 			themeColors: { primary: "#ff0000" },
 			unitFallbackImageUrl: "https://cdn.zero-grau.com/unit-fallback.png",
 		});
+	});
+
+	it("enables WhatsApp only after a number is connected", async () => {
+		const { prisma } = makePrisma({
+			companies: [{ ...baseCompany, whatsAppConnection: { connectedPhone: null } }],
+		});
+
+		expect((await new GetBranding(prisma).execute({ slug: "zero-grau" })).whatsAppEnabled).toBe(false);
+
+		const configured = makePrisma({
+			companies: [{ ...baseCompany, whatsAppConnection: { connectedPhone: "+5581999999999" } }],
+		});
+		expect((await new GetBranding(configured.prisma).execute({ slug: "zero-grau" })).whatsAppEnabled).toBe(true);
 	});
 
 	it("resolves the company through the supplied build slug", async () => {

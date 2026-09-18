@@ -13,7 +13,10 @@ describe("CancelExpiredUnpaidOrders", () => {
 			order: {
 				findMany: async () => [
 					{
-						company: { orderStatusWhatsAppTemplates: null },
+						company: {
+							orderStatusWhatsAppTemplates: null,
+							whatsAppConnection: { connectedPhone: "+5511999999999", sessionName: "company-session" },
+						},
 					customer: { phone: "5511999999999" },
 					displayNumber: 154,
 					id: "ord_1",

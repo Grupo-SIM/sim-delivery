@@ -412,7 +412,10 @@ function makeUpdateStatusPrisma(order: {
 		...order,
 		cancelReason: null,
 		displayNumber: 154,
-		company: { orderStatusWhatsAppTemplates: order.templates ?? null },
+		company: {
+			orderStatusWhatsAppTemplates: order.templates ?? null,
+			whatsAppConnection: { connectedPhone: "+5581999999999", sessionName: "company-session" },
+		},
 		customer: {
 			notificationEmail: false,
 			notificationWhatsApp: true,
@@ -422,7 +425,10 @@ function makeUpdateStatusPrisma(order: {
 		deliveryMethod: order.deliveryMethod ?? "delivery",
 		estimatedStatusCompletionAt: order.estimatedStatusCompletionAt ?? null,
 		items: [],
-		unit: { slug: "centro" },
+		unit: {
+			slug: "centro",
+			whatsAppConnection: { connectedPhone: "+5581999999999", sessionName: "unit-session" },
+		},
 	};
 
 	const prisma = {

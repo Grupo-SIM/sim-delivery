@@ -132,7 +132,8 @@ export async function dispatchOrderStatusWhatsApp({
 	companyWhatsAppSession,
 }: DispatchOrderStatusWhatsAppInput): Promise<void> {
 	const phone = customer.phone ?? customer.user?.phoneNumber;
-	if (customer.notificationWhatsApp === false || !phone) return;
+	const sessionName = unitWhatsAppSession ?? companyWhatsAppSession;
+	if (customer.notificationWhatsApp === false || !phone || !sessionName) return;
 	const message = getOrderStatusNotificationMessage({
 		cancelReason,
 		deliveryMethod,
@@ -152,7 +153,7 @@ export async function dispatchOrderStatusWhatsApp({
 		phone,
 		prisma,
 		provider: whatsApp,
-		sessionName: unitWhatsAppSession ?? companyWhatsAppSession,
+		sessionName,
 		unitId,
 	});
 }

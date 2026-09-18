@@ -51,6 +51,22 @@ describe("UpdateBranding", () => {
 		});
 	});
 
+	it("does not enable WhatsApp for a created session without a connected number", async () => {
+		const prisma = {
+			company: {
+				update: async () => ({
+					footerPaymentMethods: [],
+					name: "Zero Grau",
+					whatsAppConnection: { connectedPhone: null },
+				}),
+			},
+		} as unknown as PrismaInstance;
+
+		const result = await new UpdateBranding(prisma).execute({ companyId: "cmp_1" });
+
+		expect(result.whatsAppEnabled).toBe(false);
+	});
+
 	it("rejects an unscoped update", async () => {
 		const prisma = {
 			company: {

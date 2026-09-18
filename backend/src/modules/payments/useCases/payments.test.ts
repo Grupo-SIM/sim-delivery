@@ -196,12 +196,16 @@ function makeWorld(opts: WorldOptions = {}) {
 
 			return {
 				...order,
-				company: { orderStatusWhatsAppTemplates: null },
+				company: {
+					orderStatusWhatsAppTemplates: null,
+					whatsAppConnection: { connectedPhone: "+5581999999999", sessionName: "company-session" },
+				},
 				customer,
 				unit: {
 					cashbackPercent: order.cashbackPercent,
 					loyaltyPointsRate: order.loyaltyPointsRate,
 					name: order.unitName,
+					whatsAppConnection: { connectedPhone: "+5581999999999", sessionName: "unit-session" },
 				},
 			};
 		},
