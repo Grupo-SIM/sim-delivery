@@ -38,10 +38,12 @@ export class CreateOrder {
 		if (!unit) throw new DomainError(OrderErrors.UNIT_NOT_FOUND);
 		const unitId = unit.id;
 
-		const customer = await this.prisma.customer.findFirst({
-			where: { companyId: company.id, userId },
+		const customer = await this.prisma.customer.upsert({
+			create: { companyId: company.id, userId },
+			update: {},
+			where: { userId },
 		});
-		if (!customer) throw new DomainError(OrderErrors.CUSTOMER_NOT_FOUND);
+		if (customer.companyId !== company.id) throw new DomainError(OrderErrors.CUSTOMER_NOT_FOUND);
 		const existingOrder = await this.findOrderByIdempotencyKey(customer.id, idempotencyKey);
 		if (existingOrder) return existingOrder;
 		// A customer can leave checkout before entering payment details and return with a

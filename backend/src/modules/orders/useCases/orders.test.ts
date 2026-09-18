@@ -34,6 +34,7 @@ function makeOrderPrisma(
 		unit = baseUnit,
 		unitProducts = [baseUnitProduct],
 	} = opts;
+	let storedCustomer = customer;
 
 	const orders: object[] = [];
 	const orderItems: object[] = [];
@@ -129,7 +130,21 @@ function makeOrderPrisma(
 		},
 		customer: {
 			findFirst: async ({ where }: { where: { companyId: string; userId: string } }) =>
-				customer?.companyId === where.companyId && customer?.userId === where.userId ? customer : null,
+				storedCustomer?.companyId === where.companyId && storedCustomer?.userId === where.userId
+					? storedCustomer
+					: null,
+			upsert: async ({
+				create,
+				where,
+			}: {
+				create: { companyId: string; userId: string };
+				update: object;
+				where: { userId: string };
+			}) => {
+				if (storedCustomer?.userId === where.userId) return storedCustomer;
+				storedCustomer = { id: "cust_created", ...create };
+				return storedCustomer;
+			},
 		},
 		order: {
 			findFirst: async ({ where }: { where: { createdAt?: { gte: Date }; customerId: string; idempotencyKey?: string; status?: string; unitId?: string } }) => {
@@ -200,9 +215,17 @@ describe("CreateOrder", () => {
 		await expect(new CreateOrder(prisma).execute("user_1", baseBody)).rejects.toThrow("UNIT_NOT_FOUND");
 	});
 
-	it("throws CUSTOMER_NOT_FOUND when no customer record", async () => {
+	it("creates a customer during the first checkout", async () => {
 		const { prisma } = makeOrderPrisma({ customer: null });
-		await expect(new CreateOrder(prisma).execute("user_1", baseBody)).rejects.toThrow("CUSTOMER_NOT_FOUND");
+		await expect(
+			new CreateOrder(prisma).execute("user_1", {
+				...baseBody,
+				addressId: null,
+				deliveryMethod: "pickup",
+			}),
+		).resolves.toMatchObject({
+			customerId: "cust_created",
+		});
 	});
 
 	it("throws INVALID_ITEM when unitProductId not found in unit", async () => {
