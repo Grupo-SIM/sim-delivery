@@ -18,6 +18,15 @@ interface WithdrawalRequestModalProps {
 	summary: GetFinanceWallet200;
 }
 
+function getQuoteErrorMessage(error: unknown) {
+	if (typeof error !== "object" || error === null || !("data" in error)) return "Não foi possível calcular a cotação. Revise o valor e tente novamente.";
+
+	const data = error.data;
+	if (typeof data !== "object" || data === null || !("description" in data) || typeof data.description !== "string" || !data.description.trim()) return "Não foi possível calcular a cotação. Revise o valor e tente novamente.";
+
+	return data.description;
+}
+
 export function WithdrawalRequestModal({ isOpen, onClose, summary }: WithdrawalRequestModalProps) {
 	const queryClient = useQueryClient();
 	const [amountCents, setAmountCents] = useState(0);
@@ -59,7 +68,7 @@ export function WithdrawalRequestModal({ isOpen, onClose, summary }: WithdrawalR
 					<div><p className="text-muted-foreground">Líquido</p><strong>{quote.data ? formatCents(Number(quote.data.netAmountCents)) : "—"}</strong></div>
 				</div>
 				{belowMinimum && <p className="text-destructive text-sm">Mínimo: {formatCents(Number(summary.minimumCents))}.</p>}
-				{quote.isError && <p className="text-destructive text-sm">Não foi possível calcular a cotação. Revise o valor e tente novamente.</p>}
+				{quote.isError && <p className="text-destructive text-sm">{getQuoteErrorMessage(quote.error)}</p>}
 				<div className="flex justify-end gap-2">
 					<Button onClick={() => closeActiveModalHistory()} type="button" variant="outline">Descartar</Button>
 					<Button disabled={!valid || request.isPending || quote.isPending} onClick={() => request.mutate({ data: { grossAmountCents: amountCents, pixKey: pixKey.trim() } }, { onError: () => void showAlert("Não foi possível solicitar o saque."), onSuccess: async () => { await Promise.all([queryClient.invalidateQueries({ queryKey: getFinanceWalletQueryKey() }), queryClient.invalidateQueries({ queryKey: getFinanceWithdrawalsQueryKey() })]); showToast("Saque solicitado com sucesso.", "positive"); closeActiveModalHistory(); } })} type="button">{request.isPending ? "Solicitando..." : "Confirmar saque"}</Button>
