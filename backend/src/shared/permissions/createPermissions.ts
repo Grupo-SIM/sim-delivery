@@ -35,7 +35,7 @@ export function createPermissions(role: Role) {
 			staff: { assignOperational: true, invite: true, inviteOwner: true, read: true, remove: true, setRole: true },
 			units: { create: true, delete: true, read: true, update: true },
 			unitWhatsApp: { manage: true, read: true },
-			withdrawals: { configure: true, read: true, request: true },
+			withdrawals: { configure: true, read: false, request: false },
 		});
 		return permix;
 	}
@@ -114,7 +114,7 @@ export function createPermissions(role: Role) {
 			manage: mgmt,
 			read: mgmt,
 		},
-		withdrawals: { configure: false, read: mgmt, request: mgmt },
+		withdrawals: { configure: false, read: isOwner, request: isOwner },
 	});
 
 	return permix;

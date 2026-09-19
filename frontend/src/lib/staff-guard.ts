@@ -50,6 +50,11 @@ export function canCustomizeReceipt(role: string | null | undefined): boolean {
 	return role === "owner" || role === "manager" || role === "superAdmin";
 }
 
+/** Financial balances and withdrawals are company-owner-only. */
+export function canAccessWithdrawals(role: string | null | undefined): boolean {
+	return role === "owner";
+}
+
 export function canToggleProductAvailability(role: string | null | undefined): boolean {
 	return canManageCatalog(role) || isAttendant(role);
 }

@@ -92,17 +92,17 @@ describe("createPermissions matrix", () => {
 		expect(createPermissions("manager").check("staff", "inviteOwner")).toBe(false);
 	});
 
-	it("limits withdrawal configuration to superAdmin and requests to management", () => {
-		for (const role of ["superAdmin", "owner", "manager"] as const) {
-			expect(createPermissions(role).check("withdrawals", "read")).toBe(true);
-			expect(createPermissions(role).check("withdrawals", "request")).toBe(true);
-		}
+	it("limits withdrawal access to owners", () => {
+		expect(createPermissions("owner").check("withdrawals", "read")).toBe(true);
+		expect(createPermissions("owner").check("withdrawals", "request")).toBe(true);
 		expect(createPermissions("superAdmin").check("withdrawals", "configure")).toBe(true);
-		for (const role of ["owner", "manager", "attendant", "kitchen", "courier", "customer"] as const) {
+		for (const role of ["manager", "attendant", "kitchen", "courier", "customer"] as const) {
 			expect(createPermissions(role).check("withdrawals", "configure")).toBe(false);
+			expect(createPermissions(role).check("withdrawals", "read")).toBe(false);
+			expect(createPermissions(role).check("withdrawals", "request")).toBe(false);
 		}
-		expect(createPermissions("attendant").check("withdrawals", "read")).toBe(false);
-		expect(createPermissions("customer").check("withdrawals", "request")).toBe(false);
+		expect(createPermissions("superAdmin").check("withdrawals", "read")).toBe(false);
+		expect(createPermissions("superAdmin").check("withdrawals", "request")).toBe(false);
 	});
 
 	it("attendant pauses product sales and assigns operational staff without dashboards, team access, catalog or finances", () => {

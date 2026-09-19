@@ -16,11 +16,13 @@ import {
 	useGetReportsBusiness,
 	useGetReportsFinancial,
 } from "@/lib/api";
+import { canAccessWithdrawals } from "@/lib/staff-guard";
 import {
 	DashboardDateRangePicker,
 	type DashboardPeriodSelection,
 	DashboardUnitPicker,
 } from "@/routes/admin/components";
+import { useAuthStore } from "@/stores";
 import {
 	CancellationByStage,
 	CancellationSummary,
@@ -40,13 +42,18 @@ const formatCents = (cents: number) =>
 	(cents / 100).toLocaleString("pt-BR", { currency: "BRL", style: "currency" });
 function FinancePage() {
 	const { t } = useTranslation();
+	const role = useAuthStore(state => state.role);
+	const canViewWithdrawals = canAccessWithdrawals(role);
 	const [period, setPeriod] = useState<DashboardPeriodSelection>("month");
 	const [dateRange, setDateRange] = useState<{ endDate: string; startDate: string } | null>(null);
 	const [unitId, setUnitId] = useState("");
 	const [withdrawalOpen, setWithdrawalOpen] = useState(false);
 	const [withdrawalPage, setWithdrawalPage] = useState(1);
-	const wallet = useGetFinanceWallet();
-	const withdrawalHistory = useGetFinanceWithdrawals({ page: withdrawalPage, pageSize: 10 });
+	const wallet = useGetFinanceWallet({ query: { enabled: canViewWithdrawals } });
+	const withdrawalHistory = useGetFinanceWithdrawals(
+		{ page: withdrawalPage, pageSize: 10 },
+		{ query: { enabled: canViewWithdrawals } },
+	);
 	const queryPeriod = period === "custom" ? undefined : period;
 	const groupBy: GetReportsFinancialQueryParamsGroupByEnumKey =
 		queryPeriod === "today" || queryPeriod === "yesterday"
@@ -154,8 +161,12 @@ function FinancePage() {
 
 	return (
 		<Container className="space-y-6 py-8">
-			<WithdrawalSummary isError={wallet.isError} isPending={wallet.isPending} onRequest={() => setWithdrawalOpen(true)} summary={wallet.data} />
-			{wallet.data && <WithdrawalRequestModal isOpen={withdrawalOpen} onClose={() => setWithdrawalOpen(false)} summary={wallet.data} />}
+			{canViewWithdrawals && (
+				<>
+					<WithdrawalSummary isError={wallet.isError} isPending={wallet.isPending} onRequest={() => setWithdrawalOpen(true)} summary={wallet.data} />
+					{wallet.data && <WithdrawalRequestModal isOpen={withdrawalOpen} onClose={() => setWithdrawalOpen(false)} summary={wallet.data} />}
+				</>
+			)}
 			<div className="flex flex-wrap items-end justify-between gap-4">
 				<SectionHeading
 					subtitle="Resultado consolidado por competência financeira."
@@ -352,7 +363,7 @@ function FinancePage() {
 					})) ?? []
 				}
 			/>
-			<WithdrawalHistory data={withdrawalHistory.data} isError={withdrawalHistory.isError} isPending={withdrawalHistory.isPending} onPageChange={setWithdrawalPage} />
+			{canViewWithdrawals && <WithdrawalHistory data={withdrawalHistory.data} isError={withdrawalHistory.isError} isPending={withdrawalHistory.isPending} onPageChange={setWithdrawalPage} />}
 		</Container>
 	);
 }
