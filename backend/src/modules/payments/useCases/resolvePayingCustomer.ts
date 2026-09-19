@@ -1,5 +1,6 @@
 import { DomainError } from "@/shared/errors";
 import { isValidDocument } from "@/shared/cpf";
+import { simpayIntegrationKey } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { PaymentErrors } from "../errors";
 
@@ -12,7 +13,7 @@ export interface PayingCustomerContext {
 	};
 	/** Customer document digits, when required by the payment method. */
 	document: string | null;
-	merchant: { cnpj: string; externalMerchantId: string; legalName: string } | undefined;
+	merchant: { cnpj: string; externalMerchantId: string; integrationKey: string; legalName: string } | undefined;
 	order: { id: string; total: number; unitName: string };
 	user: { email: string; id: string; name: string; phoneNumber: string | null };
 }
@@ -80,7 +81,7 @@ export async function resolvePayingCustomer(
 		},
 		document,
 		merchant: company?.cnpj
-			? { cnpj: company.cnpj, externalMerchantId: company.id, legalName: company.name }
+			? { cnpj: company.cnpj, externalMerchantId: company.id, integrationKey: simpayIntegrationKey(company.slug), legalName: company.name }
 			: undefined,
 		order: { id: order.id, total: order.total, unitName: order.unit.name },
 		user: {

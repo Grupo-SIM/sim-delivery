@@ -9,7 +9,7 @@
 
 ## Decisões
 
-- Carteira, saldo, taxa e status são autoritativos na SIM INT PAY e isolados por `integrationKey + companyId`.
+- Carteira, saldo, taxa e status são autoritativos na SIM INT PAY e isolados por `sim-delivery_<companySlug> + companyId`.
 - CNPJ, chave Pix padrão e mínimo opcional pertencem à empresa no Sim Delivery.
 - `superAdmin`, `owner` e `manager` consultam e solicitam saques; somente `superAdmin` configura CNPJ e mínimo.
 - `PENDING` e `APPROVED` contam como processamento; `COMPLETED` e `REJECTED` são terminais.

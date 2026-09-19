@@ -7,6 +7,7 @@ function setup(minimum: number | null = null) {
 	const company = {
 		cnpj: "11222333000181",
 		id: "company-1",
+		slug: "zero-grau",
 		withdrawalMinimumCents: minimum,
 		withdrawalPixKey: null as string | null,
 	};
@@ -57,12 +58,12 @@ function setup(minimum: number | null = null) {
 	prismaData.$transaction = async (callback: (tx: unknown) => unknown) => callback(prismaData);
 	const prisma = prismaData as unknown as PrismaInstance;
 	const simpay = {
-		quoteWithdrawal: mock(async (_companyId: string, grossAmountCents: number) => ({
+		quoteWithdrawal: mock(async (_merchant: unknown, grossAmountCents: number) => ({
 			feeCents: 100,
 			grossAmountCents,
 			netAmountCents: grossAmountCents - 100,
 		})),
-		requestWithdrawal: mock(async (_companyId: string, input: { grossAmountCents: number; pixKey: string; requestId: string }) => ({
+		requestWithdrawal: mock(async (_merchant: unknown, input: { grossAmountCents: number; pixKey: string; requestId: string }) => ({
 			createdAt: "2026-09-16T12:00:00Z",
 			feeCents: 100,
 			grossAmountCents: input.grossAmountCents,
@@ -87,7 +88,7 @@ describe("WithdrawalService", () => {
 			grossAmountCents: 1_000,
 			netAmountCents: 900,
 		});
-		expect(simpay.quoteWithdrawal).toHaveBeenCalledWith("company-1", 1_000);
+		expect(simpay.quoteWithdrawal).toHaveBeenCalledWith({ externalMerchantId: "company-1", integrationKey: "sim-delivery_zero-grau" }, 1_000);
 	});
 
 	it("enforces configured company minimum before calling SIM INT PAY", async () => {
@@ -102,7 +103,7 @@ describe("WithdrawalService", () => {
 
 		const result = await service.request("company-1", "user-1", 10_000, "financeiro@empresa.com.br");
 
-		expect(simpay.requestWithdrawal).toHaveBeenCalledWith("company-1", {
+		expect(simpay.requestWithdrawal).toHaveBeenCalledWith({ externalMerchantId: "company-1", integrationKey: "sim-delivery_zero-grau" }, {
 			grossAmountCents: 10_000,
 			pixKey: "financeiro@empresa.com.br",
 			requestId: "withdrawal-1",

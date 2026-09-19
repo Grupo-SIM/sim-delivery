@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/errors";
-import type { SimpayClient } from "@/shared/infra/simpay";
+import { simpayIntegrationKey, type SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { PaymentStatusReturn } from "../dtos";
 import { PaymentErrors } from "../errors";
@@ -13,7 +13,7 @@ export class GetPaymentStatus {
 
 	async execute(userId: string, token: string): Promise<PaymentStatusReturn> {
 		const payment = await this.prisma.payment.findFirst({
-			include: { order: { select: { company: { select: { cnpj: true, id: true } } } } },
+			include: { order: { select: { company: { select: { cnpj: true, id: true, slug: true } } } } },
 			where: { order: { customer: { userId } }, token },
 		});
 		if (!payment) throw new DomainError(PaymentErrors.PAYMENT_NOT_FOUND);
@@ -21,11 +21,13 @@ export class GetPaymentStatus {
 
 		let remote: { status: string };
 		try {
-			const merchantId = payment.order?.company.cnpj ? payment.order.company.id : undefined;
+			const merchant = payment.order?.company.cnpj
+				? { externalMerchantId: payment.order.company.id, integrationKey: simpayIntegrationKey(payment.order.company.slug) }
+				: undefined;
 			remote =
 				payment.method === "pix"
-					? await this.simpay.getPixStatusDirect(payment.simpayPaymentId, merchantId)
-					: await this.simpay.getPaymentStatus(payment.simpayPaymentId, merchantId);
+					? await this.simpay.getPixStatusDirect(payment.simpayPaymentId, merchant)
+					: await this.simpay.getPaymentStatus(payment.simpayPaymentId, merchant);
 		} catch {
 			// Gateway status is best-effort. Preserve pending so a transient status outage
 			// cannot turn an unsettled payment into either approval or rejection.

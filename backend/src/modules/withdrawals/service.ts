@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/errors";
-import type { SimpayClient, SimpayWithdrawal } from "@/shared/infra/simpay";
+import { simpayIntegrationKey, type SimpayClient, type SimpayMerchantScope, type SimpayWithdrawal } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { LocalWithdrawalStatus } from "./dtos";
 import { WithdrawalErrors } from "./errors";
@@ -20,6 +20,10 @@ export class WithdrawalService {
 		return company;
 	}
 
+	private merchant(company: { id: string; slug: string }): SimpayMerchantScope {
+		return { externalMerchantId: company.id, integrationKey: simpayIntegrationKey(company.slug) };
+	}
+
 	async summary(companyId: string) {
 		const company = await this.prisma.company.findUnique({ where: { id: companyId } });
 		if (!company?.cnpj) {
@@ -36,7 +40,7 @@ export class WithdrawalService {
 			};
 		}
 		try {
-			const summary = await this.simpay.getWithdrawalSummary(company.id);
+			const summary = await this.simpay.getWithdrawalSummary(this.merchant(company));
 			return { ...summary, configured: true, minimumCents: company.withdrawalMinimumCents, pixKey: company.withdrawalPixKey };
 		} catch (error) {
 			throw new DomainError(WithdrawalErrors.WITHDRAWAL_PROVIDER_ERROR, error instanceof Error ? error.message : undefined);
@@ -47,7 +51,7 @@ export class WithdrawalService {
 		const company = await this.company(companyId);
 		this.validateAmount(company.withdrawalMinimumCents, grossAmountCents);
 		try {
-			return await this.simpay.quoteWithdrawal(company.id, grossAmountCents);
+			return await this.simpay.quoteWithdrawal(this.merchant(company), grossAmountCents);
 		} catch (error) {
 			throw new DomainError(WithdrawalErrors.WITHDRAWAL_PROVIDER_ERROR, error instanceof Error ? error.message : undefined);
 		}
@@ -62,7 +66,7 @@ export class WithdrawalService {
 			data: { companyId, grossAmountCents, pixKey, requestedById: userId },
 		});
 		try {
-			const provider = await this.simpay.requestWithdrawal(company.id, { grossAmountCents, pixKey, requestId: local.id });
+			const provider = await this.simpay.requestWithdrawal(this.merchant(company), { grossAmountCents, pixKey, requestId: local.id });
 			const updated = await this.applyProvider(local.id, provider);
 			await this.prisma.company.update({ where: { id: companyId }, data: { withdrawalPixKey: pixKey } });
 			return this.serialize(updated);
@@ -78,7 +82,7 @@ export class WithdrawalService {
 	async list(companyId: string, page: number, pageSize: number) {
 		const company = await this.company(companyId);
 		try {
-			const provider = await this.simpay.listWithdrawals(company.id, page, pageSize);
+			const provider = await this.simpay.listWithdrawals(this.merchant(company), page, pageSize);
 			for (const item of provider.items) await this.upsertProvider(companyId, item);
 		} catch {
 			// Local mirror stays readable during a transient provider outage.
@@ -92,11 +96,12 @@ export class WithdrawalService {
 	}
 
 	async get(companyId: string, id: string) {
+		const company = await this.company(companyId);
 		const item = await this.prisma.withdrawal.findFirst({ where: { companyId, id } });
 		if (!item) throw new DomainError(WithdrawalErrors.WITHDRAWAL_NOT_FOUND);
 		if (item.externalWithdrawalId) {
 			try {
-				const provider = await this.simpay.getWithdrawal(companyId, item.externalWithdrawalId);
+				const provider = await this.simpay.getWithdrawal(this.merchant(company), item.externalWithdrawalId);
 				return this.serialize(await this.applyProvider(item.id, provider));
 			} catch { /* return mirror */ }
 		}

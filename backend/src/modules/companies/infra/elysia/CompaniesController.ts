@@ -5,7 +5,7 @@ import { isValidDocument } from "@/shared/cpf";
 import { DomainError } from "@/shared/errors";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
 import { CompanyListReturn, CompanyReturn, CreateCompanyBody, UpdateCompanyBody, UpdateWithdrawalSettingsBody, WithdrawalSettingsReturn } from "../../dtos";
-import { simpay } from "@/shared/infra/simpay";
+import { simpay, simpayIntegrationKey } from "@/shared/infra/simpay";
 import { CompanyErrors } from "../../errors";
 import { CreateCompany, DeleteCompany, ListCompanies, UpdateCompany } from "../../useCases";
 
@@ -62,7 +62,7 @@ export const CompaniesController = new Elysia({
 					if (companyWithCnpj && companyWithCnpj.id !== company.id) throw new DomainError(WithdrawalErrors.WITHDRAWAL_CNPJ_TAKEN);
 					let merchant: { id: string };
 					try {
-						merchant = await simpay.provisionMerchant({ cnpj: body.cnpj, externalMerchantId: company.id, legalName: company.name });
+						merchant = await simpay.provisionMerchant({ cnpj: body.cnpj, externalMerchantId: company.id, integrationKey: simpayIntegrationKey(company.slug), legalName: company.name });
 					} catch (error) {
 						throw new DomainError(WithdrawalErrors.WITHDRAWAL_PROVIDER_ERROR, error instanceof Error ? error.message : undefined);
 					}

@@ -79,8 +79,9 @@ possui **N unidades** (lojas físicas). Detalhes em
 
 ## Carteira e saques empresariais
 
-- Cada empresa possui carteira própria na SIM INT PAY, identificada pelo `companyId`; saldo e
-  saques nunca seguem filtro de unidade.
+- Cada empresa possui carteira própria na SIM INT PAY, identificada por
+  `integrationKey = sim-delivery_<slug-da-empresa>` e `externalMerchantId = companyId`; saldo e
+  saques nunca seguem filtro de unidade nem a integração genérica `sim-delivery`.
 - SIM INT PAY é fonte de saldo disponível, valores em processamento, taxa, elegibilidade e
   status. `PENDING` e `APPROVED` permanecem em processamento; `COMPLETED` e `REJECTED` são finais.
 - `superAdmin`, `owner` e `manager` consultam a carteira e solicitam saques. Somente

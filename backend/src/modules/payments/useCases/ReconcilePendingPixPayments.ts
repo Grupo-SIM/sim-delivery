@@ -1,4 +1,4 @@
-import type { SimpayClient } from "@/shared/infra/simpay";
+import { simpayIntegrationKey, type SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { ApplySimpayPaymentStatus } from "./ApplySimpayPaymentStatus";
 
@@ -12,7 +12,7 @@ export class ReconcilePendingPixPayments {
 
 	async execute(): Promise<number> {
 		const payments = await this.prisma.payment.findMany({
-			select: { order: { select: { company: { select: { cnpj: true, id: true } } } }, simpayPaymentId: true },
+			select: { order: { select: { company: { select: { cnpj: true, id: true, slug: true } } } }, simpayPaymentId: true },
 			where: {
 				method: "pix",
 				order: { status: "awaiting_payment" },
@@ -28,8 +28,10 @@ export class ReconcilePendingPixPayments {
 			if (!paymentId) continue;
 
 			try {
-				const merchantId = payment.order?.company.cnpj ? payment.order.company.id : undefined;
-				const remote = await this.simpay.getPixStatusDirect(paymentId, merchantId);
+				const merchant = payment.order?.company.cnpj
+					? { externalMerchantId: payment.order.company.id, integrationKey: simpayIntegrationKey(payment.order.company.slug) }
+					: undefined;
+				const remote = await this.simpay.getPixStatusDirect(paymentId, merchant);
 				const result = await applyStatus.execute(paymentId, remote.status);
 				if (result.status !== "pending") reconciled += 1;
 			} catch (error) {
