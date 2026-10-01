@@ -157,6 +157,12 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 						/>
 					)}
 					<NavItem
+						icon={LuUsers}
+						label={t("admin.staff.title")}
+						onNavigate={onNavigate}
+						to="/admin/staff"
+					/>
+					<NavItem
 						icon={LuSettings}
 						label={t("admin.branding.navTitle")}
 						onNavigate={onNavigate}
