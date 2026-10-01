@@ -59,7 +59,7 @@ export function hasPriceVariation(optionGroups: OptionGroup[]): boolean {
 }
 
 /**
- * Whether a group has been filled out to the point it should collapse into a summary. A group
+ * Whether a group has enough selections to show its completion indicator and allow manual collapse. A group
  * with no cap (`maxSelect` null) completes as soon as one option is picked; a capped group
  * (including max 1, which behaves like a radio) completes once every selectable unit has been
  * used.

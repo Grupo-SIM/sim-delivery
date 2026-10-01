@@ -106,7 +106,7 @@ export function ProductDetailsModal({
 		setNote(nextNote);
 		setLocalNote(nextNote);
 		setQuantity(editingItem?.quantity ?? 1);
-		setExpandedGroupIds(new Set());
+		setExpandedGroupIds(new Set(item.optionGroups.filter(group => group.maxSelect == null).map(group => group.id)));
 		setOptions(editingItem?.options ?? optionsFromSearch(item, initialOptions));
 		setInitializedModalKey(modalKey);
 	}, [editingItem, initialNote, initialOptions, initializedModalKey, item, modalKey, setLocalNote]);
@@ -146,7 +146,7 @@ export function ProductDetailsModal({
 		if (!group) return;
 		setOptions(current => {
 			const next = applyOptionQuantity(group, option, nextQuantity, current);
-			if (!isGroupComplete(group, current) && isGroupComplete(group, next)) {
+			if (group.maxSelect != null && !isGroupComplete(group, current) && isGroupComplete(group, next)) {
 				setExpandedGroupIds(expanded => {
 					if (!expanded.has(groupId)) return expanded;
 					const withoutGroup = new Set(expanded);
