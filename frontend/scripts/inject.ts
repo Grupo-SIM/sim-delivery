@@ -12,7 +12,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { resolveThemeColors } from "../src/lib/theme-colors";
-import { resolveBrandingAssetUrl } from "./branding-assets";
+import { fetchBrandingAsset, resolveBrandingAssetUrl } from "./branding-assets";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const FRONTEND = join(ROOT, "frontend");
@@ -184,12 +184,11 @@ const themeColors = resolveThemeColors(company.themeColors as Parameters<typeof 
 await mkdir(publicDir, { recursive: true });
 let logoPath: string | null = null;
 let logoUrl = "";
-if (logoSourceUrl) {
-	const logoResponse = await fetch(logoSourceUrl);
-	if (!logoResponse.ok) throw new Error(`Could not download branding logo: HTTP ${logoResponse.status}.`);
-	const logoFilename = `logo.${extensionFrom(logoResponse.headers.get("content-type"), logoSourceUrl)}`;
+const logoAsset = await fetchBrandingAsset(logoSourceUrl);
+if (logoSourceUrl && logoAsset) {
+	const logoFilename = `logo.${extensionFrom(logoAsset.contentType, logoSourceUrl)}`;
 	logoPath = join(publicDir, logoFilename);
-	await writeFile(logoPath, await logoResponse.arrayBuffer());
+	await writeFile(logoPath, logoAsset.bytes);
 	logoUrl = `/${logoFilename}`;
 }
 await writeFile(join(publicDir, "branding.css"), createBrandingCss(themeColors, fontFamily, fontDisplay));
@@ -262,16 +261,14 @@ if (existsSync(tauriConfPath)) {
 	// and add safe padding automatically so it doesn't look flush against circular/rounded masks.
 	let iconSourcePath: string | null = null;
 	const mobileIconUrl = resolveBrandingAssetUrl(company.mobileIconUrl, apiUrl);
-	if (mobileIconUrl) {
-		const mobileIconResponse = await fetch(mobileIconUrl);
-		if (!mobileIconResponse.ok) {
-			throw new Error(`Could not download mobile icon: HTTP ${mobileIconResponse.status}.`);
-		}
-		const mobileIconFilename = `mobile-icon.${extensionFrom(mobileIconResponse.headers.get("content-type"), mobileIconUrl)}`;
+	const mobileIconAsset = await fetchBrandingAsset(mobileIconUrl);
+	if (mobileIconUrl && mobileIconAsset) {
+		const mobileIconFilename = `mobile-icon.${extensionFrom(mobileIconAsset.contentType, mobileIconUrl)}`;
 		const mobileIconPath = join(publicDir, mobileIconFilename);
-		await writeFile(mobileIconPath, await mobileIconResponse.arrayBuffer());
+		await writeFile(mobileIconPath, mobileIconAsset.bytes);
 		iconSourcePath = await squareIconSource(mobileIconPath);
-	} else if (logoPath) {
+	}
+	if (!iconSourcePath && logoPath) {
 		iconSourcePath = await squareIconSource(logoPath, LOGO_FALLBACK_ICON_PADDING);
 	}
 	if (iconSourcePath) {
