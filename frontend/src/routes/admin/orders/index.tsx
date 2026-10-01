@@ -67,7 +67,8 @@ function OrdersPage() {
 
 	async function handleRefresh() {
 		try {
-			const { error } = await ordersQuery.refetch();
+			const results = await Promise.all([unitsQuery.refetch(), ordersQuery.refetch()]);
+			const error = results.find(result => result.error)?.error;
 			if (error) throw error;
 			showToast(t("admin.orders.refresh.success"), "positive");
 		} catch {
@@ -117,8 +118,22 @@ function OrdersPage() {
 				</div>
 			</div>
 
-			{ordersQuery.isPending ? (
-				<Skeleton className="h-40 w-full" />
+			{unitsQuery.isPending || ordersQuery.isPending ? (
+				<div className="grid gap-4 sm:grid-cols-3">
+					{availableStatuses.slice(0, 3).map(status => (
+						<div className="space-y-4 rounded-brand border p-4" key={status}>
+							<Skeleton className="h-6 w-32" />
+							<Skeleton className="h-48 w-full" />
+						</div>
+					))}
+				</div>
+			) : unitsQuery.isError ? (
+				<ErrorState title={t("admin.units.loadError")} />
+			) : !canViewAllUnits && unitsQuery.data.length === 0 ? (
+				<ErrorState
+					description={t("admin.orders.noAssignedUnits.description")}
+					title={t("admin.orders.noAssignedUnits.title")}
+				/>
 			) : ordersQuery.isError ? (
 				<ErrorState title={t("admin.orders.loadError")} />
 			) : (

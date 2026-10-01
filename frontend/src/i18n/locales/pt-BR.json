@@ -572,6 +572,10 @@
 					"finalized": "Finalizado"
 				},
 				"loadError": "Não foi possível carregar os pedidos.",
+				"noAssignedUnits": {
+					"description": "Peça ao responsável pela empresa para vincular seu usuário a uma unidade em Equipe → Editar → Unidades. Após salvar, clique em Atualizar.",
+					"title": "Seu usuário não está vinculado a nenhuma unidade."
+				},
 				"problemReason": "Motivo da pendência",
 				"refresh": {
 					"action": "Atualizar",
