@@ -80,22 +80,13 @@ export class UnitWhatsApp {
 		try {
 			let session: WahaSessionInfo;
 			try {
-				session = await this.getWaha().getSession(connection.sessionName);
-				this.assertOwnership(session, unit.companyId, unitId, savedConnection);
-				if (session.status === "STOPPED") session = await this.getWaha().startSession(connection.sessionName);
-				else if (session.status === "FAILED") session = await this.getWaha().restartSession(connection.sessionName);
+				session = await this.connectSession(connection.sessionName, unit.companyId, unitId, savedConnection);
 			} catch (error) {
-				if (!(error instanceof WahaRequestError) || error.status !== 404) throw error;
-				try {
-					session = await this.getWaha().createSession(connection.sessionName, {
-						[COMPANY_METADATA]: unit.companyId,
-						[UNIT_METADATA]: unitId,
-					});
-				} catch (createError) {
-					if (!(createError instanceof WahaRequestError) || createError.status !== 409) throw createError;
-					session = await this.getWaha().getSession(connection.sessionName);
-					this.assertOwnership(session, unit.companyId, unitId, savedConnection);
-				}
+				const uniqueName = `${sessionName}_${unitId}`;
+				if (!(error instanceof DomainError) || error.message !== UnitErrors.WHATSAPP_SESSION_CONFLICT || connection.sessionName === uniqueName) throw error;
+				// Slugs can be reused after a unit is recreated. Leave the previous
+				// owner's session untouched and pair a separate session for this ID.
+				session = await this.connectSession(uniqueName, unit.companyId, unitId, null);
 			}
 			return asReturn(await this.sync(connection, session));
 		} catch (error) {
@@ -130,6 +121,25 @@ export class UnitWhatsApp {
 		}
 	}
 
+	private async connectSession(sessionName: string, companyId: string, unitId: string, savedConnection: UnitConnection | null): Promise<WahaSessionInfo> {
+		let session: WahaSessionInfo;
+		try {
+			session = await this.getWaha().getSession(sessionName);
+		} catch (error) {
+			if (!(error instanceof WahaRequestError) || error.status !== 404) throw error;
+			try {
+				return await this.getWaha().createSession(sessionName, { [COMPANY_METADATA]: companyId, [UNIT_METADATA]: unitId });
+			} catch (createError) {
+				if (!(createError instanceof WahaRequestError) || createError.status !== 409) throw createError;
+				session = await this.getWaha().getSession(sessionName);
+			}
+		}
+		this.assertOwnership(session, companyId, unitId, savedConnection);
+		if (session.status === "STOPPED") return this.getWaha().startSession(sessionName);
+		if (session.status === "FAILED") return this.getWaha().restartSession(sessionName);
+		return session;
+	}
+
 	private assertOwnership(session: WahaSessionInfo, companyId: string, unitId: string, savedConnection: UnitConnection | null): void {
 		const metadata = session.config?.metadata;
 		const ownerCompany = metadata?.[COMPANY_METADATA];
@@ -159,6 +169,7 @@ export class UnitWhatsApp {
 		return this.prisma.unitWhatsAppConnection.update({
 			data: {
 				connectedPhone: connectedPhone(session),
+				sessionName: session.name,
 				lastError: null,
 				lastStatus: session.status,
 				lastSyncedAt: new Date(),

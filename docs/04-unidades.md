@@ -31,6 +31,9 @@ restrita a `owner`/`manager` (ver [03-papeis-e-permissoes.md](03-papeis-e-permis
 - Uma unidade pertence a exatamente uma empresa (`companyId`); nunca compartilhada.
 - Cada unidade possui no máximo uma sessão WAHA transacional. Owner, manager atribuído à
   unidade e superAdmin podem conectá-la ou desconectá-la.
+- Se o nome da sessão WAHA já pertence a outra unidade (por exemplo, após recriar uma
+  unidade com o mesmo slug), conectar usa uma sessão separada com sufixo do ID atual.
+  A sessão anterior permanece intacta; a nova conexão exige pareamento por QR Code.
 - Taxa de entrega e cashback da unidade são o **default**; produto pode sobrepor cashback.
 
 ## Regras comportamentais
