@@ -70,6 +70,7 @@ export class UnitWhatsApp {
 	async connect(companyId: string | null, unitId: string): Promise<UnitWhatsAppReturn> {
 		const unit = await this.requireUnit(companyId, unitId);
 		const sessionName = buildUnitWhatsAppSessionName(unit.company.slug, unit.slug);
+		const savedConnection = await this.prisma.unitWhatsAppConnection.findUnique({ where: { unitId } });
 		const connection = await this.prisma.unitWhatsAppConnection.upsert({
 			create: { companyId: unit.companyId, sessionName, unitId },
 			update: {},
@@ -80,7 +81,7 @@ export class UnitWhatsApp {
 			let session: WahaSessionInfo;
 			try {
 				session = await this.getWaha().getSession(connection.sessionName);
-				this.assertOwnership(session, unit.companyId, unitId);
+				this.assertOwnership(session, unit.companyId, unitId, savedConnection);
 				if (session.status === "STOPPED") session = await this.getWaha().startSession(connection.sessionName);
 				else if (session.status === "FAILED") session = await this.getWaha().restartSession(connection.sessionName);
 			} catch (error) {
@@ -93,7 +94,7 @@ export class UnitWhatsApp {
 				} catch (createError) {
 					if (!(createError instanceof WahaRequestError) || createError.status !== 409) throw createError;
 					session = await this.getWaha().getSession(connection.sessionName);
-					this.assertOwnership(session, unit.companyId, unitId);
+					this.assertOwnership(session, unit.companyId, unitId, savedConnection);
 				}
 			}
 			return asReturn(await this.sync(connection, session));
@@ -129,9 +130,14 @@ export class UnitWhatsApp {
 		}
 	}
 
-	private assertOwnership(session: WahaSessionInfo, companyId: string, unitId: string): void {
+	private assertOwnership(session: WahaSessionInfo, companyId: string, unitId: string, savedConnection: UnitConnection | null): void {
 		const metadata = session.config?.metadata;
-		if (metadata?.[COMPANY_METADATA] !== companyId || metadata?.[UNIT_METADATA] !== unitId) {
+		const ownerCompany = metadata?.[COMPANY_METADATA];
+		const ownerUnit = metadata?.[UNIT_METADATA];
+		const storedOwnership = savedConnection?.companyId === companyId && savedConnection.unitId === unitId && savedConnection.sessionName === session.name;
+		// Legacy sessions can omit metadata; an existing local binding fills only
+		// missing ownership. Explicit conflicting owners always remain blocked.
+		if ((ownerCompany !== undefined && ownerCompany !== companyId) || (ownerUnit !== undefined && ownerUnit !== unitId) || ((ownerCompany === undefined || ownerUnit === undefined) && !storedOwnership)) {
 			throw new DomainError(UnitErrors.WHATSAPP_SESSION_CONFLICT);
 		}
 	}

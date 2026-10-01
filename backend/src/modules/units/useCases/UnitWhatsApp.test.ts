@@ -1,6 +1,6 @@
 import { describe, expect, it, mock } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import type { WahaClient } from "@/shared/infra/whatsapp";
+import type { WahaClient, WahaSessionInfo } from "@/shared/infra/whatsapp";
 import { buildUnitWhatsAppSessionName, UnitWhatsApp } from "./UnitWhatsApp";
 
 function connection(sessionName = "sim-delivery_acme_centro") {
@@ -31,7 +31,7 @@ function world(saved = connection()) {
 	} as unknown as PrismaInstance;
 	const waha = {
 		createSession: mock(() => Promise.resolve({ name: saved.sessionName, status: "STARTING" })),
-		getSession: mock(() =>
+		getSession: mock((): Promise<WahaSessionInfo> =>
 			Promise.resolve({
 				config: {
 					metadata: {
@@ -65,6 +65,28 @@ describe("UnitWhatsApp", () => {
 		expect(waha.restartSession).toHaveBeenCalledWith("sim-delivery_acme_centro");
 		expect(result.status).toBe("STARTING");
 		expect(result.lastError).toBeNull();
+	});
+
+	it("recovers a stored failed session without ownership metadata", async () => {
+		const { service, waha } = world(connection("sim-delivery_acme_old-slug"));
+		waha.getSession.mockImplementation(async () => ({ name: "sim-delivery_acme_old-slug", status: "FAILED" }));
+		expect((await service.connect("company_1", "unit_1")).status).toBe("STARTING");
+		expect(waha.restartSession).toHaveBeenCalledWith("sim-delivery_acme_old-slug");
+	});
+
+	it("does not claim an unbound session without metadata", async () => {
+		const { service, prisma, waha } = world();
+		(prisma.unitWhatsAppConnection.findUnique as ReturnType<typeof mock>).mockResolvedValue(null);
+		waha.getSession.mockImplementation(async () => ({ name: "sim-delivery_acme_centro", status: "FAILED" }));
+		await expect(service.connect("company_1", "unit_1")).rejects.toThrow("WHATSAPP_SESSION_CONFLICT");
+		expect(waha.restartSession).not.toHaveBeenCalled();
+	});
+
+	it("rejects conflicting company metadata even with a stored binding", async () => {
+		const { service, waha } = world();
+		waha.getSession.mockImplementation(async () => ({ config: { metadata: { "sim-delivery.companyId": "other_company" } }, name: "sim-delivery_acme_centro", status: "FAILED" }));
+		await expect(service.connect("company_1", "unit_1")).rejects.toThrow("WHATSAPP_SESSION_CONFLICT");
+		expect(waha.restartSession).not.toHaveBeenCalled();
 	});
 
 	it("builds the deterministic WAHA session name", () => {
