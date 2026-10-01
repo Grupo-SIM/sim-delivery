@@ -84,9 +84,15 @@ export class WahaClient {
 	}
 
 	async startSession(session: string): Promise<WahaSessionInfo> {
-		return this.requestJson<WahaSessionInfo>(`/api/sessions/${encodeURIComponent(session)}/start`, {
+		await this.request(`/api/sessions/${encodeURIComponent(session)}/start`, {
 			method: "POST",
 		});
+		return this.getSession(session);
+	}
+
+	async restartSession(session: string): Promise<WahaSessionInfo> {
+		await this.request(`/api/sessions/${encodeURIComponent(session)}/restart`, { method: "POST" });
+		return this.getSession(session);
 	}
 
 	async getSession(session: string): Promise<WahaSessionInfo> {
@@ -101,9 +107,10 @@ export class WahaClient {
 	}
 
 	async logoutSession(session: string): Promise<WahaSessionInfo> {
-		return this.requestJson<WahaSessionInfo>(`/api/sessions/${encodeURIComponent(session)}/logout`, {
+		await this.request(`/api/sessions/${encodeURIComponent(session)}/logout`, {
 			method: "POST",
 		});
+		return this.getSession(session);
 	}
 
 	async sendText(phone: string, message: string, session = this.options.session): Promise<void> {

@@ -7,12 +7,14 @@ import { Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/Skeleton";
 import {
 	getUnitsByUnitIdWhatsappQueryKey,
+	getUnitsByUnitIdWhatsappQrQueryKey,
 	useGetUnitsByUnitIdWhatsapp,
 	useGetUnitsByUnitIdWhatsappQr,
 	usePostUnitsByUnitIdWhatsappDisconnect,
 	usePostUnitsByUnitIdWhatsappSession,
 } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
+import { isWahaStatus, statusLabels, statusTones } from "@/lib/whatsapp-session";
 
 interface WhatsAppUnit {
 	id: string;
@@ -22,32 +24,6 @@ interface WhatsAppUnit {
 interface UnitWhatsAppEditorProps {
 	onClose: () => void;
 	unit: WhatsAppUnit | null;
-}
-
-const statusTones = {
-	FAILED: "danger",
-	PASSKEY_CONFIRMATION_REQUIRED: "accent",
-	PASSKEY_REQUIRED: "accent",
-	SCAN_QR_CODE: "accent",
-	STARTING: "cyan",
-	STOPPED: "neutral",
-	WORKING: "success",
-} as const;
-
-const statusLabels = {
-	FAILED: "admin.units.whatsApp.status.FAILED",
-	PASSKEY_CONFIRMATION_REQUIRED: "admin.units.whatsApp.status.PASSKEY_CONFIRMATION_REQUIRED",
-	PASSKEY_REQUIRED: "admin.units.whatsApp.status.PASSKEY_REQUIRED",
-	SCAN_QR_CODE: "admin.units.whatsApp.status.SCAN_QR_CODE",
-	STARTING: "admin.units.whatsApp.status.STARTING",
-	STOPPED: "admin.units.whatsApp.status.STOPPED",
-	WORKING: "admin.units.whatsApp.status.WORKING",
-} as const;
-
-type WahaStatus = keyof typeof statusLabels;
-
-function isWahaStatus(status: string | null | undefined): status is WahaStatus {
-	return Boolean(status && status in statusLabels);
 }
 
 export function UnitWhatsAppEditor({ onClose, unit }: UnitWhatsAppEditorProps) {
@@ -64,15 +40,18 @@ export function UnitWhatsAppEditor({ onClose, unit }: UnitWhatsAppEditorProps) {
 	});
 	const rawStatus = statusQuery.data?.status;
 	const status = isWahaStatus(rawStatus) ? rawStatus : null;
-	const qrQuery = useGetUnitsByUnitIdWhatsappQr(status === "SCAN_QR_CODE" ? unitId : undefined, {
-		query: { refetchInterval: 10_000 },
+	const qrQuery = useGetUnitsByUnitIdWhatsappQr(unitId, {
+		query: { enabled: Boolean(unitId) && status === "SCAN_QR_CODE", refetchInterval: 2_500 },
 	});
 	const connect = usePostUnitsByUnitIdWhatsappSession();
 	const disconnect = usePostUnitsByUnitIdWhatsappDisconnect();
 
 	async function refresh() {
 		if (!unitId) return;
-		await queryClient.invalidateQueries({ queryKey: getUnitsByUnitIdWhatsappQueryKey(unitId) });
+		await Promise.all([
+			queryClient.invalidateQueries({ queryKey: getUnitsByUnitIdWhatsappQueryKey(unitId) }),
+			queryClient.invalidateQueries({ queryKey: getUnitsByUnitIdWhatsappQrQueryKey(unitId) }),
+		]);
 	}
 
 	function connectSession() {
@@ -81,9 +60,11 @@ export function UnitWhatsAppEditor({ onClose, unit }: UnitWhatsAppEditorProps) {
 			{ unitId },
 			{
 				onError: () => void showAlert(t("admin.units.whatsApp.connectError")),
-				onSuccess: async () => {
+				onSettled: refresh,
+				onSuccess: async data => {
+					await queryClient.resetQueries({ queryKey: getUnitsByUnitIdWhatsappQrQueryKey(unitId) });
 					showToast(t("admin.units.whatsApp.connectSuccess"), "positive");
-					await refresh();
+					queryClient.setQueryData(getUnitsByUnitIdWhatsappQueryKey(unitId), data);
 				},
 			},
 		);
@@ -95,9 +76,11 @@ export function UnitWhatsAppEditor({ onClose, unit }: UnitWhatsAppEditorProps) {
 			{ unitId },
 			{
 				onError: () => void showAlert(t("admin.units.whatsApp.disconnectError")),
-				onSuccess: async () => {
+				onSettled: refresh,
+				onSuccess: async data => {
+					await queryClient.resetQueries({ queryKey: getUnitsByUnitIdWhatsappQrQueryKey(unitId) });
 					showToast(t("admin.units.whatsApp.disconnectSuccess"), "positive");
-					await refresh();
+					queryClient.setQueryData(getUnitsByUnitIdWhatsappQueryKey(unitId), data);
 				},
 			},
 		);
@@ -119,6 +102,14 @@ export function UnitWhatsAppEditor({ onClose, unit }: UnitWhatsAppEditorProps) {
 				<div className="space-y-4">
 					<Skeleton className="h-20 w-full" />
 					<Skeleton className="mx-auto size-64" />
+				</div>
+			) : statusQuery.isError ? (
+				<div className="space-y-3">
+					<p className="text-destructive text-sm">{t("admin.units.whatsApp.connectError")}</p>
+					<Button onClick={() => void refresh()} type="button" variant="outline">
+						<LuRefreshCw className="size-4" />
+						{t("admin.units.whatsApp.refresh")}
+					</Button>
 				</div>
 			) : (
 				<div className="space-y-5">
@@ -159,11 +150,11 @@ export function UnitWhatsAppEditor({ onClose, unit }: UnitWhatsAppEditorProps) {
 					<p className="text-muted-foreground text-sm">{t("admin.units.whatsApp.fallbackHint")}</p>
 
 					<div className="flex flex-wrap justify-end gap-2">
-						<Button disabled={busy} onClick={() => void refresh()} type="button" variant="outline">
+						<Button disabled={busy} onClick={() => void refresh().then(() => showToast(t("admin.units.whatsApp.refresh"), "info"))} type="button" variant="outline">
 							<LuRefreshCw className="size-4" />
 							{t("admin.units.whatsApp.refresh")}
 						</Button>
-						{statusQuery.data?.configured && status !== "STOPPED" && (
+						{status === "WORKING" && (
 							<Button disabled={busy} onClick={disconnectSession} type="button" variant="outline">
 								<LuUnplug className="size-4" />
 								{t("admin.units.whatsApp.disconnect")}

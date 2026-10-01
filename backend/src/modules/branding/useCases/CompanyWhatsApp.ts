@@ -49,6 +49,7 @@ export class CompanyWhatsApp {
 				session = await this.getWaha().createSession(connection.sessionName, { "sim-delivery.companyId": companyId });
 			}
 			if (session.status === "STOPPED") session = await this.getWaha().startSession(connection.sessionName);
+				else if (session.status === "FAILED") session = await this.getWaha().restartSession(connection.sessionName);
 			return this.sync(connection, session);
 		} catch {
 			await this.prisma.companyWhatsAppConnection.update({ data: { lastError: "Não foi possível iniciar a sessão WAHA.", lastSyncedAt: new Date() }, where: { companyId } });

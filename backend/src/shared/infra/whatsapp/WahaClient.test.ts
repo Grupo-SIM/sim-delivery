@@ -21,6 +21,19 @@ describe("normalizeBrazilianWhatsAppPhone", () => {
 });
 
 describe("WahaClient", () => {
+	for (const [method, action] of [["startSession", "start"], ["logoutSession", "logout"], ["restartSession", "restart"]] as const) {
+		it(`reads current session after ${action} succeeds with an empty response`, async () => {
+			const session = { name: "unit", status: "SCAN_QR_CODE" };
+			const fetch = mock((_input: string | URL | Request, init?: RequestInit) =>
+				Promise.resolve(init?.method === "POST" ? new Response(null, { status: 204 }) : Response.json(session)),
+			);
+			const client = new WahaClient({ baseUrl: "https://waha.example", session: "general" }, fetch as never);
+			expect(await client[method]("unit")).toEqual(session);
+			expect(fetch.mock.calls[0]?.[0]).toBe(`https://waha.example/api/sessions/unit/${action}`);
+			expect(fetch.mock.calls[1]?.[0]).toBe("https://waha.example/api/sessions/unit");
+		});
+	}
+
 	it("creates and starts a named session with tenant metadata", async () => {
 		const fetch = mock((_input: string | URL | Request, _init?: RequestInit) =>
 			Promise.resolve(Response.json({ name: "sim-delivery_acme_centro", status: "STARTING" }, { status: 201 })),

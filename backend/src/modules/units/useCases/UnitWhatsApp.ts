@@ -82,6 +82,7 @@ export class UnitWhatsApp {
 				session = await this.getWaha().getSession(connection.sessionName);
 				this.assertOwnership(session, unit.companyId, unitId);
 				if (session.status === "STOPPED") session = await this.getWaha().startSession(connection.sessionName);
+				else if (session.status === "FAILED") session = await this.getWaha().restartSession(connection.sessionName);
 			} catch (error) {
 				if (!(error instanceof WahaRequestError) || error.status !== 404) throw error;
 				try {

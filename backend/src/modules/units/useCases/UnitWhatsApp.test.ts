@@ -46,12 +46,27 @@ function world(saved = connection()) {
 			),
 		getQrDataUrl: mock(() => Promise.resolve("data:image/png;base64,AQID")),
 		logoutSession: mock(() => Promise.resolve({ name: saved.sessionName, status: "STOPPED" })),
+		restartSession: mock(() => Promise.resolve({ name: saved.sessionName, status: "STARTING" })),
 		startSession: mock(() => Promise.resolve({ name: saved.sessionName, status: "STARTING" })),
 	};
 	return { prisma, service: new UnitWhatsApp(prisma, () => waha as unknown as WahaClient), update, upsert, waha };
 }
 
 describe("UnitWhatsApp", () => {
+	it("restarts a failed session when reconnecting", async () => {
+		const { service, waha } = world();
+		waha.getSession.mockImplementation(async () => ({
+			config: { metadata: { "sim-delivery.companyId": "company_1", "sim-delivery.unitId": "unit_1" } },
+			me: { id: "5581999999999@c.us" },
+			name: "sim-delivery_acme_centro",
+			status: "FAILED",
+		}));
+		const result = await service.connect("company_1", "unit_1");
+		expect(waha.restartSession).toHaveBeenCalledWith("sim-delivery_acme_centro");
+		expect(result.status).toBe("STARTING");
+		expect(result.lastError).toBeNull();
+	});
+
 	it("builds the deterministic WAHA session name", () => {
 		expect(buildUnitWhatsAppSessionName("bliss-cookie", "shopping-recife")).toBe(
 			"sim-delivery_bliss-cookie_shopping-recife",
