@@ -1,6 +1,7 @@
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { getWahaClientOptions, WahaClient, WahaRequestError, type WahaSessionInfo } from "@/shared/infra/whatsapp";
+import { WhatsAppSessionRecovery } from "@/shared/infra/whatsapp/WhatsAppSessionRecovery";
 import { UnitErrors } from "@/modules/units/errors";
 import type { CompanyWhatsAppReturn } from "../dtos";
 
@@ -22,13 +23,19 @@ function asReturn(connection: Connection, status = connection.lastStatus): Compa
 }
 
 export class CompanyWhatsApp {
+	private readonly recovery = new WhatsAppSessionRecovery();
 	constructor(private readonly prisma: PrismaInstance, private readonly getWaha = () => new WahaClient(getWahaClientOptions())) {}
 
 	async get(companyId: string): Promise<CompanyWhatsAppReturn> {
 		const connection = await this.prisma.companyWhatsAppConnection.findUnique({ where: { companyId } });
 		if (!connection) return { configured: false, connectedPhone: null, lastError: null, lastSyncedAt: null, sessionName: null, status: null };
 		try {
-			return await this.sync(connection, await this.getWaha().getSession(connection.sessionName));
+			let session = await this.getWaha().getSession(connection.sessionName);
+			if (session.status === "FAILED") {
+				const company = await this.prisma.company.findUniqueOrThrow({ where: { id: companyId }, select: { slug: true } });
+				if (this.recovery.shouldRestart(company.slug, connection.sessionName)) session = await this.getWaha().restartSession(connection.sessionName);
+			}
+			return await this.sync(connection, session);
 		} catch {
 			const failed = await this.prisma.companyWhatsAppConnection.update({ data: { lastError: "Não foi possível consultar a sessão WAHA.", lastSyncedAt: new Date() }, where: { companyId } });
 			return asReturn(failed, failed.lastStatus ?? "FAILED");

@@ -4,6 +4,7 @@ import {
 	normalizeBrazilianWhatsAppPhone,
 	toWahaBrazilianChatId,
 	WahaClient,
+	WahaRequestError,
 } from "./WahaClient";
 
 describe("normalizeBrazilianWhatsAppPhone", () => {
@@ -33,6 +34,28 @@ describe("WahaClient", () => {
 			expect(fetch.mock.calls[1]?.[0]).toBe("https://waha.example/api/sessions/unit");
 		});
 	}
+
+	it("updates ownership without losing engine configuration or unrelated metadata", async () => {
+		const session = { name: "unit", status: "FAILED" as const, config: { proxy: { server: "local-proxy" }, webhooks: [{ url: "http://localhost/events" }], metadata: { "sim-delivery.unitId": "old", custom: "keep" } } };
+		const fetch = mock(async (_input: string | URL | Request, init?: RequestInit) => Response.json({ ...session, config: JSON.parse(String(init?.body)).config }));
+		const client = new WahaClient({ baseUrl: "https://waha.example", session: "general" }, fetch as never);
+		const result = await client.updateSessionMetadata(session, { "sim-delivery.unitId": "new" });
+		expect(fetch.mock.calls[0]?.[0]).toBe("https://waha.example/api/sessions/unit");
+		expect(fetch.mock.calls[0]?.[1]?.method).toBe("PUT");
+		expect(result.config).toEqual({ ...session.config, metadata: { custom: "keep", "sim-delivery.unitId": "new" } });
+	});
+
+	it("keeps HTTP status and operation in WAHA errors without exposing credentials", async () => {
+		const fetch = mock(async () => new Response(null, { status: 503 }));
+		const client = new WahaClient({ apiKey: "private", baseUrl: "https://waha.example", session: "general" }, fetch as never);
+		try {
+			await client.restartSession("unit");
+			throw new Error("Expected restart to fail");
+		} catch (error) {
+			expect(error).toBeInstanceOf(WahaRequestError);
+			expect((error as Error).message).toBe("WAHA request failed (503): POST /api/sessions/unit/restart");
+		}
+	});
 
 	it("creates and starts a named session with tenant metadata", async () => {
 		const fetch = mock((_input: string | URL | Request, _init?: RequestInit) =>

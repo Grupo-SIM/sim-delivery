@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useWhatsAppModalRecovery } from "@/hooks/use-whatsapp-modal-recovery";
 import {
 	getUnitsByUnitIdWhatsappQueryKey,
 	getUnitsByUnitIdWhatsappQrQueryKey,
@@ -32,6 +33,8 @@ export function UnitWhatsAppEditor({ onClose, unit }: UnitWhatsAppEditorProps) {
 	const unitId = unit?.id;
 	const statusQuery = useGetUnitsByUnitIdWhatsapp(unitId, {
 		query: {
+			enabled: Boolean(unitId),
+			refetchOnMount: "always",
 			refetchInterval: query => {
 				const status = query.state.data?.status;
 				return unitId && status !== "WORKING" && status !== "STOPPED" ? 2_500 : false;
@@ -87,6 +90,14 @@ export function UnitWhatsAppEditor({ onClose, unit }: UnitWhatsAppEditorProps) {
 	}
 
 	const busy = connect.isPending || disconnect.isPending;
+	useWhatsAppModalRecovery({
+		busy,
+		loading: statusQuery.isPending || statusQuery.isFetching,
+		modalKey: unitId ?? null,
+		onRecover: connectSession,
+		sessionName: statusQuery.data?.sessionName,
+		status: statusQuery.isSuccess ? status : null,
+	});
 	const statusLabel = status ? t(statusLabels[status]) : t("admin.units.whatsApp.status.UNCONFIGURED");
 
 	return (
@@ -129,6 +140,7 @@ export function UnitWhatsAppEditor({ onClose, unit }: UnitWhatsAppEditorProps) {
 							<Badge tone={status ? statusTones[status] : "neutral"}>{statusLabel}</Badge>
 						</div>
 					</div>
+					{statusQuery.data?.lastError && <p className="text-destructive text-sm">{statusQuery.data.lastError}</p>}
 
 					{status === "SCAN_QR_CODE" && (
 						<div className="space-y-3 text-center">

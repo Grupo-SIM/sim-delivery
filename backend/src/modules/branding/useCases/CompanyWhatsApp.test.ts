@@ -31,3 +31,24 @@ describe("CompanyWhatsApp", () => {
 		expect(result.lastError).toBeNull();
 	});
 });
+
+for (const slug of ["zero-grau", "other-company"]) {
+	it(`automatically restarts only Zero Grau company sessions: ${slug}`, async () => {
+		const saved = { companyId: "company_1", sessionName: "company", lastStatus: "FAILED", lastError: null, connectedPhone: null, lastSyncedAt: null };
+		const prisma = {
+			company: { findUniqueOrThrow: mock(async () => ({ slug })) },
+			companyWhatsAppConnection: {
+				findUnique: mock(async () => saved),
+				update: mock(async ({ data }: { data: Record<string, unknown> }) => ({ ...saved, ...data })),
+			},
+		} as unknown as PrismaInstance;
+		const waha = {
+			getSession: mock(async () => ({ name: "company", status: "FAILED" })),
+			restartSession: mock(async () => ({ name: "company", status: "STARTING" })),
+		};
+		const service = new CompanyWhatsApp(prisma, () => waha as unknown as WahaClient);
+		expect((await service.get("company_1")).status).toBe(slug === "zero-grau" ? "STARTING" : "FAILED");
+		await service.get("company_1");
+		expect(waha.restartSession).toHaveBeenCalledTimes(slug === "zero-grau" ? 1 : 0);
+	});
+}

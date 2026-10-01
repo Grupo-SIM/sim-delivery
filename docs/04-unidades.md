@@ -34,6 +34,15 @@ restrita a `owner`/`manager` (ver [03-papeis-e-permissoes.md](03-papeis-e-permis
 - Se o nome da sessão WAHA já pertence a outra unidade (por exemplo, após recriar uma
   unidade com o mesmo slug), conectar usa uma sessão separada com sufixo do ID atual.
   A sessão anterior permanece intacta; a nova conexão exige pareamento por QR Code.
+- Na Zero Grau (`zero-grau`), consultar status de sessão `FAILED` tenta recuperação
+  automática da conexão da empresa ou unidade. Tentativas têm intervalo mínimo de
+  60 segundos por sessão em cada instância do backend; sessões `STOPPED` não reiniciam
+  automaticamente. Ao abrir modal WhatsApp, frontend também envia uma tentativa
+  explícita de recuperação se consulta atual retornar `FAILED`, uma vez por abertura.
+- Na Zero Grau, sessão falha vinculada localmente pode recuperar o mesmo nome quando
+  metadados apontam uma unidade removida da mesma empresa. A configuração WAHA é
+  preservada, o ID da unidade é atualizado e a sessão reiniciada. Se unidade anterior
+  ainda existe, a sessão não é reassociada.
 - Taxa de entrega e cashback da unidade são o **default**; produto pode sobrepor cashback.
 
 ## Regras comportamentais

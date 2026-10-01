@@ -17,7 +17,7 @@ export const WAHA_SESSION_STATUSES = [
 export type WahaSessionStatus = (typeof WAHA_SESSION_STATUSES)[number];
 
 export interface WahaSessionInfo {
-	config?: { metadata?: Record<string, string> };
+	config?: { metadata?: Record<string, string>; [key: string]: unknown };
 	me?: { id: string; pushName?: string };
 	name: string;
 	status: WahaSessionStatus;
@@ -33,8 +33,8 @@ export class InvalidWhatsAppPhoneError extends Error {
 }
 
 export class WahaRequestError extends Error {
-	constructor(readonly status: number) {
-		super(`WAHA request failed (${status})`);
+	constructor(readonly status: number, readonly operation?: string) {
+		super(`WAHA request failed (${status})${operation ? `: ${operation}` : ""}`);
 		this.name = "WahaRequestError";
 	}
 }
@@ -80,18 +80,25 @@ export class WahaClient {
 		return this.requestJson<WahaSessionInfo>("/api/sessions", {
 			body: JSON.stringify({ config: { metadata }, name: session, start: true }),
 			method: "POST",
-		});
+		}, this.options.timeoutMs ?? 60_000);
+	}
+
+	async updateSessionMetadata(session: WahaSessionInfo, metadata: Record<string, string>): Promise<WahaSessionInfo> {
+		return this.requestJson<WahaSessionInfo>(`/api/sessions/${encodeURIComponent(session.name)}`, {
+			body: JSON.stringify({ config: { ...session.config, metadata: { ...session.config?.metadata, ...metadata } } }),
+			method: "PUT",
+		}, this.options.timeoutMs ?? 60_000);
 	}
 
 	async startSession(session: string): Promise<WahaSessionInfo> {
 		await this.request(`/api/sessions/${encodeURIComponent(session)}/start`, {
 			method: "POST",
-		});
+		}, this.options.timeoutMs ?? 60_000);
 		return this.getSession(session);
 	}
 
 	async restartSession(session: string): Promise<WahaSessionInfo> {
-		await this.request(`/api/sessions/${encodeURIComponent(session)}/restart`, { method: "POST" });
+		await this.request(`/api/sessions/${encodeURIComponent(session)}/restart`, { method: "POST" }, this.options.timeoutMs ?? 60_000);
 		return this.getSession(session);
 	}
 
@@ -151,7 +158,7 @@ export class WahaClient {
 		}));
 	}
 
-	private async request(path: string, init: RequestInit = {}): Promise<Response> {
+	private async request(path: string, init: RequestInit = {}, timeoutMs = this.options.timeoutMs ?? 10_000): Promise<Response> {
 		const response = await this.fetchImpl(`${this.options.baseUrl.replace(/\/$/, "")}${path}`, {
 			...init,
 			headers: {
@@ -160,14 +167,14 @@ export class WahaClient {
 				...(init.body ? { "Content-Type": "application/json" } : {}),
 				...init.headers,
 			},
-			signal: AbortSignal.timeout(this.options.timeoutMs ?? 10_000),
+			signal: AbortSignal.timeout(timeoutMs),
 		});
-		if (!response.ok) throw new WahaRequestError(response.status);
+		if (!response.ok) throw new WahaRequestError(response.status, `${init.method ?? "GET"} ${path}`);
 		return response;
 	}
 
-	private async requestJson<T>(path: string, init: RequestInit = {}): Promise<T> {
-		return (await this.request(path, init)).json() as Promise<T>;
+	private async requestJson<T>(path: string, init: RequestInit = {}, timeoutMs?: number): Promise<T> {
+		return (await this.request(path, init, timeoutMs)).json() as Promise<T>;
 	}
 
 	private async postForBrazilianChatIds(
