@@ -5,6 +5,8 @@ const external = Object.entries(pkg.dependencies ?? {})
 	.map(([name]) => name);
 
 const result = await Bun.build({
+	// Match the production runtime so Bun emits React's production JSX helpers.
+	define: { "process.env.NODE_ENV": JSON.stringify("production") },
 	entrypoints: ["src/main.ts"],
 	external,
 	outdir: "./dist",
