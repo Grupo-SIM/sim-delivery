@@ -23,4 +23,24 @@ describe("mergeLiveBranding", () => {
 			defaultTheme: "dark",
 		});
 	});
+	it("clears built branding when database branding is unset", () => {
+		const staticBranding = {
+			logoUrl: "/old-logo.png",
+			fontFamilyUrl: "https://example.com/old-font.woff2",
+			fontDisplayUrl: "https://example.com/old-display.woff2",
+			themeColors: null,
+		} as unknown as Branding;
+		const liveBranding = {
+			logoUrl: null,
+			fontFamilyUrl: null,
+			fontDisplayUrl: null,
+			themeColors: null,
+		} as GetBrandingQueryResponse;
+		expect(mergeLiveBranding(staticBranding, liveBranding)).toMatchObject({
+			logoUrl: "",
+			fontFamilyUrl: null,
+			fontDisplayUrl: null,
+		});
+	});
+
 });

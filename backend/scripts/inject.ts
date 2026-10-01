@@ -49,7 +49,7 @@ try {
 	await prisma.$disconnect();
 }
 
-if (!company) throw new Error(`Company "${slug}" was not found.`);
+company ??= { fontFamily: null, logoUrl: null, name: "", themeColors: null };
 
 const colors = (company.themeColors as ThemeColors | null)?.light;
 const themeColors = {
@@ -87,7 +87,7 @@ export const emailBranding: EmailBranding = ${JSON.stringify(
 		{
 			companyName: company.name,
 			fontFamily: company.fontFamily?.trim() || "Inter",
-			logoUrl: company.logoUrl,
+			logoUrl: company.logoUrl?.trim() || null,
 			themeColors,
 		},
 		null,

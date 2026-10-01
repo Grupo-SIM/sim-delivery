@@ -8,7 +8,8 @@ import { slug } from "@/lib/variant";
  * Branding is baked into the build (frontend/scripts/inject.ts) so first paint never flashes
  * unstyled/placeholder content. This hook layers a background refetch on top so admin edits
  * (footer text, logo, colors, tracking ids) reach the storefront without a rebuild+redeploy.
- * apiUrl/packageName/siteUrl stay build-only — they're needed before any request can be made.
+ * Empty deployments use neutral defaults until database branding is configured.
+ * apiUrl/packageName/siteUrl stay build-only.
  */
 export function mergeLiveBranding(
 	staticValues: Branding,
@@ -21,10 +22,10 @@ export function mergeLiveBranding(
 		allowThemeToggle: data.allowThemeToggle,
 		companyName: data.companyName ?? staticValues.companyName,
 		defaultTheme: data.defaultTheme,
-		fontDisplay: data.fontDisplay?.trim() || staticValues.fontDisplay,
-		fontDisplayUrl: data.fontDisplayUrl ?? staticValues.fontDisplayUrl,
-		fontFamily: data.fontFamily?.trim() || staticValues.fontFamily,
-		fontFamilyUrl: data.fontFamilyUrl ?? staticValues.fontFamilyUrl,
+		fontDisplay: data.fontDisplay?.trim() || "Inter",
+		fontDisplayUrl: data.fontDisplayUrl,
+		fontFamily: data.fontFamily?.trim() || "Inter",
+		fontFamilyUrl: data.fontFamilyUrl,
 		footerFacebookUrl: data.footerFacebookUrl,
 		footerInstagramUrl: data.footerInstagramUrl,
 		footerPaymentMethods: data.footerPaymentMethods,
@@ -34,9 +35,9 @@ export function mergeLiveBranding(
 		whatsAppEnabled: data.whatsAppEnabled,
 		ga4Id: data.ga4Id,
 		gtmId: data.gtmId,
-		logoUrl: data.logoUrl ?? staticValues.logoUrl,
+		logoUrl: data.logoUrl?.trim() || "",
 		metaPixelId: data.metaPixelId,
-		themeColors: resolveThemeColors(data.themeColors ?? staticValues.themeColors),
+		themeColors: resolveThemeColors(data.themeColors),
 	};
 }
 

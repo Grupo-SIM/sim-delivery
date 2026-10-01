@@ -11,6 +11,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
+import { resolveThemeColors } from "../src/lib/theme-colors";
+import { resolveBrandingAssetUrl } from "./branding-assets";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const FRONTEND = join(ROOT, "frontend");
@@ -56,8 +58,8 @@ interface ThemeColors {
 	light: Record<string, string>;
 }
 
-const DEFAULT_FONT_FAMILY = "Outfit";
-const DEFAULT_FONT_DISPLAY = "Luckiest Guy";
+const DEFAULT_FONT_FAMILY = "Inter";
+const DEFAULT_FONT_DISPLAY = "Inter";
 
 interface CompanyBranding {
 	allowThemeToggle: boolean;
@@ -148,28 +150,48 @@ try {
 	await prisma.$disconnect();
 }
 
-if (!company) throw new Error(`Company "${slug}" was not found.`);
+company ??= {
+	allowThemeToggle: true,
+	apiUrl: null,
+	defaultTheme: null,
+	fontDisplay: null,
+	fontDisplayUrl: null,
+	fontFamily: null,
+	fontFamilyUrl: null,
+	footerText: null,
+	ga4Id: null,
+	gtmId: null,
+	logoUrl: null,
+	metaPixelId: null,
+	mobileIconUrl: null,
+	name: "",
+	packageName: null,
+	siteUrl: null,
+	themeColors: null,
+};
 
 const apiUrl =
 	company.apiUrl?.trim() ||
 	requireBuildValue(process.env.VITE_API_URL?.trim() || null, "apiUrl or VITE_API_URL");
-const logoSourceUrl = requireBuildValue(company.logoUrl, "logoUrl");
+const logoSourceUrl = resolveBrandingAssetUrl(company.logoUrl, apiUrl);
 const fontFamily = company.fontFamily?.trim() || DEFAULT_FONT_FAMILY;
 const fontDisplay = company.fontDisplay?.trim() || DEFAULT_FONT_DISPLAY;
 const packageName =
 	company.packageName?.trim() || `com.jbmidia.${slug.toLowerCase().replace(/[^a-z0-9_]/g, "_")}`;
-const siteUrl =
-	company.siteUrl?.trim() ||
-	requireBuildValue(process.env.VITE_APP_URL?.trim() || null, "siteUrl or VITE_APP_URL");
-const themeColors = requireBuildValue(company.themeColors, "themeColors");
+const siteUrl = company.siteUrl?.trim() || process.env.VITE_APP_URL?.trim() || "";
+const themeColors = resolveThemeColors(company.themeColors as Parameters<typeof resolveThemeColors>[0]);
 
 await mkdir(publicDir, { recursive: true });
-const logoResponse = await fetch(logoSourceUrl);
-if (!logoResponse.ok) throw new Error(`Could not download branding logo: HTTP ${logoResponse.status}.`);
-
-const logoFilename = `logo.${extensionFrom(logoResponse.headers.get("content-type"), logoSourceUrl)}`;
-const logoPath = join(publicDir, logoFilename);
-await writeFile(logoPath, await logoResponse.arrayBuffer());
+let logoPath: string | null = null;
+let logoUrl = "";
+if (logoSourceUrl) {
+	const logoResponse = await fetch(logoSourceUrl);
+	if (!logoResponse.ok) throw new Error(`Could not download branding logo: HTTP ${logoResponse.status}.`);
+	const logoFilename = `logo.${extensionFrom(logoResponse.headers.get("content-type"), logoSourceUrl)}`;
+	logoPath = join(publicDir, logoFilename);
+	await writeFile(logoPath, await logoResponse.arrayBuffer());
+	logoUrl = `/${logoFilename}`;
+}
 await writeFile(join(publicDir, "branding.css"), createBrandingCss(themeColors, fontFamily, fontDisplay));
 
 await writeFile(
@@ -187,7 +209,7 @@ await writeFile(
 			footerText: company.footerText,
 			ga4Id: company.ga4Id,
 			gtmId: company.gtmId,
-			logoUrl: `/${logoFilename}`,
+			logoUrl,
 			metaPixelId: company.metaPixelId,
 			packageName,
 			siteUrl,
@@ -238,41 +260,53 @@ if (existsSync(tauriConfPath)) {
 	// A dedicated mobile icon is assumed to already be composed/padded by whoever uploaded it, so
 	// it's used as-is (only squared, never re-padded). Without one, fall back to the general logo
 	// and add safe padding automatically so it doesn't look flush against circular/rounded masks.
-	let iconSourcePath: string;
-	if (company.mobileIconUrl) {
-		const mobileIconResponse = await fetch(company.mobileIconUrl);
+	let iconSourcePath: string | null = null;
+	const mobileIconUrl = resolveBrandingAssetUrl(company.mobileIconUrl, apiUrl);
+	if (mobileIconUrl) {
+		const mobileIconResponse = await fetch(mobileIconUrl);
 		if (!mobileIconResponse.ok) {
 			throw new Error(`Could not download mobile icon: HTTP ${mobileIconResponse.status}.`);
 		}
-		const mobileIconFilename = `mobile-icon.${extensionFrom(mobileIconResponse.headers.get("content-type"), company.mobileIconUrl)}`;
+		const mobileIconFilename = `mobile-icon.${extensionFrom(mobileIconResponse.headers.get("content-type"), mobileIconUrl)}`;
 		const mobileIconPath = join(publicDir, mobileIconFilename);
 		await writeFile(mobileIconPath, await mobileIconResponse.arrayBuffer());
 		iconSourcePath = await squareIconSource(mobileIconPath);
-	} else {
+	} else if (logoPath) {
 		iconSourcePath = await squareIconSource(logoPath, LOGO_FALLBACK_ICON_PADDING);
 	}
-	const proc = Bun.spawnSync(["bunx", "@tauri-apps/cli", "icon", iconSourcePath], {
-		cwd: FRONTEND,
-		stderr: "inherit",
-		stdout: "inherit",
-	});
-	if (proc.exitCode !== 0) throw new Error("Could not generate native app icons.");
+	if (iconSourcePath) {
+		const proc = Bun.spawnSync(["bunx", "@tauri-apps/cli", "icon", iconSourcePath], {
+			cwd: FRONTEND,
+			stderr: "inherit",
+			stdout: "inherit",
+		});
+		if (proc.exitCode !== 0) throw new Error("Could not generate native app icons.");
 
-	const iconPath = join(FRONTEND, "src-tauri", "icons", "128x128.png");
-	if (!existsSync(iconPath)) throw new Error("Tauri icon generator did not produce 128x128.png.");
-	await copyFile(iconPath, join(publicDir, "favicon.png"));
-	await copyFile(iconPath, join(publicDir, "apple-touch-icon.png"));
+		const iconPath = join(FRONTEND, "src-tauri", "icons", "128x128.png");
+		if (!existsSync(iconPath)) throw new Error("Tauri icon generator did not produce 128x128.png.");
+		await copyFile(iconPath, join(publicDir, "favicon.png"));
+		await copyFile(iconPath, join(publicDir, "apple-touch-icon.png"));
+
+	} else {
+		// Do not ship icons left over from a previously branded build.
+		const emptyIcon = await sharp({
+			create: { width: 128, height: 128, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } },
+		}).png().toBuffer();
+		await writeFile(join(publicDir, "favicon.png"), emptyIcon);
+		await writeFile(join(publicDir, "apple-touch-icon.png"), emptyIcon);
+	}
 
 	const conf = JSON.parse(await Bun.file(tauriConfPath).text());
 	conf.identifier = packageName;
-	conf.productName = company.name;
-	if (conf.app?.windows?.[0]) conf.app.windows[0].title = company.name;
+	conf.productName = company.name || "Delivery";
+	if (conf.app?.windows?.[0]) conf.app.windows[0].title = company.name || "Delivery";
 	await writeFile(tauriConfPath, `${JSON.stringify(conf, null, "\t")}\n`);
 }
 
 const indexHtml = await readFile(indexHtmlPath, "utf8");
 const initialTheme = company.defaultTheme === "dark" ? "dark" : "light";
 const updatedIndexHtml = indexHtml
+	.replace(/<title>[^<]*<\/title>/, `<title>${company.name.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")}</title>`)
 	.replace(
 		/document\.documentElement\.classList\.add\("(?:dark|light)"\)/,
 		`document.documentElement.classList.add("${initialTheme}")`,
