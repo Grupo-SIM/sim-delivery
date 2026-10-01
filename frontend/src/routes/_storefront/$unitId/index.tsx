@@ -1,3 +1,4 @@
+import { useCartImages } from "@/hooks/use-cart-images";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -37,6 +38,7 @@ function UnitStorePage() {
 	const menu = useGetPublicUnitsByUnitSlugMenu(unitSlug, { slug });
 	const units = unitsQuery.data;
 	const unit = units?.find(item => item.slug === unitSlug);
+	useCartImages(unit?.id, menu.data);
 	const [hoursOpen, setHoursOpen] = useState(false);
 	const [reviewsOpen, setReviewsOpen] = useState(false);
 	const [categoryNavDocked, setCategoryNavDocked] = useState(false);

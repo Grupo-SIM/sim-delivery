@@ -57,6 +57,24 @@ describe("cart store", () => {
 		expect(useCartStore.getState().items[0]?.quantity).toBe(5);
 	});
 
+	it("refreshes persisted images without changing cart selections or checkout key", () => {
+		useCartStore.getState().addItem("u_1", { ...base, options: [option] }, 2, "sem cebola");
+		const key = useCartStore.getState().getCheckoutIdempotencyKey();
+		const original = useCartStore.getState().items[0]!;
+		useCartStore.getState().syncImages("u_2", [{ id: base.id, imageUrl: "wrong.jpg" }]);
+		expect(useCartStore.getState().items[0]).toEqual(original);
+		useCartStore.getState().syncImages("u_1", [{ id: base.id, imageUrl: "product.jpg" }]);
+		expect(useCartStore.getState().items[0]).toEqual({ ...original, imageUrl: "product.jpg" });
+		expect(useCartStore.getState().getCheckoutIdempotencyKey()).toBe(key);
+		const items = useCartStore.getState().items;
+		useCartStore.getState().syncImages("u_1", [{ id: base.id, imageUrl: "product.jpg" }]);
+		expect(useCartStore.getState().items).toBe(items);
+		useCartStore.getState().syncImages("u_1", []);
+		expect(useCartStore.getState().items).toBe(items);
+		useCartStore.getState().syncImages("u_1", [{ id: base.id, imageUrl: "" }]);
+		expect(useCartStore.getState().items[0]?.imageUrl).toBe("");
+	});
+
 	it("keeps a checkout key through retries and replaces it after a cart change", () => {
 		useCartStore.getState().addItem("u_1", base, 1);
 		const first = useCartStore.getState().getCheckoutIdempotencyKey();

@@ -33,6 +33,7 @@ export interface CartItem {
 export type CartItemInput = Omit<CartItem, "lineKey" | "note" | "quantity">;
 
 export interface CartState {
+	syncImages: (unitId: string, products: { id: string; imageUrl: string }[]) => void;
 	addItem: (unitId: string, item: CartItemInput, quantity?: number, note?: string) => void;
 	checkoutIdempotencyKey: string | null;
 	clear: () => void;
@@ -118,6 +119,19 @@ export const useCartStore = create<CartState>()(
 					items: state.items.map(line => (line.lineKey === lineKey ? { ...line, quantity } : line)),
 				}));
 			},
+			syncImages: (unitId, products) =>
+				set(state => {
+					if (state.unitId !== unitId) return state;
+					const images = new Map(products.map(product => [product.id, product.imageUrl]));
+					let changed = false;
+					const items = state.items.map(item => {
+						const imageUrl = images.get(item.id);
+						if (imageUrl === undefined || imageUrl === item.imageUrl) return item;
+						changed = true;
+						return { ...item, imageUrl };
+					});
+					return changed ? { items } : state;
+				}),
 			unitId: null,
 		}),
 		{ name: "cart" },

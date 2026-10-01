@@ -1,3 +1,4 @@
+import { useCartImages } from "@/hooks/use-cart-images";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -65,6 +66,7 @@ function CheckoutPage() {
 	const unit = units?.find(u => u.slug === unitSlug);
 	const unitId = unit?.id ?? "";
 	const { data: menu } = useQuery(getPublicUnitsByUnitSlugMenuQueryOptions(unitSlug, { slug: slug ?? "" }));
+	useCartImages(unitId, menu);
 	const availableMethods = unit?.deliveryMethods ?? ["delivery"];
 	const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>(() =>
 		getMethod(unitId, availableMethods),
