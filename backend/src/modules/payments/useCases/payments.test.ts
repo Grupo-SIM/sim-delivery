@@ -626,8 +626,11 @@ describe("ConfirmPayment", () => {
 		expect(sent).toEqual([
 			{
 				message: "Recebemos seu pedido #154 e ele já entrou na fila de preparo.",
+				orderId: "order_1",
 				orderNumber: 154,
 				status: "recebido",
+				subtitle: "Acompanhe seu pedido",
+				title: "Atualização do pedido #154",
 				to: "maria@example.com",
 			},
 		]);
