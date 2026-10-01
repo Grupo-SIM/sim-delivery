@@ -18,7 +18,7 @@ export class MagicLinkEmail extends BaseEmail {
 	protected readonly subject = "Seu link de acesso";
 
 	protected get text(): string {
-		return `Acesse sua conta: ${this.url}. O link expira em 5 minutos.`;
+		return `Acesse sua conta: ${this.url}. O link expira em 30 minutos.`;
 	}
 
 	protected override get html(): Promise<string> {

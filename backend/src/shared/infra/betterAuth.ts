@@ -51,6 +51,7 @@ export const auth = betterAuth({
 			},
 		}),
 		magicLink({
+			expiresIn: 30 * 60,
 			sendMagicLink: async ({ email, metadata, token }) => {
 				const unitId = typeof metadata?.unitId === "string" ? metadata.unitId : undefined;
 				const redirectTo = typeof metadata?.redirectTo === "string" && metadata.redirectTo.startsWith("/") && !metadata.redirectTo.startsWith("//") && !metadata.redirectTo.startsWith("/identify")

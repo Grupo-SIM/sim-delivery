@@ -57,7 +57,7 @@ export function MagicLinkEmailTemplate({ url }: MagicLinkEmailProps) {
 					padding: "14px 16px",
 				}}
 			>
-				Por segurança, este link expira em 5 minutos e pode ser usado uma única vez. Se não foi você, ignore este e-mail.
+				Por segurança, este link expira em 30 minutos e pode ser usado uma única vez. Se não foi você, ignore este e-mail.
 			</Text>
 		</EmailLayout>
 	);

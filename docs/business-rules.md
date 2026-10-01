@@ -29,6 +29,10 @@ possui **N unidades** (lojas físicas). Detalhes em
 - **Cardápio** — conjunto de produtos/categorias que uma unidade oferece.
 - **Cashback** — crédito acumulado pelo cliente, resgatável em pedidos futuros.
 
+## Links mágicos de acesso
+
+- Links mágicos de acesso expiram 30 minutos após a emissão e podem ser usados uma única vez.
+
 ## Impressão de recibos de pedido
 
 - `superAdmin`, `owner`, `manager`, `attendant` e `kitchen` podem imprimir e reimprimir o
