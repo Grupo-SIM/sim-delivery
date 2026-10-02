@@ -39,7 +39,7 @@ export type UpdateInventorySettingsBody = typeof UpdateInventorySettingsBody.sta
 export const CreateInventoryMovementBody = t.Object({
 	inventoryItemId: t.String(),
 	quantity: t.Number(),
-	reason: t.String({ minLength: 1 }),
+	reason: t.Optional(t.String()),
 	type: MovementType,
 	unitCostCents: t.Optional(t.Number({ minimum: 0 })),
 	unitId: t.String(),

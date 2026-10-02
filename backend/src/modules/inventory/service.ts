@@ -107,7 +107,7 @@ export class InventoryService {
 					balanceAfter: nextQuantity,
 					inventoryItemId: item.id,
 					quantity: delta,
-					reason: body.reason.trim(),
+					reason: body.reason?.trim() ?? "",
 					type: body.type,
 					unitCostCents: body.unitCostCents,
 					unitId: unit.id,

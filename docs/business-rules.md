@@ -19,6 +19,11 @@ Cada **variante** whitelabel do app mapeia para exatamente uma empresa. Uma empr
 possui **N unidades** (lojas físicas). Detalhes em
 [01-visao-geral-e-dominio.md](01-visao-geral-e-dominio.md).
 
+## Movimentações de insumos
+
+- O motivo é opcional em entradas, ajustes e perdas. Movimentações sem motivo são
+  registradas com texto vazio.
+
 ## Glossário
 
 - **Empresa / tenant** — cliente da plataforma. Escopo raiz de todos os dados (`companyId`).

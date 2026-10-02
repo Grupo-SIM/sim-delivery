@@ -52,8 +52,6 @@ export function InventoryMovementModal({
 
 	function submit() {
 		const trimmedReason = reason.trim();
-		if (!trimmedReason) return;
-
 		mutation.mutate(
 			{
 				data: {
@@ -155,14 +153,9 @@ export function InventoryMovementModal({
 					</div>
 				)}
 				<TextField
-					label={
-						<span>
-							{t("admin.inventory.fields.reason")} <RequiredMark />
-						</span>
-					}
+					label={t("admin.inventory.fields.reason")}
 					onValueChange={setReason}
 					placeholder="Ex: Compra semanal"
-					required
 					value={reason}
 				/>
 				<div className="flex justify-end gap-2">
@@ -173,7 +166,6 @@ export function InventoryMovementModal({
 						disabled={
 							!unitId ||
 							!inventoryItemId ||
-							!reason.trim() ||
 							quantity <= 0 ||
 							(requiresTotalCost && totalCostCents <= 0) ||
 							mutation.isPending
