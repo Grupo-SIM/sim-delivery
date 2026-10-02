@@ -1,3 +1,4 @@
+import { UserErrors } from "@/modules/users/errors";
 import { DomainError } from "@/shared/errors";
 import { isValidCpf } from "@/shared/cpf";
 import type { PrismaInstance } from "@/shared/infra/sql";
@@ -14,26 +15,35 @@ export class UpsertCustomer {
 		if (!company) throw new DomainError(CustomerErrors.COMPANY_NOT_FOUND);
 		if (cpf && !isValidCpf(cpf)) throw new DomainError(CustomerErrors.INVALID_CPF);
 
-		await this.prisma.user.update({ data: { name }, where: { id: userId } });
+		try {
+			return await this.prisma.$transaction(async tx => {
+				const customer = await tx.customer.upsert({
+					create: { companyId: company.id, cpf: cpf ?? null, userId },
+					update: { cpf: cpf ?? undefined },
+					where: { userId },
+				});
 
-		const customer = await this.prisma.customer.upsert({
-			create: { companyId: company.id, cpf: cpf ?? null, userId },
-			update: { cpf: cpf ?? undefined },
-			where: { userId },
-		});
+				await tx.user.update({ data: { name }, where: { id: userId } });
 
-		await this.prisma.address.updateMany({
-			data: { isDefault: false },
-			where: { customerId: customer.id, isDefault: true },
-		});
-		await this.prisma.address.create({
-			data: { ...this.mapAddress(address), customerId: customer.id, isDefault: true },
-		});
+				await tx.address.updateMany({
+					data: { isDefault: false },
+					where: { customerId: customer.id, isDefault: true },
+				});
+				await tx.address.create({
+					data: { ...this.mapAddress(address), customerId: customer.id, isDefault: true },
+				});
 
-		return this.prisma.customer.findUniqueOrThrow({
-			include: { addresses: { orderBy: { isDefault: "desc" }, where: { deletedAt: null } } },
-			where: { id: customer.id },
-		});
+				return tx.customer.findUniqueOrThrow({
+					include: { addresses: { orderBy: { isDefault: "desc" }, where: { deletedAt: null } } },
+					where: { id: customer.id },
+				});
+			});
+		} catch (error) {
+			if (typeof error === "object" && error !== null && "code" in error && error.code === "P2002") {
+				throw new DomainError(UserErrors.ACCOUNT_ALREADY_EXISTS);
+			}
+			throw error;
+		}
 	}
 
 	private mapAddress(address: AddressInput) {

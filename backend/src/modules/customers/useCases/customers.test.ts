@@ -201,6 +201,38 @@ describe("customers use-cases", () => {
 			).rejects.toThrow("COMPANY_NOT_FOUND");
 		});
 
+		it("returns a conflict for a CPF owned by another customer without changing profile or addresses", async () => {
+			const { addresses, customers, prisma, users } = makePrisma({
+				customer: { companyId: "cmp_1", cpf: "52998224725", id: "cust_1", phone: null, userId: "other_user" },
+			});
+			prisma.customer.upsert = (async () => {
+				throw { code: "P2002", meta: { target: ["companyId", "cpf"] } };
+			}) as unknown as typeof prisma.customer.upsert;
+
+			const error = await new UpsertCustomer(prisma).execute("user_1", {
+				address: baseAddress,
+				cpf: "52998224725",
+				name: "Maria Silva",
+				slug: "demo",
+			}).catch(error => error);
+
+			expect(error).toMatchObject({ message: "ACCOUNT_ALREADY_EXISTS", status: 409 });
+			expect(users).toEqual({});
+			expect(addresses).toHaveLength(0);
+			expect(customers).toEqual([
+				expect.objectContaining({ cpf: "52998224725", userId: "other_user" }),
+			]);
+		});
+
+		it("propagates unexpected database failures", async () => {
+			const { prisma } = makePrisma();
+			const failure = new Error("Database unavailable");
+			prisma.customer.upsert = (async () => { throw failure; }) as unknown as typeof prisma.customer.upsert;
+			await expect(new UpsertCustomer(prisma).execute("user_1", {
+				address: baseAddress, name: "Maria Silva", slug: "demo",
+			})).rejects.toBe(failure);
+		});
+
 		it("creates a customer and address on first call", async () => {
 			const { addresses, customers, prisma, users } = makePrisma();
 			await new UpsertCustomer(prisma).execute("user_1", {
