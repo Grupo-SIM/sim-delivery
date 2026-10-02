@@ -19,7 +19,7 @@ export class WahaPhoneOtpProvider extends PhoneOtpProvider {
 		if (!company) throw new Error("Company is required for WhatsApp OTP.");
 		return this.client.sendText(
 			phoneNumber,
-			`Seu código de acesso é ${code}. Ele expira em 5 minutos. Não compartilhe este código.`,
+			`Seu código de acesso é ${code}. Ele expira em 30 minutos. Não compartilhe este código.`,
 			buildCompanyWhatsAppSessionName(company.slug),
 		);
 	}

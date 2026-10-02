@@ -34,8 +34,9 @@ possui **N unidades** (lojas físicas). Detalhes em
 - **Cardápio** — conjunto de produtos/categorias que uma unidade oferece.
 - **Cashback** — crédito acumulado pelo cliente, resgatável em pedidos futuros.
 
-## Links mágicos de acesso
+## Códigos WhatsApp e links mágicos de acesso
 
+- Códigos de acesso enviados por WhatsApp expiram 30 minutos após a emissão.
 - Links mágicos de acesso expiram 30 minutos após a emissão e podem ser usados uma única vez.
 
 ## Impressão de recibos de pedido

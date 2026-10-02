@@ -8,6 +8,7 @@ import { prisma } from "./sql";
 import { normalizeBrazilianWhatsAppPhone } from "./whatsapp";
 
 const algorithm = "argon2id";
+const accessVerificationExpiresIn = 30 * 60;
 
 const phoneOtpProvider = new phoneOtpProviders[process.env.PHONE_OTP_DRIVER as PhoneOtpProviderKey]();
 
@@ -32,7 +33,7 @@ export const auth = betterAuth({
 	plugins: [
 		phoneNumber({
 			allowedAttempts: 3,
-			expiresIn: 300,
+			expiresIn: accessVerificationExpiresIn,
 			otpLength: 6,
 			phoneNumberValidator: to => {
 				try {
@@ -51,7 +52,7 @@ export const auth = betterAuth({
 			},
 		}),
 		magicLink({
-			expiresIn: 30 * 60,
+			expiresIn: accessVerificationExpiresIn,
 			sendMagicLink: async ({ email, metadata, token }) => {
 				const unitId = typeof metadata?.unitId === "string" ? metadata.unitId : undefined;
 				const redirectTo = typeof metadata?.redirectTo === "string" && metadata.redirectTo.startsWith("/") && !metadata.redirectTo.startsWith("//") && !metadata.redirectTo.startsWith("/identify")

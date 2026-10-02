@@ -15,7 +15,7 @@ describe("WahaPhoneOtpProvider", () => {
 
 		expect(sendText).toHaveBeenCalledWith(
 			"5581999999999",
-			"Seu código de acesso é 123456. Ele expira em 5 minutos. Não compartilhe este código.",
+			"Seu código de acesso é 123456. Ele expira em 30 minutos. Não compartilhe este código.",
 			"sim-delivery_acme",
 		);
 	});
