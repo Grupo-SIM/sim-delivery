@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { Container } from "@/components/ui/Container";
@@ -44,6 +44,11 @@ function ThankYouPage() {
 }
 
 export const Route = createFileRoute("/_storefront/$unitId/checkout/thank-you/")({
+	beforeLoad: ({ params, search }) => {
+		if (!search.orderId) {
+			throw redirect({ params: { unitId: params.unitId }, replace: true, to: "/$unitId" });
+		}
+	},
 	component: ThankYouPage,
 	validateSearch: searchSchema,
 });

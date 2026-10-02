@@ -1,6 +1,6 @@
 import { useCartImages } from "@/hooks/use-cart-images";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate, redirect, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AddressCreateModal, type AddressValue } from "@/components/address";
@@ -208,11 +208,10 @@ function CheckoutPage() {
 				onSuccess: order => {
 					const totalCents = Number(order.total);
 					if (totalCents === 0) {
-						clearCart();
 						void navigate({
 							params: { orderId: order.id },
 							to: "/orders/$orderId",
-						});
+						}).then(clearCart);
 						return;
 					}
 					setPlacedOrder({ id: order.id, totalCents });
@@ -222,12 +221,11 @@ function CheckoutPage() {
 	}
 
 	function handlePaymentConfirmed() {
-		clearCart();
 		if (!placedOrder) return;
 		void navigate({
 			params: { orderId: placedOrder.id },
 			to: "/orders/$orderId",
-		});
+		}).then(clearCart);
 	}
 
 	async function handleIdentitySubmit(value: { cpf: string; name: string; phone: string }) {
@@ -244,6 +242,10 @@ function CheckoutPage() {
 	}
 
 	const isPendingOrder = isPlacingOrder;
+
+	if (cartItems.length === 0) {
+		return <Navigate params={{ unitId: unitSlug }} replace to="/$unitId" />;
+	}
 
 	if (loadingUnits || (identified && loadingCustomer)) {
 		return (
@@ -381,5 +383,10 @@ function CheckoutPage() {
 }
 
 export const Route = createFileRoute("/_storefront/$unitId/checkout/")({
+	beforeLoad: ({ params }) => {
+		if (useCartStore.getState().items.length === 0) {
+			throw redirect({ params: { unitId: params.unitId }, replace: true, to: "/$unitId" });
+		}
+	},
 	component: CheckoutPage,
 });

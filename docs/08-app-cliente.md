@@ -55,6 +55,12 @@ direto na escolha de unidade.
 
 ## Regras comportamentais
 
+- Checkout (identificação, resumo e pagamento) exige carrinho com itens, inclusive no
+  acesso direto por URL. Esvaziar o carrinho durante o checkout retorna ao cardápio,
+  substituindo a entrada no histórico.
+- Confirmação exige referência a um pedido. Pedidos já criados continuam acessíveis
+  após limpar o carrinho; concluir o pedido abre seu acompanhamento antes da limpeza.
+
 - Ao trocar de unidade, revalidar itens do carrinho (preço/disponibilidade).
 - Persistir carrinho por dispositivo/sessão.
 - "Peça novamente" e destaques dependem de cliente logado com histórico.
