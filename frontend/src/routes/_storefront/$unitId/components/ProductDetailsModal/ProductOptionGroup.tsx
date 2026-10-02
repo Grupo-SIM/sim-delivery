@@ -103,7 +103,7 @@ export function ProductOptionGroup({
 				)}
 			</button>
 			{!collapsed && (
-				<div className="divide-y divide-border overflow-hidden rounded-b-brand border-x border-b border-border">
+				<div className="grid auto-rows-fr divide-y divide-border overflow-hidden rounded-b-brand border-x border-b border-border">
 					{group.options.map(option => (
 						<ProductOptionRow
 							group={group}
