@@ -57,7 +57,10 @@ function PreferencesPage() {
 			{ data: { email, whatsApp: whatsAppEnabled ? whatsApp : false } },
 			{
 				onError: () => setError(t("store.account.preferences.saveError")),
-				onSuccess: () => setSaved(true),
+				onSuccess: () => {
+					setSaved(true);
+					showToast(t("store.account.preferences.saved"), "positive");
+				},
 			},
 		);
 	}
@@ -95,15 +98,21 @@ function PreferencesPage() {
 						</div>
 					</label>
 					{/* biome-ignore lint/a11y/noLabelWithoutControl: Checkbox is a custom control nested in the label. */}
-					{whatsAppEnabled && <>
 					<label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3">
-						<Checkbox checked={whatsApp} onChange={event => setWhatsApp(event.currentTarget.checked)} />
+						<Checkbox
+							checked={whatsAppEnabled && whatsApp}
+							disabled={!whatsAppEnabled}
+							onChange={event => setWhatsApp(event.currentTarget.checked)}
+						/>
 						<div>
 							<p className="font-medium text-sm">{t("store.account.preferences.whatsApp")}</p>
-							<p className="text-muted-foreground text-sm">{t("store.account.preferences.whatsAppHint")}</p>
+							<p className="text-muted-foreground text-sm">
+								{t(whatsAppEnabled
+									? "store.account.preferences.whatsAppHint"
+									: "store.account.preferences.whatsAppUnavailable")}
+							</p>
 						</div>
 					</label>
-					</>}
 				</div>
 				{error && <p className="text-destructive text-sm">{error}</p>}
 				{saved && <p className="text-primary text-sm">{t("store.account.preferences.saved")}</p>}

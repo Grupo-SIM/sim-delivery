@@ -1713,7 +1713,8 @@
 					"themeSaveError": "Não foi possível salvar o tema. Tente novamente.",
 					"title": "Preferências da conta",
 					"whatsApp": "WhatsApp",
-					"whatsAppHint": "Receba atualizações rápidas pelo WhatsApp."
+					"whatsAppHint": "Receba atualizações rápidas pelo WhatsApp.",
+					"whatsAppUnavailable": "Indisponível no momento: a loja precisa conectar o WhatsApp."
 				},
 				"profile": {
 					"addAddress": "Adicionar endereço",
