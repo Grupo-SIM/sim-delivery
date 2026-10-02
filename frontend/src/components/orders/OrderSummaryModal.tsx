@@ -69,6 +69,12 @@ export function OrderSummaryModal({ onClose, onEditEstimate, order, view }: Orde
 								{t(`store.checkout.order.${order.deliveryMethod}`, { defaultValue: order.deliveryMethod })}
 							</p>
 						</div>
+						{order.status === "cancelado" && order.cancelReason?.trim() && (
+							<div className="sm:col-span-2">
+								<p className="text-muted-foreground">{t("admin.orders.updateStatus.cancelReason")}</p>
+								<p className="mt-1 whitespace-pre-wrap break-words font-medium">{order.cancelReason}</p>
+							</div>
+						)}
 						{showOrderOperations && (
 							<>
 								<div>
