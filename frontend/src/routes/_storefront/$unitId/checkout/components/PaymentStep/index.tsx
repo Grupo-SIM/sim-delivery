@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaCreditCard } from "react-icons/fa";
@@ -11,6 +11,7 @@ import { CardPaymentPending } from "./CardPaymentPending";
 import { PaymentIdentityForm } from "./PaymentIdentityForm";
 import { hasCompletePaymentIdentity } from "./payment-identity";
 import { PixPanel } from "./PixPanel";
+import { syncCardPaymentStatus } from "./sync-card-payment-status";
 
 type PaymentMethod = "card" | "pix";
 
@@ -39,6 +40,7 @@ export function PaymentStep({
 	slug,
 }: PaymentStepProps) {
 	const { t } = useTranslation();
+	const queryClient = useQueryClient();
 	const [method, setMethod] = useState<PaymentMethod>("card");
 	const [pixCpf, setPixCpf] = useState(customerCpf);
 	const [cardPaymentToken, setCardPaymentToken] = useState<string | null>(null);
@@ -60,7 +62,8 @@ export function PaymentStep({
 						});
 					void showAlert(message);
 				},
-				onSuccess: payment => {
+				onSuccess: async payment => {
+					await syncCardPaymentStatus(queryClient, payment);
 					if (payment.status === "confirmed") onConfirmed();
 					else setCardPaymentToken(payment.token);
 				},
