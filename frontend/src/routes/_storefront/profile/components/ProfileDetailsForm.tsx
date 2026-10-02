@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { MaskedInput } from "@/components/ui/MaskedInput";
 
-import { getBrazilianMobileDigits, toBrazilianMobilePhone } from "@/lib/brazilian-phone";
+import { getBrazilianMobileDigits, resolveCustomerPhone, toBrazilianMobilePhone } from "@/lib/brazilian-phone";
 import { isValidCpf } from "@/lib/cpf";
 import type { AuthUser } from "@/stores/auth";
 
@@ -21,15 +21,16 @@ export function ProfileDetailsForm({ customer, isSaving, onSave, user }: Profile
 	const [name, setName] = useState(user.name);
 	const hasTemporaryPhoneEmail = user.email.endsWith("@phone.local");
 	const [email, setEmail] = useState(hasTemporaryPhoneEmail ? "" : user.email);
-	const [phone, setPhone] = useState(getBrazilianMobileDigits(customer?.phone));
+	const savedPhone = resolveCustomerPhone(customer?.phone, user.phoneNumber);
+	const [phone, setPhone] = useState(getBrazilianMobileDigits(savedPhone));
 	const [cpf, setCpf] = useState(customer?.cpf ?? "");
 
 	useEffect(() => setName(user.name), [user.name]);
 	useEffect(() => setEmail(hasTemporaryPhoneEmail ? "" : user.email), [hasTemporaryPhoneEmail, user.email]);
 	useEffect(() => {
-		setPhone(getBrazilianMobileDigits(customer?.phone));
+		setPhone(getBrazilianMobileDigits(savedPhone));
 		setCpf(customer?.cpf ?? "");
-	}, [customer?.cpf, customer?.phone]);
+	}, [customer?.cpf, savedPhone]);
 
 	const trimmedName = name.trim();
 	const trimmedEmail = email.trim();
@@ -39,7 +40,7 @@ export function ProfileDetailsForm({ customer, isSaving, onSave, user }: Profile
 	const dirty =
 		trimmedName !== user.name ||
 		(hasTemporaryPhoneEmail && Boolean(trimmedEmail)) ||
-		normalizedPhone !== toBrazilianMobilePhone(customer?.phone) ||
+		normalizedPhone !== toBrazilianMobilePhone(savedPhone) ||
 		cpfDigits !== (customer?.cpf ?? "");
 	const validPhone = phoneDigits.length === 11;
 	const validCpf = isValidCpf(cpfDigits);

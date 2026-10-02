@@ -52,10 +52,11 @@ function makePrisma(
 	const customers: CustomerRecord[] = customer ? [customer] : [];
 	const addresses: AddressRecord[] = [];
 
-	return {
+	const result = {
 		addresses,
 		customers,
 		prisma: {
+			$transaction: async (callback: (tx: unknown) => Promise<unknown>) => callback(result.prisma),
 			address: {
 				count: async ({ where }: { where: { customerId: string; deletedAt: null } }) =>
 					addresses.filter(address => address.customerId === where.customerId && !address.deletedAt).length,
@@ -153,6 +154,7 @@ function makePrisma(
 				},
 			},
 			user: {
+				findUniqueOrThrow: async ({ where }: { where: { id: string } }) => ({ phoneNumber: null, phoneNumberVerified: false, ...users[where.id] }),
 				update: async ({ data, where }: { data: { name: string }; where: { id: string } }) => {
 					users[where.id] = data;
 					return { id: where.id, ...data };
@@ -161,6 +163,7 @@ function makePrisma(
 		} as unknown as PrismaInstance,
 		users,
 	};
+	return result;
 }
 
 describe("customers use-cases", () => {
@@ -335,17 +338,40 @@ describe("customers use-cases", () => {
 
 describe("customer profile mutations", () => {
 	it("upserts CPF and phone without creating an address", async () => {
-		const { addresses, customers, prisma } = makePrisma();
+		const { addresses, customers, prisma, users } = makePrisma();
 		await new UpdateMyCustomer(prisma).execute("user_1", {
 			cpf: "52998224725",
-			phone: "11999999999",
+			phone: "5511999999999",
 			slug: "demo",
 		});
 
+		expect(users.user_1).toMatchObject({ phoneNumber: "+5511999999999", phoneNumberVerified: false });
 		expect(addresses).toHaveLength(0);
 		expect(customers).toEqual([
-			expect.objectContaining({ cpf: "52998224725", phone: "11999999999", userId: "user_1" }),
+			expect.objectContaining({ cpf: "52998224725", phone: "5511999999999", userId: "user_1" }),
 		]);
+	});
+
+	it("preserves verification for the same phone and clears it for a different phone", async () => {
+		for (const previous of ["5511999999999", "+5511999999999", "+5581999999999"]) {
+			const { prisma, users } = makePrisma();
+			users.user_1 = { phoneNumber: previous, phoneNumberVerified: true };
+			await new UpdateMyCustomer(prisma).execute("user_1", { cpf: "52998224725", phone: "5511999999999", slug: "demo" });
+			expect(users.user_1).toMatchObject({ phoneNumber: "+5511999999999", phoneNumberVerified: previous !== "+5581999999999" });
+		}
+	});
+
+	it("rejects a phone owned by another account before changing customer data", async () => {
+		const { prisma, customers } = makePrisma();
+		prisma.user.update = (async () => { throw { code: "P2002" }; }) as unknown as typeof prisma.user.update;
+		await expect(new UpdateMyCustomer(prisma).execute("user_1", { cpf: "52998224725", phone: "5511999999999", slug: "demo" })).rejects.toThrow("ACCOUNT_ALREADY_EXISTS");
+		expect(customers).toHaveLength(0);
+	});
+
+	it("propagates unexpected transaction failures", async () => {
+		const { prisma } = makePrisma();
+		prisma.$transaction = (async () => { throw new Error("Database unavailable"); }) as unknown as typeof prisma.$transaction;
+		await expect(new UpdateMyCustomer(prisma).execute("user_1", { cpf: "52998224725", phone: "5511999999999", slug: "demo" })).rejects.toThrow("Database unavailable");
 	});
 
 	it("rejects an invalid CPF", async () => {

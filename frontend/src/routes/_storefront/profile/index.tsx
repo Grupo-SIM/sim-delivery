@@ -108,8 +108,11 @@ function ProfilePage() {
 				const session = await authClient.getSession();
 				if (session.data?.user) setUser(mapSessionUser(session.data.user));
 			}
-			if (changedCustomer)
+			if (changedCustomer) {
 				await updateCustomer.mutateAsync({ data: { cpf: value.cpf, phone: value.phone, slug: slug ?? "" } });
+				const session = await authClient.getSession({ query: { disableCookieCache: true } });
+				if (session.data?.user) setUser(mapSessionUser(session.data.user));
+			}
 			await refreshCustomer();
 			showToast(t("store.account.profile.saved"), "positive");
 		} catch {

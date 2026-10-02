@@ -234,7 +234,7 @@ function CheckoutPage() {
 			if (error) throw error;
 			const customer = await updateCustomer({ data: { cpf: value.cpf, phone: value.phone, slug: slug ?? "" } });
 			setSavedCustomer(customer);
-			const session = await authClient.getSession();
+			const session = await authClient.getSession({ query: { disableCookieCache: true } });
 			if (session.data?.user) setUser(mapSessionUser(session.data.user));
 		} catch {
 			void showAlert(t("store.checkout.payment.identity.error"));

@@ -5,6 +5,8 @@ import { FaCreditCard } from "react-icons/fa";
 import { FaPix } from "react-icons/fa6";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { getPaymentsCardsQueryOptions, usePostPaymentsCard } from "@/lib/api";
+import { resolveCustomerPhone } from "@/lib/brazilian-phone";
+import { useAuthStore } from "@/stores/auth";
 import { showAlert } from "@/stores";
 import { CardPaymentForm, type CardPaymentValue } from "./CardPaymentForm";
 import { CardPaymentPending } from "./CardPaymentPending";
@@ -41,11 +43,13 @@ export function PaymentStep({
 }: PaymentStepProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
+	const accountPhone = useAuthStore(state => state.user?.phoneNumber);
+	const phone = resolveCustomerPhone(customerPhone, accountPhone);
 	const [method, setMethod] = useState<PaymentMethod>("card");
 	const [pixCpf, setPixCpf] = useState(customerCpf);
 	const [cardPaymentToken, setCardPaymentToken] = useState<string | null>(null);
 	const hasFullName = customerName.trim().split(/\s+/).filter(Boolean).length >= 2;
-	const identityComplete = hasCompletePaymentIdentity(customerName, customerCpf, customerPhone);
+	const identityComplete = hasCompletePaymentIdentity(customerName, customerCpf, phone);
 
 	const { data: savedCards, isPending: savedCardsPending } = useQuery(getPaymentsCardsQueryOptions({ slug }));
 	const { isPending: isPayingCard, mutate: payWithCard } = usePostPaymentsCard();
@@ -84,7 +88,7 @@ export function PaymentStep({
 				<PaymentIdentityForm
 					initialCpf={customerCpf}
 					initialName={hasFullName ? customerName : ""}
-					initialPhone={customerPhone}
+					initialPhone={phone}
 					isSaving={isSavingIdentity}
 					onSubmit={onIdentitySubmit}
 				/>

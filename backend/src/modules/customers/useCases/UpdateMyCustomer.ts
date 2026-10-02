@@ -1,3 +1,4 @@
+import { UserErrors } from "@/modules/users/errors";
 import { DomainError } from "@/shared/errors";
 import { isValidCpf } from "@/shared/cpf";
 import type { PrismaInstance } from "@/shared/infra/sql";
@@ -12,18 +13,38 @@ export class UpdateMyCustomer {
 		if (!company) throw new DomainError(CustomerErrors.COMPANY_NOT_FOUND);
 		if (!isValidCpf(data.cpf)) throw new DomainError(CustomerErrors.INVALID_CPF);
 
-		const customer = await this.prisma.customer.upsert({
-			create: { companyId: company.id, cpf: data.cpf, phone: data.phone, userId },
-			update: {
-				cpf: data.cpf,
-				phone: data.phone,
-			},
-			where: { userId },
-		});
+		try {
+			return await this.prisma.$transaction(async tx => {
+				const user = await tx.user.findUniqueOrThrow({ where: { id: userId } });
+				// Better Auth uses E.164, while the customer contact stores digits only.
+				const phoneNumber = `+${data.phone}`;
+				if (user.phoneNumber !== phoneNumber) {
+					await tx.user.update({
+						data: {
+							phoneNumber,
+							phoneNumberVerified: user.phoneNumber?.replace(/\D/g, "") === data.phone
+								? user.phoneNumberVerified
+								: false,
+						},
+						where: { id: userId },
+					});
+				}
+				const customer = await tx.customer.upsert({
+					create: { companyId: company.id, cpf: data.cpf, phone: data.phone, userId },
+					update: { cpf: data.cpf, phone: data.phone },
+					where: { userId },
+				});
 
-		return this.prisma.customer.findUniqueOrThrow({
-			include: { addresses: { orderBy: { isDefault: "desc" }, where: { deletedAt: null } } },
-			where: { id: customer.id },
-		});
+				return tx.customer.findUniqueOrThrow({
+					include: { addresses: { orderBy: { isDefault: "desc" }, where: { deletedAt: null } } },
+					where: { id: customer.id },
+				});
+			});
+		} catch (error) {
+			if (typeof error === "object" && error !== null && "code" in error && error.code === "P2002") {
+				throw new DomainError(UserErrors.ACCOUNT_ALREADY_EXISTS);
+			}
+			throw error;
+		}
 	}
 }
