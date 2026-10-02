@@ -84,16 +84,13 @@ export class UnitWhatsApp {
 		});
 
 		try {
-			let session: WahaSessionInfo;
-			try {
-				session = await this.connectSession(connection.sessionName, unit.companyId, unitId, savedConnection, unit.company.slug === "zero-grau");
-			} catch (error) {
-				const uniqueName = `${sessionName}_${unitId}`;
-				if (!(error instanceof DomainError) || error.message !== UnitErrors.WHATSAPP_SESSION_CONFLICT || connection.sessionName === uniqueName) throw error;
-				// Slugs can be reused after a unit is recreated. Leave the previous
-				// owner's session untouched and pair a separate session for this ID.
-				session = await this.connectSession(uniqueName, unit.companyId, unitId, null);
-			}
+			const session = await this.connectSession(
+				connection.sessionName,
+				unit.companyId,
+				unitId,
+				savedConnection,
+				unit.company.slug === "zero-grau" ? sessionName : undefined,
+			);
 			return asReturn(await this.sync(connection, session));
 		} catch (error) {
 			await this.prisma.unitWhatsAppConnection.update({
@@ -127,7 +124,7 @@ export class UnitWhatsApp {
 		}
 	}
 
-	private async connectSession(sessionName: string, companyId: string, unitId: string, savedConnection: UnitConnection | null, recoverOrphan = false): Promise<WahaSessionInfo> {
+	private async connectSession(sessionName: string, companyId: string, unitId: string, savedConnection: UnitConnection | null, recoverOrphanSessionName?: string): Promise<WahaSessionInfo> {
 		let session: WahaSessionInfo;
 		try {
 			session = await this.getWaha().getSession(sessionName);
@@ -142,9 +139,17 @@ export class UnitWhatsApp {
 		}
 		const metadata = session.config?.metadata;
 		const previousUnitId = metadata?.[UNIT_METADATA];
-		if (recoverOrphan && session.status === "FAILED" && savedConnection?.sessionName === sessionName && savedConnection.companyId === companyId && savedConnection.unitId === unitId && metadata?.[COMPANY_METADATA] === companyId && previousUnitId && previousUnitId !== unitId) {
-			const previousUnit = await this.prisma.unit.findFirst({ where: { id: previousUnitId } });
-			if (!previousUnit) {
+		const previousCompanyId = metadata?.[COMPANY_METADATA];
+		const storedOwnership = savedConnection?.sessionName === sessionName && savedConnection.companyId === companyId && savedConnection.unitId === unitId;
+		const staleOwnership = (previousUnitId && previousUnitId !== unitId) || (previousCompanyId && previousCompanyId !== companyId);
+		if (sessionName === recoverOrphanSessionName && session.status === "FAILED" && storedOwnership && staleOwnership) {
+			const previousUnit = previousUnitId && previousUnitId !== unitId
+				? await this.prisma.unit.findFirst({ where: { id: previousUnitId } })
+				: null;
+			const previousCompany = previousCompanyId && previousCompanyId !== companyId
+				? await this.prisma.company.findUnique({ where: { id: previousCompanyId } })
+				: null;
+			if (!previousUnit && !previousCompany) {
 				session = await this.getWaha().updateSessionMetadata(session, { [COMPANY_METADATA]: companyId, [UNIT_METADATA]: unitId });
 				this.assertOwnership(session, companyId, unitId, savedConnection);
 				return this.getWaha().restartSession(sessionName);
@@ -170,6 +175,7 @@ export class UnitWhatsApp {
 
 	private connectionError(error: unknown): string {
 		if (error instanceof WahaRequestError) return error.message;
+		if (error instanceof DomainError) return error.description ?? error.message;
 		if (error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError")) return "WAHA excedeu o tempo limite para iniciar a sessão.";
 		return "Não foi possível iniciar a sessão WAHA.";
 	}

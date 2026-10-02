@@ -1,6 +1,6 @@
 import { describe, expect, it, mock } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import { WahaRequestError, type WahaClient, type WahaSessionInfo } from "@/shared/infra/whatsapp";
+import { WahaRequestError, WahaClient, type WahaSessionInfo } from "@/shared/infra/whatsapp";
 import { buildUnitWhatsAppSessionName, UnitWhatsApp } from "./UnitWhatsApp";
 
 function connection(sessionName = "sim-delivery_acme_centro") {
@@ -90,53 +90,19 @@ describe("UnitWhatsApp", () => {
 		expect(waha.restartSession).not.toHaveBeenCalled();
 	});
 
-	it("pairs a new ID-specific session when a recreated unit reuses a slug", async () => {
-		const { service, waha, update } = world();
-		const uniqueName = "sim-delivery_acme_centro_unit_1";
-		waha.getSession.mockImplementation(async name => {
-			if (name === uniqueName) throw new WahaRequestError(404);
-			return { name: "sim-delivery_acme_centro", status: "FAILED", config: { metadata: { "sim-delivery.companyId": "company_1", "sim-delivery.unitId": "old_unit" } } };
-		});
-		waha.createSession.mockImplementation(async () => ({ name: uniqueName, status: "STARTING" }));
-		const result = await service.connect("company_1", "unit_1");
-		expect(waha.createSession).toHaveBeenCalledWith(uniqueName, { "sim-delivery.companyId": "company_1", "sim-delivery.unitId": "unit_1" });
-		expect(waha.restartSession).not.toHaveBeenCalled();
-		expect(waha.logoutSession).not.toHaveBeenCalled();
-		expect(result.sessionName).toBe(uniqueName);
-		expect(result.status).toBe("STARTING");
-		expect(update).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ sessionName: uniqueName }) }));
-	});
-
-	it("keeps the old binding when creation of the replacement fails", async () => {
-		const { service, waha, update } = world();
-		waha.getSession.mockImplementation(async name => {
-			if (name.endsWith("_unit_1")) throw new WahaRequestError(404);
-			return { name, status: "FAILED", config: { metadata: { "sim-delivery.unitId": "old_unit" } } };
-		});
-		waha.createSession.mockRejectedValue(new WahaRequestError(500));
-		await expect(service.connect("company_1", "unit_1")).rejects.toThrow("WHATSAPP_UNAVAILABLE");
-		expect(update.mock.calls[0]?.[0].data).not.toHaveProperty("sessionName");
-	});
-
-	it("reuses an owned replacement after a create conflict", async () => {
+	it("does not create an alternative session when an existing session has conflicting metadata", async () => {
 		const { service, waha } = world();
-		let replacementReads = 0;
-		waha.getSession.mockImplementation(async name => {
-			if (!name.endsWith("_unit_1")) return { name, status: "FAILED", config: { metadata: { "sim-delivery.unitId": "old_unit" } } };
-			if (++replacementReads === 1) throw new WahaRequestError(404);
-			return { name, status: "SCAN_QR_CODE", config: { metadata: { "sim-delivery.companyId": "company_1", "sim-delivery.unitId": "unit_1" } } };
-		});
-		waha.createSession.mockRejectedValue(new WahaRequestError(409));
-		expect((await service.connect("company_1", "unit_1")).sessionName).toBe("sim-delivery_acme_centro_unit_1");
-		expect(waha.restartSession).not.toHaveBeenCalled();
-	});
-
-	it("rejects a replacement that also belongs to another unit", async () => {
-		const { service, waha } = world();
-		waha.getSession.mockImplementation(async name => ({ name, status: "FAILED", config: { metadata: { "sim-delivery.unitId": "old_unit" } } }));
+		waha.getSession.mockImplementation(async name => ({ name, status: "FAILED", config: { metadata: { "sim-delivery.companyId": "company_1", "sim-delivery.unitId": "old_unit" } } }));
 		await expect(service.connect("company_1", "unit_1")).rejects.toThrow("WHATSAPP_SESSION_CONFLICT");
-		expect(waha.restartSession).not.toHaveBeenCalled();
 		expect(waha.createSession).not.toHaveBeenCalled();
+		expect(waha.getSession).toHaveBeenCalledTimes(1);
+	});
+
+	it("creates a session only when the exact stored session is absent", async () => {
+		const { service, waha } = world();
+		waha.getSession.mockRejectedValue(new WahaRequestError(404));
+		expect((await service.connect("company_1", "unit_1")).status).toBe("STARTING");
+		expect(waha.createSession).toHaveBeenCalledWith("sim-delivery_acme_centro", { "sim-delivery.companyId": "company_1", "sim-delivery.unitId": "unit_1" });
 	});
 
 	it("automatically recovers Zero Grau failures without restarting on every status poll", async () => {
@@ -156,26 +122,44 @@ describe("UnitWhatsApp", () => {
 	});
 
 	it("rebinds and restarts the same failed Zero Grau session when its previous unit was deleted", async () => {
-		const { service, prisma, waha } = world();
+		const { service, prisma, waha } = world(connection("sim-delivery_zero-grau_centro"));
 		(prisma.unit.findFirst as ReturnType<typeof mock>).mockImplementation(async ({ where }: { where: { id: string } }) => where.id === "old_unit" ? null : { company: { slug: "zero-grau" }, companyId: "company_1", id: "unit_1", slug: "centro" });
 		waha.getSession.mockImplementation(async name => ({ name, status: "FAILED", config: { metadata: { "sim-delivery.companyId": "company_1", "sim-delivery.unitId": "old_unit" } } }));
 		const result = await service.connect("company_1", "unit_1");
-		expect(result.sessionName).toBe("sim-delivery_acme_centro");
+		expect(result.sessionName).toBe("sim-delivery_zero-grau_centro");
 		expect(result.status).toBe("STARTING");
 		expect(waha.updateSessionMetadata).toHaveBeenCalledTimes(1);
 		expect(waha.updateSessionMetadata.mock.calls[0]?.[1]["sim-delivery.unitId"]).toBe("unit_1");
-		expect(waha.restartSession).toHaveBeenCalledWith("sim-delivery_acme_centro");
+		expect(waha.restartSession).toHaveBeenCalledWith("sim-delivery_zero-grau_centro");
 		expect(waha.createSession).not.toHaveBeenCalled();
 	});
 
 	it("does not rebind a failed Zero Grau session whose previous unit still exists", async () => {
-		const { service, prisma, waha } = world();
+		const { service, prisma, waha } = world(connection("sim-delivery_zero-grau_centro"));
 		(prisma.unit.findFirst as ReturnType<typeof mock>).mockResolvedValue({ company: { slug: "zero-grau" }, companyId: "company_1", id: "unit_1", slug: "centro" });
 		waha.getSession.mockImplementation(async name => ({ name, status: "FAILED", config: { metadata: { "sim-delivery.companyId": "company_1", "sim-delivery.unitId": "old_unit" } } }));
 		await expect(service.connect("company_1", "unit_1")).rejects.toThrow("WHATSAPP_SESSION_CONFLICT");
 		expect(waha.updateSessionMetadata).not.toHaveBeenCalled();
+		expect(waha.createSession).not.toHaveBeenCalled();
 		expect(waha.restartSession).not.toHaveBeenCalled();
 	});
+
+	for (const previousCompanyExists of [false, true]) {
+		it(`only repairs old company metadata when its record was removed: ${previousCompanyExists}`, async () => {
+			const { service, prisma, waha } = world(connection("sim-delivery_zero-grau_centro"));
+			(prisma as unknown as { company: unknown }).company = { findUnique: mock(async () => previousCompanyExists ? { id: "old_company" } : null) };
+			(prisma.unit.findFirst as ReturnType<typeof mock>).mockImplementation(async ({ where }: { where: { id: string } }) => where.id === "old_unit" ? null : { company: { slug: "zero-grau" }, companyId: "company_1", id: "unit_1", slug: "centro" });
+			waha.getSession.mockImplementation(async name => ({ name, status: "FAILED", config: { metadata: { "sim-delivery.companyId": "old_company", "sim-delivery.unitId": "old_unit" } } }));
+			if (previousCompanyExists) {
+				await expect(service.connect("company_1", "unit_1")).rejects.toThrow("WHATSAPP_SESSION_CONFLICT");
+				expect(waha.restartSession).not.toHaveBeenCalled();
+			} else {
+				expect((await service.connect("company_1", "unit_1")).status).toBe("STARTING");
+				expect(waha.restartSession).toHaveBeenCalledWith("sim-delivery_zero-grau_centro");
+			}
+			expect(waha.createSession).not.toHaveBeenCalled();
+		});
+	}
 
 	it("reports the failing WAHA operation when automatic recovery fails", async () => {
 		const { service, prisma, waha } = world();
@@ -191,6 +175,26 @@ describe("UnitWhatsApp", () => {
 		const { service, waha } = world(saved);
 		waha.getSession.mockImplementation(async name => ({ name, status: "FAILED" }));
 		expect((await service.get("company_1", "unit_1")).lastError).toBe("WAHA restart failed");
+	});
+
+	it("automatic unit recovery calls the relevant unit restart URL, never the global session or session creation", async () => {
+		const sessionName = "sim-delivery_zero-grau_tucuma";
+		const saved = connection(sessionName);
+		const { prisma } = world(saved);
+		(prisma.unit.findFirst as ReturnType<typeof mock>).mockResolvedValue({ company: { slug: "zero-grau" }, companyId: "company_1", id: "unit_1", slug: "tucuma" });
+		let restarted = false;
+		const fetch = mock(async (input: string | URL | Request, init?: RequestInit) => {
+			if (init?.method === "POST") {
+				restarted = true;
+				return new Response(null, { status: 204 });
+			}
+			return Response.json({ name: sessionName, status: restarted ? "STARTING" : "FAILED", config: { metadata: { "sim-delivery.companyId": "company_1", "sim-delivery.unitId": "unit_1" } } });
+		});
+		const service = new UnitWhatsApp(prisma, () => new WahaClient({ baseUrl: "https://waha.example", session: "global" }, fetch as never));
+		const result = await service.get("company_1", "unit_1");
+		expect(result.status).toBe("STARTING");
+		expect(result.sessionName).toBe(sessionName);
+		expect(fetch.mock.calls.filter(([, init]) => init?.method === "POST").map(([url]) => url)).toEqual(["https://waha.example/api/sessions/sim-delivery_zero-grau_tucuma/restart"]);
 	});
 
 	it("builds the deterministic WAHA session name", () => {

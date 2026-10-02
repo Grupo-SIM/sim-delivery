@@ -31,18 +31,19 @@ restrita a `owner`/`manager` (ver [03-papeis-e-permissoes.md](03-papeis-e-permis
 - Uma unidade pertence a exatamente uma empresa (`companyId`); nunca compartilhada.
 - Cada unidade possui no máximo uma sessão WAHA transacional. Owner, manager atribuído à
   unidade e superAdmin podem conectá-la ou desconectá-la.
-- Se o nome da sessão WAHA já pertence a outra unidade (por exemplo, após recriar uma
-  unidade com o mesmo slug), conectar usa uma sessão separada com sufixo do ID atual.
-  A sessão anterior permanece intacta; a nova conexão exige pareamento por QR Code.
+- Recuperação de uma sessão WAHA existente usa seu próprio nome e endpoint de reinício.
+  Conflitos de metadados não criam sessões alternativas; criação ocorre apenas se WAHA
+  confirmar que a sessão vinculada não existe (HTTP 404).
 - Na Zero Grau (`zero-grau`), consultar status de sessão `FAILED` tenta recuperação
   automática da conexão da empresa ou unidade. Tentativas têm intervalo mínimo de
   60 segundos por sessão em cada instância do backend; sessões `STOPPED` não reiniciam
   automaticamente. Ao abrir modal WhatsApp, frontend também envia uma tentativa
   explícita de recuperação se consulta atual retornar `FAILED`, uma vez por abertura.
-- Na Zero Grau, sessão falha vinculada localmente pode recuperar o mesmo nome quando
-  metadados apontam uma unidade removida da mesma empresa. A configuração WAHA é
-  preservada, o ID da unidade é atualizado e a sessão reiniciada. Se unidade anterior
-  ainda existe, a sessão não é reassociada.
+- Na Zero Grau, sessão falha vinculada localmente pode recuperar seu nome canônico
+  quando metadados apontam IDs antigos removidos do banco. A configuração WAHA é
+  preservada, os IDs são atualizados e a própria sessão reiniciada. Se empresa ou unidade
+  anterior ainda existe, a sessão não é reassociada. Modal de unidade controla sessão
+  da unidade; modal global controla sessão da empresa.
 - Taxa de entrega e cashback da unidade são o **default**; produto pode sobrepor cashback.
 
 ## Regras comportamentais
