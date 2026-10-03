@@ -186,7 +186,14 @@ export class InventoryLifecycle {
 		const legacyItems = await tx.orderItem.findMany({
 			where: { inventoryReservations: { none: {} }, orderId, unitProductId: { not: null } },
 		});
+		if (legacyItems.length === 0) return costByOrderItem;
+		const controlledProducts = await tx.unitProduct.findMany({
+			select: { id: true },
+			where: { id: { in: legacyItems.map(item => item.unitProductId!) }, stock: { not: null }, unitId },
+		});
+		const controlledProductIds = new Set(controlledProducts.map(product => product.id));
 		for (const item of legacyItems) {
+			if (!controlledProductIds.has(item.unitProductId!)) continue;
 			const result = await tx.unitProduct.updateMany({
 				data: { stock: { decrement: item.quantity } },
 				where: { id: item.unitProductId!, stock: { gte: item.quantity }, unitId },
