@@ -16,7 +16,7 @@ export function CardPaymentPending({ onConfirmed, onFailed, token }: CardPayment
 	const { data } = useGetPaymentsStatusByToken(token, {
 		query: {
 			refetchInterval: query =>
-				query.state.data?.status === "confirmed" || query.state.data?.status === "failed" ? false : 2_000,
+				query.state.data?.status === "confirmed" || query.state.data?.status === "failed" ? false : 5_000,
 			refetchIntervalInBackground: false,
 			refetchOnWindowFocus: true,
 		},

@@ -63,7 +63,7 @@ export function PixPanel({ customerCpf, onConfirmed, onCpfSaved, orderId, slug }
 			enabled: !!pix,
 			refetchInterval: query => {
 				if (query.state.data?.status === "confirmed") return false;
-				return 15_000;
+				return 5_000;
 			},
 			refetchIntervalInBackground: false,
 			refetchOnWindowFocus: false,

@@ -2,7 +2,7 @@ import { simpayIntegrationKey, type SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { ApplySimpayPaymentStatus } from "./ApplySimpayPaymentStatus";
 
-const RECONCILIATION_INTERVAL_MS = 30_000;
+const RECONCILIATION_INTERVAL_MS = 5_000;
 
 export class ReconcilePendingPixPayments {
 	constructor(
