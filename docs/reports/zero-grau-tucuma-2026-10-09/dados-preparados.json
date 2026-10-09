@@ -1,0 +1,3268 @@
+{
+  "schemaVersion": 1,
+  "status": "prepared_not_applied",
+  "capturedAt": "2026-10-09T21:46:19.270Z",
+  "scope": {
+    "companyId": "01a0f62e-f662-7d28-801d-f4eea0f9be24",
+    "unitId": "cmuq0q97v000201qginb30m9x",
+    "company": "Zero Grau",
+    "unit": "Tucumã"
+  },
+  "pricingPolicy": {
+    "keepExistingPrices": true,
+    "observedIfoodMultiplier": 1.4,
+    "newPriceFormula": "round(ifoodPriceCents / 1.4)",
+    "confidence": "inferência; não tabela oficial de preços",
+    "excludeIfoodPricesFromWriteRows": true
+  },
+  "insert": {
+    "product": [
+      {
+        "id": "ef5d7151-fb62-5e57-843e-fd636214f8d4",
+        "companyId": "01a0f62e-f662-7d28-801d-f4eea0f9be24",
+        "title": "Combo — Pizza grande de calabresa + Guaraná Quinari 2 litros",
+        "slug": "combo-pizza-grande-de-calabresa-guarana-quinari-2-litros",
+        "description": "Pizza De Calabresa (G) + Guaraná Quinari 2 litros (Tradicional, Sabor Abacaxi ou Quinari Zero)",
+        "imageUrl": "",
+        "basePriceCents": 7100,
+        "cashbackPercentOverride": null,
+        "popularity": 0,
+        "sourceItemIds": [
+          "69ef054f-99a0-4484-9c30-44eb5dee7df3"
+        ]
+      },
+      {
+        "id": "bb0a1c89-89f8-5c4f-84f0-cdba937f5314",
+        "companyId": "01a0f62e-f662-7d28-801d-f4eea0f9be24",
+        "title": "Paleta mexicana — Açaí",
+        "slug": "paleta-mexicana-acai",
+        "description": "Recheada Com Leite Condensado",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202005081724_c9HQ_.jpeg",
+        "basePriceCents": 1200,
+        "cashbackPercentOverride": null,
+        "popularity": 0,
+        "sourceItemIds": [
+          "949b1f7a-c998-4102-bcb2-117bca31faaa"
+        ]
+      },
+      {
+        "id": "89b5b11d-c490-540d-bfb4-6b146e415b41",
+        "companyId": "01a0f62e-f662-7d28-801d-f4eea0f9be24",
+        "title": "Paleta mexicana — Leite Ninho",
+        "slug": "paleta-mexicana-leite-ninho",
+        "description": "Recheada Com Chocolate Ao Leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202005081722_Jtd6_.jpeg",
+        "basePriceCents": 1200,
+        "cashbackPercentOverride": null,
+        "popularity": 0,
+        "sourceItemIds": [
+          "b519eb9d-a556-41f6-b886-6610496e7530"
+        ]
+      },
+      {
+        "id": "64660628-5044-59a4-8554-a0e308aa7536",
+        "companyId": "01a0f62e-f662-7d28-801d-f4eea0f9be24",
+        "title": "Paleta mexicana — Morango (fruta)",
+        "slug": "paleta-mexicana-morango-fruta",
+        "description": "Recheada Com Leite Condensado",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202005081723_fjHe_.jpeg",
+        "basePriceCents": 1200,
+        "cashbackPercentOverride": null,
+        "popularity": 0,
+        "sourceItemIds": [
+          "379ab491-4737-43a7-9f57-ec139b6acd42"
+        ]
+      }
+    ],
+    "product_category": [
+      {
+        "productId": "ef5d7151-fb62-5e57-843e-fd636214f8d4",
+        "categoryId": "493ba90e-10e8-5e05-b622-23eb38bd8c95"
+      },
+      {
+        "productId": "bb0a1c89-89f8-5c4f-84f0-cdba937f5314",
+        "categoryId": "c12c49d1-fb97-57ae-9a02-ab136090ef24"
+      },
+      {
+        "productId": "89b5b11d-c490-540d-bfb4-6b146e415b41",
+        "categoryId": "c12c49d1-fb97-57ae-9a02-ab136090ef24"
+      },
+      {
+        "productId": "64660628-5044-59a4-8554-a0e308aa7536",
+        "categoryId": "c12c49d1-fb97-57ae-9a02-ab136090ef24"
+      }
+    ],
+    "unit_product": [
+      {
+        "id": "05960d59-dec6-5f39-a64a-94f9874301a4",
+        "unitId": "cmuq0q97v000201qginb30m9x",
+        "productId": "ef5d7151-fb62-5e57-843e-fd636214f8d4",
+        "categoriesOverridden": false,
+        "tagsOverridden": false,
+        "priceCentsOverride": null,
+        "promotionalPriceCents": null,
+        "cashbackPercentOverride": null,
+        "available": true,
+        "stock": null,
+        "featuredRank": null
+      },
+      {
+        "id": "704e78fb-5447-5dd2-903b-07d82cee152b",
+        "unitId": "cmuq0q97v000201qginb30m9x",
+        "productId": "bb0a1c89-89f8-5c4f-84f0-cdba937f5314",
+        "categoriesOverridden": false,
+        "tagsOverridden": false,
+        "priceCentsOverride": null,
+        "promotionalPriceCents": null,
+        "cashbackPercentOverride": null,
+        "available": true,
+        "stock": null,
+        "featuredRank": null
+      },
+      {
+        "id": "5cb1cfd7-667e-549e-a33e-f45c467704dd",
+        "unitId": "cmuq0q97v000201qginb30m9x",
+        "productId": "89b5b11d-c490-540d-bfb4-6b146e415b41",
+        "categoriesOverridden": false,
+        "tagsOverridden": false,
+        "priceCentsOverride": null,
+        "promotionalPriceCents": null,
+        "cashbackPercentOverride": null,
+        "available": true,
+        "stock": null,
+        "featuredRank": null
+      },
+      {
+        "id": "50a83a0f-07fe-5bf6-b447-e385a6e272bf",
+        "unitId": "cmuq0q97v000201qginb30m9x",
+        "productId": "64660628-5044-59a4-8554-a0e308aa7536",
+        "categoriesOverridden": false,
+        "tagsOverridden": false,
+        "priceCentsOverride": null,
+        "promotionalPriceCents": null,
+        "cashbackPercentOverride": null,
+        "available": true,
+        "stock": null,
+        "featuredRank": null
+      }
+    ],
+    "option_group": [
+      {
+        "id": "898b27ca-2b95-54c2-ab0b-57069c0879a9",
+        "productId": "ef5d7151-fb62-5e57-843e-fd636214f8d4",
+        "name": "Sabor do Guaraná Quinari",
+        "required": true,
+        "maxSelect": 1,
+        "allowRepeatSelection": false,
+        "priceRule": "sum",
+        "sortOrder": 0
+      },
+      {
+        "id": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+        "name": "Sabor",
+        "required": true,
+        "maxSelect": 1,
+        "allowRepeatSelection": false,
+        "priceRule": "sum",
+        "sortOrder": 1
+      },
+      {
+        "id": "a2e35b47-3d77-53c3-905c-fc00607abfd4",
+        "productId": "e5310e52-a8dd-5817-b233-c5f126d5b6a4",
+        "name": "Sabor",
+        "required": true,
+        "maxSelect": 1,
+        "allowRepeatSelection": false,
+        "priceRule": "sum",
+        "sortOrder": 1
+      },
+      {
+        "id": "219cb1df-88ab-5b4e-8b43-550cc4cab4b6",
+        "productId": "ec857aaf-c777-50bc-98d7-c4c670f924a4",
+        "name": "Sabor",
+        "required": true,
+        "maxSelect": 1,
+        "allowRepeatSelection": false,
+        "priceRule": "sum",
+        "sortOrder": 0
+      },
+      {
+        "id": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+        "name": "Sabor",
+        "required": true,
+        "maxSelect": 1,
+        "allowRepeatSelection": false,
+        "priceRule": "sum",
+        "sortOrder": 0
+      },
+      {
+        "id": "ab99c0a0-c91c-5da9-9164-0b817560e0f6",
+        "productId": "33b9116d-3f3f-59b3-a8e8-aebb1dc70b29",
+        "name": "Sabor",
+        "required": true,
+        "maxSelect": 1,
+        "allowRepeatSelection": false,
+        "priceRule": "sum",
+        "sortOrder": 0
+      }
+    ],
+    "option": [
+      {
+        "id": "5617e6c2-220a-578f-8e94-cabdbc5b8ec4",
+        "groupId": "898b27ca-2b95-54c2-ab0b-57069c0879a9",
+        "name": "Tradicional",
+        "description": "Incluído no combo.",
+        "imageUrl": null,
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 0,
+        "sourceItemIds": [
+          "69ef054f-99a0-4484-9c30-44eb5dee7df3"
+        ]
+      },
+      {
+        "id": "0b197694-1575-5455-83b3-93b35bcfab34",
+        "groupId": "898b27ca-2b95-54c2-ab0b-57069c0879a9",
+        "name": "Abacaxi",
+        "description": "Incluído no combo.",
+        "imageUrl": null,
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 1,
+        "sourceItemIds": [
+          "69ef054f-99a0-4484-9c30-44eb5dee7df3"
+        ]
+      },
+      {
+        "id": "2d3a4cea-71e3-5e14-af03-9211dd92ab88",
+        "groupId": "898b27ca-2b95-54c2-ab0b-57069c0879a9",
+        "name": "Zero",
+        "description": "Incluído no combo.",
+        "imageUrl": null,
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 2,
+        "sourceItemIds": [
+          "69ef054f-99a0-4484-9c30-44eb5dee7df3"
+        ]
+      },
+      {
+        "id": "990ee895-422b-52e6-a677-272f58545407",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Abacaxi",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140108_64E0_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 0,
+        "sourceItemIds": [
+          "36b29150-8b74-4fdd-8691-208220911119"
+        ]
+      },
+      {
+        "id": "75270b59-983d-5b4c-b4b8-406e70da0408",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Brigadeiro",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109161846_H380_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 1,
+        "sourceItemIds": [
+          "046d83fb-c3d0-4bc3-b5bc-96e0da4d5da1"
+        ]
+      },
+      {
+        "id": "a096aebe-36c1-53a5-87f5-31f3f6f45e6c",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Leite Condensado",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109161849_85BL_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 2,
+        "sourceItemIds": [
+          "44ac3d7c-910e-450b-bb2a-28ddec6239f6"
+        ]
+      },
+      {
+        "id": "c6dfcfce-9cab-5b17-bff4-17fe1756a509",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Passas Ao Rhun",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109161851_2B52_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 3,
+        "sourceItemIds": [
+          "6282a909-72a1-44fa-bc8e-92f619942a3d"
+        ]
+      },
+      {
+        "id": "6edebb9d-1549-5592-b98f-6eabb9109873",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Ameixa",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140109_F23Y_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 4,
+        "sourceItemIds": [
+          "5ce7a456-3679-4440-a13f-863e3dedeaee"
+        ]
+      },
+      {
+        "id": "05131df9-a34c-514f-8228-4d85f42d580a",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Açaí",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140110_2D26_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 5,
+        "sourceItemIds": [
+          "3f32d389-54ee-46ad-8eea-35c0de0ac72f"
+        ]
+      },
+      {
+        "id": "93db782e-af37-5a80-aa71-1a9206a6f4be",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Chandelle",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192327_6N6J_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 6,
+        "sourceItemIds": [
+          "8cc44701-0db9-44cc-951a-9e685d25bb14"
+        ]
+      },
+      {
+        "id": "31bbabea-5114-56da-9a53-343cf6143f2b",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Charge",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192334_7WX6_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 7,
+        "sourceItemIds": [
+          "28bcd1dc-1275-4ffb-8cc0-a9a2fd19217c"
+        ]
+      },
+      {
+        "id": "66099652-2fc4-56ca-9aa9-bfac6085bf4b",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Chiclete",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140110_L77U_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 8,
+        "sourceItemIds": [
+          "3306e283-4b45-4cc1-9715-6ee0be3e7eb0"
+        ]
+      },
+      {
+        "id": "b7885479-8148-58c2-b096-48cd0cf2fd07",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Chocolate",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140113_5GM2_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 9,
+        "sourceItemIds": [
+          "e5445126-2d50-4b96-87e7-095a3e40f5e3"
+        ]
+      },
+      {
+        "id": "e7ff99ac-d5d0-5f0e-8f9d-987c69f5dd25",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Cookies",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140113_JVE7_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 10,
+        "sourceItemIds": [
+          "14d21159-1338-43fb-9a11-13169ac7191c"
+        ]
+      },
+      {
+        "id": "fe36f78e-551f-5918-b2a0-9c9cd1e7a15e",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Cupuaçú",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140114_A7MU_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 11,
+        "sourceItemIds": [
+          "7bce9ecf-0a82-49ff-9535-e5d598b7b733"
+        ]
+      },
+      {
+        "id": "39a50c1a-234e-5088-a685-f9ec1f69307a",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Flocos",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140114_MBF1_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 12,
+        "sourceItemIds": [
+          "37523d03-8b06-46e9-a7b4-c3b51f38cedd"
+        ]
+      },
+      {
+        "id": "d1c00384-330a-5c01-a26d-3382573ec433",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Frutas Tropicais",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192346_W83B_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 13,
+        "sourceItemIds": [
+          "ef2fc729-fcaf-4510-8697-bf52597ad399"
+        ]
+      },
+      {
+        "id": "895c2a87-6527-55d8-b9f4-02a082f9df7d",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Kit Kat",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192347_O2E3_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 14,
+        "sourceItemIds": [
+          "ffb66915-65c5-4b93-a217-dea5a276863d"
+        ]
+      },
+      {
+        "id": "5b706d2c-71a1-5227-a777-08ac0eba68a1",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Leite Ninho",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140115_3773_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 15,
+        "sourceItemIds": [
+          "cc6d4d61-9b15-40e9-b789-2f67b86ced12"
+        ]
+      },
+      {
+        "id": "c368f356-425c-53eb-8587-b206e86cf5c6",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Leite Ninho Trufado C/ Chocolate",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192348_6137_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 16,
+        "sourceItemIds": [
+          "25445efc-74b7-4860-a45e-3b07e3fa9ff4"
+        ]
+      },
+      {
+        "id": "9110bfa5-a2bc-5feb-9c55-399ce636b45e",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Menta C/ Chocolate",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192348_753D_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 17,
+        "sourceItemIds": [
+          "d51688b0-a4c3-4216-87cb-e366ee358bb0"
+        ]
+      },
+      {
+        "id": "2d4db225-ae09-54f5-bde3-a7901eb9a181",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Morango",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141555_1DJ1_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 18,
+        "sourceItemIds": [
+          "31a767e8-4f1d-46a5-97c3-41dbcc41089d"
+        ]
+      },
+      {
+        "id": "e0c0e6ac-e475-51e5-ae62-f6b1bf12e84d",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Ovomaltine",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272313_YK9K_s.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 19,
+        "sourceItemIds": [
+          "870a871c-32fb-450b-9c24-8504872d6612"
+        ]
+      },
+      {
+        "id": "164b27a6-09e1-5847-a714-70a10e69a1d3",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Prestigio",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141109_M10E_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 20,
+        "sourceItemIds": [
+          "bcb9940a-fbdf-4571-acb0-65a3b061b555"
+        ]
+      },
+      {
+        "id": "65000680-a8fc-59fa-a354-28d762810729",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Sensação",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192349_FR04_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 21,
+        "sourceItemIds": [
+          "36d3c168-aace-4638-9581-877bf51f0016"
+        ]
+      },
+      {
+        "id": "204dfab1-06cb-5eca-99c1-3d8116a600a6",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Torta De Limão",
+        "description": "Acompanha O Cascão",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141118_6300_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 22,
+        "sourceItemIds": [
+          "94a365ba-4096-4658-a324-2c7045d901b1"
+        ]
+      },
+      {
+        "id": "8683bb25-af2a-5743-b5bf-09f8c5fe38e5",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "blue ice",
+        "description": "Uma bola de sorvete, acompanha  casquinha.",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402061946_2FL4_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 23,
+        "sourceItemIds": [
+          "bcf2f3d5-b50c-4028-80fb-9365cd7903de"
+        ]
+      },
+      {
+        "id": "a8728c36-d989-5641-ae6e-db3eae3f5669",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "cafe com chocolate",
+        "description": "Acompanha casquinha.",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402061951_86HP_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 24,
+        "sourceItemIds": [
+          "263f16b9-9d41-488f-90b3-769703c44fa9"
+        ]
+      },
+      {
+        "id": "962adc7e-78fb-5787-99c1-051b6379b68e",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Yorgut grego",
+        "description": "Acompanha casquinha.",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402061954_A40G_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 25,
+        "sourceItemIds": [
+          "c5a7b0d2-80af-4838-8522-f39678a11afc"
+        ]
+      },
+      {
+        "id": "12cc43f6-3e30-5401-bc9a-00452c576fd0",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Chocolate com Avelã",
+        "description": "Acompanha casquinha.",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062000_T5V5_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 26,
+        "sourceItemIds": [
+          "ba0d23aa-023d-44ba-8d11-270eaf30d635"
+        ]
+      },
+      {
+        "id": "b9f270e4-bb0d-5e50-98d9-c168f2c36759",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Negresco",
+        "description": "Acompanha casquinha.",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062019_MD7G_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 27,
+        "sourceItemIds": [
+          "a44f1f95-b936-4e86-afe1-6668cdd7027c"
+        ]
+      },
+      {
+        "id": "bb0d5574-ead7-54cb-9e38-b00bc720dfbd",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Açaí c/ Leite Ninho",
+        "description": "Açaí com leite Ninho cremoso",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202510271732_JK8K_i.jpg",
+        "priceDeltaCents": -100,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 28,
+        "sourceItemIds": [
+          "e8b47069-f2f7-4f0c-9857-7a789346020e"
+        ]
+      },
+      {
+        "id": "b2c699e6-38ec-5ccd-8a84-34cd5277915b",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Doce de Leite",
+        "description": "Acompanha o cascão.",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082108_UMY7_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 29,
+        "sourceItemIds": [
+          "0fc28c7d-ff37-45e5-9287-9ab10dd1f1e7"
+        ]
+      },
+      {
+        "id": "574bca4f-1983-5342-a278-18392b235140",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Coco Queimado",
+        "description": "Coco cremoso , com pedaços de coco queimado",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202510271750_FT12_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 30,
+        "sourceItemIds": [
+          "22067f83-24b9-4685-986f-78550ed6169e"
+        ]
+      },
+      {
+        "id": "e82faa82-abc4-5d1c-a3a4-9b9207617061",
+        "groupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194",
+        "name": "Gianduella",
+        "description": "Sorvete cremoso de chocolate com avelã",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202510271758_2361_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 31,
+        "sourceItemIds": [
+          "aa11c6ac-ee42-402f-9bf5-bf47b2eacf1a"
+        ]
+      },
+      {
+        "id": "10802c3e-d3ad-50d6-9a63-d98c4d5aafce",
+        "groupId": "a2e35b47-3d77-53c3-905c-fc00607abfd4",
+        "name": "Chocolate",
+        "description": "Sorvete de chocolate com flocos de Ovomaltine.",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062039_I7XO_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 0,
+        "sourceItemIds": [
+          "a921f5fe-7a7c-4620-8fba-95afc9bc0ee1"
+        ]
+      },
+      {
+        "id": "b6ba837e-c24f-5f35-86b9-ec3dfbf011a6",
+        "groupId": "a2e35b47-3d77-53c3-905c-fc00607abfd4",
+        "name": "Morango",
+        "description": "Sorvete de Morango com flocos de Ovomaltine.",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062042_Y1UY_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 1,
+        "sourceItemIds": [
+          "3e790da5-a9de-426a-8d2a-a6b37bab11b5"
+        ]
+      },
+      {
+        "id": "ee9b2476-7036-510f-b4a2-c206dc0b29c2",
+        "groupId": "a2e35b47-3d77-53c3-905c-fc00607abfd4",
+        "name": "Leite condensado",
+        "description": "Sorvete de Leite Condensado e flocos de Ovomaltine.",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062044_NU8H_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 2,
+        "sourceItemIds": [
+          "d90a2447-f638-43c7-816d-50da1ffe2c25"
+        ]
+      },
+      {
+        "id": "98ef511d-8ad4-50ce-b2ab-70e1297fec35",
+        "groupId": "a2e35b47-3d77-53c3-905c-fc00607abfd4",
+        "name": "Leite Ninho",
+        "description": "Sorvete de Leite Ninho com Flocos de Ovomaltine.",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062045_IKIC_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 3,
+        "sourceItemIds": [
+          "80e61ae9-c369-47bd-8262-a9798f66d032"
+        ]
+      },
+      {
+        "id": "4b7571a9-1034-5e5a-94eb-6ad5dc7454c4",
+        "groupId": "a2e35b47-3d77-53c3-905c-fc00607abfd4",
+        "name": "Negresco",
+        "description": "Sorvete de Negresco com Flocos de Ovomaltine.",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062047_WJY4_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 4,
+        "sourceItemIds": [
+          "722f4a4b-b2ec-42d8-bfe5-75e3e8c92d2e"
+        ]
+      },
+      {
+        "id": "9259ef91-58f7-51e8-8840-5f6e30549185",
+        "groupId": "219cb1df-88ab-5b4e-8b43-550cc4cab4b6",
+        "name": "Groselha",
+        "description": "A Base De Agua",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141750_1CMR_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 0,
+        "sourceItemIds": [
+          "4fad0f57-afef-4617-abb4-e6fc7128b70e"
+        ]
+      },
+      {
+        "id": "fca1e2e9-1de3-586f-bc1b-895a3bc5af3f",
+        "groupId": "219cb1df-88ab-5b4e-8b43-550cc4cab4b6",
+        "name": "Limão",
+        "description": "A Base De Agua",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141743_VR2D_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 1,
+        "sourceItemIds": [
+          "2fc9e548-b0ee-4379-bafa-e875938506a8"
+        ]
+      },
+      {
+        "id": "bbeb96a4-dabc-5c6c-905a-d4df2ee0325a",
+        "groupId": "219cb1df-88ab-5b4e-8b43-550cc4cab4b6",
+        "name": "Pinta Lingua (Azul)",
+        "description": "A Base De Agua",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141817_TCO5_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 2,
+        "sourceItemIds": [
+          "8f691452-93dc-425b-9012-b1524b59329a"
+        ]
+      },
+      {
+        "id": "3d69c3b8-ac85-5512-8732-037e46a97cf6",
+        "groupId": "219cb1df-88ab-5b4e-8b43-550cc4cab4b6",
+        "name": "Tangerina",
+        "description": "A Base De Agua",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141816_8140_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 3,
+        "sourceItemIds": [
+          "c02af975-76d2-4aeb-aef2-784281a5a94e"
+        ]
+      },
+      {
+        "id": "b18ea4aa-440f-54be-bedc-1f555564d538",
+        "groupId": "219cb1df-88ab-5b4e-8b43-550cc4cab4b6",
+        "name": "Uva",
+        "description": "A Base De Agua",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141747_7TRJ_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 4,
+        "sourceItemIds": [
+          "dd3e37a1-db05-46d9-8e19-bbf804b3e6c3"
+        ]
+      },
+      {
+        "id": "494fa4c6-8ead-56e2-9bc2-c45f43202c7f",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Chocomenta",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 0,
+        "sourceItemIds": [
+          "c72b868b-b510-4a66-bbc4-a141208a6cb8"
+        ]
+      },
+      {
+        "id": "4d28905f-5d15-5134-877e-6677fb1fba31",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Abacaxi",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 1,
+        "sourceItemIds": [
+          "c366cc15-a89b-46c6-8158-9fee2a021cd6"
+        ]
+      },
+      {
+        "id": "30fbcce7-aaab-5095-8430-a05219a5ba55",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Açaí",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 2,
+        "sourceItemIds": [
+          "b9727666-90e3-48d6-994e-68f332dfa752"
+        ]
+      },
+      {
+        "id": "8c00098b-1291-5a2b-8882-41e26ac28b81",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Biscoito",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 3,
+        "sourceItemIds": [
+          "2cb6ff0f-af6e-4f7e-810e-91b4aa33bad2"
+        ]
+      },
+      {
+        "id": "bad4426c-ff9d-5d60-ad88-81b9c57bad76",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Cajá",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 4,
+        "sourceItemIds": [
+          "306d200e-253f-40ce-9994-3135350737e6"
+        ]
+      },
+      {
+        "id": "b7304027-8ab1-5ac8-bd9b-0038f4aadf3d",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Chocolate",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 5,
+        "sourceItemIds": [
+          "09330768-ab92-4cd2-abc6-4cdfee924897"
+        ]
+      },
+      {
+        "id": "c8aab130-1292-59f9-aa62-4471dc5c4aa5",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Coco",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 6,
+        "sourceItemIds": [
+          "7d4a8160-7be7-4fbe-8c87-74c3e8b237a3"
+        ]
+      },
+      {
+        "id": "eef7c5bf-8737-553c-9997-604db5099032",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Cupuaçu",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 7,
+        "sourceItemIds": [
+          "60c545cd-1694-4a9e-ac61-bb7f00238e71"
+        ]
+      },
+      {
+        "id": "6da79062-f16c-54da-9160-1cd503248c29",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Goiaba",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 8,
+        "sourceItemIds": [
+          "69d2c4ea-bfca-471a-bdd8-bf6bd9d6e675"
+        ]
+      },
+      {
+        "id": "4c2757cf-25f6-5150-a897-80d19c08e7b8",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Graviola",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 9,
+        "sourceItemIds": [
+          "5dfea907-8e5c-4966-9ec3-b6bcf1c10e2d"
+        ]
+      },
+      {
+        "id": "49366571-8adc-5cbf-9822-ba0460ac0cc6",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Leite Condensado",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 10,
+        "sourceItemIds": [
+          "aadbe9a3-db35-4547-98bf-bb451e8bd878"
+        ]
+      },
+      {
+        "id": "8c03338d-d0e7-50ac-9bcb-7a0a69a1c5ee",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Leite Ninho",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 11,
+        "sourceItemIds": [
+          "65ff321e-ee76-4696-9c74-55386f9d6925"
+        ]
+      },
+      {
+        "id": "a42c7e42-b463-5153-9686-3e9e7e50d424",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Maracujá",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 12,
+        "sourceItemIds": [
+          "0be9e6ac-ec21-4a4a-a2a3-63a68529517e"
+        ]
+      },
+      {
+        "id": "65bd27b1-5cea-59f0-95cc-0ffb494b9f72",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Milho Verde",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 13,
+        "sourceItemIds": [
+          "34a7540d-803f-4fc4-b17b-5d857995132b"
+        ]
+      },
+      {
+        "id": "5bb24618-2841-5586-a6e8-0778a7d571e4",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Morango",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 14,
+        "sourceItemIds": [
+          "d17b8e4c-d446-4818-b6a5-2d4c43638720"
+        ]
+      },
+      {
+        "id": "c74129d4-8365-50f4-b831-efeffd7eff8d",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Tapioca",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 15,
+        "sourceItemIds": [
+          "41317784-a342-4ff3-b4ce-9d8a66ca3440"
+        ]
+      },
+      {
+        "id": "50f5344a-f5aa-58ab-abb6-2a0527a9193c",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Doce De Leite",
+        "description": "Picolé a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 16,
+        "sourceItemIds": [
+          "4be56d16-c65f-4381-9ec1-7055ef708fe5"
+        ]
+      },
+      {
+        "id": "39654c80-131e-57b1-b625-d746edc6dcf0",
+        "groupId": "6711a012-2a9f-5e48-9318-7380b51758d2",
+        "name": "Paraense",
+        "description": "Açaí com farinha de tapioca , a base de leite",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 17,
+        "sourceItemIds": [
+          "ab21662c-a637-4a51-abf9-ed7aed13dfc3"
+        ]
+      },
+      {
+        "id": "a869f71c-336e-5ff3-9237-e90fe3f56b14",
+        "groupId": "ab99c0a0-c91c-5da9-9164-0b817560e0f6",
+        "name": "Skimo De Coco",
+        "description": "Picolé com cobertura de chocolate",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272319_pb7V_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 0,
+        "sourceItemIds": [
+          "71cb4af9-2761-4861-9098-d7ec41cf77df"
+        ]
+      },
+      {
+        "id": "3da24cb5-79c1-5905-b0f3-03b9ea2b9cd0",
+        "groupId": "ab99c0a0-c91c-5da9-9164-0b817560e0f6",
+        "name": "Skimo De Maracujá",
+        "description": "Picolé com cobertura de chocolate",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141813_TB6Q_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 1,
+        "sourceItemIds": [
+          "d3a61a6c-5fb9-4bcb-adc0-8b011149f6c3"
+        ]
+      },
+      {
+        "id": "0e5b93d3-ce6d-5f0d-80e8-d7b8062fcd03",
+        "groupId": "ab99c0a0-c91c-5da9-9164-0b817560e0f6",
+        "name": "Skimo Lokura - Morango Recheado",
+        "description": "Picolé com cobertura de chocolate",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141815_U50U_i.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 2,
+        "sourceItemIds": [
+          "a77bfac9-8a95-4317-9646-e8419256c3de"
+        ]
+      },
+      {
+        "id": "f21a0d85-9a4c-5acc-83ba-429669279264",
+        "groupId": "ab99c0a0-c91c-5da9-9164-0b817560e0f6",
+        "name": "Skimo Tradicional",
+        "description": "Picolé com cobertura de chocolate",
+        "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272319_pb7V_p.jpg",
+        "priceDeltaCents": 0,
+        "maxPerItem": 1,
+        "available": true,
+        "sortOrder": 3,
+        "sourceItemIds": [
+          "3dcfba3d-fbd0-4d7d-9a4d-746a86cd0b2f"
+        ]
+      }
+    ]
+  },
+  "update": {
+    "product": [
+      {
+        "id": "e5310e52-a8dd-5817-b233-c5f126d5b6a4",
+        "expected": {
+          "description": "Para viagem."
+        },
+        "set": {
+          "description": "Para viagem. Sorvete do sabor escolhido com flocos de Ovomaltine."
+        }
+      }
+    ],
+    "option": [
+      {
+        "id": "size-option/e5310e52-a8dd-5817-b233-c5f126d5b6a4",
+        "expected": {
+          "name": "Pequeno",
+          "priceDeltaCents": 0
+        },
+        "set": {
+          "name": "330 ml"
+        },
+        "reason": "Volume explícito no iFood, preço atual preservado."
+      },
+      {
+        "id": "size-option/c5db0a2b-8436-583e-94b4-f0b4bcef5f94",
+        "expected": {
+          "name": "Grande",
+          "priceDeltaCents": 400
+        },
+        "set": {
+          "name": "550 ml"
+        },
+        "reason": "Volume explícito no iFood, preço atual preservado."
+      },
+      {
+        "id": "3a6e3a31-00c6-5006-8706-941fc9562823",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192117_0251_i.jpg"
+        },
+        "sourceItemIds": [
+          "bb6ab1f1-4e47-39bf-90a7-6df637997110"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "6f64d713-ce50-503a-b0e5-fc564ae9dd67",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192117_JNJ3_i.jpg"
+        },
+        "sourceItemIds": [
+          "e1e62bd9-ae7c-30f9-a270-7b92a0cdfff1"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "dc195aa7-3c10-5a87-8a01-4356cac34fc7",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192119_Y5WD_i.jpg"
+        },
+        "sourceItemIds": [
+          "b3e9600a-7dfe-3d7a-8294-288f0fdf266b"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "c37c18a1-ad28-5c3a-81de-6a94932787ce",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192122_JB4T_i.jpg"
+        },
+        "sourceItemIds": [
+          "85332eb1-98db-30f5-b6dc-de5d93fe842e"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "ed5919c0-5677-5466-b6b6-6d5aa6877135",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192122_OSGQ_i.jpg"
+        },
+        "sourceItemIds": [
+          "3b35f786-6a0c-3b0d-a368-b11963175d51"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "7d94da67-3cb4-528a-8a24-9e6acc98cfe4",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192123_H4QU_i.jpg"
+        },
+        "sourceItemIds": [
+          "7ec8034d-bf83-3bf9-8007-a36ae2a513b5"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "2bcaff46-6a0f-5355-879a-9a5e522884a8",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192124_FPNY_i.jpg"
+        },
+        "sourceItemIds": [
+          "dc32eab7-2573-3e04-aa73-debecce3bd19"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "52c74db6-7d3a-5283-bc41-0e840e8924b5",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192125_6701_i.jpg"
+        },
+        "sourceItemIds": [
+          "447377f3-b8fe-3032-9c47-6e32018bd661"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "ac7ce323-8c36-50a1-af8e-2dbc81fb8bd6",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192126_2HBJ_i.jpg"
+        },
+        "sourceItemIds": [
+          "b4f979b7-ec6f-33af-adcd-4409ba886720"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "4248492b-3380-5b84-95ea-1c3168c41a62",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192126_5804_i.jpg"
+        },
+        "sourceItemIds": [
+          "a2bd33dd-11cc-3154-bf85-1e30608becfa"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "2cabb373-8c97-5dd9-9d34-a945904b273f",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192127_4R4A_i.jpg"
+        },
+        "sourceItemIds": [
+          "bb11cf7a-aaf4-35a2-ba92-26694ef135d2"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "36878a4e-498b-5a73-ba07-4540d7a87db1",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192128_2YA7_i.jpg"
+        },
+        "sourceItemIds": [
+          "8def1c74-2f96-3174-9e9b-ba615db51cf8"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "bfe12ac4-c943-5e09-8c2b-c0ff64489be1",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192129_SG3Y_i.jpg"
+        },
+        "sourceItemIds": [
+          "b2750055-5d07-37bb-b1a7-f697a2ba64c5"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "8dbf0a0e-a3ea-5417-ab93-4bbaee60c863",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192129_GCJP_i.jpg"
+        },
+        "sourceItemIds": [
+          "99eb9fb4-f211-3105-97d8-69e6861e36f9"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "655544ff-32b9-58f9-b64d-52eb2a98cd40",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192130_C1G3_i.jpg"
+        },
+        "sourceItemIds": [
+          "5de25932-7de9-3597-92bb-122338d55e59"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "90c77be6-1bc9-5cfb-bc1f-c30de4039982",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192130_N0JH_i.jpg"
+        },
+        "sourceItemIds": [
+          "c89a2e98-7dfe-3c04-892c-0f3347949d6f"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "53c018b6-0a36-5366-9158-95d1c3bd95f0",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192131_OU47_i.jpg"
+        },
+        "sourceItemIds": [
+          "f0c86a8d-b246-3a1c-a576-bc306eb46194"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "2217384f-9b01-5e4d-b783-b94496dfe025",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192132_2H16_i.jpg"
+        },
+        "sourceItemIds": [
+          "d4d43641-213a-3357-ae59-b90d2fac4e66"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "02cf4486-58b4-5591-8fd7-c3b50001feca",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192134_WCJ0_i.jpg"
+        },
+        "sourceItemIds": [
+          "c0bcff62-b84b-3a18-acdc-02c9614bb548"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "cb25d175-917d-52e4-8176-85fec4a636f4",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192246_EYO3_i.jpg"
+        },
+        "sourceItemIds": [
+          "5d6c3926-0b12-338c-83b4-16060324c207"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "d5312f0f-f37b-5bc8-963f-7733d1dad592",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192246_D07U_i.jpg"
+        },
+        "sourceItemIds": [
+          "6c235a0c-5d70-35ca-a542-6f34b464cf3a"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "2b78d41f-7413-50f9-8188-6fde6ca0c37e",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192248_2AOO_i.jpg"
+        },
+        "sourceItemIds": [
+          "6703ceb4-9d24-3f59-9323-1c43007b7a53"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "42bd12a7-370b-54a4-bb29-20b2b5c6bb90",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192249_W27U_i.jpg"
+        },
+        "sourceItemIds": [
+          "20d2e9f9-f0c7-3a19-98a2-2557fc33b770"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "36661094-83f9-5a0b-aa5e-7db41303550e",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192250_21RR_i.jpg"
+        },
+        "sourceItemIds": [
+          "801892b0-3189-34a7-a922-eadbac3cd267"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "e0f27b8b-41c8-5f13-9884-24638893eb20",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192251_FO7Q_i.jpg"
+        },
+        "sourceItemIds": [
+          "5b464268-a2f3-3306-aab9-8623770f7b18"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "7ca415b6-334c-5aec-b02c-5a29ba9f8380",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192252_8P72_i.jpg"
+        },
+        "sourceItemIds": [
+          "d1d62d95-a86e-310c-811e-2d9e748ce73b"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "f925dad8-498b-543b-8c45-4c35fd0db9a5",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192253_32A3_i.jpg"
+        },
+        "sourceItemIds": [
+          "dce85cf1-3bdb-3422-a906-e523315096b7"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "37e2adcb-cbee-5d59-92f8-b53dcd69f254",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192255_07UO_i.jpg"
+        },
+        "sourceItemIds": [
+          "f2d4b5e4-bfb9-3d59-992c-8e8da7620a0d"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "3272c2f2-cbb0-533b-a4e9-6d81a36e032e",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192256_3S14_i.jpg"
+        },
+        "sourceItemIds": [
+          "56569c5f-99a0-360d-bfab-55164ef6e6c3"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "450ce479-44d3-5f35-b532-bad579ed6551",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192256_7O8M_i.jpg"
+        },
+        "sourceItemIds": [
+          "56d8f7ac-9253-3163-b597-5ff1238744fa"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "d2e1bf19-2411-5e1c-a8e1-555293b6b693",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192257_81L7_i.jpg"
+        },
+        "sourceItemIds": [
+          "226719e2-4f27-33e7-b59b-a16b8c19eac6"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "c6da1da9-1241-5bcb-beb4-78ec2880028e",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192300_3UX2_i.jpg"
+        },
+        "sourceItemIds": [
+          "7964eb43-da35-3670-bbd8-ee4cce6943e9"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "e9ec0845-74ad-5edb-aa87-2c5b2cd3283e",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192301_I468_i.jpg"
+        },
+        "sourceItemIds": [
+          "b6047b7f-ec2a-3b90-96cd-8b11313e2816"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      },
+      {
+        "id": "99df783c-a78e-5179-a450-d120be3eec5e",
+        "expected": {
+          "imageUrl": null
+        },
+        "set": {
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192305_PMT6_i.jpg"
+        },
+        "sourceItemIds": [
+          "bfb8a81c-c5ab-3214-a3bf-c50d16e4583e"
+        ],
+        "reason": "Imagem faltante, obtida no detalhe da pizza pequena tradicional."
+      }
+    ]
+  },
+  "review": [
+    {
+      "topic": "Preço promocional do combo",
+      "productId": "ef5d7151-fb62-5e57-843e-fd636214f8d4",
+      "suggestedPriceCents": 7100,
+      "confidence": "média",
+      "reason": "99,40/1,4 = 71,00; itens avulsos atuais somam 70,00 + 11,00 = 81,00. Desconto de 10,00 inferido, não confirmado pelo cardápio local."
+    },
+    {
+      "topic": "Barca/Barcaçaí",
+      "productId": "70ef0cc5-02c6-5c46-860a-04084e994e7b",
+      "proposal": "Preço 5200 coincide. iFood especifica 500 ml de açaí + bola de sorvete; banco omite açaí/volume, inclui chantilly/tubetes ausentes no iFood. Confirmar composição antes de substituir descrição. Preparar grupo Sabor do sorvete com sabores capturados somente após confirmar uso na Barca.",
+      "suggestedDescription": "500 ml. De açaí, morango, kiwi, banana, manga, farinha lactea, leite em pó (Ninho), amendoim e cereal (acompanha uma bola de sorvete) adicionar o sabor."
+    },
+    {
+      "topic": "Casquinha versus cascão",
+      "productId": "69ba60aa-8cef-5696-af1b-3d1fea3d0538",
+      "sourceItemId": "f5cf0d61-b91d-4c73-ba7a-238006446e3e",
+      "proposal": "Preservar cascão a 100 centavos. Confirmar se casquinha é outro produto antes de criar. 150/1,4 não fornece preço local redondo.",
+      "suggestedPriceCents": 100,
+      "confidence": "baixa"
+    },
+    {
+      "topic": "Volume do suco",
+      "optionId": "size-option/758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "current": "390 ml",
+      "source": "400 ml",
+      "proposal": "Manter 390 ml por origem no PDF local; confirmar volume comercial antes de mudar."
+    },
+    {
+      "topic": "Preço do suco Cajá",
+      "optionId": "bfb8a723-3790-5591-81ab-a985b6d31329",
+      "currentPriceDeltaCents": 0,
+      "sourceInferredPriceDeltaCents": 100,
+      "proposal": "Preservar 1300 atual; iFood sugere 1400 sem leite, mas com leite sugere 1500, enquanto +200 resultaria 1600. Não alterar preço nem inventar regra condicional."
+    },
+    {
+      "topic": "Preço do suco Acerola",
+      "optionId": "9f802d87-56d3-58b6-b24c-eecc373b5559",
+      "currentPriceDeltaCents": 0,
+      "sourceInferredPriceDeltaCents": 100,
+      "proposal": "Preservar 1300 atual; iFood sugere 1400 sem leite, mas com leite sugere 1500, enquanto +200 resultaria 1600. Não alterar preço nem inventar regra condicional."
+    },
+    {
+      "topic": "Quinari 1 litro",
+      "optionId": "size-option/5a371271-3c4c-55fd-b79a-b27239b36013",
+      "currentEffectivePriceCents": 800,
+      "sourceInferredPriceCents": 1100,
+      "proposal": "Preservar 800; iFood diverge do padrão atual."
+    },
+    {
+      "topic": "Marcas e combinações de refrigerante",
+      "productId": "3d0483d1-a393-5418-a442-5301dee5d73c",
+      "verifiedVariants": [
+        {
+          "sourceItemId": "86f4074d-fa55-47df-bddd-c3fb890dcb16",
+          "title": "Coca Cola 600 Ml.",
+          "description": "600 ml.",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212227_M18b_c.jpg",
+          "inferredPriceCents": 800,
+          "preserveExistingSizePrice": true
+        },
+        {
+          "sourceItemId": "d2e43c9e-bd7d-4a44-ac1b-15ecf9b08441",
+          "title": "Coca Cola Lata 350 Ml.",
+          "description": "350 ml.",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212226_znWm_c.jpg",
+          "inferredPriceCents": 700,
+          "preserveExistingSizePrice": true
+        },
+        {
+          "sourceItemId": "694170fb-8f75-4bbe-be86-7cb696b5be1c",
+          "title": "Coca Cola Litro",
+          "description": "1 litro",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212232_aS2c_c.jpg",
+          "inferredPriceCents": 1100,
+          "preserveExistingSizePrice": true
+        },
+        {
+          "sourceItemId": "e66aa68e-2630-4230-927c-a3809add8311",
+          "title": "Coca-Cola Original 1,5l",
+          "description": "Garrafa 1,5l",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/820af392-002c-47b1-bfae-d7ef31743c7f/202210192214_pcatvoxm2a.jpg",
+          "inferredPriceCents": 1300,
+          "preserveExistingSizePrice": true
+        },
+        {
+          "sourceItemId": "54dd27e7-fdff-4852-ba62-b5d4825faaf4",
+          "title": "Coca Cola Zero 600ml",
+          "description": "Unidade 1un",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/820af392-002c-47b1-bfae-d7ef31743c7f/202210200323_n3x4i2ox7m.jpg",
+          "inferredPriceCents": 800,
+          "preserveExistingSizePrice": true
+        },
+        {
+          "sourceItemId": "7fd107fb-1fa3-43d0-a302-87cdfa990088",
+          "title": "Fanta Laranja 350 Ml.",
+          "description": "350 ml.",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212228_ICuw_f.jpg",
+          "inferredPriceCents": 700,
+          "preserveExistingSizePrice": true
+        },
+        {
+          "sourceItemId": "70eade3d-7429-4c5d-b239-09f8db3a9278",
+          "title": "Fanta Laranja Litro",
+          "description": "1 litro",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212233_wRda_f.jpg",
+          "inferredPriceCents": 1100,
+          "preserveExistingSizePrice": true
+        },
+        {
+          "sourceItemId": "1cf67bf9-f130-4a94-a246-5f407fe24df7",
+          "title": "Refrigerante Coca Cola Lata Zero",
+          "description": "Lata 350ml",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/820af392-002c-47b1-bfae-d7ef31743c7f/202306271636_0l49q8eqdxpf.jpg",
+          "inferredPriceCents": 700,
+          "preserveExistingSizePrice": true
+        },
+        {
+          "sourceItemId": "4574795e-a820-4ecb-a02b-6e5cbc362fd6",
+          "title": "Schweppes Citrus 350ml",
+          "description": "Lata 350ml",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/820af392-002c-47b1-bfae-d7ef31743c7f/202511241039_34oiums83ch.png",
+          "inferredPriceCents": 700,
+          "preserveExistingSizePrice": true
+        },
+        {
+          "sourceItemId": "f90802eb-4895-417b-aab3-ac91c27409fa",
+          "title": "Sprite Original 350ml",
+          "description": "Unidade 350ml",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/820af392-002c-47b1-bfae-d7ef31743c7f/202511241907_7b3j7oo5x0n.png",
+          "inferredPriceCents": 700,
+          "preserveExistingSizePrice": true
+        }
+      ],
+      "proposal": "Cadastrar variantes somente após escolher modelagem. Grupo Sabor independente permitiria marcas/tamanhos não observados; preferir opção única Apresentação (marca+tamanho) ou produtos por marca com tamanhos próprios, preservando IDs usados em histórico. Não remover tamanhos atuais só porque ausentes no iFood."
+    },
+    {
+      "topic": "Água com gás",
+      "productId": "f812af90-1572-56c1-a528-517fd38402d1",
+      "suggestedSize": "500 ml",
+      "suggestedGroup": {
+        "name": "Tamanho",
+        "required": true,
+        "maxSelect": 1,
+        "priceRule": "sum",
+        "options": [
+          {
+            "name": "500 ml",
+            "priceDeltaCents": 0
+          }
+        ]
+      },
+      "reason": "Volume ausente no banco; confirmado no item iFood."
+    },
+    {
+      "topic": "Escopo de sabores",
+      "proposal": "Todos os sabores listados são da unidade Tucumã. Hoje existe somente uma unidade e nenhum override. Se novas unidades surgirem, confirmar disponibilidade por unidade antes de herdar estas opções globais."
+    },
+    {
+      "topic": "Borda da pizza pequena",
+      "currentGroupId": "cbd3a57e-b82b-5d4e-a767-9ea91074e070",
+      "sourceGroup": {
+        "code": "65b44284-7910-3deb-9266-c895884b2833",
+        "name": "Escolha a sua Preferência",
+        "min": 1,
+        "max": 1,
+        "garnishItens": [
+          {
+            "id": "6984d919-0b37-3bea-aa6e-fa1ba069646f",
+            "code": "6984d919-0b37-3bea-aa6e-fa1ba069646f",
+            "description": "Massa Tradicional + Borda Cheddar",
+            "details": "",
+            "logoUrl": "",
+            "unitPrice": 23.8
+          },
+          {
+            "id": "c77ae383-ff79-3a4e-94db-50735e32a1e9",
+            "code": "c77ae383-ff79-3a4e-94db-50735e32a1e9",
+            "description": "Massa Tradicional + Borda Chocolate",
+            "details": "",
+            "logoUrl": "",
+            "unitPrice": 23.8
+          },
+          {
+            "id": "9a079755-9a38-36e3-9601-e55eebff76da",
+            "code": "9a079755-9a38-36e3-9601-e55eebff76da",
+            "description": "Massa Tradicional + Borda Requeijão",
+            "details": "",
+            "logoUrl": "",
+            "unitPrice": 23.8
+          },
+          {
+            "id": "f55f631e-de5a-3391-b98c-9c4e9ee87420",
+            "code": "f55f631e-de5a-3391-b98c-9c4e9ee87420",
+            "description": "Massa Tradicional + Borda Tradicional",
+            "details": "",
+            "logoUrl": "",
+            "unitPrice": 0
+          }
+        ],
+        "order": 0
+      },
+      "proposal": "iFood exige preferência (1 de 1), incluindo opção tradicional gratuita. Banco permite nenhuma borda e cobra 1000 por borda simples; iFood/1,4 sugere 1700. Preservar grupo opcional e preços locais. Escolher nenhuma borda já equivale à tradicional gratuita; não duplicar opção nem obrigar borda paga."
+    },
+    {
+      "topic": "Pizza pequena tradicional: composição e preços",
+      "matchedFlavors": [
+        {
+          "optionId": "3a6e3a31-00c6-5006-8706-941fc9562823",
+          "sourceOptionId": "bb6ab1f1-4e47-39bf-90a7-6df637997110",
+          "name": "Dom gourmet",
+          "currentDescription": "Tradicional — Molho, mussarela, presunto, calabresa, palmito, cebola, pimentão e orégano.",
+          "sourceDescription": "Molho, mussarela, presunto, calabresa, palmito, cebola, pimentão, orégano",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192117_0251_i.jpg",
+          "currentEffectivePriceCents": 5600,
+          "sourceInferredPriceCents": 5600
+        },
+        {
+          "optionId": "6f64d713-ce50-503a-b0e5-fc564ae9dd67",
+          "sourceOptionId": "e1e62bd9-ae7c-30f9-a270-7b92a0cdfff1",
+          "name": "Especial da casa",
+          "currentDescription": "Tradicional — Molho, mussarela, frango, milho, requeijão, ovos, creme de leite, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, frango, milho, requeijão, ovos, creme de leite, orégano e azeitonas",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192117_JNJ3_i.jpg",
+          "currentEffectivePriceCents": 5600,
+          "sourceInferredPriceCents": 5600
+        },
+        {
+          "optionId": "dc195aa7-3c10-5a87-8a01-4356cac34fc7",
+          "sourceOptionId": "b3e9600a-7dfe-3d7a-8294-288f0fdf266b",
+          "name": "Soberana",
+          "currentDescription": "Tradicional — Molho, mussarela, presunto, calabresa, bacon, ovos, palmito, milho, cebola, pimentão, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, presunto, calabresa, bacon, ovos, palmito, milho, cebola, pimentão, orégano e azeitonas",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192119_Y5WD_i.jpg",
+          "currentEffectivePriceCents": 5600,
+          "sourceInferredPriceCents": 5600
+        },
+        {
+          "optionId": "c37c18a1-ad28-5c3a-81de-6a94932787ce",
+          "sourceOptionId": "85332eb1-98db-30f5-b6dc-de5d93fe842e",
+          "name": "Vegetariana",
+          "currentDescription": "Tradicional — Molho, mussarela, manjericão, palmito, milho verde, ervilha, pimentão, cebola, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, manjeiricão, palmito,milho verde, ervilha, pimentão, cebola, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192122_JB4T_i.jpg",
+          "currentEffectivePriceCents": 5600,
+          "sourceInferredPriceCents": 6857
+        },
+        {
+          "optionId": "ed5919c0-5677-5466-b6b6-6d5aa6877135",
+          "sourceOptionId": "3b35f786-6a0c-3b0d-a368-b11963175d51",
+          "name": "Crocante",
+          "currentDescription": "Especial — Molho, mussarela, bacon, batata palha, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, bacon, batata palha, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192122_OSGQ_i.jpg",
+          "currentEffectivePriceCents": 5600,
+          "sourceInferredPriceCents": 5600
+        },
+        {
+          "optionId": "7d94da67-3cb4-528a-8a24-9e6acc98cfe4",
+          "sourceOptionId": "7ec8034d-bf83-3bf9-8007-a36ae2a513b5",
+          "name": "Quatro queijos",
+          "currentDescription": "Tradicional — Molho, mussarela, provolone, parmesão, requeijão, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, provolone, parmesão, requeijão, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192123_H4QU_i.jpg",
+          "currentEffectivePriceCents": 5200,
+          "sourceInferredPriceCents": 5200
+        },
+        {
+          "optionId": "2bcaff46-6a0f-5355-879a-9a5e522884a8",
+          "sourceOptionId": "dc32eab7-2573-3e04-aa73-debecce3bd19",
+          "name": "Provolone",
+          "currentDescription": "Tradicional — Molho, mussarela, provolone, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, provolone, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192124_FPNY_i.jpg",
+          "currentEffectivePriceCents": 4800,
+          "sourceInferredPriceCents": 4800
+        },
+        {
+          "optionId": "52c74db6-7d3a-5283-bc41-0e840e8924b5",
+          "sourceOptionId": "447377f3-b8fe-3032-9c47-6e32018bd661",
+          "name": "Portuguesa com requeijão",
+          "currentDescription": "Tradicional — Molho, mussarela, requeijão, calabresa, presunto, cebola, ovos, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, calabresa, presunto, cebola, ovos, orégano, azeitona e requeijão",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192125_6701_i.jpg",
+          "currentEffectivePriceCents": 5200,
+          "sourceInferredPriceCents": 5200
+        },
+        {
+          "optionId": "ac7ce323-8c36-50a1-af8e-2dbc81fb8bd6",
+          "sourceOptionId": "b4f979b7-ec6f-33af-adcd-4409ba886720",
+          "name": "Portuguesa",
+          "currentDescription": "Tradicional — Molho, mussarela, calabresa, presunto, cebola, ovos, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, calabresa, presunto, cebola, ovos, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192126_2HBJ_i.jpg",
+          "currentEffectivePriceCents": 4800,
+          "sourceInferredPriceCents": 4800
+        },
+        {
+          "optionId": "4248492b-3380-5b84-95ea-1c3168c41a62",
+          "sourceOptionId": "a2bd33dd-11cc-3154-bf85-1e30608becfa",
+          "name": "Palmito",
+          "currentDescription": "Tradicional — Molho, mussarela, palmito, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, palmito, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192126_5804_i.jpg",
+          "currentEffectivePriceCents": 4800,
+          "sourceInferredPriceCents": 4800
+        },
+        {
+          "optionId": "2cabb373-8c97-5dd9-9d34-a945904b273f",
+          "sourceOptionId": "bb11cf7a-aaf4-35a2-ba92-26694ef135d2",
+          "name": "Napolitana com requeijão",
+          "currentDescription": "Tradicional — Molho, mussarela, tomate, parmesão, requeijão, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, tomate, parmesão, orégano, azeitona e requeijão",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192127_4R4A_i.jpg",
+          "currentEffectivePriceCents": 5200,
+          "sourceInferredPriceCents": 5200
+        },
+        {
+          "optionId": "36878a4e-498b-5a73-ba07-4540d7a87db1",
+          "sourceOptionId": "8def1c74-2f96-3174-9e9b-ba615db51cf8",
+          "name": "Napolitana",
+          "currentDescription": "Tradicional — Molho, mussarela, tomate, parmesão, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, tomate, parmesão, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192128_2YA7_i.jpg",
+          "currentEffectivePriceCents": 4800,
+          "sourceInferredPriceCents": 4800
+        },
+        {
+          "optionId": "bfe12ac4-c943-5e09-8c2b-c0ff64489be1",
+          "sourceOptionId": "b2750055-5d07-37bb-b1a7-f697a2ba64c5",
+          "name": "Mussarela",
+          "currentDescription": "Tradicional — Molho, mussarela, tomate, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192129_SG3Y_i.jpg",
+          "currentEffectivePriceCents": 4800,
+          "sourceInferredPriceCents": 4800
+        },
+        {
+          "optionId": "8dbf0a0e-a3ea-5417-ab93-4bbaee60c863",
+          "sourceOptionId": "99eb9fb4-f211-3105-97d8-69e6861e36f9",
+          "name": "Milho verde",
+          "currentDescription": "Tradicional — Molho, mussarela, milho verde, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, milho verde, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192129_GCJP_i.jpg",
+          "currentEffectivePriceCents": 4800,
+          "sourceInferredPriceCents": 4800
+        },
+        {
+          "optionId": "655544ff-32b9-58f9-b64d-52eb2a98cd40",
+          "sourceOptionId": "5de25932-7de9-3597-92bb-122338d55e59",
+          "name": "Marguerita",
+          "currentDescription": "Tradicional — Molho, mussarela, manjericão desidratado, tomate, parmesão e azeitona.",
+          "sourceDescription": "Molho, mussarela, menjericão desidratado, tomate, parmesão e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192130_C1G3_i.jpg",
+          "currentEffectivePriceCents": 4800,
+          "sourceInferredPriceCents": 4800
+        },
+        {
+          "optionId": "90c77be6-1bc9-5cfb-bc1f-c30de4039982",
+          "sourceOptionId": "c89a2e98-7dfe-3c04-892c-0f3347949d6f",
+          "name": "Lombo ao creme",
+          "currentDescription": "Tradicional — Molho, mussarela, lombo, creme de leite, orégano e azeitona.",
+          "sourceDescription": "",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192130_N0JH_i.jpg",
+          "currentEffectivePriceCents": 5200,
+          "sourceInferredPriceCents": 5200
+        },
+        {
+          "optionId": "53c018b6-0a36-5366-9158-95d1c3bd95f0",
+          "sourceOptionId": "f0c86a8d-b246-3a1c-a576-bc306eb46194",
+          "name": "Lombo",
+          "currentDescription": "Tradicional — Molho, mussarela, lombo, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, lombo, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192131_OU47_i.jpg",
+          "currentEffectivePriceCents": 4800,
+          "sourceInferredPriceCents": 4800
+        },
+        {
+          "optionId": "2217384f-9b01-5e4d-b783-b94496dfe025",
+          "sourceOptionId": "d4d43641-213a-3357-ae59-b90d2fac4e66",
+          "name": "Grega com requeijão",
+          "currentDescription": "Tradicional — Molho, mussarela, lombo, requeijão, cebola, palmito, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, lombo, cebola, palmito, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192132_2H16_i.jpg",
+          "currentEffectivePriceCents": 5200,
+          "sourceInferredPriceCents": 5200
+        },
+        {
+          "optionId": "02cf4486-58b4-5591-8fd7-c3b50001feca",
+          "sourceOptionId": "c0bcff62-b84b-3a18-acdc-02c9614bb548",
+          "name": "Grega",
+          "currentDescription": "Tradicional — Molho, mussarela, lombo, cebola, palmito, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, lombo, cebola, palmito, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192134_WCJ0_i.jpg",
+          "currentEffectivePriceCents": 4800,
+          "sourceInferredPriceCents": 4800
+        },
+        {
+          "optionId": "cb25d175-917d-52e4-8176-85fec4a636f4",
+          "sourceOptionId": "5d6c3926-0b12-338c-83b4-16060324c207",
+          "name": "Frango com cheddar",
+          "currentDescription": "Tradicional — Molho, mussarela, frango, cheddar, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, frango, cheddar, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192246_EYO3_i.jpg",
+          "currentEffectivePriceCents": 5200,
+          "sourceInferredPriceCents": 5200
+        },
+        {
+          "optionId": "d5312f0f-f37b-5bc8-963f-7733d1dad592",
+          "sourceOptionId": "6c235a0c-5d70-35ca-a542-6f34b464cf3a",
+          "name": "Frango com requeijão",
+          "currentDescription": "Tradicional — Molho, mussarela, frango, requeijão, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, frango, requeijão, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192246_D07U_i.jpg",
+          "currentEffectivePriceCents": 5200,
+          "sourceInferredPriceCents": 5200
+        },
+        {
+          "optionId": "2b78d41f-7413-50f9-8188-6fde6ca0c37e",
+          "sourceOptionId": "6703ceb4-9d24-3f59-9323-1c43007b7a53",
+          "name": "Frango com milho",
+          "currentDescription": "Tradicional — Molho, mussarela, frango, milho verde, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, frango ,orégano, azeitona e milho",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192248_2AOO_i.jpg",
+          "currentEffectivePriceCents": 5000,
+          "sourceInferredPriceCents": 5000
+        },
+        {
+          "optionId": "42bd12a7-370b-54a4-bb29-20b2b5c6bb90",
+          "sourceOptionId": "20d2e9f9-f0c7-3a19-98a2-2557fc33b770",
+          "name": "Frango",
+          "currentDescription": "Tradicional — Molho, mussarela, frango, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, frango, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192249_W27U_i.jpg",
+          "currentEffectivePriceCents": 4800,
+          "sourceInferredPriceCents": 4843
+        },
+        {
+          "optionId": "36661094-83f9-5a0b-aa5e-7db41303550e",
+          "sourceOptionId": "801892b0-3189-34a7-a922-eadbac3cd267",
+          "name": "Calabresa com cheddar",
+          "currentDescription": "Tradicional — Molho, mussarela, calabresa, cheddar, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, calabresa, cheddar, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192250_21RR_i.jpg",
+          "currentEffectivePriceCents": 5200,
+          "sourceInferredPriceCents": 5200
+        },
+        {
+          "optionId": "e0f27b8b-41c8-5f13-9884-24638893eb20",
+          "sourceOptionId": "5b464268-a2f3-3306-aab9-8623770f7b18",
+          "name": "Calabresa com requeijão",
+          "currentDescription": "Tradicional — Molho, mussarela, calabresa, requeijão, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, calabresa, requeijão, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192251_FO7Q_i.jpg",
+          "currentEffectivePriceCents": 5200,
+          "sourceInferredPriceCents": 5200
+        },
+        {
+          "optionId": "7ca415b6-334c-5aec-b02c-5a29ba9f8380",
+          "sourceOptionId": "d1d62d95-a86e-310c-811e-2d9e748ce73b",
+          "name": "Calabresa acebolada",
+          "currentDescription": "Tradicional — Molho, mussarela, calabresa, cebola, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, calabresa, oregano, azeitona e cebola",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192252_8P72_i.jpg",
+          "currentEffectivePriceCents": 5000,
+          "sourceInferredPriceCents": 5000
+        },
+        {
+          "optionId": "f925dad8-498b-543b-8c45-4c35fd0db9a5",
+          "sourceOptionId": "dce85cf1-3bdb-3422-a906-e523315096b7",
+          "name": "Calabresa",
+          "currentDescription": "Tradicional — Molho, mussarela, calabresa, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, calabresa, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192253_32A3_i.jpg",
+          "currentEffectivePriceCents": 4800,
+          "sourceInferredPriceCents": 4800
+        },
+        {
+          "optionId": "37e2adcb-cbee-5d59-92f8-b53dcd69f254",
+          "sourceOptionId": "f2d4b5e4-bfb9-3d59-992c-8e8da7620a0d",
+          "name": "Baiana",
+          "currentDescription": "Tradicional — Molho, mussarela, calabresa, pimenta, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, calabresa, pimenta, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192255_07UO_i.jpg",
+          "currentEffectivePriceCents": 4800,
+          "sourceInferredPriceCents": 4800
+        },
+        {
+          "optionId": "3272c2f2-cbb0-533b-a4e9-6d81a36e032e",
+          "sourceOptionId": "56569c5f-99a0-360d-bfab-55164ef6e6c3",
+          "name": "Bacon com requeijão",
+          "currentDescription": "Especial — Molho, mussarela, bacon, requeijão, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, bacon, orégano, azeitona e requeijão",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192256_3S14_i.jpg",
+          "currentEffectivePriceCents": 5600,
+          "sourceInferredPriceCents": 5600
+        },
+        {
+          "optionId": "450ce479-44d3-5f35-b532-bad579ed6551",
+          "sourceOptionId": "56d8f7ac-9253-3163-b597-5ff1238744fa",
+          "name": "Bacon",
+          "currentDescription": "Especial — Molho, mussarela, bacon, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, bacon, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192256_7O8M_i.jpg",
+          "currentEffectivePriceCents": 5200,
+          "sourceInferredPriceCents": 5200
+        },
+        {
+          "optionId": "d2e1bf19-2411-5e1c-a8e1-555293b6b693",
+          "sourceOptionId": "226719e2-4f27-33e7-b59b-a16b8c19eac6",
+          "name": "Americana",
+          "currentDescription": "Tradicional — Molho, mussarela, bacon, milho, ovos, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, bacon, milho, ovos, orégano e azeitona",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192257_81L7_i.jpg",
+          "currentEffectivePriceCents": 4800,
+          "sourceInferredPriceCents": 4800
+        },
+        {
+          "optionId": "c6da1da9-1241-5bcb-beb4-78ec2880028e",
+          "sourceOptionId": "7964eb43-da35-3670-bbd8-ee4cce6943e9",
+          "name": "Alho e azeite",
+          "currentDescription": "Tradicional — Molho, mussarela, alho, azeite, orégano e azeitona.",
+          "sourceDescription": "Molho, mussarela, azeitona, alho, azeite e orégano",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192300_3UX2_i.jpg",
+          "currentEffectivePriceCents": 4800,
+          "sourceInferredPriceCents": 4800
+        },
+        {
+          "optionId": "e9ec0845-74ad-5edb-aa87-2c5b2cd3283e",
+          "sourceOptionId": "b6047b7f-ec2a-3b90-96cd-8b11313e2816",
+          "name": "Atum com requeijão",
+          "currentDescription": "Tradicional — Atum, molho, mussarela, tomate, cebola, requeijão e azeitona.",
+          "sourceDescription": "Molho, mussarela, azeitona, tomate, cebola, requeijão e atum",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192301_I468_i.jpg",
+          "currentEffectivePriceCents": 5200,
+          "sourceInferredPriceCents": 5200
+        },
+        {
+          "optionId": "99df783c-a78e-5179-a450-d120be3eec5e",
+          "sourceOptionId": "bfb8a81c-c5ab-3214-a3bf-c50d16e4583e",
+          "name": "Atum",
+          "currentDescription": "Tradicional — Atum, molho, mussarela e azeitona.",
+          "sourceDescription": "Molho, Mussarela, Azeitona e Atum",
+          "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192305_PMT6_i.jpg",
+          "currentEffectivePriceCents": 4800,
+          "sourceInferredPriceCents": 4800
+        }
+      ],
+      "missingFlavors": [],
+      "proposal": "34 sabores correspondem a opções existentes. Imagens preparadas para completar apenas a pequena; preservar descrições do PDF e preços locais. Revisar diferenças de ingredientes antes de substituir textos. Não aplicar dados de pequena automaticamente aos outros tamanhos."
+    },
+    {
+      "topic": "Complementos não acessíveis",
+      "sourceItemIds": [
+        "fb009787-a059-3d23-a5fd-dc21de916e69",
+        "e4a536d2-ce24-321e-aa1a-6b049665b6ae",
+        "bd03babc-6a4b-317e-a0fb-bf2e91b28640",
+        "f08957d1-b238-33cd-9703-fcabe1e733a5",
+        "d6e13f67-6cf4-3e74-b33d-2bc1105f704f",
+        "afc48217-1194-38c0-a746-6bd4000df835",
+        "b7004b32-3430-3776-85e2-abe7e27fb8ea",
+        "66b8dc93-b92a-3351-9dfa-0a8db6d956ff",
+        "38eee092-78ac-351b-8f27-3d2420d0834f",
+        "cd67b755-0884-3bf5-88f2-c6e0c1e3415d",
+        "c7080cd2-4fa6-3229-bf04-b929437f71b4",
+        "aeeb58ee-4250-36cd-8aca-6936f8bca6de",
+        "c6f0b993-cdc0-3a5a-b8e7-b1fbdde8d6c3",
+        "8c4ba148-5dc3-3976-b723-90b30fc07603",
+        "11763fc2-8224-370c-b4f5-6c4ae8e15054",
+        "700acb28-e721-3ad0-b6e3-f85c7387ac6e",
+        "377a2773-8f0c-46ae-b9a9-c61921459aa5",
+        "854d30f3-8b30-496a-ba63-e6915631cbfb",
+        "3d464491-b1d7-48d8-8d7c-29ec1eb987ce",
+        "7d54a8a6-efed-4e12-8cdc-39d201532bb5"
+      ],
+      "proposal": "Dados principais preservados no mapeamento; grupos internos de 16 pizzas e 4 açaís ainda precisam de consulta. Não alegar inventário completo desses complementos nem aplicar limites/deltas não observados."
+    }
+  ],
+  "mapping": [
+    {
+      "sourceItemId": "69ef054f-99a0-4484-9c30-44eb5dee7df3",
+      "sourceTitle": "Pizza G Calabresa + Guaraná Quinari 2 litros",
+      "productId": "ef5d7151-fb62-5e57-843e-fd636214f8d4",
+      "status": "missing_product",
+      "inferredPriceCents": 7100
+    },
+    {
+      "sourceItemId": "377a2773-8f0c-46ae-b9a9-c61921459aa5",
+      "sourceTitle": "Açaí 350 Ml.",
+      "productId": "3a9fe21f-a957-50e1-bf7b-2d83de0d86b9",
+      "status": "existing_product_and_size",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212115_ddSs__.jpg",
+      "description": "Açaí, leite condensado e creme de leite"
+    },
+    {
+      "sourceItemId": "854d30f3-8b30-496a-ba63-e6915631cbfb",
+      "sourceTitle": "Açaí 500 Ml.",
+      "productId": "3a9fe21f-a957-50e1-bf7b-2d83de0d86b9",
+      "status": "existing_product_and_size",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212129_Q2M9__.jpg",
+      "description": "Açaí, leite condensado e creme de leite"
+    },
+    {
+      "sourceItemId": "6d1794cb-d3e4-46aa-8605-198df2bbd031",
+      "sourceTitle": "Barcaçaí",
+      "productId": "70ef0cc5-02c6-5c46-860a-04084e994e7b",
+      "status": "existing_product_and_size",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282132_8VX9_b.jpg",
+      "description": "500 ml. De açaí, morango, kiwi, banana, manga, farinha lactea, leite em pó (Ninho), amendoim e cereal (acompanha uma bola de sorvete) adicionar o sabor."
+    },
+    {
+      "sourceItemId": "3d464491-b1d7-48d8-8d7c-29ec1eb987ce",
+      "sourceTitle": "Açai Com Cupuaçu 350ml",
+      "productId": "08421643-e702-5c74-afc4-63e288f8d5dc",
+      "status": "existing_product_and_size",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202409231846_1IS4_i.jpg",
+      "description": "Açai Com Cupuacu,Creme De Leite E Leite Condensado (Não Permitido Ir Separados Acompanhamentos)."
+    },
+    {
+      "sourceItemId": "7d54a8a6-efed-4e12-8cdc-39d201532bb5",
+      "sourceTitle": "Açai Com Cupuaçu 500ml",
+      "productId": "08421643-e702-5c74-afc4-63e288f8d5dc",
+      "status": "existing_product_and_size",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202409231846_1IS4_i.jpg",
+      "description": "Açai Com Cupuaçu, Creme De Leite E Leite Condensado. (Porções De Acompanhamento Não Vai Separado)."
+    },
+    {
+      "sourceItemId": "36b29150-8b74-4fdd-8691-208220911119",
+      "sourceTitle": "Bola De Sorvete - Abacaxi",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "046d83fb-c3d0-4bc3-b5bc-96e0da4d5da1",
+      "sourceTitle": "Bola De Sorvete - Brigadeiro",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "44ac3d7c-910e-450b-bb2a-28ddec6239f6",
+      "sourceTitle": "Bola De Sorvete - Leite Condensado",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "6282a909-72a1-44fa-bc8e-92f619942a3d",
+      "sourceTitle": "Bola De Sorvete - Passas Ao Rhun",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "5ce7a456-3679-4440-a13f-863e3dedeaee",
+      "sourceTitle": "Bola De Sorvete - Ameixa",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "3f32d389-54ee-46ad-8eea-35c0de0ac72f",
+      "sourceTitle": "Bola De Sorvete - Açaí",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "8cc44701-0db9-44cc-951a-9e685d25bb14",
+      "sourceTitle": "Bola De Sorvete - Chandelle",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "28bcd1dc-1275-4ffb-8cc0-a9a2fd19217c",
+      "sourceTitle": "Bola De Sorvete - Charge",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "3306e283-4b45-4cc1-9715-6ee0be3e7eb0",
+      "sourceTitle": "Bola De Sorvete - Chiclete",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "e5445126-2d50-4b96-87e7-095a3e40f5e3",
+      "sourceTitle": "Bola De Sorvete - Chocolate",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "14d21159-1338-43fb-9a11-13169ac7191c",
+      "sourceTitle": "Bola De Sorvete - Cookies",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "7bce9ecf-0a82-49ff-9535-e5d598b7b733",
+      "sourceTitle": "Bola De Sorvete - Cupuaçú",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "37523d03-8b06-46e9-a7b4-c3b51f38cedd",
+      "sourceTitle": "Bola De Sorvete - Flocos",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "ef2fc729-fcaf-4510-8697-bf52597ad399",
+      "sourceTitle": "Bola De Sorvete - Frutas Tropicais",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "ffb66915-65c5-4b93-a217-dea5a276863d",
+      "sourceTitle": "Bola De Sorvete - Kit Kat",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "cc6d4d61-9b15-40e9-b789-2f67b86ced12",
+      "sourceTitle": "Bola De Sorvete - Leite Ninho",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "25445efc-74b7-4860-a45e-3b07e3fa9ff4",
+      "sourceTitle": "Bola De Sorvete - Leite Ninho Trufado C/ Chocolate",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "d51688b0-a4c3-4216-87cb-e366ee358bb0",
+      "sourceTitle": "Bola De Sorvete - Menta C/ Chocolate",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "31a767e8-4f1d-46a5-97c3-41dbcc41089d",
+      "sourceTitle": "Bola De Sorvete - Morango",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "870a871c-32fb-450b-9c24-8504872d6612",
+      "sourceTitle": "Bola De Sorvete - Ovomaltine",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "bcb9940a-fbdf-4571-acb0-65a3b061b555",
+      "sourceTitle": "Bola De Sorvete - Prestigio",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "36d3c168-aace-4638-9581-877bf51f0016",
+      "sourceTitle": "Bola De Sorvete - Sensação",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "94a365ba-4096-4658-a324-2c7045d901b1",
+      "sourceTitle": "Bola De Sorvete - Torta De Limão",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "bcf2f3d5-b50c-4028-80fb-9365cd7903de",
+      "sourceTitle": "Bola de sorvete - blue ice",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "263f16b9-9d41-488f-90b3-769703c44fa9",
+      "sourceTitle": "Bola de sorvete - cafe com chocolate",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "c5a7b0d2-80af-4838-8522-f39678a11afc",
+      "sourceTitle": "Bola de Sorvete - Yorgut grego",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "ba0d23aa-023d-44ba-8d11-270eaf30d635",
+      "sourceTitle": "Bola de Sorvete - Chocolate com Avelã",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "a44f1f95-b936-4e86-afe1-6668cdd7027c",
+      "sourceTitle": "Bola de Sorvete - Negresco",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "e8b47069-f2f7-4f0c-9857-7a789346020e",
+      "sourceTitle": "Bola de Sorvete - Açaí c/ Leite Ninho",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "0fc28c7d-ff37-45e5-9287-9ab10dd1f1e7",
+      "sourceTitle": "Bola de sorvete - Doce de Leite",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "22067f83-24b9-4685-986f-78550ed6169e",
+      "sourceTitle": "Bola de Sorvete - Coco Queimado",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "aa11c6ac-ee42-402f-9bf5-bf47b2eacf1a",
+      "sourceTitle": "Bola de Sorvete - Gianduella",
+      "productId": "490b214e-7c58-5627-af60-ba168011ad29",
+      "status": "missing_flavor",
+      "optionGroupId": "a1abc7fa-4fc0-5917-9736-3183bb5b5194"
+    },
+    {
+      "sourceItemId": "39d0931e-7f69-41d3-8593-f13380e42348",
+      "sourceTitle": "Milk-Shake (550ml) chocolate",
+      "productId": "e5310e52-a8dd-5817-b233-c5f126d5b6a4",
+      "status": "missing_flavor",
+      "optionGroupId": "a2e35b47-3d77-53c3-905c-fc00607abfd4",
+      "size": "550 ml",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062027_D7U8_i.jpg"
+    },
+    {
+      "sourceItemId": "c8ad7edb-298b-47ce-aa10-1bc2527815df",
+      "sourceTitle": "Milk-Shake (550)ml - Morango",
+      "productId": "e5310e52-a8dd-5817-b233-c5f126d5b6a4",
+      "status": "missing_flavor",
+      "optionGroupId": "a2e35b47-3d77-53c3-905c-fc00607abfd4",
+      "size": "550 ml",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062028_E252_i.jpg"
+    },
+    {
+      "sourceItemId": "a724b3de-16b0-4db0-8e1e-19c1c5a3e436",
+      "sourceTitle": "Milk-Shake (550)ml - Ninho",
+      "productId": "e5310e52-a8dd-5817-b233-c5f126d5b6a4",
+      "status": "missing_flavor",
+      "optionGroupId": "a2e35b47-3d77-53c3-905c-fc00607abfd4",
+      "size": "550 ml",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062030_YPX5_i.jpg"
+    },
+    {
+      "sourceItemId": "4d021558-8ebf-4b62-94b8-612638b74678",
+      "sourceTitle": "Milk-Shake (550ml) - Leite Cond.",
+      "productId": "e5310e52-a8dd-5817-b233-c5f126d5b6a4",
+      "status": "missing_flavor",
+      "optionGroupId": "a2e35b47-3d77-53c3-905c-fc00607abfd4",
+      "size": "550 ml",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062033_6Q7H_i.jpg"
+    },
+    {
+      "sourceItemId": "70905075-0f25-4cc3-8ccc-c36db01b1a60",
+      "sourceTitle": "Milk-Shake (550ml) Negresco",
+      "productId": "e5310e52-a8dd-5817-b233-c5f126d5b6a4",
+      "status": "missing_flavor",
+      "optionGroupId": "a2e35b47-3d77-53c3-905c-fc00607abfd4",
+      "size": "550 ml",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062034_TN8B_i.jpg"
+    },
+    {
+      "sourceItemId": "a921f5fe-7a7c-4620-8fba-95afc9bc0ee1",
+      "sourceTitle": "Milk-Shake (330ml) - Chocolate",
+      "productId": "e5310e52-a8dd-5817-b233-c5f126d5b6a4",
+      "status": "missing_flavor",
+      "optionGroupId": "a2e35b47-3d77-53c3-905c-fc00607abfd4",
+      "size": "330 ml",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062039_I7XO_i.jpg"
+    },
+    {
+      "sourceItemId": "3e790da5-a9de-426a-8d2a-a6b37bab11b5",
+      "sourceTitle": "Milke-Shake (330ml) - Morango",
+      "productId": "e5310e52-a8dd-5817-b233-c5f126d5b6a4",
+      "status": "missing_flavor",
+      "optionGroupId": "a2e35b47-3d77-53c3-905c-fc00607abfd4",
+      "size": "330 ml",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062042_Y1UY_i.jpg"
+    },
+    {
+      "sourceItemId": "d90a2447-f638-43c7-816d-50da1ffe2c25",
+      "sourceTitle": "Milk-Shake (330 Ml) - Leite Cond.",
+      "productId": "e5310e52-a8dd-5817-b233-c5f126d5b6a4",
+      "status": "missing_flavor",
+      "optionGroupId": "a2e35b47-3d77-53c3-905c-fc00607abfd4",
+      "size": "330 ml",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062044_NU8H_i.jpg"
+    },
+    {
+      "sourceItemId": "80e61ae9-c369-47bd-8262-a9798f66d032",
+      "sourceTitle": "Milk Shake (330ml) - Ninho",
+      "productId": "e5310e52-a8dd-5817-b233-c5f126d5b6a4",
+      "status": "missing_flavor",
+      "optionGroupId": "a2e35b47-3d77-53c3-905c-fc00607abfd4",
+      "size": "330 ml",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062045_IKIC_i.jpg"
+    },
+    {
+      "sourceItemId": "722f4a4b-b2ec-42d8-bfe5-75e3e8c92d2e",
+      "sourceTitle": "Milk Shake (330ml) - Negresco",
+      "productId": "e5310e52-a8dd-5817-b233-c5f126d5b6a4",
+      "status": "missing_flavor",
+      "optionGroupId": "a2e35b47-3d77-53c3-905c-fc00607abfd4",
+      "size": "330 ml",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062047_WJY4_i.jpg"
+    },
+    {
+      "sourceItemId": "949b1f7a-c998-4102-bcb2-117bca31faaa",
+      "sourceTitle": "Paleta Mexicana      Açaí",
+      "productId": "bb0a1c89-89f8-5c4f-84f0-cdba937f5314",
+      "status": "missing_product",
+      "inferredPriceCents": 1200
+    },
+    {
+      "sourceItemId": "b519eb9d-a556-41f6-b886-6610496e7530",
+      "sourceTitle": "Paleta Mexicana        Leite Ninho",
+      "productId": "89b5b11d-c490-540d-bfb4-6b146e415b41",
+      "status": "missing_product",
+      "inferredPriceCents": 1200
+    },
+    {
+      "sourceItemId": "379ab491-4737-43a7-9f57-ec139b6acd42",
+      "sourceTitle": "Paleta Mexicana      Morango (Fruta)",
+      "productId": "64660628-5044-59a4-8554-a0e308aa7536",
+      "status": "missing_product",
+      "inferredPriceCents": 1200
+    },
+    {
+      "sourceItemId": "f5cf0d61-b91d-4c73-ba7a-238006446e3e",
+      "sourceTitle": "Adicional De Casquinha",
+      "productId": "69ba60aa-8cef-5696-af1b-3d1fea3d0538",
+      "status": "review_equivalence"
+    },
+    {
+      "sourceItemId": "4fad0f57-afef-4617-abb4-e6fc7128b70e",
+      "sourceTitle": "Picolé de Groselha",
+      "productId": "ec857aaf-c777-50bc-98d7-c4c670f924a4",
+      "status": "missing_flavor",
+      "optionGroupId": "219cb1df-88ab-5b4e-8b43-550cc4cab4b6"
+    },
+    {
+      "sourceItemId": "2fc9e548-b0ee-4379-bafa-e875938506a8",
+      "sourceTitle": "Picolé de Limão",
+      "productId": "ec857aaf-c777-50bc-98d7-c4c670f924a4",
+      "status": "missing_flavor",
+      "optionGroupId": "219cb1df-88ab-5b4e-8b43-550cc4cab4b6"
+    },
+    {
+      "sourceItemId": "8f691452-93dc-425b-9012-b1524b59329a",
+      "sourceTitle": "Picolé de Pinta Lingua (Azul)",
+      "productId": "ec857aaf-c777-50bc-98d7-c4c670f924a4",
+      "status": "missing_flavor",
+      "optionGroupId": "219cb1df-88ab-5b4e-8b43-550cc4cab4b6"
+    },
+    {
+      "sourceItemId": "c02af975-76d2-4aeb-aef2-784281a5a94e",
+      "sourceTitle": "Picolé de Tangerina",
+      "productId": "ec857aaf-c777-50bc-98d7-c4c670f924a4",
+      "status": "missing_flavor",
+      "optionGroupId": "219cb1df-88ab-5b4e-8b43-550cc4cab4b6"
+    },
+    {
+      "sourceItemId": "dd3e37a1-db05-46d9-8e19-bbf804b3e6c3",
+      "sourceTitle": "Picolé de Uva",
+      "productId": "ec857aaf-c777-50bc-98d7-c4c670f924a4",
+      "status": "missing_flavor",
+      "optionGroupId": "219cb1df-88ab-5b4e-8b43-550cc4cab4b6"
+    },
+    {
+      "sourceItemId": "c72b868b-b510-4a66-bbc4-a141208a6cb8",
+      "sourceTitle": "Picolé Chocomenta",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "c366cc15-a89b-46c6-8158-9fee2a021cd6",
+      "sourceTitle": "Picolé de Abacaxi",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "b9727666-90e3-48d6-994e-68f332dfa752",
+      "sourceTitle": "Picolé de Açaí",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "2cb6ff0f-af6e-4f7e-810e-91b4aa33bad2",
+      "sourceTitle": "Picolé de Biscoito",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "306d200e-253f-40ce-9994-3135350737e6",
+      "sourceTitle": "Picolé de Cajá",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "09330768-ab92-4cd2-abc6-4cdfee924897",
+      "sourceTitle": "Picolé de Chocolate",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "7d4a8160-7be7-4fbe-8c87-74c3e8b237a3",
+      "sourceTitle": "Picolé de Coco",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "60c545cd-1694-4a9e-ac61-bb7f00238e71",
+      "sourceTitle": "Picolé de Cupuaçu",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "69d2c4ea-bfca-471a-bdd8-bf6bd9d6e675",
+      "sourceTitle": "Picolé de Goiaba",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "5dfea907-8e5c-4966-9ec3-b6bcf1c10e2d",
+      "sourceTitle": "Picolé de Graviola",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "aadbe9a3-db35-4547-98bf-bb451e8bd878",
+      "sourceTitle": "Picolé de Leite Condensado",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "65ff321e-ee76-4696-9c74-55386f9d6925",
+      "sourceTitle": "Picolé de Leite Ninho",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "0be9e6ac-ec21-4a4a-a2a3-63a68529517e",
+      "sourceTitle": "Picolé de Maracujá",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "34a7540d-803f-4fc4-b17b-5d857995132b",
+      "sourceTitle": "Picolé de Milho Verde",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "d17b8e4c-d446-4818-b6a5-2d4c43638720",
+      "sourceTitle": "Picolé de Morango",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "41317784-a342-4ff3-b4ce-9d8a66ca3440",
+      "sourceTitle": "Picolé de Tapioca",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "4be56d16-c65f-4381-9ec1-7055ef708fe5",
+      "sourceTitle": "Picolé Doce De Leite",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "ab21662c-a637-4a51-abf9-ed7aed13dfc3",
+      "sourceTitle": "Picolé Paraense",
+      "productId": "8e9e370b-3856-5300-896c-9395d161c0e3",
+      "status": "missing_flavor",
+      "optionGroupId": "6711a012-2a9f-5e48-9318-7380b51758d2"
+    },
+    {
+      "sourceItemId": "71cb4af9-2761-4861-9098-d7ec41cf77df",
+      "sourceTitle": "Skimo De Coco",
+      "productId": "33b9116d-3f3f-59b3-a8e8-aebb1dc70b29",
+      "status": "missing_flavor",
+      "optionGroupId": "ab99c0a0-c91c-5da9-9164-0b817560e0f6"
+    },
+    {
+      "sourceItemId": "d3a61a6c-5fb9-4bcb-adc0-8b011149f6c3",
+      "sourceTitle": "Skimo De Maracujá",
+      "productId": "33b9116d-3f3f-59b3-a8e8-aebb1dc70b29",
+      "status": "missing_flavor",
+      "optionGroupId": "ab99c0a0-c91c-5da9-9164-0b817560e0f6"
+    },
+    {
+      "sourceItemId": "a77bfac9-8a95-4317-9646-e8419256c3de",
+      "sourceTitle": "Skimo Lokura - Morango Recheado",
+      "productId": "33b9116d-3f3f-59b3-a8e8-aebb1dc70b29",
+      "status": "missing_flavor",
+      "optionGroupId": "ab99c0a0-c91c-5da9-9164-0b817560e0f6"
+    },
+    {
+      "sourceItemId": "3dcfba3d-fbd0-4d7d-9a4d-746a86cd0b2f",
+      "sourceTitle": "Skimo Tradicional",
+      "productId": "33b9116d-3f3f-59b3-a8e8-aebb1dc70b29",
+      "status": "missing_flavor",
+      "optionGroupId": "ab99c0a0-c91c-5da9-9164-0b817560e0f6"
+    },
+    {
+      "sourceItemId": "3d84d770-e7c6-4d26-aac0-20da371352a4",
+      "sourceTitle": "Açaí C/ Leite  -  400 Ml.",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Açaí c/ leite",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282121_IAJu_s.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "f7ce1ce4-1cf6-4e36-80c9-f14c1a5252b2",
+      "sourceTitle": "Goiaba C/ Leite  -  400 Ml.",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Goiaba c/ leite",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282122_d5qA_s.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "6c577082-5682-430f-887e-58f4d1e46858",
+      "sourceTitle": "Graviola C/ Leite  -  400 Ml.",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Graviola c/ leite",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282123_g7zR_s.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "36562953-fcf9-4a0e-b1f6-64ee4542251d",
+      "sourceTitle": "Maracujá C/ Leite  -  400 Ml.",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Maracujá c/ leite",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282124_qvLl_s.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "8858ab52-731b-4a8e-b8bc-6469f4f48453",
+      "sourceTitle": "Suco De Abacaxi  -  400 Ml.",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Abacaxi",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282055_oVTA_s.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "4572f498-62a5-458a-a586-d2461d3db570",
+      "sourceTitle": "Suco De Açaí  -  400 Ml.",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Açaí",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282056_nUrl_s.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "536188c4-15b5-43c4-9251-3eae6c582618",
+      "sourceTitle": "Suco De Cupuaçu  -  400 Ml.",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Cupuaçu",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282105_R3Wk_s.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "b5edbe67-b8da-40ee-a1e3-0ed8f63173f7",
+      "sourceTitle": "Suco De Goiaba  -  400 Ml.",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Goiaba",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282056_fhDR_s.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "815a5c3e-0cd5-433c-acf1-ccef66969973",
+      "sourceTitle": "Suco De Graviola  -  400 Ml.",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Graviola",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282057_iCdq_s.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "3bb5f10e-376f-4058-a546-2cb9b5c27903",
+      "sourceTitle": "Suco De Laranja  -  400 Ml.",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Laranja",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282057_Oo64_s.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "88180abe-088b-4cce-b669-a2b60a9236b7",
+      "sourceTitle": "Suco De Maracujá  -  400 Ml.",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Maracujá",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282110_NzKr_s.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "4efd4f3a-31cd-432b-bb75-210f0dc44d58",
+      "sourceTitle": "Suco Verde Laranja - 400ml",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Couve, Hotelã,Gengibre ,Laranja E Açucar.",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202307051919_B1IT_i.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "10278dd1-00cf-428d-b6c4-e6d226f8d688",
+      "sourceTitle": "Suco De Limão - 400ml",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Limao Espremido Batido Com Açucar E Gelo.",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082022_14V0_i.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "89b3de69-88c3-4ab9-9f6b-fef33b6f2baa",
+      "sourceTitle": "Suco de morango - 400ml",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Morango Batido.",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082028_Y75Q_i.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "64597610-0ab4-4bce-b7af-92f159252985",
+      "sourceTitle": "Suco de morango c/ leite - 400ml",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Fruta morango batida com gelo, leite e açucar.",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082034_X421_i.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "9ce6e3ac-b923-4bbf-8996-9dd9df7c1718",
+      "sourceTitle": "Suco de limão c/ leite - 400ml",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Suco do limão batido com gelo e açúcar.",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082038_TUMX_i.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "0fb8ed3c-fb5c-4b38-be0b-92ad79169183",
+      "sourceTitle": "Suco de cajá - 400ml",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Poupa de cajá batida com gelo, açúcar e água filtrada.",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082040_M0P1_i.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "794ead21-523a-44f2-a3c2-649996618b5a",
+      "sourceTitle": "Suco de cajá c/ leite - 400ml",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Poupa de cajá batida com leite, gelo e açúcar.",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082049_FJ02_i.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "b69cc896-113a-48d2-b5b4-dc5f4c6af5ce",
+      "sourceTitle": "Suco de acerola - 400ml",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Poupa de acerola batida com gelo, água filtrada e açúcar.",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082052_T82D_i.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "9360ae93-45e9-48d6-93cf-6bfa2bceaafa",
+      "sourceTitle": "Suco de Acerola c/ leite - 400ml",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Poupa de acerola batido com leite, gelo, açúcar.",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082056_P744_i.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "03428b4c-413d-488a-8427-ef074f154278",
+      "sourceTitle": "Suco de abacaxi c/ leite - 400ml",
+      "productId": "758e4be7-059e-50c1-bf0f-c119bc81aec3",
+      "status": "existing_flavor_and_optional_milk",
+      "description": "Poupa de abacaxi ,leite, açúcar e água filtrada.",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082059_206G_i.jpg",
+      "sourceSize": "400 ml"
+    },
+    {
+      "sourceItemId": "03ee7234-69c3-4fd0-86cd-9ab07f133b48",
+      "sourceTitle": "Agua Mineral  500 Ml.",
+      "productId": "1c96e374-4f20-5662-b3f6-0aa819de96d1",
+      "status": "existing_product_and_size",
+      "description": "500 ml.",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212242_8PWe_a.jpg"
+    },
+    {
+      "sourceItemId": "a8a368e8-9c0a-4bdb-a5f8-dcc1f5e6295e",
+      "sourceTitle": "Agua Mineral C/ Gás 500 Ml.",
+      "productId": "f812af90-1572-56c1-a528-517fd38402d1",
+      "status": "existing_product_and_size",
+      "description": "C/ gás",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212244_saeh_a.jpg"
+    },
+    {
+      "sourceItemId": "86f4074d-fa55-47df-bddd-c3fb890dcb16",
+      "sourceTitle": "Coca Cola 600 Ml.",
+      "productId": "3d0483d1-a393-5418-a442-5301dee5d73c",
+      "status": "missing_brand_size",
+      "description": "600 ml.",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212227_M18b_c.jpg"
+    },
+    {
+      "sourceItemId": "d2e43c9e-bd7d-4a44-ac1b-15ecf9b08441",
+      "sourceTitle": "Coca Cola Lata 350 Ml.",
+      "productId": "3d0483d1-a393-5418-a442-5301dee5d73c",
+      "status": "missing_brand_size",
+      "description": "350 ml.",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212226_znWm_c.jpg"
+    },
+    {
+      "sourceItemId": "694170fb-8f75-4bbe-be86-7cb696b5be1c",
+      "sourceTitle": "Coca Cola Litro",
+      "productId": "3d0483d1-a393-5418-a442-5301dee5d73c",
+      "status": "missing_brand_size",
+      "description": "1 litro",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212232_aS2c_c.jpg"
+    },
+    {
+      "sourceItemId": "e66aa68e-2630-4230-927c-a3809add8311",
+      "sourceTitle": "Coca-Cola Original 1,5l",
+      "productId": "3d0483d1-a393-5418-a442-5301dee5d73c",
+      "status": "missing_brand_size",
+      "description": "Garrafa 1,5l",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/820af392-002c-47b1-bfae-d7ef31743c7f/202210192214_pcatvoxm2a.jpg"
+    },
+    {
+      "sourceItemId": "54dd27e7-fdff-4852-ba62-b5d4825faaf4",
+      "sourceTitle": "Coca Cola Zero 600ml",
+      "productId": "3d0483d1-a393-5418-a442-5301dee5d73c",
+      "status": "missing_brand_size",
+      "description": "Unidade 1un",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/820af392-002c-47b1-bfae-d7ef31743c7f/202210200323_n3x4i2ox7m.jpg"
+    },
+    {
+      "sourceItemId": "7fd107fb-1fa3-43d0-a302-87cdfa990088",
+      "sourceTitle": "Fanta Laranja 350 Ml.",
+      "productId": "3d0483d1-a393-5418-a442-5301dee5d73c",
+      "status": "missing_brand_size",
+      "description": "350 ml.",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212228_ICuw_f.jpg"
+    },
+    {
+      "sourceItemId": "70eade3d-7429-4c5d-b239-09f8db3a9278",
+      "sourceTitle": "Fanta Laranja Litro",
+      "productId": "3d0483d1-a393-5418-a442-5301dee5d73c",
+      "status": "missing_brand_size",
+      "description": "1 litro",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212233_wRda_f.jpg"
+    },
+    {
+      "sourceItemId": "1cf67bf9-f130-4a94-a246-5f407fe24df7",
+      "sourceTitle": "Refrigerante Coca Cola Lata Zero",
+      "productId": "3d0483d1-a393-5418-a442-5301dee5d73c",
+      "status": "missing_brand_size",
+      "description": "Lata 350ml",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/820af392-002c-47b1-bfae-d7ef31743c7f/202306271636_0l49q8eqdxpf.jpg"
+    },
+    {
+      "sourceItemId": "88e37cce-5cb0-40aa-a263-77380ac70006",
+      "sourceTitle": "Refrigerante Guaraná Quinarí 1l",
+      "productId": "370c898d-ea86-5e2b-8f79-a5e34ec0134a",
+      "status": "existing_product_and_size",
+      "description": "Garrafa 1l",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/820af392-002c-47b1-bfae-d7ef31743c7f/202210200300_pxyori2ja8k.jpg"
+    },
+    {
+      "sourceItemId": "88b83714-0c73-4089-a03c-358c4d4a5b93",
+      "sourceTitle": "Refrigerante Guaraná Quinari Pet 500ml",
+      "productId": "370c898d-ea86-5e2b-8f79-a5e34ec0134a",
+      "status": "existing_product_and_size",
+      "description": "Garrafa 500ml",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/820af392-002c-47b1-bfae-d7ef31743c7f/202210192143_2luelztrjnt.jpg"
+    },
+    {
+      "sourceItemId": "4574795e-a820-4ecb-a02b-6e5cbc362fd6",
+      "sourceTitle": "Schweppes Citrus 350ml",
+      "productId": "3d0483d1-a393-5418-a442-5301dee5d73c",
+      "status": "missing_brand_size",
+      "description": "Lata 350ml",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/820af392-002c-47b1-bfae-d7ef31743c7f/202511241039_34oiums83ch.png"
+    },
+    {
+      "sourceItemId": "f90802eb-4895-417b-aab3-ac91c27409fa",
+      "sourceTitle": "Sprite Original 350ml",
+      "productId": "3d0483d1-a393-5418-a442-5301dee5d73c",
+      "status": "missing_brand_size",
+      "description": "Unidade 350ml",
+      "imageUrl": "https://static.ifood-static.com.br/image/upload/t_high/pratos/820af392-002c-47b1-bfae-d7ef31743c7f/202511241907_7b3j7oo5x0n.png"
+    },
+    {
+      "sourceItemId": "fdf355dd-a9ff-3e57-a89c-687b9e4befba",
+      "sourceTitle": "Pizzas Tradicionais PEQUENA (4 PEDAÇOS)",
+      "productId": "de857250-4104-55bc-b0d0-984911048ddc",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Tradicionais",
+      "sourceDetailCaptured": true
+    },
+    {
+      "sourceItemId": "fb009787-a059-3d23-a5fd-dc21de916e69",
+      "sourceTitle": "Pizzas Tradicionais MÉDIA 2 SABORES (6 PEDAÇOS)",
+      "productId": "a1ce21b1-b9af-5f82-8066-0c8d465991f1",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Tradicionais",
+      "sourceDetailCaptured": false
+    },
+    {
+      "sourceItemId": "e4a536d2-ce24-321e-aa1a-6b049665b6ae",
+      "sourceTitle": "Pizzas Tradicionais MÉDIA (6 PEDAÇOS)",
+      "productId": "a1ce21b1-b9af-5f82-8066-0c8d465991f1",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Tradicionais",
+      "sourceDetailCaptured": false
+    },
+    {
+      "sourceItemId": "bd03babc-6a4b-317e-a0fb-bf2e91b28640",
+      "sourceTitle": "Pizzas Tradicionais GRANDE 2 SABORES (9 PEDAÇOS)",
+      "productId": "631ffabb-6c1a-510f-903e-9400fab44861",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Tradicionais",
+      "sourceDetailCaptured": false
+    },
+    {
+      "sourceItemId": "f08957d1-b238-33cd-9703-fcabe1e733a5",
+      "sourceTitle": "Pizzas Tradicionais GRANDE 3 SABORES (9 PEDAÇOS)",
+      "productId": "631ffabb-6c1a-510f-903e-9400fab44861",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Tradicionais",
+      "sourceDetailCaptured": false
+    },
+    {
+      "sourceItemId": "d6e13f67-6cf4-3e74-b33d-2bc1105f704f",
+      "sourceTitle": "Pizzas Tradicionais GRANDE (9 PEDAÇOS)",
+      "productId": "631ffabb-6c1a-510f-903e-9400fab44861",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Tradicionais",
+      "sourceDetailCaptured": false
+    },
+    {
+      "sourceItemId": "afc48217-1194-38c0-a746-6bd4000df835",
+      "sourceTitle": "Pizzas Doces PEQUENA (4 PEDAÇOS)",
+      "productId": "de857250-4104-55bc-b0d0-984911048ddc",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Doces",
+      "sourceDetailCaptured": false
+    },
+    {
+      "sourceItemId": "b7004b32-3430-3776-85e2-abe7e27fb8ea",
+      "sourceTitle": "Pizzas Doces MÉDIA 2 SABORES (6 PEDAÇOS)",
+      "productId": "a1ce21b1-b9af-5f82-8066-0c8d465991f1",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Doces",
+      "sourceDetailCaptured": false
+    },
+    {
+      "sourceItemId": "66b8dc93-b92a-3351-9dfa-0a8db6d956ff",
+      "sourceTitle": "Pizzas Doces MÉDIA (6 PEDAÇOS)",
+      "productId": "a1ce21b1-b9af-5f82-8066-0c8d465991f1",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Doces",
+      "sourceDetailCaptured": false
+    },
+    {
+      "sourceItemId": "38eee092-78ac-351b-8f27-3d2420d0834f",
+      "sourceTitle": "Pizzas Doces GRANDE 2 SABORES (9 PEDAÇOS)",
+      "productId": "631ffabb-6c1a-510f-903e-9400fab44861",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Doces",
+      "sourceDetailCaptured": false
+    },
+    {
+      "sourceItemId": "cd67b755-0884-3bf5-88f2-c6e0c1e3415d",
+      "sourceTitle": "Pizzas Doces GRANDE 3 SABORES (9 PEDAÇOS)",
+      "productId": "631ffabb-6c1a-510f-903e-9400fab44861",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Doces",
+      "sourceDetailCaptured": false
+    },
+    {
+      "sourceItemId": "c7080cd2-4fa6-3229-bf04-b929437f71b4",
+      "sourceTitle": "Pizzas Doces GRANDE (9 PEDAÇOS)",
+      "productId": "631ffabb-6c1a-510f-903e-9400fab44861",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Doces",
+      "sourceDetailCaptured": false
+    },
+    {
+      "sourceItemId": "aeeb58ee-4250-36cd-8aca-6936f8bca6de",
+      "sourceTitle": "Pizzas Especiais PEQUENA (4 PEDAÇOS)",
+      "productId": "de857250-4104-55bc-b0d0-984911048ddc",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Especiais",
+      "sourceDetailCaptured": false
+    },
+    {
+      "sourceItemId": "c6f0b993-cdc0-3a5a-b8e7-b1fbdde8d6c3",
+      "sourceTitle": "Pizzas Especiais MÉDIA 2 SABORES (6 PEDAÇOS)",
+      "productId": "a1ce21b1-b9af-5f82-8066-0c8d465991f1",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Especiais",
+      "sourceDetailCaptured": false
+    },
+    {
+      "sourceItemId": "8c4ba148-5dc3-3976-b723-90b30fc07603",
+      "sourceTitle": "Pizzas Especiais MÉDIA (6 PEDAÇOS)",
+      "productId": "a1ce21b1-b9af-5f82-8066-0c8d465991f1",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Especiais",
+      "sourceDetailCaptured": false
+    },
+    {
+      "sourceItemId": "11763fc2-8224-370c-b4f5-6c4ae8e15054",
+      "sourceTitle": "Pizzas Especiais GRANDE 2 SABORES (9 PEDAÇOS)",
+      "productId": "631ffabb-6c1a-510f-903e-9400fab44861",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Especiais",
+      "sourceDetailCaptured": false
+    },
+    {
+      "sourceItemId": "700acb28-e721-3ad0-b6e3-f85c7387ac6e",
+      "sourceTitle": "Pizzas Especiais GRANDE (9 PEDAÇOS)",
+      "productId": "631ffabb-6c1a-510f-903e-9400fab44861",
+      "status": "existing_size_flavor_model",
+      "sourceCategory": "Pizzas Especiais",
+      "sourceDetailCaptured": false
+    }
+  ],
+  "coverage": {
+    "menuCategories": 11,
+    "menuItems": 131,
+    "itemsRequiringDetail": 21,
+    "detailItemsCaptured": [
+      "fdf355dd-a9ff-3e57-a89c-687b9e4befba"
+    ],
+    "uncapturedDetailItemIds": [
+      "fb009787-a059-3d23-a5fd-dc21de916e69",
+      "e4a536d2-ce24-321e-aa1a-6b049665b6ae",
+      "bd03babc-6a4b-317e-a0fb-bf2e91b28640",
+      "f08957d1-b238-33cd-9703-fcabe1e733a5",
+      "d6e13f67-6cf4-3e74-b33d-2bc1105f704f",
+      "afc48217-1194-38c0-a746-6bd4000df835",
+      "b7004b32-3430-3776-85e2-abe7e27fb8ea",
+      "66b8dc93-b92a-3351-9dfa-0a8db6d956ff",
+      "38eee092-78ac-351b-8f27-3d2420d0834f",
+      "cd67b755-0884-3bf5-88f2-c6e0c1e3415d",
+      "c7080cd2-4fa6-3229-bf04-b929437f71b4",
+      "aeeb58ee-4250-36cd-8aca-6936f8bca6de",
+      "c6f0b993-cdc0-3a5a-b8e7-b1fbdde8d6c3",
+      "8c4ba148-5dc3-3976-b723-90b30fc07603",
+      "11763fc2-8224-370c-b4f5-6c4ae8e15054",
+      "700acb28-e721-3ad0-b6e3-f85c7387ac6e",
+      "377a2773-8f0c-46ae-b9a9-c61921459aa5",
+      "854d30f3-8b30-496a-ba63-e6915631cbfb",
+      "3d464491-b1d7-48d8-8d7c-29ec1eb987ce",
+      "7d54a8a6-efed-4e12-8cdc-39d201532bb5"
+    ],
+    "limitation": "iFood retornou HTTP 403 nas consultas de detalhes seguintes; catálogo principal completo, complementos parcialmente observados. Não inferir ausência de complementos a partir desse bloqueio."
+  },
+  "applyContract": {
+    "fillCreatedAtAndUpdatedAt": "CURRENT_TIMESTAMP para inserções; updatedAt para atualizações",
+    "stripMetadataKeys": [
+      "sourceItemIds",
+      "reason",
+      "expected"
+    ],
+    "verifyExpectedBeforeWrite": true,
+    "transactionRequired": true,
+    "remoteExecutionAuthorized": false
+  }
+}

@@ -1,0 +1,427 @@
+{
+  "coverage": {
+    "menuCategories": 11,
+    "menuItems": 131,
+    "itemsRequiringDetail": 21,
+    "detailItemsCaptured": [
+      "fdf355dd-a9ff-3e57-a89c-687b9e4befba"
+    ],
+    "uncapturedDetailItemIds": [
+      "fb009787-a059-3d23-a5fd-dc21de916e69",
+      "e4a536d2-ce24-321e-aa1a-6b049665b6ae",
+      "bd03babc-6a4b-317e-a0fb-bf2e91b28640",
+      "f08957d1-b238-33cd-9703-fcabe1e733a5",
+      "d6e13f67-6cf4-3e74-b33d-2bc1105f704f",
+      "afc48217-1194-38c0-a746-6bd4000df835",
+      "b7004b32-3430-3776-85e2-abe7e27fb8ea",
+      "66b8dc93-b92a-3351-9dfa-0a8db6d956ff",
+      "38eee092-78ac-351b-8f27-3d2420d0834f",
+      "cd67b755-0884-3bf5-88f2-c6e0c1e3415d",
+      "c7080cd2-4fa6-3229-bf04-b929437f71b4",
+      "aeeb58ee-4250-36cd-8aca-6936f8bca6de",
+      "c6f0b993-cdc0-3a5a-b8e7-b1fbdde8d6c3",
+      "8c4ba148-5dc3-3976-b723-90b30fc07603",
+      "11763fc2-8224-370c-b4f5-6c4ae8e15054",
+      "700acb28-e721-3ad0-b6e3-f85c7387ac6e",
+      "377a2773-8f0c-46ae-b9a9-c61921459aa5",
+      "854d30f3-8b30-496a-ba63-e6915631cbfb",
+      "3d464491-b1d7-48d8-8d7c-29ec1eb987ce",
+      "7d54a8a6-efed-4e12-8cdc-39d201532bb5"
+    ],
+    "limitation": "iFood retornou HTTP 403 nas consultas de detalhes seguintes; catálogo principal completo, complementos parcialmente observados. Não inferir ausência de complementos a partir desse bloqueio."
+  },
+  "items": [
+    {
+      "openingHours": [
+        {
+          "DayOfWeek": "FRIDAY",
+          "OpeningTime": "00:00",
+          "ClosingTime": "23:59:59"
+        },
+        {
+          "DayOfWeek": "MONDAY",
+          "OpeningTime": "00:00",
+          "ClosingTime": "23:59:59"
+        },
+        {
+          "DayOfWeek": "SATURDAY",
+          "OpeningTime": "00:00",
+          "ClosingTime": "23:59:59"
+        },
+        {
+          "DayOfWeek": "SUNDAY",
+          "OpeningTime": "00:00",
+          "ClosingTime": "23:59:59"
+        },
+        {
+          "DayOfWeek": "THURSDAY",
+          "OpeningTime": "00:00",
+          "ClosingTime": "23:59:59"
+        },
+        {
+          "DayOfWeek": "TUESDAY",
+          "OpeningTime": "00:00",
+          "ClosingTime": "23:59:59"
+        },
+        {
+          "DayOfWeek": "WEDNESDAY",
+          "OpeningTime": "00:00",
+          "ClosingTime": "23:59:59"
+        }
+      ],
+      "productTags": [
+        {
+          "group": "PIZZA_SIZE",
+          "tags": [
+            "Pequena"
+          ]
+        }
+      ],
+      "discoveryTags": [],
+      "operationModes": [],
+      "posCode": "",
+      "id": "fdf355dd-a9ff-3e57-a89c-687b9e4befba",
+      "code": "fdf355dd-a9ff-3e57-a89c-687b9e4befba",
+      "description": "PEQUENA (4 PEDAÇOS)",
+      "details": "",
+      "logoUrl": "",
+      "needChoices": true,
+      "unitPrice": 0,
+      "unitMinPrice": 67.2,
+      "ean": "",
+      "scalePrices": [],
+      "availability": "AVAILABLE",
+      "enabled": true,
+      "type": "LEGACY_PIZZA",
+      "order": 0,
+      "choices": [
+        {
+          "code": "65b44284-7910-3deb-9266-c895884b2833",
+          "name": "Escolha a sua Preferência",
+          "min": 1,
+          "max": 1,
+          "garnishItens": [
+            {
+              "id": "6984d919-0b37-3bea-aa6e-fa1ba069646f",
+              "code": "6984d919-0b37-3bea-aa6e-fa1ba069646f",
+              "description": "Massa Tradicional + Borda Cheddar",
+              "details": "",
+              "logoUrl": "",
+              "unitPrice": 23.8
+            },
+            {
+              "id": "c77ae383-ff79-3a4e-94db-50735e32a1e9",
+              "code": "c77ae383-ff79-3a4e-94db-50735e32a1e9",
+              "description": "Massa Tradicional + Borda Chocolate",
+              "details": "",
+              "logoUrl": "",
+              "unitPrice": 23.8
+            },
+            {
+              "id": "9a079755-9a38-36e3-9601-e55eebff76da",
+              "code": "9a079755-9a38-36e3-9601-e55eebff76da",
+              "description": "Massa Tradicional + Borda Requeijão",
+              "details": "",
+              "logoUrl": "",
+              "unitPrice": 23.8
+            },
+            {
+              "id": "f55f631e-de5a-3391-b98c-9c4e9ee87420",
+              "code": "f55f631e-de5a-3391-b98c-9c4e9ee87420",
+              "description": "Massa Tradicional + Borda Tradicional",
+              "details": "",
+              "logoUrl": "",
+              "unitPrice": 0
+            }
+          ],
+          "order": 0
+        },
+        {
+          "code": "ea844502-c3ff-36db-a33a-f637e5fbc332",
+          "name": "Escolha um sabor",
+          "min": 1,
+          "max": 1,
+          "garnishItens": [
+            {
+              "id": "bb6ab1f1-4e47-39bf-90a7-6df637997110",
+              "code": "bb6ab1f1-4e47-39bf-90a7-6df637997110",
+              "description": "Dom Gourmet",
+              "details": "Molho, mussarela, presunto, calabresa, palmito, cebola, pimentão, orégano",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192117_0251_i.jpg",
+              "unitPrice": 78.4
+            },
+            {
+              "id": "e1e62bd9-ae7c-30f9-a270-7b92a0cdfff1",
+              "code": "e1e62bd9-ae7c-30f9-a270-7b92a0cdfff1",
+              "description": "Especial da Casa",
+              "details": "Molho, mussarela, frango, milho, requeijão, ovos, creme de leite, orégano e azeitonas",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192117_JNJ3_i.jpg",
+              "unitPrice": 78.4
+            },
+            {
+              "id": "b3e9600a-7dfe-3d7a-8294-288f0fdf266b",
+              "code": "b3e9600a-7dfe-3d7a-8294-288f0fdf266b",
+              "description": "Soberana",
+              "details": "Molho, mussarela, presunto, calabresa, bacon, ovos, palmito, milho, cebola, pimentão, orégano e azeitonas",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192119_Y5WD_i.jpg",
+              "unitPrice": 78.4
+            },
+            {
+              "id": "85332eb1-98db-30f5-b6dc-de5d93fe842e",
+              "code": "85332eb1-98db-30f5-b6dc-de5d93fe842e",
+              "description": "Vegetariana",
+              "details": "Molho, mussarela, manjeiricão, palmito,milho verde, ervilha, pimentão, cebola, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192122_JB4T_i.jpg",
+              "unitPrice": 96
+            },
+            {
+              "id": "3b35f786-6a0c-3b0d-a368-b11963175d51",
+              "code": "3b35f786-6a0c-3b0d-a368-b11963175d51",
+              "description": "Crocante",
+              "details": "Molho, mussarela, bacon, batata palha, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192122_OSGQ_i.jpg",
+              "unitPrice": 78.4
+            },
+            {
+              "id": "7ec8034d-bf83-3bf9-8007-a36ae2a513b5",
+              "code": "7ec8034d-bf83-3bf9-8007-a36ae2a513b5",
+              "description": "Quatro Queijos",
+              "details": "Molho, mussarela, provolone, parmesão, requeijão, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192123_H4QU_i.jpg",
+              "unitPrice": 72.8
+            },
+            {
+              "id": "dc32eab7-2573-3e04-aa73-debecce3bd19",
+              "code": "dc32eab7-2573-3e04-aa73-debecce3bd19",
+              "description": "Provolone",
+              "details": "Molho, mussarela, provolone, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192124_FPNY_i.jpg",
+              "unitPrice": 67.2
+            },
+            {
+              "id": "447377f3-b8fe-3032-9c47-6e32018bd661",
+              "code": "447377f3-b8fe-3032-9c47-6e32018bd661",
+              "description": "Portuguesa com Requeijão",
+              "details": "Molho, mussarela, calabresa, presunto, cebola, ovos, orégano, azeitona e requeijão",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192125_6701_i.jpg",
+              "unitPrice": 72.8
+            },
+            {
+              "id": "b4f979b7-ec6f-33af-adcd-4409ba886720",
+              "code": "b4f979b7-ec6f-33af-adcd-4409ba886720",
+              "description": "Portuguesa",
+              "details": "Molho, mussarela, calabresa, presunto, cebola, ovos, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192126_2HBJ_i.jpg",
+              "unitPrice": 67.2
+            },
+            {
+              "id": "a2bd33dd-11cc-3154-bf85-1e30608becfa",
+              "code": "a2bd33dd-11cc-3154-bf85-1e30608becfa",
+              "description": "Palmito",
+              "details": "Molho, mussarela, palmito, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192126_5804_i.jpg",
+              "unitPrice": 67.2
+            },
+            {
+              "id": "bb11cf7a-aaf4-35a2-ba92-26694ef135d2",
+              "code": "bb11cf7a-aaf4-35a2-ba92-26694ef135d2",
+              "description": "Napolitana com Requeijão",
+              "details": "Molho, mussarela, tomate, parmesão, orégano, azeitona e requeijão",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192127_4R4A_i.jpg",
+              "unitPrice": 72.8
+            },
+            {
+              "id": "8def1c74-2f96-3174-9e9b-ba615db51cf8",
+              "code": "8def1c74-2f96-3174-9e9b-ba615db51cf8",
+              "description": "Napolitana",
+              "details": "Molho, mussarela, tomate, parmesão, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192128_2YA7_i.jpg",
+              "unitPrice": 67.2
+            },
+            {
+              "id": "b2750055-5d07-37bb-b1a7-f697a2ba64c5",
+              "code": "b2750055-5d07-37bb-b1a7-f697a2ba64c5",
+              "description": "Mussarela",
+              "details": "Molho, mussarela, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192129_SG3Y_i.jpg",
+              "unitPrice": 67.2
+            },
+            {
+              "id": "99eb9fb4-f211-3105-97d8-69e6861e36f9",
+              "code": "99eb9fb4-f211-3105-97d8-69e6861e36f9",
+              "description": "Milho Verde",
+              "details": "Molho, mussarela, milho verde, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192129_GCJP_i.jpg",
+              "unitPrice": 67.2
+            },
+            {
+              "id": "5de25932-7de9-3597-92bb-122338d55e59",
+              "code": "5de25932-7de9-3597-92bb-122338d55e59",
+              "description": "Marguerita",
+              "details": "Molho, mussarela, menjericão desidratado, tomate, parmesão e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192130_C1G3_i.jpg",
+              "unitPrice": 67.2
+            },
+            {
+              "id": "c89a2e98-7dfe-3c04-892c-0f3347949d6f",
+              "code": "c89a2e98-7dfe-3c04-892c-0f3347949d6f",
+              "description": "Lombo ao Creme",
+              "details": "",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192130_N0JH_i.jpg",
+              "unitPrice": 72.8
+            },
+            {
+              "id": "f0c86a8d-b246-3a1c-a576-bc306eb46194",
+              "code": "f0c86a8d-b246-3a1c-a576-bc306eb46194",
+              "description": "Lombo",
+              "details": "Molho, mussarela, lombo, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192131_OU47_i.jpg",
+              "unitPrice": 67.2
+            },
+            {
+              "id": "d4d43641-213a-3357-ae59-b90d2fac4e66",
+              "code": "d4d43641-213a-3357-ae59-b90d2fac4e66",
+              "description": "Grega com Requeijão",
+              "details": "Molho, mussarela, lombo, cebola, palmito, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192132_2H16_i.jpg",
+              "unitPrice": 72.8
+            },
+            {
+              "id": "c0bcff62-b84b-3a18-acdc-02c9614bb548",
+              "code": "c0bcff62-b84b-3a18-acdc-02c9614bb548",
+              "description": "Grega",
+              "details": "Molho, mussarela, lombo, cebola, palmito, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192134_WCJ0_i.jpg",
+              "unitPrice": 67.2
+            },
+            {
+              "id": "5d6c3926-0b12-338c-83b4-16060324c207",
+              "code": "5d6c3926-0b12-338c-83b4-16060324c207",
+              "description": "Frango com Cheddar",
+              "details": "Molho, mussarela, frango, cheddar, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192246_EYO3_i.jpg",
+              "unitPrice": 72.8
+            },
+            {
+              "id": "6c235a0c-5d70-35ca-a542-6f34b464cf3a",
+              "code": "6c235a0c-5d70-35ca-a542-6f34b464cf3a",
+              "description": "Frango com Requeijão",
+              "details": "Molho, mussarela, frango, requeijão, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192246_D07U_i.jpg",
+              "unitPrice": 72.8
+            },
+            {
+              "id": "6703ceb4-9d24-3f59-9323-1c43007b7a53",
+              "code": "6703ceb4-9d24-3f59-9323-1c43007b7a53",
+              "description": "Frango com Milho",
+              "details": "Molho, mussarela, frango ,orégano, azeitona e milho",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192248_2AOO_i.jpg",
+              "unitPrice": 70
+            },
+            {
+              "id": "20d2e9f9-f0c7-3a19-98a2-2557fc33b770",
+              "code": "20d2e9f9-f0c7-3a19-98a2-2557fc33b770",
+              "description": "Frango",
+              "details": "Molho, mussarela, frango, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192249_W27U_i.jpg",
+              "unitPrice": 67.8
+            },
+            {
+              "id": "801892b0-3189-34a7-a922-eadbac3cd267",
+              "code": "801892b0-3189-34a7-a922-eadbac3cd267",
+              "description": "Calabresa com Cheddar",
+              "details": "Molho, mussarela, calabresa, cheddar, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192250_21RR_i.jpg",
+              "unitPrice": 72.8
+            },
+            {
+              "id": "5b464268-a2f3-3306-aab9-8623770f7b18",
+              "code": "5b464268-a2f3-3306-aab9-8623770f7b18",
+              "description": "Calabresa com Requeijão",
+              "details": "Molho, mussarela, calabresa, requeijão, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192251_FO7Q_i.jpg",
+              "unitPrice": 72.8
+            },
+            {
+              "id": "d1d62d95-a86e-310c-811e-2d9e748ce73b",
+              "code": "d1d62d95-a86e-310c-811e-2d9e748ce73b",
+              "description": "Calabresa Acebolada",
+              "details": "Molho, mussarela, calabresa, oregano, azeitona e cebola",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192252_8P72_i.jpg",
+              "unitPrice": 70
+            },
+            {
+              "id": "dce85cf1-3bdb-3422-a906-e523315096b7",
+              "code": "dce85cf1-3bdb-3422-a906-e523315096b7",
+              "description": "Calabresa",
+              "details": "Molho, mussarela, calabresa, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192253_32A3_i.jpg",
+              "unitPrice": 67.2
+            },
+            {
+              "id": "f2d4b5e4-bfb9-3d59-992c-8e8da7620a0d",
+              "code": "f2d4b5e4-bfb9-3d59-992c-8e8da7620a0d",
+              "description": "Baiana",
+              "details": "Molho, mussarela, calabresa, pimenta, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192255_07UO_i.jpg",
+              "unitPrice": 67.2
+            },
+            {
+              "id": "56569c5f-99a0-360d-bfab-55164ef6e6c3",
+              "code": "56569c5f-99a0-360d-bfab-55164ef6e6c3",
+              "description": "Bacon com Requeijão",
+              "details": "Molho, mussarela, bacon, orégano, azeitona e requeijão",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192256_3S14_i.jpg",
+              "unitPrice": 78.4
+            },
+            {
+              "id": "56d8f7ac-9253-3163-b597-5ff1238744fa",
+              "code": "56d8f7ac-9253-3163-b597-5ff1238744fa",
+              "description": "Bacon",
+              "details": "Molho, mussarela, bacon, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192256_7O8M_i.jpg",
+              "unitPrice": 72.8
+            },
+            {
+              "id": "226719e2-4f27-33e7-b59b-a16b8c19eac6",
+              "code": "226719e2-4f27-33e7-b59b-a16b8c19eac6",
+              "description": "Americana",
+              "details": "Molho, mussarela, bacon, milho, ovos, orégano e azeitona",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192257_81L7_i.jpg",
+              "unitPrice": 67.2
+            },
+            {
+              "id": "7964eb43-da35-3670-bbd8-ee4cce6943e9",
+              "code": "7964eb43-da35-3670-bbd8-ee4cce6943e9",
+              "description": "Alho e azeite",
+              "details": "Molho, mussarela, azeitona, alho, azeite e orégano",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192300_3UX2_i.jpg",
+              "unitPrice": 67.2
+            },
+            {
+              "id": "b6047b7f-ec2a-3b90-96cd-8b11313e2816",
+              "code": "b6047b7f-ec2a-3b90-96cd-8b11313e2816",
+              "description": "Atum com Reiqueijão",
+              "details": "Molho, mussarela, azeitona, tomate, cebola, requeijão e atum",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192301_I468_i.jpg",
+              "unitPrice": 72.8
+            },
+            {
+              "id": "bfb8a81c-c5ab-3214-a3bf-c50d16e4583e",
+              "code": "bfb8a81c-c5ab-3214-a3bf-c50d16e4583e",
+              "description": "Atum",
+              "details": "Molho, Mussarela, Azeitona e Atum",
+              "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192305_PMT6_i.jpg",
+              "unitPrice": 67.2
+            }
+          ],
+          "order": 1
+        }
+      ],
+      "category": {
+        "code": "",
+        "name": ""
+      }
+    }
+  ]
+}

@@ -1,0 +1,3097 @@
+{
+  "capturedAt": "2026-10-09T21:46:19.270Z",
+  "sourceUrl": "https://www.ifood.com.br/delivery/rio-branco-ac/zero-grau-sorvetes---tucuma-conjunto-tucuma/e2183ad9-d0c6-46fb-802b-aee61da7122b",
+  "categories": [
+    {
+      "code": "bb0a8ffd-cbca-48bf-9230-b0ed52fa88d4",
+      "name": "Combos Zero Grau",
+      "itens": [
+        {
+          "id": "69ef054f-99a0-4484-9c30-44eb5dee7df3",
+          "code": "69ef054f-99a0-4484-9c30-44eb5dee7df3",
+          "description": "Pizza G Calabresa + Guaraná Quinari 2 litros",
+          "details": "Pizza De Calabresa (G) + Guaraná Quinari 2 litros (Tradicional, Sabor Abacaxi ou Quinari Zero)",
+          "logoUrl": "",
+          "needChoices": false,
+          "unitPrice": 99.4,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        }
+      ]
+    },
+    {
+      "code": "d64d5f74-de35-4ef5-8b96-7df847f20a36",
+      "name": "Pizzas Tradicionais",
+      "itens": [
+        {
+          "id": "fdf355dd-a9ff-3e57-a89c-687b9e4befba",
+          "code": "fdf355dd-a9ff-3e57-a89c-687b9e4befba",
+          "description": "Pizzas Tradicionais PEQUENA (4 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 67.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Pequena"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        },
+        {
+          "id": "fb009787-a059-3d23-a5fd-dc21de916e69",
+          "code": "fb009787-a059-3d23-a5fd-dc21de916e69",
+          "description": "Pizzas Tradicionais MÉDIA 2 SABORES (6 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 81.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Média"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        },
+        {
+          "id": "e4a536d2-ce24-321e-aa1a-6b049665b6ae",
+          "code": "e4a536d2-ce24-321e-aa1a-6b049665b6ae",
+          "description": "Pizzas Tradicionais MÉDIA (6 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 81.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Média"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        },
+        {
+          "id": "bd03babc-6a4b-317e-a0fb-bf2e91b28640",
+          "code": "bd03babc-6a4b-317e-a0fb-bf2e91b28640",
+          "description": "Pizzas Tradicionais GRANDE 2 SABORES (9 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 98,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Grande"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        },
+        {
+          "id": "f08957d1-b238-33cd-9703-fcabe1e733a5",
+          "code": "f08957d1-b238-33cd-9703-fcabe1e733a5",
+          "description": "Pizzas Tradicionais GRANDE 3 SABORES (9 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 98.01,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Grande"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        },
+        {
+          "id": "d6e13f67-6cf4-3e74-b33d-2bc1105f704f",
+          "code": "d6e13f67-6cf4-3e74-b33d-2bc1105f704f",
+          "description": "Pizzas Tradicionais GRANDE (9 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 98,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Grande"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        }
+      ]
+    },
+    {
+      "code": "315595de-5fb1-4835-a9a4-a767f428cbed",
+      "name": "Pizzas Doces",
+      "itens": [
+        {
+          "id": "afc48217-1194-38c0-a746-6bd4000df835",
+          "code": "afc48217-1194-38c0-a746-6bd4000df835",
+          "description": "Pizzas Doces PEQUENA (4 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 67.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Pequena"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        },
+        {
+          "id": "b7004b32-3430-3776-85e2-abe7e27fb8ea",
+          "code": "b7004b32-3430-3776-85e2-abe7e27fb8ea",
+          "description": "Pizzas Doces MÉDIA 2 SABORES (6 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 81.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Média"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        },
+        {
+          "id": "66b8dc93-b92a-3351-9dfa-0a8db6d956ff",
+          "code": "66b8dc93-b92a-3351-9dfa-0a8db6d956ff",
+          "description": "Pizzas Doces MÉDIA (6 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 81.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Média"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        },
+        {
+          "id": "38eee092-78ac-351b-8f27-3d2420d0834f",
+          "code": "38eee092-78ac-351b-8f27-3d2420d0834f",
+          "description": "Pizzas Doces GRANDE 2 SABORES (9 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 98,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Grande"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        },
+        {
+          "id": "cd67b755-0884-3bf5-88f2-c6e0c1e3415d",
+          "code": "cd67b755-0884-3bf5-88f2-c6e0c1e3415d",
+          "description": "Pizzas Doces GRANDE 3 SABORES (9 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 98.01,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Grande"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        },
+        {
+          "id": "c7080cd2-4fa6-3229-bf04-b929437f71b4",
+          "code": "c7080cd2-4fa6-3229-bf04-b929437f71b4",
+          "description": "Pizzas Doces GRANDE (9 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 98,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Grande"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        }
+      ]
+    },
+    {
+      "code": "953c702e-c3ab-410a-b91b-8094b88abe20",
+      "name": "Pizzas Especiais",
+      "itens": [
+        {
+          "id": "aeeb58ee-4250-36cd-8aca-6936f8bca6de",
+          "code": "aeeb58ee-4250-36cd-8aca-6936f8bca6de",
+          "description": "Pizzas Especiais PEQUENA (4 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 86.4,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Pequena"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        },
+        {
+          "id": "c6f0b993-cdc0-3a5a-b8e7-b1fbdde8d6c3",
+          "code": "c6f0b993-cdc0-3a5a-b8e7-b1fbdde8d6c3",
+          "description": "Pizzas Especiais MÉDIA 2 SABORES (6 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 103.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Média"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        },
+        {
+          "id": "8c4ba148-5dc3-3976-b723-90b30fc07603",
+          "code": "8c4ba148-5dc3-3976-b723-90b30fc07603",
+          "description": "Pizzas Especiais MÉDIA (6 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 103.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Média"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        },
+        {
+          "id": "11763fc2-8224-370c-b4f5-6c4ae8e15054",
+          "code": "11763fc2-8224-370c-b4f5-6c4ae8e15054",
+          "description": "Pizzas Especiais GRANDE 2 SABORES (9 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 120.4,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Grande"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        },
+        {
+          "id": "700acb28-e721-3ad0-b6e3-f85c7387ac6e",
+          "code": "700acb28-e721-3ad0-b6e3-f85c7387ac6e",
+          "description": "Pizzas Especiais GRANDE (9 PEDAÇOS)",
+          "details": "",
+          "logoUrl": "",
+          "needChoices": true,
+          "unitPrice": 0,
+          "unitMinPrice": 120.4,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PIZZA_SIZE",
+              "tags": [
+                "Grande"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "LEGACY_PIZZA"
+        }
+      ]
+    },
+    {
+      "code": "dbbfcbbc-4d70-4816-8f8d-1a5ab0803683",
+      "name": "Açaí",
+      "itens": [
+        {
+          "id": "377a2773-8f0c-46ae-b9a9-c61921459aa5",
+          "code": "377a2773-8f0c-46ae-b9a9-c61921459aa5",
+          "description": "Açaí 350 Ml.",
+          "details": "Açaí, leite condensado e creme de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212115_ddSs__.jpg",
+          "needChoices": true,
+          "unitPrice": 19.6,
+          "unitMinPrice": 19.6,
+          "unitOriginalPrice": 19.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "36",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "854d30f3-8b30-496a-ba63-e6915631cbfb",
+          "code": "854d30f3-8b30-496a-ba63-e6915631cbfb",
+          "description": "Açaí 500 Ml.",
+          "details": "Açaí, leite condensado e creme de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212129_Q2M9__.jpg",
+          "needChoices": true,
+          "unitPrice": 25.2,
+          "unitMinPrice": 25.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "37",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "6d1794cb-d3e4-46aa-8605-198df2bbd031",
+          "code": "6d1794cb-d3e4-46aa-8605-198df2bbd031",
+          "description": "Barcaçaí",
+          "details": "500 ml. De açaí, morango, kiwi, banana, manga, farinha lactea, leite em pó (Ninho), amendoim e cereal (acompanha uma bola de sorvete) adicionar o sabor.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282132_8VX9_b.jpg",
+          "needChoices": false,
+          "unitPrice": 72.8,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "251",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "3d464491-b1d7-48d8-8d7c-29ec1eb987ce",
+          "code": "3d464491-b1d7-48d8-8d7c-29ec1eb987ce",
+          "description": "Açai Com Cupuaçu 350ml",
+          "details": "Açai Com Cupuacu,Creme De Leite E Leite Condensado (Não Permitido Ir Separados Acompanhamentos).",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202409231846_1IS4_i.jpg",
+          "needChoices": true,
+          "unitPrice": 19.6,
+          "unitMinPrice": 19.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "DISH_CLASSIFICATION",
+              "tags": [
+                "NATURAL"
+              ]
+            },
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "7d54a8a6-efed-4e12-8cdc-39d201532bb5",
+          "code": "7d54a8a6-efed-4e12-8cdc-39d201532bb5",
+          "description": "Açai Com Cupuaçu 500ml",
+          "details": "Açai Com Cupuaçu, Creme De Leite E Leite Condensado. (Porções De Acompanhamento Não Vai Separado).",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202409231846_1IS4_i.jpg",
+          "needChoices": true,
+          "unitPrice": 25.2,
+          "unitMinPrice": 25.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "DISH_CLASSIFICATION",
+              "tags": [
+                "NATURAL"
+              ]
+            },
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        }
+      ]
+    },
+    {
+      "code": "5106d186-adcc-4709-9b7f-72ee00231c24",
+      "name": "Sorvetes",
+      "itens": [
+        {
+          "id": "36b29150-8b74-4fdd-8691-208220911119",
+          "code": "36b29150-8b74-4fdd-8691-208220911119",
+          "description": "Bola De Sorvete - Abacaxi",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140108_64E0_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "030",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "046d83fb-c3d0-4bc3-b5bc-96e0da4d5da1",
+          "code": "046d83fb-c3d0-4bc3-b5bc-96e0da4d5da1",
+          "description": "Bola De Sorvete - Brigadeiro",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109161846_H380_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "44ac3d7c-910e-450b-bb2a-28ddec6239f6",
+          "code": "44ac3d7c-910e-450b-bb2a-28ddec6239f6",
+          "description": "Bola De Sorvete - Leite Condensado",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109161849_85BL_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "6282a909-72a1-44fa-bc8e-92f619942a3d",
+          "code": "6282a909-72a1-44fa-bc8e-92f619942a3d",
+          "description": "Bola De Sorvete - Passas Ao Rhun",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109161851_2B52_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "949b1f7a-c998-4102-bcb2-117bca31faaa",
+          "code": "949b1f7a-c998-4102-bcb2-117bca31faaa",
+          "description": "Paleta Mexicana      Açaí",
+          "details": "Recheada Com Leite Condensado",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202005081724_c9HQ_.jpeg",
+          "needChoices": false,
+          "unitPrice": 16.8,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "198",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "b519eb9d-a556-41f6-b886-6610496e7530",
+          "code": "b519eb9d-a556-41f6-b886-6610496e7530",
+          "description": "Paleta Mexicana        Leite Ninho",
+          "details": "Recheada Com Chocolate Ao Leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202005081722_Jtd6_.jpeg",
+          "needChoices": false,
+          "unitPrice": 16.8,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "198",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "379ab491-4737-43a7-9f57-ec139b6acd42",
+          "code": "379ab491-4737-43a7-9f57-ec139b6acd42",
+          "description": "Paleta Mexicana      Morango (Fruta)",
+          "details": "Recheada Com Leite Condensado",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202005081723_fjHe_.jpeg",
+          "needChoices": false,
+          "unitPrice": 16.8,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "198",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "5ce7a456-3679-4440-a13f-863e3dedeaee",
+          "code": "5ce7a456-3679-4440-a13f-863e3dedeaee",
+          "description": "Bola De Sorvete - Ameixa",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140109_F23Y_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "3f32d389-54ee-46ad-8eea-35c0de0ac72f",
+          "code": "3f32d389-54ee-46ad-8eea-35c0de0ac72f",
+          "description": "Bola De Sorvete - Açaí",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140110_2D26_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "SERVES_1"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "8cc44701-0db9-44cc-951a-9e685d25bb14",
+          "code": "8cc44701-0db9-44cc-951a-9e685d25bb14",
+          "description": "Bola De Sorvete - Chandelle",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192327_6N6J_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "28bcd1dc-1275-4ffb-8cc0-a9a2fd19217c",
+          "code": "28bcd1dc-1275-4ffb-8cc0-a9a2fd19217c",
+          "description": "Bola De Sorvete - Charge",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192334_7WX6_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "3306e283-4b45-4cc1-9715-6ee0be3e7eb0",
+          "code": "3306e283-4b45-4cc1-9715-6ee0be3e7eb0",
+          "description": "Bola De Sorvete - Chiclete",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140110_L77U_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "e5445126-2d50-4b96-87e7-095a3e40f5e3",
+          "code": "e5445126-2d50-4b96-87e7-095a3e40f5e3",
+          "description": "Bola De Sorvete - Chocolate",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140113_5GM2_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "14d21159-1338-43fb-9a11-13169ac7191c",
+          "code": "14d21159-1338-43fb-9a11-13169ac7191c",
+          "description": "Bola De Sorvete - Cookies",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140113_JVE7_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "7bce9ecf-0a82-49ff-9535-e5d598b7b733",
+          "code": "7bce9ecf-0a82-49ff-9535-e5d598b7b733",
+          "description": "Bola De Sorvete - Cupuaçú",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140114_A7MU_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "37523d03-8b06-46e9-a7b4-c3b51f38cedd",
+          "code": "37523d03-8b06-46e9-a7b4-c3b51f38cedd",
+          "description": "Bola De Sorvete - Flocos",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140114_MBF1_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "ef2fc729-fcaf-4510-8697-bf52597ad399",
+          "code": "ef2fc729-fcaf-4510-8697-bf52597ad399",
+          "description": "Bola De Sorvete - Frutas Tropicais",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192346_W83B_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "ffb66915-65c5-4b93-a217-dea5a276863d",
+          "code": "ffb66915-65c5-4b93-a217-dea5a276863d",
+          "description": "Bola De Sorvete - Kit Kat",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192347_O2E3_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "cc6d4d61-9b15-40e9-b789-2f67b86ced12",
+          "code": "cc6d4d61-9b15-40e9-b789-2f67b86ced12",
+          "description": "Bola De Sorvete - Leite Ninho",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109140115_3773_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "25445efc-74b7-4860-a45e-3b07e3fa9ff4",
+          "code": "25445efc-74b7-4860-a45e-3b07e3fa9ff4",
+          "description": "Bola De Sorvete - Leite Ninho Trufado C/ Chocolate",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192348_6137_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "d51688b0-a4c3-4216-87cb-e366ee358bb0",
+          "code": "d51688b0-a4c3-4216-87cb-e366ee358bb0",
+          "description": "Bola De Sorvete - Menta C/ Chocolate",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192348_753D_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "31a767e8-4f1d-46a5-97c3-41dbcc41089d",
+          "code": "31a767e8-4f1d-46a5-97c3-41dbcc41089d",
+          "description": "Bola De Sorvete - Morango",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141555_1DJ1_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "870a871c-32fb-450b-9c24-8504872d6612",
+          "code": "870a871c-32fb-450b-9c24-8504872d6612",
+          "description": "Bola De Sorvete - Ovomaltine",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272313_YK9K_s.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "bcb9940a-fbdf-4571-acb0-65a3b061b555",
+          "code": "bcb9940a-fbdf-4571-acb0-65a3b061b555",
+          "description": "Bola De Sorvete - Prestigio",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141109_M10E_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "36d3c168-aace-4638-9581-877bf51f0016",
+          "code": "36d3c168-aace-4638-9581-877bf51f0016",
+          "description": "Bola De Sorvete - Sensação",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192349_FR04_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "94a365ba-4096-4658-a324-2c7045d901b1",
+          "code": "94a365ba-4096-4658-a324-2c7045d901b1",
+          "description": "Bola De Sorvete - Torta De Limão",
+          "details": "Acompanha O Cascão",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141118_6300_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "30",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "f5cf0d61-b91d-4c73-ba7a-238006446e3e",
+          "code": "f5cf0d61-b91d-4c73-ba7a-238006446e3e",
+          "description": "Adicional De Casquinha",
+          "details": "Uma Adicional De Casquinha.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202401192357_V8OM_i.jpg",
+          "needChoices": false,
+          "unitPrice": 1.5,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "bcf2f3d5-b50c-4028-80fb-9365cd7903de",
+          "code": "bcf2f3d5-b50c-4028-80fb-9365cd7903de",
+          "description": "Bola de sorvete - blue ice",
+          "details": "Uma bola de sorvete, acompanha  casquinha.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402061946_2FL4_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "263f16b9-9d41-488f-90b3-769703c44fa9",
+          "code": "263f16b9-9d41-488f-90b3-769703c44fa9",
+          "description": "Bola de sorvete - cafe com chocolate",
+          "details": "Acompanha casquinha.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402061951_86HP_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "c5a7b0d2-80af-4838-8522-f39678a11afc",
+          "code": "c5a7b0d2-80af-4838-8522-f39678a11afc",
+          "description": "Bola de Sorvete - Yorgut grego",
+          "details": "Acompanha casquinha.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402061954_A40G_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "ba0d23aa-023d-44ba-8d11-270eaf30d635",
+          "code": "ba0d23aa-023d-44ba-8d11-270eaf30d635",
+          "description": "Bola de Sorvete - Chocolate com Avelã",
+          "details": "Acompanha casquinha.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062000_T5V5_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "a44f1f95-b936-4e86-afe1-6668cdd7027c",
+          "code": "a44f1f95-b936-4e86-afe1-6668cdd7027c",
+          "description": "Bola de Sorvete - Negresco",
+          "details": "Acompanha casquinha.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062019_MD7G_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "39d0931e-7f69-41d3-8593-f13380e42348",
+          "code": "39d0931e-7f69-41d3-8593-f13380e42348",
+          "description": "Milk-Shake (550ml) chocolate",
+          "details": "Sorvete de chocolate e flocos de Ovomaltine.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062027_D7U8_i.jpg",
+          "needChoices": false,
+          "unitPrice": 25.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "c8ad7edb-298b-47ce-aa10-1bc2527815df",
+          "code": "c8ad7edb-298b-47ce-aa10-1bc2527815df",
+          "description": "Milk-Shake (550)ml - Morango",
+          "details": "Sorvete de morango, com Ovomaltine em flocos.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062028_E252_i.jpg",
+          "needChoices": false,
+          "unitPrice": 25.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "a724b3de-16b0-4db0-8e1e-19c1c5a3e436",
+          "code": "a724b3de-16b0-4db0-8e1e-19c1c5a3e436",
+          "description": "Milk-Shake (550)ml - Ninho",
+          "details": "Sorvete de Ninho com flocos de Ovomaltine.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062030_YPX5_i.jpg",
+          "needChoices": false,
+          "unitPrice": 25.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "4d021558-8ebf-4b62-94b8-612638b74678",
+          "code": "4d021558-8ebf-4b62-94b8-612638b74678",
+          "description": "Milk-Shake (550ml) - Leite Cond.",
+          "details": "Sorvete de leite condensado e flocos de Ovomaltine.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062033_6Q7H_i.jpg",
+          "needChoices": false,
+          "unitPrice": 25.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "70905075-0f25-4cc3-8ccc-c36db01b1a60",
+          "code": "70905075-0f25-4cc3-8ccc-c36db01b1a60",
+          "description": "Milk-Shake (550ml) Negresco",
+          "details": "Sorvete de Negresco com flocos de Ovomaltine.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062034_TN8B_i.jpg",
+          "needChoices": false,
+          "unitPrice": 25.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "a921f5fe-7a7c-4620-8fba-95afc9bc0ee1",
+          "code": "a921f5fe-7a7c-4620-8fba-95afc9bc0ee1",
+          "description": "Milk-Shake (330ml) - Chocolate",
+          "details": "Sorvete de chocolate com flocos de Ovomaltine.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062039_I7XO_i.jpg",
+          "needChoices": false,
+          "unitPrice": 19.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "3e790da5-a9de-426a-8d2a-a6b37bab11b5",
+          "code": "3e790da5-a9de-426a-8d2a-a6b37bab11b5",
+          "description": "Milke-Shake (330ml) - Morango",
+          "details": "Sorvete de Morango com flocos de Ovomaltine.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062042_Y1UY_i.jpg",
+          "needChoices": false,
+          "unitPrice": 19.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "d90a2447-f638-43c7-816d-50da1ffe2c25",
+          "code": "d90a2447-f638-43c7-816d-50da1ffe2c25",
+          "description": "Milk-Shake (330 Ml) - Leite Cond.",
+          "details": "Sorvete de Leite Condensado e flocos de Ovomaltine.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062044_NU8H_i.jpg",
+          "needChoices": false,
+          "unitPrice": 19.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "80e61ae9-c369-47bd-8262-a9798f66d032",
+          "code": "80e61ae9-c369-47bd-8262-a9798f66d032",
+          "description": "Milk Shake (330ml) - Ninho",
+          "details": "Sorvete de Leite Ninho com Flocos de Ovomaltine.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062045_IKIC_i.jpg",
+          "needChoices": false,
+          "unitPrice": 19.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "722f4a4b-b2ec-42d8-bfe5-75e3e8c92d2e",
+          "code": "722f4a4b-b2ec-42d8-bfe5-75e3e8c92d2e",
+          "description": "Milk Shake (330ml) - Negresco",
+          "details": "Sorvete de Negresco com Flocos de Ovomaltine.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202402062047_WJY4_i.jpg",
+          "needChoices": false,
+          "unitPrice": 19.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "e8b47069-f2f7-4f0c-9857-7a789346020e",
+          "code": "e8b47069-f2f7-4f0c-9857-7a789346020e",
+          "description": "Bola de Sorvete - Açaí c/ Leite Ninho",
+          "details": "Açaí com leite Ninho cremoso",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202510271732_JK8K_i.jpg",
+          "needChoices": false,
+          "unitPrice": 11.2,
+          "ean": "",
+          "scalePrices": [],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "0fc28c7d-ff37-45e5-9287-9ab10dd1f1e7",
+          "code": "0fc28c7d-ff37-45e5-9287-9ab10dd1f1e7",
+          "description": "Bola de sorvete - Doce de Leite",
+          "details": "Acompanha o cascão.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082108_UMY7_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "22067f83-24b9-4685-986f-78550ed6169e",
+          "code": "22067f83-24b9-4685-986f-78550ed6169e",
+          "description": "Bola de Sorvete - Coco Queimado",
+          "details": "Coco cremoso , com pedaços de coco queimado",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202510271750_FT12_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "aa11c6ac-ee42-402f-9bf5-bf47b2eacf1a",
+          "code": "aa11c6ac-ee42-402f-9bf5-bf47b2eacf1a",
+          "description": "Bola de Sorvete - Gianduella",
+          "details": "Sorvete cremoso de chocolate com avelã",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202510271758_2361_i.jpg",
+          "needChoices": false,
+          "unitPrice": 12.6,
+          "ean": "",
+          "scalePrices": [],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        }
+      ]
+    },
+    {
+      "code": "e47a230e-f645-4112-8e95-d5daee309617",
+      "name": "Picolés Simples",
+      "itens": [
+        {
+          "id": "4fad0f57-afef-4617-abb4-e6fc7128b70e",
+          "code": "4fad0f57-afef-4617-abb4-e6fc7128b70e",
+          "description": "Picolé de Groselha",
+          "details": "A Base De Agua",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141750_1CMR_i.jpg",
+          "needChoices": false,
+          "unitPrice": 2.8,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "67",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "2fc9e548-b0ee-4379-bafa-e875938506a8",
+          "code": "2fc9e548-b0ee-4379-bafa-e875938506a8",
+          "description": "Picolé de Limão",
+          "details": "A Base De Agua",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141743_VR2D_i.jpg",
+          "needChoices": false,
+          "unitPrice": 2.8,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "67",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "8f691452-93dc-425b-9012-b1524b59329a",
+          "code": "8f691452-93dc-425b-9012-b1524b59329a",
+          "description": "Picolé de Pinta Lingua (Azul)",
+          "details": "A Base De Agua",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141817_TCO5_i.jpg",
+          "needChoices": false,
+          "unitPrice": 2.8,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "67",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "c02af975-76d2-4aeb-aef2-784281a5a94e",
+          "code": "c02af975-76d2-4aeb-aef2-784281a5a94e",
+          "description": "Picolé de Tangerina",
+          "details": "A Base De Agua",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141816_8140_i.jpg",
+          "needChoices": false,
+          "unitPrice": 2.8,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "67",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "dd3e37a1-db05-46d9-8e19-bbf804b3e6c3",
+          "code": "dd3e37a1-db05-46d9-8e19-bbf804b3e6c3",
+          "description": "Picolé de Uva",
+          "details": "A Base De Agua",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141747_7TRJ_i.jpg",
+          "needChoices": false,
+          "unitPrice": 2.8,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "67",
+          "type": "DEFAULT"
+        }
+      ]
+    },
+    {
+      "code": "31322433-a489-458e-9b5d-cbbfaea6035a",
+      "name": "Picolés Cremoso",
+      "itens": [
+        {
+          "id": "c72b868b-b510-4a66-bbc4-a141208a6cb8",
+          "code": "c72b868b-b510-4a66-bbc4-a141208a6cb8",
+          "description": "Picolé Chocomenta",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "c366cc15-a89b-46c6-8158-9fee2a021cd6",
+          "code": "c366cc15-a89b-46c6-8158-9fee2a021cd6",
+          "description": "Picolé de Abacaxi",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "b9727666-90e3-48d6-994e-68f332dfa752",
+          "code": "b9727666-90e3-48d6-994e-68f332dfa752",
+          "description": "Picolé de Açaí",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "2cb6ff0f-af6e-4f7e-810e-91b4aa33bad2",
+          "code": "2cb6ff0f-af6e-4f7e-810e-91b4aa33bad2",
+          "description": "Picolé de Biscoito",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "306d200e-253f-40ce-9994-3135350737e6",
+          "code": "306d200e-253f-40ce-9994-3135350737e6",
+          "description": "Picolé de Cajá",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "09330768-ab92-4cd2-abc6-4cdfee924897",
+          "code": "09330768-ab92-4cd2-abc6-4cdfee924897",
+          "description": "Picolé de Chocolate",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "7d4a8160-7be7-4fbe-8c87-74c3e8b237a3",
+          "code": "7d4a8160-7be7-4fbe-8c87-74c3e8b237a3",
+          "description": "Picolé de Coco",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "60c545cd-1694-4a9e-ac61-bb7f00238e71",
+          "code": "60c545cd-1694-4a9e-ac61-bb7f00238e71",
+          "description": "Picolé de Cupuaçu",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "69d2c4ea-bfca-471a-bdd8-bf6bd9d6e675",
+          "code": "69d2c4ea-bfca-471a-bdd8-bf6bd9d6e675",
+          "description": "Picolé de Goiaba",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "5dfea907-8e5c-4966-9ec3-b6bcf1c10e2d",
+          "code": "5dfea907-8e5c-4966-9ec3-b6bcf1c10e2d",
+          "description": "Picolé de Graviola",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "aadbe9a3-db35-4547-98bf-bb451e8bd878",
+          "code": "aadbe9a3-db35-4547-98bf-bb451e8bd878",
+          "description": "Picolé de Leite Condensado",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "65ff321e-ee76-4696-9c74-55386f9d6925",
+          "code": "65ff321e-ee76-4696-9c74-55386f9d6925",
+          "description": "Picolé de Leite Ninho",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "0be9e6ac-ec21-4a4a-a2a3-63a68529517e",
+          "code": "0be9e6ac-ec21-4a4a-a2a3-63a68529517e",
+          "description": "Picolé de Maracujá",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "34a7540d-803f-4fc4-b17b-5d857995132b",
+          "code": "34a7540d-803f-4fc4-b17b-5d857995132b",
+          "description": "Picolé de Milho Verde",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "d17b8e4c-d446-4818-b6a5-2d4c43638720",
+          "code": "d17b8e4c-d446-4818-b6a5-2d4c43638720",
+          "description": "Picolé de Morango",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "41317784-a342-4ff3-b4ce-9d8a66ca3440",
+          "code": "41317784-a342-4ff3-b4ce-9d8a66ca3440",
+          "description": "Picolé de Tapioca",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "4be56d16-c65f-4381-9ec1-7055ef708fe5",
+          "code": "4be56d16-c65f-4381-9ec1-7055ef708fe5",
+          "description": "Picolé Doce De Leite",
+          "details": "Picolé a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "ab21662c-a637-4a51-abf9-ed7aed13dfc3",
+          "code": "ab21662c-a637-4a51-abf9-ed7aed13dfc3",
+          "description": "Picolé Paraense",
+          "details": "Açaí com farinha de tapioca , a base de leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272318_z5l3_p.jpg",
+          "needChoices": false,
+          "unitPrice": 4.9,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "68",
+          "type": "DEFAULT"
+        }
+      ]
+    },
+    {
+      "code": "2660587d-3818-498e-a646-a87e7051abae",
+      "name": "Picolés Especiais",
+      "itens": [
+        {
+          "id": "71cb4af9-2761-4861-9098-d7ec41cf77df",
+          "code": "71cb4af9-2761-4861-9098-d7ec41cf77df",
+          "description": "Skimo De Coco",
+          "details": "Picolé com cobertura de chocolate",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272319_pb7V_p.jpg",
+          "needChoices": false,
+          "unitPrice": 6.3,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "69",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "d3a61a6c-5fb9-4bcb-adc0-8b011149f6c3",
+          "code": "d3a61a6c-5fb9-4bcb-adc0-8b011149f6c3",
+          "description": "Skimo De Maracujá",
+          "details": "Picolé com cobertura de chocolate",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141813_TB6Q_i.jpg",
+          "needChoices": false,
+          "unitPrice": 6.3,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "69",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "a77bfac9-8a95-4317-9646-e8419256c3de",
+          "code": "a77bfac9-8a95-4317-9646-e8419256c3de",
+          "description": "Skimo Lokura - Morango Recheado",
+          "details": "Picolé com cobertura de chocolate",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202109141815_U50U_i.jpg",
+          "needChoices": false,
+          "unitPrice": 6.3,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "69",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "3dcfba3d-fbd0-4d7d-9a4d-746a86cd0b2f",
+          "code": "3dcfba3d-fbd0-4d7d-9a4d-746a86cd0b2f",
+          "description": "Skimo Tradicional",
+          "details": "Picolé com cobertura de chocolate",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003272319_pb7V_p.jpg",
+          "needChoices": false,
+          "unitPrice": 6.3,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "69",
+          "type": "DEFAULT"
+        }
+      ]
+    },
+    {
+      "code": "60aecbbf-60a1-4d39-b8ae-414f68662a58",
+      "name": "Sucos",
+      "itens": [
+        {
+          "id": "3d84d770-e7c6-4d26-aac0-20da371352a4",
+          "code": "3d84d770-e7c6-4d26-aac0-20da371352a4",
+          "description": "Açaí C/ Leite  -  400 Ml.",
+          "details": "Açaí c/ leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282121_IAJu_s.jpg",
+          "needChoices": false,
+          "unitPrice": 21,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "41",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "f7ce1ce4-1cf6-4e36-80c9-f14c1a5252b2",
+          "code": "f7ce1ce4-1cf6-4e36-80c9-f14c1a5252b2",
+          "description": "Goiaba C/ Leite  -  400 Ml.",
+          "details": "Goiaba c/ leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282122_d5qA_s.jpg",
+          "needChoices": false,
+          "unitPrice": 21,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "49",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "6c577082-5682-430f-887e-58f4d1e46858",
+          "code": "6c577082-5682-430f-887e-58f4d1e46858",
+          "description": "Graviola C/ Leite  -  400 Ml.",
+          "details": "Graviola c/ leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282123_g7zR_s.jpg",
+          "needChoices": false,
+          "unitPrice": 21,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "55",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "36562953-fcf9-4a0e-b1f6-64ee4542251d",
+          "code": "36562953-fcf9-4a0e-b1f6-64ee4542251d",
+          "description": "Maracujá C/ Leite  -  400 Ml.",
+          "details": "Maracujá c/ leite",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282124_qvLl_s.jpg",
+          "needChoices": false,
+          "unitPrice": 21,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "52",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "8858ab52-731b-4a8e-b8bc-6469f4f48453",
+          "code": "8858ab52-731b-4a8e-b8bc-6469f4f48453",
+          "description": "Suco De Abacaxi  -  400 Ml.",
+          "details": "Abacaxi",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282055_oVTA_s.jpg",
+          "needChoices": false,
+          "unitPrice": 18.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "38",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "4572f498-62a5-458a-a586-d2461d3db570",
+          "code": "4572f498-62a5-458a-a586-d2461d3db570",
+          "description": "Suco De Açaí  -  400 Ml.",
+          "details": "Açaí",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282056_nUrl_s.jpg",
+          "needChoices": false,
+          "unitPrice": 18.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "40",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "536188c4-15b5-43c4-9251-3eae6c582618",
+          "code": "536188c4-15b5-43c4-9251-3eae6c582618",
+          "description": "Suco De Cupuaçu  -  400 Ml.",
+          "details": "Cupuaçu",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282105_R3Wk_s.jpg",
+          "needChoices": false,
+          "unitPrice": 18.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "46",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "b5edbe67-b8da-40ee-a1e3-0ed8f63173f7",
+          "code": "b5edbe67-b8da-40ee-a1e3-0ed8f63173f7",
+          "description": "Suco De Goiaba  -  400 Ml.",
+          "details": "Goiaba",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282056_fhDR_s.jpg",
+          "needChoices": false,
+          "unitPrice": 18.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "48",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "815a5c3e-0cd5-433c-acf1-ccef66969973",
+          "code": "815a5c3e-0cd5-433c-acf1-ccef66969973",
+          "description": "Suco De Graviola  -  400 Ml.",
+          "details": "Graviola",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282057_iCdq_s.jpg",
+          "needChoices": false,
+          "unitPrice": 18.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "54",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "3bb5f10e-376f-4058-a546-2cb9b5c27903",
+          "code": "3bb5f10e-376f-4058-a546-2cb9b5c27903",
+          "description": "Suco De Laranja  -  400 Ml.",
+          "details": "Laranja",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282057_Oo64_s.jpg",
+          "needChoices": false,
+          "unitPrice": 18.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "50",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "88180abe-088b-4cce-b669-a2b60a9236b7",
+          "code": "88180abe-088b-4cce-b669-a2b60a9236b7",
+          "description": "Suco De Maracujá  -  400 Ml.",
+          "details": "Maracujá",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003282110_NzKr_s.jpg",
+          "needChoices": false,
+          "unitPrice": 18.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "52",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "4efd4f3a-31cd-432b-bb75-210f0dc44d58",
+          "code": "4efd4f3a-31cd-432b-bb75-210f0dc44d58",
+          "description": "Suco Verde Laranja - 400ml",
+          "details": "Couve, Hotelã,Gengibre ,Laranja E Açucar.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202307051919_B1IT_i.jpg",
+          "needChoices": false,
+          "unitPrice": 19.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            },
+            {
+              "group": "DIETARY_RESTRICTIONS",
+              "tags": [
+                "LAC_FREE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "229",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "10278dd1-00cf-428d-b6c4-e6d226f8d688",
+          "code": "10278dd1-00cf-428d-b6c4-e6d226f8d688",
+          "description": "Suco De Limão - 400ml",
+          "details": "Limao Espremido Batido Com Açucar E Gelo.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082022_14V0_i.jpg",
+          "needChoices": false,
+          "unitPrice": 18.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "DISH_CLASSIFICATION",
+              "tags": [
+                "NATURAL"
+              ]
+            },
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "89b3de69-88c3-4ab9-9f6b-fef33b6f2baa",
+          "code": "89b3de69-88c3-4ab9-9f6b-fef33b6f2baa",
+          "description": "Suco de morango - 400ml",
+          "details": "Morango Batido.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082028_Y75Q_i.jpg",
+          "needChoices": false,
+          "unitPrice": 19.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "DISH_CLASSIFICATION",
+              "tags": [
+                "NATURAL"
+              ]
+            },
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "64597610-0ab4-4bce-b7af-92f159252985",
+          "code": "64597610-0ab4-4bce-b7af-92f159252985",
+          "description": "Suco de morango c/ leite - 400ml",
+          "details": "Fruta morango batida com gelo, leite e açucar.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082034_X421_i.jpg",
+          "needChoices": false,
+          "unitPrice": 22.4,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "DISH_CLASSIFICATION",
+              "tags": [
+                "NATURAL"
+              ]
+            },
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "9ce6e3ac-b923-4bbf-8996-9dd9df7c1718",
+          "code": "9ce6e3ac-b923-4bbf-8996-9dd9df7c1718",
+          "description": "Suco de limão c/ leite - 400ml",
+          "details": "Suco do limão batido com gelo e açúcar.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082038_TUMX_i.jpg",
+          "needChoices": false,
+          "unitPrice": 21,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "DISH_CLASSIFICATION",
+              "tags": [
+                "NATURAL"
+              ]
+            },
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "0fb8ed3c-fb5c-4b38-be0b-92ad79169183",
+          "code": "0fb8ed3c-fb5c-4b38-be0b-92ad79169183",
+          "description": "Suco de cajá - 400ml",
+          "details": "Poupa de cajá batida com gelo, açúcar e água filtrada.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082040_M0P1_i.jpg",
+          "needChoices": false,
+          "unitPrice": 19.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "794ead21-523a-44f2-a3c2-649996618b5a",
+          "code": "794ead21-523a-44f2-a3c2-649996618b5a",
+          "description": "Suco de cajá c/ leite - 400ml",
+          "details": "Poupa de cajá batida com leite, gelo e açúcar.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082049_FJ02_i.jpg",
+          "needChoices": false,
+          "unitPrice": 21,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "b69cc896-113a-48d2-b5b4-dc5f4c6af5ce",
+          "code": "b69cc896-113a-48d2-b5b4-dc5f4c6af5ce",
+          "description": "Suco de acerola - 400ml",
+          "details": "Poupa de acerola batida com gelo, água filtrada e açúcar.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082052_T82D_i.jpg",
+          "needChoices": false,
+          "unitPrice": 19.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "9360ae93-45e9-48d6-93cf-6bfa2bceaafa",
+          "code": "9360ae93-45e9-48d6-93cf-6bfa2bceaafa",
+          "description": "Suco de Acerola c/ leite - 400ml",
+          "details": "Poupa de acerola batido com leite, gelo, açúcar.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082056_P744_i.jpg",
+          "needChoices": false,
+          "unitPrice": 21,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "03428b4c-413d-488a-8427-ef074f154278",
+          "code": "03428b4c-413d-488a-8427-ef074f154278",
+          "description": "Suco de abacaxi c/ leite - 400ml",
+          "details": "Poupa de abacaxi ,leite, açúcar e água filtrada.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202407082059_206G_i.jpg",
+          "needChoices": false,
+          "unitPrice": 21,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        }
+      ]
+    },
+    {
+      "code": "b133e79e-5fec-463c-82ec-fd191fdeccd4",
+      "name": "Refrigerantes",
+      "itens": [
+        {
+          "id": "03ee7234-69c3-4fd0-86cd-9ab07f133b48",
+          "code": "03ee7234-69c3-4fd0-86cd-9ab07f133b48",
+          "description": "Agua Mineral  500 Ml.",
+          "details": "500 ml.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212242_8PWe_a.jpg",
+          "needChoices": false,
+          "unitPrice": 4.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "6",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "a8a368e8-9c0a-4bdb-a5f8-dcc1f5e6295e",
+          "code": "a8a368e8-9c0a-4bdb-a5f8-dcc1f5e6295e",
+          "description": "Agua Mineral C/ Gás 500 Ml.",
+          "details": "C/ gás",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212244_saeh_a.jpg",
+          "needChoices": false,
+          "unitPrice": 5.6,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "7",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "86f4074d-fa55-47df-bddd-c3fb890dcb16",
+          "code": "86f4074d-fa55-47df-bddd-c3fb890dcb16",
+          "description": "Coca Cola 600 Ml.",
+          "details": "600 ml.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212227_M18b_c.jpg",
+          "needChoices": false,
+          "unitPrice": 11.2,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "17",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "d2e43c9e-bd7d-4a44-ac1b-15ecf9b08441",
+          "code": "d2e43c9e-bd7d-4a44-ac1b-15ecf9b08441",
+          "description": "Coca Cola Lata 350 Ml.",
+          "details": "350 ml.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212226_znWm_c.jpg",
+          "needChoices": false,
+          "unitPrice": 9.8,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "12",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "694170fb-8f75-4bbe-be86-7cb696b5be1c",
+          "code": "694170fb-8f75-4bbe-be86-7cb696b5be1c",
+          "description": "Coca Cola Litro",
+          "details": "1 litro",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212232_aS2c_c.jpg",
+          "needChoices": false,
+          "unitPrice": 15.4,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "21",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "e66aa68e-2630-4230-927c-a3809add8311",
+          "code": "e66aa68e-2630-4230-927c-a3809add8311",
+          "description": "Coca-Cola Original 1,5l",
+          "details": "Garrafa 1,5l",
+          "logoUrl": "820af392-002c-47b1-bfae-d7ef31743c7f/202210192214_pcatvoxm2a.jpg",
+          "needChoices": false,
+          "unitPrice": 18.2,
+          "sellingOption": {
+            "minimum": 1500,
+            "incremental": 1500,
+            "availableUnits": [
+              "UNIT"
+            ]
+          },
+          "ean": "7894900011890",
+          "scalePrices": [],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "54dd27e7-fdff-4852-ba62-b5d4825faaf4",
+          "code": "54dd27e7-fdff-4852-ba62-b5d4825faaf4",
+          "description": "Coca Cola Zero 600ml",
+          "details": "Unidade 1un",
+          "logoUrl": "820af392-002c-47b1-bfae-d7ef31743c7f/202210200323_n3x4i2ox7m.jpg",
+          "needChoices": false,
+          "unitPrice": 11.2,
+          "sellingOption": {
+            "minimum": 600,
+            "incremental": 600,
+            "availableUnits": [
+              "UNIT"
+            ]
+          },
+          "ean": "47894900701607",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "DIETARY_RESTRICTIONS",
+              "tags": [
+                "ZERO"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "7fd107fb-1fa3-43d0-a302-87cdfa990088",
+          "code": "7fd107fb-1fa3-43d0-a302-87cdfa990088",
+          "description": "Fanta Laranja 350 Ml.",
+          "details": "350 ml.",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212228_ICuw_f.jpg",
+          "needChoices": false,
+          "unitPrice": 9.8,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "13",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "70eade3d-7429-4c5d-b239-09f8db3a9278",
+          "code": "70eade3d-7429-4c5d-b239-09f8db3a9278",
+          "description": "Fanta Laranja Litro",
+          "details": "1 litro",
+          "logoUrl": "d692f39d-2c11-4d1c-a75c-7a2dad6cd36f/202003212233_wRda_f.jpg",
+          "needChoices": false,
+          "unitPrice": 15.4,
+          "ean": "",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "22",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "1cf67bf9-f130-4a94-a246-5f407fe24df7",
+          "code": "1cf67bf9-f130-4a94-a246-5f407fe24df7",
+          "description": "Refrigerante Coca Cola Lata Zero",
+          "details": "Lata 350ml",
+          "logoUrl": "820af392-002c-47b1-bfae-d7ef31743c7f/202306271636_0l49q8eqdxpf.jpg",
+          "needChoices": false,
+          "unitPrice": 9.8,
+          "sellingOption": {
+            "minimum": 350,
+            "incremental": 350,
+            "availableUnits": [
+              "UNIT"
+            ]
+          },
+          "ean": "7894900708370",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "DIETARY_RESTRICTIONS",
+              "tags": [
+                "SUGAR_FREE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        },
+        {
+          "id": "88e37cce-5cb0-40aa-a263-77380ac70006",
+          "code": "88e37cce-5cb0-40aa-a263-77380ac70006",
+          "description": "Refrigerante Guaraná Quinarí 1l",
+          "details": "Garrafa 1l",
+          "logoUrl": "820af392-002c-47b1-bfae-d7ef31743c7f/202210200300_pxyori2ja8k.jpg",
+          "needChoices": false,
+          "unitPrice": 15.4,
+          "sellingOption": {
+            "minimum": 1000,
+            "incremental": 1000,
+            "availableUnits": [
+              "UNIT"
+            ]
+          },
+          "ean": "7898929068361",
+          "scalePrices": [],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "1370789",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "88b83714-0c73-4089-a03c-358c4d4a5b93",
+          "code": "88b83714-0c73-4089-a03c-358c4d4a5b93",
+          "description": "Refrigerante Guaraná Quinari Pet 500ml",
+          "details": "Garrafa 500ml",
+          "logoUrl": "820af392-002c-47b1-bfae-d7ef31743c7f/202210192143_2luelztrjnt.jpg",
+          "needChoices": false,
+          "unitPrice": 7,
+          "sellingOption": {
+            "minimum": 500,
+            "incremental": 500,
+            "availableUnits": [
+              "UNIT"
+            ]
+          },
+          "ean": "7898929068415",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "529",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "4574795e-a820-4ecb-a02b-6e5cbc362fd6",
+          "code": "4574795e-a820-4ecb-a02b-6e5cbc362fd6",
+          "description": "Schweppes Citrus 350ml",
+          "details": "Lata 350ml",
+          "logoUrl": "820af392-002c-47b1-bfae-d7ef31743c7f/202511241039_34oiums83ch.png",
+          "needChoices": false,
+          "unitPrice": 9.8,
+          "sellingOption": {
+            "minimum": 400,
+            "incremental": 400,
+            "availableUnits": [
+              "UNIT"
+            ]
+          },
+          "ean": "7896093765314",
+          "scalePrices": [],
+          "productTags": [
+            {
+              "group": "PORTION_SIZE",
+              "tags": [
+                "NOT_APPLICABLE"
+              ]
+            }
+          ],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "externalCode": "1352528",
+          "type": "DEFAULT"
+        },
+        {
+          "id": "f90802eb-4895-417b-aab3-ac91c27409fa",
+          "code": "f90802eb-4895-417b-aab3-ac91c27409fa",
+          "description": "Sprite Original 350ml",
+          "details": "Unidade 350ml",
+          "logoUrl": "820af392-002c-47b1-bfae-d7ef31743c7f/202511241907_7b3j7oo5x0n.png",
+          "needChoices": false,
+          "unitPrice": 9.8,
+          "sellingOption": {
+            "minimum": 350,
+            "incremental": 350,
+            "availableUnits": [
+              "UNIT"
+            ]
+          },
+          "ean": "7894900060225",
+          "scalePrices": [],
+          "availability": "AVAILABLE",
+          "enabled": true,
+          "type": "DEFAULT"
+        }
+      ]
+    }
+  ]
+}
