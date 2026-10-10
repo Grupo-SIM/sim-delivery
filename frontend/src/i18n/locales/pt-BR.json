@@ -543,7 +543,8 @@
 				"filter": {
 					"all": "Todos",
 					"date": "Data",
-					"datePlaceholder": "Selecionar período",
+					"datePlaceholder": "Último expediente",
+					"defaultPeriodDescription": "Desde a última abertura de cada unidade. Pedidos finalizados permanecem até a próxima abertura; pedidos operacionais não concluídos de expedientes anteriores também aparecem.",
 					"search": "Buscar",
 					"searchPlaceholder": "Buscar por nome, telefone ou pedido",
 					"unit": "Unidade",
