@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuStore } from "react-icons/lu";
+import { PickupAddress } from "@/components/storefront";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+	type GetPublicUnits200,
 	type PostCustomersMe200,
 	postPublicCouponsValidate,
 	usePostOrdersFeesQuote,
@@ -38,6 +40,7 @@ interface OrderReviewProps {
 	onSetCoupon: (coupon: AppliedCoupon | null) => void;
 	onSubmit: () => void;
 	subtotal: number;
+	unit: GetPublicUnits200[number] | undefined;
 	unitDeliveryFee: number;
 	unitId: string;
 	unitSlug: string;
@@ -64,6 +67,7 @@ export function OrderReview({
 	onSetCoupon,
 	onSubmit,
 	subtotal,
+	unit,
 	unitDeliveryFee,
 	unitId,
 	unitSlug,
@@ -236,6 +240,7 @@ export function OrderReview({
 							</p>
 						)}
 						<p className="text-foreground">{t("store.checkout.order.pickupDetails")}</p>
+						<PickupAddress unit={unit} />
 					</div>
 				</section>
 			)}

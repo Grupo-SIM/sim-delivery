@@ -310,6 +310,7 @@ function CheckoutPage() {
 						onSubmit={handlePlaceOrder}
 						slug={slug ?? ""}
 						subtotal={cartTotalCents(cartItems)}
+						unit={unit}
 						unitDeliveryFee={Number(unit?.deliveryFee ?? 0)}
 						unitId={unitId}
 						unitSlug={unitSlug}

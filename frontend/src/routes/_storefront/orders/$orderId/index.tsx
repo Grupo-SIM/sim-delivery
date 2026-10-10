@@ -19,6 +19,8 @@ import { useGetCustomerOrder } from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
 import { slug } from "@/lib/variant";
 
+import { OrderPickupAddress } from "./components";
+
 function formatStatusTime(value?: string) {
 	if (!value) return null;
 	return new Intl.DateTimeFormat("pt-BR", {
@@ -219,6 +221,7 @@ function OrderTrackingPage() {
 					</div>
 					<span className="font-semibold">{formatMoney(order.total / 100)}</span>
 				</div>
+				{order.deliveryMethod === "pickup" && <OrderPickupAddress unitSlug={order.unitSlug} />}
 				<p className="font-medium text-sm">{t("store.checkout.tracking.items")}</p>
 				<ul className="space-y-3 text-muted-foreground text-sm">
 					{order.items.map(item => (
