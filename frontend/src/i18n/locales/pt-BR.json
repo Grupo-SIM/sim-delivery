@@ -544,8 +544,6 @@
 					"all": "Todos",
 					"date": "Data",
 					"datePlaceholder": "Último expediente",
-					"defaultPeriodDescription": "Desde a última abertura de cada unidade. Pedidos finalizados permanecem até a próxima abertura; pedidos operacionais não concluídos de expedientes anteriores também aparecem.",
-					"periodDescription": "Da abertura ao fechamento configurado de cada unidade, incluindo a madrugada seguinte quando o expediente atravessa a meia-noite.",
 					"search": "Buscar",
 					"searchPlaceholder": "Buscar por nome, telefone ou pedido",
 					"unit": "Unidade",

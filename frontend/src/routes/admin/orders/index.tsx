@@ -104,9 +104,6 @@ function OrdersPage() {
 						placeholder={t("admin.orders.filter.datePlaceholder")}
 						value={dateRange}
 					/>
-					<p className="text-muted-foreground text-xs">
-						{t(dateRange ? "admin.orders.filter.periodDescription" : "admin.orders.filter.defaultPeriodDescription")}
-					</p>
 				</div>
 				<div className="space-y-1">
 					<span className="font-medium text-sm">{t("admin.orders.filter.unit")}</span>
