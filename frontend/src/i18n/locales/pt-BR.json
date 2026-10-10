@@ -1912,6 +1912,7 @@
 					"loyaltyUse": "Usar pontos",
 					"pickup": "Retirada",
 					"pickupDetails": "Retire seu pedido diretamente na unidade quando ele estiver pronto.",
+					"pickupOnlyTitle": "Esta unidade oferece apenas retirada",
 					"place": "Fazer pedido",
 					"placing": "Realizando pedido…",
 					"subtitle": "Revise seu pedido antes de confirmar.",

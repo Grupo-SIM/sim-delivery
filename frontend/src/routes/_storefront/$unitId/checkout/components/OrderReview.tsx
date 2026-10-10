@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { LuStore } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -151,15 +152,15 @@ export function OrderReview({
 				))}
 			</section>
 
-			{availableMethods.length > 1 && (
+			{availableMethods.length > 0 && (
 				<section className="space-y-2">
 					<span className="font-semibold text-sm">{t("store.checkout.order.deliveryMethod")}</span>
 					<div className="grid grid-cols-2 gap-2">
 						{(["delivery", "pickup"] as DeliveryMethod[])
-							.filter(method => availableMethods.includes(method))
 							.map(method => (
 								<Button
-									className="w-full"
+									className="w-full disabled:border-border disabled:bg-muted disabled:text-muted-foreground disabled:opacity-60"
+									disabled={!availableMethods.includes(method)}
 									key={method}
 									onClick={() => onChangeDeliveryMethod(method)}
 									type="button"
@@ -226,8 +227,16 @@ export function OrderReview({
 			)}
 
 			{deliveryMethod === "pickup" && (
-				<section className="rounded-lg border border-primary/25 bg-primary/5 p-3 text-sm">
-					<p className="text-muted-foreground">{t("store.checkout.order.pickupDetails")}</p>
+				<section className="flex items-start gap-3 rounded-lg border-2 border-primary/60 bg-primary/10 p-4 text-sm">
+					<LuStore aria-hidden="true" className="mt-0.5 size-6 shrink-0 text-primary" />
+					<div className="space-y-1">
+						{!availableMethods.includes("delivery") && (
+							<p className="font-bold text-base text-foreground">
+								{t("store.checkout.order.pickupOnlyTitle")}
+							</p>
+						)}
+						<p className="text-foreground">{t("store.checkout.order.pickupDetails")}</p>
+					</div>
 				</section>
 			)}
 
