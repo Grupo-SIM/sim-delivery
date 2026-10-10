@@ -1,4 +1,4 @@
-import { startExpiredUnpaidOrderCancellation, startShiftEndOrderClosure } from "./modules/orders/useCases";
+import { startExpiredUnpaidOrderCancellation } from "./modules/orders/useCases";
 import { startPendingPaymentReconciliation } from "./modules/payments/useCases";
 import { server } from "./server";
 import { auth } from "./shared/infra/betterAuth";
@@ -16,7 +16,6 @@ const whatsApp = createWhatsAppProvider();
 startExpiredUnpaidOrderCancellation(prisma, whatsApp);
 startWhatsAppOutboxWorker(prisma, whatsApp);
 startPendingPaymentReconciliation(prisma, simpay);
-startShiftEndOrderClosure(prisma);
 
 server.listen(process.env.PORT || 3333);
 

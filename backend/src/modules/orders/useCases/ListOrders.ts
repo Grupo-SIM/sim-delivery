@@ -13,7 +13,7 @@ export class ListOrders {
 		userId?: string,
 	): Promise<AdminOrderListReturn> {
 		const { customerId, deliveryMethod, from, hasCoupon, search, status, to, unitId } = query;
-		// The operational board defaults to the current business shift. A customer history,
+		// The operational board includes the current shift and unresolved orders from earlier shifts. A customer history,
 		// however, must cover every eligible order so it agrees with the customer metrics.
 		const usesCurrentShift = !customerId && !from && !to;
 		const staffUnitScope =
@@ -35,7 +35,10 @@ export class ListOrders {
 			usesCurrentShift
 				? {
 						OR: shiftStarts.map(unit => ({
-							createdAt: { gte: getCurrentBusinessShiftStart(unit.hours) },
+							OR: [
+								{ createdAt: { gte: getCurrentBusinessShiftStart(unit.hours) } },
+								{ status: { in: ["recebido", "em_preparo", "pronto", "saiu_para_entrega", "problema"] } },
+							],
 							unitId: unit.id,
 						})),
 					}

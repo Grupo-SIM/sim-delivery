@@ -899,6 +899,28 @@ function makeListOrdersPrisma() {
 }
 
 describe("ListOrders", () => {
+	it("keeps unresolved orders from earlier shifts visible within the unit scope", async () => {
+		const { prisma } = makeListOrdersPrisma();
+		let query: unknown;
+		prisma.order.findMany = (async (input: unknown) => {
+			query = input;
+			return [];
+		}) as typeof prisma.order.findMany;
+		await new ListOrders(prisma).execute("cmp_1", {});
+		expect(query).toMatchObject({
+			where: {
+				companyId: "cmp_1",
+				OR: [{
+					unitId: "unit_1",
+					OR: [
+						{ createdAt: { gte: expect.any(Date) } },
+						{ status: { in: ["recebido", "em_preparo", "pronto", "saiu_para_entrega", "problema"] } },
+					],
+				}],
+			},
+		});
+	});
+
 	it("returns orders with customer and unit names", async () => {
 		const { prisma } = makeListOrdersPrisma();
 		const result = await new ListOrders(prisma).execute("cmp_1", {});

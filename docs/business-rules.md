@@ -25,6 +25,13 @@ possui **N unidades** (lojas físicas). Detalhes em
 - Nova chave de idempotência cria pedido independente. Repetir a mesma chave
   retorna o pedido já criado, sem duplicar reservas ou débitos de créditos.
 
+## Encerramento do expediente
+
+- Fim do expediente e encerramento manual do dia não cancelam pedidos operacionais.
+- Pedidos não concluídos mantêm status e reservas e continuam visíveis no painel no
+  próximo expediente, para resolução pelo gerente ou proprietário. Cancelamento é manual.
+- A expiração de pedidos pendentes de pagamento permanece uma regra independente.
+
 ## Movimentações de insumos
 
 - O motivo é opcional em entradas, ajustes e perdas. Movimentações sem motivo são
