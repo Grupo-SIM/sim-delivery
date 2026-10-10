@@ -4,7 +4,7 @@ import { ApplySimpayPaymentStatus } from "./ApplySimpayPaymentStatus";
 
 const RECONCILIATION_INTERVAL_MS = 5_000;
 
-export class ReconcilePendingPixPayments {
+export class ReconcilePendingPayments {
 	constructor(
 		private readonly prisma: PrismaInstance,
 		private readonly simpay: SimpayClient,
@@ -12,9 +12,9 @@ export class ReconcilePendingPixPayments {
 
 	async execute(): Promise<number> {
 		const payments = await this.prisma.payment.findMany({
-			select: { order: { select: { company: { select: { cnpj: true, id: true, slug: true } } } }, simpayPaymentId: true },
+			select: { method: true, order: { select: { company: { select: { cnpj: true, id: true, slug: true } } } }, simpayPaymentId: true },
 			where: {
-				method: "pix",
+				method: { in: ["pix", "credit_card"] },
 				order: { status: "awaiting_payment" },
 				simpayPaymentId: { not: null },
 				status: "pending",
@@ -31,11 +31,13 @@ export class ReconcilePendingPixPayments {
 				const merchant = payment.order?.company.cnpj
 					? { externalMerchantId: payment.order.company.id, integrationKey: simpayIntegrationKey(payment.order.company.slug) }
 					: undefined;
-				const remote = await this.simpay.getPixStatusDirect(paymentId, merchant);
+				const remote = payment.method === "pix"
+					? await this.simpay.getPixStatusDirect(paymentId, merchant)
+					: await this.simpay.getPaymentStatus(paymentId, merchant);
 				const result = await applyStatus.execute(paymentId, remote.status);
 				if (result.status !== "pending") reconciled += 1;
 			} catch (error) {
-				console.error(`Failed to reconcile PIX payment ${paymentId}`, error);
+				console.error(`Failed to reconcile payment ${paymentId}`, error);
 			}
 		}
 
@@ -43,11 +45,11 @@ export class ReconcilePendingPixPayments {
 	}
 }
 
-export function startPendingPixPaymentReconciliation(
+export function startPendingPaymentReconciliation(
 	prisma: PrismaInstance,
 	simpay: SimpayClient,
 ): () => void {
-	const reconciliation = new ReconcilePendingPixPayments(prisma, simpay);
+	const reconciliation = new ReconcilePendingPayments(prisma, simpay);
 	let running = false;
 	const run = async () => {
 		if (running) return;
@@ -55,7 +57,7 @@ export function startPendingPixPaymentReconciliation(
 		try {
 			await reconciliation.execute();
 		} catch (error) {
-			console.error("Failed to reconcile pending PIX payments", error);
+			console.error("Failed to reconcile pending payments", error);
 		} finally {
 			running = false;
 		}

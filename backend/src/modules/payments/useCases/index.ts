@@ -6,4 +6,4 @@ export * from "./DeleteSavedCard";
 export * from "./GetPaymentStatus";
 export * from "./ListSavedCards";
 export * from "./RefundPayment";
-export * from "./ReconcilePendingPixPayments";
+export * from "./ReconcilePendingPayments";

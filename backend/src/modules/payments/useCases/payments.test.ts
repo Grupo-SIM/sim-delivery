@@ -1,4 +1,4 @@
-import { describe, expect, it } from "bun:test";
+import { describe, expect, it, mock } from "bun:test";
 import type { DomPagamentosClient } from "@/shared/infra/domPagamentos";
 import { PaymentProviderError } from "@/shared/infra/paymentProviderError";
 import type { SimpayClient } from "@/shared/infra/simpay";
@@ -10,11 +10,12 @@ import { CreatePixPayment } from "./CreatePixPayment";
 import { DeleteSavedCard } from "./DeleteSavedCard";
 import { GetPaymentStatus } from "./GetPaymentStatus";
 import { ListSavedCards } from "./ListSavedCards";
-import { ReconcilePendingPixPayments } from "./ReconcilePendingPixPayments";
+import { ReconcilePendingPayments } from "./ReconcilePendingPayments";
 import { buildPaymentDescription, resolvePayingCustomer } from "./resolvePayingCustomer";
 
 /** Shapes below mirror only the columns the use cases actually read. */
 interface CompanyRow {
+	cnpj?: string;
 	id: string;
 	slug: string;
 }
@@ -110,7 +111,7 @@ function makeWorld(opts: WorldOptions = {}) {
 	const addresses = opts.addresses ?? [];
 	const companies = opts.companies ?? [baseCompany];
 	const customers = opts.customers ?? [structuredClone(baseCustomer)];
-	const orders = opts.orders ?? [baseOrder];
+	const orders = opts.orders ?? [structuredClone(baseOrder)];
 	const payments = opts.payments ?? [];
 	const savedCards = opts.savedCards ?? [];
 	const cashbackLedger: Record<string, unknown>[] = [];
@@ -150,18 +151,23 @@ function makeWorld(opts: WorldOptions = {}) {
 				const customer = customers.find(candidate => candidate.id === order?.customerId);
 				return customer?.userId === where.order.customer.userId;
 			}) ?? null,
-		findMany: async () =>
+		findMany: async ({ where }: { where: { method: { in: string[] } } }) =>
 			payments
 				.filter(payment => {
 					const order = orders.find(candidate => candidate.id === payment.orderId);
 					return (
-						payment.method === "pix" &&
+						where.method.in.includes(payment.method) &&
 						payment.status === "pending" &&
 						payment.simpayPaymentId !== null &&
 						order?.status === "awaiting_payment"
 					);
 				})
-				.map(payment => ({ simpayPaymentId: payment.simpayPaymentId })),
+				.map(payment => {
+					const order = orders.find(candidate => candidate.id === payment.orderId);
+					const customer = customers.find(candidate => candidate.id === order?.customerId);
+					const company = companies.find(candidate => candidate.id === customer?.companyId);
+					return { method: payment.method, order: { company }, simpayPaymentId: payment.simpayPaymentId };
+				}),
 		update: async ({ data, where }: { data: Record<string, unknown>; where: { id: string } }) => {
 			const payment = payments.find(row => row.id === where.id);
 			if (!payment) throw new Error(`unknown payment ${where.id}`);
@@ -209,7 +215,12 @@ function makeWorld(opts: WorldOptions = {}) {
 				},
 			};
 		},
-		update: async () => ({}),
+		update: async ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => {
+			const order = orders.find(row => row.id === where.id);
+			if (!order) throw new Error(`unknown order ${where.id}`);
+			Object.assign(order, data);
+			return order;
+		},
 	};
 
 	const tx = {
@@ -285,7 +296,7 @@ function makeWorld(opts: WorldOptions = {}) {
 		},
 	} as unknown as PrismaInstance;
 
-	return { cashbackLedger, customers, loyaltyLedger, payments, prisma, savedCards };
+	return { cashbackLedger, customers, loyaltyLedger, orders, payments, prisma, savedCards };
 }
 
 const pixSuccess = {
@@ -722,6 +733,14 @@ describe("ConfirmPayment", () => {
 });
 
 describe("GetPaymentStatus", () => {
+	it("reads persisted pending status for SSE without waiting for the gateway", async () => {
+		const { prisma } = makeWorld({ payments: [{ amount: 5000, id: "pay_1", method: "pix", orderId: "order_1", pixContent: "c", pixQrcode: "q", simpayPaymentId: "simpay_1", status: "pending", token: "token_1" }] });
+		const getPixStatusDirect = mock(async () => { throw new Error("must not call remote"); });
+		const { simpay } = makeSimpay({ getPixStatusDirect });
+		expect(await new GetPaymentStatus(prisma, simpay).execute("user_1", "token_1", false)).toEqual({ status: "pending" });
+		expect(getPixStatusDirect).not.toHaveBeenCalled();
+	});
+
 	function makePending(method = "pix") {
 		return makeWorld({
 			payments: [
@@ -849,7 +868,36 @@ describe("ApplySimpayPaymentStatus", () => {
 	});
 });
 
-describe("ReconcilePendingPixPayments", () => {
+describe("ReconcilePendingPayments", () => {
+	it("confirms an asynchronous card without an open checkout", async () => {
+		const { payments, prisma, orders, cashbackLedger } = makeWorld({
+			companies: [{ ...baseCompany, cnpj: "10802530000107" }],
+			payments: [{ amount: 5000, id: "pay_1", method: "credit_card", orderId: "order_1", pixContent: null, pixQrcode: null, simpayPaymentId: "simpay_1", status: "pending", token: "token_1" }],
+		});
+		const getPaymentStatus = mock(async () => ({ status: "COMPLETED" }));
+		const getPixStatusDirect = mock(async () => { throw new Error("card must use card status endpoint"); });
+		const { simpay } = makeSimpay({ getPaymentStatus, getPixStatusDirect });
+		const reconciliation = new ReconcilePendingPayments(prisma, simpay);
+		expect(await reconciliation.execute()).toBe(1);
+		expect(payments[0]?.status).toBe("confirmed");
+		expect(orders[0]?.status).toBe("recebido");
+		expect(getPaymentStatus).toHaveBeenCalledWith("simpay_1", { externalMerchantId: "cmp_1", integrationKey: "sim-delivery_zero-grau" });
+		expect(getPixStatusDirect).not.toHaveBeenCalled();
+		expect(await reconciliation.execute()).toBe(0);
+		expect(cashbackLedger).toHaveLength(1);
+	});
+
+	it("persists card rejection without confirming an order", async () => {
+		const { payments, prisma, orders, cashbackLedger } = makeWorld({
+			payments: [{ amount: 5000, id: "pay_1", method: "credit_card", orderId: "order_1", pixContent: null, pixQrcode: null, simpayPaymentId: "simpay_1", status: "pending", token: "token_1" }],
+		});
+		const { simpay } = makeSimpay({ getPaymentStatus: async () => ({ status: "FAILED" }) });
+		expect(await new ReconcilePendingPayments(prisma, simpay).execute()).toBe(1);
+		expect(payments[0]?.status).toBe("failed");
+		expect(orders[0]?.status).toBe("awaiting_payment");
+		expect(cashbackLedger).toHaveLength(0);
+	});
+
 	it("polls pending PIX payments and confirms approvals", async () => {
 		const { payments, prisma } = makeWorld({
 			payments: [
@@ -868,7 +916,7 @@ describe("ReconcilePendingPixPayments", () => {
 		});
 		const { simpay } = makeSimpay({ getPixStatusDirect: async () => ({ status: "APPROVED" }) });
 
-		expect(await new ReconcilePendingPixPayments(prisma, simpay).execute()).toBe(1);
+		expect(await new ReconcilePendingPayments(prisma, simpay).execute()).toBe(1);
 		expect(payments[0]?.status).toBe("confirmed");
 	});
 
@@ -892,7 +940,7 @@ describe("ReconcilePendingPixPayments", () => {
 			},
 		});
 
-		expect(await new ReconcilePendingPixPayments(prisma, simpay).execute()).toBe(1);
+		expect(await new ReconcilePendingPayments(prisma, simpay).execute()).toBe(1);
 		expect(payments.find(payment => payment.simpayPaymentId === "approved")?.status).toBe("confirmed");
 	});
 });

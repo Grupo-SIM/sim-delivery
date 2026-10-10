@@ -11,13 +11,13 @@ export class GetPaymentStatus {
 		private readonly simpay: SimpayClient,
 	) {}
 
-	async execute(userId: string, token: string): Promise<PaymentStatusReturn> {
+	async execute(userId: string, token: string, reconcileRemote = true): Promise<PaymentStatusReturn> {
 		const payment = await this.prisma.payment.findFirst({
 			include: { order: { select: { company: { select: { cnpj: true, id: true, slug: true } } } } },
 			where: { order: { customer: { userId } }, token },
 		});
 		if (!payment) throw new DomainError(PaymentErrors.PAYMENT_NOT_FOUND);
-		if (payment.status !== "pending" || !payment.simpayPaymentId) return { status: payment.status };
+		if (!reconcileRemote || payment.status !== "pending" || !payment.simpayPaymentId) return { status: payment.status };
 
 		let remote: { status: string };
 		try {
@@ -28,10 +28,12 @@ export class GetPaymentStatus {
 				payment.method === "pix"
 					? await this.simpay.getPixStatusDirect(payment.simpayPaymentId, merchant)
 					: await this.simpay.getPaymentStatus(payment.simpayPaymentId, merchant);
-		} catch {
+		} catch (error) {
+			console.error(`[PaymentStatus] SimIntPay query failed paymentId=${payment.id} simpayPaymentId=${payment.simpayPaymentId}`, error);
 			// Gateway status is best-effort. Preserve pending so a transient status outage
 			// cannot turn an unsettled payment into either approval or rejection.
-			return { status: payment.status };
+			const persisted = await this.prisma.payment.findUnique({ where: { token }, select: { status: true } });
+			return { status: persisted?.status ?? payment.status };
 		}
 
 		const result = await new ApplySimpayPaymentStatus(this.prisma).execute(

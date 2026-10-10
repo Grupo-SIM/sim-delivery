@@ -1,4 +1,3 @@
-import cors from "@elysiajs/cors";
 import staticPlugin from "@elysiajs/static";
 import { timeConversion } from "@hyoretsu/utils";
 import Elysia, { t } from "elysia";
@@ -7,6 +6,7 @@ import { envSchema } from "@/env";
 import { DomainError } from "@/shared/errors/DomainError";
 import { auth } from "@/shared/infra/betterAuth";
 import { prisma } from "@/shared/infra/sql";
+import { createCors } from "./cors";
 import { GlobalPlugin } from "./global";
 import { OpenAPI } from "./openapi";
 import { consume } from "./rateLimit";
@@ -24,14 +24,7 @@ export const app = new Elysia({ normalize: "typebox" })
 		}
 	})
 	.use([
-		cors({
-			credentials: true,
-			// In non-production, allow all origins so the local Vite dev server
-			// (localhost:5173) can reach a locally-running backend without requiring
-			// CORS_WHITELIST to be updated for every developer's setup.
-			origin:
-				process.env.NODE_ENV === "production" ? process.env.CORS_WHITELIST?.split(",").filter(Boolean) : true,
-		}),
+		createCors(process.env.NODE_ENV === "production", process.env.CORS_WHITELIST),
 		staticPlugin({
 			assets: process.env.STATIC_DIR!,
 			prefix: "/static",

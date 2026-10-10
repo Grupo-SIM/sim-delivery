@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { MaskedInput } from "@/components/ui/MaskedInput";
 import { type PostPaymentsPix200, useGetPaymentsStatusByToken, usePostPaymentsPix } from "@/lib/api";
+import { paymentStatusClient } from "@/lib/api/payment-status-client";
 import { formatMoney } from "@/lib/formatMoney";
 import { isValidCpf } from "@/lib/cpf";
 import { showAlert } from "@/stores";
@@ -59,14 +60,16 @@ export function PixPanel({ customerCpf, onConfirmed, onCpfSaved, orderId, slug }
 		if (status === "confirmed") notifyConfirmed();
 	});
 	const { data: status } = useGetPaymentsStatusByToken(pix?.token, {
+		client: { client: paymentStatusClient },
 		query: {
 			enabled: !!pix,
 			refetchInterval: query => {
 				if (query.state.data?.status === "confirmed") return false;
 				return 5_000;
 			},
-			refetchIntervalInBackground: false,
-			refetchOnWindowFocus: false,
+			refetchIntervalInBackground: true,
+			refetchOnWindowFocus: "always",
+			refetchOnReconnect: "always",
 		},
 	});
 

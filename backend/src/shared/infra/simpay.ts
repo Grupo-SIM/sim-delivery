@@ -6,7 +6,7 @@
  *   POST /zero-grau/payments/credit-card — tokenized card charge
  *   POST /zero-grau/payments/pix         — PIX charge (QR code + copy-paste)
  *   GET  /zero-grau/payments/status/:id  — status from the Simpay DB (webhook-fed)
- *   GET  /zero-grau/payments/pix-status/:id — status straight from DOM (no webhook wait)
+ *   GET  /zero-grau/payments/pix-status/:id — queries DOM and settles SimIntPay first
  */
 
 import { extractPaymentProviderMessage, PaymentProviderError } from "./paymentProviderError";
@@ -229,7 +229,7 @@ export class SimpayClient {
 			merchant
 				? `${merchantBase(merchant)}/payments/${encodeURIComponent(paymentId)}`
 				: `${resolveBaseUrl()}/zero-grau/payments/status/${paymentId}`,
-			{ headers: merchant ? internalHeaders() : headers },
+			{ cache: "no-store", headers: merchant ? internalHeaders() : headers, signal: AbortSignal.timeout(8_000) },
 		);
 		const data = await response.json();
 
@@ -276,11 +276,13 @@ export class SimpayClient {
 		return data as T;
 	}
 
-	/** Queries DOM directly through back-simpay, without waiting for the webhook. */
+	/** SimIntPay checks DOM and settles its local transaction before reporting approval. */
 	async getPixStatusDirect(paymentId: string, merchant?: SimpayMerchantScope): Promise<{ status: string }> {
 		if (merchant) return this.getPaymentStatus(paymentId, merchant);
-		const response = await fetch(`${resolveBaseUrl()}/zero-grau/payments/pix-status/${paymentId}`, {
+		const response = await fetch(`${resolveBaseUrl()}/zero-grau/payments/pix-status/${encodeURIComponent(paymentId)}`, {
+			cache: "no-store",
 			headers,
+			signal: AbortSignal.timeout(8_000),
 		});
 		if (!response.ok) return { status: "UNKNOWN" };
 		return (await response.json()) as { status: string };

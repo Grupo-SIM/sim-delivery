@@ -1,5 +1,5 @@
 import { startExpiredUnpaidOrderCancellation, startShiftEndOrderClosure } from "./modules/orders/useCases";
-import { startPendingPixPaymentReconciliation } from "./modules/payments/useCases";
+import { startPendingPaymentReconciliation } from "./modules/payments/useCases";
 import { server } from "./server";
 import { auth } from "./shared/infra/betterAuth";
 import { app } from "./shared/infra/elysia";
@@ -15,7 +15,7 @@ await new SeedOwner(prisma, input => auth.api.signUpEmail(input)).execute();
 const whatsApp = createWhatsAppProvider();
 startExpiredUnpaidOrderCancellation(prisma, whatsApp);
 startWhatsAppOutboxWorker(prisma, whatsApp);
-startPendingPixPaymentReconciliation(prisma, simpay);
+startPendingPaymentReconciliation(prisma, simpay);
 startShiftEndOrderClosure(prisma);
 
 server.listen(process.env.PORT || 3333);

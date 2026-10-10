@@ -28,9 +28,9 @@ import {
 	ListSavedCards,
 	RefundPayment,
 } from "../../useCases";
+import { createPaymentStatusStream } from "../payment-status-stream";
 import { paymentStatusEvents } from "../PaymentStatusEvents";
 
-const encoder = new TextEncoder();
 const sseHeaders = {
 	"Cache-Control": "no-cache, no-transform",
 	Connection: "keep-alive",
@@ -45,10 +45,6 @@ function isValidWebhookSecret(value: string | null): boolean {
 	const expected = Buffer.from(secret);
 	const received = Buffer.from(value);
 	return expected.length === received.length && timingSafeEqual(expected, received);
-}
-
-function paymentStatusEvent(status: string): Uint8Array {
-	return encoder.encode(`event: payment-status\ndata: ${JSON.stringify({ status })}\n\n`);
 }
 
 export const PaymentsController = new Elysia({ detail: { tags: ["Payments"] } })
@@ -95,7 +91,8 @@ export const PaymentsController = new Elysia({ detail: { tags: ["Payments"] } })
 			)
 			.get(
 				"/status/:token",
-				async ({ getPaymentStatus, params, request }) => {
+				async ({ getPaymentStatus, params, request, set }) => {
+					set.headers["Cache-Control"] = "no-store";
 					const { userId } = await AuthGuard.execute(request.headers);
 					return getPaymentStatus.execute(userId, params.token);
 				},
@@ -105,34 +102,11 @@ export const PaymentsController = new Elysia({ detail: { tags: ["Payments"] } })
 				const { userId } = await AuthGuard.execute(request.headers);
 				// Authorize before opening a long-lived response. The stream then reads the
 				// persisted status once more after subscribing to avoid a missed webhook.
-				await getPaymentStatus.execute(userId, params.token);
-
-				let close = () => undefined;
-				const stream = new ReadableStream<Uint8Array>({
-					cancel: () => close(),
-					start(controller) {
-						let closed = false;
-						const send = (status: string) => {
-							if (!closed) controller.enqueue(paymentStatusEvent(status));
-						};
-						const unsubscribe = paymentStatusEvents.subscribe(params.token, send);
-						const heartbeat = setInterval(() => {
-							if (!closed) controller.enqueue(encoder.encode(": keepalive\n\n"));
-						}, 25_000);
-						const onAbort = () => close();
-
-						close = () => {
-							if (closed) return;
-							closed = true;
-							clearInterval(heartbeat);
-							unsubscribe();
-							request.signal.removeEventListener("abort", onAbort);
-							controller.close();
-						};
-
-						request.signal.addEventListener("abort", onAbort, { once: true });
-						void getPaymentStatus.execute(userId, params.token).then(status => send(status.status));
-					},
+				await getPaymentStatus.execute(userId, params.token, false);
+				const stream = createPaymentStatusStream({
+					readStatus: () => getPaymentStatus.execute(userId, params.token, false),
+					signal: request.signal,
+					subscribe: listener => paymentStatusEvents.subscribe(params.token, listener),
 				});
 
 				return new Response(stream, { headers: sseHeaders });
