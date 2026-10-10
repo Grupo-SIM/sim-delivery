@@ -60,7 +60,7 @@ function makeOrderPrisma(
 						const o = {
 							cancelReason: null,
 							createdAt: new Date(),
-							id: "ord_1",
+							id: `ord_${orders.length + 1}`,
 							status: "recebido",
 							updatedAt: new Date(),
 							...data,
@@ -68,10 +68,10 @@ function makeOrderPrisma(
 						orders.push(o);
 						return o;
 					},
-					findUniqueOrThrow: async () => ({
-						...(orders[0] as object),
+					findUniqueOrThrow: async ({ where }: { where: { id: string } }) => ({
+						...orders.find(order => (order as { id: string }).id === where.id),
 						feeSnapshots: orderFeeSnapshots,
-						items: itemsWithFees(),
+						items: itemsWithFees().filter(item => (item as { orderId: string }).orderId === where.id),
 					}),
 				},
 				orderFeeSnapshot: {
@@ -274,19 +274,25 @@ describe("CreateOrder", () => {
 		expect(retry.id).toBe(first.id);
 	});
 
-	it("recovers a valid unpaid order when checkout receives a new idempotency key", async () => {
+	it("creates a new order despite an active unpaid order", async () => {
 		const { orders, prisma } = makeOrderPrisma();
 		const createOrder = new CreateOrder(prisma);
 
 		const first = await createOrder.execute("user_1", baseBody);
-		const recovered = await createOrder.execute("user_1", {
+		const second = await createOrder.execute("user_1", {
 			...baseBody,
 			idempotencyKey: "00000000-0000-4000-8000-000000000002",
+			items: [{ quantity: 3, unitProductId: "up_1" }],
 		});
 
-		expect(orders).toHaveLength(1);
+		expect(orders).toHaveLength(2);
 		expect(first.status).toBe("awaiting_payment");
-		expect(recovered.id).toBe(first.id);
+		expect(second.id).not.toBe(first.id);
+		expect(second.status).toBe("awaiting_payment");
+		expect(first.total).toBe(2500);
+		expect(second.total).toBe(3500);
+		expect(second.items).toHaveLength(1);
+		expect(second.items[0].quantity).toBe(3);
 	});
 
 	it("does not recover an unpaid order after its one-hour reservation expires", async () => {

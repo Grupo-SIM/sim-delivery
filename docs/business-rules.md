@@ -19,6 +19,12 @@ Cada **variante** whitelabel do app mapeia para exatamente uma empresa. Uma empr
 possui **N unidades** (lojas físicas). Detalhes em
 [01-visao-geral-e-dominio.md](01-visao-geral-e-dominio.md).
 
+## Criação de pedidos
+
+- Pedido pendente de pagamento não bloqueia novos pedidos do mesmo cliente/unidade.
+- Nova chave de idempotência cria pedido independente. Repetir a mesma chave
+  retorna o pedido já criado, sem duplicar reservas ou débitos de créditos.
+
 ## Movimentações de insumos
 
 - O motivo é opcional em entradas, ajustes e perdas. Movimentações sem motivo são
