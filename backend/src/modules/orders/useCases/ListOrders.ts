@@ -2,6 +2,7 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import type { Role } from "@/shared/permissions";
 import type { AdminOrderListReturn, ListOrdersQuery } from "../dtos";
 import { customerOrderFilter } from "../customer-order-filter";
+import { getBusinessShiftDateRanges } from "./getBusinessShiftDateRanges";
 import { getCurrentBusinessShiftStart } from "./getCurrentBusinessShiftStart";
 
 export class ListOrders {
@@ -16,12 +17,16 @@ export class ListOrders {
 		// The operational board includes the current shift and unresolved orders from earlier shifts. A customer history,
 		// however, must cover every eligible order so it agrees with the customer metrics.
 		const usesCurrentShift = !customerId && !from && !to;
+		const usesSelectedShifts =
+			!customerId &&
+			Boolean(from || to) &&
+			[from, to].every(value => !value || /^\d{4}-\d{2}-\d{2}$/.test(value));
 		const staffUnitScope =
 			role !== undefined && !["owner", "superAdmin"].includes(role) && userId
 				? { staffUnits: { some: { userId } } }
 				: {};
 		const shiftStarts =
-			usesCurrentShift
+			usesCurrentShift || usesSelectedShifts
 				? await this.prisma.unit.findMany({
 						select: { hours: true, id: true },
 						where: {
@@ -43,6 +48,16 @@ export class ListOrders {
 						})),
 					}
 				: null;
+		const selectedShiftFilter =
+			usesSelectedShifts
+				? {
+						OR: shiftStarts.map(unit => ({
+							OR: getBusinessShiftDateRanges(unit.hours, from, to).map(createdAt => ({ createdAt })),
+							unitId: unit.id,
+						})),
+					}
+				: null;
+		const periodFilter = currentShiftFilter ?? selectedShiftFilter;
 		const searchFilter = search
 			? {
 						OR: [
@@ -78,7 +93,7 @@ export class ListOrders {
 				...(status ? { status } : {}),
 				...(unitId ? { unitId } : {}),
 				...(hasCoupon !== undefined ? (hasCoupon ? { couponId: { not: null } } : { couponId: null }) : {}),
-				...(from || to
+				...(!usesSelectedShifts && (from || to)
 					? {
 							createdAt: {
 								...(from ? { gte: new Date(from) } : {}),
@@ -86,9 +101,9 @@ export class ListOrders {
 							},
 						}
 					: {}),
-				...(currentShiftFilter && searchFilter
-					? { AND: [currentShiftFilter, searchFilter] }
-					: currentShiftFilter ?? searchFilter ?? {}),
+				...(periodFilter && searchFilter
+					? { AND: [periodFilter, searchFilter] }
+					: periodFilter ?? searchFilter ?? {}),
 			},
 		});
 		const productIds = [...new Set(orders.flatMap(order => order.items.map(item => item.productId)))];

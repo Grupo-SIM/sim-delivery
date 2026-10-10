@@ -921,6 +921,32 @@ describe("ListOrders", () => {
 		});
 	});
 
+	it("filters selected opening dates per unit and combines search without losing either scope", async () => {
+		const { prisma } = makeListOrdersPrisma();
+		let query: unknown;
+		prisma.unit.findMany = (async () => [{ id: "unit_1", hours: [{ weekday: 4, closed: false, opensAt: "18:00", closesAt: "03:00" }] }]) as typeof prisma.unit.findMany;
+		prisma.order.findMany = (async (input: unknown) => { query = input; return []; }) as typeof prisma.order.findMany;
+		await new ListOrders(prisma).execute("cmp_1", { from: "2026-10-22", to: "2026-10-22", search: "Maria", unitId: "unit_1" });
+		expect(query).toMatchObject({ where: { companyId: "cmp_1", unitId: "unit_1", AND: [
+			{ OR: [{ unitId: "unit_1", OR: [{ createdAt: { gte: new Date(2026, 9, 22, 18), lt: new Date(2026, 9, 23, 3) } }] }] },
+			{ OR: expect.any(Array) },
+		] } });
+		expect((query as { where: object }).where).not.toHaveProperty("createdAt");
+	});
+
+	it("preserves timestamp filters and customer history without querying unit shifts", async () => {
+		for (const customerId of [undefined, "cust_1"]) {
+			const { prisma } = makeListOrdersPrisma();
+			let query: unknown;
+			prisma.unit.findMany = (() => { throw new Error("Unit shifts must not be queried"); }) as typeof prisma.unit.findMany;
+			prisma.order.findMany = (async (input: unknown) => { query = input; return []; }) as typeof prisma.order.findMany;
+			const from = customerId ? "2026-10-22" : "2026-10-22T00:00:00";
+			const to = customerId ? "2026-10-23" : "2026-10-22T23:59:59";
+			await new ListOrders(prisma).execute("cmp_1", { customerId, from, to });
+			expect(query).toMatchObject({ where: { createdAt: { gte: new Date(from), lte: new Date(to) } } });
+		}
+	});
+
 	it("returns orders with customer and unit names", async () => {
 		const { prisma } = makeListOrdersPrisma();
 		const result = await new ListOrders(prisma).execute("cmp_1", {});

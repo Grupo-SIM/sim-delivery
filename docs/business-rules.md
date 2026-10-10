@@ -27,6 +27,16 @@ possui **N unidades** (lojas físicas). Detalhes em
 
 ## Encerramento do expediente
 
+- Filtro de datas do painel de pedidos considera a data de abertura do expediente de cada
+  unidade. Expediente aberto no dia 22 e encerrado na madrugada do dia 23 pertence ao dia 22,
+  sem repetir seus pedidos no filtro do dia 23. A abertura é inclusiva e o fechamento é
+  exclusivo: pedido criado exatamente no fechamento não pertence ao expediente encerrado.
+  Intervalos incluem os expedientes de todas
+  as datas selecionadas. Dias sem horário configurado ou marcados como fechados usam o dia
+  civil, excluindo a madrugada pertencente ao expediente anterior, para preservar a consulta
+  de pedidos. Histórico do cliente e filtros com timestamps (como o dashboard) mantêm
+  os limites exatos informados.
+
 - Fim do expediente e encerramento manual do dia não cancelam pedidos operacionais.
 - Pedidos não concluídos mantêm status e reservas e continuam visíveis no painel no
   próximo expediente, para resolução pelo gerente ou proprietário. Cancelamento é manual.

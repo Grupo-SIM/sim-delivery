@@ -57,8 +57,8 @@ function OrdersPage() {
 		...(search.trim() ? { search: search.trim() } : {}),
 		...(dateRange
 			? {
-					from: `${dateRange.startDate}T00:00:00`,
-					to: `${dateRange.endDate}T23:59:59.999`,
+					from: dateRange.startDate,
+					to: dateRange.endDate,
 				}
 			: {}),
 	});
@@ -104,9 +104,9 @@ function OrdersPage() {
 						placeholder={t("admin.orders.filter.datePlaceholder")}
 						value={dateRange}
 					/>
-					{!dateRange && (
-						<p className="text-muted-foreground text-xs">{t("admin.orders.filter.defaultPeriodDescription")}</p>
-					)}
+					<p className="text-muted-foreground text-xs">
+						{t(dateRange ? "admin.orders.filter.periodDescription" : "admin.orders.filter.defaultPeriodDescription")}
+					</p>
 				</div>
 				<div className="space-y-1">
 					<span className="font-medium text-sm">{t("admin.orders.filter.unit")}</span>
