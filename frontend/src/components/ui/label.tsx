@@ -8,7 +8,7 @@ interface LabelProps extends ComponentPropsWithoutRef<"label"> {
 export function Label({ children, className, ...props }: LabelProps) {
 	return (
 		// biome-ignore lint/a11y/noLabelWithoutControl: Callers provide the paired control as children or through htmlFor.
-		<label className={cn("grid gap-2 font-medium text-sm leading-none", className)} {...props}>
+		<label className={cn("grid content-start gap-2 self-start font-medium text-sm leading-none", className)} {...props}>
 			{children}
 		</label>
 	);
