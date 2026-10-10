@@ -77,8 +77,8 @@ function OrdersPage() {
 	}
 
 	return (
-		<Container className="space-y-6 py-6 sm:py-8" size="full">
-			<div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+		<Container className="flex h-full min-h-0 min-w-0 flex-col gap-6 overflow-hidden py-6 sm:py-8" size="full">
+			<div className="flex shrink-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 				<SectionHeading subtitle={t("admin.orders.subtitle")} title={t("admin.orders.title")} />
 				<Button disabled={ordersQuery.isFetching} onClick={() => void handleRefresh()} type="button" variant="outline">
 					{ordersQuery.isFetching ? (
@@ -90,7 +90,7 @@ function OrdersPage() {
 				</Button>
 			</div>
 
-			<div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(15rem,1fr)_minmax(0,2fr)] md:items-start">
+			<div className="grid shrink-0 gap-4 md:grid-cols-[minmax(0,2fr)_minmax(15rem,1fr)_minmax(0,2fr)] md:items-start">
 				<TextField
 					label={t("admin.orders.filter.search")}
 					onValueChange={setSearch}
@@ -119,7 +119,7 @@ function OrdersPage() {
 			</div>
 
 			{unitsQuery.isPending || ordersQuery.isPending ? (
-				<div className="grid gap-4 sm:grid-cols-3">
+				<div className="grid min-h-0 flex-1 gap-4 overflow-hidden sm:grid-cols-3">
 					{availableStatuses.slice(0, 3).map(status => (
 						<div className="space-y-4 rounded-brand border p-4" key={status}>
 							<Skeleton className="h-6 w-32" />

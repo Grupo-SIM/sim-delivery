@@ -277,7 +277,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 	return (
 		<>
 			<ScrollArea
-				className="h-[calc(100dvh-14rem)] overflow-auto pb-3"
+				className="min-h-0 min-w-0 flex-1 overscroll-contain overflow-auto pb-3"
 				onDragLeave={event => {
 					const nextTarget = event.relatedTarget as Node | null;
 					if (nextTarget && !event.currentTarget.contains(nextTarget)) finishDrag();

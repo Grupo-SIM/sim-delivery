@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
 import { LuMenu, LuX } from "react-icons/lu";
 import { ScrollArea } from "@/components/ui/ScrollArea";
@@ -8,6 +8,9 @@ import { AdminSidebar, OperationalNavbar } from "./admin/components";
 
 function AdminLayout() {
 	const [mobileOpen, setMobileOpen] = useState(false);
+	const isOrdersPage = useRouterState({
+		select: state => /^\/admin\/orders\/?$/.test(state.location.pathname),
+	});
 	const role = useAuthStore(state => state.role);
 
 	if (isOperationalStaff(role)) {
@@ -15,7 +18,7 @@ function AdminLayout() {
 			<div className="flex h-dvh flex-col overflow-hidden">
 				<OperationalNavbar />
 				<main className="min-h-0 flex-1">
-					<ScrollArea className="h-full overflow-y-auto">
+					<ScrollArea className={isOrdersPage ? "h-full overflow-hidden" : "h-full overflow-y-auto"}>
 						<Outlet />
 					</ScrollArea>
 				</main>
@@ -24,7 +27,7 @@ function AdminLayout() {
 	}
 
 	return (
-		<div className="flex min-h-screen overflow-x-hidden">
+		<div className={isOrdersPage ? "flex h-dvh overflow-hidden" : "flex min-h-screen overflow-x-hidden"}>
 			<aside className="fixed inset-y-0 left-0 z-20 hidden w-60 flex-col border-border border-r bg-card md:flex">
 				<AdminSidebar />
 			</aside>
@@ -56,8 +59,8 @@ function AdminLayout() {
 				<AdminSidebar onNavigate={() => setMobileOpen(false)} />
 			</aside>
 
-			<div className="flex min-w-0 flex-1 flex-col md:pl-60">
-				<header className="sticky top-0 z-20 flex items-center gap-3 border-border border-b bg-card px-4 py-3 md:hidden">
+			<div className="flex min-h-0 min-w-0 flex-1 flex-col md:pl-60">
+				<header className="sticky top-0 z-20 flex shrink-0 items-center gap-3 border-border border-b bg-card px-4 py-3 md:hidden">
 					<button
 						aria-label="Abrir menu"
 						className="cursor-pointer rounded-md border border-transparent p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -69,7 +72,7 @@ function AdminLayout() {
 					<span className="font-semibold text-sm">Admin</span>
 				</header>
 
-				<main className="min-w-0 flex-1">
+				<main className="min-h-0 min-w-0 flex-1">
 					<Outlet />
 				</main>
 			</div>
