@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
@@ -9,8 +9,10 @@ import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { Modal } from "@/components/ui/Modal";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { closeActiveModalHistory } from "@/hooks/use-modal-history";
 import { getProductsQueryKey, usePatchProductsByProductId } from "@/lib/api";
-import { ProductOptionsEditor, type ProductOptionsEditorHandle } from "./ProductOptionsModal";
+import { showToast } from "@/stores";
+import { ProductOptionsEditor } from "./ProductOptionsModal";
 import type { Product } from "./types";
 
 interface ProductEditModalProps {
@@ -24,7 +26,6 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 	const [title, setTitle] = useState("");
 	const [localTitle, setLocalTitle, flushTitle] = useDebouncedInput(title, setTitle);
 	const [imageUrl, setImageUrl] = useState("");
-	const [localImageUrl, setLocalImageUrl, flushImageUrl] = useDebouncedInput(imageUrl, setImageUrl);
 	const [description, setDescription] = useState("");
 	const [localDescription, setLocalDescription, flushDescription] = useDebouncedInput(
 		description,
@@ -36,8 +37,6 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 	const [error, setError] = useState<string | null>(null);
 	const [isUploadingImage, setIsUploadingImage] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
-	const [optionsReady, setOptionsReady] = useState(false);
-	const optionsRef = useRef<ProductOptionsEditorHandle>(null);
 
 	const { mutateAsync } = usePatchProductsByProductId();
 
@@ -52,7 +51,6 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 		setCashbackEnabled(product.cashbackPercentOverride !== null);
 		setCashback(product.cashbackPercentOverride ?? 0);
 		setError(null);
-		setOptionsReady(false);
 	}, [product]);
 
 	async function save() {
@@ -60,26 +58,23 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 			return;
 		}
 		flushTitle();
-		flushImageUrl();
 		flushDescription();
 		setError(null);
 		setIsSaving(true);
 		try {
-			await Promise.all([
-				mutateAsync({
-					data: {
-						basePriceCents: Math.round(priceReais * 100),
-						cashbackPercentOverride: cashbackEnabled ? cashback : null,
-						description: localDescription,
-						imageUrl: localImageUrl,
-						title: localTitle,
-					},
-					productId: product.id,
-				}),
-				optionsRef.current?.save(),
-			]);
+			await mutateAsync({
+				data: {
+					basePriceCents: Math.round(priceReais * 100),
+					cashbackPercentOverride: cashbackEnabled ? cashback : null,
+					description: localDescription,
+					imageUrl,
+					title: localTitle,
+				},
+				productId: product.id,
+			});
 			await queryClient.invalidateQueries({ queryKey: getProductsQueryKey() });
-			onClose();
+			showToast(t("admin.products.edit.saved"), "positive");
+			closeActiveModalHistory();
 		} catch {
 			setError(t("admin.products.edit.error"));
 		} finally {
@@ -90,7 +85,10 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 	return (
 		<Modal
 			isOpen={product !== null}
-			onClose={onClose}
+			onClose={() => {
+				onClose();
+				void queryClient.invalidateQueries({ queryKey: getProductsQueryKey() });
+			}}
 			title={t("admin.products.edit.title")}
 			urlKey="product-edit"
 			urlState={product?.id}
@@ -169,15 +167,20 @@ export function ProductEditModal({ onClose, product }: ProductEditModalProps) {
 					/>
 				</Label>
 
-				<ProductOptionsEditor onReadyChange={setOptionsReady} product={product} ref={optionsRef} />
+				{product && <ProductOptionsEditor product={product} />}
 
 				{error && <p className="text-destructive text-xs">{error}</p>}
 				<div className="flex justify-end gap-2">
-					<Button disabled={isSaving} onClick={onClose} type="button" variant="outline">
+					<Button
+						disabled={isSaving}
+						onClick={() => closeActiveModalHistory()}
+						type="button"
+						variant="outline"
+					>
 						{t("admin.products.edit.cancel")}
 					</Button>
 					<Button
-						disabled={isSaving || isUploadingImage || !localTitle || !optionsReady}
+						disabled={isSaving || isUploadingImage || !localTitle}
 						onClick={() => void save()}
 						type="button"
 					>

@@ -1,12 +1,13 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuGripVertical, LuPencil, LuTrash2 } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Modal } from "@/components/ui/Modal";
 import { Tooltip } from "@/components/ui/Tooltip";
+import { closeActiveModalHistory } from "@/hooks/use-modal-history";
 import { OptionFormFields } from "./OptionFormFields";
 
 export interface EditableOption {
@@ -19,15 +20,18 @@ export interface EditableOption {
 	sortOrder: number;
 }
 interface OptionEditorProps {
-	onChange: (option: EditableOption) => void;
+	isSaving: boolean;
+	onSave: (option: EditableOption) => Promise<boolean>;
 	onDelete: () => void;
 	option: EditableOption;
 }
 
-export function OptionEditor({ onChange, onDelete, option }: OptionEditorProps) {
+export function OptionEditor({ isSaving, onSave, onDelete, option }: OptionEditorProps) {
 	const { t } = useTranslation();
 	const [isEditing, setIsEditing] = useState(false);
-	const [originalOption, setOriginalOption] = useState<EditableOption | null>(null);
+	const [draft, setDraft] = useState(option);
+	const draftRef = useRef(option);
+	const [isUploading, setIsUploading] = useState(false);
 	const { attributes, isDragging, listeners, setNodeRef, transform, transition } = useSortable({
 		id: option.id,
 	});
@@ -80,7 +84,8 @@ export function OptionEditor({ onChange, onDelete, option }: OptionEditorProps) 
 						<Button
 							aria-label={t("admin.products.options.edit")}
 							onClick={() => {
-								setOriginalOption({ ...option });
+								setDraft({ ...option });
+								draftRef.current = { ...option };
 								setIsEditing(true);
 							}}
 							size="icon"
@@ -94,6 +99,7 @@ export function OptionEditor({ onChange, onDelete, option }: OptionEditorProps) 
 						aria-label={t("admin.products.options.delete")}
 						confirmation={t("admin.products.options.deleteOptionConfirm")}
 						confirmLabel={t("admin.products.options.delete")}
+						disabled={isSaving}
 						idleIcon={<LuTrash2 className="size-4" />}
 						onConfirm={onDelete}
 						size="icon"
@@ -107,32 +113,31 @@ export function OptionEditor({ onChange, onDelete, option }: OptionEditorProps) 
 			<Modal
 				isOpen={isEditing}
 				maxWidth="640px"
-				onClose={() => {
-					if (originalOption) onChange(originalOption);
-					setIsEditing(false);
-				}}
+				onClose={() => setIsEditing(false)}
 				title={option.name}
 				urlKey="product-option-edit"
 				urlState={option.id}
 			>
 				<div className="grid gap-3 md:grid-cols-2">
-					<OptionFormFields onChange={onChange} option={option} />
-					<p className="text-muted-foreground text-xs md:col-span-2">
-						{t("admin.products.options.draftChangesHint")}
-					</p>
+					<OptionFormFields
+						draftRef={draftRef}
+						onChange={setDraft}
+						onUploadingChange={setIsUploading}
+						option={draft}
+					/>
 					<div className="flex justify-end gap-2 md:col-span-2">
-						<Button
-							onClick={() => {
-								if (originalOption) onChange(originalOption);
-								setIsEditing(false);
-							}}
-							type="button"
-							variant="outline"
-						>
+						<Button onClick={() => closeActiveModalHistory()} type="button" variant="outline">
 							{t("admin.products.options.discardChanges")}
 						</Button>
-						<Button onClick={() => setIsEditing(false)} type="button">
-							{t("admin.products.options.finishEditing")}
+						<Button
+							disabled={isSaving || isUploading || !draftRef.current.name.trim()}
+							onClick={async () => {
+								if (await onSave({ ...draftRef.current, name: draftRef.current.name.trim() }))
+									closeActiveModalHistory();
+							}}
+							type="button"
+						>
+							{t("admin.products.edit.save")}
 						</Button>
 					</div>
 				</div>

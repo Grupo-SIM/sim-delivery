@@ -1,4 +1,4 @@
-import { type MutableRefObject, useState } from "react";
+import type { MutableRefObject } from "react";
 import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Input } from "@/components/ui/input";
@@ -6,29 +6,30 @@ import { Label, RequiredMark } from "@/components/ui/label";
 import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { showToast } from "@/stores";
 import type { EditableOption } from "./OptionEditor";
 
 interface OptionFormFieldsProps {
 	draftRef?: MutableRefObject<EditableOption>;
 	onChange: (option: EditableOption) => void;
+	onUploadingChange: (uploading: boolean) => void;
 	option: EditableOption;
 }
 
-export function OptionFormFields({ draftRef, onChange, option }: OptionFormFieldsProps) {
+export function OptionFormFields({ draftRef, onChange, onUploadingChange, option }: OptionFormFieldsProps) {
 	const { t } = useTranslation();
-	const [name, setName] = useState(option.name);
-	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
-	const [description, setDescription] = useState(option.description);
-	const [localDescription, setLocalDescription, flushDescription] = useDebouncedInput(
-		description,
-		setDescription,
-	);
-	const [imageUrl, setImageUrl] = useState(option.imageUrl ?? "");
 	const update = (patch: Partial<EditableOption>) => {
 		const value = { ...(draftRef?.current ?? option), ...patch };
 		if (draftRef) draftRef.current = value;
 		onChange(value);
 	};
+	const [localName, setLocalName, flushName] = useDebouncedInput(option.name, value =>
+		update({ name: value }),
+	);
+	const [localDescription, setLocalDescription, flushDescription] = useDebouncedInput(
+		option.description,
+		value => update({ description: value }),
+	);
 
 	return (
 		<>
@@ -71,13 +72,13 @@ export function OptionFormFields({ draftRef, onChange, option }: OptionFormField
 				<span>{t("admin.products.options.optionImage")}</span>
 				<MediaUrlInput
 					asset="product"
-					onUploadError={() => undefined}
+					onUploadError={() => showToast(t("admin.products.create.uploadError"), "negative")}
+					onUploadingChange={onUploadingChange}
 					onValueChange={value => {
-						setImageUrl(value);
 						update({ imageUrl: value || null });
 					}}
 					uploadLabel={t("admin.products.options.optionImage")}
-					value={imageUrl}
+					value={option.imageUrl ?? ""}
 				/>
 			</Label>
 			<Label>

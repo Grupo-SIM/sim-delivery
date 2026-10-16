@@ -10,7 +10,7 @@
 			"save": "Salvar"
 		},
 		"admin": {
-		"branding": {
+			"branding": {
 				"addAttachment": "Adicionar anexo",
 				"allColorsCopied": "Cores copiadas de {{mode}}.",
 				"allColorsReset": "Cores restauradas para o padrão.",
@@ -734,6 +734,7 @@
 					"cancel": "Cancelar",
 					"error": "Não foi possível salvar o produto.",
 					"save": "Salvar",
+					"saved": "Produto salvo.",
 					"saving": "Salvando...",
 					"title": "Editar produto"
 				},
@@ -750,11 +751,9 @@
 					"deleteOptionConfirm": "Excluir opção?",
 					"descriptionPlaceholder": "Ex: Molho extra cremoso",
 					"discardChanges": "Descartar alterações",
-					"draftChangesHint": "As alterações serão salvas ao salvar o produto.",
 					"edit": "Editar",
 					"editGroup": "Editar customização",
 					"expand": "Expandir",
-					"finishEditing": "Concluir edição",
 					"groupCreated": "Grupo criado",
 					"groupName": "Nome",
 					"groupPlaceholder": "Ex: Escolha o sabor",
@@ -763,8 +762,8 @@
 					"max": "Máximo",
 					"maxHelp": "Deixe em branco para não limitar a quantidade de escolhas. Com máximo 1, funciona como escolha única.",
 					"maxSelect": "Máximo de escolhas",
-					"minimize": "Minimizar",
 					"minSelect": "Mínimo de escolhas",
+					"minimize": "Minimizar",
 					"optionCount_one": "{{count}} opção",
 					"optionCount_other": "{{count}} opções",
 					"optionCreated": "Opção criada",
@@ -777,6 +776,7 @@
 					"priceRule": "Regra de preço",
 					"reorder": "Arraste para ordenar",
 					"required": "Obrigatório",
+					"saveError": "Não foi possível salvar a customização. Tente novamente.",
 					"saved": "Customização salva",
 					"sum": "Somar preços",
 					"title": "Customizações",
@@ -1582,8 +1582,8 @@
 					"open": "Aberto"
 				},
 				"subtitle": "Lojas desta empresa.",
-				"title": "Unidades"
-				,"whatsApp": {
+				"title": "Unidades",
+				"whatsApp": {
 					"action": "WhatsApp",
 					"connect": "Conectar WhatsApp",
 					"connectError": "Não foi possível iniciar a sessão do WhatsApp.",

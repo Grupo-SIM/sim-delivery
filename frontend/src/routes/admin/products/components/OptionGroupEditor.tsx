@@ -23,15 +23,17 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Label, RequiredMark } from "@/components/ui/label";
 import { Modal } from "@/components/ui/Modal";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { ScrollArea } from "@/components/ui/ScrollArea";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { closeActiveModalHistory } from "@/hooks/use-modal-history";
 import { verticalListModifiers } from "@/lib/dnd-modifiers";
 import { AddOptionModal } from "./AddOptionModal";
 import { type EditableOption, OptionEditor } from "./OptionEditor";
 import { OptionGroupCard } from "./OptionGroupCard";
+import type { ProductOptionActions } from "./use-product-option-actions";
 
 export interface OptionGroup {
 	allowRepeatSelection: boolean;
@@ -46,14 +48,13 @@ export interface OptionGroup {
 
 interface OptionGroupEditorProps {
 	group: OptionGroup;
-	onChange: (group: OptionGroup) => void;
-	onDelete: () => void;
+	actions: ProductOptionActions;
 }
 
-export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEditorProps) {
+export function OptionGroupEditor({ group, actions }: OptionGroupEditorProps) {
 	const { t } = useTranslation();
 	const [isExpanded, setIsExpanded] = useState(false);
-	const [originalGroup, setOriginalGroup] = useState<OptionGroup | null>(null);
+	const [draft, setDraft] = useState(group);
 	const [isOptionsExpanded, setIsOptionsExpanded] = useState(true);
 	const [name, setName] = useState(group.name);
 	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
@@ -65,26 +66,16 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 		useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
 	);
 
-	function addOption(option: EditableOption) {
-		onChange({
-			...group,
-			options: [
-				...group.options,
-				{
-					...option,
-					sortOrder: group.options.length,
-				},
-			],
-		});
-	}
-
 	function moveOption({ active, over }: DragEndEvent) {
-		if (!over || active.id === over.id) return;
+		if (!over || active.id === over.id || actions.isSaving) return;
 		const sourceIndex = group.options.findIndex(option => option.id === active.id);
 		const targetIndex = group.options.findIndex(option => option.id === over.id);
 		if (sourceIndex < 0 || targetIndex < 0) return;
-		const options = arrayMove(group.options, sourceIndex, targetIndex);
-		onChange({ ...group, options: options.map((option, index) => ({ ...option, sortOrder: index })) });
+		void actions.reorderOptions(group.id, arrayMove(group.options, sourceIndex, targetIndex));
+	}
+	async function save() {
+		flushName();
+		if (await actions.saveGroup({ ...draft, name: localName.trim() })) closeActiveModalHistory();
 	}
 
 	return (
@@ -96,9 +87,17 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 			<OptionGroupCard
 				dragHandleProps={{ ...attributes, ...listeners }}
 				name={group.name}
-				onDelete={onDelete}
+				onDelete={
+					actions.isSaving
+						? undefined
+						: () => {
+								void actions.deleteGroup(group.id);
+							}
+				}
 				onEdit={() => {
-					setOriginalGroup(structuredClone(group));
+					setDraft(group);
+					setName(group.name);
+					setLocalName(group.name);
 					setIsExpanded(true);
 				}}
 				optionCount={group.options.length}
@@ -106,10 +105,7 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 			<Modal
 				isOpen={isExpanded}
 				maxWidth="900px"
-				onClose={() => {
-					if (originalGroup) onChange(originalGroup);
-					setIsExpanded(false);
-				}}
+				onClose={() => setIsExpanded(false)}
 				title={t("admin.products.options.editGroup")}
 				urlKey="product-option-group-edit"
 				urlState={group.id}
@@ -117,12 +113,14 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 				<div className="space-y-4">
 					<div className="grid gap-3 md:grid-cols-2">
 						<Label>
-							<span>{t("admin.products.options.groupName")}</span>
+							<span>
+								{t("admin.products.options.groupName")} <RequiredMark />
+							</span>
 							<Input
 								className="text-foreground"
 								onBlur={() => {
 									flushName();
-									onChange({ ...group, name: localName });
+									setDraft({ ...draft, name: localName });
 								}}
 								onChange={event => setLocalName(event.currentTarget.value)}
 								placeholder={t("admin.products.options.groupPlaceholder")}
@@ -132,8 +130,8 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 						<div className="flex items-center gap-2 md:col-span-2">
 							<Checkbox
 								aria-label={t("admin.products.options.required")}
-								checked={group.required}
-								onChange={() => onChange({ ...group, required: !group.required })}
+								checked={draft.required}
+								onChange={() => setDraft({ ...draft, required: !draft.required })}
 							/>
 							<span>{t("admin.products.options.required")}</span>
 						</div>
@@ -144,19 +142,19 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 									<NumericInput
 										className="w-20"
 										decimalScale={0}
-										onValueChange={({ floatValue }) => onChange({ ...group, maxSelect: floatValue ?? null })}
+										onValueChange={({ floatValue }) => setDraft({ ...draft, maxSelect: floatValue ?? null })}
 										placeholder={t("admin.products.options.unlimited")}
-										value={group.maxSelect}
+										value={draft.maxSelect}
 									/>
 								</Label>
-								{group.maxSelect !== 1 && (
+								{draft.maxSelect !== 1 && (
 									<>
 										<div className="flex items-center gap-2 pb-2">
 											<Checkbox
 												aria-label={t("admin.products.options.allowRepeatSelection")}
-												checked={group.allowRepeatSelection}
+												checked={draft.allowRepeatSelection}
 												onChange={() =>
-													onChange({ ...group, allowRepeatSelection: !group.allowRepeatSelection })
+													setDraft({ ...draft, allowRepeatSelection: !draft.allowRepeatSelection })
 												}
 											/>
 											<span>{t("admin.products.options.allowRepeatSelection")}</span>
@@ -165,14 +163,14 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 											<span>{t("admin.products.options.priceRule")}</span>
 											<CustomSelect
 												onChange={priceRule =>
-													onChange({ ...group, priceRule: priceRule as OptionGroup["priceRule"] })
+													setDraft({ ...draft, priceRule: priceRule as OptionGroup["priceRule"] })
 												}
 												options={[
 													{ label: t("admin.products.options.sum"), value: "sum" },
 													{ label: t("admin.products.options.highest"), value: "highest" },
 													{ label: t("admin.products.options.average"), value: "average" },
 												]}
-												value={group.priceRule}
+												value={draft.priceRule}
 											/>
 										</Label>
 									</>
@@ -211,19 +209,12 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 										<ScrollArea className="max-h-[30rem] space-y-2 overflow-y-auto overflow-x-hidden pr-1">
 											{group.options.map(option => (
 												<OptionEditor
+													isSaving={actions.isSaving}
 													key={option.id}
-													onChange={value =>
-														onChange({
-															...group,
-															options: group.options.map(item => (item.id === option.id ? value : item)),
-														})
-													}
-													onDelete={() =>
-														onChange({
-															...group,
-															options: group.options.filter(item => item.id !== option.id),
-														})
-													}
+													onDelete={() => {
+														void actions.deleteOption(group.id, option.id);
+													}}
+													onSave={value => actions.saveOption(group.id, value)}
 													option={option}
 												/>
 											))}
@@ -234,31 +225,35 @@ export function OptionGroupEditor({ group, onChange, onDelete }: OptionGroupEdit
 						</>
 					)}
 					<div className="border-border border-t pt-4">
-						<AddOptionModal onAdd={addOption} />
+						<AddOptionModal
+							isSaving={actions.isSaving}
+							onAdd={option => actions.addOption(group.id, { ...option, sortOrder: group.options.length })}
+						/>
 					</div>
-					<p className="text-muted-foreground text-xs">{t("admin.products.options.draftChangesHint")}</p>
 					<div className="flex justify-end gap-2">
 						<ConfirmActionButton
 							confirmation={t("admin.products.options.deleteGroupConfirm")}
 							confirmLabel={t("admin.products.options.delete")}
-							onConfirm={onDelete}
+							disabled={actions.isSaving}
+							onConfirm={() =>
+								closeActiveModalHistory(() => {
+									void actions.deleteGroup(group.id);
+								})
+							}
 							type="button"
 							variant="outline"
 						>
 							{t("admin.products.options.delete")}
 						</ConfirmActionButton>
-						<Button
-							onClick={() => {
-								if (originalGroup) onChange(originalGroup);
-								setIsExpanded(false);
-							}}
-							type="button"
-							variant="outline"
-						>
+						<Button onClick={() => closeActiveModalHistory()} type="button" variant="outline">
 							{t("admin.products.options.discardChanges")}
 						</Button>
-						<Button onClick={() => setIsExpanded(false)} type="button">
-							{t("admin.products.options.finishEditing")}
+						<Button
+							disabled={actions.isSaving || !localName.trim()}
+							onClick={() => void save()}
+							type="button"
+						>
+							{t("admin.products.edit.save")}
 						</Button>
 					</div>
 				</div>

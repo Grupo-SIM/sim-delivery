@@ -155,3 +155,8 @@ possui **N unidades** (lojas físicas). Detalhes em
   (que notificam/sugerem/penalizam).
 - Escopo MVP vs Roadmap: itens não presentes no esboço original são **Roadmap** e estão
   marcados como tal — ver [12-referencias-e-benchmark.md](12-referencias-e-benchmark.md).
+
+## Edição de produtos e customizações
+
+- Produto, grupo de opções e opção têm salvamentos independentes. Salvar uma opção persiste seus dados, incluindo a foto, sem exigir salvar o grupo ou o produto.
+- Descartar alterações de um grupo ou produto não desfaz opções ou grupos já salvos.
