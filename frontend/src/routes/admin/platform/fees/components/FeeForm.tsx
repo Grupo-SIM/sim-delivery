@@ -83,7 +83,10 @@ export function FeeForm({ initial = defaults, isPending, lockKind = false, onCan
 				<CustomSelect onChange={value => setForm(current => ({ ...current, displayMode: value as FeeFormValue["displayMode"] }))} options={displayOptions} value={form.displayMode} />
 			</div>
 			<label className="flex cursor-pointer items-center gap-2 text-sm" htmlFor="fee-active">
-				<Checkbox checked={form.active} id="fee-active" onChange={event => setForm(current => ({ ...current, active: event.currentTarget.checked }))} />
+				<Checkbox checked={form.active} id="fee-active" onChange={event => {
+					const active = event.currentTarget.checked;
+					setForm(current => ({ ...current, active }));
+				}} />
 				Taxa ativa
 			</label>
 			<div className="flex justify-end gap-2">
