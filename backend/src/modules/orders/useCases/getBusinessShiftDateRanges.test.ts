@@ -6,6 +6,7 @@ const hours = [4, 5, 6].map(weekday => ({ closed: false, closesAt: "03:00", open
 describe("getBusinessShiftDateRanges", () => {
 	it("includes the following morning in the opening date, without overlap", () => {
 		const [range] = getBusinessShiftDateRanges(hours, "2026-10-22", "2026-10-22");
+		if (!("lt" in range)) throw new Error("Expected a bounded business shift");
 		expect(new Date(2026, 9, 23, 2, 59, 59).getTime()).toBeLessThan(range.lt!.getTime());
 		expect(new Date(2026, 9, 23, 3).getTime()).toBe(range.lt!.getTime());
 		expect(range).toEqual({ gte: new Date(2026, 9, 22, 18), lt: new Date(2026, 9, 23, 3) });

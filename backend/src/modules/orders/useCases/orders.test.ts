@@ -37,7 +37,7 @@ function makeOrderPrisma(
 	let storedCustomer = customer;
 
 	const orders: object[] = [];
-	const orderItems: object[] = [];
+	const orderItems: Array<{ id: string; orderId?: string }> = [];
 	const orderItemOptions: object[] = [];
 	const orderFeeSnapshots: Array<Record<string, unknown> & { id: string }> = [];
 	const orderItemFeeSnapshots: Array<Record<string, unknown>> = [];
@@ -71,7 +71,7 @@ function makeOrderPrisma(
 					findUniqueOrThrow: async ({ where }: { where: { id: string } }) => ({
 						...orders.find(order => (order as { id: string }).id === where.id),
 						feeSnapshots: orderFeeSnapshots,
-						items: itemsWithFees().filter(item => (item as { orderId: string }).orderId === where.id),
+						items: itemsWithFees().filter(item => item.orderId === where.id),
 					}),
 				},
 				orderFeeSnapshot: {
@@ -406,14 +406,14 @@ function makeUpdateStatusPrisma(order: {
 		deliveryMethod: string;
 		estimatedStatusCompletionAt: Date | null;
 		preparedById?: string | null;
-		company: { orderStatusWhatsAppTemplates: Record<string, string> | null };
+		company: { orderStatusWhatsAppTemplates: Record<string, string> | null; whatsAppConnection: { connectedPhone: string; sessionName: string } };
 		customer: {
 			notificationEmail?: boolean;
 			notificationWhatsApp?: boolean;
 			phone: string | null;
 			user: { email: string };
 		};
-		unit: { slug: string };
+		unit: { slug: string; whatsAppConnection: { connectedPhone: string; sessionName: string } };
 	} = {
 		...order,
 		cancelReason: null,
@@ -924,7 +924,7 @@ describe("ListOrders", () => {
 	it("filters selected opening dates per unit and combines search without losing either scope", async () => {
 		const { prisma } = makeListOrdersPrisma();
 		let query: unknown;
-		prisma.unit.findMany = (async () => [{ id: "unit_1", hours: [{ weekday: 4, closed: false, opensAt: "18:00", closesAt: "03:00" }] }]) as typeof prisma.unit.findMany;
+		prisma.unit.findMany = (async () => [{ id: "unit_1", hours: [{ weekday: 4, closed: false, opensAt: "18:00", closesAt: "03:00" }] }]) as unknown as typeof prisma.unit.findMany;
 		prisma.order.findMany = (async (input: unknown) => { query = input; return []; }) as typeof prisma.order.findMany;
 		await new ListOrders(prisma).execute("cmp_1", { from: "2026-10-22", to: "2026-10-22", search: "Maria", unitId: "unit_1" });
 		expect(query).toMatchObject({ where: { companyId: "cmp_1", unitId: "unit_1", AND: [

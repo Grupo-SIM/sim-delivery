@@ -8,7 +8,7 @@ interface OrderStatusEmailProps {
 	title: string;
 }
 
-export function OrderStatusEmailTemplate({ message, orderNumber, reviewUrl, subtitle, title }: OrderStatusEmailProps) {
+export function OrderStatusEmailTemplate({ message, reviewUrl, subtitle, title }: OrderStatusEmailProps) {
 	return (
 		<EmailLayout preview={title}>
 			<Text

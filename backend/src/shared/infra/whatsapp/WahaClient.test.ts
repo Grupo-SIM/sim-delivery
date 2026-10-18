@@ -24,7 +24,7 @@ describe("normalizeBrazilianWhatsAppPhone", () => {
 describe("WahaClient", () => {
 	for (const [method, action] of [["startSession", "start"], ["logoutSession", "logout"], ["restartSession", "restart"]] as const) {
 		it(`reads current session after ${action} succeeds with an empty response`, async () => {
-			const session = { name: "unit", status: "SCAN_QR_CODE" };
+			const session = { name: "unit", status: "SCAN_QR_CODE" as const };
 			const fetch = mock((_input: string | URL | Request, init?: RequestInit) =>
 				Promise.resolve(init?.method === "POST" ? new Response(null, { status: 204 }) : Response.json(session)),
 			);
