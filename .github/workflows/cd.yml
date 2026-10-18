@@ -11,20 +11,13 @@ jobs:
     name: Detect affected
     runs-on: ubuntu-latest
     outputs:
-      # {"build":["backend","frontend",...]} — only packages with a build script are included.
-      # The web (GHCR) job fans out over this list; the Tauri jobs gate on whether
-      # "frontend" is in it. A push that touches neither builds nothing.
-      # Manual runs use the repository's resolver with no base, planning every service.
-      # Pushes use affected detection; a first push plans every service via its zero SHA.
       tasks: ${{ steps.all.outputs.tasks || steps.affected.outputs.tasks }}
-      # Company selection only; URLs and branding come from the database.
       slugs: ${{ steps.slugs.outputs.values }}
       variants: ${{ steps.slugs.outputs.variants }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
-          # Need history present so Turbo's --affected can diff against the base.
           fetch-depth: 0
 
       - name: Set up Bun for manual run
@@ -66,7 +59,7 @@ jobs:
           echo "variants=$variants" >> "$GITHUB_OUTPUT"
 
   ghcr-backend:
-    name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Build and publish backend image
+    name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Backend
     needs: detect
     if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'backend') }}
     runs-on: ubuntu-latest
@@ -97,7 +90,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
 
   ghcr-frontend:
-    name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Build and publish frontend image
+    name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Frontend
     needs: detect
     if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'frontend') }}
     runs-on: ubuntu-latest
