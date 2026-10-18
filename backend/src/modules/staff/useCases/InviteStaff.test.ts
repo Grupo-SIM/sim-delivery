@@ -19,8 +19,7 @@ function fakePrisma(existingEmails: string[] = []) {
 				},
 			},
 			unit: {
-				findMany: async ({ where }: { where: { id: { in: string[] } } }) =>
-					where.id.in.map(id => ({ id })),
+				findMany: async ({ where }: { where: { id: { in: string[] } } }) => where.id.in.map(id => ({ id })),
 			},
 			user: {
 				findUnique: async ({ where }: { where: { email: string } }) =>
@@ -113,5 +112,43 @@ describe("InviteStaff", () => {
 		expect(calls).toEqual([
 			{ body: { email: "new@staff.com", redirectTo: `${process.env.APP_URL}/reset-password` } },
 		]);
+	});
+});
+
+describe("owner provisioning", () => {
+	it("uses the supplied password without sending a reset email", async () => {
+		const { prisma } = fakePrisma();
+		const passwords: string[] = [];
+		let resets = 0;
+		const invite = new InviteStaff(
+			prisma,
+			async ({ body }) => {
+				passwords.push(body.password);
+				return { user: { id: "u_new" } };
+			},
+			async () => {
+				resets++;
+			},
+		);
+		const result = await invite.execute(
+			{ companyId: "cmp_target", email: "owner@example.com", name: "Company", role: "owner" },
+			{ password: "secret123" },
+		);
+		expect(passwords).toEqual(["secret123"]);
+		expect(resets).toBe(0);
+		expect(result.role).toBe("owner");
+	});
+	it("sends password definition to the selected company's site", async () => {
+		const { prisma, updates } = fakePrisma();
+		const redirects: string[] = [];
+		const invite = new InviteStaff(prisma, signUp, async ({ body }) => {
+			redirects.push(body.redirectTo);
+		});
+		await invite.execute(
+			{ companyId: "cmp_target", email: "owner@example.com", name: "Company", role: "owner" },
+			{ siteUrl: "https://target.example.com/" },
+		);
+		expect(redirects).toEqual(["https://target.example.com/reset-password"]);
+		expect(updates[0]).toEqual({ data: { companyId: "cmp_target", role: "owner" }, id: "u_new" });
 	});
 });

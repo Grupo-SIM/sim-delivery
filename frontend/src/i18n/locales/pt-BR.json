@@ -252,6 +252,21 @@
 				},
 				"empty": "Nenhuma empresa ainda.",
 				"loadError": "Não foi possível carregar as empresas.",
+				"owner": {
+					"action": "Criar dono",
+					"created": "Dono criado com sucesso.",
+					"discard": "Descartar",
+					"email": "Email do dono",
+					"error": "Não foi possível criar o dono. Verifique se o email já está cadastrado e tente novamente.",
+					"hint": "Deixe a senha vazia para enviar um email com link para definição de senha. Com senha preenchida, o acesso é criado sem envio de email.",
+					"invited": "Dono criado. Email para definição de senha enviado.",
+					"password": "Senha (opcional)",
+					"passwordPlaceholder": "Mínimo de 6 caracteres",
+					"save": "Salvar",
+					"saving": "Salvando...",
+					"title": "Criar dono — {{name}}",
+					"updated": "Empresa atualizada."
+				},
 				"row": {
 					"delete": "Excluir",
 					"deleteConfirm": "Excluir empresa {{name}}?",

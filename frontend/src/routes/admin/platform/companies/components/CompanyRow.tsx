@@ -1,18 +1,14 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuLandmark, LuPencil, LuTrash2 } from "react-icons/lu";
+import { LuLandmark, LuPencil, LuUserPlus } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
-import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Input } from "@/components/ui/input";
 import { Tooltip } from "@/components/ui/Tooltip";
-import {
-	type GetCompanies200,
-	getCompaniesQueryKey,
-	useDeleteCompaniesByCompanyId,
-	usePatchCompaniesByCompanyId,
-} from "@/lib/api";
-import { showAlert, showToast } from "@/stores";
+import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { type GetCompanies200, getCompaniesQueryKey, usePatchCompaniesByCompanyId } from "@/lib/api";
+import { showToast } from "@/stores";
+import { ProvisionOwnerModal } from "./ProvisionOwnerModal";
 import { WithdrawalSettingsModal } from "./WithdrawalSettingsModal";
 
 interface CompanyRowProps {
@@ -25,11 +21,13 @@ export function CompanyRow({ company }: CompanyRowProps) {
 	const [editing, setEditing] = useState(false);
 	const [name, setName] = useState(company.name);
 	const [slug, setSlug] = useState(company.slug);
+	const [localName, setLocalName, flushName] = useDebouncedInput(name, setName);
+	const [localSlug, setLocalSlug, flushSlug] = useDebouncedInput(slug, setSlug);
 	const [error, setError] = useState<string | null>(null);
 	const [financialOpen, setFinancialOpen] = useState(false);
 
 	const update = usePatchCompaniesByCompanyId();
-	const remove = useDeleteCompaniesByCompanyId();
+	const [ownerOpen, setOwnerOpen] = useState(false);
 
 	function reset() {
 		setName(company.name);
@@ -49,20 +47,8 @@ export function CompanyRow({ company }: CompanyRowProps) {
 					),
 				onSuccess: async () => {
 					setEditing(false);
+					showToast(t("admin.companies.owner.updated"), "positive");
 					await queryClient.invalidateQueries({ queryKey: getCompaniesQueryKey() });
-				},
-			},
-		);
-	}
-
-	function del() {
-		remove.mutate(
-			{ companyId: company.id },
-			{
-				onError: () => void showAlert(t("admin.companies.row.deleteError")),
-				onSuccess: () => {
-					void queryClient.invalidateQueries({ queryKey: getCompaniesQueryKey() });
-					showToast(t("admin.companies.row.deleteSuccess"), "positive");
 				},
 			},
 		);
@@ -79,27 +65,45 @@ export function CompanyRow({ company }: CompanyRowProps) {
 				<td className="px-4 py-3 text-right">
 					<div className="flex justify-end gap-2">
 						<Tooltip content="Configuração financeira">
-							<Button aria-label="Configuração financeira" onClick={() => setFinancialOpen(true)} size="icon" type="button" variant="outline"><LuLandmark /></Button>
+							<Button
+								aria-label="Configuração financeira"
+								onClick={() => setFinancialOpen(true)}
+								size="icon"
+								type="button"
+								variant="outline"
+							>
+								<LuLandmark />
+							</Button>
 						</Tooltip>
 						<Tooltip content={t("admin.companies.edit.action")}>
-							<Button aria-label={t("admin.companies.edit.action")} onClick={() => setEditing(true)} size="icon" type="button" variant="outline"><LuPencil /></Button>
+							<Button
+								aria-label={t("admin.companies.edit.action")}
+								onClick={() => setEditing(true)}
+								size="icon"
+								type="button"
+								variant="outline"
+							>
+								<LuPencil />
+							</Button>
 						</Tooltip>
-						<ConfirmActionButton
-							aria-label={t("admin.companies.row.delete")}
-							confirmation={t("admin.companies.row.deleteConfirm", { name: company.name })}
-							confirmLabel={t("admin.companies.row.delete")}
-							disabled={remove.isPending}
-							idleIcon={<LuTrash2 />}
-							onConfirm={del}
-							size="icon"
-							tooltip={t("admin.companies.row.delete")}
-							type="button"
-							variant="outline"
-						>
-							<span className="sr-only">{t("admin.companies.row.delete")}</span>
-						</ConfirmActionButton>
+						<Tooltip content={t("admin.companies.owner.action")}>
+							<Button
+								aria-label={t("admin.companies.owner.action")}
+								onClick={() => setOwnerOpen(true)}
+								size="icon"
+								type="button"
+								variant="outline"
+							>
+								<LuUserPlus />
+							</Button>
+						</Tooltip>
 					</div>
-					<WithdrawalSettingsModal company={company} isOpen={financialOpen} onClose={() => setFinancialOpen(false)} />
+					<ProvisionOwnerModal company={company} isOpen={ownerOpen} onClose={() => setOwnerOpen(false)} />
+					<WithdrawalSettingsModal
+						company={company}
+						isOpen={financialOpen}
+						onClose={() => setFinancialOpen(false)}
+					/>
 				</td>
 			</tr>
 		);
@@ -110,17 +114,19 @@ export function CompanyRow({ company }: CompanyRowProps) {
 			<td className="px-4 py-3">
 				<Input
 					className="min-w-0"
-					onChange={event => setName(event.currentTarget.value)}
+					onBlur={() => flushName()}
+					onChange={event => setLocalName(event.currentTarget.value)}
 					placeholder={t("admin.companies.create.namePlaceholder")}
-					value={name}
+					value={localName}
 				/>
 			</td>
 			<td className="px-4 py-3">
 				<Input
 					className="min-w-0"
-					onChange={event => setSlug(event.currentTarget.value)}
+					onBlur={() => flushSlug()}
+					onChange={event => setLocalSlug(event.currentTarget.value)}
 					placeholder={t("admin.companies.edit.slugPlaceholder")}
-					value={slug}
+					value={localSlug}
 				/>
 				{error && <p className="mt-1 text-destructive text-xs">{error}</p>}
 			</td>

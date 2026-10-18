@@ -85,3 +85,13 @@ escopadas por unidade recebem o `unitId` no `check`.
 - Se `manager` pode gerir outros `manager` ou só níveis abaixo.
 - Papel de "financeiro" dedicado (roadmap, quando entrar módulo financeiro/caixa).
 - Como `courier` autentica (mesmo Better Auth ou fluxo próprio) — ver [01](01-visao-geral-e-dominio.md).
+
+## Provisionamento de donos pelo superAdmin
+
+Na listagem de empresas, o superAdmin pode criar um dono para a empresa escolhida
+informando um email ainda não cadastrado. O nome inicial do dono é o nome da empresa.
+A senha é opcional: quando preenchida (6 a 128 caracteres), o acesso fica pronto sem
+email de definição; quando omitida, o sistema envia um link para definir a senha.
+O redirecionamento usa o `siteUrl` da empresa, com `APP_URL` como fallback. Essa origem
+precisa estar autorizada no Better Auth e o provedor de email precisa estar configurado.
+A listagem não oferece ação de excluir empresa.

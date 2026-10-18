@@ -19,7 +19,10 @@ export class InviteStaff {
 		private readonly requestPasswordReset: RequestPasswordResetFn,
 	) {}
 
-	async execute({ companyId, email, name, role, unitIds = [] }: InviteStaffDTO): Promise<StaffReturn> {
+	async execute(
+		{ companyId, email, name, role, unitIds = [] }: InviteStaffDTO,
+		options: { password?: string; siteUrl?: string } = {},
+	): Promise<StaffReturn> {
 		if (!companyId) {
 			throw new DomainError(StaffErrors.NO_COMPANY);
 		}
@@ -31,7 +34,9 @@ export class InviteStaff {
 			throw new DomainError(StaffErrors.EMAIL_TAKEN);
 		}
 
-		const { user } = await this.signUp({ body: { email, name, password: crypto.randomUUID() } });
+		const { user } = await this.signUp({
+			body: { email, name, password: options.password ?? crypto.randomUUID() },
+		});
 
 		const staff = await this.prisma.user.update({
 			data: { companyId, role },
@@ -44,9 +49,13 @@ export class InviteStaff {
 			});
 		}
 
-		await this.requestPasswordReset({
-			body: { email, redirectTo: `${process.env.APP_URL}/reset-password` },
-		});
+		if (!options.password)
+			await this.requestPasswordReset({
+				body: {
+					email,
+					redirectTo: `${(options.siteUrl || process.env.APP_URL)?.replace(/\/$/, "")}/reset-password`,
+				},
+			});
 
 		return { ...staff, unitIds: role === "owner" ? [] : unitIds } as StaffReturn;
 	}
