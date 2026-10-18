@@ -1,0 +1,9 @@
+# Company branding builds
+
+`COMPANY_SLUG` remains mandatory for backend preparation. Frontend accepts `COMPANY_SLUG`, falling back to `VITE_COMPANY_SLUG`. Empty selections and unknown companies fail; there is no neutral tenant deployment. `DATABASE_URL` must point to the intended database. Preparation reads company configuration; it does not migrate or seed databases.
+
+Direct package dev, build, type-check, backend export and native entrypoints prepare branding before starting their underlying command. Turbo passes both selectors and frontend URL fallbacks through these entrypoints. Restart dev watchers after changing company or branding. Database-backed preparation and consuming builds/type-checks are uncached, so changing branding does not require a source commit.
+
+Frontend canonical HTML and native configuration live in `frontend/scripts/defaults/`. Edit these files for structural defaults, rather than generated `frontend/index.html` or `frontend/src-tauri/tauri.conf.json`. Each preparation derives company metadata from canonical inputs, downloads assets and generates icons in a temporary directory before publishing. Previous logo/mobile-icon extensions and native icon directories are removed when publishing; unavailable or omitted artwork produces empty web/native icons instead of retaining another company's artwork. Downloads retain existing best-effort behavior.
+
+Keep one company build per checkout at a time: generated files are shared within that checkout. Use isolated worktrees for concurrent company builds. CI keeps newline-separated `VARIANTS`, legacy workflow fallback, required company variants and existing image names. Docker builds keep `COMPANY_SLUG` and `BRANDING_REVISION`; change the latter when rebuilding database-only branding changes to invalidate Docker layers. No schema or deployment changes are required.

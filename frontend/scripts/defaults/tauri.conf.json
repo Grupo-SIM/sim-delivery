@@ -1,0 +1,38 @@
+{
+	"$schema": "https://schema.tauri.app/config/2",
+	"app": {
+		"security": {
+			"csp": null
+		},
+		"windows": [
+			{
+				"fullscreen": false,
+				"height": 800,
+				"resizable": true,
+				"title": "Delivery",
+				"width": 400
+			}
+		],
+		"withGlobalTauri": true
+	},
+	"build": {
+		"beforeBuildCommand": "turbo -F frontend build",
+		"beforeDevCommand": "turbo -F '*' dev",
+		"devUrl": "http://localhost:5173",
+		"frontendDist": "../dist"
+	},
+	"bundle": {
+		"active": true,
+		"icon": [
+			"icons/32x32.png",
+			"icons/128x128.png",
+			"icons/128x128@2x.png",
+			"icons/icon.icns",
+			"icons/icon.ico"
+		],
+		"targets": "all"
+	},
+	"identifier": "com.jbmidia.delivery",
+	"productName": "Delivery",
+	"version": "1.0.0"
+}

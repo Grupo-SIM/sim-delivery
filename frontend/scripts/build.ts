@@ -1,5 +1,5 @@
 import { $ } from "bun";
 
-await $`bun turbo frontend#inject --force`;
+await $`bun run inject`;
 await $`tsc -b`;
 await $`vite build`;

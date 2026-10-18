@@ -70,10 +70,7 @@ try {
 
 if (!company) throw new Error(`Company not found: ${slug}`);
 const deploymentDefaults = createDeploymentDefaults(company);
-await writeFile(
-	join(ROOT, "backend", "src", "shared", "infra", "deployment-defaults.ts"),
-	`import type { DeploymentDefaults } from "../deployment-config";\n\nexport const deploymentDefaults: DeploymentDefaults = ${JSON.stringify(deploymentDefaults, null, "\t")};\n`,
-);
+
 
 const colors = (company.themeColors as ThemeColors | null)?.light;
 const themeColors = {
@@ -118,6 +115,11 @@ export const emailBranding: EmailBranding = ${JSON.stringify(
 		"\t",
 	)};
 `,
+);
+
+await writeFile(
+	join(ROOT, "backend", "src", "shared", "infra", "deployment-defaults.ts"),
+	`import type { DeploymentDefaults } from "../deployment-config";\n\nexport const deploymentDefaults: DeploymentDefaults = ${JSON.stringify(deploymentDefaults, null, "\t")};\n`,
 );
 
 console.log(`Injected backend email branding for ${company.name} (${slug}).`);

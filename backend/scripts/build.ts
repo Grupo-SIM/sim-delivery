@@ -1,4 +1,7 @@
+import { $ } from "bun";
 import pkg from "../package.json";
+
+await $`bun run inject`;
 
 const external = Object.entries(pkg.dependencies ?? {})
 	.filter(([, version]) => !version.startsWith("workspace:"))
