@@ -9,31 +9,33 @@ import { closeActiveModalHistory } from "@/hooks/use-modal-history";
 import { type GetCompanies200, getCompaniesQueryKey, usePatchCompaniesByCompanyId } from "@/lib/api";
 import { showToast } from "@/stores";
 
-interface DeploymentSettingsModalProps {
+interface EditCompanyModalProps {
 	company: GetCompanies200[number];
 	isOpen: boolean;
 	onClose: () => void;
 }
 
-export function DeploymentSettingsModal({ company, isOpen, onClose }: DeploymentSettingsModalProps) {
+export function EditCompanyModal({ company, isOpen, onClose }: EditCompanyModalProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [apiUrl, setApiUrl] = useState(company.apiUrl ?? "");
 	const [siteUrl, setSiteUrl] = useState(company.siteUrl ?? "");
-	const [ownerEmail, setOwnerEmail] = useState(company.ownerEmail ?? "");
+	const [name, setName] = useState(company.name);
+	const [slug, setSlug] = useState(company.slug);
 	const update = usePatchCompaniesByCompanyId();
 	useEffect(() => {
 		if (!isOpen) return;
 		setApiUrl(company.apiUrl ?? "");
 		setSiteUrl(company.siteUrl ?? "");
-		setOwnerEmail(company.ownerEmail ?? "");
+		setName(company.name);
+		setSlug(company.slug);
 	}, [company, isOpen]);
 	return (
 		<Modal
 			isOpen={isOpen}
 			onClose={onClose}
-			title={t("admin.companies.deployment.title", { name: company.name })}
-			urlKey="company-deployment"
+			title={t("admin.companies.edit.title", { name: company.name })}
+			urlKey="company-edit"
 			urlState={company.id}
 		>
 			<form
@@ -46,24 +48,51 @@ export function DeploymentSettingsModal({ company, isOpen, onClose }: Deployment
 							companyId: company.id,
 							data: {
 								apiUrl: apiUrl.trim(),
-								ownerEmail: ownerEmail.trim().toLowerCase() || null,
+								name: name.trim(),
+								slug: slug.trim(),
 								siteUrl: siteUrl.trim(),
 							},
 						},
 						{
-							onError: () => showToast(t("admin.companies.deployment.error"), "negative"),
+							onError: caught =>
+								showToast(
+									t(caught.status === 409 ? "admin.companies.edit.slugTaken" : "admin.companies.edit.error"),
+									"negative",
+								),
 							onSuccess: async () => {
 								await queryClient.invalidateQueries({ queryKey: getCompaniesQueryKey() });
-								showToast(t("admin.companies.deployment.saved"), "positive");
+								showToast(t("admin.companies.edit.saved"), "positive");
 								closeActiveModalHistory();
 							},
 						},
 					);
 				}}
 			>
-				<p className="text-muted-foreground text-sm">
-					{t("admin.companies.deployment.identity", { name: company.name, slug: company.slug })}
-				</p>
+				<TextField
+					autoComplete="organization"
+					label={
+						<span>
+							{t("admin.companies.create.name")} <RequiredMark />
+						</span>
+					}
+					name="company-name"
+					onValueChange={setName}
+					placeholder={t("admin.companies.create.namePlaceholder")}
+					required
+					value={name}
+				/>
+				<TextField
+					label={
+						<span>
+							{t("admin.companies.create.slug")} <RequiredMark />
+						</span>
+					}
+					name="company-slug"
+					onValueChange={setSlug}
+					placeholder={t("admin.companies.edit.slugPlaceholder")}
+					required
+					value={slug}
+				/>
 				<TextField
 					autoComplete="url"
 					label={
@@ -94,21 +123,14 @@ export function DeploymentSettingsModal({ company, isOpen, onClose }: Deployment
 					type="url"
 					value={apiUrl}
 				/>
-				<TextField
-					autoComplete="email"
-					label={t("admin.companies.deployment.ownerEmail")}
-					name="company-owner-email"
-					onValueChange={setOwnerEmail}
-					placeholder="dono@empresa.com.br"
-					type="email"
-					value={ownerEmail}
-				/>
-				<p className="text-muted-foreground text-sm">{t("admin.companies.deployment.hint")}</p>
 				<div className="flex justify-end gap-2">
 					<Button onClick={() => closeActiveModalHistory()} type="button" variant="outline">
 						{t("actions.discard")}
 					</Button>
-					<Button disabled={update.isPending || !apiUrl.trim() || !siteUrl.trim()} type="submit">
+					<Button
+						disabled={update.isPending || !name.trim() || !slug.trim() || !apiUrl.trim() || !siteUrl.trim()}
+						type="submit"
+					>
 						{t(update.isPending ? "admin.companies.edit.saving" : "actions.save")}
 					</Button>
 				</div>
