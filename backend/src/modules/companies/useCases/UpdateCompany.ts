@@ -10,6 +10,7 @@ export class UpdateCompany {
 		apiUrl,
 		companyId,
 		name,
+		ownerEmail,
 		packageName,
 		siteUrl,
 		slug,
@@ -30,6 +31,7 @@ export class UpdateCompany {
 			data: {
 				...(apiUrl !== undefined && { apiUrl }),
 				...(name !== undefined && { name }),
+				...(ownerEmail !== undefined && { ownerEmail: ownerEmail?.trim().toLowerCase() ?? null }),
 				...(packageName !== undefined && { packageName }),
 				...(siteUrl !== undefined && { siteUrl }),
 				...(slug !== undefined && { slug }),

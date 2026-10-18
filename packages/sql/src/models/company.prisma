@@ -7,6 +7,8 @@ model Company {
     packageName String?  @unique
     siteUrl     String?
     apiUrl      String?
+    /// Initial owner provisioning email; never a credential or an automatic ownership transfer.
+    ownerEmail  String?
     /// Branding fields rendered in the store footer and app shell.
     logoUrl     String?
     /// Dedicated source for the mobile app icon. Falls back to logoUrl (with safe padding) when unset.

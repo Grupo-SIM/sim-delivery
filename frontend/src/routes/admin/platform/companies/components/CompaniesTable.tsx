@@ -21,7 +21,7 @@ export function CompaniesTable({ companies }: CompaniesTableProps) {
 				<col />
 				<col />
 				<col className="w-40" />
-				<col className="w-52" />
+				<col className="w-64" />
 			</colgroup>
 			<thead>
 				<tr className="border-border border-b text-left text-muted-foreground">

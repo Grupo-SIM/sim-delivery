@@ -1,13 +1,15 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuLandmark, LuPencil, LuUserPlus } from "react-icons/lu";
+import { LuDownload, LuLandmark, LuPencil, LuServer, LuUserPlus } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { type GetCompanies200, getCompaniesQueryKey, usePatchCompaniesByCompanyId } from "@/lib/api";
 import { showToast } from "@/stores";
+import { downloadCompanyCompose } from "./company-compose";
+import { DeploymentSettingsModal } from "./DeploymentSettingsModal";
 import { ProvisionOwnerModal } from "./ProvisionOwnerModal";
 import { WithdrawalSettingsModal } from "./WithdrawalSettingsModal";
 
@@ -25,6 +27,7 @@ export function CompanyRow({ company }: CompanyRowProps) {
 	const [localSlug, setLocalSlug, flushSlug] = useDebouncedInput(slug, setSlug);
 	const [error, setError] = useState<string | null>(null);
 	const [financialOpen, setFinancialOpen] = useState(false);
+	const [deploymentOpen, setDeploymentOpen] = useState(false);
 
 	const update = usePatchCompaniesByCompanyId();
 	const [ownerOpen, setOwnerOpen] = useState(false);
@@ -86,6 +89,36 @@ export function CompanyRow({ company }: CompanyRowProps) {
 								<LuPencil />
 							</Button>
 						</Tooltip>
+						<Tooltip content={t("admin.companies.deployment.action")}>
+							<Button
+								aria-label={t("admin.companies.deployment.action")}
+								onClick={() => setDeploymentOpen(true)}
+								size="icon"
+								type="button"
+								variant="outline"
+							>
+								<LuServer />
+							</Button>
+						</Tooltip>
+						<Tooltip content={t("admin.companies.deployment.download")}>
+							<Button
+								aria-label={t("admin.companies.deployment.download")}
+								disabled={!company.apiUrl || !company.siteUrl}
+								onClick={() => {
+									try {
+										downloadCompanyCompose(company);
+										showToast(t("admin.companies.deployment.downloaded"), "info");
+									} catch {
+										showToast(t("admin.companies.deployment.downloadError"), "negative");
+									}
+								}}
+								size="icon"
+								type="button"
+								variant="outline"
+							>
+								<LuDownload />
+							</Button>
+						</Tooltip>
 						<Tooltip content={t("admin.companies.owner.action")}>
 							<Button
 								aria-label={t("admin.companies.owner.action")}
@@ -98,6 +131,11 @@ export function CompanyRow({ company }: CompanyRowProps) {
 							</Button>
 						</Tooltip>
 					</div>
+					<DeploymentSettingsModal
+						company={company}
+						isOpen={deploymentOpen}
+						onClose={() => setDeploymentOpen(false)}
+					/>
 					<ProvisionOwnerModal company={company} isOpen={ownerOpen} onClose={() => setOwnerOpen(false)} />
 					<WithdrawalSettingsModal
 						company={company}

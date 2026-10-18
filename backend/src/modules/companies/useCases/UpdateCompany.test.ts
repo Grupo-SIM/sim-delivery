@@ -60,3 +60,22 @@ describe("UpdateCompany", () => {
 		);
 	});
 });
+
+it("saves deployment settings without changing identity and allows clearing the provisioning email", async () => {
+	const prisma = fakePrisma([{ ...base }]);
+	const update = new UpdateCompany(prisma);
+	const saved = await update.execute({
+		apiUrl: "https://api.example.com",
+		companyId: "cmp_1",
+		ownerEmail: "Owner@Example.com",
+		siteUrl: "https://example.com",
+	});
+	expect(saved.ownerEmail).toBe("owner@example.com");
+	expect(saved.apiUrl).toBe("https://api.example.com");
+	expect(saved.siteUrl).toBe("https://example.com");
+	expect(saved.name).toBe("Old");
+	expect(saved.slug).toBe("old");
+	const cleared = await update.execute({ companyId: "cmp_1", ownerEmail: null });
+	expect(cleared.ownerEmail).toBeNull();
+	expect(cleared.apiUrl).toBe("https://api.example.com");
+});

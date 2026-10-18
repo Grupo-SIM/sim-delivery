@@ -1,5 +1,4 @@
-/**
- * The whitelabel company key baked into this build (VITE_COMPANY_SLUG). The public storefront
- * sends it to resolve which company it serves (docs/02). Undefined in an unconfigured build.
- */
-export const slug = import.meta.env.VITE_COMPANY_SLUG;
+import { branding } from "./branding";
+
+/** Company selected at build time; VITE_COMPANY_SLUG remains a local development fallback. */
+export const slug = branding.companySlug || import.meta.env.VITE_COMPANY_SLUG;

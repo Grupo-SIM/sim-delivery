@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createDeploymentDefaults } from "../src/shared/deployment-config";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const brandingPath = join(ROOT, "backend", "src", "shared", "infra", "branding.ts");
@@ -39,17 +40,40 @@ interface ThemeColors {
 const { PrismaClient, adapter } = await import("../../packages/sql/src/index.ts");
 const prisma = new PrismaClient({ adapter });
 
-let company: { fontFamily: string | null; logoUrl: string | null; name: string; themeColors: unknown } | null;
+let company: {
+	fontFamily: string | null;
+	logoUrl: string | null;
+	name: string;
+	themeColors: unknown;
+	apiUrl: string | null;
+	siteUrl: string | null;
+	ownerEmail: string | null;
+	slug: string;
+} | null;
 try {
 	company = await prisma.company.findUnique({
-		select: { fontFamily: true, logoUrl: true, name: true, themeColors: true },
+		select: {
+			apiUrl: true,
+			fontFamily: true,
+			logoUrl: true,
+			name: true,
+			ownerEmail: true,
+			siteUrl: true,
+			slug: true,
+			themeColors: true,
+		},
 		where: { slug },
 	});
 } finally {
 	await prisma.$disconnect();
 }
 
-company ??= { fontFamily: null, logoUrl: null, name: "", themeColors: null };
+if (!company) throw new Error(`Company not found: ${slug}`);
+const deploymentDefaults = createDeploymentDefaults(company);
+await writeFile(
+	join(ROOT, "backend", "src", "shared", "infra", "deployment-defaults.ts"),
+	`import type { DeploymentDefaults } from "../deployment-config";\n\nexport const deploymentDefaults: DeploymentDefaults = ${JSON.stringify(deploymentDefaults, null, "\t")};\n`,
+);
 
 const colors = (company.themeColors as ThemeColors | null)?.light;
 const themeColors = {

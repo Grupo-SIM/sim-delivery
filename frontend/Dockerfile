@@ -18,15 +18,10 @@ WORKDIR /app
 # Branding is queried from Prisma during the build, never at first render.
 ARG COMPANY_SLUG
 ARG NODE_ENV=production
-ARG VITE_API_URL
-ARG VITE_APP_URL
-ARG VITE_COMPANY_SLUG
+ARG BRANDING_REVISION=unversioned
 
 ENV COMPANY_SLUG=${COMPANY_SLUG}
 ENV NODE_ENV=${NODE_ENV}
-ENV VITE_API_URL=${VITE_API_URL}
-ENV VITE_APP_URL=${VITE_APP_URL}
-ENV VITE_COMPANY_SLUG=${VITE_COMPANY_SLUG}
 
 COPY . .
 RUN --mount=type=secret,id=DATABASE_URL DATABASE_URL="$(cat /run/secrets/DATABASE_URL)" bunx turbo -F frontend build

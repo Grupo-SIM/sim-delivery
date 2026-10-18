@@ -2,6 +2,7 @@
 	"$schema": "https://turborepo.dev/schema.json",
 	"tasks": {
 		"backend#build": {
+			"cache": false,
 			"dependsOn": ["^export", "generate", "inject"],
 			"env": ["COMPANY_SLUG", "DATABASE_URL"],
 			"inputs": ["scripts/inject.ts", "src/**", ".env*"],
@@ -15,11 +16,12 @@
 			"persistent": true
 		},
 		"backend#inject": {
+			"cache": false,
 			"dependsOn": ["sql#export"],
 			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV"],
-			"inputs": ["scripts/inject.ts", ".env*"],
+			"inputs": ["scripts/inject.ts", "src/shared/deployment-config.ts", ".env*"],
 			"outputLogs": "new-only",
-			"outputs": ["src/shared/infra/branding.ts"]
+			"outputs": ["src/shared/infra/branding.ts", "src/shared/infra/deployment-defaults.ts"]
 		},
 		"build": {
 			"dependsOn": ["^export", "generate"],
@@ -45,8 +47,9 @@
 			"outputs": ["out/**"]
 		},
 		"frontend#build": {
+			"cache": false,
 			"dependsOn": ["^export", "generate", "inject"],
-			"env": ["DATABASE_URL"],
+			"env": ["COMPANY_SLUG", "DATABASE_URL", "VITE_COMPANY_SLUG"],
 			"inputs": ["src/**", "!src/**/generated/**"],
 			"outputLogs": "new-only",
 			"outputs": ["build/**", "dist/**", "out/**", ".next/**", "!.next/cache/**"]
@@ -63,6 +66,7 @@
 			"outputs": ["src/lib/api/generated/**"]
 		},
 		"frontend#inject": {
+			"cache": false,
 			"dependsOn": ["sql#export"],
 			"env": [
 				"COMPANY_SLUG",

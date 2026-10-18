@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import svgr from "vite-plugin-svgr";
 import "dotenv/config";
+import { branding } from "./src/lib/branding";
 
 const host = process.env.TAURI_DEV_HOST;
 
@@ -19,7 +20,7 @@ export default defineConfig({
 		tsconfigPaths: true,
 	},
 	server: {
-		allowedHosts: [process.env.VITE_APP_URL?.replace(/https?:\/\//, "") || ""]
+		allowedHosts: [process.env.VITE_APP_URL || branding.siteUrl]
 			.filter(Boolean)
 			.map(each => each.replace(/(^https?:\/\/|\/$)/, "")),
 		hmr: host

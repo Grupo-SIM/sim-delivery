@@ -24,14 +24,14 @@ export class SeedOwner {
 			return;
 		}
 
+		// Provision only a new company's first owner. Never promote, move or replace existing users.
+		const owner = await this.prisma.user.findFirst({
+			select: { id: true },
+			where: { companyId: company.id, role: "owner" },
+		});
+		if (owner) return;
 		const existing = await this.prisma.user.findUnique({ where: { email } });
-		if (existing) {
-			await this.prisma.user.update({
-				data: { companyId: company.id, role: "owner" },
-				where: { id: existing.id },
-			});
-			return;
-		}
+		if (existing) return;
 
 		const { user } = await this.signUp({ body: { email, name, password } });
 		await this.prisma.user.update({

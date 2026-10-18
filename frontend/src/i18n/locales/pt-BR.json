@@ -241,6 +241,20 @@
 					"submit": "Criar empresa",
 					"submitting": "Criando..."
 				},
+				"deployment": {
+					"action": "Configuração de deploy",
+					"apiUrl": "URL do backend",
+					"download": "Baixar Docker Compose",
+					"downloadError": "Não foi possível gerar o Compose. Verifique as URLs de deploy.",
+					"downloaded": "Docker Compose baixado.",
+					"error": "Não foi possível salvar a configuração de deploy.",
+					"hint": "Use URLs http ou https, sem caminho. Alterações entram nas próximas imagens. O email preenche a criação do dono e o provisionamento inicial; não altera donos existentes. Senhas continuam fora do cadastro.",
+					"identity": "Nome: {{name}} · Slug: {{slug}}. Edite esses dados na listagem de empresas.",
+					"ownerEmail": "Email de provisionamento do dono (opcional)",
+					"saved": "Configuração salva. Gere novas imagens para aplicar.",
+					"siteUrl": "URL do frontend",
+					"title": "Deploy — {{name}}"
+				},
 				"edit": {
 					"action": "Editar",
 					"cancel": "Cancelar",

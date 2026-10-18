@@ -4,3 +4,7 @@ dist
 generated
 node_modules
 out
+
+# Runtime secrets must never enter the build context.
+**/.env*
+!**/.env.example

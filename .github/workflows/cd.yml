@@ -17,7 +17,7 @@ jobs:
       # Manual runs use the repository's resolver with no base, planning every service.
       # Pushes use affected detection; a first push plans every service via its zero SHA.
       tasks: ${{ steps.all.outputs.tasks || steps.affected.outputs.tasks }}
-      # JSON arrays parsed from newline-separated slug@url GitHub variables.
+      # Company selection only; URLs and branding come from the database.
       slugs: ${{ steps.slugs.outputs.values }}
       variants: ${{ steps.slugs.outputs.variants }}
     steps:
@@ -51,35 +51,17 @@ jobs:
       - name: Parse company slugs
         id: slugs
         env:
-          APP_URLS: ${{ vars.APP_URL }}
-          API_URLS: ${{ vars.API_URL }}
+          VARIANTS: ${{ vars.VARIANTS }}
+          LEGACY_APP_URLS: ${{ vars.APP_URL }}
         run: |
-          parse_urls() {
-            jq -Rn --arg value "$1" '
-              $value
-              | split("\n")
-              | map(gsub("^\\s+|\\s+$"; ""))
-              | map(select(length > 0) | capture("^(?<slug>[^@]+)@(?<url>.*)$") | {key: .slug, value: .url})
-              | from_entries
-            '
-          }
-
-          app_urls=$(parse_urls "$APP_URLS")
-          api_urls=$(parse_urls "$API_URLS")
-          variants=$(jq -cn --argjson app "$app_urls" --argjson api "$api_urls" '
-            ($app | keys) as $appSlugs
-            | ($api | keys) as $apiSlugs
-            | if $appSlugs != $apiSlugs then
-                error("APP_URL and API_URL must contain the same slugs")
-              else
-                [$appSlugs[] | {slug: ., appUrl: $app[.], apiUrl: $api[.]}]
-              end
+          slugs=$(jq -Rnc --arg value "${VARIANTS:-$LEGACY_APP_URLS}" '
+            $value | split("\n")
+            | map(gsub("^\\s+|\\s+$"; "") | split("@")[0] | select(length > 0))
+            | unique
+            | if length == 0 or any(.[]; test("^[a-z0-9]+(-[a-z0-9]+)*$") | not)
+              then error("Set VARIANTS to one company slug per line") else . end
           ')
-          slugs=$(jq -c '[.[].slug]' <<< "$variants")
-          if [ "$slugs" = "[]" ]; then
-            echo "::error title=Missing frontend companies::Set APP_URL and API_URL using slug@url lines."
-            exit 1
-          fi
+          variants=$(jq -c '[.[] | {slug: .}]' <<< "$slugs")
           echo "values=$slugs" >> "$GITHUB_OUTPUT"
           echo "variants=$variants" >> "$GITHUB_OUTPUT"
 
@@ -104,6 +86,7 @@ jobs:
         with:
           build-args: |
             COMPANY_SLUG=${{ matrix.slug }}
+            BRANDING_REVISION=${{ github.run_id }}-${{ github.run_attempt }}
             NODE_ENV=production
           cache-scope: backend_${{ matrix.slug }}
           dockerfile: backend/Dockerfile
@@ -137,10 +120,8 @@ jobs:
         with:
           build-args: |
             COMPANY_SLUG=${{ matrix.slug }}
+            BRANDING_REVISION=${{ github.run_id }}-${{ github.run_attempt }}
             NODE_ENV=production
-            VITE_API_URL=${{ matrix.apiUrl }}
-            VITE_APP_URL=${{ matrix.appUrl }}
-            VITE_COMPANY_SLUG=${{ matrix.slug }}
           cache-scope: frontend_${{ matrix.slug }}
           dockerfile: frontend/Dockerfile
           # Each company gets its own tagged image: frontend-zero-grau, frontend-acai-top, …

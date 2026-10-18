@@ -21,9 +21,9 @@ export function ProvisionOwnerModal({ company, isOpen, onClose }: ProvisionOwner
 	const provision = usePostCompaniesByCompanyIdOwner();
 	useEffect(() => {
 		if (!isOpen) return;
-		setEmail("");
+		setEmail(company.ownerEmail ?? "");
 		setPassword("");
-	}, [isOpen]);
+	}, [company.ownerEmail, isOpen]);
 	return (
 		<Modal
 			isOpen={isOpen}

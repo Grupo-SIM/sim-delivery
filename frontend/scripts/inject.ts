@@ -50,8 +50,8 @@ if (process.env.NODE_ENV !== "production") {
 	}
 }
 
-const slug = process.env.VITE_COMPANY_SLUG?.trim();
-if (!slug) throw new Error("VITE_COMPANY_SLUG is required to run the branded frontend.");
+const slug = process.env.COMPANY_SLUG?.trim() || process.env.VITE_COMPANY_SLUG?.trim();
+if (!slug) throw new Error("COMPANY_SLUG (or VITE_COMPANY_SLUG) is required to run the branded frontend.");
 
 interface ThemeColors {
 	dark: Record<string, string>;
@@ -150,25 +150,7 @@ try {
 	await prisma.$disconnect();
 }
 
-company ??= {
-	allowThemeToggle: true,
-	apiUrl: null,
-	defaultTheme: null,
-	fontDisplay: null,
-	fontDisplayUrl: null,
-	fontFamily: null,
-	fontFamilyUrl: null,
-	footerText: null,
-	ga4Id: null,
-	gtmId: null,
-	logoUrl: null,
-	metaPixelId: null,
-	mobileIconUrl: null,
-	name: "",
-	packageName: null,
-	siteUrl: null,
-	themeColors: null,
-};
+if (!company) throw new Error(`Company not found: ${slug}`);
 
 const apiUrl =
 	company.apiUrl?.trim() ||
@@ -178,7 +160,10 @@ const fontFamily = company.fontFamily?.trim() || DEFAULT_FONT_FAMILY;
 const fontDisplay = company.fontDisplay?.trim() || DEFAULT_FONT_DISPLAY;
 const packageName =
 	company.packageName?.trim() || `com.jbmidia.${slug.toLowerCase().replace(/[^a-z0-9_]/g, "_")}`;
-const siteUrl = company.siteUrl?.trim() || process.env.VITE_APP_URL?.trim() || "";
+const siteUrl = requireBuildValue(
+	company.siteUrl?.trim() || process.env.VITE_APP_URL?.trim() || null,
+	"siteUrl or VITE_APP_URL",
+);
 const themeColors = resolveThemeColors(company.themeColors as Parameters<typeof resolveThemeColors>[0]);
 
 await mkdir(publicDir, { recursive: true });
@@ -195,11 +180,12 @@ await writeFile(join(publicDir, "branding.css"), createBrandingCss(themeColors, 
 
 await writeFile(
 	brandingPath,
-	`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tallowThemeToggle: boolean;\n\tdefaultTheme: "dark" | "light";\n\tapiUrl: string;\n\tcompanyName: string;\n\tfontDisplay: string;\n\tfontDisplayUrl: string | null;\n\tfontFamily: string;\n\tfontFamilyUrl: string | null;\n\tfooterFacebookUrl?: string | null;\n\tfooterInstagramUrl?: string | null;\n\tfooterPaymentMethods?: string[];\n\tfooterSupportEmail?: string | null;\n\tfooterText: string | null;\n\tfooterWhatsApp?: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n\twhatsAppEnabled: boolean;\n}\n\nexport const branding: Branding = ${JSON.stringify(
+	`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tallowThemeToggle: boolean;\n\tdefaultTheme: "dark" | "light";\n\tapiUrl: string;\n\tcompanyName: string;\n\tcompanySlug: string;\n\tfontDisplay: string;\n\tfontDisplayUrl: string | null;\n\tfontFamily: string;\n\tfontFamilyUrl: string | null;\n\tfooterFacebookUrl?: string | null;\n\tfooterInstagramUrl?: string | null;\n\tfooterPaymentMethods?: string[];\n\tfooterSupportEmail?: string | null;\n\tfooterText: string | null;\n\tfooterWhatsApp?: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n\twhatsAppEnabled: boolean;\n}\n\nexport const branding: Branding = ${JSON.stringify(
 		{
 			allowThemeToggle: company.allowThemeToggle,
 			apiUrl,
 			companyName: company.name,
+			companySlug: slug,
 			defaultTheme: company.defaultTheme === "dark" ? "dark" : "light",
 			fontDisplay,
 			fontDisplayUrl: company.fontDisplayUrl,
@@ -283,12 +269,13 @@ if (existsSync(tauriConfPath)) {
 		if (!existsSync(iconPath)) throw new Error("Tauri icon generator did not produce 128x128.png.");
 		await copyFile(iconPath, join(publicDir, "favicon.png"));
 		await copyFile(iconPath, join(publicDir, "apple-touch-icon.png"));
-
 	} else {
 		// Do not ship icons left over from a previously branded build.
 		const emptyIcon = await sharp({
-			create: { width: 128, height: 128, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } },
-		}).png().toBuffer();
+			create: { background: { alpha: 0, b: 0, g: 0, r: 0 }, channels: 4, height: 128, width: 128 },
+		})
+			.png()
+			.toBuffer();
 		await writeFile(join(publicDir, "favicon.png"), emptyIcon);
 		await writeFile(join(publicDir, "apple-touch-icon.png"), emptyIcon);
 	}
@@ -303,7 +290,10 @@ if (existsSync(tauriConfPath)) {
 const indexHtml = await readFile(indexHtmlPath, "utf8");
 const initialTheme = company.defaultTheme === "dark" ? "dark" : "light";
 const updatedIndexHtml = indexHtml
-	.replace(/<title>[^<]*<\/title>/, `<title>${company.name.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")}</title>`)
+	.replace(
+		/<title>[^<]*<\/title>/,
+		`<title>${company.name.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")}</title>`,
+	)
 	.replace(
 		/document\.documentElement\.classList\.add\("(?:dark|light)"\)/,
 		`document.documentElement.classList.add("${initialTheme}")`,
