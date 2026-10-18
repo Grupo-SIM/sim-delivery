@@ -81,13 +81,10 @@ jobs:
             COMPANY_SLUG=${{ matrix.slug }}
             BRANDING_REVISION=${{ github.run_id }}-${{ github.run_attempt }}
             NODE_ENV=production
-          cache-scope: backend_${{ matrix.slug }}
-          dockerfile: backend/Dockerfile
-          image: jbmidia/sim-delivery_backend_${{ matrix.slug }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          registry: docker.io
+          image_suffix: backend_${{ matrix.slug }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
           secrets: DATABASE_URL=${{ secrets.DATABASE_URL }}
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
 
   ghcr-frontend:
     name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Frontend
@@ -115,14 +112,11 @@ jobs:
             COMPANY_SLUG=${{ matrix.slug }}
             BRANDING_REVISION=${{ github.run_id }}-${{ github.run_attempt }}
             NODE_ENV=production
-          cache-scope: frontend_${{ matrix.slug }}
           dockerfile: frontend/Dockerfile
-          # Each company gets its own tagged image: frontend-zero-grau, frontend-acai-top, …
-          image: jbmidia/sim-delivery_frontend_${{ matrix.slug }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          registry: docker.io
+          image_suffix: frontend_${{ matrix.slug }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
           secrets: DATABASE_URL=${{ secrets.DATABASE_URL }}
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
 
   # desktop:
   #   name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Build & release ${{ matrix.platform }} app
