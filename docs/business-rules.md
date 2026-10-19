@@ -112,6 +112,15 @@ possui **N unidades** (lojas físicas). Detalhes em
 
 ## Carteira e saques empresariais
 
+- Cadastro do primeiro dono pelo superAdmin provisiona automaticamente conta ativa e carteira
+  zerada na SIM INT PAY, usando email normalizado e senha informada. Sem senha, cada sistema
+  envia seu próprio link de definição de senha; senhas definidas depois são independentes.
+- CNPJ é opcional no cadastro da empresa e do primeiro dono. Configuração posterior de saques
+  sincroniza CNPJ com conta e vínculo financeiro na SIM INT PAY. Donos adicionais não substituem
+  conta financeira. Repetir cadastro do primeiro dono após falha externa retoma provisionamento,
+  sem trocar senha ou zerar carteira. Email/CNPJ de outra conta bloqueiam associação automática.
+
+
 - Cada empresa possui carteira própria na SIM INT PAY, identificada por
   `integrationKey = sim-delivery_<slug-da-empresa>` e `externalMerchantId = companyId`; saldo e
   saques nunca seguem filtro de unidade nem a integração genérica `sim-delivery`.

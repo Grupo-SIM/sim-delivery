@@ -1,3 +1,4 @@
+import { ProvisionCompanyOwner } from "../../useCases/ProvisionCompanyOwner";
 import Elysia, { t } from "elysia";
 import { StaffReturn } from "@/modules/staff/dtos";
 import { InviteStaff } from "@/modules/staff/useCases/InviteStaff";
@@ -74,16 +75,7 @@ export const CompaniesController = new Elysia({
 						input => auth.api.signUpEmail(input),
 						input => auth.api.requestPasswordReset(input),
 					);
-					return invite.execute(
-						{
-							companyId: company.id,
-							email: body.email.trim().toLowerCase(),
-							name: company.name,
-							role: "owner",
-							unitIds: [],
-						},
-						{ password: body.password, siteUrl: company.siteUrl ?? undefined },
-					);
+					return new ProvisionCompanyOwner(prisma, invite, simpay, input => auth.api.requestPasswordReset(input)).execute(company, body);
 				},
 				{ body: ProvisionOwnerBody, response: StaffReturn },
 			)

@@ -163,6 +163,17 @@ export function isFailedSimpayStatus(status: unknown): boolean {
 }
 
 export class SimpayClient {
+	async provisionOwner(merchant: SimpayMerchantScope, owner: { cnpj?: string | null; email: string; legalName: string; password?: string }): Promise<{ id: string }> {
+		const response = await fetch(`${merchantBase(merchant)}/owner`, {
+			body: JSON.stringify(owner),
+			headers: internalHeaders(),
+			method: "PUT",
+		});
+		const data = await response.json().catch(() => null);
+		if (!response.ok) throw new PaymentProviderError("Simpay", extractPaymentProviderMessage(data) || `Erro ao cadastrar dono (HTTP ${response.status})`, response.status);
+		return data as { id: string };
+	}
+
 	async provisionMerchant(merchant: SimpayMerchantReference): Promise<{ id: string }> {
 		const response = await fetch(merchantBase(merchant), {
 			body: JSON.stringify({ cnpj: merchant.cnpj, legalName: merchant.legalName }),
