@@ -1,0 +1,23 @@
+{
+	"accent": "#FEE830",
+	"accentForeground": "#0A1EEF",
+	"background": "#F6F7FB",
+	"border": "#E2E4EF",
+	"card": "#FFFFFF",
+	"cardForeground": "#0B0F3E",
+	"destructive": "#C71552",
+	"foreground": "#0B0F3E",
+	"input": "#D9DCEC",
+	"muted": "#F0F1F7",
+	"mutedForeground": "#5E6482",
+	"popover": "#FFFFFF",
+	"popoverForeground": "#0B0F3E",
+	"primary": "#0A1EEF",
+	"primaryForeground": "#FFFFFF",
+	"ring": "#0A1EEF",
+	"secondary": "#36C9F5",
+	"secondaryForeground": "#0A1EEF",
+	"success": "#1CB85A",
+	"surfaceSunken": "#EEF0FA",
+	"warning": "#F5BA00"
+}

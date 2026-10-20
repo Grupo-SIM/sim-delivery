@@ -6,7 +6,7 @@ import { CategorySummary } from "./CategorySummary";
 import { MenuSectionBlock } from "./MenuSectionBlock";
 import { ProductDetailsModal } from "./ProductDetailsModal";
 import { TopPicksCarousel } from "./TopPicksCarousel";
-import type { MenuItem, MenuSection } from "./types";
+import type { MenuSection } from "./types";
 
 interface MenuBrowserProps {
 	header: ReactNode;
@@ -67,7 +67,9 @@ export function MenuBrowser({
 
 	return (
 		<>
-			<div className={hasCategories ? "lg:grid lg:grid-cols-[12rem_1fr] lg:gap-6" : undefined}>
+			<div
+				className={hasCategories ? "menu-browser lg:grid lg:grid-cols-[12rem_1fr] lg:gap-6" : "menu-browser"}
+			>
 				{hasCategories && <CategorySummary sections={filtered} />}
 				<div className="min-w-0 space-y-6">
 					{header}

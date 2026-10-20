@@ -8,10 +8,11 @@ export function StorefrontFooter({ branding }: StorefrontFooterProps) {
 	const companyName = branding?.companyName ?? "JB Delivery";
 	const year = new Date().getFullYear();
 	const contactItems = [
-		branding?.whatsAppEnabled && branding.footerWhatsApp && {
-			href: `https://wa.me/${branding.footerWhatsApp.replace(/\D/g, "")}`,
-			label: branding.footerWhatsApp,
-		},
+		branding?.whatsAppEnabled &&
+			branding.footerWhatsApp && {
+				href: `https://wa.me/${branding.footerWhatsApp.replace(/\D/g, "")}`,
+				label: branding.footerWhatsApp,
+			},
 		branding?.footerSupportEmail && {
 			href: `mailto:${branding.footerSupportEmail}`,
 			label: branding.footerSupportEmail,
@@ -23,9 +24,9 @@ export function StorefrontFooter({ branding }: StorefrontFooterProps) {
 	].filter((item): item is { href: string; label: string } => Boolean(item));
 
 	return (
-		<footer className="mt-auto border-border/70 border-t bg-muted/35">
+		<footer className="storefront-footer mt-auto border-border/70 border-t bg-muted/35">
 			<div className="mx-auto max-w-6xl px-5 py-9">
-				<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+				<div className="storefront-footer-content grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 					<div className="space-y-3">
 						<div className="flex items-center gap-3">
 							{branding?.logoUrl && (
@@ -33,10 +34,12 @@ export function StorefrontFooter({ branding }: StorefrontFooterProps) {
 							)}
 							<p className="font-display text-lg">{companyName}</p>
 						</div>
-						<p className="max-w-xl text-muted-foreground text-sm">
+						<p className="storefront-footer-description max-w-xl text-muted-foreground text-sm">
 							{branding?.footerText ?? `© ${year} ${companyName}. Todos os direitos reservados.`}
 						</p>
-						<p className="text-muted-foreground text-xs">Desenvolvido por JB Delivery</p>
+						<p className="storefront-footer-credit text-muted-foreground text-xs">
+							Desenvolvido por JB Delivery
+						</p>
 					</div>
 					{branding?.footerPaymentMethods?.length ? (
 						<div className="space-y-2 text-sm">

@@ -3,6 +3,7 @@ import { LuImageOff, LuPlus } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { StarRating } from "@/components/ui/StarRating";
+import { useLiveBranding } from "@/hooks/use-live-branding";
 import { displayedUnitPrice, feeUnitAmount, normalizeProductFees } from "@/lib/platform-fees";
 import { hasPriceVariation } from "./product-options";
 import { type MenuItem, money } from "./types";
@@ -14,6 +15,7 @@ interface MenuItemCardProps {
 
 export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 	const { t } = useTranslation();
+	const { logoUrl } = useLiveBranding();
 	const showFromPrice = hasPriceVariation(item.optionGroups);
 
 	const displayPriceCents = displayedUnitPrice(Number(item.fromPriceCents), item.productFees);
@@ -23,7 +25,7 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 
 	return (
 		<Card
-			className="group flex h-full cursor-pointer flex-col overflow-hidden p-0 shadow-md transition duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+			className="menu-item-card group flex h-full cursor-pointer flex-col overflow-hidden p-0 shadow-md transition duration-300 hover:-translate-y-0.5 hover:shadow-lg"
 			onClick={() => onSelect(item)}
 			onKeyDown={event => {
 				if (event.key === "Enter" || event.key === " ") {
@@ -44,11 +46,19 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 					/>
 				) : (
 					<div className="flex h-full items-center justify-center text-muted-foreground/60">
-						<LuImageOff aria-label={t("store.menu.imagePlaceholder")} className="size-10" />
+						{logoUrl ? (
+							<img
+								alt={t("store.menu.imagePlaceholder")}
+								className="w-1/3 object-contain opacity-35"
+								src={logoUrl}
+							/>
+						) : (
+							<LuImageOff aria-label={t("store.menu.imagePlaceholder")} className="size-10" />
+						)}
 					</div>
 				)}
 			</div>
-			<div className="flex min-w-0 flex-1 flex-col gap-2 p-3 sm:p-4">
+			<div className="menu-item-content flex min-w-0 flex-1 flex-col gap-2 p-3 sm:p-4">
 				<p className="font-semibold leading-tight">{item.title}</p>
 				{Number(item.ratingCount) > 0 && (
 					<StarRating average={item.ratingAverage} count={Number(item.ratingCount)} />

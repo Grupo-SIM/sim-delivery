@@ -14,7 +14,6 @@ import {
 	CartBar,
 	InfoPill,
 	MenuBrowser,
-	PromotionalCarousel,
 	StoreHoursModal,
 	StoreToolbar,
 	UnitReviews,
@@ -95,10 +94,13 @@ function UnitStorePage() {
 	return (
 		<>
 			<StorefrontBannerCarousel
-				images={unit.bannerUrls.map((src, index) => ({ alt: `${unit.name} — banner ${index + 1}`, src }))}
+				images={[
+					...unit.promotionalImages.map(image => ({ alt: image.title, href: image.linkUrl, src: image.imageUrl })),
+					...unit.bannerUrls.map((src, index) => ({ alt: `${unit.name} — banner ${index + 1}`, src })),
+				]}
 				label={t("store.unit.bannerCarousel")}
 			/>
-			<Container className="space-y-6 py-8">
+			<Container className="unit-store-content space-y-6 py-5">
 				<UnitStoreHeader onReviewsClick={() => setReviewsOpen(true)} unit={unit} unitSlug={unitSlug} units={units} />
 
 				{menu.isPending ? (
@@ -125,7 +127,6 @@ function UnitStorePage() {
 										{t("store.unit.minOrder")} {money.format(minOrder / 100)}
 									</InfoPill>
 								)}
-								<PromotionalCarousel images={unit.promotionalImages} />
 							</div>
 						}
 						modalNote={productModal.note}

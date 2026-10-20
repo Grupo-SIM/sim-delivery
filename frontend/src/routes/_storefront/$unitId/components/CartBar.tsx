@@ -16,7 +16,14 @@ interface CartBarProps {
 }
 
 /** Sticky bottom bar summarizing the current unit's cart; opens the cart modal. */
-export function CartBar({ categoryNavDocked, deliveryFee, minOrderCents, sections, unitId, unitSlug }: CartBarProps) {
+export function CartBar({
+	categoryNavDocked,
+	deliveryFee,
+	minOrderCents,
+	sections,
+	unitId,
+	unitSlug,
+}: CartBarProps) {
 	const { t } = useTranslation();
 	const [open, setOpen] = useState(false);
 	const cartUnitId = useCartStore(state => state.unitId);
@@ -37,7 +44,7 @@ export function CartBar({ categoryNavDocked, deliveryFee, minOrderCents, section
 		<>
 			<div
 				className={cn(
-					"fixed right-4 bottom-4 z-20 flex max-w-[calc(100%-2rem)] flex-col items-end gap-1.5 transition-[bottom] duration-200",
+					"store-cart-bar fixed right-4 bottom-4 z-20 flex max-w-[calc(100%-2rem)] flex-col items-end gap-1.5 transition-[bottom] duration-200",
 					categoryNavDocked && "bottom-[calc(5rem+env(safe-area-inset-bottom))] lg:bottom-4",
 				)}
 			>
@@ -51,7 +58,8 @@ export function CartBar({ categoryNavDocked, deliveryFee, minOrderCents, section
 					onClick={() => setOpen(true)}
 					type="button"
 				>
-					<span>{t("store.cart.open", { count })}</span>
+					<span className="store-cart-count">{count}</span>
+					<span>{t("store.cart.view")}</span>
 					<span>{money.format(total / 100)}</span>
 				</Button>
 			</div>

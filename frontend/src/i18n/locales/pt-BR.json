@@ -1820,7 +1820,8 @@
 				"subtotal": "Subtotal",
 				"suggestions": "Você também pode gostar",
 				"title": "Seu carrinho",
-				"updated": "Produto atualizado no carrinho!"
+				"updated": "Produto atualizado no carrinho!",
+				"view": "Ver carrinho"
 			},
 			"checkout": {
 				"address": {
@@ -2059,8 +2060,8 @@
 				"noAddress": "Endereço não informado",
 				"pickup": "Retirada",
 				"prepTime": "Preparo",
-				"subtitle": "Escolha uma unidade para iniciar seu pedido.",
-				"title": "Nossas unidades"
+				"subtitle": "Toque na loja e comece seu pedido.",
+				"title": "Escolha sua unidade"
 			},
 			"menu": {
 				"categories": "Categorias do cardápio",
@@ -2138,6 +2139,7 @@
 				"etaRange": "{{min}}–{{max}} min",
 				"freeDelivery": "Grátis",
 				"hoursTitle": "Horários de funcionamento",
+				"methodSelected": "Modalidade alterada para {{method}}.",
 				"minOrder": "Pedido mín.",
 				"notFound": "Esta unidade não está disponível.",
 				"operation": "Funcionamento",
@@ -2156,6 +2158,13 @@
 					"tue": "Terça-feira",
 					"wed": "Quarta-feira"
 				}
+			},
+			"welcome": {
+				"description": "Açaí, sorvete e pizza da Zero Grau, direto na sua casa.",
+				"eyebrow": "O APP DA ZERO GRAU",
+				"order": "Fazer pedido",
+				"title": "Bateu",
+				"titleAccent": "Vontade?"
 			}
 		}
 	}

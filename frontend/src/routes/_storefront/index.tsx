@@ -3,19 +3,23 @@ import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { useLiveBranding } from "@/hooks/use-live-branding";
 import { useGetBranding, useGetPublicUnits } from "@/lib/api";
 import { slug } from "@/lib/variant";
 import { StorefrontBannerCarousel, StorefrontBannerSkeleton } from "../components/storefront";
-import { UnitHeroCard } from "./components";
+import { UnitHeroCard, WelcomeHero } from "./components";
 
 function StorePage() {
 	const { t } = useTranslation();
+	const liveBranding = useLiveBranding();
 	const { data: branding, isPending: isBrandingPending } = useGetBranding(slug ? { slug } : undefined);
 	const { data: units, isError, isPending } = useGetPublicUnits({ slug });
 
 	return (
-		<div className="bg-background">
-			{isBrandingPending ? (
+		<div className="storefront-home bg-background">
+			{liveBranding.companyName === "Zero Grau" ? (
+				<WelcomeHero />
+			) : isBrandingPending ? (
 				<StorefrontBannerSkeleton />
 			) : branding?.homepageBannerUrls.length ? (
 				<StorefrontBannerCarousel
@@ -26,7 +30,7 @@ function StorePage() {
 					label={t("store.chooseUnit.bannerCarousel")}
 				/>
 			) : null}
-			<section className="mx-auto max-w-6xl px-5 pt-12 pb-8 sm:pt-16">
+			<section className="unit-selection-heading mx-auto max-w-6xl px-5 pt-12 pb-8 sm:pt-16" id="unidades">
 				<p className="font-semibold text-primary text-sm">{branding?.companyName ?? "JB DELIVERY"}</p>
 				<h1 className="mt-2 max-w-2xl font-display text-4xl text-foreground sm:text-5xl">
 					{t("store.chooseUnit.title")}
@@ -34,18 +38,18 @@ function StorePage() {
 				<p className="mt-3 max-w-xl text-lg text-muted-foreground">{t("store.chooseUnit.subtitle")}</p>
 			</section>
 
-			<section className="mx-auto max-w-6xl px-5 pb-12" id="unidades">
+			<section className="unit-selection mx-auto max-w-6xl px-5 pb-12">
 				{isPending || isBrandingPending ? (
-					<div className="grid gap-4 md:grid-cols-2">
-						<Skeleton className="h-80 w-full" />
-						<Skeleton className="h-80 w-full" />
+					<div className="grid grid-cols-2 gap-3 sm:gap-5">
+						<Skeleton className="aspect-[1.2] w-full rounded-3xl" />
+						<Skeleton className="aspect-[1.2] w-full rounded-3xl" />
 					</div>
 				) : isError ? (
 					<ErrorState title={t("store.chooseUnit.loadError")} />
 				) : units.length === 0 ? (
 					<EmptyState title={t("store.chooseUnit.empty")} />
 				) : (
-					<div className="grid gap-4 md:grid-cols-2">
+					<div className="grid grid-cols-2 gap-3 sm:gap-5">
 						{units.map(unit => (
 							<UnitHeroCard
 								fallbackImageUrl={branding?.unitFallbackImageUrl}

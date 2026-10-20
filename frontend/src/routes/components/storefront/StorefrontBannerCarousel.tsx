@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type TouchEvent } from "react";
+import { type TouchEvent, useEffect, useRef, useState } from "react";
 import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 
@@ -6,6 +6,7 @@ const AUTO_ADVANCE_MS = 4_000;
 const SWIPE_THRESHOLD_PX = 48;
 
 interface StorefrontBanner {
+	href?: string | null;
 	alt: string;
 	src: string;
 }
@@ -70,7 +71,10 @@ export function StorefrontBannerCarousel({ className, images, label }: Storefron
 		<section
 			aria-label={label}
 			aria-roledescription="carrossel"
-			className={cn("group border-border/70 border-b bg-muted/50 sm:px-5 sm:py-4", className)}
+			className={cn(
+				"storefront-banner group border-border/70 border-b bg-muted/50 sm:px-5 sm:py-4",
+				className,
+			)}
 		>
 			<div
 				className="relative mx-auto aspect-[11/4] w-full max-w-5xl touch-pan-y overflow-hidden shadow-sm sm:rounded-xl sm:border sm:border-border/70 sm:shadow-md"
@@ -82,15 +86,14 @@ export function StorefrontBannerCarousel({ className, images, label }: Storefron
 					className="flex h-full transition-transform duration-500 ease-out motion-reduce:transition-none"
 					style={{ transform: `translateX(-${currentIndex * 100}%)` }}
 				>
-					{images.map((image, index) => (
-						<img
-							alt={image.alt}
-							aria-hidden={index !== currentIndex}
-							className="h-full w-full shrink-0 object-cover"
-							key={`${image.src}-${index}`}
-							src={image.src}
-						/>
-					))}
+					{images.map((image, index) => {
+						const content = <img alt={image.alt} className="h-full w-full object-cover" src={image.src} />;
+						return (
+							<div aria-hidden={index !== currentIndex} className="h-full w-full shrink-0" key={`${image.src}-${index}`}>
+								{image.href ? <a className="block h-full w-full cursor-pointer" href={image.href} rel="noopener noreferrer" tabIndex={index === currentIndex ? 0 : -1} target="_blank">{content}</a> : content}
+							</div>
+						);
+					})}
 				</div>
 
 				{images.length > 1 && (

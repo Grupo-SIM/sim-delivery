@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { type DeliveryMethod, useDeliveryMethodStore } from "@/stores";
+import { type DeliveryMethod, showToast, useDeliveryMethodStore } from "@/stores";
 
 interface DeliveryMethodSelectorProps {
 	deliveryMethods: string[];
@@ -22,18 +22,25 @@ export function DeliveryMethodSelector({ deliveryMethods, unitId }: DeliveryMeth
 	}
 
 	return (
-		<div className="flex overflow-hidden rounded-lg border border-border bg-muted text-xs">
+		<div className="delivery-method-selector flex overflow-hidden rounded-lg border border-border bg-muted text-xs">
 			{(["delivery", "pickup"] as DeliveryMethod[])
 				.filter(m => deliveryMethods.includes(m))
 				.map(method => (
 					<button
+						aria-pressed={current === method}
 						className={
 							current === method
 								? "flex-1 cursor-pointer bg-primary px-3 py-1.5 font-semibold text-primary-foreground transition-colors"
 								: "flex-1 cursor-pointer px-3 py-1.5 text-muted-foreground transition-colors hover:text-foreground"
 						}
 						key={method}
-						onClick={() => setMethod(unitId, method)}
+						onClick={() => {
+							setMethod(unitId, method);
+							showToast(
+								t("store.unit.methodSelected", { method: t(`store.checkout.order.${method}`) }),
+								"info",
+							);
+						}}
 						type="button"
 					>
 						{t(`store.checkout.order.${method}`)}

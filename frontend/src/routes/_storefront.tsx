@@ -11,7 +11,9 @@ function StorefrontLayout() {
 	const unitName = units?.find(unit => unit.slug === unitSlug)?.name;
 
 	return (
-		<div className="flex min-h-screen flex-col">
+		<div
+			className={`storefront flex min-h-screen flex-col ${branding.companyName === "Zero Grau" ? "zero-grau-storefront" : ""}`}
+		>
 			<StorefrontHeader branding={branding} unitName={unitName} />
 			<main className="flex flex-1 flex-col">
 				<Outlet />

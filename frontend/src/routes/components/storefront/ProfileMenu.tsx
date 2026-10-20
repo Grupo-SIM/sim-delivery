@@ -76,7 +76,7 @@ export function ProfileMenu({
 	if (!isAuthenticated || !user) {
 		return (
 			<Link
-				className="rounded-full bg-primary px-4 py-2 font-semibold text-primary-foreground text-sm transition hover:opacity-90"
+				className="storefront-sign-in rounded-full bg-primary px-4 py-2 font-semibold text-primary-foreground text-sm transition hover:opacity-90"
 				search={{ redirectTo: currentPath }}
 				to="/identify"
 			>
@@ -96,7 +96,7 @@ export function ProfileMenu({
 			<button
 				aria-expanded={open}
 				aria-haspopup="menu"
-				className="flex cursor-pointer items-center gap-2 rounded-full p-0.5 transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+				className="storefront-profile flex cursor-pointer items-center gap-2 rounded-full border border-border p-0.5 transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 				onClick={() => setOpen(value => !value)}
 				ref={triggerRef}
 				type="button"

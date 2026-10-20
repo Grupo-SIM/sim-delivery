@@ -34,7 +34,7 @@ export function StorefrontHeader({
 	const staffAreaPath = getStaffAreaPath(role);
 
 	return (
-		<header className="relative z-30 border-border/70 border-b bg-background/95 backdrop-blur">
+		<header className="storefront-header relative z-30 border-border/70 border-b bg-background/95 backdrop-blur">
 			<div className="mx-auto flex min-h-20 max-w-6xl items-center justify-between gap-5 px-5 py-3">
 				<Link aria-label={companyName} className="flex min-w-0 items-center gap-3" to="/">
 					{branding?.logoUrl ? (
@@ -44,9 +44,11 @@ export function StorefrontHeader({
 							{companyName.slice(0, 2).toUpperCase()}
 						</span>
 					)}
-					<span className="flex min-w-0 flex-col">
+					<span className="storefront-header-name flex min-w-0 flex-col">
 						<span className="truncate font-display text-primary text-xl tracking-wide">{companyName}</span>
-						{unitName && <span className="truncate text-muted-foreground text-sm">{unitName}</span>}
+						{unitName && (
+							<span className="storefront-unit-name truncate text-muted-foreground text-sm">{unitName}</span>
+						)}
 					</span>
 				</Link>
 
