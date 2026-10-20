@@ -4,14 +4,12 @@ import { useTranslation } from "react-i18next";
 import { BrandWave } from "@/components/ui/BrandWave";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { useLiveBranding } from "@/hooks/use-live-branding";
 import { getSafeAuthRedirect } from "@/lib/auth-redirect";
 import { isOperationalStaff, isStaff } from "@/lib/staff-guard";
 import { useAuthStore } from "@/stores/auth";
 import { IdentifyForm } from "../$unitId/checkout/components";
 
 function IdentifyPage() {
-	const { whatsAppEnabled } = useLiveBranding();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const isAuthenticated = useAuthStore(state => state.isAuthenticated);
@@ -49,7 +47,6 @@ function IdentifyPage() {
 				/>
 				<div className="identify-card rounded-brand border border-border bg-card p-4 sm:p-7">
 					<IdentifyForm
-						enableWhatsApp={Boolean(whatsAppEnabled)}
 						returnTo={getSafeAuthRedirect(redirectTo)}
 					/>
 				</div>

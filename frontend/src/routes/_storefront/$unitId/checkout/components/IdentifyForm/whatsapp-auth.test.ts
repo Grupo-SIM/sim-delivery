@@ -27,12 +27,18 @@ describe("isValidOtp", () => {
 describe("getIdentifierKind", () => {
 	it("detects an email before attempting phone normalization", () => {
 		expect(isValidEmail("cliente@exemplo.com")).toBeTrue();
-		expect(getIdentifierKind("cliente@exemplo.com", true)).toBe("email");
+		expect(getIdentifierKind("cliente@exemplo.com")).toBe("email");
 	});
 
-	it("detects a Brazilian WhatsApp number only when enabled", () => {
-		expect(getIdentifierKind("(81) 99999-9999", true)).toBe("phone");
-		expect(getIdentifierKind("(81) 99999-9999", false)).toBeNull();
+	it("detects a Brazilian mobile number without depending on store WhatsApp branding", () => {
+		expect(getIdentifierKind("(81) 99999-9999")).toBe("phone");
+		expect(getIdentifierKind("+55 (81) 99999-9999")).toBe("phone");
+	});
+
+	it("keeps incomplete contacts invalid", () => {
+		expect(getIdentifierKind("(81) 99999-999")).toBeNull();
+		expect(getIdentifierKind("cliente@exemplo")).toBeNull();
+		expect(getIdentifierKind("")).toBeNull();
 	});
 });
 

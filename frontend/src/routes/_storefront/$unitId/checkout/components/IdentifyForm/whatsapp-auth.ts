@@ -11,9 +11,9 @@ export function isValidEmail(email: string): boolean {
 	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 }
 
-export function getIdentifierKind(identifier: string, enableWhatsApp: boolean): IdentifierKind | null {
+export function getIdentifierKind(identifier: string): IdentifierKind | null {
 	if (isValidEmail(identifier)) return "email";
-	if (enableWhatsApp && toBrazilianE164(identifier)) return "phone";
+	if (toBrazilianE164(identifier)) return "phone";
 	return null;
 }
 

@@ -279,7 +279,7 @@ function CheckoutPage() {
 						subtitle={t("store.checkout.identify.subtitle")}
 						title={t("store.checkout.identify.title")}
 					/>
-					<IdentifyForm enableWhatsApp unitSlug={unitSlug} />
+					<IdentifyForm unitSlug={unitSlug} />
 				</>
 			)}
 

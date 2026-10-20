@@ -17,12 +17,11 @@ type AccessMethod = "magic-link" | "password";
 type Step = "form" | "email-sent" | "phone-code";
 
 interface IdentifyFormProps {
-	enableWhatsApp?: boolean;
 	returnTo?: string;
 	unitSlug?: string;
 }
 
-export function IdentifyForm({ enableWhatsApp = false, returnTo, unitSlug }: IdentifyFormProps) {
+export function IdentifyForm({ returnTo, unitSlug }: IdentifyFormProps) {
 	const { t } = useTranslation();
 	const signIn = useAuthStore(state => state.signIn);
 	const setUser = useAuthStore(state => state.setUser);
@@ -35,7 +34,7 @@ export function IdentifyForm({ enableWhatsApp = false, returnTo, unitSlug }: Ide
 	const [error, setError] = useState<string | null>(null);
 	const [cooldown, setCooldown] = useState(0);
 	const [resent, setResent] = useState(false);
-	const identifierKind = getIdentifierKind(identifier, enableWhatsApp);
+	const identifierKind = getIdentifierKind(identifier);
 	const emailIsValid = isValidEmail(identifier);
 	const phoneNumber = identifierKind === "phone" ? toBrazilianE164(identifier) : null;
 	const isPasswordLogin = accessMethod === "password";
