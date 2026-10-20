@@ -26,14 +26,11 @@ ENV NODE_ENV=${NODE_ENV}
 COPY . .
 RUN --mount=type=secret,id=DATABASE_URL DATABASE_URL="$(cat /run/secrets/DATABASE_URL)" bunx turbo -F frontend build
 
-FROM ghcr.io/static-web-server/static-web-server:2 AS runtime
+FROM nginx:stable-alpine AS runtime
 
-COPY --from=build /app/frontend/dist /public
+COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/frontend/dist /usr/share/nginx/html
 
-# Scratch-based static binary: no OS packages, so ~no CVEs.
-ENV SERVER_ROOT=/public
-ENV SERVER_PORT=5173
-# SPA fallback: client-side routing handles unknown paths.
-ENV SERVER_FALLBACK_PAGE=/public/index.html
+# The HTTP config keeps SPA navigation separate from missing static assets.
 
 EXPOSE 5173
