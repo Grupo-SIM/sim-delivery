@@ -81,6 +81,7 @@ jobs:
             COMPANY_SLUG=${{ matrix.slug }}
             BRANDING_REVISION=${{ github.run_id }}-${{ github.run_attempt }}
             NODE_ENV=production
+          dockerfile: backend/Dockerfile
           image_suffix: backend_${{ matrix.slug }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: ghcr.io
