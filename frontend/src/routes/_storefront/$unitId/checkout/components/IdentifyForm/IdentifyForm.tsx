@@ -60,7 +60,9 @@ export function IdentifyForm({ returnTo, unitSlug }: IdentifyFormProps) {
 			} else {
 				const { error: sendError } = await authClient.phoneNumber.sendOtp({ phoneNumber: phoneNumber! });
 				if (sendError) {
-					setError(t(sendError.status === 429 ? "store.checkout.identify.errors.rateLimited" : "store.checkout.identify.errors.otpSend"));
+					setError(t(sendError.code === "PHONE_LOGIN_NOT_ENABLED"
+						? "store.checkout.identify.errors.phoneLoginNotEnabled"
+						: sendError.status === 429 ? "store.checkout.identify.errors.rateLimited" : "store.checkout.identify.errors.otpSend"));
 					return;
 				}
 				setStep("phone-code");

@@ -1873,6 +1873,7 @@
 						"otpInvalid": "Código inválido ou expirado.",
 						"otpSend": "Não foi possível enviar o código pelo WhatsApp. Tente novamente.",
 						"passwordRequiresEmail": "Para entrar com senha, informe um e-mail válido.",
+						"phoneLoginNotEnabled": "Login por celular não foi habilitado nesta empresa. Entre por e-mail.",
 						"rateLimited": "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
 						"send": "Não foi possível enviar o link. Tente novamente."
 					},

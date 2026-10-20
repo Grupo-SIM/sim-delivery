@@ -1,4 +1,4 @@
-import { buildCompanyWhatsAppSessionName } from "@/modules/branding/useCases";
+import { APIError } from "better-auth/api";
 import { prisma, type PrismaInstance } from "@/shared/infra/sql";
 import { getWahaClientOptions, WahaClient } from "@/shared/infra/whatsapp";
 import { PhoneOtpProvider } from "../models/PhoneOtpProvider";
@@ -15,12 +15,20 @@ export class WahaPhoneOtpProvider extends PhoneOtpProvider {
 	}
 
 	async sendCode(phoneNumber: string, code: string): Promise<void> {
-		const company = await this.database.company.findFirst({ select: { slug: true } });
-		if (!company) throw new Error("Company is required for WhatsApp OTP.");
+		const company = await this.database.company.findFirst({
+			select: { whatsAppConnection: { select: { connectedPhone: true, sessionName: true } } },
+		});
+		const connection = company?.whatsAppConnection;
+		if (!connection?.connectedPhone) {
+			throw new APIError("FORBIDDEN", {
+				code: "PHONE_LOGIN_NOT_ENABLED",
+				message: "Login por celular não foi habilitado nesta empresa. Entre por e-mail.",
+			});
+		}
 		return this.client.sendText(
 			phoneNumber,
 			`Seu código de acesso é ${code}. Ele expira em 30 minutos. Não compartilhe este código.`,
-			buildCompanyWhatsAppSessionName(company.slug),
+			connection.sessionName,
 		);
 	}
 }

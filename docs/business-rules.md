@@ -59,6 +59,7 @@ possui **N unidades** (lojas físicas). Detalhes em
 
 ## Códigos WhatsApp e links mágicos de acesso
 
+- Login por celular exige WhatsApp da empresa configurado e pareado. Sem essa configuração, a tentativa deve informar que o login por celular não foi habilitado e orientar o acesso por e-mail, sem tentar enviar o código.
 - Códigos de acesso enviados por WhatsApp expiram 30 minutos após a emissão.
 - Links mágicos de acesso expiram 30 minutos após a emissão e podem ser usados uma única vez.
 
