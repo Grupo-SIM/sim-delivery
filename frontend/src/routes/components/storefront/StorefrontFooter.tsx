@@ -38,7 +38,15 @@ export function StorefrontFooter({ branding }: StorefrontFooterProps) {
 							{branding?.footerText ?? `© ${year} ${companyName}. Todos os direitos reservados.`}
 						</p>
 						<p className="storefront-footer-credit text-muted-foreground text-xs">
-							Desenvolvido por JB Delivery
+							Desenvolvido por{" "}
+							<a
+								className="cursor-pointer underline-offset-4 hover:text-foreground hover:underline"
+								href="https://simintermediacoes.com/"
+								rel="noreferrer"
+								target="_blank"
+							>
+								SIM Intermediações
+							</a>
 						</p>
 					</div>
 					{branding?.footerPaymentMethods?.length ? (
