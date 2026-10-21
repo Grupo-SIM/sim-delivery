@@ -83,6 +83,7 @@ export class CreateCardPayment {
 			const result = await this.simpay.createCardPayment({
 				bin: cardToken.substring(0, 6),
 				brand,
+				allocation: { merchantAmountCents: order.total - order.feeTotalCents, platformFeeCents: order.feeTotalCents },
 				description: buildPaymentDescription(order),
 				document: holderDocument,
 				document_type: holderDocument.length === 11 ? "CPF" : "CNPJ",

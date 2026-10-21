@@ -110,6 +110,15 @@ possui **N unidades** (lojas físicas). Detalhes em
 - Pedido mantém subtotal e itens comerciais separados, grava snapshots completos das taxas e exclui
   taxas de receita, margem e recompensas empresariais. Reembolso atribui parcela comercial de modo
   proporcional ao total pago.
+- Pagamentos online enviam à SIM INT PAY uma divisão explícita em centavos: total do comprador,
+  parcela da empresa (`total − feeTotalCents`) e taxas da plataforma (`feeTotalCents`). A carteira
+  empresarial recebe integralmente sua parcela, incluindo frete e após descontos/créditos, sem
+  descontos adicionais de adquirente, liquidez ou serviço. Somente as taxas pertencem à plataforma.
+- A divisão é congelada na cobrança e reutilizada na confirmação e no estorno. Configuração
+  posterior não recalcula pagamentos históricos. Novas cobranças exigem carteira empresarial
+  identificada; ausência de CNPJ não permite fallback para a conta genérica Zero Grau.
+- Publicação requer primeiro o backend SIM INT PAY com suporte à divisão e depois o Delivery.
+  Cobranças já pendentes preservam o contrato original; nenhuma retroatribuição é automática.
 
 ## Carteira e saques empresariais
 

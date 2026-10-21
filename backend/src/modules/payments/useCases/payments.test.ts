@@ -369,7 +369,7 @@ describe("resolvePayingCustomer", () => {
 		const context = await resolvePayingCustomer(prisma, "user_1", body);
 
 		expect(context.document).toBe("52998224725");
-		expect(context.order).toEqual({ id: "order_1", total: 5000, unitName: "Boa Viagem" });
+		expect(context.order).toEqual({ feeTotalCents: 0, id: "order_1", total: 5000, unitName: "Boa Viagem" });
 		expect(context.user.email).toBe("maria@example.com");
 	});
 
@@ -1428,5 +1428,30 @@ describe("DeleteSavedCard", () => {
 			"SAVED_CARD_NOT_FOUND",
 		);
 		expect(savedCards).toHaveLength(1);
+	});
+});
+
+describe("platform fee allocation", () => {
+	it("sends the frozen fee separately from merchant proceeds for PIX and card", async () => {
+		for (const method of ["pix", "card"]) {
+			const { prisma } = makeWorld({ orders: [{ ...baseOrder, feeTotalCents: 537, total: 10537 }] });
+			const { calls, simpay } = makeSimpay();
+			if (method === "pix") {
+				await new CreatePixPayment(prisma, simpay).execute("user_1", { orderId: "order_1", slug: "zero-grau" });
+			} else {
+				await new CreateCardPayment(prisma, simpay, makeDom().dom).execute("user_1", {
+					card: { cvv: "123", expMonth: 12, expYear: 2030, holderName: "MARIA SILVA", number: "4242424242424242" },
+					holderCpf: "11144477735", orderId: "order_1", slug: "zero-grau",
+				});
+			}
+			expect(calls[method][0]).toMatchObject({ price: 105.37, allocation: { merchantAmountCents: 10000, platformFeeCents: 537 } });
+		}
+	});
+
+	it("still declares an explicit zero platform fee", async () => {
+		const { prisma } = makeWorld();
+		const { calls, simpay } = makeSimpay();
+		await new CreatePixPayment(prisma, simpay).execute("user_1", { orderId: "order_1", slug: "zero-grau" });
+		expect(calls.pix[0]).toMatchObject({ allocation: { merchantAmountCents: 5000, platformFeeCents: 0 } });
 	});
 });

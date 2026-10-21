@@ -46,3 +46,35 @@ describe("Simpay owner registration", () => {
 		} finally { fetch.mockRestore(); }
 	});
 });
+
+describe("Simpay allocation transport", () => {
+	const pix = { allocation: { merchantAmountCents: 10000, platformFeeCents: 500 }, price: 105, document: "52998224725", document_type: "CPF", email: "buyer@example.com", name: "Maria Silva", description: "Pedido" };
+	const card = { ...pix, holder_name: "Maria Silva", token: "card-token", bin: "424242", brand: "visa", installments: 1 };
+	const merchant = { cnpj: "10802530000107", externalMerchantId: "company", integrationKey: "sim-delivery_zero-grau", legalName: "Zero Grau" };
+
+	it("sends allocation only through the authenticated company scope", async () => {
+		const fetch = spyOn(globalThis, "fetch");
+		for (let request = 0; request < 4; request++) fetch.mockResolvedValueOnce(Response.json({ id: "payment" }));
+		try {
+			const client = new SimpayClient();
+			await client.createPixPayment(pix, merchant);
+			await client.createCardPayment(card, merchant);
+			for (const index of [1, 3]) {
+				const [url, options] = fetch.mock.calls[index];
+				expect(String(url)).toContain("/internal/integrations/sim-delivery_zero-grau/merchants/company/payments/");
+				expect(options?.headers).toHaveProperty("x-internal-token");
+				expect(JSON.parse(String(options?.body)).allocation).toEqual(pix.allocation);
+			}
+		} finally { fetch.mockRestore(); }
+	});
+
+	it("refuses unscoped charges before any request", async () => {
+		const fetch = spyOn(globalThis, "fetch");
+		try {
+			const client = new SimpayClient();
+			await expect(client.createPixPayment(pix)).rejects.toThrow("Configure o CNPJ");
+			await expect(client.createCardPayment(card)).rejects.toThrow("Configure o CNPJ");
+			expect(fetch).not.toHaveBeenCalled();
+		} finally { fetch.mockRestore(); }
+	});
+});

@@ -1,17 +1,18 @@
 /**
- * Simpay (SimintPay) client for the Zero Grau tenant.
- *
- * Talks to the back-simpay service, which processes payments through DOM
- * Pagamentos internally. Mirrors the Atlas integration:
- *   POST /zero-grau/payments/credit-card — tokenized card charge
- *   POST /zero-grau/payments/pix         — PIX charge (QR code + copy-paste)
- *   GET  /zero-grau/payments/status/:id  — status from the Simpay DB (webhook-fed)
- *   GET  /zero-grau/payments/pix-status/:id — queries DOM and settles SimIntPay first
+ * SIM INT PAY client. New charges use authenticated company-scoped merchant
+ * endpoints with explicit merchant/platform allocation. Legacy Zero Grau status
+ * endpoints remain available for payments created before merchant provisioning.
  */
 
 import { extractPaymentProviderMessage, PaymentProviderError } from "./paymentProviderError";
 
+export interface SimpayPaymentAllocation {
+	merchantAmountCents: number;
+	platformFeeCents: number;
+}
+
 export interface SimpayCardPaymentParams {
+	allocation: SimpayPaymentAllocation;
 	price: number;
 	document: string;
 	document_type: string;
@@ -40,6 +41,7 @@ export interface SimpayPaymentResponse {
 }
 
 export interface SimpayPixPaymentParams {
+	allocation: SimpayPaymentAllocation;
 	price: number;
 	document: string;
 	document_type: string;
@@ -186,10 +188,11 @@ export class SimpayClient {
 	}
 
 	async createCardPayment(params: SimpayCardPaymentParams, merchant?: SimpayMerchantReference): Promise<SimpayPaymentResponse> {
-		if (merchant) await this.provisionMerchant(merchant);
-		const response = await fetch(merchant ? `${merchantBase(merchant)}/payments/credit-card` : `${resolveBaseUrl()}/zero-grau/payments/credit-card`, {
+		if (!merchant) throw new PaymentProviderError("Simpay", "Configure o CNPJ e a carteira da empresa antes de receber pagamentos online.", 422);
+		await this.provisionMerchant(merchant);
+		const response = await fetch(`${merchantBase(merchant)}/payments/credit-card`, {
 			body: JSON.stringify(params),
-			headers: merchant ? internalHeaders() : headers,
+			headers: internalHeaders(),
 			method: "POST",
 		});
 		const data = await response.json().catch(() => null);
@@ -206,10 +209,11 @@ export class SimpayClient {
 	}
 
 	async createPixPayment(params: SimpayPixPaymentParams, merchant?: SimpayMerchantReference): Promise<SimpayPixCreateResponse> {
-		if (merchant) await this.provisionMerchant(merchant);
-		const response = await fetch(merchant ? `${merchantBase(merchant)}/payments/pix` : `${resolveBaseUrl()}/zero-grau/payments/pix`, {
+		if (!merchant) throw new PaymentProviderError("Simpay", "Configure o CNPJ e a carteira da empresa antes de receber pagamentos online.", 422);
+		await this.provisionMerchant(merchant);
+		const response = await fetch(`${merchantBase(merchant)}/payments/pix`, {
 			body: JSON.stringify(params),
-			headers: merchant ? internalHeaders() : headers,
+			headers: internalHeaders(),
 			method: "POST",
 		});
 

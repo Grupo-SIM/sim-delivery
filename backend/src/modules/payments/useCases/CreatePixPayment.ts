@@ -29,6 +29,7 @@ export class CreatePixPayment {
 
 		const phone = (customer.phone ?? user.phoneNumber ?? "").replace(/\D/g, "");
 		const pix = await this.simpay.createPixPayment({
+			allocation: { merchantAmountCents: order.total - order.feeTotalCents, platformFeeCents: order.feeTotalCents },
 			description: buildPaymentDescription(order),
 			document,
 			document_type: document.length === 11 ? "CPF" : "CNPJ",
