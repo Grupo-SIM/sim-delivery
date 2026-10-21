@@ -116,7 +116,7 @@ possui **N unidades** (lojas físicas). Detalhes em
   descontos adicionais de adquirente, liquidez ou serviço. Somente as taxas pertencem à plataforma.
 - A divisão é congelada na cobrança e reutilizada na confirmação e no estorno. Configuração
   posterior não recalcula pagamentos históricos. Novas cobranças exigem carteira empresarial
-  identificada; ausência de CNPJ não permite fallback para a conta genérica Zero Grau.
+  identificada; ausência de CPF/CNPJ não permite fallback para a conta genérica Zero Grau.
 - Publicação requer primeiro o backend SIM INT PAY com suporte à divisão e depois o Delivery.
   Cobranças já pendentes preservam o contrato original; nenhuma retroatribuição é automática.
 
@@ -125,10 +125,10 @@ possui **N unidades** (lojas físicas). Detalhes em
 - Cadastro do primeiro dono pelo superAdmin provisiona automaticamente conta ativa e carteira
   zerada na SIM INT PAY, usando email normalizado e senha informada. Sem senha, cada sistema
   envia seu próprio link de definição de senha; senhas definidas depois são independentes.
-- CNPJ é opcional no cadastro da empresa e do primeiro dono. Configuração posterior de saques
-  sincroniza CNPJ com conta e vínculo financeiro na SIM INT PAY. Donos adicionais não substituem
+- CPF/CNPJ é opcional no cadastro da empresa e do primeiro dono. Configuração posterior de saques
+  sincroniza CPF/CNPJ com conta e vínculo financeiro na SIM INT PAY. Donos adicionais não substituem
   conta financeira. Repetir cadastro do primeiro dono após falha externa retoma provisionamento,
-  sem trocar senha ou zerar carteira. Email/CNPJ de outra conta bloqueiam associação automática.
+  sem trocar senha ou zerar carteira. Email/CPF/CNPJ de outra conta bloqueiam associação automática.
 
 
 - Cada empresa possui carteira própria na SIM INT PAY, identificada por
@@ -137,8 +137,8 @@ possui **N unidades** (lojas físicas). Detalhes em
 - SIM INT PAY é fonte de saldo disponível, valores em processamento, taxa, elegibilidade e
   status. `PENDING` e `APPROVED` permanecem em processamento; `COMPLETED` e `REJECTED` são finais.
 - `superAdmin`, `owner` e `manager` consultam a carteira e solicitam saques. Somente
-  `superAdmin` configura CNPJ, mínimo local opcional e chave Pix padrão.
-- CNPJ válido e único é obrigatório para provisionar a carteira. Mínimo vazio desativa a
+  `superAdmin` configura CPF/CNPJ, mínimo local opcional e chave Pix padrão.
+- CPF ou CNPJ válido e único é obrigatório para provisionar a carteira. Mínimo vazio desativa a
   validação local; a SIM INT PAY ainda valida valor positivo, líquido, saldo e limites próprios.
 - Cotação e solicitação usam valor bruto em centavos. Taxa fixa e percentual são calculadas
   pela SIM INT PAY e os valores bruto, taxa e líquido ficam congelados no histórico local.
@@ -148,6 +148,8 @@ possui **N unidades** (lojas físicas). Detalhes em
   callback atrasar ou falhar.
 - Retroatribuição de pagamentos confirmados é operação administrativa, começa em dry-run e
   exige execução explícita após conferência dos conflitos.
+
+- O campo técnico `cnpj` do contrato e do vínculo financeiro aceita CPF (11 dígitos) ou CNPJ (14). Na SIM INT PAY, CPF identifica pessoa física em `user.cpf`; CNPJ identifica pessoa jurídica em `user.cnpj`.
 
 ## Índice
 

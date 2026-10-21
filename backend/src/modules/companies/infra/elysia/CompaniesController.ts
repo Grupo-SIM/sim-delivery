@@ -4,7 +4,7 @@ import { StaffReturn } from "@/modules/staff/dtos";
 import { InviteStaff } from "@/modules/staff/useCases/InviteStaff";
 import { CompanyScopeGuard } from "@/modules/users/guards";
 import { WithdrawalErrors } from "@/modules/withdrawals/errors";
-import { isValidDocument } from "@/shared/cpf";
+import { isValidMerchantDocument } from "@/shared/merchant-document";
 import { DomainError } from "@/shared/errors";
 import { auth } from "@/shared/infra/betterAuth";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
@@ -86,7 +86,7 @@ export const CompaniesController = new Elysia({
 					CompanyScopeGuard.authorize(scope, "withdrawals", "configure");
 					const company = await prisma.company.findUnique({ where: { id: params.companyId } });
 					if (!company) throw new DomainError(CompanyErrors.COMPANY_NOT_FOUND);
-					if (!isValidDocument(body.cnpj)) throw new DomainError(WithdrawalErrors.WITHDRAWAL_INVALID_CNPJ);
+					if (!isValidMerchantDocument(body.cnpj)) throw new DomainError(WithdrawalErrors.WITHDRAWAL_INVALID_CNPJ);
 					const companyWithCnpj = await prisma.company.findUnique({ where: { cnpj: body.cnpj } });
 					if (companyWithCnpj && companyWithCnpj.id !== company.id)
 						throw new DomainError(WithdrawalErrors.WITHDRAWAL_CNPJ_TAKEN);

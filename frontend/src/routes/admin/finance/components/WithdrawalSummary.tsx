@@ -48,7 +48,7 @@ export function WithdrawalSummary({ isError, isPending, onRequest, summary }: Wi
 				<span><strong>Valor mínimo:</strong> {summary?.minimumCents == null ? "Sem mínimo" : formatCents(Number(summary.minimumCents))}</span>
 			</div>
 			{isError && <p className="text-destructive text-sm">Não foi possível consultar a carteira. O relatório abaixo continua disponível.</p>}
-			{summary && !summary.configured && <p className="text-destructive text-sm">CNPJ e carteira ainda não configurados.</p>}
+			{summary && !summary.configured && <p className="text-destructive text-sm">CPF/CNPJ e carteira ainda não configurados.</p>}
 			{summary?.configured && !summary.canRequest && <p className="text-warning text-sm">Saque indisponível no momento. Consulte o saldo e tente novamente mais tarde.</p>}
 		</section>
 	);

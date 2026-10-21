@@ -72,8 +72,8 @@ describe("Simpay allocation transport", () => {
 		const fetch = spyOn(globalThis, "fetch");
 		try {
 			const client = new SimpayClient();
-			await expect(client.createPixPayment(pix)).rejects.toThrow("Configure o CNPJ");
-			await expect(client.createCardPayment(card)).rejects.toThrow("Configure o CNPJ");
+			await expect(client.createPixPayment(pix)).rejects.toThrow("Configure o CPF/CNPJ");
+			await expect(client.createCardPayment(card)).rejects.toThrow("Configure o CPF/CNPJ");
 			expect(fetch).not.toHaveBeenCalled();
 		} finally { fetch.mockRestore(); }
 	});

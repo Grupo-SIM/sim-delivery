@@ -188,7 +188,7 @@ export class SimpayClient {
 	}
 
 	async createCardPayment(params: SimpayCardPaymentParams, merchant?: SimpayMerchantReference): Promise<SimpayPaymentResponse> {
-		if (!merchant) throw new PaymentProviderError("Simpay", "Configure o CNPJ e a carteira da empresa antes de receber pagamentos online.", 422);
+		if (!merchant) throw new PaymentProviderError("Simpay", "Configure o CPF/CNPJ e a carteira da empresa antes de receber pagamentos online.", 422);
 		await this.provisionMerchant(merchant);
 		const response = await fetch(`${merchantBase(merchant)}/payments/credit-card`, {
 			body: JSON.stringify(params),
@@ -209,7 +209,7 @@ export class SimpayClient {
 	}
 
 	async createPixPayment(params: SimpayPixPaymentParams, merchant?: SimpayMerchantReference): Promise<SimpayPixCreateResponse> {
-		if (!merchant) throw new PaymentProviderError("Simpay", "Configure o CNPJ e a carteira da empresa antes de receber pagamentos online.", 422);
+		if (!merchant) throw new PaymentProviderError("Simpay", "Configure o CPF/CNPJ e a carteira da empresa antes de receber pagamentos online.", 422);
 		await this.provisionMerchant(merchant);
 		const response = await fetch(`${merchantBase(merchant)}/payments/pix`, {
 			body: JSON.stringify(params),
