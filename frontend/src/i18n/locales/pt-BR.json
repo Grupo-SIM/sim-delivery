@@ -284,7 +284,13 @@
 					"placeholder": "Nome ou slug"
 				},
 				"subtitle": "Clientes atendidos pela plataforma.",
-				"title": "Empresas"
+				"title": "Empresas",
+				"visualIdentity": {
+					"download": "Baixar template genérico de identidade visual",
+					"downloadCompany": "Baixar identidade visual de {{name}}",
+					"error": "Não foi possível preparar o template de identidade visual.",
+					"success": "Template de identidade visual preparado para download."
+				}
 			},
 			"coupons": {
 				"columns": {

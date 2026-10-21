@@ -4,6 +4,7 @@ import { LuLandmark, LuPencil, LuUserPlus } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/Tooltip";
 import type { GetCompanies200 } from "@/lib/api";
+import { DownloadVisualIdentityButton } from "./DownloadVisualIdentityButton";
 import { EditCompanyModal } from "./EditCompanyModal";
 import { ProvisionOwnerModal } from "./ProvisionOwnerModal";
 import { WithdrawalSettingsModal } from "./WithdrawalSettingsModal";
@@ -27,6 +28,7 @@ export function CompanyRow({ company }: CompanyRowProps) {
 			</td>
 			<td className="px-4 py-3 text-right">
 				<div className="flex justify-end gap-2">
+					<DownloadVisualIdentityButton company={company} />
 					<Tooltip content="Configuração financeira">
 						<Button
 							aria-label="Configuração financeira"

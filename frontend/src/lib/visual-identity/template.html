@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; connect-src 'none'">
+<title>SIM Delivery · Briefing de identidade visual</title>
+<style>
+:root{--wine:#8E1B2E;--gold:#E3A41A;--cream:#FBF6EE;--ink:#1F1513;--soft:#5F504A;--line:#EADFCF}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.5 'Nunito Sans',system-ui,sans-serif}main{max-width:960px;margin:auto;padding:48px 24px}header{border-top:8px solid var(--gold);border-bottom:1px solid var(--line);padding:28px 0}small,.eyebrow{letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}h1,h2,h3{font-family:Rubik,system-ui,sans-serif}h1{font-size:42px;line-height:1.1;color:var(--wine);margin:16px 0}h2{color:var(--wine);font-size:24px}section{margin-top:32px;break-inside:avoid}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{background:white;border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}.label{font-size:13px;font-weight:700;color:var(--soft)}[contenteditable]{white-space:pre-wrap;overflow-wrap:anywhere;min-height:28px;padding-top:6px}[contenteditable]:focus{outline:2px solid var(--wine);outline-offset:4px}.hint{color:var(--soft);font-size:14px}button{border:1px solid var(--wine);border-radius:999px;padding:12px 20px;background:var(--wine);color:white;font:inherit;cursor:pointer}button+button{background:white;color:var(--wine)}.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0}.swatches{display:flex;gap:8px;margin:16px 0}.swatches span{height:36px;flex:1;border:1px solid var(--line);border-radius:8px}footer{margin-top:40px;border-top:1px solid var(--line);padding-top:16px;color:var(--soft)}@media(max-width:600px){.grid{grid-template-columns:1fr}h1{font-size:32px}}@media print{body{background:white}main{padding:0}.toolbar{display:none}.field{border-radius:6px}h1{font-size:32px}}
+</style>
+</head>
+<body><main>
+<header><div class="eyebrow">SIM Delivery / Sua marca, seu delivery</div><h1>Vamos dar identidade<br>ao seu delivery.</h1><p>Preencha este briefing e envie o arquivo salvo junto dos materiais da sua marca à equipe SIM Delivery.</p><p class="hint">Clique nos campos para editar. “A preencher” indica informação pendente. Dados preenchidos representam cadastro atual e precisam de revisão. Nenhuma alteração aqui modifica o sistema.</p></header>
+<div class="toolbar"><button id="save" type="button">Baixar briefing preenchido</button><button id="print" type="button">Imprimir / Salvar PDF</button><span id="feedback" role="status"></span></div>
+{{sections}}
+<section><h2>Orientações para envio</h2><p>Envie logo preferencialmente em SVG ou PNG transparente; ícone quadrado em alta resolução; banners e fotos originais, sem cortes. Informe cores em HEX, nomes e arquivos licenciados das fontes. Indique versões para fundos claros e escuros quando existirem.</p><p class="hint">Links são referências textuais: imagens e fontes não são baixadas nem incorporadas automaticamente. Anexe os arquivos ao enviar o briefing. As cores e fontes deste documento são apresentação da referência Estação 237; não substituem escolhas da sua empresa. Rubik e Nunito Sans usam fontes locais quando disponíveis, com fallback do sistema.</p></section>
+<footer>SIM Delivery · Briefing comercial de identidade visual · Revise materiais e direitos de uso antes do envio.</footer>
+</main><script>
+document.getElementById('print').onclick=function(){window.print()};
+document.getElementById('save').onclick=function(){
+ var clone=document.documentElement.cloneNode(true);clone.querySelector('#feedback').textContent='';
+ var blob=new Blob(['<!doctype html>\n'+clone.outerHTML],{type:'text/html;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='sim-delivery-identidade-visual-preenchida.html';a.click();setTimeout(function(){URL.revokeObjectURL(url)},1000);document.getElementById('feedback').textContent='Arquivo preparado para download.';
+};
+</script></body></html>

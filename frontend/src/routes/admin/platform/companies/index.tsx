@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { DownloadVisualIdentityButton } from "./components/DownloadVisualIdentityButton";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -27,6 +28,8 @@ function CompaniesPage() {
 	return (
 		<Container className="space-y-6 py-8">
 			<SectionHeading subtitle={t("admin.companies.subtitle")} title={t("admin.companies.title")} />
+
+			<div><DownloadVisualIdentityButton /></div>
 
 			<CreateCompanyForm />
 
