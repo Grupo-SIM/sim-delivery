@@ -8,13 +8,11 @@ function StorefrontLayout() {
 	const branding = useLiveBranding();
 	const { unitId: unitSlug } = useParams({ strict: false });
 	const { data: units } = useGetPublicUnits({ slug });
-	const unitName = units?.find(unit => unit.slug === unitSlug)?.name;
+	const unitName = (unitSlug ? units?.find(unit => unit.slug === unitSlug) : units?.length === 1 ? units[0] : undefined)?.name;
 
 	return (
-		<div
-			className={`storefront flex min-h-screen flex-col ${branding.companyName === "Zero Grau" ? "zero-grau-storefront" : ""}`}
-		>
-			<StorefrontHeader branding={branding} unitName={unitName} />
+		<div className="storefront flex min-h-screen flex-col">
+			<StorefrontHeader branding={branding} hideUnitChange={units?.length === 1} unitName={unitName} />
 			<main className="flex flex-1 flex-col">
 				<Outlet />
 			</main>

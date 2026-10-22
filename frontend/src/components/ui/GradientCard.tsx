@@ -9,7 +9,7 @@ interface GradientCardProps extends ComponentPropsWithoutRef<"div"> {
 }
 
 /**
- * Signature Zero Grau product card: a heavily-rounded, gradient-filled panel that
+ * Signature storefront product card: a heavily-rounded, gradient-filled panel that
  * lifts on hover. Mirrors the storefront hero cards (blue / yellow / cyan).
  */
 const toneClassName: Record<GradientCardTone, string> = {

@@ -3,23 +3,24 @@ import { useTranslation } from "react-i18next";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { useLiveBranding } from "@/hooks/use-live-branding";
 import { useGetBranding, useGetPublicUnits } from "@/lib/api";
 import { slug } from "@/lib/variant";
 import { StorefrontBannerCarousel, StorefrontBannerSkeleton } from "../components/storefront";
-import { UnitHeroCard, WelcomeHero } from "./components";
+import { unitSearchSchema } from "./components/unit-search";
+import { UnitHeroCard, UnitStorePage, WelcomeHero } from "./components";
 
 function StorePage() {
 	const { t } = useTranslation();
-	const liveBranding = useLiveBranding();
 	const { data: branding, isPending: isBrandingPending } = useGetBranding(slug ? { slug } : undefined);
 	const { data: units, isError, isPending } = useGetPublicUnits({ slug });
 
+	if (!isPending && !isError && units.length === 1) {
+		return <UnitStorePage homepage unitSlug={units[0].slug} />;
+	}
+
 	return (
 		<div className="storefront-home bg-background">
-			{liveBranding.companyName === "Zero Grau" ? (
-				<WelcomeHero />
-			) : isBrandingPending ? (
+			{isBrandingPending ? (
 				<StorefrontBannerSkeleton />
 			) : branding?.homepageBannerUrls.length ? (
 				<StorefrontBannerCarousel
@@ -29,7 +30,7 @@ function StorePage() {
 					}))}
 					label={t("store.chooseUnit.bannerCarousel")}
 				/>
-			) : null}
+			) : <WelcomeHero />}
 			<section className="unit-selection-heading mx-auto max-w-6xl px-5 pt-12 pb-8 sm:pt-16" id="unidades">
 				<p className="font-semibold text-primary text-sm">{branding?.companyName ?? "JB DELIVERY"}</p>
 				<h1 className="mt-2 max-w-2xl font-display text-4xl text-foreground sm:text-5xl">
@@ -67,4 +68,5 @@ function StorePage() {
 
 export const Route = createFileRoute("/_storefront/")({
 	component: StorePage,
+	validateSearch: unitSearchSchema,
 });

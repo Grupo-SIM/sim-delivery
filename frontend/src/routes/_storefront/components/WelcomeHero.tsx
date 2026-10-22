@@ -7,7 +7,7 @@ export function WelcomeHero() {
 	return (
 		<section className="welcome-hero">
 			<div className="welcome-hero-inner">
-				<img alt="" className="welcome-delivery" src="/zero-grau/delivery.webp" />
+				<img alt="" className="welcome-delivery" src="/storefront/delivery.webp" />
 				<div className="welcome-copy">
 					<p className="welcome-eyebrow">{t("store.welcome.eyebrow")}</p>
 					<h1 className="font-display">

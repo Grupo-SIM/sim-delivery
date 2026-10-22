@@ -19,6 +19,10 @@ Cada **variante** whitelabel do app mapeia para exatamente uma empresa. Uma empr
 possui **N unidades** (lojas físicas). Detalhes em
 [01-visao-geral-e-dominio.md](01-visao-geral-e-dominio.md).
 
+Quando a empresa possui apenas uma unidade disponível no catálogo público, ela é a
+unidade padrão: a homepage renderiza diretamente seu cardápio, mantendo a URL raiz.
+O nome da unidade aparece como subtítulo da empresa no cabeçalho, sem título duplicado. Com várias unidades, a homepage mantém a seleção de unidades.
+
 ## Criação de pedidos
 
 - Pedido pendente de pagamento não bloqueia novos pedidos do mesmo cliente/unidade.

@@ -14,7 +14,7 @@ function DesignKitPage() {
 				<header className="space-y-3">
 					<Badge tone="accent">Design Kit</Badge>
 					<DisplayHeading as="h1" size="xl">
-						Zero Grau
+						JB Delivery
 					</DisplayHeading>
 					<p className="max-w-2xl text-lg text-muted-foreground">
 						Identidade visual do cardápio — cores, tipografia, componentes e animações da marca, sobre Base

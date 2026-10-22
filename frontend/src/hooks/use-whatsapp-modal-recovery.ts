@@ -17,7 +17,7 @@ export function useWhatsAppModalRecovery({ busy, loading, modalKey, onRecover, s
 	useEffect(() => {
 		if (opening.current.key !== modalKey) opening.current = { key: modalKey, attempted: false };
 		if (!modalKey || opening.current.attempted || busy || loading || status !== "FAILED") return;
-		if (sessionName !== "sim-delivery_zero-grau" && !sessionName?.startsWith("sim-delivery_zero-grau_")) return;
+		if (!sessionName) return;
 		opening.current.attempted = true;
 		recover();
 	}, [busy, loading, modalKey, sessionName, status]);

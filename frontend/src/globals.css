@@ -4,12 +4,12 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Zero Grau design kit — brand tokens.
+ * storefront design kit — brand tokens.
  * Source of truth for colors, typography, radii, shadows and motion.
  * Default palette: black, white and neutral grays.
  */
 @theme inline {
-	/* Semantic (ShadCN-compatible) tokens, repointed to the Zero Grau brand */
+	/* Semantic (ShadCN-compatible) tokens, repointed to the storefront brand */
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
 	--color-card: var(--card);

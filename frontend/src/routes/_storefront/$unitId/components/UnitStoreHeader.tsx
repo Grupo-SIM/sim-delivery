@@ -18,8 +18,7 @@ export function UnitStoreHeader({ onReviewsClick, unit, unitSlug, units }: UnitS
 
 	return (
 		<header className="unit-store-header space-y-3">
-			<div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
-				<h1 className="min-w-0 font-display text-3xl text-primary">{unit.name}</h1>
+			<div className="flex justify-end">
 				<UnitContactLinks unit={unit} />
 			</div>
 			<p className="text-muted-foreground text-sm">{address || t("store.chooseUnit.noAddress")}</p>
