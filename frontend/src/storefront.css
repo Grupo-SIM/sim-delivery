@@ -36,9 +36,6 @@
 	padding: 4px;
 	border-radius: 8px;
 }
-.storefront .storefront-header-name > span:first-child {
-	color: var(--primary-foreground);
-}
 .storefront .storefront-unit-name {
 	font-size: 16px;
 	font-weight: 800;
@@ -719,9 +716,6 @@ html:has(.storefront) { scrollbar-color: var(--muted-foreground) var(--backgroun
 @media (max-width: 639px) {
 	.storefront .storefront-header > div {
 		gap: 12px;
-	}
-	.storefront .storefront-header-name > span:first-child {
-		font-size: 16px;
 	}
 	.storefront .storefront-sign-in {
 		padding: 10px 16px;
