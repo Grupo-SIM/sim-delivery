@@ -154,9 +154,6 @@
 				"title": "Configurações da empresa",
 				"trackingSummaryEmpty": "Nenhum ID configurado",
 				"typographySummaryEmpty": "Fontes padrão do sistema",
-				"unitFallbackImageShort": "Ícone da loja",
-				"unitFallbackImageUpload": "Enviar ícone da loja",
-				"unitFallbackImageUrl": "URL do ícone da loja",
 				"uploadError": "Não foi possível enviar o arquivo.",
 				"paletteImport": {
 					"action": "Importar imagem da paleta (SVG)",

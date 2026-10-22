@@ -5,15 +5,14 @@ import { cn } from "@/lib/utils";
 import type { PublicUnit } from "../../components/storefront/types";
 
 interface UnitHeroCardProps {
-	fallbackImageUrl?: string | null;
 	openLabel: string;
 	unit: PublicUnit;
 }
 
-export function UnitHeroCard({ fallbackImageUrl, openLabel, unit }: UnitHeroCardProps) {
+export function UnitHeroCard({ openLabel, unit }: UnitHeroCardProps) {
 	const { t } = useTranslation();
 	const branding = useLiveBranding();
-	const imageUrl = unit.imageUrl || fallbackImageUrl;
+	const imageUrl = unit.imageUrl;
 	return (
 		<Link
 			className={cn(

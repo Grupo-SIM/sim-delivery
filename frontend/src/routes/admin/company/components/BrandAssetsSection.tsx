@@ -20,7 +20,6 @@ export function BrandAssetsSection({ assets, onChange }: BrandAssetsSectionProps
 		assets.homepageBannerUrls.some(Boolean) && t("admin.branding.homepageBannerShort"),
 		assets.logoUrl && t("admin.branding.logoShort"),
 		assets.mobileIconUrl && t("admin.branding.mobileIconShort"),
-		assets.unitFallbackImageUrl && t("admin.branding.unitFallbackImageShort"),
 	].filter(Boolean);
 
 	return (
@@ -68,17 +67,6 @@ export function BrandAssetsSection({ assets, onChange }: BrandAssetsSectionProps
 				<p className="text-muted-foreground text-sm">{t("admin.branding.mobileIconHint")}</p>
 			</Label>
 
-			<Label>
-				{t("admin.branding.unitFallbackImageUrl")}
-				<MediaUrlInput
-					asset="unit"
-					onUploadError={uploadError}
-					onValueChange={unitFallbackImageUrl => onChange({ unitFallbackImageUrl })}
-					preview
-					uploadLabel={t("admin.branding.unitFallbackImageUpload")}
-					value={assets.unitFallbackImageUrl}
-				/>
-			</Label>
 		</CollapsibleSection>
 	);
 }

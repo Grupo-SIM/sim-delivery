@@ -64,14 +64,12 @@ export interface BrandAssetsState {
 	homepageBannerUrls: string[];
 	logoUrl: string;
 	mobileIconUrl: string;
-	unitFallbackImageUrl: string;
 }
 
 export const emptyBrandAssets: BrandAssetsState = {
 	homepageBannerUrls: [""],
 	logoUrl: "",
 	mobileIconUrl: "",
-	unitFallbackImageUrl: "",
 };
 
 export interface FontsState {

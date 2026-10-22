@@ -66,7 +66,6 @@ function BrandingPage() {
 				homepageBannerUrls: branding.homepageBannerUrls.length ? branding.homepageBannerUrls : [""],
 				logoUrl: branding.logoUrl ?? "",
 				mobileIconUrl: branding.mobileIconUrl ?? "",
-				unitFallbackImageUrl: branding.unitFallbackImageUrl ?? "",
 			});
 			setFonts({
 				display: branding.fontDisplay ?? "",
@@ -163,7 +162,6 @@ function BrandingPage() {
 						]),
 					),
 					themeColors,
-					unitFallbackImageUrl: assets.unitFallbackImageUrl.trim() || undefined,
 				},
 			},
 			{

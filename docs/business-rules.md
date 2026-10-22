@@ -23,6 +23,9 @@ Quando a empresa possui apenas uma unidade disponível no catálogo público, el
 unidade padrão: a homepage renderiza diretamente seu cardápio, mantendo a URL raiz.
 O nome da unidade aparece como subtítulo da empresa no cabeçalho, sem título duplicado. Com várias unidades, a homepage mantém a seleção de unidades.
 
+Na seleção de unidades, unidades sem imagem própria usam o logotipo da empresa
+centralizado, sem recorte. Não há configuração separada de imagem padrão da unidade.
+
 ## Criação de pedidos
 
 - Pedido pendente de pagamento não bloqueia novos pedidos do mesmo cliente/unidade.

@@ -53,7 +53,6 @@ function StorePage() {
 					<div className="grid grid-cols-2 gap-3 sm:gap-5">
 						{units.map(unit => (
 							<UnitHeroCard
-								fallbackImageUrl={branding?.unitFallbackImageUrl}
 								key={unit.id}
 								openLabel={t("store.status.open")}
 								unit={unit}
