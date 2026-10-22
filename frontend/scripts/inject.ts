@@ -13,6 +13,7 @@ import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { resolveThemeColors } from "../src/lib/theme-colors";
 import { fetchBrandingAsset, resolveBrandingAssetUrl } from "./branding-assets";
+import { squareIconSource } from "./branding-icons";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const FRONTEND = join(ROOT, "frontend");
@@ -257,33 +258,6 @@ try {
 	 */
 	const LOGO_FALLBACK_ICON_PADDING = 0.19;
 	
-	/**
-	 * The Tauri icon generator requires a square source image, but a branding logo is free-form
-	 * (e.g. a wide wordmark). Pads it onto a transparent square canvas sized to the longer side
-	 * (plus optional extra margin) so icon generation never fails on the logo's actual aspect ratio
-	 * and the mark isn't flush against the edge once masked into a circle/rounded shape.
-	 */
-	async function squareIconSource(sourcePath: string, extraPadding = 0): Promise<string> {
-		const image = sharp(sourcePath);
-		const { height = 0, width = 0 } = await image.metadata();
-		if (width === height && width > 0 && extraPadding === 0) return sourcePath;
-	
-		const size = Math.ceil(Math.max(width, height) * (1 + extraPadding * 2));
-		const squaredPath = join(stage, `branding-icon-source-${extraPadding}.png`);
-		await image
-			.resize(width, height)
-			.extend({
-				background: { alpha: 0, b: 0, g: 0, r: 0 },
-				bottom: Math.ceil((size - height) / 2),
-				left: Math.floor((size - width) / 2),
-				right: Math.ceil((size - width) / 2),
-				top: Math.floor((size - height) / 2),
-			})
-			.png()
-			.toFile(squaredPath);
-		return squaredPath;
-	}
-	
 	const tauriConfPath = join(FRONTEND, "scripts", "defaults", "tauri.conf.json");
 	if (existsSync(tauriConfPath)) {
 		// A dedicated mobile icon is assumed to already be composed/padded by whoever uploaded it, so
@@ -296,10 +270,10 @@ try {
 			const mobileIconFilename = `mobile-icon.${extensionFrom(mobileIconAsset.contentType, mobileIconUrl)}`;
 			const mobileIconPath = join(publicDir, mobileIconFilename);
 			await writeFile(mobileIconPath, mobileIconAsset.bytes);
-			iconSourcePath = await squareIconSource(mobileIconPath);
+			iconSourcePath = await squareIconSource(mobileIconPath, join(stage, "branding-icon-source-0.png"));
 		}
 		if (!iconSourcePath && logoPath) {
-			iconSourcePath = await squareIconSource(logoPath, LOGO_FALLBACK_ICON_PADDING);
+			iconSourcePath = await squareIconSource(logoPath, join(stage, "branding-icon-source-logo.png"), LOGO_FALLBACK_ICON_PADDING);
 		}
 		if (iconSourcePath) {
 			const proc = Bun.spawnSync([join(FRONTEND, "node_modules", ".bin", "tauri"), "icon", iconSourcePath, "--output", join(stage, "icons")], {

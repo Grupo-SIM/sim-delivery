@@ -71,7 +71,7 @@
 			"cache": false,
 			"dependsOn": ["sql#export"],
 			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
-			"inputs": [".env*", "index.html", "scripts/inject.ts", "src-tauri/tauri.conf.json", "scripts/defaults/**", "scripts/branding-assets.ts"],
+			"inputs": [".env*", "index.html", "scripts/inject.ts", "src-tauri/tauri.conf.json", "scripts/defaults/**", "scripts/branding-assets.ts", "scripts/branding-icons.ts"],
 			"outputLogs": "new-only",
 			"outputs": ["index.html", "public/apple-touch-icon.png", "public/branding.css", "public/favicon.png", "public/logo.*", "src/lib/branding.ts", "src-tauri/icons", "src-tauri/tauri.conf.json", "public/mobile-icon.*"]
 		},
