@@ -11,7 +11,7 @@
 	display: none;
 }
 .storefront {
-	--store-header-height: 80px;
+	--store-header-height: 96px;
 	background: var(--background);
 }
 .storefront .storefront-header {
@@ -27,9 +27,19 @@
 	padding: 16px 20px;
 }
 .storefront .storefront-header img {
-	width: 56px;
-	height: 46px;
+	width: 80px;
+	height: 64px;
+	flex-shrink: 0;
 	border-radius: 0;
+}
+@media (min-width: 640px) {
+	.storefront {
+		--store-header-height: 112px;
+	}
+	.storefront .storefront-header img {
+		width: 96px;
+		height: 80px;
+	}
 }
 :root.dark .storefront .storefront-header img {
 	background: #fbf6ee;
