@@ -4,6 +4,8 @@ import { GetBranding } from "./GetBranding";
 
 interface CompanyRow {
 	welcomeEyebrow?: string;
+	welcomeTitle?: string;
+	welcomeTitleAccent?: string;
 	welcomeDescription?: string;
 	footerPaymentMethods: string[];
 	homepageBannerUrls: string[];
@@ -18,6 +20,8 @@ interface CompanyRow {
 
 const baseCompany: CompanyRow = {
 	welcomeEyebrow: "Peça online",
+	welcomeTitle: "Bateu",
+	welcomeTitleAccent: "Vontade?",
 	welcomeDescription: "Tudo que você gosta, em casa.",
 	footerPaymentMethods: ["Pix"],
 	homepageBannerUrls: ["https://cdn.zero-grau.com/homepage-banner.png"],
@@ -57,6 +61,8 @@ describe("GetBranding", () => {
 		expect(result).toMatchObject({
 			companyName: "Zero Grau",
 			welcomeEyebrow: "Peça online",
+			welcomeTitle: "Bateu",
+			welcomeTitleAccent: "Vontade?",
 			welcomeDescription: "Tudo que você gosta, em casa.",
 			footerPaymentMethods: ["Pix"],
 			homepageBannerUrls: ["https://cdn.zero-grau.com/homepage-banner.png"],

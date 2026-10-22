@@ -4,6 +4,8 @@ import { OrderStatusEmailTemplates, OrderStatusWhatsAppTemplates, ThemeColors, T
 
 export const BrandingReturn = t.Object({
 	welcomeEyebrow: __nullable__(t.String()),
+	welcomeTitle: __nullable__(t.String()),
+	welcomeTitleAccent: __nullable__(t.String()),
 	welcomeDescription: __nullable__(t.String()),
 	allowThemeToggle: t.Boolean(),
 	companyName: __nullable__(t.String()),

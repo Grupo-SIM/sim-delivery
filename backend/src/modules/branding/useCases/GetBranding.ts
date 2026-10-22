@@ -11,6 +11,8 @@ export class GetBranding {
 			select: {
 				allowThemeToggle: true,
 				welcomeEyebrow: true,
+				welcomeTitle: true,
+				welcomeTitleAccent: true,
 				welcomeDescription: true,
 				defaultTheme: true,
 				fontDisplay: true,
@@ -41,6 +43,8 @@ export class GetBranding {
 
 		return {
 			welcomeEyebrow: company?.welcomeEyebrow ?? null,
+			welcomeTitle: company?.welcomeTitle ?? null,
+			welcomeTitleAccent: company?.welcomeTitleAccent ?? null,
 			welcomeDescription: company?.welcomeDescription ?? null,
 			allowThemeToggle: company?.allowThemeToggle ?? true,
 			companyName: company?.name ?? null,

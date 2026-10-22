@@ -63,6 +63,8 @@ const DEFAULT_FONT_FAMILY = "Inter";
 const DEFAULT_FONT_DISPLAY = "Inter";
 
 interface CompanyBranding {
+	welcomeTitle: string | null;
+	welcomeTitleAccent: string | null;
 	welcomeEyebrow: string | null;
 	welcomeDescription: string | null;
 	allowThemeToggle: boolean;
@@ -153,9 +155,11 @@ try {
 	// optional copy columns while still surfacing database/required branding errors.
 	const [welcomeCopy] = branding
 		? await prisma.$queryRaw<
-				{ welcomeEyebrow: string | null; welcomeDescription: string | null }[]
+				{ welcomeTitle: string | null; welcomeTitleAccent: string | null; welcomeEyebrow: string | null; welcomeDescription: string | null }[]
 			>`
-				SELECT to_jsonb(c)->>'welcomeEyebrow' AS "welcomeEyebrow",
+				SELECT to_jsonb(c)->>'welcomeTitle' AS "welcomeTitle",
+				       to_jsonb(c)->>'welcomeTitleAccent' AS "welcomeTitleAccent",
+				       to_jsonb(c)->>'welcomeEyebrow' AS "welcomeEyebrow",
 				       to_jsonb(c)->>'welcomeDescription' AS "welcomeDescription"
 				FROM "company" AS c WHERE c."slug" = ${slug}
 			`
@@ -164,6 +168,8 @@ try {
 		? {
 				...branding,
 				welcomeEyebrow: welcomeCopy?.welcomeEyebrow ?? null,
+				welcomeTitle: welcomeCopy?.welcomeTitle ?? null,
+				welcomeTitleAccent: welcomeCopy?.welcomeTitleAccent ?? null,
 				welcomeDescription: welcomeCopy?.welcomeDescription ?? null,
 			}
 		: null;
@@ -214,10 +220,12 @@ try {
 	
 	await writeFile(
 		brandingPath,
-		`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\twelcomeEyebrow?: string | null;\n\twelcomeDescription?: string | null;\n\tallowThemeToggle: boolean;\n\tdefaultTheme: "dark" | "light";\n\tapiUrl: string;\n\tcompanyName: string;\n\tcompanySlug: string;\n\tfontDisplay: string;\n\tfontDisplayUrl: string | null;\n\tfontFamily: string;\n\tfontFamilyUrl: string | null;\n\tfooterFacebookUrl?: string | null;\n\tfooterInstagramUrl?: string | null;\n\tfooterPaymentMethods?: string[];\n\tfooterSupportEmail?: string | null;\n\tfooterText: string | null;\n\tfooterWhatsApp?: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmobileIconUrl?: string | null;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n\twhatsAppEnabled: boolean;\n}\n\nexport const branding: Branding = ${JSON.stringify(
+		`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\twelcomeEyebrow?: string | null;\n\twelcomeTitle?: string | null;\n\twelcomeTitleAccent?: string | null;\n\twelcomeDescription?: string | null;\n\tallowThemeToggle: boolean;\n\tdefaultTheme: "dark" | "light";\n\tapiUrl: string;\n\tcompanyName: string;\n\tcompanySlug: string;\n\tfontDisplay: string;\n\tfontDisplayUrl: string | null;\n\tfontFamily: string;\n\tfontFamilyUrl: string | null;\n\tfooterFacebookUrl?: string | null;\n\tfooterInstagramUrl?: string | null;\n\tfooterPaymentMethods?: string[];\n\tfooterSupportEmail?: string | null;\n\tfooterText: string | null;\n\tfooterWhatsApp?: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmobileIconUrl?: string | null;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n\twhatsAppEnabled: boolean;\n}\n\nexport const branding: Branding = ${JSON.stringify(
 			{
 				allowThemeToggle: company.allowThemeToggle,
 				welcomeEyebrow: company.welcomeEyebrow,
+				welcomeTitle: company.welcomeTitle,
+				welcomeTitleAccent: company.welcomeTitleAccent,
 				welcomeDescription: company.welcomeDescription,
 				apiUrl,
 				companyName: company.name,

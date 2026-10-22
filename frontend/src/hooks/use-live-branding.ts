@@ -20,6 +20,8 @@ export function mergeLiveBranding(
 	return {
 		...staticValues,
 		welcomeEyebrow: data.welcomeEyebrow,
+		welcomeTitle: data.welcomeTitle,
+		welcomeTitleAccent: data.welcomeTitleAccent,
 		welcomeDescription: data.welcomeDescription,
 		allowThemeToggle: data.allowThemeToggle,
 		companyName: data.companyName ?? staticValues.companyName,

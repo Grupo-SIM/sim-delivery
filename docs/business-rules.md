@@ -32,7 +32,7 @@ centralizado, sem recorte. Não há configuração separada de imagem padrão da
 - Com troca de tema habilitada, respeitar preferência salva do usuário. Com troca desabilitada, aplicar sempre tema padrão da empresa.
 - Tema do dispositivo só é aplicado quando não há preferência da conta nem da empresa.
 - Todas as empresas usam a mesma estrutura visual da vitrine, personalizada pelas cores, fontes e imagens do branding.
-- Texto de abertura e descrição da página inicial são editáveis no branding da empresa; valores vazios usam os textos padrão.
+- Texto de abertura, título e descrição da página inicial são editáveis no branding da empresa; valores vazios usam os textos padrão.
 
 ## Criação de pedidos
 

@@ -18,6 +18,8 @@ model Company {
     /// Ordered wide artwork shown as a carousel above the storefront unit selection.
     homepageBannerUrls String[] @default([])
     welcomeEyebrow String?
+    welcomeTitle String?
+    welcomeTitleAccent String?
     welcomeDescription String?
     footerText  String?
     footerPaymentMethods String[] @default([])

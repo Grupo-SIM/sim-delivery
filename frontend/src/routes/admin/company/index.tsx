@@ -51,6 +51,7 @@ function BrandingPage() {
 	const [allowThemeToggle, setAllowThemeToggle] = useState(true);
 	const [defaultTheme, setDefaultTheme] = useState<keyof ThemeColors>("light");
 	const [themeColors, setThemeColors] = useState<ThemeColors>(defaultThemeColors);
+	const [welcomeTitle, setWelcomeTitle] = useState("");
 	const [welcomeEyebrow, setWelcomeEyebrow] = useState("");
 	const [welcomeDescription, setWelcomeDescription] = useState("");
 	const [assets, setAssets] = useState<BrandAssetsState>(emptyBrandAssets);
@@ -67,6 +68,7 @@ function BrandingPage() {
 		if (branding && !initialized) {
 			setInitialized(true);
 			setWelcomeEyebrow(branding.welcomeEyebrow ?? "");
+			setWelcomeTitle([branding.welcomeTitle, branding.welcomeTitleAccent].filter(Boolean).join(" "));
 			setWelcomeDescription(branding.welcomeDescription ?? "");
 			setAllowThemeToggle(branding.allowThemeToggle);
 			setDefaultTheme(branding.defaultTheme);
@@ -125,7 +127,10 @@ function BrandingPage() {
 	}, [branding, initialized]);
 
 	const serializedSettings = JSON.stringify({
- welcomeEyebrow, welcomeDescription,
+		welcomeEyebrow,
+		welcomeDescription,
+		welcomeTitle: welcomeTitle.trim().split(/\s+/)[0] || "",
+		welcomeTitleAccent: welcomeTitle.trim().split(/\s+/).slice(1).join(" "),
 					allowThemeToggle,
 					defaultTheme,
 					fontDisplay: fonts.display.trim() || undefined,
@@ -221,7 +226,7 @@ function BrandingPage() {
 						themeColors={themeColors}
 					/>
 
-					<WelcomeCopySection eyebrow={welcomeEyebrow} description={welcomeDescription} onEyebrowChange={setWelcomeEyebrow} onDescriptionChange={setWelcomeDescription} />
+					<WelcomeCopySection title={welcomeTitle} onTitleChange={setWelcomeTitle} eyebrow={welcomeEyebrow} description={welcomeDescription} onEyebrowChange={setWelcomeEyebrow} onDescriptionChange={setWelcomeDescription} />
 
 					<BrandAssetsSection
 						assets={assets}

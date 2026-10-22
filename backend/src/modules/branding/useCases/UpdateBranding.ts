@@ -10,6 +10,8 @@ export class UpdateBranding {
 
 	async execute({
 		welcomeEyebrow,
+		welcomeTitle,
+		welcomeTitleAccent,
 		welcomeDescription,
 		allowThemeToggle,
 		companyId,
@@ -40,6 +42,8 @@ export class UpdateBranding {
 		const company = await this.prisma.company.update({
 			data: {
 				welcomeEyebrow,
+				welcomeTitle,
+				welcomeTitleAccent,
 				welcomeDescription,
 				allowThemeToggle,
 				defaultTheme,
@@ -67,6 +71,8 @@ export class UpdateBranding {
 			select: {
 				allowThemeToggle: true,
 				welcomeEyebrow: true,
+				welcomeTitle: true,
+				welcomeTitleAccent: true,
 				welcomeDescription: true,
 				defaultTheme: true,
 				fontDisplay: true,
@@ -97,6 +103,8 @@ export class UpdateBranding {
 
 		return {
 			welcomeEyebrow: company.welcomeEyebrow ?? null,
+			welcomeTitle: company.welcomeTitle ?? null,
+			welcomeTitleAccent: company.welcomeTitleAccent ?? null,
 			welcomeDescription: company.welcomeDescription ?? null,
 			allowThemeToggle: company.allowThemeToggle,
 			companyName: company.name,

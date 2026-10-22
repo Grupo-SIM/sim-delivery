@@ -86,6 +86,8 @@ export type ThemeMode = typeof ThemeMode.static;
 
 export const UpdateBrandingBody = t.Object({
 	welcomeEyebrow: t.Optional(t.String({ maxLength: 100 })),
+	welcomeTitle: t.Optional(t.String({ maxLength: 100 })),
+	welcomeTitleAccent: t.Optional(t.String({ maxLength: 100 })),
 	welcomeDescription: t.Optional(t.String({ maxLength: 500 })),
 	allowThemeToggle: t.Optional(t.Boolean()),
 	defaultTheme: t.Optional(ThemeMode),
