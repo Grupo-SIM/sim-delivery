@@ -14,7 +14,8 @@
 	--store-header-height: 96px;
 	background: var(--background);
 }
-.storefront .storefront-header {
+.storefront-header {
+	--navigation-height: 96px;
 	position: sticky;
 	top: 0;
 	color: var(--primary-foreground);
@@ -22,42 +23,45 @@
 	border: 0;
 	backdrop-filter: none;
 }
-.storefront .storefront-header > div {
-	min-height: var(--store-header-height);
+.storefront-header > div {
+	min-height: var(--navigation-height);
 	padding: 16px 20px;
 }
-.storefront .storefront-header img {
+.storefront-header img {
 	width: 80px;
 	height: 64px;
 	flex-shrink: 0;
 	border-radius: 0;
 }
 @media (min-width: 640px) {
+	.storefront-header {
+		--navigation-height: 112px;
+	}
 	.storefront {
 		--store-header-height: 112px;
 	}
-	.storefront .storefront-header img {
+	.storefront-header img {
 		width: 96px;
 		height: 80px;
 	}
 }
-:root.dark .storefront .storefront-header img {
+:root.dark .storefront-header img {
 	background: #fbf6ee;
 	padding: 4px;
 	border-radius: 8px;
 }
-.storefront .storefront-unit-name {
+.storefront-header .storefront-unit-name {
 	font-size: 16px;
 	font-weight: 800;
 	color: var(--primary-foreground);
 }
-.storefront .storefront-header a:has(> svg) {
+.storefront-header a:has(> svg) {
 	color: var(--primary-foreground);
 }
-.storefront .storefront-header a > svg {
+.storefront-header a > svg {
 	color: inherit;
 }
-.storefront .storefront-sign-in {
+.storefront-header .storefront-sign-in {
 	padding: 11px 22px;
 	font-size: 16px;
 	font-weight: 900;
@@ -65,12 +69,12 @@
 	background: var(--accent);
 	border: 1px solid var(--accent);
 }
-.storefront .storefront-profile {
+.storefront-header .storefront-profile {
 	padding: 0;
 	background: var(--primary-foreground);
 	border-color: var(--primary-foreground);
 }
-.storefront .storefront-profile span {
+.storefront-header .storefront-profile span {
 	width: 42px;
 	height: 42px;
 	font-weight: 900;
@@ -713,7 +717,7 @@ html:has(.storefront) { scrollbar-color: var(--muted-foreground) var(--backgroun
 .storefront,
 .storefront > main,
 .storefront-home,
-.storefront .storefront-header > div,
+.storefront-header > div,
 .storefront .storefront-footer-content {
 	min-width: 0;
 	width: 100%;
@@ -726,10 +730,10 @@ html:has(.storefront) { scrollbar-color: var(--muted-foreground) var(--backgroun
 	overflow-wrap: anywhere;
 }
 @media (max-width: 639px) {
-	.storefront .storefront-header > div {
+	.storefront-header > div {
 		gap: 12px;
 	}
-	.storefront .storefront-sign-in {
+	.storefront-header .storefront-sign-in {
 		padding: 10px 16px;
 	}
 }

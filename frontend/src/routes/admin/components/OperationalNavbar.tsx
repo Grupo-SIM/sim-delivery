@@ -5,7 +5,7 @@ import { AdminUnitPicker } from "./AdminUnitPicker";
 export function OperationalNavbar() {
 	const branding = useLiveBranding();
 	return (
-		<div>
+		<div className="shrink-0">
 			<StorefrontHeader
 				branding={branding}
 				hideUnitChange

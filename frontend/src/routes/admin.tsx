@@ -4,7 +4,7 @@ import { LuMenu, LuX } from "react-icons/lu";
 import { ScrollArea } from "@/components/ui/ScrollArea";
 import { isOperationalStaff, requireStaffBeforeLoad } from "@/lib/staff-guard";
 import { useAuthStore } from "@/stores";
-import { AdminSidebar, OperationalNavbar } from "./admin/components";
+import { AdminBrand, AdminSidebar, OperationalNavbar } from "./admin/components";
 
 function AdminLayout() {
 	const [mobileOpen, setMobileOpen] = useState(false);
@@ -15,7 +15,7 @@ function AdminLayout() {
 
 	if (isOperationalStaff(role)) {
 		return (
-			<div className="flex h-dvh flex-col overflow-hidden">
+			<div className="admin-shell flex h-dvh flex-col overflow-hidden">
 				<OperationalNavbar />
 				<main className="min-h-0 flex-1">
 					<ScrollArea className={isOrdersPage ? "h-full overflow-hidden" : "h-full overflow-y-auto"}>
@@ -27,7 +27,13 @@ function AdminLayout() {
 	}
 
 	return (
-		<div className={isOrdersPage ? "flex h-dvh overflow-hidden" : "flex min-h-screen overflow-x-hidden"}>
+		<div
+			className={
+				isOrdersPage
+					? "admin-shell flex h-dvh overflow-hidden"
+					: "admin-shell flex min-h-screen overflow-x-hidden"
+			}
+		>
 			<aside className="fixed inset-y-0 left-0 z-20 hidden w-60 flex-col border-border border-r bg-card md:flex">
 				<AdminSidebar />
 			</aside>
@@ -45,11 +51,12 @@ function AdminLayout() {
 				className={`fixed inset-y-0 left-0 z-40 w-60 flex-col border-border border-r bg-card transition-transform duration-300 md:hidden ${
 					mobileOpen ? "flex translate-x-0" : "flex -translate-x-full"
 				}`}
+				inert={!mobileOpen}
 			>
 				<div className="flex items-center justify-end px-4 pt-4">
 					<button
 						aria-label="Fechar menu"
-						className="cursor-pointer rounded-md border border-transparent p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
+						className="grid size-9 shrink-0 cursor-pointer place-items-center rounded-xl border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
 						onClick={() => setMobileOpen(false)}
 						type="button"
 					>
@@ -60,16 +67,16 @@ function AdminLayout() {
 			</aside>
 
 			<div className="flex min-h-0 min-w-0 flex-1 flex-col md:pl-60">
-				<header className="sticky top-0 z-20 flex shrink-0 items-center gap-3 border-border border-b bg-card px-4 py-3 md:hidden">
+				<header className="admin-mobile-header sticky top-0 z-20 flex shrink-0 items-center justify-between gap-3 bg-primary px-5 py-4 text-primary-foreground md:hidden">
 					<button
 						aria-label="Abrir menu"
-						className="cursor-pointer rounded-md border border-transparent p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
+						className="grid size-10 shrink-0 cursor-pointer place-items-center rounded-xl border border-primary-foreground/40 text-primary-foreground transition-colors hover:bg-primary-foreground/10"
 						onClick={() => setMobileOpen(true)}
 						type="button"
 					>
 						<LuMenu className="size-5" />
 					</button>
-					<span className="font-semibold text-sm">Admin</span>
+					<AdminBrand />
 				</header>
 
 				<main className="min-h-0 min-w-0 flex-1">

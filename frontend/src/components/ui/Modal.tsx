@@ -57,7 +57,7 @@ export function Modal({
 			<Dialog.Portal>
 				<Dialog.Overlay className={`fixed inset-0 ${zIndexClass} bg-black/55 backdrop-blur-sm`} />
 				<Dialog.Content
-					className={`fixed top-1/2 left-1/2 ${zIndexClass} w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl bg-card text-card-foreground shadow-2xl sm:w-[92vw] sm:max-w-[92vw]`}
+					className={`fixed top-1/2 left-1/2 ${zIndexClass} w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[20px] border border-border bg-card text-card-foreground shadow-2xl sm:w-[92vw] sm:max-w-[92vw]`}
 					onOpenAutoFocus={event => {
 						event.preventDefault();
 						contentRef.current?.focus({ preventScroll: true });
@@ -85,7 +85,7 @@ export function Modal({
 								title ? "border-border/70 border-b pb-5" : "justify-end"
 							}`}
 						>
-							{title && <Dialog.Title className="min-w-0 flex-1 font-bold text-xl leading-tight">{title}</Dialog.Title>}
+							{title && <Dialog.Title className="min-w-0 flex-1 font-black text-[22px] leading-tight tracking-tight">{title}</Dialog.Title>}
 							{closeConfirmation ? (
 								<ConfirmActionButton
 									aria-label={closeConfirmation.tooltip}

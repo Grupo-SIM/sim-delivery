@@ -25,7 +25,7 @@ export function AdminUnitPicker({ compact = false }: AdminUnitPickerProps) {
 	if (units.length === 0) return null;
 
 	return (
-		<div className={compact ? "w-36 sm:w-44" : "space-y-1.5"}>
+		<div className={compact ? "w-28 sm:w-44" : "space-y-1.5"}>
 			{!compact && (
 				<span className="font-medium text-muted-foreground text-xs">{t("admin.dashboard.selectedUnit")}</span>
 			)}

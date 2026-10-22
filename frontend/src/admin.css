@@ -1,0 +1,80 @@
+/* Administrative pages share storefront typography and surfaces without changing
+ * the geometry of table cells, inline editors, or the orders board. */
+.admin-shell {
+	--radius-brand: 20px;
+	min-width: 0;
+	background: var(--background);
+	color: var(--foreground);
+}
+
+.admin-shell [data-slot="container"] {
+	min-width: 0;
+	padding-inline: 20px;
+	padding-block: 24px;
+}
+
+.admin-shell [data-slot="container"][data-size="xl"] {
+	max-width: 1152px;
+}
+
+.admin-shell .bg-card:is(.rounded-md, .rounded-lg, .rounded-xl, .rounded-brand) {
+	border-radius: 20px;
+	box-shadow: none;
+}
+
+.admin-shell h2 {
+	font-weight: 800;
+	letter-spacing: -0.025em;
+}
+
+.admin-shell [data-slot="section-heading"] h2 {
+	font-weight: 900;
+}
+
+.admin-shell .storefront-header > div,
+.admin-shell .storefront-header > div > div {
+	min-width: 0;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.admin-shell .storefront-header > div > div {
+	justify-content: flex-end;
+}
+
+.admin-mobile-header,
+.admin-sidebar-brand {
+	min-height: 96px;
+}
+
+.admin-brand-logo {
+	width: 80px;
+	height: 64px;
+}
+
+:root.dark .admin-brand-logo {
+	padding: 4px;
+	background: #fbf6ee;
+	border-radius: 8px;
+}
+
+html:has(.admin-shell) {
+	scrollbar-color: var(--muted-foreground) var(--background);
+	scrollbar-width: thin;
+}
+
+@media (min-width: 640px) {
+	.admin-shell [data-slot="container"] {
+		padding-block: 32px;
+	}
+
+	.admin-mobile-header,
+	.admin-sidebar-brand {
+		min-height: 112px;
+	}
+
+	.admin-brand-logo {
+		width: 96px;
+		height: 80px;
+	}
+}
