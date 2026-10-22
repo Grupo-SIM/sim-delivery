@@ -47,6 +47,7 @@ export function PaymentStep({
 	const phone = resolveCustomerPhone(customerPhone, accountPhone);
 	const [method, setMethod] = useState<PaymentMethod>("card");
 	const [pixCpf, setPixCpf] = useState(customerCpf);
+	const [reauthCardId, setReauthCardId] = useState<string>();
 	const [cardPaymentToken, setCardPaymentToken] = useState<string | null>(null);
 	const hasFullName = customerName.trim().split(/\s+/).filter(Boolean).length >= 2;
 	const identityComplete = hasCompletePaymentIdentity(customerName, customerCpf, phone);
@@ -59,6 +60,7 @@ export function PaymentStep({
 			{ data: { ...value, orderId, slug } },
 			{
 				onError: error => {
+					if (error.data.error === "SAVED_CARD_REAUTH_REQUIRED") setReauthCardId(value.savedCardId);
 					const message =
 						error.data.description ??
 						t(`store.checkout.payment.card.errors.${error.data.error}`, {
@@ -128,6 +130,7 @@ export function PaymentStep({
 						amountCents={amountCents}
 						customerCpf={customerCpf}
 						isPending={isPayingCard}
+						reauthCardId={reauthCardId}
 						onSubmit={handleCardSubmit}
 						savedCards={savedCards ?? []}
 					/>

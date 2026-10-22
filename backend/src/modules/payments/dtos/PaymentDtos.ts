@@ -27,6 +27,7 @@ export type NewCardInput = typeof NewCardInput.static;
 
 export const CreateCardPaymentBody = t.Object({
 	card: t.Optional(NewCardInput),
+	replaceSavedCardId: t.Optional(t.String()),
 	cardNickname: t.Optional(t.String({ maxLength: 60, minLength: 1 })),
 	/** Deprecated buyer CPF fallback kept for older app builds. */
 	cpf: t.Optional(t.String({ maxLength: 14, minLength: 11 })),

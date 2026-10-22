@@ -1,105 +1,73 @@
-import { describe, expect, it, spyOn } from "bun:test";
-import { SimpayClient, isApprovedSimpayStatus, isFailedSimpayStatus, simpayIntegrationKey } from "./simpay";
-
-describe("Simpay payment status", () => {
-	it("accepts explicit approval statuses regardless of casing", () => {
-		expect(isApprovedSimpayStatus(" completed ")).toBe(true);
-		expect(isApprovedSimpayStatus("paid")).toBe(true);
-		expect(isApprovedSimpayStatus("PENDING")).toBe(false);
-	});
-
-	it("recognizes terminal failure statuses", () => {
-		expect(isFailedSimpayStatus("FAILED")).toBe(true);
-		expect(isFailedSimpayStatus("not_authorized")).toBe(true);
-		expect(isFailedSimpayStatus("PENDING")).toBe(false);
-	});
+import { afterEach, expect, it, mock, spyOn } from "bun:test";
+import { SimpayClient, isApprovedSimpayStatus, isFailedSimpayStatus } from "./simpay";
+import { decryptSimpaySecret, encryptSimpaySecret } from "./simpay-secrets";
+import type { PrismaInstance } from "./sql";
+const previous = { ...process.env };
+afterEach(() => { mock.restore(); for (const key of ["SIMPAY_PROVISIONING_TOKEN", "SIMPAY_CREDENTIALS_ENCRYPTION_KEY"]) { if (previous[key] === undefined) delete process.env[key]; else process.env[key] = previous[key]; } });
+const scope = { externalMerchantId: "company", integrationKey: "sim-delivery_shop" };
+const ready = { id: "platform", status: "READY", platform: { id: "platform", tag: "SHOP" }, merchant: { id: "merchant" }, credentials: { accessToken: "scoped-token", webhookSecret: "webhook-secret" } };
+function fixture(active = true) {
+ process.env.SIMPAY_CREDENTIALS_ENCRYPTION_KEY = "ab".repeat(32);
+ process.env.SIMPAY_PROVISIONING_TOKEN = "provision-token";
+ let saved: any = active ? { status: "READY", platformId: "platform", platformTag: "SHOP", encryptedAccessToken: encryptSimpaySecret("scoped-token") } : null;
+ const db = { payment: { findMany: mock(async () => [] as { simpayPaymentId: string }[]) }, company: { findUnique: async () => ({ id: "company", slug: "shop", name: "Shop" }) }, companySimpayIntegration: { findUnique: async () => saved, upsert: mock(async ({ create, update }: any) => { saved = saved ? { ...saved, ...update } : create; return saved; }) } };
+ return { client: new SimpayClient(db as unknown as PrismaInstance), db, saved: () => saved };
+}
+it("normalizes canonical and historical provider statuses", () => { expect(isApprovedSimpayStatus(" completed ")).toBe(true); expect(isApprovedSimpayStatus("PENDING")).toBe(false); expect(isFailedSimpayStatus("not_authorized")).toBe(true); });
+it("reserves pending platform before owner and persists only registration metadata", async () => {
+ const { client, saved } = fixture(false);
+ const fetch = spyOn(globalThis, "fetch").mockResolvedValue(Response.json({ id: "reservation", status: "PENDING_OWNER" }));
+ expect(await client.provisionPlatform(scope, "Shop")).toEqual({ id: "reservation", status: "PENDING_OWNER" });
+ expect(String(fetch.mock.calls[0][0])).toEndWith("/platform-registrations/company");
+ expect(fetch.mock.calls[0][1]?.headers).toHaveProperty("x-provisioning-token", "provision-token");
+ expect(JSON.parse(String(fetch.mock.calls[0][1]?.body))).toEqual({ slug: "shop", legalName: "Shop" });
+ expect(saved()).toMatchObject({ companyId: "company", status: "PENDING_OWNER" });
+});
+it("completes owner with encrypted per-company credentials and no stored password", async () => {
+ const { client, saved } = fixture(false);
+ const fetch = spyOn(globalThis, "fetch").mockResolvedValue(Response.json(ready));
+ expect(await client.provisionOwner(scope, { email: "owner@example.com", legalName: "Shop", password: "secret123", cnpj: null })).toEqual({ id: "merchant" });
+ expect(String(fetch.mock.calls[0][0])).toEndWith("/platform-registrations/company/owner");
+ expect(decryptSimpaySecret(saved().encryptedAccessToken)).toBe("scoped-token");
+ expect(JSON.stringify(saved())).not.toContain("scoped-token"); expect(JSON.stringify(saved())).not.toContain("secret123");
+});
+it("rejects incomplete active registration responses", async () => {
+ const { client, db } = fixture(false); spyOn(globalThis, "fetch").mockResolvedValue(Response.json({ id: "platform", status: "READY" }));
+ await expect(client.provisionPlatform(scope, "Shop")).rejects.toThrow("credenciais"); expect(db.companySimpayIntegration.upsert).not.toHaveBeenCalled();
+});
+it("sends cents, allocation and idempotency only through canonical merchant scope", async () => {
+ const { client } = fixture(); const fetch = spyOn(globalThis, "fetch").mockResolvedValueOnce(Response.json({ id: "merchant" })).mockResolvedValueOnce(Response.json({ transactionId: "transaction", paymentId: "gateway", status: "PENDING", amountCents: 10537, pixContent: "copy", qrCode: "qr" }));
+ const params = { idempotencyKey: "attempt", allocation: { merchantAmountCents: 10000, platformFeeCents: 537 }, price: 105.37, document: "52998224725", document_type: "CPF", name: "Maria Silva", email: "buyer@example.com", description: "Pedido" };
+ expect(await client.createPixPayment(params, { ...scope, cnpj: "10802530000107", legalName: "Shop" })).toMatchObject({ paymentId: "gateway", pix_qrcode: "qr", pix_content: "copy" });
+ expect(String(fetch.mock.calls[1][0])).toEndWith("/platforms/SHOP/merchants/company/payments");
+ expect(fetch.mock.calls[1][1]?.headers).toHaveProperty("x-access-token", "scoped-token"); expect(fetch.mock.calls[1][1]?.headers).not.toHaveProperty("x-internal-token");
+ expect(JSON.parse(String(fetch.mock.calls[1][1]?.body))).toMatchObject({ amountCents: 10537, allocation: params.allocation, idempotencyKey: "attempt", paymentMethod: "PIX", customer: { documentType: "CPF" } });
+});
+it("adapts canonical withdrawal amounts, pagination and decimal rates", async () => {
+ const { client } = fixture(); const row = { id: "withdrawal", amountCents: 800, grossAmountCents: 1000, feeCents: 200, pixKey: "key", requestId: "local", status: "PENDING", rejectionReason: null, createdAt: "2026-10-22T00:00:00Z", updatedAt: "2026-10-22T00:00:00Z" };
+ const fetch = spyOn(globalThis, "fetch").mockResolvedValueOnce(Response.json(row)).mockResolvedValueOnce(Response.json({ data: [row], meta: { page: 1, limit: 10, total: 1, totalPages: 1 } })).mockResolvedValueOnce(Response.json({ availableBalanceCents: 5000, feePolicy: { fixedCents: 200, rate: 0.025 } }));
+ expect(await client.requestWithdrawal(scope, { grossAmountCents: 1000, pixKey: "key", requestId: "local" })).toMatchObject({ netAmountCents: 800, requestId: "local" });
+ expect(JSON.parse(String(fetch.mock.calls[0][1]?.body))).toEqual({ amountCents: 1000, pixKey: "key", idempotencyKey: "local" });
+ expect(await client.listWithdrawals(scope, 1, 10)).toMatchObject({ items: [{ netAmountCents: 800 }], meta: { totalItems: 1, pageSize: 10 } });
+ expect((await client.getWithdrawalSummary(scope)).feePolicy).toEqual({ fixedCents: 200, percentBasisPoints: 250 });
+});
+it("refuses anonymous historical status and charges without company scope", async () => {
+ const { client } = fixture(); const fetch = spyOn(globalThis, "fetch");
+ await expect(client.getPaymentStatus("historic")).rejects.toThrow("associação"); await expect(client.createPixPayment({} as never)).rejects.toThrow("carteira"); expect(fetch).not.toHaveBeenCalled();
+});
+it("preserves provider errors, including non-JSON errors", async () => {
+ const { client } = fixture(); spyOn(globalThis, "fetch").mockResolvedValueOnce(Response.json({ message: "Conflito" }, { status: 409 })).mockResolvedValueOnce(new Response("Bad gateway", { status: 502 }));
+ await expect(client.getPaymentStatus("payment", scope)).rejects.toThrow("Conflito"); await expect(client.getPaymentStatus("payment", scope)).rejects.toThrow("HTTP 502");
+});
+it("detects wrong encryption key and requires encryption configuration", () => {
+ fixture(); const encoded = encryptSimpaySecret("test-secret"); expect(decryptSimpaySecret(encoded)).toBe("test-secret"); process.env.SIMPAY_CREDENTIALS_ENCRYPTION_KEY = "cd".repeat(32); expect(() => decryptSimpaySecret(encoded)).toThrow(); delete process.env.SIMPAY_CREDENTIALS_ENCRYPTION_KEY; expect(() => encryptSimpaySecret("test")).toThrow("SIMPAY_CREDENTIALS_ENCRYPTION_KEY");
 });
 
-describe("Simpay merchant scope", () => {
-	it("isolates each company under its branded integration key", () => {
-		expect(simpayIntegrationKey("zero-grau")).toBe("sim-delivery_zero-grau");
-		expect(simpayIntegrationKey("acme-food")).toBe("sim-delivery_acme-food");
-	});
-});
-
-
-describe("Simpay owner registration", () => {
-	it("uses authenticated scoped endpoint and preserves optional CNPJ/password", async () => {
-		const fetch = spyOn(globalThis, "fetch").mockResolvedValue(Response.json({ id: "merchant" }));
-		try {
-			const owner = { email: "owner@example.com", legalName: "Shop", password: "secret123", cnpj: null };
-			expect(await new SimpayClient().provisionOwner({ externalMerchantId: "company", integrationKey: "sim-delivery_shop" }, owner)).toEqual({ id: "merchant" });
-			const [url, options] = fetch.mock.calls[0];
-			expect(String(url)).toEndWith("/internal/integrations/sim-delivery_shop/merchants/company/owner");
-			expect(options?.method).toBe("PUT");
-			expect(options?.headers).toHaveProperty("x-internal-token");
-			expect(JSON.parse(String(options?.body))).toEqual(owner);
-		} finally { fetch.mockRestore(); }
-	});
-	it("surfaces provider rejection and non-JSON errors", async () => {
-		const fetch = spyOn(globalThis, "fetch").mockResolvedValueOnce(Response.json({ message: "Email já cadastrado" }, { status: 409 })).mockResolvedValueOnce(new Response("Bad gateway", { status: 502 }));
-		try {
-			const client = new SimpayClient();
-			const scope = { externalMerchantId: "company", integrationKey: "sim-delivery_shop" };
-			await expect(client.provisionOwner(scope, { email: "owner@example.com", legalName: "Shop" })).rejects.toThrow("Email já cadastrado");
-			await expect(client.provisionOwner(scope, { email: "owner@example.com", legalName: "Shop" })).rejects.toThrow("HTTP 502");
-		} finally { fetch.mockRestore(); }
-	});
-});
-
-describe("Simpay allocation transport", () => {
-	const pix = { allocation: { merchantAmountCents: 10000, platformFeeCents: 500 }, price: 105, document: "52998224725", document_type: "CPF", email: "buyer@example.com", name: "Maria Silva", description: "Pedido" };
-	const card = { ...pix, holder_name: "Maria Silva", token: "card-token", bin: "424242", brand: "visa", installments: 1 };
-	const merchant = { cnpj: "10802530000107", externalMerchantId: "company", integrationKey: "sim-delivery_zero-grau", legalName: "Zero Grau" };
-
-	it("sends allocation only through the authenticated company scope", async () => {
-		const fetch = spyOn(globalThis, "fetch");
-		for (let request = 0; request < 4; request++) fetch.mockResolvedValueOnce(Response.json({ id: "payment" }));
-		try {
-			const client = new SimpayClient();
-			await client.createPixPayment(pix, merchant);
-			await client.createCardPayment(card, merchant);
-			for (const index of [1, 3]) {
-				const [url, options] = fetch.mock.calls[index];
-				expect(String(url)).toContain("/internal/integrations/sim-delivery_zero-grau/merchants/company/payments/");
-				expect(options?.headers).toHaveProperty("x-internal-token");
-				expect(JSON.parse(String(options?.body)).allocation).toEqual(pix.allocation);
-			}
-		} finally { fetch.mockRestore(); }
-	});
-
-	it("refuses unscoped charges before any request", async () => {
-		const fetch = spyOn(globalThis, "fetch");
-		try {
-			const client = new SimpayClient();
-			await expect(client.createPixPayment(pix)).rejects.toThrow("Configure o CPF/CNPJ");
-			await expect(client.createCardPayment(card)).rejects.toThrow("Configure o CPF/CNPJ");
-			expect(fetch).not.toHaveBeenCalled();
-		} finally { fetch.mockRestore(); }
-	});
-});
-
-
-describe("Simpay platform reservation", () => {
-	it("reserves a pending platform without sending owner credentials", async () => {
-		const fetch = spyOn(globalThis, "fetch").mockResolvedValue(Response.json({ id: "platform", status: "PENDING_OWNER" }));
-		try {
-			const scope = { externalMerchantId: "company", integrationKey: "sim-delivery_shop" };
-			expect(await new SimpayClient().provisionPlatform(scope, "Shop")).toEqual({ id: "platform", status: "PENDING_OWNER" });
-			const [url, options] = fetch.mock.calls[0];
-			expect(String(url)).toEndWith("/internal/integrations/sim-delivery_shop/merchants/company/platform");
-			expect(options?.method).toBe("PUT");
-			expect(options?.headers).toHaveProperty("x-internal-token");
-			expect(JSON.parse(String(options?.body))).toEqual({ legalName: "Shop" });
-		} finally { fetch.mockRestore(); }
-	});
-	it("surfaces provider errors and invalid responses", async () => {
-		const fetch = spyOn(globalThis, "fetch").mockResolvedValueOnce(Response.json({ message: "Integração já reservada" }, { status: 409 })).mockResolvedValueOnce(new Response("Bad gateway", { status: 502 }));
-		try {
-			const client = new SimpayClient();
-			const scope = { externalMerchantId: "company", integrationKey: "sim-delivery_shop" };
-			await expect(client.provisionPlatform(scope, "Shop")).rejects.toThrow("Integração já reservada");
-			await expect(client.provisionPlatform(scope, "Shop")).rejects.toThrow("HTTP 502");
-		} finally { fetch.mockRestore(); }
-	});
+it("blocks credential activation when pending historical payments cannot be proven", async () => {
+ const { client, db } = fixture(false);
+ db.payment.findMany.mockResolvedValue([{ simpayPaymentId: "historic-payment" }]);
+ const fetch = spyOn(globalThis, "fetch").mockResolvedValueOnce(Response.json(ready)).mockResolvedValueOnce(Response.json({ compatible: false, conflicts: ["historic-payment"] }));
+ await expect(client.provisionPlatform(scope, "Shop")).rejects.toThrow("Histórico financeiro");
+ expect(db.companySimpayIntegration.upsert).not.toHaveBeenCalled();
+ expect(String(fetch.mock.calls[1][0])).toEndWith("/platform-registrations/company/compatibility");
 });

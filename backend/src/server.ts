@@ -1,3 +1,4 @@
+import { CanonicalWebhooksController } from "./modules/payments/infra/elysia/CanonicalWebhooksController";
 import { mkdir } from "node:fs/promises";
 import { BrandingController } from "./modules/branding/infra";
 import { CashbackController } from "./modules/cashback/infra";
@@ -57,6 +58,7 @@ export const server = app.use([
 	DeliveriesController,
 	OrdersController,
 	PaymentsController,
+	CanonicalWebhooksController,
 	PlatformFeesController,
 	ReportsController,
 	ReviewsController,

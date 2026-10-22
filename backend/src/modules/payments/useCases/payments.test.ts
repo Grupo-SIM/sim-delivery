@@ -1,5 +1,8 @@
 import { describe, expect, it, mock } from "bun:test";
-import type { DomPagamentosClient } from "@/shared/infra/domPagamentos";
+interface DomPagamentosClient {
+ createCustomer(payload: unknown): Promise<string>;
+ createCardToken(id: string, payload: unknown): Promise<{ brand: string; expiryMonth: string; expiryYear: string; holderName: string; last4: string; token: string }>;
+}
 import { PaymentProviderError } from "@/shared/infra/paymentProviderError";
 import type { SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
@@ -56,6 +59,7 @@ interface PaymentRow {
 }
 
 interface SavedCardRow {
+	bin?: string | null;
 	brand: string;
 	cardToken: string;
 	createdAt: Date;
@@ -70,7 +74,7 @@ interface SavedCardRow {
 	nickname?: string | null;
 }
 
-const baseCompany: CompanyRow = { id: "cmp_1", slug: "zero-grau" };
+const baseCompany: CompanyRow = { cnpj: "10802530000107", id: "cmp_1", slug: "zero-grau" };
 
 const baseCustomer: CustomerRow = {
 	companyId: "cmp_1",
@@ -113,7 +117,7 @@ function makeWorld(opts: WorldOptions = {}) {
 	const customers = opts.customers ?? [structuredClone(baseCustomer)];
 	const orders = opts.orders ?? [structuredClone(baseOrder)];
 	const payments = opts.payments ?? [];
-	const savedCards = opts.savedCards ?? [];
+	const savedCards: SavedCardRow[] = (opts.savedCards ?? []).map(card => ({ bin: "424242", ...card }));
 	const cashbackLedger: Record<string, unknown>[] = [];
 	const loyaltyLedger: Record<string, unknown>[] = [];
 
@@ -235,7 +239,16 @@ function makeWorld(opts: WorldOptions = {}) {
 		whatsAppNotification: { upsert: async () => ({}) },
 	};
 
+	const attempts: any[] = [];
 	const prisma = {
+		paymentAttempt: {
+			findFirst: async ({ where }: any) => attempts.find(row => row.orderId === where.orderId && where.state.in.includes(row.state)) ?? null,
+			findMany: async () => [],
+			create: async ({ data }: any) => { const row = { id: `attempt_${attempts.length + 1}`, state: "preparing", ...data }; attempts.push(row); return row; },
+			update: async ({ where, data }: any) => { const row = attempts.find(row => row.id === where.id); Object.assign(row, data); return row; },
+			findUniqueOrThrow: async ({ where }: any) => attempts.find(row => row.id === where.id),
+		},
+		simpayWebhookInbox: { findMany: async () => [] },
 		$transaction: async (fn: (client: typeof tx) => Promise<unknown>) => fn(tx),
 		address: {
 			findFirst: async () => addresses[0] ?? null,
@@ -352,6 +365,14 @@ function makeDom(overrides: Partial<Record<string, unknown>> = {}) {
 	} as unknown as DomPagamentosClient;
 
 	return { calls, dom };
+}
+
+function cardUseCase(prisma: PrismaInstance, client: SimpayClient, dom: DomPagamentosClient) {
+ const simpay = Object.assign(Object.create(client), {
+  createCustomer: async (_scope: unknown, input: any) => ({ id: await dom.createCustomer({ ...input, codeExternal: input.externalCustomerId, mobilePhone: input.phone }) }),
+  tokenizeCard: async (_scope: unknown, customerId: string, card: any) => ({ ...await dom.createCardToken(customerId, { number: card.number, cvv: card.cvv, exp_month: card.expMonth, exp_year: card.expYear, holder_name: card.holderName, holder_document: card.holderDocument }), bin: card.number.slice(0, 6), customerId }),
+ });
+ return new CreateCardPayment(prisma, simpay);
 }
 
 describe("buildPaymentDescription", () => {
@@ -1036,7 +1057,7 @@ describe("CreateCardPayment", () => {
 		const { calls, simpay } = makeSimpay();
 		const { dom } = makeDom();
 
-		const result = await new CreateCardPayment(prisma, simpay, dom).execute("user_1", body);
+		const result = await cardUseCase(prisma, simpay, dom).execute("user_1", body);
 
 		expect(result).toMatchObject({ status: "confirmed" });
 		expect(payments[0]).toMatchObject({ method: "credit_card", status: "confirmed" });
@@ -1051,7 +1072,7 @@ describe("CreateCardPayment", () => {
 		});
 		const { dom } = makeDom();
 
-		const result = await new CreateCardPayment(prisma, simpay, dom).execute("user_1", body);
+		const result = await cardUseCase(prisma, simpay, dom).execute("user_1", body);
 
 		expect(result).toMatchObject({ status: "pending", token: "token_1" });
 		expect(payments[0]).toMatchObject({ method: "credit_card", status: "pending" });
@@ -1065,7 +1086,7 @@ describe("CreateCardPayment", () => {
 		});
 		const { dom } = makeDom();
 
-		await expect(new CreateCardPayment(prisma, simpay, dom).execute("user_1", body)).rejects.toThrow(
+		await expect(cardUseCase(prisma, simpay, dom).execute("user_1", body)).rejects.toThrow(
 			"CARD_DECLINED",
 		);
 		expect(payments).toHaveLength(0);
@@ -1076,7 +1097,7 @@ describe("CreateCardPayment", () => {
 		const { simpay } = makeSimpay();
 		const { calls, dom } = makeDom();
 
-		await new CreateCardPayment(prisma, simpay, dom).execute("user_1", body);
+		await cardUseCase(prisma, simpay, dom).execute("user_1", body);
 
 		expect((calls.tokens[0] as { payload: { number: string } }).payload.number).toBe("4242424242424242");
 	});
@@ -1086,7 +1107,7 @@ describe("CreateCardPayment", () => {
 		const { calls: simpayCalls, simpay } = makeSimpay();
 		const { calls: domCalls, dom } = makeDom();
 
-		await new CreateCardPayment(prisma, simpay, dom).execute("user_1", body);
+		await cardUseCase(prisma, simpay, dom).execute("user_1", body);
 
 		expect((domCalls.tokens[0] as { payload: { holder_document: string } }).payload.holder_document).toBe(
 			"11144477735",
@@ -1100,21 +1121,21 @@ describe("CreateCardPayment", () => {
 		const { simpay } = makeSimpay();
 		const { calls, dom } = makeDom();
 
-		await new CreateCardPayment(prisma, simpay, dom).execute("user_1", body);
+		await cardUseCase(prisma, simpay, dom).execute("user_1", body);
 
 		expect(calls.customers).toHaveLength(1);
-		expect(customers[0].domId).toBe("dom_1");
+		expect(customers[0].domId).toBeNull();
 	});
 
-	it("skips DOM customer creation when the customer already has one", async () => {
+	it("does not trust a legacy DOM id without canonical customer ownership", async () => {
 		const { prisma } = makeWorld({ customers: [{ ...baseCustomer, domId: "dom_existing" }] });
 		const { simpay } = makeSimpay();
 		const { calls, dom } = makeDom();
 
-		await new CreateCardPayment(prisma, simpay, dom).execute("user_1", body);
+		await cardUseCase(prisma, simpay, dom).execute("user_1", body);
 
-		expect(calls.customers).toHaveLength(0);
-		expect((calls.tokens[0] as { domId: string }).domId).toBe("dom_existing");
+		expect(calls.customers).toHaveLength(1);
+		expect((calls.tokens[0] as { domId: string }).domId).toBe("dom_1");
 	});
 
 	it("saves the card and marks the first one as default", async () => {
@@ -1122,7 +1143,7 @@ describe("CreateCardPayment", () => {
 		const { simpay } = makeSimpay();
 		const { dom } = makeDom();
 
-		await new CreateCardPayment(prisma, simpay, dom).execute("user_1", {
+		await cardUseCase(prisma, simpay, dom).execute("user_1", {
 			...body,
 			cardNickname: "Cartão pessoal",
 			saveCard: true,
@@ -1154,7 +1175,7 @@ describe("CreateCardPayment", () => {
 		const { simpay } = makeSimpay();
 		const { dom } = makeDom();
 
-		await new CreateCardPayment(prisma, simpay, dom).execute("user_1", { ...body, saveCard: true });
+		await cardUseCase(prisma, simpay, dom).execute("user_1", { ...body, saveCard: true });
 
 		expect(savedCards[1]).toMatchObject({ isDefault: false });
 	});
@@ -1164,9 +1185,17 @@ describe("CreateCardPayment", () => {
 		const { simpay } = makeSimpay();
 		const { dom } = makeDom();
 
-		await new CreateCardPayment(prisma, simpay, dom).execute("user_1", body);
+		await cardUseCase(prisma, simpay, dom).execute("user_1", body);
 
 		expect(savedCards).toHaveLength(0);
+	});
+
+	it("requires re-entry for a legacy saved card without real BIN and never charges it", async () => {
+		const saved: SavedCardRow = { bin: null, brand: "visa", cardToken: "opaque-token-without-bin", createdAt: new Date(), customerId: "cust_1", expiryMonth: "12", expiryYear: "2030", holderDocument: "11144477735", holderName: "Maria Silva", id: "card_legacy", isDefault: true, last4: "4242" };
+		const { prisma } = makeWorld({ savedCards: [saved] });
+		const { calls, simpay } = makeSimpay();
+		await expect(cardUseCase(prisma, simpay, makeDom().dom).execute("user_1", { orderId: "order_1", savedCardId: saved.id, slug: "zero-grau" })).rejects.toThrow("SAVED_CARD_REAUTH_REQUIRED");
+		expect(calls.card).toHaveLength(0);
 	});
 
 	it("charges a saved card without tokenizing again", async () => {
@@ -1187,7 +1216,7 @@ describe("CreateCardPayment", () => {
 		const { calls, simpay } = makeSimpay();
 		const { calls: domCalls, dom } = makeDom();
 
-		const result = await new CreateCardPayment(prisma, simpay, dom).execute("user_1", {
+		const result = await cardUseCase(prisma, simpay, dom).execute("user_1", {
 			orderId: "order_1",
 			savedCardId: "card_1",
 			slug: "zero-grau",
@@ -1220,7 +1249,7 @@ describe("CreateCardPayment", () => {
 		const { calls, simpay } = makeSimpay();
 		const { dom } = makeDom();
 
-		await new CreateCardPayment(prisma, simpay, dom).execute("user_1", {
+		await cardUseCase(prisma, simpay, dom).execute("user_1", {
 			holderCpf: "11144477735",
 			orderId: "order_1",
 			savedCardId: "card_legacy",
@@ -1252,7 +1281,7 @@ describe("CreateCardPayment", () => {
 		const { dom } = makeDom();
 
 		await expect(
-			new CreateCardPayment(prisma, simpay, dom).execute("user_1", {
+			cardUseCase(prisma, simpay, dom).execute("user_1", {
 				orderId: "order_1",
 				savedCardId: "card_1",
 				slug: "zero-grau",
@@ -1266,7 +1295,7 @@ describe("CreateCardPayment", () => {
 		const { dom } = makeDom();
 
 		await expect(
-			new CreateCardPayment(prisma, simpay, dom).execute("user_1", { orderId: "order_1", slug: "zero-grau" }),
+			cardUseCase(prisma, simpay, dom).execute("user_1", { orderId: "order_1", slug: "zero-grau" }),
 		).rejects.toThrow("CARD_REQUIRED");
 	});
 
@@ -1289,7 +1318,7 @@ describe("CreateCardPayment", () => {
 		const { calls, simpay } = makeSimpay();
 		const { dom } = makeDom();
 
-		await expect(new CreateCardPayment(prisma, simpay, dom).execute("user_1", body)).rejects.toThrow(
+		await expect(cardUseCase(prisma, simpay, dom).execute("user_1", body)).rejects.toThrow(
 			"PAYMENT_ALREADY_CONFIRMED",
 		);
 		expect(calls.card).toHaveLength(0);
@@ -1314,22 +1343,22 @@ describe("CreateCardPayment", () => {
 		const { simpay } = makeSimpay();
 		const { dom } = makeDom();
 
-		await new CreateCardPayment(prisma, simpay, dom).execute("user_1", body);
+		await cardUseCase(prisma, simpay, dom).execute("user_1", body);
 
 		expect(payments).toHaveLength(1);
 		expect(payments[0]).toMatchObject({ method: "credit_card", pixQrcode: null, status: "confirmed" });
 	});
 
-	it("maps a gateway rejection to CARD_DECLINED", async () => {
+	it("keeps an uncertain gateway failure recoverable", async () => {
 		const { payments, prisma } = makeWorld();
 		const { simpay } = makeSimpay({
 			createCardPayment: async () => {
-				throw new Error("declined");
+				throw new PaymentProviderError("Simpay", "declined", 422);
 			},
 		});
 		const { dom } = makeDom();
 
-		await expect(new CreateCardPayment(prisma, simpay, dom).execute("user_1", body)).rejects.toThrow(
+		await expect(cardUseCase(prisma, simpay, dom).execute("user_1", body)).rejects.toThrow(
 			"CARD_DECLINED",
 		);
 		expect(payments).toHaveLength(0);
@@ -1345,7 +1374,7 @@ describe("CreateCardPayment", () => {
 		const { dom } = makeDom();
 
 		try {
-			await new CreateCardPayment(prisma, simpay, dom).execute("user_1", body);
+			await cardUseCase(prisma, simpay, dom).execute("user_1", body);
 			throw new Error("expected payment to fail");
 		} catch (error) {
 			expect(error).toMatchObject({ description: "Saldo insuficiente", message: "CARD_DECLINED" });
@@ -1362,7 +1391,7 @@ describe("CreateCardPayment", () => {
 		});
 
 		try {
-			await new CreateCardPayment(prisma, simpay, dom).execute("user_1", body);
+			await cardUseCase(prisma, simpay, dom).execute("user_1", body);
 			throw new Error("expected tokenization to fail");
 		} catch (error) {
 			expect(error).toMatchObject({
@@ -1378,7 +1407,7 @@ describe("CreateCardPayment", () => {
 		const { dom } = makeDom();
 
 		await expect(
-			new CreateCardPayment(prisma, simpay, dom).execute("user_1", { ...body, holderCpf: undefined }),
+			cardUseCase(prisma, simpay, dom).execute("user_1", { ...body, holderCpf: undefined }),
 		).rejects.toThrow("DOCUMENT_REQUIRED");
 	});
 
@@ -1387,7 +1416,7 @@ describe("CreateCardPayment", () => {
 		const { calls, simpay } = makeSimpay();
 		const { dom } = makeDom();
 
-		await expect(new CreateCardPayment(prisma, simpay, dom).execute("user_1", body)).rejects.toThrow(
+		await expect(cardUseCase(prisma, simpay, dom).execute("user_1", body)).rejects.toThrow(
 			"UNAUTHORIZED_ORDER",
 		);
 		expect(calls.card).toHaveLength(0);
@@ -1439,7 +1468,7 @@ describe("platform fee allocation", () => {
 			if (method === "pix") {
 				await new CreatePixPayment(prisma, simpay).execute("user_1", { orderId: "order_1", slug: "zero-grau" });
 			} else {
-				await new CreateCardPayment(prisma, simpay, makeDom().dom).execute("user_1", {
+				await cardUseCase(prisma, simpay, makeDom().dom).execute("user_1", {
 					card: { cvv: "123", expMonth: 12, expYear: 2030, holderName: "MARIA SILVA", number: "4242424242424242" },
 					holderCpf: "11144477735", orderId: "order_1", slug: "zero-grau",
 				});

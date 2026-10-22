@@ -113,7 +113,7 @@ export class WithdrawalService {
 		const local = input.requestId
 			? await this.prisma.withdrawal.findFirst({ where: { companyId: input.externalMerchantId, id: input.requestId } })
 			: await this.prisma.withdrawal.findFirst({ where: { companyId: input.externalMerchantId, externalWithdrawalId: input.withdrawalId } });
-		if (!local) return { ok: true };
+		if (!local || local.externalWithdrawalId && local.externalWithdrawalId !== input.withdrawalId) return { ok: true };
 		await this.prisma.$transaction(async tx => {
 			const providerUpdatedAt = new Date(input.updatedAt);
 			if (Number.isNaN(providerUpdatedAt.getTime())) return;

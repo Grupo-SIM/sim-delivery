@@ -208,3 +208,7 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
 
 - Produto, grupo de opções e opção têm salvamentos independentes. Salvar uma opção persiste seus dados, incluindo a foto, sem exigir salvar o grupo ou o produto.
 - Descartar alterações de um grupo ou produto não desfaz opções ou grupos já salvos.
+
+## Integração financeira canônica
+
+Delivery usa bootstrap `/platform-registrations/:companyId` e operações `/platforms/:tag/merchants/:companyId`. Credenciais empresariais ficam criptografadas e separadas do DTO público da empresa. Tokenização de cartões passa pela SIM INT PAY com mesma conta DOM explicitamente configurada; BIN nunca deriva do token. Cartões antigos sem metadados exigem nova digitação; substituir registro salvo exige consentimento. Tentativa de pagamento nasce antes da chamada externa com chave idempotente e divisão congelada; timeout mantém incerteza e nunca autoriza cobrança duplicada. Eventos canônicos usam HMAC do corpo bruto, segredo por empresa e inbox deduplicada. Histórico anterior preserva titular e carteira; callbacks antigos continuam aceitos durante drenagem.

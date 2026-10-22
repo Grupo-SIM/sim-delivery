@@ -1,3 +1,4 @@
+import { startPaymentAttempt, recoverPaymentAttempt, recordAttemptResponse } from "./payment-attempts";
 import { DomainError } from "@/shared/errors";
 import type { SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
@@ -12,7 +13,8 @@ export class CreatePixPayment {
 	) {}
 
 	async execute(userId: string, data: CreatePixPaymentBody): Promise<PixPaymentReturn> {
-		const { customer, document, merchant, order, user } = await resolvePayingCustomer(this.prisma, userId, data);
+		const context = await resolvePayingCustomer(this.prisma, userId, data);
+		const { customer, document, merchant, order, user } = context;
 		if (!document) throw new DomainError(PaymentErrors.DOCUMENT_REQUIRED);
 
 		// Re-poll the same charge instead of creating a duplicate when the customer
@@ -27,8 +29,16 @@ export class CreatePixPayment {
 			};
 		}
 
+		const { attempt, created } = await startPaymentAttempt(this.prisma, context, "pix");
+		if (!created) {
+			const { payment } = await recoverPaymentAttempt(this.prisma, this.simpay, context, attempt.id);
+			if (!payment.pixContent || !payment.pixQrcode) throw new DomainError(PaymentErrors.PAYMENT_PROCESSING);
+			return { amount: payment.amount, pixContent: payment.pixContent, pixQrcode: payment.pixQrcode, token: payment.token };
+		}
+		await this.prisma.paymentAttempt.update({ where: { id: attempt.id }, data: { state: "submitting" } });
 		const phone = (customer.phone ?? user.phoneNumber ?? "").replace(/\D/g, "");
 		const pix = await this.simpay.createPixPayment({
+			idempotencyKey: attempt.id,
 			allocation: { merchantAmountCents: order.total - order.feeTotalCents, platformFeeCents: order.feeTotalCents },
 			description: buildPaymentDescription(order),
 			document,
@@ -39,6 +49,7 @@ export class CreatePixPayment {
 			price: order.total / 100,
 		}, merchant);
 
+		await recordAttemptResponse(this.prisma, attempt.id, pix);
 		// The gateway answers 201 even when DOM declines the charge (e.g. invalid CPF),
 		// leaving the QR fields empty. Surface that as a clear error instead of a broken QR.
 		const qrcode = pix.pix_qrcode || pix.pix_qrcode_url;

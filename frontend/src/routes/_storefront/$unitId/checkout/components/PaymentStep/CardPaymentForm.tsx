@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaCcAmex, FaCcDiscover, FaCcMastercard, FaCcVisa, FaCreditCard } from "react-icons/fa";
 import { LuEye, LuEyeOff } from "react-icons/lu";
@@ -14,6 +14,7 @@ import type { GetPaymentsCards200 } from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
 
 export interface CardPaymentValue {
+	replaceSavedCardId?: string;
 	card?: {
 		cvv: string;
 		expMonth: number;
@@ -28,6 +29,7 @@ export interface CardPaymentValue {
 }
 
 interface CardPaymentFormProps {
+	reauthCardId?: string;
 	amountCents: number;
 	customerCpf: string | null;
 	isPending: boolean;
@@ -51,6 +53,7 @@ function brandIcon(brand: string) {
 }
 
 export function CardPaymentForm({
+	reauthCardId,
 	amountCents,
 	customerCpf,
 	isPending,
@@ -68,6 +71,7 @@ export function CardPaymentForm({
 	const [saveCard, setSaveCard] = useState(false);
 	const [cardNickname, setCardNickname] = useDebouncedInput("", () => undefined);
 
+	useEffect(() => { if (reauthCardId) { setSelected("new"); setSaveCard(false); } }, [reauthCardId]);
 	const usingSavedCard = selected !== "new";
 	const selectedSavedCard = savedCards.find(card => card.id === selected);
 	const holderCpfRequired = !usingSavedCard || selectedSavedCard?.holderCpfRequired === true;
@@ -91,6 +95,7 @@ export function CardPaymentForm({
 				? { holderCpf: holderCpfRequired ? holderCpf : undefined, savedCardId: selected }
 				: {
 						card: { cvv, expMonth, expYear, holderName: holderName.trim(), number },
+						replaceSavedCardId: saveCard ? reauthCardId : undefined,
 						cardNickname: saveCard ? cardNickname.trim() || undefined : undefined,
 						holderCpf,
 						saveCard,
@@ -107,6 +112,7 @@ export function CardPaymentForm({
 				handleSubmit();
 			}}
 		>
+			{reauthCardId && <p className="text-muted-foreground text-sm">{t("store.checkout.payment.card.reauthHint")}</p>}
 			{savedCards.length > 0 && (
 				<div className="space-y-2">
 					{savedCards.map(card => {
@@ -242,7 +248,7 @@ export function CardPaymentForm({
 
 					<label className="flex cursor-pointer items-center gap-2 font-medium text-sm">
 						<Checkbox checked={saveCard} onChange={event => setSaveCard(event.currentTarget.checked)} />
-						{t("store.checkout.payment.card.save")}
+						{t(reauthCardId ? "store.checkout.payment.card.replaceSaved" : "store.checkout.payment.card.save")}
 					</label>
 					{saveCard && (
 						<Label>

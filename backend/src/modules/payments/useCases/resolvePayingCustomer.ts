@@ -5,6 +5,7 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import { PaymentErrors } from "../errors";
 
 export interface PayingCustomerContext {
+	companyId: string;
 	customer: {
 		id: string;
 		cpf: string | null;
@@ -52,7 +53,7 @@ export async function resolvePayingCustomer(
 	});
 	if (!order) throw new DomainError(PaymentErrors.ORDER_NOT_FOUND);
 
-	if (!customer || order.customerId !== customer.id) {
+	if (!company || !customer || order.customerId !== customer.id) {
 		throw new DomainError(PaymentErrors.UNAUTHORIZED_ORDER);
 	}
 
@@ -73,6 +74,7 @@ export async function resolvePayingCustomer(
 	}
 
 	return {
+		companyId: company.id,
 		customer: {
 			cpf: customer.cpf ?? document,
 			domId: customer.domId,

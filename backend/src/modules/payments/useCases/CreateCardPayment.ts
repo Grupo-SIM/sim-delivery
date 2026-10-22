@@ -1,6 +1,7 @@
 import { DomainError } from "@/shared/errors";
 import { isValidCpf } from "@/shared/cpf";
-import type { DomCardTokenResult, DomPagamentosClient } from "@/shared/infra/domPagamentos";
+import type { CanonicalCardToken } from "@/shared/infra/simpay";
+import { startPaymentAttempt, recoverPaymentAttempt, recordAttemptResponse } from "./payment-attempts";
 import { PaymentProviderError, paymentProviderErrorDescription } from "@/shared/infra/paymentProviderError";
 import { isApprovedSimpayStatus, isFailedSimpayStatus, type SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
@@ -13,7 +14,6 @@ export class CreateCardPayment {
 	constructor(
 		private readonly prisma: PrismaInstance,
 		private readonly simpay: SimpayClient,
-		private readonly dom: DomPagamentosClient,
 	) {}
 
 	async execute(userId: string, data: CreateCardPaymentBody): Promise<CardPaymentReturn> {
@@ -24,19 +24,34 @@ export class CreateCardPayment {
 		);
 		const { customer, merchant, order, user } = context;
 
+		const existingPayment = await this.prisma.payment.findUnique({ where: { orderId: order.id } });
+		if (existingPayment?.status === "confirmed") throw new DomainError(PaymentErrors.PAYMENT_ALREADY_CONFIRMED);
+		const { attempt, created } = await startPaymentAttempt(this.prisma, context, "credit_card");
+		if (!created) {
+			const recovered = await recoverPaymentAttempt(this.prisma, this.simpay, context, attempt.id);
+			return { status: recovered.status, token: recovered.payment.token };
+		}
+		if (data.replaceSavedCardId && (!data.card || !data.saveCard || !await this.prisma.savedCard.findFirst({ where: { id: data.replaceSavedCardId, customerId: customer.id } }))) {
+			await this.prisma.paymentAttempt.update({ where: { id: attempt.id }, data: { state: "failed" } });
+			throw new DomainError(PaymentErrors.SAVED_CARD_NOT_FOUND);
+		}
+		let bin = "";
 		let cardToken: string;
 		let brand = "unknown";
 		let holderName = user.name;
 		let holderDocument = (data.holderCpf ?? data.cpf)?.replace(/\D/g, "") ?? null;
-		let tokenizedForSave: DomCardTokenResult | null = null;
+		let tokenizedForSave: CanonicalCardToken | null = null;
 		let savedCardToBackfillId: string | null = null;
 
+		try {
 		if (data.savedCardId) {
 			const savedCard = await this.prisma.savedCard.findFirst({
 				where: { customerId: customer.id, id: data.savedCardId },
 			});
 			if (!savedCard) throw new DomainError(PaymentErrors.SAVED_CARD_NOT_FOUND);
 
+			if (!savedCard.bin || !/^\d{6,8}$/.test(savedCard.bin)) throw new DomainError(PaymentErrors.SAVED_CARD_REAUTH_REQUIRED);
+			bin = savedCard.bin;
 			cardToken = savedCard.cardToken;
 			brand = savedCard.brand;
 			holderName = savedCard.holderName;
@@ -44,15 +59,15 @@ export class CreateCardPayment {
 			if (!savedCard.holderDocument) savedCardToBackfillId = savedCard.id;
 		} else if (data.card) {
 			if (!holderDocument) throw new DomainError(PaymentErrors.DOCUMENT_REQUIRED);
-			let tokenized: DomCardTokenResult;
+			let tokenized: CanonicalCardToken;
 			try {
-				const domId = customer.domId ?? (await this.createDomCustomer(context, holderDocument));
-				tokenized = await this.dom.createCardToken(domId, {
+				const domId = await this.createCustomer(context, holderDocument);
+				tokenized = await this.simpay.tokenizeCard(merchant!, domId, {
 					cvv: data.card.cvv,
-					exp_month: data.card.expMonth,
-					exp_year: data.card.expYear,
-					holder_document: holderDocument,
-					holder_name: data.card.holderName,
+					expMonth: data.card.expMonth,
+					expYear: data.card.expYear,
+					holderDocument,
+					holderName: data.card.holderName,
 					number: data.card.number.replace(/\D/g, ""),
 				});
 			} catch (error) {
@@ -62,6 +77,7 @@ export class CreateCardPayment {
 				throw error;
 			}
 
+			bin = tokenized.bin;
 			cardToken = tokenized.token;
 			brand = tokenized.brand;
 			holderName = tokenized.holderName;
@@ -72,16 +88,22 @@ export class CreateCardPayment {
 		if (!holderDocument) throw new DomainError(PaymentErrors.DOCUMENT_REQUIRED);
 		if (!isValidCpf(holderDocument)) throw new DomainError(PaymentErrors.INVALID_DOCUMENT);
 
+		} catch (error) {
+			await this.prisma.paymentAttempt.update({ where: { id: attempt.id }, data: { state: "failed" } });
+			throw error;
+		}
 		const existing = await this.prisma.payment.findUnique({ where: { orderId: order.id } });
 		if (existing?.status === "confirmed") throw new DomainError(PaymentErrors.PAYMENT_ALREADY_CONFIRMED);
 
 		const phone = (customer.phone ?? user.phoneNumber ?? "").replace(/\D/g, "");
 
+		await this.prisma.paymentAttempt.update({ where: { id: attempt.id }, data: { state: "submitting" } });
 		let simpayPaymentId: string | null = null;
 		let gatewayStatus = "";
 		try {
 			const result = await this.simpay.createCardPayment({
-				bin: cardToken.substring(0, 6),
+				idempotencyKey: attempt.id,
+				bin,
 				brand,
 				allocation: { merchantAmountCents: order.total - order.feeTotalCents, platformFeeCents: order.feeTotalCents },
 				description: buildPaymentDescription(order),
@@ -95,10 +117,15 @@ export class CreateCardPayment {
 				price: order.total / 100,
 				token: cardToken,
 			}, merchant);
+			await recordAttemptResponse(this.prisma, attempt.id, result);
 			simpayPaymentId = result.paymentId ?? result.id ?? null;
 			gatewayStatus = result.status;
 		} catch (error) {
-			throw new DomainError(PaymentErrors.CARD_DECLINED, paymentProviderErrorDescription(error));
+			if (error instanceof PaymentProviderError && [400, 422].includes(error.status ?? 0)) {
+				await this.prisma.paymentAttempt.update({ where: { id: attempt.id }, data: { state: "failed" } });
+				throw new DomainError(PaymentErrors.CARD_DECLINED, paymentProviderErrorDescription(error));
+			}
+			throw new DomainError(PaymentErrors.PAYMENT_PROCESSING, paymentProviderErrorDescription(error));
 		}
 		if (isFailedSimpayStatus(gatewayStatus)) {
 			throw new DomainError(PaymentErrors.CARD_DECLINED);
@@ -106,8 +133,8 @@ export class CreateCardPayment {
 
 		if (tokenizedForSave) {
 			const existingCards = await this.prisma.savedCard.count({ where: { customerId: customer.id } });
-			await this.prisma.savedCard.create({
-				data: {
+			const savedData = {
+					bin: tokenizedForSave.bin,
 					brand: tokenizedForSave.brand,
 					cardToken: tokenizedForSave.token,
 					customerId: customer.id,
@@ -118,8 +145,12 @@ export class CreateCardPayment {
 					isDefault: existingCards === 0,
 					last4: tokenizedForSave.last4,
 					nickname: data.cardNickname?.trim() || null,
-				},
-			});
+			};
+			if (data.replaceSavedCardId) {
+				const previous = await this.prisma.savedCard.findFirst({ where: { id: data.replaceSavedCardId, customerId: customer.id } });
+				if (!previous) throw new DomainError(PaymentErrors.SAVED_CARD_NOT_FOUND);
+				await this.prisma.savedCard.update({ where: { id: previous.id }, data: { ...savedData, isDefault: previous.isDefault } });
+			} else await this.prisma.savedCard.create({ data: savedData });
 		}
 		if (savedCardToBackfillId) {
 			await this.prisma.savedCard.update({
@@ -148,43 +179,16 @@ export class CreateCardPayment {
 		// PENDING must not release the order; only an explicit approval may do that.
 		if (isApprovedSimpayStatus(gatewayStatus)) {
 			await new ConfirmPayment(this.prisma).execute(payment.token);
+			await this.prisma.paymentAttempt.update({ where: { id: attempt.id }, data: { state: "confirmed" } });
 			return { status: "confirmed", token: payment.token };
 		}
 
 		return { status: "pending", token: payment.token };
 	}
 
-	private async createDomCustomer(
-		context: Awaited<ReturnType<typeof resolvePayingCustomer>>,
-		document: string,
-	) {
-		const { customer, user } = context;
-
-		const address = await this.prisma.address.findFirst({
-			orderBy: { isDefault: "desc" },
-			where: { customerId: customer.id },
-		});
-
-		const domId = await this.dom.createCustomer({
-			address: address
-				? {
-						city: address.city ?? "",
-						neighborhood: address.neighborhood ?? "",
-						number: address.number,
-						state: address.state ?? "",
-						street: address.addressLine,
-						zip_code: address.zipCode,
-					}
-				: undefined,
-			codeExternal: customer.id,
-			document,
-			email: user.email,
-			mobilePhone: (customer.phone ?? user.phoneNumber ?? "").replace(/\D/g, "") || undefined,
-			name: user.name,
-		});
-
-		await this.prisma.customer.update({ data: { domId }, where: { id: customer.id } });
-
-		return domId;
+	private async createCustomer(context: Awaited<ReturnType<typeof resolvePayingCustomer>>, document: string) {
+		if (!context.merchant) throw new DomainError(PaymentErrors.CARD_TOKENIZATION_FAILED);
+		const { id } = await this.simpay.createCustomer(context.merchant, { externalCustomerId: context.customer.id, name: context.user.name, email: context.user.email, document, phone: (context.customer.phone ?? context.user.phoneNumber ?? "").replace(/\D/g, "") || undefined });
+		return id;
 	}
 }

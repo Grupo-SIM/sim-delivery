@@ -12,8 +12,8 @@ export interface AppliedPaymentStatus {
 export class ApplySimpayPaymentStatus {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(simpayPaymentId: string, remoteStatus: string): Promise<AppliedPaymentStatus> {
-		const payment = await this.prisma.payment.findFirst({ where: { simpayPaymentId } });
+	async execute(simpayPaymentId: string, remoteStatus: string, companyId?: string): Promise<AppliedPaymentStatus> {
+		const payment = await this.prisma.payment.findFirst({ where: { simpayPaymentId, ...(companyId ? { order: { companyId } } : {}) } });
 		if (!payment) return { found: false, status: "not_found" };
 		if (payment.status !== "pending") return { found: true, status: payment.status };
 

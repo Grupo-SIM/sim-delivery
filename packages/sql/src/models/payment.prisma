@@ -75,6 +75,7 @@ model SavedCard {
     expiryYear  String
     holderName  String
     /// CPF of the card holder, digits only. Null only for cards saved before this field existed.
+    bin String?
     holderDocument String?
     nickname    String?
     isDefault   Boolean  @default(false)
@@ -85,4 +86,51 @@ model SavedCard {
 
     @@index([customerId])
     @@map("saved_card")
+}
+
+/// Backend-only credentials; never included in company public DTOs.
+model CompanySimpayIntegration {
+    companyId String @id
+    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    registrationId String
+    platformId String?
+    platformTag String?
+    merchantId String?
+    status String @default("PENDING_OWNER")
+    encryptedAccessToken String?
+    encryptedWebhookSecret String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    @@map("company_simpay_integration")
+}
+
+model PaymentAttempt {
+    id String @id @default(cuid())
+    orderId String
+    companyId String
+    method String
+    state String @default("preparing")
+    amountCents Int
+    merchantAmountCents Int
+    platformFeeCents Int
+    requestHash String
+    providerTransactionId String?
+    providerPaymentId String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    @@index([orderId, createdAt])
+    @@index([state, updatedAt])
+    @@map("payment_attempt")
+}
+
+model SimpayWebhookInbox {
+    id String @id @default(cuid())
+    companyId String
+    eventId String
+    payload Json
+    processedAt DateTime?
+    createdAt DateTime @default(now())
+    @@unique([companyId, eventId])
+    @@index([processedAt, createdAt])
+    @@map("simpay_webhook_inbox")
 }

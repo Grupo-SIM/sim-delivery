@@ -40,7 +40,6 @@ export const envSchema = t.Object({
 		default: "postgresql://postgres:password@localhost:5432/vivendo_de_bet",
 		format: "uri",
 	}),
-	DOM_API_KEY: t.Optional(t.String()),
 	MAIL_DRIVER: t.Enum(MailProvidersEnum, { default: MailProvidersEnum.NODEMAILER }),
 	MAIL_FROM: t.Optional(t.String({ format: "email" })),
 	MAIL_HOST: t.Optional(t.String()),
@@ -72,6 +71,8 @@ export const envSchema = t.Object({
 			format: "uri",
 		}),
 	),
+	SIMPAY_CREDENTIALS_ENCRYPTION_KEY: t.Optional(t.String({ pattern: "^[a-fA-F0-9]{64}$" })),
+	SIMPAY_PROVISIONING_TOKEN: t.Optional(t.String({ minLength: 16 })),
 	SIMPAY_INTERNAL_TOKEN: t.Optional(t.String({ minLength: 16 })),
 	SIMPAY_WEBHOOK_SECRET: t.Optional(t.String({ minLength: 32 })),
 	STATIC_DIR: t.Optional(

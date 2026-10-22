@@ -21,7 +21,7 @@ export class GetPaymentStatus {
 
 		let remote: { status: string };
 		try {
-			const merchant = payment.order?.company.cnpj
+			const merchant = payment.order?.company
 				? { externalMerchantId: payment.order.company.id, integrationKey: simpayIntegrationKey(payment.order.company.slug) }
 				: undefined;
 			remote =

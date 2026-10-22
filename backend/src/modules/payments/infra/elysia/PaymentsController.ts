@@ -1,7 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 import Elysia, { t } from "elysia";
 import { AuthGuard, CompanyScopeGuard } from "@/modules/users/guards";
-import { domPagamentos } from "@/shared/infra/domPagamentos";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
 import { simpay } from "@/shared/infra/simpay";
 import {
@@ -54,7 +53,7 @@ export const PaymentsController = new Elysia({ detail: { tags: ["Payments"] } })
 			.decorate(({ prisma, ...injected }) => ({
 				...injected,
 				applySimpayPaymentStatus: new ApplySimpayPaymentStatus(prisma),
-				createCardPayment: new CreateCardPayment(prisma, simpay, domPagamentos),
+				createCardPayment: new CreateCardPayment(prisma, simpay),
 				createPixPayment: new CreatePixPayment(prisma, simpay),
 				deleteSavedCard: new DeleteSavedCard(prisma),
 				getPaymentStatus: new GetPaymentStatus(prisma, simpay),

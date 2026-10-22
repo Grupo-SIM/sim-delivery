@@ -1922,8 +1922,10 @@
 							"NAME_REQUIRED": "Informe seu nome completo antes de pagar.",
 							"ORDER_NOT_FOUND": "Pedido não encontrado.",
 							"PAYMENT_ALREADY_CONFIRMED": "Este pedido já foi pago.",
+							"PAYMENT_PROCESSING": "Pagamento em processamento. Aguarde; sua cobrança será consultada sem criar outra.",
 							"PHONE_REQUIRED": "Informe seu celular antes de pagar.",
 							"SAVED_CARD_NOT_FOUND": "O cartão salvo não foi encontrado.",
+							"SAVED_CARD_REAUTH_REQUIRED": "Atualize os dados deste cartão para continuar.",
 							"UNAUTHORIZED_ORDER": "Este pedido não pertence à sua conta."
 						},
 						"expiry": "Validade",
@@ -1939,6 +1941,8 @@
 						"paying": "Processando…",
 						"pending": "Aguardando confirmação do cartão",
 						"pendingHint": "A operadora ainda está processando o pagamento. Não feche esta tela.",
+						"reauthHint": "Informe os dados do cartão novamente. Marque a opção abaixo se quiser atualizar o cartão salvo após o pagamento ser aceito.",
+						"replaceSaved": "Atualizar este cartão salvo",
 						"save": "Salvar cartão para próximas compras",
 						"showCvc": "Exibir CVC"
 					},
