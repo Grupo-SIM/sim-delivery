@@ -37,6 +37,7 @@ export function mergeLiveBranding(
 		gtmId: data.gtmId,
 		logoUrl: data.logoUrl?.trim() || "",
 		metaPixelId: data.metaPixelId,
+		mobileIconUrl: data.mobileIconUrl,
 		themeColors: resolveThemeColors(data.themeColors),
 	};
 }

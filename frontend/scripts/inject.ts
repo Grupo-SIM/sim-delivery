@@ -194,7 +194,7 @@ try {
 	
 	await writeFile(
 		brandingPath,
-		`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tallowThemeToggle: boolean;\n\tdefaultTheme: "dark" | "light";\n\tapiUrl: string;\n\tcompanyName: string;\n\tcompanySlug: string;\n\tfontDisplay: string;\n\tfontDisplayUrl: string | null;\n\tfontFamily: string;\n\tfontFamilyUrl: string | null;\n\tfooterFacebookUrl?: string | null;\n\tfooterInstagramUrl?: string | null;\n\tfooterPaymentMethods?: string[];\n\tfooterSupportEmail?: string | null;\n\tfooterText: string | null;\n\tfooterWhatsApp?: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n\twhatsAppEnabled: boolean;\n}\n\nexport const branding: Branding = ${JSON.stringify(
+		`import type { ThemeColors } from "./theme-colors";\n\nexport interface Branding {\n\tallowThemeToggle: boolean;\n\tdefaultTheme: "dark" | "light";\n\tapiUrl: string;\n\tcompanyName: string;\n\tcompanySlug: string;\n\tfontDisplay: string;\n\tfontDisplayUrl: string | null;\n\tfontFamily: string;\n\tfontFamilyUrl: string | null;\n\tfooterFacebookUrl?: string | null;\n\tfooterInstagramUrl?: string | null;\n\tfooterPaymentMethods?: string[];\n\tfooterSupportEmail?: string | null;\n\tfooterText: string | null;\n\tfooterWhatsApp?: string | null;\n\tga4Id: string | null;\n\tgtmId: string | null;\n\tlogoUrl: string;\n\tmobileIconUrl?: string | null;\n\tmetaPixelId: string | null;\n\tpackageName: string;\n\tsiteUrl: string;\n\tthemeColors: ThemeColors;\n\twhatsAppEnabled: boolean;\n}\n\nexport const branding: Branding = ${JSON.stringify(
 			{
 				allowThemeToggle: company.allowThemeToggle,
 				apiUrl,

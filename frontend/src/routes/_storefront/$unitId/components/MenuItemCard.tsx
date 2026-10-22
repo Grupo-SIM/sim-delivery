@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { LuImageOff, LuPlus } from "react-icons/lu";
+import { LuPlus } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { StarRating } from "@/components/ui/StarRating";
@@ -15,7 +15,7 @@ interface MenuItemCardProps {
 
 export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 	const { t } = useTranslation();
-	const { logoUrl } = useLiveBranding();
+	const { mobileIconUrl } = useLiveBranding();
 	const showFromPrice = hasPriceVariation(item.optionGroups);
 
 	const displayPriceCents = displayedUnitPrice(Number(item.fromPriceCents), item.productFees);
@@ -46,15 +46,11 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 					/>
 				) : (
 					<div className="flex h-full items-center justify-center text-muted-foreground/60">
-						{logoUrl ? (
-							<img
-								alt={t("store.menu.imagePlaceholder")}
-								className="w-1/3 object-contain opacity-35"
-								src={logoUrl}
-							/>
-						) : (
-							<LuImageOff aria-label={t("store.menu.imagePlaceholder")} className="size-10" />
-						)}
+						<img
+							alt={t("store.menu.imagePlaceholder")}
+							className="w-1/3 object-contain opacity-35"
+							src={mobileIconUrl || "/apple-touch-icon.png"}
+						/>
 					</div>
 				)}
 			</div>
