@@ -131,8 +131,8 @@
 					"retirado": "Pedido retirado",
 					"saiu_para_entrega": "Saiu para entrega"
 				},
-				"paletteApplied": "Cores aplicadas. Salve para publicar.",
-				"paletteHint": "As cores são publicadas quando você salvar as configurações da empresa.",
+				"paletteApplied": "Tema salvo!",
+				"paletteHint": "Ao salvar, as cores são publicadas imediatamente.",
 				"removeAttachment": "Remover {{filename}}",
 				"resetAllColors": "Restaurar cores",
 				"resetColor": "Restaurar {{color}} para a cor padrão",

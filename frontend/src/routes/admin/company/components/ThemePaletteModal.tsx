@@ -1,7 +1,10 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
+import { getBrandingQueryKey, usePutBranding } from "@/lib/api";
+import { slug } from "@/lib/variant";
 import { defaultThemeColors, type ThemeColorSet, type ThemeColors } from "@/lib/theme-colors";
 import { showToast } from "@/stores";
 import { ThemeEditor } from "./ThemeEditor";
@@ -17,6 +20,8 @@ interface ThemePaletteModalProps {
 export function ThemePaletteModal({ colors, isOpen, onClose, onSave }: ThemePaletteModalProps) {
 	const { t } = useTranslation();
 	const [draft, setDraft] = useState(colors);
+	const queryClient = useQueryClient();
+	const put = usePutBranding();
 
 	useEffect(() => {
 		if (isOpen) setDraft(colors);
@@ -49,16 +54,29 @@ export function ThemePaletteModal({ colors, isOpen, onClose, onSave }: ThemePale
 	}
 
 	function save() {
-		onSave(draft);
-		showToast(t("admin.branding.paletteApplied"), "info");
-		onClose();
+		put.mutate(
+			{ data: { themeColors: draft } },
+			{
+				onError: () => showToast(t("admin.branding.saveError"), "negative"),
+				onSuccess: () => {
+					onSave(draft);
+					// Keep other unsaved company fields intact; refresh branding on the next fetch.
+					queryClient.invalidateQueries({
+						queryKey: getBrandingQueryKey(slug ? { slug } : undefined),
+						refetchType: "none",
+					});
+					showToast(t("admin.branding.paletteApplied"), "positive");
+					onClose();
+				},
+			},
+		);
 	}
 
 	return (
 		<Modal
 			isOpen={isOpen}
 			maxWidth="960px"
-			onClose={onClose}
+			onClose={() => { if (!put.isPending) onClose(); }}
 			title={t("admin.branding.themeColors")}
 			urlKey="theme-palette"
 		>
@@ -75,11 +93,11 @@ export function ThemePaletteModal({ colors, isOpen, onClose, onSave }: ThemePale
 				/>
 
 				<div className="flex justify-end gap-2 border-border border-t pt-4">
-					<Button onClick={onClose} type="button" variant="outline">
+					<Button disabled={put.isPending} onClick={onClose} type="button" variant="outline">
 						{t("actions.discard")}
 					</Button>
-					<Button onClick={save} type="button">
-						{t("actions.save")}
+					<Button disabled={put.isPending} onClick={save} type="button">
+						{put.isPending ? t("admin.branding.saving") : t("actions.save")}
 					</Button>
 				</div>
 			</div>
