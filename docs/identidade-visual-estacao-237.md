@@ -32,17 +32,27 @@ O HTML não define tema escuro; não há paleta escura extraída.
 ## Template comercial
 
 Arquivo genérico: [identidade-visual.html](../frontend/public/templates/identidade-visual.html).
-Abra no navegador, clique nos campos e use **Baixar briefing preenchido** para
-salvar alterações ou **Imprimir / Salvar PDF**. Envie arquivo e materiais juntos.
-Funciona localmente, sem carregar fontes, imagens ou scripts externos.
+Página visual, sem formulário: mostra cores com nomes e HEX, prévias de aplicação
+nos temas claro e escuro e fontes cadastradas. Tema claro genérico usa cores
+extraídas da referência; tema escuro é uma adaptação sugerida, identificada na página.
 
-No admin, **Empresas** oferece download genérico e download preenchido na linha
-de cada empresa. Versão preenchida usa dados atuais da listagem, incluindo cores
-claras/escuras, logos, banners, fontes e canais públicos. Campos ausentes ficam
-como “A preencher”. Não inclui senhas, configurações financeiras, API, rastreadores
-ou modelos de mensagens. Links de assets ficam como texto; arquivos não são
-incorporados. Revisão do briefing não modifica cadastro.
+No admin, **Empresas** oferece download genérico e download com identidade atual
+na linha de cada empresa. Cores empresariais seguem mesma resolução usada no app;
+sem paleta cadastrada, usam padrão do sistema. Fontes são identificadas pelo nome,
+sem downloads externos. Nenhum dado financeiro, API ou segredo é exportado.
+
+Na página baixada, **Baixar imagem da paleta (SVG)** exporta todas as cores dos dois
+temas. **Imprimir / Salvar PDF** usa impressão do navegador. SVG pode ser editado
+em ferramenta vetorial, preservando atributos `data-theme`/`data-token` dos retângulos
+e cores `fill` em HEX de seis dígitos. Importação usa `fill`, não texto do rótulo.
+
+Em **Identidade visual → Tema e cores → Importar imagem da paleta (SVG)**,
+selecione imagem exportada. Importação é local e preenche edição dos dois temas;
+somente **Salvar** persiste. Arquivo incompleto, inválido ou acima de 2 MB é
+rejeitado sem alterar cores. PNG/JPG, screenshots e PDFs não preservam identificação
+dos campos e não são importáveis. Importação lê somente cores, sem executar SVG
+nem alterar fontes ou outros dados da empresa.
 
 Fonte do layout: `frontend/src/lib/visual-identity/template.html`; preenchimento:
-`template.ts` na mesma pasta. Ao alterar campos/layout, atualizar também arquivo
-genérico público para manter mesma estrutura.
+`template.ts` na mesma pasta. Ao alterar layout, atualizar também arquivo genérico
+público para manter mesma estrutura.

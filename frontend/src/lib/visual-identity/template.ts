@@ -1,4 +1,6 @@
 import type { GetCompanies200 } from "@/lib/api";
+import { type ThemeColors, toThemeVariable } from "@/lib/theme-colors";
+import { colorLabels, companyPalette, referenceThemeColors } from "./palette";
 import template from "./template.html?raw";
 
 type Company = GetCompanies200[number];
@@ -7,18 +9,45 @@ export function escapeHtml(value: string) {
 	return value.replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]!);
 }
 
+export function createVisualIdentitySvg(name: string, colors: ThemeColors) {
+	const sections = (["light", "dark"] as const).map((mode, modeIndex) => {
+		const top = 160 + modeIndex * 700;
+		const swatches = Object.entries(colorLabels).map(([token, label], index) => {
+			const color = colors[mode][token as keyof typeof colorLabels];
+			const x = 48 + (index % 4) * 276;
+			const y = top + 56 + Math.floor(index / 4) * 98;
+			return `<g><rect data-theme="${mode}" data-token="${token}" x="${x}" y="${y}" width="248" height="44" rx="8" fill="${color}" stroke="#D4D4D4"/><text x="${x}" y="${y + 64}" font-size="13">${label}</text><text x="${x}" y="${y + 83}" font-size="13" fill="#525252">${color}</text></g>`;
+		}).join("");
+		return `<text x="48" y="${top + 24}" font-size="24" font-weight="700">${mode === "light" ? "Tema claro" : "Tema escuro"}</text>${swatches}`;
+	}).join("");
+	return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1580" viewBox="0 0 1200 1580" data-sim-delivery-palette="1"><rect width="1200" height="1580" fill="#FBF6EE"/><g font-family="sans-serif" fill="#1F1513"><text x="48" y="56" font-size="16">SIM DELIVERY / IDENTIDADE VISUAL</text><text x="48" y="108" font-size="36" font-weight="700">${escapeHtml(name.slice(0, 48))}</text>${sections}<text x="48" y="1540" font-size="14">Importe este SVG em Tema e cores para aplicar a paleta. Revise antes de salvar.</text></g></svg>`;
+}
+
 export function createVisualIdentityTemplate(company?: Company) {
-	const field = (label: string, value?: string | null) => `<div class="field"><div class="label">${escapeHtml(label)}</div><div contenteditable="true" role="textbox" aria-label="${escapeHtml(label)}">${escapeHtml(value?.trim() || "A preencher")}</div></div>`;
-	const section = (title: string, fields: [string, (string | null | undefined)?][]) => `<section><h2>${title}</h2><div class="grid">${fields.map(([label, value]) => field(label, value)).join("")}</div></section>`;
-	const sections = [
-		section("01 / Sua empresa", [["Nome da empresa / nome no aplicativo", company?.name], ["Identificador (slug)", company?.slug], ["Site do delivery", company?.siteUrl], ["Responsável pelo briefing"], ["Segmento e descrição da marca"], ["Público e personalidade da marca"]]),
-		section("02 / Logos e imagens", [["Logo (link ou nome do arquivo)", company?.logoUrl], ["Ícone do aplicativo (quadrado)", company?.mobileIconUrl], ["Imagem padrão das unidades", company?.unitFallbackImageUrl], ["Banners da página inicial (um por linha)", company?.homepageBannerUrls.join("\n")], ["Versões do logo para fundos claros e escuros"], ["Observações sobre imagens e recortes"]]),
-		section("03 / Cores e aparência", [["Tema inicial", company ? (company.defaultTheme === "dark" ? "Escuro" : "Claro") : undefined], ["Permitir alternar claro/escuro", company ? (company.allowThemeToggle ? "Sim" : "Não") : undefined], ["Paleta clara (nome: HEX)", company?.themeColors ? JSON.stringify(company.themeColors.light, null, 2) : undefined], ["Paleta escura (nome: HEX)", company?.themeColors ? JSON.stringify(company.themeColors.dark, null, 2) : undefined], ["Cor principal / secundária / destaque (HEX)"], ["Restrições e referências visuais"]]),
-		section("04 / Tipografia", [["Fonte de títulos", company?.fontDisplay], ["Arquivo / URL da fonte de títulos", company?.fontDisplayUrl], ["Fonte de textos", company?.fontFamily], ["Arquivo / URL da fonte de textos", company?.fontFamilyUrl]]),
-		section("05 / Rodapé e canais públicos", [["Texto do rodapé", company?.footerText], ["WhatsApp público", company?.footerWhatsApp], ["E-mail de suporte", company?.footerSupportEmail], ["Instagram", company?.footerInstagramUrl], ["Facebook", company?.footerFacebookUrl], ["Meios de pagamento exibidos", company?.footerPaymentMethods.join(", ")]]),
-		section("06 / Revisão e entrega", [["Arquivos anexados e links para materiais"], ["Observações e pendências"], ["Responsável pela aprovação"], ["Data da revisão"]]),
-	].join("\n");
-	return template.replace("{{sections}}", () => sections);
+	const name = company?.name || "Sua marca no SIM Delivery";
+	const colors = company ? companyPalette(company.themeColors) : referenceThemeColors;
+	const displayFont = company?.fontDisplay || (company ? "Fonte padrão do sistema" : "Rubik");
+	const bodyFont = company?.fontFamily || (company ? "Fonte padrão do sistema" : "Nunito Sans");
+	const panels = (["light", "dark"] as const).map(mode => {
+		const vars = Object.entries(colors[mode]).map(([key, value]) => `--${toThemeVariable(key as keyof typeof colorLabels)}:${value}`).join(";");
+		const mainTokens = new Set(["primary", "secondary", "accent", "background", "foreground", "card", "border", "mutedForeground"]);
+		const swatches = Object.entries(colorLabels).map(([token, label]) => {
+			const color = colors[mode][token as keyof typeof colorLabels];
+			return { token, html: `<div class="swatch"><div class="paint" style="background:${color}"></div><span>${label}</span><code>${color}</code></div>` };
+		});
+		const mainSwatches = swatches.filter(swatch => mainTokens.has(swatch.token)).map(swatch => swatch.html).join("");
+		const otherSwatches = swatches.filter(swatch => !mainTokens.has(swatch.token)).map(swatch => swatch.html).join("");
+		return `<section class="theme" style="${vars}"><div class="section-title"><h2>${mode === "light" ? "Tema claro" : "Tema escuro"}</h2><span>Paleta e aplicação</span></div><div class="preview"><div class="eyebrow">SEU DELIVERY, SUA IDENTIDADE</div><h3>${escapeHtml(name)}</h3><p>Seus favoritos, com o sabor da sua marca.</p><div class="sample-card"><span class="badge">Destaque</span><h4>Uma experiência feita para você</h4><p>Do primeiro pedido à próxima visita.</p><span class="sample-action">Ver cardápio →</span></div></div><div class="swatches">${mainSwatches}</div><details><summary>Expandir paleta completa</summary><div class="swatches">${otherSwatches}</div></details></section>`;
+	}).join("");
+	const svg = createVisualIdentitySvg(name, colors);
+	const replacements: Record<string, string> = {
+		name: escapeHtml(name),
+		note: company ? "Identidade atual da empresa no SIM Delivery." : "Referência Estação 237: vinho, dourado e creme. Tema escuro é uma adaptação sugerida.",
+		panels,
+		fonts: `<div><span>Títulos</span><strong>${escapeHtml(displayFont)}</strong><p>Aa Bb Cc · Sua marca em destaque</p></div><div><span>Textos</span><strong>${escapeHtml(bodyFont)}</strong><p>Uma experiência simples, do pedido à entrega.</p></div>`,
+		svg: escapeHtml(svg),
+	};
+	return template.replace(/\{\{(\w+)\}\}/g, (match, key: string) => replacements[key] ?? match);
 }
 
 export function downloadVisualIdentityTemplate(company?: Company) {

@@ -12,3 +12,4 @@ export * from "./ThemeSection";
 export * from "./TrackingSection";
 export * from "./TypographySection";
 export * from "./types";
+export * from "./ImportPaletteButton";

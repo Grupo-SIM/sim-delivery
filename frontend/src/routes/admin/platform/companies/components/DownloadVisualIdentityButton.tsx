@@ -27,7 +27,7 @@ export function DownloadVisualIdentityButton({ company }: DownloadVisualIdentity
 						showToast(t("admin.companies.visualIdentity.error"), "negative");
 					}
 				}}
-				size={company ? "icon" : "default"}
+				size={company ? "icon" : "md"}
 				type="button"
 				variant="outline"
 			>

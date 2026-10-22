@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
 import type { ThemeColors } from "@/lib/theme-colors";
+import { ImportPaletteButton } from "./ImportPaletteButton";
 import { PaletteSwatches } from "./PaletteSwatches";
 import { ThemePaletteModal } from "./ThemePaletteModal";
 
@@ -81,6 +82,7 @@ export function ThemeSection({
 						<PaletteSwatches colors={themeColors.dark} />
 					</span>
 				</div>
+				<ImportPaletteButton onImport={onThemeColorsChange} />
 				<Button onClick={() => setIsPaletteOpen(true)} type="button" variant="outline">
 					<LuPalette aria-hidden /> {t("admin.branding.editPalette")}
 				</Button>
