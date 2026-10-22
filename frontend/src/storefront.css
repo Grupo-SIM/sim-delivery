@@ -18,8 +18,8 @@
 	--navigation-height: 96px;
 	position: sticky;
 	top: 0;
-	color: var(--primary-foreground);
-	background: var(--primary);
+	color: var(--foreground);
+	background: var(--background);
 	border: 0;
 	backdrop-filter: none;
 }
@@ -45,18 +45,13 @@
 		height: 80px;
 	}
 }
-:root.dark .storefront-header img {
-	background: #fbf6ee;
-	padding: 4px;
-	border-radius: 8px;
-}
 .storefront-header .storefront-unit-name {
 	font-size: 16px;
 	font-weight: 800;
-	color: var(--primary-foreground);
+	color: var(--foreground);
 }
 .storefront-header a:has(> svg) {
-	color: var(--primary-foreground);
+	color: var(--foreground);
 }
 .storefront-header a > svg {
 	color: inherit;
@@ -301,7 +296,7 @@
 /* Store menu: white toolbar, two-column cards, top category dock, full cart pill. */
 .storefront .storefront-banner {
 	padding: 0;
-	background: linear-gradient(var(--primary) 50%, var(--background) 50%);
+	background: var(--background);
 	border: 0;
 }
 .storefront .storefront-banner > div {
@@ -791,4 +786,3 @@ html:has(.storefront) { scrollbar-color: var(--muted-foreground) var(--backgroun
 	width: 18px;
 	background: white;
 }
-
