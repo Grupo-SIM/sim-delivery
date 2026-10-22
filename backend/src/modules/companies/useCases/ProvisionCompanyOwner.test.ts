@@ -1,4 +1,5 @@
 import { describe, expect, it, mock } from "bun:test";
+import type { SimpayClient } from "@/shared/infra/simpay";
 import { ProvisionCompanyOwner } from "./ProvisionCompanyOwner";
 
 const company = { cnpj: null, id: "company", name: "Shop", siteUrl: "https://shop.example", slug: "shop" };
@@ -10,7 +11,7 @@ function setup(first: typeof owner | null = null, existing: typeof owner | null 
 		user: { findFirst: mock(async () => currentFirst), findUnique: mock(async () => existing) },
 	};
 	const invite = { execute: mock(async () => { currentFirst ??= owner; return owner; }) };
-	const simpay = { provisionOwner: mock(async () => ({ id: "merchant" })) };
+	const simpay = { provisionOwner: mock(async (..._args: Parameters<SimpayClient["provisionOwner"]>) => ({ id: "merchant" })) };
 	const reset = mock(async () => ({}));
 	return { invite, prisma, reset, simpay, service: new ProvisionCompanyOwner(prisma as never, invite as never, simpay as never, reset) };
 }

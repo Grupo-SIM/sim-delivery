@@ -78,3 +78,28 @@ describe("Simpay allocation transport", () => {
 		} finally { fetch.mockRestore(); }
 	});
 });
+
+
+describe("Simpay platform reservation", () => {
+	it("reserves a pending platform without sending owner credentials", async () => {
+		const fetch = spyOn(globalThis, "fetch").mockResolvedValue(Response.json({ id: "platform", status: "PENDING_OWNER" }));
+		try {
+			const scope = { externalMerchantId: "company", integrationKey: "sim-delivery_shop" };
+			expect(await new SimpayClient().provisionPlatform(scope, "Shop")).toEqual({ id: "platform", status: "PENDING_OWNER" });
+			const [url, options] = fetch.mock.calls[0];
+			expect(String(url)).toEndWith("/internal/integrations/sim-delivery_shop/merchants/company/platform");
+			expect(options?.method).toBe("PUT");
+			expect(options?.headers).toHaveProperty("x-internal-token");
+			expect(JSON.parse(String(options?.body))).toEqual({ legalName: "Shop" });
+		} finally { fetch.mockRestore(); }
+	});
+	it("surfaces provider errors and invalid responses", async () => {
+		const fetch = spyOn(globalThis, "fetch").mockResolvedValueOnce(Response.json({ message: "Integração já reservada" }, { status: 409 })).mockResolvedValueOnce(new Response("Bad gateway", { status: 502 }));
+		try {
+			const client = new SimpayClient();
+			const scope = { externalMerchantId: "company", integrationKey: "sim-delivery_shop" };
+			await expect(client.provisionPlatform(scope, "Shop")).rejects.toThrow("Integração já reservada");
+			await expect(client.provisionPlatform(scope, "Shop")).rejects.toThrow("HTTP 502");
+		} finally { fetch.mockRestore(); }
+	});
+});

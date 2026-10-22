@@ -165,6 +165,17 @@ export function isFailedSimpayStatus(status: unknown): boolean {
 }
 
 export class SimpayClient {
+	async provisionPlatform(merchant: SimpayMerchantScope, legalName: string): Promise<{ id: string; status: "PENDING_OWNER" | "READY" }> {
+		const response = await fetch(`${merchantBase(merchant)}/platform`, {
+			body: JSON.stringify({ legalName }),
+			headers: internalHeaders(),
+			method: "PUT",
+		});
+		const data = await response.json().catch(() => null);
+		if (!response.ok) throw new PaymentProviderError("Simpay", extractPaymentProviderMessage(data) || `Erro ao reservar plataforma (HTTP ${response.status})`, response.status);
+		return data as { id: string; status: "PENDING_OWNER" | "READY" };
+	}
+
 	async provisionOwner(merchant: SimpayMerchantScope, owner: { cnpj?: string | null; email: string; legalName: string; password?: string }): Promise<{ id: string }> {
 		const response = await fetch(`${merchantBase(merchant)}/owner`, {
 			body: JSON.stringify(owner),

@@ -31,7 +31,7 @@ export const CompaniesController = new Elysia({
 		app
 			.decorate(({ prisma, ...injected }) => ({
 				...injected,
-				createCompany: new CreateCompany(prisma),
+				createCompany: new CreateCompany(prisma, simpay),
 				deleteCompany: new DeleteCompany(prisma),
 				listCompanies: new ListCompanies(prisma),
 				prisma,

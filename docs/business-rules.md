@@ -137,6 +137,8 @@ centralizado, sem recorte. Não há configuração separada de imagem padrão da
 
 ## Carteira e saques empresariais
 
+- Criação da empresa pelo superAdmin reserva plataforma pendente na SIM INT PAY antes de existir dono; não cria usuário fictício. Primeiro dono conclui plataforma e autorizações, mantendo id da reserva. Empresas já existentes sem reserva concluem o mesmo fluxo no cadastro do primeiro dono. Vínculos anteriores são preservados.
+- Falha na reserva externa mantém empresa local. Repetir criação com os mesmos dados antes de existir dono retoma reserva; dados diferentes ou empresa com dono mantêm erro de slug duplicado. Cadastro do primeiro dono também retoma reserva pendente.
 - Cadastro do primeiro dono pelo superAdmin provisiona automaticamente conta ativa e carteira
   zerada na SIM INT PAY, usando email normalizado e senha informada. Sem senha, cada sistema
   envia seu próprio link de definição de senha; senhas definidas depois são independentes.
