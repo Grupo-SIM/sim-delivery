@@ -12,7 +12,7 @@ export const referenceThemeColors: ThemeColors = {
 	},
 	dark: {
 		...defaultThemeColors.dark,
-		primary: "#E3A41A", primaryForeground: "#1F1513", secondary: "#6E1424", secondaryForeground: "#FFFFFF",
+		primary: "#8E1B2E", primaryForeground: "#FFFFFF", secondary: "#6E1424", secondaryForeground: "#FFFFFF",
 		accent: "#E3A41A", accentForeground: "#1F1513", background: "#1F1513", foreground: "#FBF6EE",
 		card: "#30221F", cardForeground: "#FBF6EE", popover: "#30221F", popoverForeground: "#FBF6EE",
 		muted: "#3F302B", mutedForeground: "#D6C6BB", border: "#5F504A", input: "#5F504A", ring: "#E3A41A",

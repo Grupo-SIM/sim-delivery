@@ -36,6 +36,10 @@ Página visual, sem formulário: mostra cores com nomes e HEX, prévias de aplic
 nos temas claro e escuro e fontes cadastradas. Tema claro genérico usa cores
 extraídas da referência; tema escuro é uma adaptação sugerida, identificada na página.
 
+A adaptação escura preserva marrons quentes nas superfícies e vinho `#8E1B2E`
+como cor primária, com texto branco. O cabeçalho usa a cor primária; dourado
+`#E3A41A` fica nos destaques, evitando que o número 237 se confunda com a navbar.
+
 No admin, **Empresas** oferece download genérico e download com identidade atual
 na linha de cada empresa. Cores empresariais seguem mesma resolução usada no app;
 sem paleta cadastrada, usam padrão do sistema. Fontes são identificadas pelo nome,
