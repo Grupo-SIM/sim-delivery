@@ -5,6 +5,11 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      variants:
+        description: "Variants to build, comma-separated (empty = all configured variants)"
+        required: false
+        type: string
 
 jobs:
   detect:
@@ -44,9 +49,13 @@ jobs:
       - name: Parse company slugs
         id: slugs
         env:
+          REQUESTED_VARIANTS: ${{ inputs.variants }}
           VARIANTS: ${{ vars.VARIANTS }}
           LEGACY_APP_URLS: ${{ vars.APP_URL }}
         run: |
+          if [[ -n "${REQUESTED_VARIANTS//[[:space:]]/}" ]]; then
+            VARIANTS="${REQUESTED_VARIANTS//,/$'\n'}"
+          fi
           slugs=$(jq -Rnc --arg value "${VARIANTS:-$LEGACY_APP_URLS}" '
             $value | split("\n")
             | map(gsub("^\\s+|\\s+$"; "") | split("@")[0] | select(length > 0))
