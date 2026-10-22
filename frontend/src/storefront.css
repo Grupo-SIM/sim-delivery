@@ -42,6 +42,9 @@
 .storefront .storefront-header a:has(> svg) {
 	color: var(--primary-foreground);
 }
+.storefront .storefront-header a > svg {
+	color: inherit;
+}
 .storefront .storefront-sign-in {
 	padding: 11px 22px;
 	font-size: 16px;
@@ -52,15 +55,15 @@
 }
 .storefront .storefront-profile {
 	padding: 0;
-	background: var(--accent);
-	border-color: var(--accent);
+	background: var(--primary-foreground);
+	border-color: var(--primary-foreground);
 }
 .storefront .storefront-profile span {
 	width: 42px;
 	height: 42px;
 	font-weight: 900;
-	color: var(--accent-foreground);
-	background: var(--accent);
+	color: var(--primary);
+	background: var(--primary-foreground);
 }
 .storefront .welcome-hero {
 	position: relative;
