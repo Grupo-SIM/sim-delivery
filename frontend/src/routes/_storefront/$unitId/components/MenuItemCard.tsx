@@ -48,7 +48,7 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 					<div className="flex h-full items-center justify-center bg-[#F1E6D6] text-muted-foreground/60">
 						<img
 							alt={t("store.menu.imagePlaceholder")}
-							className="w-1/3 object-contain opacity-100"
+							className="w-1/3 object-contain opacity-25 grayscale"
 							src={logoUrl || mobileIconUrl || "/apple-touch-icon.png"}
 						/>
 					</div>
