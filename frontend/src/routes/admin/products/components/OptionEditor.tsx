@@ -55,7 +55,7 @@ export function OptionEditor({ isSaving, onSave, onDelete, option }: OptionEdito
 				{option.imageUrl && (
 					<img alt="" className="size-12 shrink-0 rounded object-cover" src={option.imageUrl} />
 				)}
-				<div className="min-w-0 flex-1">
+				<div className="min-w-0 flex-1 space-y-1">
 					<p className="truncate font-medium">{option.name}</p>
 					{option.description && (
 						<p className="truncate text-muted-foreground text-sm">{option.description}</p>

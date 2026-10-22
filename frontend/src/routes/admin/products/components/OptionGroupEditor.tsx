@@ -104,7 +104,7 @@ export function OptionGroupEditor({ group, actions }: OptionGroupEditorProps) {
 			/>
 			<Modal
 				isOpen={isExpanded}
-				maxWidth="900px"
+				maxWidth="640px"
 				onClose={() => setIsExpanded(false)}
 				title={t("admin.products.options.editGroup")}
 				urlKey="product-option-group-edit"
@@ -140,7 +140,7 @@ export function OptionGroupEditor({ group, actions }: OptionGroupEditorProps) {
 								<Label>
 									<span className="text-muted-foreground">{t("admin.products.options.max")}</span>
 									<NumericInput
-										className="w-20"
+										className="w-32"
 										decimalScale={0}
 										onValueChange={({ floatValue }) => setDraft({ ...draft, maxSelect: floatValue ?? null })}
 										placeholder={t("admin.products.options.unlimited")}
@@ -148,35 +148,34 @@ export function OptionGroupEditor({ group, actions }: OptionGroupEditorProps) {
 									/>
 								</Label>
 								{draft.maxSelect !== 1 && (
-									<>
-										<div className="flex items-center gap-2 pb-2">
-											<Checkbox
-												aria-label={t("admin.products.options.allowRepeatSelection")}
-												checked={draft.allowRepeatSelection}
-												onChange={() =>
-													setDraft({ ...draft, allowRepeatSelection: !draft.allowRepeatSelection })
-												}
-											/>
-											<span>{t("admin.products.options.allowRepeatSelection")}</span>
-										</div>
-										<Label className="w-52">
-											<span>{t("admin.products.options.priceRule")}</span>
-											<CustomSelect
-												onChange={priceRule =>
-													setDraft({ ...draft, priceRule: priceRule as OptionGroup["priceRule"] })
-												}
-												options={[
-													{ label: t("admin.products.options.sum"), value: "sum" },
-													{ label: t("admin.products.options.highest"), value: "highest" },
-													{ label: t("admin.products.options.average"), value: "average" },
-												]}
-												value={draft.priceRule}
-											/>
-										</Label>
-									</>
+									<Label className="w-52">
+										<span>{t("admin.products.options.priceRule")}</span>
+										<CustomSelect
+											onChange={priceRule =>
+												setDraft({ ...draft, priceRule: priceRule as OptionGroup["priceRule"] })
+											}
+											options={[
+												{ label: t("admin.products.options.sum"), value: "sum" },
+												{ label: t("admin.products.options.highest"), value: "highest" },
+												{ label: t("admin.products.options.average"), value: "average" },
+											]}
+											value={draft.priceRule}
+										/>
+									</Label>
 								)}
 							</div>
-							<p className="text-muted-foreground text-xs">{t("admin.products.options.maxHelp")}</p>
+							{draft.maxSelect !== 1 && (
+								<div className="flex items-center gap-2">
+									<Checkbox
+										aria-label={t("admin.products.options.allowRepeatSelection")}
+										checked={draft.allowRepeatSelection}
+										onChange={() =>
+											setDraft({ ...draft, allowRepeatSelection: !draft.allowRepeatSelection })
+										}
+									/>
+									<span>{t("admin.products.options.allowRepeatSelection")}</span>
+								</div>
+							)}
 						</div>
 					</div>
 					{group.options.length > 0 && (
