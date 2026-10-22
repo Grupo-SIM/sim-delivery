@@ -11,7 +11,7 @@
 	display: none;
 }
 .storefront {
-	--store-header-height: 78px;
+	--store-header-height: 80px;
 	background: var(--background);
 }
 .storefront .storefront-header {
@@ -79,20 +79,24 @@
 }
 .storefront .welcome-hero-inner {
 	position: relative;
+	display: grid;
+	grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+	align-items: center;
 	max-width: 1152px;
 	min-height: 280px;
 	padding: 25px 20px 40px;
 	margin: auto;
 }
 .storefront .welcome-delivery {
-	position: absolute;
-	top: -7px;
-	right: 0;
-	width: 183px;
-	height: 267px;
+	grid-area: 1 / 2;
+	width: 100%;
+	height: auto;
+	align-self: end;
+	margin-bottom: 16px;
 	object-fit: contain;
 }
 .storefront .welcome-copy {
+	grid-area: 1 / 1;
 	position: relative;
 	z-index: 1;
 	max-width: 230px;
@@ -155,7 +159,7 @@
 }
 .storefront .unit-selection-heading h1 {
 	margin: 0;
-	font-family: var(--font-display);
+	font-family: var(--font-sans);
 	font-size: 22px;
 	font-weight: 900;
 	letter-spacing: -0.03em;
@@ -202,7 +206,7 @@
 	margin: 0;
 }
 .storefront .storefront-footer-content p.font-display {
-	font-family: var(--font-display);
+	font-family: var(--font-sans);
 	font-size: 15px;
 	font-weight: 900;
 	letter-spacing: -0.03em;
@@ -290,7 +294,7 @@
 	border: 0;
 }
 .storefront .storefront-banner > div {
-	max-width: 1152px;
+	max-width: 1112px;
 	aspect-ratio: 2.47;
 	border: 0;
 	border-radius: 20px;
@@ -529,9 +533,9 @@
 		font-size: 21px;
 	}
 	.storefront .welcome-delivery {
-		top: -25px;
-		width: 290px;
-		height: 425px;
+		max-width: 420px;
+		justify-self: end;
+		margin-bottom: 24px;
 	}
 	.storefront .welcome-eyebrow {
 		font-size: 16px;
@@ -576,10 +580,8 @@
 		min-height: 460px;
 	}
 	.storefront .welcome-delivery {
-		top: -45px;
-		right: 50px;
-		width: 355px;
-		height: 520px;
+		max-width: 480px;
+		align-self: center;
 	}
 	.storefront .welcome-copy h1 {
 		font-size: 76px;
@@ -597,7 +599,7 @@
 		font-size: 14px;
 	}
 	.storefront .welcome-delivery {
-		right: -25px;
+		margin-bottom: 24px;
 	}
 	.storefront .menu-item-content {
 		padding: 9px;
@@ -637,3 +639,91 @@ html:has(.storefront) { scrollbar-color: var(--muted-foreground) var(--backgroun
 .storefront .unit-store-content { padding-inline: 20px; }
 
 .storefront .unit-store-header [data-open="false"] { color: var(--muted-foreground) !important; }
+
+/* Keep storefront columns aligned at every viewport, including desktop side navigation. */
+.storefront .unit-store-content {
+	max-width: 1152px;
+}
+.storefront .unit-store-header > div:first-child {
+	justify-content: flex-start;
+}
+.storefront .store-toolbar {
+	margin-top: 8px;
+}
+.storefront .category-nav-anchor {
+	margin-top: 24px;
+	margin-bottom: 16px;
+}
+.storefront .category-nav {
+	margin-inline: 0;
+	padding-inline: 0;
+}
+.storefront .category-nav-docked {
+	padding-inline: max(20px, calc((100vw - 1112px) / 2));
+}
+.storefront .menu-section h2 {
+	font-family: var(--font-sans);
+}
+.storefront .menu-section {
+	scroll-margin-top: calc(var(--store-header-height) + 84px);
+}
+@media (max-width: 639px) {
+	.storefront .welcome-hero-inner {
+		grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+		padding-block: 24px 36px;
+	}
+	.storefront .welcome-copy h1 {
+		font-size: clamp(30px, 9.5vw, 48px);
+	}
+	.storefront .welcome-description {
+		margin-top: 18px;
+		font-size: 15px;
+		line-height: 1.5;
+	}
+	.storefront .welcome-order {
+		padding-left: 16px;
+		font-size: 15px;
+	}
+	.storefront .storefront-banner > div {
+		border-radius: 20px;
+	}
+	.storefront .store-hours {
+		padding: 0 0 0 12px;
+		border-width: 0 0 0 1px;
+		border-radius: 0;
+	}
+	.storefront .store-toolbar {
+		gap: 16px;
+		padding: 16px;
+	}
+	.storefront .menu-section h2 {
+		font-size: 22px;
+	}
+}
+
+.storefront,
+.storefront > main,
+.storefront-home,
+.storefront .storefront-header > div,
+.storefront .storefront-footer-content {
+	min-width: 0;
+	width: 100%;
+}
+.storefront .storefront-footer-content > div:first-child {
+	flex-wrap: wrap;
+	min-width: 0;
+}
+.storefront .storefront-footer-credit {
+	overflow-wrap: anywhere;
+}
+@media (max-width: 639px) {
+	.storefront .storefront-header > div {
+		gap: 12px;
+	}
+	.storefront .storefront-header-name > span:first-child {
+		font-size: 16px;
+	}
+	.storefront .storefront-sign-in {
+		padding: 10px 16px;
+	}
+}
