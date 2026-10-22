@@ -7,6 +7,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetPublicUnits, useGetPublicUnitsByUnitSlugMenu } from "@/lib/api";
 import { slug } from "@/lib/variant";
+import { StorefrontBannerCarousel } from "../../components/storefront";
 import { useSelectedUnitStore } from "@/stores";
 import {
 	CartBar,
@@ -18,6 +19,7 @@ import {
 	UnitStoreHeader,
 	UnitStoreSkeleton,
 } from "../$unitId/components";
+import { UnitStoreBanner } from "../$unitId/components/UnitStoreBanner";
 import { money } from "../$unitId/components/types";
 
 export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string; homepage?: boolean }) {
@@ -78,6 +80,11 @@ export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string
 
 	return (
 		<>
+			<StorefrontBannerCarousel
+				images={unit.bannerUrls.map((src, index) => ({ alt: `${unit.name} — banner ${index + 1}`, src }))}
+				label={t("store.unit.bannerCarousel")}
+			/>
+			<UnitStoreBanner urls={unit.bannerUrls} />
 			<Container className="unit-store-content space-y-6 py-5">
 				<UnitStoreHeader onReviewsClick={() => setReviewsOpen(true)} unit={unit} unitSlug={unitSlug} units={units} />
 

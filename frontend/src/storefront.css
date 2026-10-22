@@ -303,9 +303,11 @@
 .storefront .storefront-banner > div {
 	max-width: 1112px;
 	aspect-ratio: 2.47;
+	position: relative;
+	overflow: hidden;
 	border: 0;
 	border-radius: 20px;
-	box-shadow: 0 15px 24px color-mix(in srgb, var(--foreground) 10%, transparent);
+	box-shadow: none;
 }
 .storefront .unit-store-header h1 {
 	font-family: var(--font-display);
@@ -652,7 +654,7 @@ html:has(.storefront) { scrollbar-color: var(--muted-foreground) var(--backgroun
 	max-width: 1152px;
 }
 .storefront .unit-store-header > div:first-child {
-	justify-content: flex-start;
+	justify-content: space-between;
 }
 .storefront .store-toolbar {
 	margin-top: 8px;
@@ -732,5 +734,57 @@ html:has(.storefront) { scrollbar-color: var(--muted-foreground) var(--backgroun
 	}
 }
 
-/* Hours remain part of the toolbar without a separate frame. */
-.storefront .store-hours { border: 0; border-radius: 0; }
+/* Align the compact menu header and toolbar with the storefront reference. */
+.storefront .unit-store-content {
+	padding-top: 16px;
+}
+.storefront .unit-store-header {
+	position: relative;
+}
+.storefront .unit-store-header > div:first-child {
+	padding-right: 96px;
+	min-height: 28px;
+}
+.storefront .unit-store-header fieldset {
+	position: absolute;
+	top: 4px;
+	right: 0;
+}
+.storefront .unit-store-header > p {
+	margin-top: 8px;
+}
+.storefront .unit-store-header > div:last-child {
+	margin-top: 4px;
+}
+.storefront .store-hours {
+	padding: 0 0 0 12px;
+	border-width: 0 0 0 1px;
+	border-radius: 0;
+}
+.storefront .store-banner-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.storefront .store-banner-pagination {
+	position: absolute;
+	bottom: 12px;
+	inset-inline: 0;
+	display: flex;
+	justify-content: center;
+	gap: 6px;
+}
+.storefront .store-banner-pagination button {
+	width: 7px;
+	height: 7px;
+	padding: 0;
+	cursor: pointer;
+	background: rgb(255 255 255 / 60%);
+	border: 1px solid rgb(0 0 0 / 10%);
+	border-radius: 999px;
+}
+.storefront .store-banner-pagination button[aria-pressed="true"] {
+	width: 18px;
+	background: white;
+}
+
