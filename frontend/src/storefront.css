@@ -31,6 +31,11 @@
 	height: 46px;
 	border-radius: 0;
 }
+:root.dark .storefront .storefront-header img {
+	background: #fbf6ee;
+	padding: 4px;
+	border-radius: 8px;
+}
 .storefront .storefront-header-name > span:first-child {
 	color: var(--primary-foreground);
 }

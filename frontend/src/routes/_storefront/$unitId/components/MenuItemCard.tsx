@@ -45,10 +45,10 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 						src={item.imageUrl}
 					/>
 				) : (
-					<div className="flex h-full items-center justify-center text-muted-foreground/60">
+					<div className="flex h-full items-center justify-center bg-[#F1E6D6] text-muted-foreground/60">
 						<img
 							alt={t("store.menu.imagePlaceholder")}
-							className="w-1/3 object-contain opacity-35"
+							className="w-1/3 object-contain"
 							src={mobileIconUrl || "/apple-touch-icon.png"}
 						/>
 					</div>
