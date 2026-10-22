@@ -21,7 +21,6 @@ import { Route as AdminTagsIndexRouteImport } from './routes/admin/tags/index'
 import { Route as AdminStaffIndexRouteImport } from './routes/admin/staff/index'
 import { Route as AdminReviewsIndexRouteImport } from './routes/admin/reviews/index'
 import { Route as AdminReceiptTemplateIndexRouteImport } from './routes/admin/receipt-template/index'
-import { Route as AdminPromotionalImagesIndexRouteImport } from './routes/admin/promotional-images/index'
 import { Route as AdminProductsIndexRouteImport } from './routes/admin/products/index'
 import { Route as AdminOrdersIndexRouteImport } from './routes/admin/orders/index'
 import { Route as AdminInventoryIndexRouteImport } from './routes/admin/inventory/index'
@@ -105,12 +104,6 @@ const AdminReceiptTemplateIndexRoute =
   AdminReceiptTemplateIndexRouteImport.update({
     id: '/receipt-template/',
     path: '/receipt-template/',
-    getParentRoute: () => AdminRoute,
-  } as any)
-const AdminPromotionalImagesIndexRoute =
-  AdminPromotionalImagesIndexRouteImport.update({
-    id: '/promotional-images/',
-    path: '/promotional-images/',
     getParentRoute: () => AdminRoute,
   } as any)
 const AdminProductsIndexRoute = AdminProductsIndexRouteImport.update({
@@ -265,7 +258,6 @@ export interface FileRoutesByFullPath {
   '/admin/inventory/': typeof AdminInventoryIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
-  '/admin/promotional-images/': typeof AdminPromotionalImagesIndexRoute
   '/admin/receipt-template/': typeof AdminReceiptTemplateIndexRoute
   '/admin/reviews/': typeof AdminReviewsIndexRoute
   '/admin/staff/': typeof AdminStaffIndexRoute
@@ -302,7 +294,6 @@ export interface FileRoutesByTo {
   '/admin/inventory': typeof AdminInventoryIndexRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
   '/admin/products': typeof AdminProductsIndexRoute
-  '/admin/promotional-images': typeof AdminPromotionalImagesIndexRoute
   '/admin/receipt-template': typeof AdminReceiptTemplateIndexRoute
   '/admin/reviews': typeof AdminReviewsIndexRoute
   '/admin/staff': typeof AdminStaffIndexRoute
@@ -342,7 +333,6 @@ export interface FileRoutesById {
   '/admin/inventory/': typeof AdminInventoryIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/products/': typeof AdminProductsIndexRoute
-  '/admin/promotional-images/': typeof AdminPromotionalImagesIndexRoute
   '/admin/receipt-template/': typeof AdminReceiptTemplateIndexRoute
   '/admin/reviews/': typeof AdminReviewsIndexRoute
   '/admin/staff/': typeof AdminStaffIndexRoute
@@ -382,7 +372,6 @@ export interface FileRouteTypes {
     | '/admin/inventory/'
     | '/admin/orders/'
     | '/admin/products/'
-    | '/admin/promotional-images/'
     | '/admin/receipt-template/'
     | '/admin/reviews/'
     | '/admin/staff/'
@@ -419,7 +408,6 @@ export interface FileRouteTypes {
     | '/admin/inventory'
     | '/admin/orders'
     | '/admin/products'
-    | '/admin/promotional-images'
     | '/admin/receipt-template'
     | '/admin/reviews'
     | '/admin/staff'
@@ -458,7 +446,6 @@ export interface FileRouteTypes {
     | '/admin/inventory/'
     | '/admin/orders/'
     | '/admin/products/'
-    | '/admin/promotional-images/'
     | '/admin/receipt-template/'
     | '/admin/reviews/'
     | '/admin/staff/'
@@ -569,13 +556,6 @@ declare module '@tanstack/react-router' {
       path: '/receipt-template'
       fullPath: '/admin/receipt-template/'
       preLoaderRoute: typeof AdminReceiptTemplateIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/promotional-images/': {
-      id: '/admin/promotional-images/'
-      path: '/promotional-images'
-      fullPath: '/admin/promotional-images/'
-      preLoaderRoute: typeof AdminPromotionalImagesIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/products/': {
@@ -792,7 +772,6 @@ interface AdminRouteChildren {
   AdminInventoryIndexRoute: typeof AdminInventoryIndexRoute
   AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
   AdminProductsIndexRoute: typeof AdminProductsIndexRoute
-  AdminPromotionalImagesIndexRoute: typeof AdminPromotionalImagesIndexRoute
   AdminReceiptTemplateIndexRoute: typeof AdminReceiptTemplateIndexRoute
   AdminReviewsIndexRoute: typeof AdminReviewsIndexRoute
   AdminStaffIndexRoute: typeof AdminStaffIndexRoute
@@ -816,7 +795,6 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminInventoryIndexRoute: AdminInventoryIndexRoute,
   AdminOrdersIndexRoute: AdminOrdersIndexRoute,
   AdminProductsIndexRoute: AdminProductsIndexRoute,
-  AdminPromotionalImagesIndexRoute: AdminPromotionalImagesIndexRoute,
   AdminReceiptTemplateIndexRoute: AdminReceiptTemplateIndexRoute,
   AdminReviewsIndexRoute: AdminReviewsIndexRoute,
   AdminStaffIndexRoute: AdminStaffIndexRoute,

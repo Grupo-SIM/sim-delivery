@@ -8,7 +8,6 @@ import {
 	LuChartBar,
 	LuClipboardList,
 	LuFolderTree,
-	LuImages,
 	LuLandmark,
 	LuBadgeDollarSign,
 	LuLogOut,
@@ -106,12 +105,6 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 							label={t("admin.coupons.title")}
 							onNavigate={onNavigate}
 							to="/admin/coupons"
-						/>
-						<NavItem
-							icon={LuImages}
-							label={t("admin.promotionalImages.title")}
-							onNavigate={onNavigate}
-							to="/admin/promotional-images"
 						/>
 						<NavItem
 							icon={LuUsers}

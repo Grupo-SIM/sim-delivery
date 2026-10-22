@@ -8,7 +8,6 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetPublicUnits, useGetPublicUnitsByUnitSlugMenu } from "@/lib/api";
 import { slug } from "@/lib/variant";
 import { useSelectedUnitStore } from "@/stores";
-import { StorefrontBannerCarousel } from "../../components/storefront";
 import {
 	CartBar,
 	InfoPill,
@@ -79,13 +78,6 @@ export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string
 
 	return (
 		<>
-			<StorefrontBannerCarousel
-				images={[
-					...unit.promotionalImages.map(image => ({ alt: image.title, href: image.linkUrl, src: image.imageUrl })),
-					...unit.bannerUrls.map((src, index) => ({ alt: `${unit.name} — banner ${index + 1}`, src })),
-				]}
-				label={t("store.unit.bannerCarousel")}
-			/>
 			<Container className="unit-store-content space-y-6 py-5">
 				<UnitStoreHeader onReviewsClick={() => setReviewsOpen(true)} unit={unit} unitSlug={unitSlug} units={units} />
 

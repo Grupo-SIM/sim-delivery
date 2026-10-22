@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuBookOpen, LuClock, LuDoorClosed, LuImages, LuMessageCircle, LuSettings, LuSlash, LuTruck } from "react-icons/lu";
+import { LuBookOpen, LuClock, LuDoorClosed, LuMessageCircle, LuSettings, LuSlash, LuTruck } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { buttonClassName } from "@/components/ui/button-styles";
@@ -15,7 +15,6 @@ import { showAlert, showToast } from "@/stores";
 import { UnitDeliveryZonesEditor } from "./UnitDeliveryZonesEditor";
 import { UnitEditor } from "./UnitEditor";
 import { UnitHoursEditor } from "./UnitHoursEditor";
-import { UnitPromotionalImagesEditor } from "./UnitPromotionalImagesEditor";
 import { UnitWhatsAppEditor } from "./UnitWhatsAppEditor";
 
 interface UnitsTableProps {
@@ -30,7 +29,6 @@ export function UnitsTable({ units }: UnitsTableProps) {
 	const [hoursUnitId, setHoursUnitId] = useState<string | null>(null);
 	const [editorUnit, setEditorUnit] = useState<GetUnits200[number] | null>(null);
 	const [zonesUnit, setZonesUnit] = useState<GetUnits200[number] | null>(null);
-	const [promotionsUnit, setPromotionsUnit] = useState<GetUnits200[number] | null>(null);
 	const [whatsAppUnit, setWhatsAppUnit] = useState<GetUnits200[number] | null>(null);
 	const canManageWhatsApp = ["manager", "owner", "superAdmin"].includes(session?.user.role ?? "");
 
@@ -122,17 +120,6 @@ export function UnitsTable({ units }: UnitsTableProps) {
 												<LuSettings className="h-4 w-4" />
 											</Button>
 										</Tooltip>
-										<Tooltip content={t("admin.units.promotionalImages.action")}>
-											<Button
-												aria-label={t("admin.units.promotionalImages.action")}
-												onClick={() => setPromotionsUnit(unit)}
-												size="icon"
-												type="button"
-												variant="outline"
-											>
-												<LuImages className="h-4 w-4" />
-											</Button>
-										</Tooltip>
 										<Tooltip content={t("admin.units.hours.action")}>
 											<Button
 												aria-label={t("admin.units.hours.action")}
@@ -199,7 +186,6 @@ export function UnitsTable({ units }: UnitsTableProps) {
 			<UnitHoursEditor onClose={() => setHoursUnitId(null)} unitId={hoursUnitId} />
 			<UnitEditor onClose={() => setEditorUnit(null)} unit={editorUnit} />
 			<UnitDeliveryZonesEditor onClose={() => setZonesUnit(null)} unit={zonesUnit} />
-			<UnitPromotionalImagesEditor onClose={() => setPromotionsUnit(null)} unit={promotionsUnit} />
 			<UnitWhatsAppEditor onClose={() => setWhatsAppUnit(null)} unit={whatsAppUnit} />
 		</>
 	);

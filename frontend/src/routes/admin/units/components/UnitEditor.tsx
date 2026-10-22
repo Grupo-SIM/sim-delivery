@@ -1,7 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { BannerImagesEditor } from "@/components/storefront";
 import { Button } from "@/components/ui/button";
 import { CollapsibleModalSection } from "@/components/ui/CollapsibleModalSection";
 import { CustomSelect } from "@/components/ui/CustomSelect";
@@ -89,7 +88,6 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 	const { isPending: isSaving, mutate } = usePatchUnitsByUnitId();
 	const [address, setAddress] = useState<AddressState>(emptyAddress);
 	const [availability, setAvailability] = useState<Availability>("auto");
-	const [bannerUrls, setBannerUrls] = useState<string[]>([""]);
 	const [cashback, setCashback] = useState(0);
 	const [cepError, setCepError] = useState<string | null>(null);
 	const [imageUrl, setImageUrl] = useState("");
@@ -108,7 +106,6 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 	useEffect(() => {
 		setAddress(toAddressState(unit));
 		setAvailability(toAvailability(unit?.isOpenManual ?? null));
-		setBannerUrls(unit?.bannerUrls.length ? unit.bannerUrls : [""]);
 		setCashback(unit?.cashbackPercent ?? 0);
 		setCepError(null);
 		setImageUrl(unit?.imageUrl ?? "");
@@ -154,7 +151,6 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 			{
 				data: {
 					...address,
-					bannerUrls: bannerUrls.map(bannerUrl => bannerUrl.trim()).filter(Boolean),
 					cashbackPercent: cashback,
 					facebookUrl: localFacebookUrl.trim() || null,
 					imageUrl: imageUrl.trim() || null,
@@ -375,14 +371,6 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 					/>
 				</section>
 
-				<section className="space-y-4 border-border border-t pt-6">
-					<h2 className="font-semibold text-lg">{t("admin.units.banner.title")}</h2>
-					<BannerImagesEditor
-						bannerUrls={bannerUrls}
-						onChange={setBannerUrls}
-						onUploadError={() => void showAlert(t("admin.units.banner.uploadError"))}
-					/>
-				</section>
 
 				<div className="flex justify-end gap-2 pt-2">
 					<Button onClick={onClose} type="button" variant="outline">

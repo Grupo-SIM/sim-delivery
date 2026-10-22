@@ -5,8 +5,6 @@ export { InfoPill } from "./InfoPill";
 export { MenuBrowser } from "./MenuBrowser";
 export { OptionImagePreviewModal } from "./OptionImagePreviewModal";
 export { ProductDetailsModal } from "./ProductDetailsModal";
-export { PromotionalCarousel } from "./PromotionalCarousel";
-export { PromotionalSlide } from "./PromotionalSlide";
 export { StoreHoursModal } from "./StoreHoursModal";
 export { StoreToolbar } from "./StoreToolbar";
 export { UnitContactLinks } from "./UnitContactLinks";

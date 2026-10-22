@@ -882,48 +882,6 @@
 					"title": "Lojas do produto"
 				}
 			},
-			"promotionalImages": {
-				"columns": {
-					"image": "Imagem",
-					"link": "Link"
-				},
-				"create": {
-					"error": "Não foi possível criar a imagem promocional.",
-					"saving": "Salvando...",
-					"submit": "Adicionar imagem promocional"
-				},
-				"delete": {
-					"action": "Excluir",
-					"confirm": "Excluir a imagem {{title}}?",
-					"error": "Não foi possível excluir a imagem promocional.",
-					"success": "Imagem promocional excluída."
-				},
-				"edit": {
-					"action": "Editar",
-					"error": "Não foi possível salvar a imagem promocional.",
-					"title": "Editar imagem promocional"
-				},
-				"empty": "Nenhuma imagem promocional ainda.",
-				"fields": {
-					"image": "Imagem",
-					"link": "Link",
-					"title": "Título",
-					"titlePlaceholder": "Ex: Promoção de fim de semana"
-				},
-				"loadError": "Não foi possível carregar as imagens promocionais.",
-				"search": {
-					"label": "Buscar imagens promocionais",
-					"placeholder": "Título da imagem"
-				},
-				"subtitle": "Banners promocionais reutilizáveis entre unidades.",
-				"title": "Imagens promocionais",
-				"units": {
-					"action": "Unidades",
-					"title": "Associar imagem às unidades"
-				},
-				"upload": "Enviar imagem promocional",
-				"uploadError": "Não foi possível enviar a imagem."
-			},
 			"receiptTemplate": {
 				"actions": {
 					"remove": "Remover do recibo",
@@ -1588,11 +1546,6 @@
 				"loadError": "Não foi possível carregar as unidades.",
 				"menu": {
 					"action": "Cardápio"
-				},
-				"promotionalImages": {
-					"action": "Imagens Promocionais",
-					"empty": "Cadastre imagens promocionais antes de associá-las.",
-					"title": "Imagens promocionais da unidade"
 				},
 				"row": {
 					"activate": "Reativar",
