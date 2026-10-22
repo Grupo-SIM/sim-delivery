@@ -26,7 +26,6 @@ export function StorefrontHeader({
 	profileMenuLogoutTo,
 	profileMenuOnlyLogout = false,
 	showBackToCustomerArea = false,
-	unitName,
 }: StorefrontHeaderProps) {
 	const { t } = useTranslation();
 	const role = useAuthStore(state => state.role);
@@ -44,12 +43,6 @@ export function StorefrontHeader({
 							{companyName.slice(0, 2).toUpperCase()}
 						</span>
 					)}
-					<span className="storefront-header-name flex min-w-0 flex-col">
-						<span className="truncate font-display text-primary text-xl tracking-wide">{companyName}</span>
-						{unitName && (
-							<span className="storefront-unit-name truncate text-muted-foreground text-sm">{unitName}</span>
-						)}
-					</span>
 				</Link>
 
 				<div className="flex items-center gap-4">

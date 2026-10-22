@@ -14,13 +14,6 @@ export function DeliveryMethodSelector({ deliveryMethods, unitId }: DeliveryMeth
 
 	if (deliveryMethods.length === 0) return <p className="font-semibold text-sm">—</p>;
 
-	if (deliveryMethods.length === 1) {
-		const method = deliveryMethods[0];
-		return (
-			<p className="font-semibold text-sm">{t(`store.checkout.order.${method}`, { defaultValue: method })}</p>
-		);
-	}
-
 	return (
 		<div className="delivery-method-selector flex overflow-hidden rounded-lg border border-border bg-muted text-xs">
 			{(["delivery", "pickup"] as DeliveryMethod[])

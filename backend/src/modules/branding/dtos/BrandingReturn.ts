@@ -3,6 +3,8 @@ import { __nullable__ } from "sql/typebox";
 import { OrderStatusEmailTemplates, OrderStatusWhatsAppTemplates, ThemeColors, ThemeMode } from "./BrandingInput";
 
 export const BrandingReturn = t.Object({
+	welcomeEyebrow: __nullable__(t.String()),
+	welcomeDescription: __nullable__(t.String()),
 	allowThemeToggle: t.Boolean(),
 	companyName: __nullable__(t.String()),
 	defaultTheme: ThemeMode,

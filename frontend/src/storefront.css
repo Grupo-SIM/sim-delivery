@@ -290,7 +290,7 @@
 /* Store menu: white toolbar, two-column cards, top category dock, full cart pill. */
 .storefront .storefront-banner {
 	padding: 0;
-	background: var(--primary);
+	background: linear-gradient(var(--primary) 50%, var(--background) 50%);
 	border: 0;
 }
 .storefront .storefront-banner > div {
@@ -727,3 +727,6 @@ html:has(.storefront) { scrollbar-color: var(--muted-foreground) var(--backgroun
 		padding: 10px 16px;
 	}
 }
+
+/* Hours remain part of the toolbar without a separate frame. */
+.storefront .store-hours { border: 0; border-radius: 0; }

@@ -38,7 +38,7 @@ export function StorefrontFooter({ branding }: StorefrontFooterProps) {
 							{branding?.footerText ?? `© ${year} ${companyName}. Todos os direitos reservados.`}
 						</p>
 						<p className="storefront-footer-credit text-muted-foreground text-xs">
-							Desenvolvido por{" "}
+							Desenvolvido por<br />
 							<a
 								className="cursor-pointer underline-offset-4 hover:text-foreground hover:underline"
 								href="https://simintermediacoes.com/"

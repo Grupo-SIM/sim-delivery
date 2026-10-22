@@ -33,7 +33,7 @@ for (const path of assets) {
 	assert(!/^\s*<!doctype html/i.test(body), `${path} returned SPA HTML`);
 	if (path.endsWith(".css")) {
 		assert(body.includes(".flex{"), "built CSS must contain Tailwind utilities");
-		assert(body.includes(".zero-grau-storefront"), "built CSS must contain storefront styles");
+		assert(body.includes(".storefront"), "built CSS must contain storefront styles");
 	}
 }
 

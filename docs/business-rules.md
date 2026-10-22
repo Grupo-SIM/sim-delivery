@@ -21,7 +21,7 @@ possui **N unidades** (lojas físicas). Detalhes em
 
 Quando a empresa possui apenas uma unidade disponível no catálogo público, ela é a
 unidade padrão: a homepage renderiza diretamente seu cardápio, mantendo a URL raiz.
-O nome da unidade aparece como subtítulo da empresa no cabeçalho, sem título duplicado. Com várias unidades, a homepage mantém a seleção de unidades.
+O cabeçalho mostra apenas o logotipo da empresa, sem nome da empresa ou da unidade. Com várias unidades, a homepage mantém a seleção de unidades.
 
 Na seleção de unidades, unidades sem imagem própria usam o logotipo da empresa
 centralizado, sem recorte. Não há configuração separada de imagem padrão da unidade.
@@ -30,7 +30,9 @@ centralizado, sem recorte. Não há configuração separada de imagem padrão da
 
 - Sem preferência salva do usuário, aplicar tema padrão da empresa, inclusive antes do login.
 - Com troca de tema habilitada, respeitar preferência salva do usuário. Com troca desabilitada, aplicar sempre tema padrão da empresa.
-- Tema do dispositivo não substitui automaticamente o padrão da empresa.
+- Tema do dispositivo só é aplicado quando não há preferência da conta nem da empresa.
+- Todas as empresas usam a mesma estrutura visual da vitrine, personalizada pelas cores, fontes e imagens do branding.
+- Texto de abertura e descrição da página inicial são editáveis no branding da empresa; valores vazios usam os textos padrão.
 
 ## Criação de pedidos
 

@@ -31,6 +31,7 @@ function BrandedProviders({ children }: { children: ReactNode }) {
 	useLayoutEffect(() => {
 		document.documentElement.classList.toggle("dark", mode === "dark");
 		document.documentElement.classList.toggle("light", mode === "light");
+		document.documentElement.style.colorScheme = mode;
 		syncStatusBarAppearance(mode);
 	}, [mode]);
 	useEffect(() => {

@@ -29,7 +29,7 @@ export function UnitHeroCard({ openLabel, unit }: UnitHeroCardProps) {
 						className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105"
 						src={imageUrl}
 					/>
-					<div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/40 to-transparent" />
+					<div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/10 to-transparent" />
 				</>
 			) : (
 				branding.logoUrl && (

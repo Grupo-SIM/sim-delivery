@@ -10,6 +10,8 @@ export class GetBranding {
 		const company = await this.prisma.company.findUnique({
 			select: {
 				allowThemeToggle: true,
+				welcomeEyebrow: true,
+				welcomeDescription: true,
 				defaultTheme: true,
 				fontDisplay: true,
 				fontDisplayUrl: true,
@@ -38,6 +40,8 @@ export class GetBranding {
 		});
 
 		return {
+			welcomeEyebrow: company?.welcomeEyebrow ?? null,
+			welcomeDescription: company?.welcomeDescription ?? null,
 			allowThemeToggle: company?.allowThemeToggle ?? true,
 			companyName: company?.name ?? null,
 			defaultTheme: company?.defaultTheme === "dark" ? "dark" : "light",

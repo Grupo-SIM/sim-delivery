@@ -32,6 +32,8 @@ describe("UpdateBranding", () => {
 
 		const result = await new UpdateBranding(prisma).execute({
 			companyId: "company_1",
+			welcomeEyebrow: "Seu pedido online",
+			welcomeDescription: "Direto na sua casa.",
 			footerInstagramUrl: "https://instagram.com/zero-grau",
 			footerPaymentMethods: ["Pix", "Crédito"],
 			footerSupportEmail: "contato@zero-grau.com",
@@ -42,6 +44,8 @@ describe("UpdateBranding", () => {
 
 		expect(result).toMatchObject({
 			companyName: "company_1",
+			welcomeEyebrow: "Seu pedido online",
+			welcomeDescription: "Direto na sua casa.",
 			footerInstagramUrl: "https://instagram.com/zero-grau",
 			footerPaymentMethods: ["Pix", "Crédito"],
 			footerSupportEmail: "contato@zero-grau.com",

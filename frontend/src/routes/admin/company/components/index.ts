@@ -13,3 +13,5 @@ export * from "./TrackingSection";
 export * from "./TypographySection";
 export * from "./types";
 export * from "./ImportPaletteButton";
+
+export { WelcomeCopySection } from "./WelcomeCopySection";

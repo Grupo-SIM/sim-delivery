@@ -15,7 +15,7 @@ interface MenuItemCardProps {
 
 export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 	const { t } = useTranslation();
-	const { mobileIconUrl } = useLiveBranding();
+	const { logoUrl, mobileIconUrl } = useLiveBranding();
 	const showFromPrice = hasPriceVariation(item.optionGroups);
 
 	const displayPriceCents = displayedUnitPrice(Number(item.fromPriceCents), item.productFees);
@@ -48,8 +48,8 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 					<div className="flex h-full items-center justify-center bg-[#F1E6D6] text-muted-foreground/60">
 						<img
 							alt={t("store.menu.imagePlaceholder")}
-							className="w-1/3 object-contain"
-							src={mobileIconUrl || "/apple-touch-icon.png"}
+							className="w-1/3 object-contain opacity-100"
+							src={logoUrl || mobileIconUrl || "/apple-touch-icon.png"}
 						/>
 					</div>
 				)}

@@ -17,6 +17,8 @@ model Company {
     unitFallbackImageUrl String?
     /// Ordered wide artwork shown as a carousel above the storefront unit selection.
     homepageBannerUrls String[] @default([])
+    welcomeEyebrow String?
+    welcomeDescription String?
     footerText  String?
     footerPaymentMethods String[] @default([])
     footerInstagramUrl String?

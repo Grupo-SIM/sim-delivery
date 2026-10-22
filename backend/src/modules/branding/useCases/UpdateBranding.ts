@@ -9,6 +9,8 @@ export class UpdateBranding {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute({
+		welcomeEyebrow,
+		welcomeDescription,
 		allowThemeToggle,
 		companyId,
 		defaultTheme,
@@ -37,6 +39,8 @@ export class UpdateBranding {
 
 		const company = await this.prisma.company.update({
 			data: {
+				welcomeEyebrow,
+				welcomeDescription,
 				allowThemeToggle,
 				defaultTheme,
 				fontDisplay,
@@ -62,6 +66,8 @@ export class UpdateBranding {
 			},
 			select: {
 				allowThemeToggle: true,
+				welcomeEyebrow: true,
+				welcomeDescription: true,
 				defaultTheme: true,
 				fontDisplay: true,
 				fontDisplayUrl: true,
@@ -90,6 +96,8 @@ export class UpdateBranding {
 		});
 
 		return {
+			welcomeEyebrow: company.welcomeEyebrow ?? null,
+			welcomeDescription: company.welcomeDescription ?? null,
 			allowThemeToggle: company.allowThemeToggle,
 			companyName: company.name,
 			defaultTheme: company.defaultTheme === "dark" ? "dark" : "light",

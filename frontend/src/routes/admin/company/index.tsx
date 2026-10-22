@@ -13,6 +13,7 @@ import { slug } from "@/lib/variant";
 import { showToast } from "@/stores";
 import {
 	BrandAssetsSection,
+	WelcomeCopySection,
 	CompanyWhatsAppEditor,
 	type BrandAssetsState,
 	defaultOrderStatusTemplates,
@@ -50,6 +51,8 @@ function BrandingPage() {
 	const [allowThemeToggle, setAllowThemeToggle] = useState(true);
 	const [defaultTheme, setDefaultTheme] = useState<keyof ThemeColors>("light");
 	const [themeColors, setThemeColors] = useState<ThemeColors>(defaultThemeColors);
+	const [welcomeEyebrow, setWelcomeEyebrow] = useState("");
+	const [welcomeDescription, setWelcomeDescription] = useState("");
 	const [assets, setAssets] = useState<BrandAssetsState>(emptyBrandAssets);
 	const [fonts, setFonts] = useState<FontsState>(emptyFonts);
 	const [footer, setFooter] = useState<FooterState>(emptyFooter);
@@ -63,6 +66,8 @@ function BrandingPage() {
 	useEffect(() => {
 		if (branding && !initialized) {
 			setInitialized(true);
+			setWelcomeEyebrow(branding.welcomeEyebrow ?? "");
+			setWelcomeDescription(branding.welcomeDescription ?? "");
 			setAllowThemeToggle(branding.allowThemeToggle);
 			setDefaultTheme(branding.defaultTheme);
 			setThemeColors(resolveThemeColors(branding.themeColors));
@@ -120,6 +125,7 @@ function BrandingPage() {
 	}, [branding, initialized]);
 
 	const serializedSettings = JSON.stringify({
+ welcomeEyebrow, welcomeDescription,
 					allowThemeToggle,
 					defaultTheme,
 					fontDisplay: fonts.display.trim() || undefined,
@@ -214,6 +220,8 @@ function BrandingPage() {
 						onThemeColorsChange={setThemeColors}
 						themeColors={themeColors}
 					/>
+
+					<WelcomeCopySection eyebrow={welcomeEyebrow} description={welcomeDescription} onEyebrowChange={setWelcomeEyebrow} onDescriptionChange={setWelcomeDescription} />
 
 					<BrandAssetsSection
 						assets={assets}

@@ -100,7 +100,7 @@ export function StorefrontBannerCarousel({ className, images, label }: Storefron
 					<>
 						<button
 							aria-label="Banner anterior"
-							className="absolute top-1/2 left-3 grid size-9 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-white/60 bg-black/35 text-white shadow-md backdrop-blur-sm transition hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+							className="absolute top-1/2 left-3 hidden sm:grid size-9 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-white/60 bg-black/35 text-white shadow-md backdrop-blur-sm transition hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
 							onClick={selectPrevious}
 							type="button"
 						>
@@ -108,7 +108,7 @@ export function StorefrontBannerCarousel({ className, images, label }: Storefron
 						</button>
 						<button
 							aria-label="Próximo banner"
-							className="absolute top-1/2 right-3 grid size-9 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-white/60 bg-black/35 text-white shadow-md backdrop-blur-sm transition hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+							className="absolute top-1/2 right-3 hidden sm:grid size-9 -translate-y-1/2 cursor-pointer place-items-center rounded-full border border-white/60 bg-black/35 text-white shadow-md backdrop-blur-sm transition hover:bg-black/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
 							onClick={selectNext}
 							type="button"
 						>

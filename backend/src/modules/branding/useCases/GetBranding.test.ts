@@ -3,6 +3,8 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import { GetBranding } from "./GetBranding";
 
 interface CompanyRow {
+	welcomeEyebrow?: string;
+	welcomeDescription?: string;
 	footerPaymentMethods: string[];
 	homepageBannerUrls: string[];
 	id: string;
@@ -15,6 +17,8 @@ interface CompanyRow {
 }
 
 const baseCompany: CompanyRow = {
+	welcomeEyebrow: "Peça online",
+	welcomeDescription: "Tudo que você gosta, em casa.",
 	footerPaymentMethods: ["Pix"],
 	homepageBannerUrls: ["https://cdn.zero-grau.com/homepage-banner.png"],
 	id: "cmp_1",
@@ -52,6 +56,8 @@ describe("GetBranding", () => {
 
 		expect(result).toMatchObject({
 			companyName: "Zero Grau",
+			welcomeEyebrow: "Peça online",
+			welcomeDescription: "Tudo que você gosta, em casa.",
 			footerPaymentMethods: ["Pix"],
 			homepageBannerUrls: ["https://cdn.zero-grau.com/homepage-banner.png"],
 			logoUrl: "https://cdn.zero-grau.com/logo.png",

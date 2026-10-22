@@ -146,6 +146,7 @@
 				"sectionTheme": "Tema e cores",
 				"sectionTracking": "Rastreamento de marketing",
 				"sectionTypography": "Tipografia",
+				"sectionWelcome": "Textos da página inicial",
 				"subtitle": "Tema, imagens, rodapé, notificações e rastreamento da sua empresa.",
 				"themeColors": "Cores do tema",
 				"themeSummary": "{{theme}} padrão · {{toggle}}",
@@ -155,6 +156,8 @@
 				"trackingSummaryEmpty": "Nenhum ID configurado",
 				"typographySummaryEmpty": "Fontes padrão do sistema",
 				"uploadError": "Não foi possível enviar o arquivo.",
+				"welcomeDescription": "Descrição da página inicial",
+				"welcomeEyebrow": "Texto de abertura",
 				"paletteImport": {
 					"action": "Importar imagem da paleta (SVG)",
 					"error": "Arquivo inválido. Use a imagem SVG baixada no template SIM Delivery, com todas as cores em HEX.",
@@ -1883,7 +1886,7 @@
 						"otpInvalid": "Código inválido ou expirado.",
 						"otpSend": "Não foi possível enviar o código pelo WhatsApp. Tente novamente.",
 						"passwordRequiresEmail": "Para entrar com senha, informe um e-mail válido.",
-						"phoneLoginNotEnabled": "Login por celular não foi habilitado nesta empresa. Entre por e-mail.",
+						"phoneLoginNotEnabled": "Login por celular não foi habilitado. Entre por e-mail.",
 						"rateLimited": "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
 						"send": "Não foi possível enviar o link. Tente novamente."
 					},
