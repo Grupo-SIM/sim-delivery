@@ -127,11 +127,9 @@ const prisma = new PrismaClient({ adapter });
 
 let company: CompanyBranding | null;
 try {
-	company = await prisma.company.findUnique({
+	const branding = await prisma.company.findUnique({
 		select: {
 			allowThemeToggle: true,
-			welcomeEyebrow: true,
-			welcomeDescription: true,
 			apiUrl: true,
 			defaultTheme: true,
 			fontDisplay: true,
@@ -151,6 +149,24 @@ try {
 		},
 		where: { slug },
 	});
+	// Builds can precede deployment migrations. JSON lookup returns null for absent
+	// optional copy columns while still surfacing database/required branding errors.
+	const [welcomeCopy] = branding
+		? await prisma.$queryRaw<
+				{ welcomeEyebrow: string | null; welcomeDescription: string | null }[]
+			>`
+				SELECT to_jsonb(c)->>'welcomeEyebrow' AS "welcomeEyebrow",
+				       to_jsonb(c)->>'welcomeDescription' AS "welcomeDescription"
+				FROM "company" AS c WHERE c."slug" = ${slug}
+			`
+		: [];
+	company = branding
+		? {
+				...branding,
+				welcomeEyebrow: welcomeCopy?.welcomeEyebrow ?? null,
+				welcomeDescription: welcomeCopy?.welcomeDescription ?? null,
+			}
+		: null;
 } finally {
 	await prisma.$disconnect();
 }
