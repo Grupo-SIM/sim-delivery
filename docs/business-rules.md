@@ -26,6 +26,12 @@ O nome da unidade aparece como subtítulo da empresa no cabeçalho, sem título 
 Na seleção de unidades, unidades sem imagem própria usam o logotipo da empresa
 centralizado, sem recorte. Não há configuração separada de imagem padrão da unidade.
 
+## Tema visual
+
+- Sem preferência salva do usuário, aplicar tema padrão da empresa, inclusive antes do login.
+- Com troca de tema habilitada, respeitar preferência salva do usuário. Com troca desabilitada, aplicar sempre tema padrão da empresa.
+- Tema do dispositivo não substitui automaticamente o padrão da empresa.
+
 ## Criação de pedidos
 
 - Pedido pendente de pagamento não bloqueia novos pedidos do mesmo cliente/unidade.

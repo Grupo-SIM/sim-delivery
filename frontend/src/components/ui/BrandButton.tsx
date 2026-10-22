@@ -8,11 +8,11 @@ interface BrandButtonProps extends ComponentPropsWithoutRef<"button"> {
 	children: ReactNode;
 }
 const tones: Record<BrandTone, string> = {
-	accent: "border-accent bg-accent text-accent-foreground hover:bg-accent/90",
-	cyan: "border-secondary bg-secondary text-secondary-foreground hover:bg-secondary/80",
+	accent: "border-border bg-accent text-accent-foreground hover:bg-accent/90",
+	cyan: "border-border bg-secondary text-secondary-foreground hover:bg-secondary/80",
 	outline: "border-border bg-transparent text-foreground hover:bg-muted",
-	primary: "border-primary bg-primary text-primary-foreground hover:bg-primary/90",
-	whatsapp: "border-success bg-success text-background hover:bg-success/90",
+	primary: "border-border bg-primary text-primary-foreground hover:bg-primary/90",
+	whatsapp: "border-border bg-success text-background hover:bg-success/90",
 };
 export function BrandButton({
 	children,
