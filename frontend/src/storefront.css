@@ -295,7 +295,7 @@
 }
 /* Store menu: white toolbar, two-column cards, top category dock, full cart pill. */
 .storefront .storefront-banner {
-	padding: 0;
+	padding: 16px;
 	background: var(--background);
 	border: 0;
 }
