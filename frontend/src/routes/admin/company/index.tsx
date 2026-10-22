@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/Container";
@@ -42,7 +42,10 @@ function BrandingPage() {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const { data: branding, isError, isPending } = useGetBranding(slug ? { slug } : undefined);
-	const put = usePutBranding();
+	const { mutate } = usePutBranding();
+	const [initialized, setInitialized] = useState(false);
+	const [saving, setSaving] = useState(false);
+	const lastAttempt = useRef<string | null>(null);
 
 	const [allowThemeToggle, setAllowThemeToggle] = useState(true);
 	const [defaultTheme, setDefaultTheme] = useState<keyof ThemeColors>("light");
@@ -58,7 +61,8 @@ function BrandingPage() {
 		useState<OrderStatusEmailTemplates>(emptyOrderStatusEmailTemplates);
 
 	useEffect(() => {
-		if (branding) {
+		if (branding && !initialized) {
+			setInitialized(true);
 			setAllowThemeToggle(branding.allowThemeToggle);
 			setDefaultTheme(branding.defaultTheme);
 			setThemeColors(resolveThemeColors(branding.themeColors));
@@ -113,12 +117,9 @@ function BrandingPage() {
 				) as OrderStatusEmailTemplates,
 			);
 		}
-	}, [branding]);
+	}, [branding, initialized]);
 
-	function save() {
-		put.mutate(
-			{
-				data: {
+	const serializedSettings = JSON.stringify({
 					allowThemeToggle,
 					defaultTheme,
 					fontDisplay: fonts.display.trim() || undefined,
@@ -162,17 +163,34 @@ function BrandingPage() {
 						]),
 					),
 					themeColors,
+				});
+
+	useEffect(() => {
+		if (!initialized) return;
+		if (lastAttempt.current === null) {
+			lastAttempt.current = serializedSettings;
+			return;
+		}
+		if (saving || lastAttempt.current === serializedSettings) return;
+
+		// Serialize writes so an older request cannot overwrite newer edits.
+		const timer = setTimeout(() => {
+			lastAttempt.current = serializedSettings;
+			setSaving(true);
+			mutate(
+				{ data: JSON.parse(serializedSettings) },
+				{
+					onError: () => showToast(t("admin.branding.saveError"), "negative"),
+					onSuccess: () => {
+						void queryClient.invalidateQueries({ queryKey: getBrandingQueryKey(slug ? { slug } : undefined) });
+						showToast(t("admin.branding.saveSuccess"), "positive");
+					},
+					onSettled: () => setSaving(false),
 				},
-			},
-			{
-				onError: () => showToast(t("admin.branding.saveError"), "negative"),
-				onSuccess: () => {
-					queryClient.invalidateQueries({ queryKey: getBrandingQueryKey(slug ? { slug } : undefined) });
-					showToast(t("admin.branding.saveSuccess"), "positive");
-				},
-			},
-		);
-	}
+			);
+		}, 500);
+		return () => clearTimeout(timer);
+	}, [initialized, mutate, queryClient, saving, serializedSettings, t]);
 
 	return (
 		<Container className="space-y-6 py-8" size="md">
@@ -229,9 +247,6 @@ function BrandingPage() {
 
 					<Button className="w-fit" onClick={() => setWhatsAppOpen(true)} type="button" variant="outline">Configurar WhatsApp global</Button>
 
-					<Button className="ml-auto flex w-fit" disabled={put.isPending} onClick={save} type="button">
-						{put.isPending ? t("admin.branding.saving") : t("admin.branding.save")}
-					</Button>
 					<CompanyWhatsAppEditor onClose={() => setWhatsAppOpen(false)} open={whatsAppOpen} />
 				</div>
 			)}
