@@ -1,4 +1,4 @@
-/* Storefront: proportions and surfaces from the supplied app artwork. */
+/* Storefront surfaces follow the active company identity. */
 .brand-wave {
 	position: absolute;
 	bottom: -1px;
@@ -32,7 +32,7 @@
 	border-radius: 0;
 }
 .storefront .storefront-header-name > span:first-child {
-	display: none;
+	color: var(--primary-foreground);
 }
 .storefront .storefront-unit-name {
 	font-size: 16px;
@@ -46,7 +46,7 @@
 	padding: 11px 22px;
 	font-size: 16px;
 	font-weight: 900;
-	color: var(--primary);
+	color: var(--accent-foreground);
 	background: var(--accent);
 	border: 1px solid var(--accent);
 }
@@ -59,7 +59,7 @@
 	width: 42px;
 	height: 42px;
 	font-weight: 900;
-	color: var(--primary);
+	color: var(--accent-foreground);
 	background: var(--accent);
 }
 .storefront .welcome-hero {
@@ -82,8 +82,7 @@
 	right: 0;
 	width: 183px;
 	height: 267px;
-	object-fit: cover;
-	mask-image: linear-gradient(to right, transparent, black 8%);
+	object-fit: contain;
 }
 .storefront .welcome-copy {
 	position: relative;
@@ -94,7 +93,7 @@
 	margin-bottom: 8px;
 	font-size: 12px;
 	font-weight: 800;
-	color: var(--secondary);
+	color: var(--primary-foreground);
 	letter-spacing: 0.13em;
 }
 .storefront .welcome-copy h1 {
@@ -123,7 +122,7 @@
 	margin-top: 18px;
 	font-size: 16px;
 	font-weight: 900;
-	color: var(--primary);
+	color: var(--accent-foreground);
 	cursor: pointer;
 	background: var(--accent);
 	border: 1px solid var(--accent);
@@ -148,7 +147,7 @@
 }
 .storefront .unit-selection-heading h1 {
 	margin: 0;
-	font-family: var(--font-sans);
+	font-family: var(--font-display);
 	font-size: 22px;
 	font-weight: 900;
 	letter-spacing: -0.03em;
@@ -164,9 +163,10 @@
 	border-radius: 20px;
 }
 .storefront .unit-hero-card:not(.unit-hero-photo) {
-	color: var(--primary);
+	color: var(--accent-foreground);
 }
 .storefront .unit-hero-card:nth-child(even):not(.unit-hero-photo) {
+	color: var(--secondary-foreground);
 	background: var(--secondary);
 }
 .storefront .storefront-footer {
@@ -194,7 +194,7 @@
 	margin: 0;
 }
 .storefront .storefront-footer-content p.font-display {
-	font-family: var(--font-sans);
+	font-family: var(--font-display);
 	font-size: 15px;
 	font-weight: 900;
 	letter-spacing: -0.03em;
@@ -498,7 +498,7 @@
 	height: 26px;
 	padding: 0 7px;
 	font-weight: 900;
-	color: var(--primary);
+	color: var(--accent-foreground);
 	background: var(--accent);
 	border-radius: 999px;
 }

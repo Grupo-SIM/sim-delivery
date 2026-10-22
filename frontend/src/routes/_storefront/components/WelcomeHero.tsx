@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { LuArrowDown } from "react-icons/lu";
+import { DeliveryIllustration } from "@/components/ui/DeliveryIllustration";
 import { BrandWave } from "@/components/ui/BrandWave";
 
 export function WelcomeHero() {
@@ -7,7 +8,7 @@ export function WelcomeHero() {
 	return (
 		<section className="welcome-hero">
 			<div className="welcome-hero-inner">
-				<img alt="" className="welcome-delivery" src="/storefront/delivery.webp" />
+				<DeliveryIllustration className="welcome-delivery" />
 				<div className="welcome-copy">
 					<p className="welcome-eyebrow">{t("store.welcome.eyebrow")}</p>
 					<h1 className="font-display">

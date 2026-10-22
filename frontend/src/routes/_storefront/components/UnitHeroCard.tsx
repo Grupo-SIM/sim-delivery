@@ -17,7 +17,7 @@ export function UnitHeroCard({ openLabel, unit }: UnitHeroCardProps) {
 		<Link
 			className={cn(
 				"unit-hero-card group relative flex aspect-[1.2] cursor-pointer flex-col justify-between overflow-hidden rounded-3xl bg-accent p-3 text-accent-foreground transition-shadow hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-5",
-				imageUrl && "unit-hero-photo text-white",
+				imageUrl && "unit-hero-photo text-primary-foreground",
 			)}
 			params={{ unitId: unit.slug }}
 			to="/$unitId"
@@ -41,8 +41,8 @@ export function UnitHeroCard({ openLabel, unit }: UnitHeroCardProps) {
 				)
 			)}
 			<span
-				className="relative flex w-fit items-center gap-1.5 rounded-full bg-white px-2.5 py-1 font-bold text-xs sm:text-sm"
-				style={{ color: unit.isOpenNow ? "#167437" : "var(--muted-foreground)" }}
+				className="relative flex w-fit items-center gap-1.5 rounded-full bg-card px-2.5 py-1 font-bold text-xs sm:text-sm"
+				style={{ color: unit.isOpenNow ? "var(--card-foreground)" : "var(--muted-foreground)" }}
 			>
 				<span
 					className={cn("size-1.5 rounded-full", unit.isOpenNow ? "bg-success" : "bg-muted-foreground")}
