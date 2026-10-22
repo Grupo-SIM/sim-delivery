@@ -65,7 +65,7 @@ export function FeeForm({ initial = defaults, isPending, lockKind = false, onCan
 				<span>Valor <RequiredMark /></span>
 				<NumericFormat
 					allowNegative={false}
-					className="flex h-11 w-full rounded-md border border-input bg-surface px-3 py-2 text-sm placeholder:text-muted-foreground/70"
+					className="flex h-11 w-full rounded-md border border-input bg-surface text-card-foreground px-3 py-2 text-sm placeholder:text-muted-foreground/70"
 					decimalScale={form.calculationType === "percentage" ? 2 : 2}
 					decimalSeparator=","
 					isAllowed={({ floatValue }) => floatValue === undefined || (floatValue > 0 && (form.calculationType !== "percentage" || floatValue <= 100))}

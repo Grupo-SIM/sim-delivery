@@ -4,9 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/ui/Container";
 import { DisplayHeading } from "@/components/ui/DisplayHeading";
 import { GradientCard } from "@/components/ui/GradientCard";
+import { useLiveBranding } from "@/hooks/use-live-branding";
+import { useThemePreference } from "@/hooks/use-theme-preference";
 import { KitSection, Swatch } from "./components";
 
 function DesignKitPage() {
+ const branding = useLiveBranding();
+ const { mode } = useThemePreference(branding.allowThemeToggle, branding.defaultTheme);
+ const colors = branding.themeColors[mode];
 	return (
 		<div className="min-h-screen bg-background py-12">
 			<Container className="space-y-16">
@@ -24,29 +29,19 @@ function DesignKitPage() {
 
 				{/* Palette */}
 				<KitSection
-					description="Azul royal é a cor de ação; amarelo e ciano são acentos decorativos. Vermelho para estados negativos."
+					description="Papéis fixos, cores da empresa atual: marca para ações e seleção, apoio para painéis de marca, destaque para promoções; estados usam suas próprias cores."
 					title="Paleta"
 				>
 					<div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-						<Swatch className="bg-brand-blue" name="Blue" value="#0012FF" />
-						<Swatch className="bg-brand-blue-light" name="Blue Light" value="#3342FF" />
-						<Swatch
-							className="bg-brand-yellow"
-							name="Yellow"
-							textClassName="text-brand-blue"
-							value="#FFED00"
-						/>
-						<Swatch
-							className="bg-brand-yellow-dark"
-							name="Yellow Dark"
-							textClassName="text-brand-blue"
-							value="#E6D600"
-						/>
-						<Swatch className="bg-brand-cyan" name="Cyan" textClassName="text-brand-ink" value="#00E5FF" />
-						<Swatch className="bg-brand-cyan-deep" name="Cyan Deep" value="#00B4D8" />
-						<Swatch className="bg-brand-red" name="Red Liras" value="#E33E2B" />
-						<Swatch className="bg-brand-ink" name="Ink" value="#1A1A2E" />
-					</div>
+ <Swatch className="bg-primary" name="Marca e ações" textClassName="text-primary-foreground" value={colors.primary} />
+ <Swatch className="bg-secondary" name="Apoio da marca" textClassName="text-secondary-foreground" value={colors.secondary} />
+ <Swatch className="bg-accent" name="Destaque promocional" textClassName="text-accent-foreground" value={colors.accent} />
+ <Swatch className="bg-card" name="Cartões" textClassName="text-card-foreground" value={colors.card} />
+ <Swatch className="bg-popover" name="Menus e pop-ups" textClassName="text-popover-foreground" value={colors.popover} />
+ <Swatch className="bg-muted" name="Apoio neutro" textClassName="text-muted-foreground" value={colors.muted} />
+ <Swatch className="bg-foreground" name="Conteúdo" textClassName="text-background" value={colors.foreground} />
+ <Swatch className="bg-destructive" name="Erro / exclusão" textClassName="text-destructive-foreground" value={colors.destructive} />
+ </div>
 				</KitSection>
 
 				{/* Typography */}
@@ -54,7 +49,7 @@ function DesignKitPage() {
 					description="Luckiest Guy para títulos de destaque; Outfit para todo o resto (400 → 900)."
 					title="Tipografia"
 				>
-					<div className="space-y-6 rounded-brand border border-border bg-card p-8 shadow-soft">
+					<div className="space-y-6 rounded-brand border border-border bg-card text-card-foreground p-8 shadow-soft">
 						<div className="space-y-1">
 							<span className="text-muted-foreground text-xs uppercase tracking-wide">
 								Display — Luckiest Guy
@@ -78,9 +73,9 @@ function DesignKitPage() {
 					title="Botões"
 				>
 					<div className="flex flex-wrap items-center gap-4">
-						<BrandButton tone="primary">Fazer pedido</BrandButton>
-						<BrandButton tone="accent">Ver cardápio</BrandButton>
-						<BrandButton tone="cyan">Novidades</BrandButton>
+						<BrandButton tone="accent">Fazer pedido</BrandButton>
+						<BrandButton tone="primary">Ver cardápio</BrandButton>
+						<BrandButton tone="secondary">Novidades</BrandButton>
 						<BrandButton tone="whatsapp">WhatsApp</BrandButton>
 						<BrandButton tone="outline">Saiba mais</BrandButton>
 					</div>
@@ -88,31 +83,31 @@ function DesignKitPage() {
 
 				{/* Cards */}
 				<KitSection
-					description="Cards de produto com gradiente e hover 3D — a assinatura visual da vitrine."
+					description="Painéis de marca com pares consistentes de fundo e texto."
 					title="Cards"
 				>
 					<div className="grid gap-6 sm:grid-cols-2">
-						<GradientCard tone="blue">
+						<GradientCard tone="primary">
 							<div>
 								<p className="font-display text-3xl">Sorvetes</p>
 								<p className="opacity-90">Do jeito que você monta</p>
 							</div>
 						</GradientCard>
-						<GradientCard tone="yellow">
+						<GradientCard tone="accent">
 							<div>
 								<p className="font-display text-3xl">Açaí</p>
 								<p className="opacity-80">Cremoso e gelado</p>
 							</div>
 						</GradientCard>
-						<GradientCard tone="cyan">
+						<GradientCard tone="secondary">
 							<div>
 								<p className="font-display text-3xl">Milkshakes</p>
 								<p className="opacity-90">Cerca de mil combinações</p>
 							</div>
 						</GradientCard>
-						<GradientCard tone="instagram">
+						<GradientCard tone="inverse">
 							<div>
-								<p className="font-display text-3xl">@zerograu</p>
+								<p className="font-display text-3xl">Sua marca</p>
 								<p className="opacity-90">Siga a gente</p>
 							</div>
 						</GradientCard>
@@ -122,9 +117,9 @@ function DesignKitPage() {
 				{/* Badges */}
 				<KitSection description="Etiquetas de status em pílula, em todos os tons da marca." title="Badges">
 					<div className="flex flex-wrap gap-3">
-						<Badge tone="primary">Destaque</Badge>
-						<Badge tone="accent">Novo</Badge>
-						<Badge tone="cyan">Gelado</Badge>
+						<Badge tone="accent">Destaque</Badge>
+						<Badge tone="secondary">Novo</Badge>
+						<Badge tone="secondary">Gelado</Badge>
 						<Badge tone="success">Aberto</Badge>
 						<Badge tone="danger">Esgotado</Badge>
 						<Badge tone="neutral">Em breve</Badge>
@@ -137,17 +132,17 @@ function DesignKitPage() {
 					title="Animações"
 				>
 					<div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-						<div className="flex h-32 items-center justify-center rounded-brand bg-card shadow-soft">
-							<span className="animate-float font-display text-2xl text-brand-blue">float</span>
+						<div className="flex h-32 items-center justify-center rounded-brand bg-card text-card-foreground shadow-soft">
+							<span className="animate-float font-display text-2xl text-primary">float</span>
 						</div>
-						<div className="flex h-32 items-center justify-center rounded-brand bg-card shadow-soft">
-							<span className="animate-float-slow font-display text-2xl text-brand-cyan-deep">slow</span>
+						<div className="flex h-32 items-center justify-center rounded-brand bg-card text-card-foreground shadow-soft">
+							<span className="animate-float-slow font-display text-2xl text-muted-foreground">slow</span>
 						</div>
-						<div className="flex h-32 items-center justify-center rounded-brand bg-card shadow-soft">
-							<span className="animate-float-fast font-display text-2xl text-brand-red">fast</span>
+						<div className="flex h-32 items-center justify-center rounded-brand bg-card text-card-foreground shadow-soft">
+							<span className="animate-float-fast font-display text-2xl text-primary">fast</span>
 						</div>
-						<div className="flex h-32 items-center justify-center rounded-brand bg-card shadow-soft">
-							<span className="animate-pulse-soon font-display text-2xl text-brand-yellow-dark">pulse</span>
+						<div className="flex h-32 items-center justify-center rounded-brand bg-card text-card-foreground shadow-soft">
+							<span className="animate-pulse-soon font-display text-2xl text-primary">pulse</span>
 						</div>
 					</div>
 				</KitSection>

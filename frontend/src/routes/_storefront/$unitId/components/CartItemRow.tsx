@@ -53,7 +53,7 @@ export function CartItemRow({ item, onEdit }: CartItemRowProps) {
 				)}
 
 				<textarea
-					className="min-h-9 w-full rounded border border-input bg-surface px-2 py-1 text-sm placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+					className="min-h-9 w-full rounded border border-input bg-surface text-card-foreground px-2 py-1 text-sm placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
 					onBlur={flushNote}
 					onChange={event => setLocalNote(event.currentTarget.value)}
 					placeholder={t("store.cart.notePlaceholder")}

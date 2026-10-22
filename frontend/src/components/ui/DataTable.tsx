@@ -14,7 +14,7 @@ export function DataTable({ children, className, tableClassName, ...props }: Dat
 		<div className="relative">
 			<div
 				className={cn(
-					"scrollbar-none max-h-[65vh] overflow-auto overscroll-contain rounded-md border border-border bg-card [-webkit-overflow-scrolling:touch] [&_thead]:sticky [&_thead]:top-0 [&_thead]:z-10 [&_thead]:bg-card",
+					"scrollbar-none max-h-[65vh] overflow-auto overscroll-contain rounded-md border border-border bg-card text-card-foreground [-webkit-overflow-scrolling:touch] [&_thead]:sticky [&_thead]:top-0 [&_thead]:z-10 [&_thead]:bg-card",
 					className,
 				)}
 				ref={setViewport}

@@ -42,7 +42,7 @@ export function SavedCardsSection() {
 	}
 
 	return (
-		<section className="space-y-4 rounded-xl border border-border bg-card p-5">
+		<section className="space-y-4 rounded-xl border border-border bg-card text-card-foreground p-5">
 			<div>
 				<h2 className="font-semibold text-lg">{t("store.account.profile.savedCards")}</h2>
 				<p className="text-muted-foreground text-sm">{t("store.account.profile.savedCardsHint")}</p>

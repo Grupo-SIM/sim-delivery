@@ -47,7 +47,7 @@ export function ProfileDetailsForm({ customer, isSaving, onSave, user }: Profile
 
 	return (
 		<form
-			className="space-y-4 rounded-xl border border-border bg-card p-5"
+			className="space-y-4 rounded-xl border border-border bg-card text-card-foreground p-5"
 			onSubmit={event => {
 				event.preventDefault();
 				onSave({ cpf: cpfDigits, email: trimmedEmail, name: trimmedName, phone: normalizedPhone });

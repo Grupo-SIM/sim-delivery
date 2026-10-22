@@ -34,7 +34,7 @@ export function DashboardOrdersByPeriodChart({
 					/>
 				</div>
 			</div>
-			<ScrollArea className="overflow-x-auto rounded-md border border-border bg-card px-5 py-4">
+			<ScrollArea className="overflow-x-auto rounded-md border border-border bg-card text-card-foreground px-5 py-4">
 				<div aria-label={title} className="flex h-[193px] min-w-max items-end gap-1" role="img">
 					{ordersByPeriod.map(item => {
 						const orderCount = Number(item.orderCount);

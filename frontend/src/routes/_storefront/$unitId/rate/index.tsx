@@ -94,7 +94,7 @@ function RatePage() {
 									onMouseEnter={() => setHovered(star)}
 										type="button"
 									>
-										<LuStar className={isSelected ? "size-6 fill-warning text-warning" : "size-6 text-foreground"} />
+										<LuStar className={isSelected ? "size-6 fill-accent text-accent" : "size-6 text-foreground"} />
 									</button>
 								);
 							})}

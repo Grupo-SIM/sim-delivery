@@ -82,7 +82,7 @@ export function CreateProductForm() {
 
 	return (
 		<form
-			className="group space-y-4 rounded-lg border border-border bg-card p-4"
+			className="group space-y-4 rounded-lg border border-border bg-card text-card-foreground p-4"
 			onSubmit={event => {
 				event.preventDefault();
 				flushText();
@@ -196,7 +196,7 @@ export function CreateProductForm() {
 				<Label>
 					{t("admin.products.create.description")}
 					<textarea
-						className="flex min-h-24 w-full rounded border border-input bg-surface px-3 py-2 text-sm transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+						className="flex min-h-24 w-full rounded border border-input bg-surface text-card-foreground px-3 py-2 text-sm transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
 						onBlur={flushDescription}
 						onChange={event => setLocalDescription(event.currentTarget.value)}
 						placeholder={t("admin.products.create.descriptionPlaceholder")}

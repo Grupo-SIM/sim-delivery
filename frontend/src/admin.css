@@ -54,7 +54,7 @@
 
 :root.dark .admin-brand-logo {
 	padding: 4px;
-	background: #fbf6ee;
+	background: var(--primary-foreground);
 	border-radius: 8px;
 }
 

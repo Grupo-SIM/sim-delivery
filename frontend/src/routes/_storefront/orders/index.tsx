@@ -8,20 +8,9 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetCustomerOrders } from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
+import { orderStatusClassName } from "@/lib/order-status-styles";
 import { slug } from "@/lib/variant";
 import { useAuthStore } from "@/stores/auth";
-
-/** Terminal statuses render muted; everything else reads as an active order. */
-const CLOSED_STATUSES = new Set(["entregue", "retirado", "cancelado"]);
-
-function statusToneClass(status: string): string {
-	if (status === "cancelado") return "bg-destructive/10 text-destructive";
-	if (status === "problema") return "bg-destructive/10 text-destructive";
-	if (status === "awaiting_payment") return "bg-warning/10 text-warning";
-	if (status === "recebido") return "bg-success/10 text-success";
-	if (CLOSED_STATUSES.has(status)) return "bg-muted text-muted-foreground";
-	return "bg-primary/10 text-primary";
-}
 
 function OrdersPage() {
 	const { t } = useTranslation();
@@ -75,7 +64,7 @@ function OrdersPage() {
 						return (
 							<li key={order.id}>
 								<Link
-									className="group flex items-center gap-3 rounded-lg border border-border bg-card p-3 transition hover:border-primary/40 hover:shadow-sm"
+									className="group flex items-center gap-3 rounded-lg border border-border bg-card text-card-foreground p-3 transition hover:border-primary/40 hover:shadow-sm"
 									params={{ orderId: order.id }}
 									to="/orders/$orderId"
 								>
@@ -89,7 +78,7 @@ function OrdersPage() {
 												{t("store.account.orders.identifier", { number: order.displayNumber })}
 											</span>
 											<span
-												className={`shrink-0 rounded-full px-2 py-0.5 font-semibold text-xs ${statusToneClass(visibleStatus)}`}
+												className={`shrink-0 rounded-full px-2 py-0.5 font-semibold text-xs ${orderStatusClassName(visibleStatus)}`}
 											>
 												{t(`store.checkout.tracking.status.${visibleStatus}`, {
 													defaultValue: visibleStatus,

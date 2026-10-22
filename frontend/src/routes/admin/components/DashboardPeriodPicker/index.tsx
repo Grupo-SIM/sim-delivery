@@ -44,7 +44,7 @@ export function DashboardPeriodPicker({ datePicker, labels, onChange, period }: 
 			<button
 				aria-expanded={open}
 				aria-haspopup="listbox"
-				className="flex h-11 w-full cursor-pointer items-center justify-between rounded-xl border border-input bg-background px-3 font-semibold text-sm shadow-sm outline-none ring-offset-background transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+				className="flex h-11 w-full cursor-pointer items-center justify-between rounded-xl border border-input bg-background px-3 font-semibold text-sm shadow-sm outline-none ring-offset-background transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 				onClick={() => setOpen(value => !value)}
 				type="button"
 			>
@@ -55,14 +55,14 @@ export function DashboardPeriodPicker({ datePicker, labels, onChange, period }: 
 			</button>
 			{open && (
 				<ScrollArea
-					className="absolute z-50 mt-2 max-h-80 w-full overflow-y-auto rounded-xl border border-border bg-popover py-1 shadow-medium"
+					className="absolute z-50 mt-2 max-h-80 w-full overflow-y-auto rounded-xl border border-border bg-popover text-popover-foreground py-1 shadow-medium"
 					role="listbox"
 				>
 					{dashboardPeriodValues.map(option => (
 						<button
 							aria-selected={option === period}
 							className={cn(
-								"flex w-full cursor-pointer items-center px-3 py-2 text-left text-sm transition-colors hover:bg-accent",
+								"flex w-full cursor-pointer items-center px-3 py-2 text-left text-sm transition-colors hover:bg-muted",
 								option === period && "bg-primary/10 font-semibold text-primary",
 							)}
 							key={option}

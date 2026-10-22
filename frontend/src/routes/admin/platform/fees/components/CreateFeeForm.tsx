@@ -19,5 +19,5 @@ export function CreateFeeForm() {
 		} catch { void showAlert("Não foi possível criar a taxa. Verifique nome e valor."); }
 		finally { setIsPending(false); }
 	}
-	return <div className="rounded-xl border border-border bg-card p-5"><h2 className="mb-4 font-semibold">Nova taxa</h2><FeeForm isPending={isPending} key={formKey} onSubmit={value => void create(value)} /></div>;
+	return <div className="rounded-xl border border-border bg-card text-card-foreground p-5"><h2 className="mb-4 font-semibold">Nova taxa</h2><FeeForm isPending={isPending} key={formKey} onSubmit={value => void create(value)} /></div>;
 }

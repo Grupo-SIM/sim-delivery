@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { LuStar } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 
 interface StarRatingProps {
@@ -16,7 +17,7 @@ export function StarRating({ average, className, count }: StarRatingProps) {
 
 	return (
 		<span className={cn("inline-flex items-center gap-1 text-sm", className)}>
-			<span aria-hidden>⭐</span>
+			<LuStar aria-hidden className="size-4 fill-accent text-accent" />
 			<span className="font-medium">{average.toFixed(1)}</span>
 			<span className="text-muted-foreground text-xs">({t("rating.count", { count })})</span>
 		</span>

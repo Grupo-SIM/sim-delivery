@@ -76,7 +76,7 @@ export function OperationsMetrics({ isPending, operations }: OperationsMetricsPr
 					<StatCard key={card.label} label={card.label} value={card.value} />
 				))}
 			</div>
-			<ScrollArea className="mt-4 overflow-x-auto rounded-md border border-border bg-card p-5">
+			<ScrollArea className="mt-4 overflow-x-auto rounded-md border border-border bg-card text-card-foreground p-5">
 				{isPending || !operations ? (
 					<Skeleton className="h-24" />
 				) : (

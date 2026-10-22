@@ -34,6 +34,16 @@ centralizado, sem recorte. Não há configuração separada de imagem padrão da
 - Todas as empresas usam a mesma estrutura visual da vitrine, personalizada pelas cores, fontes e imagens do branding.
 - Texto de abertura, título e descrição da página inicial são editáveis no branding da empresa; valores vazios usam os textos padrão.
 
+As cores seguem os mesmos papéis em todas as empresas; os valores da paleta salva não são convertidos para outra marca:
+
+- `primary` / `primaryForeground`: marca, ações principais, links e seleção ativa.
+- `secondary` / `secondaryForeground`: painéis de apoio da marca, incluindo unidades sem foto.
+- `accent` / `accentForeground`: chamadas promocionais, ofertas, benefícios e avaliações. Não indica erro nem hover genérico.
+- `background` / `foreground`: página; `card` / `cardForeground`: cartões e formulários; `popover` / `popoverForeground`: menus, seletores abertos e tooltips.
+- `muted` / `mutedForeground`: apoio neutro, hover e conteúdo secundário; `surfaceSunken`: áreas rebaixadas e imagens ausentes.
+- `success`, `warning`, `destructive`: sucesso/conclusão, atenção/espera e erro/exclusão. Texto sobre fundos sólidos de estado é derivado para contraste, sem alterar a cor configurada.
+- `border`, `input`, `ring`: divisórias, bordas de campos e foco de teclado.
+
 ## Criação de pedidos
 
 - Pedido pendente de pagamento não bloqueia novos pedidos do mesmo cliente/unidade.

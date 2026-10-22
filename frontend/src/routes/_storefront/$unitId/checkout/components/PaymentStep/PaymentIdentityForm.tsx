@@ -32,7 +32,7 @@ export function PaymentIdentityForm({
 
 	return (
 		<form
-			className="space-y-4 rounded-xl border border-border bg-card p-4"
+			className="space-y-4 rounded-xl border border-border bg-card text-card-foreground p-4"
 			onSubmit={event => {
 				event.preventDefault();
 				if (!canSubmit) return;

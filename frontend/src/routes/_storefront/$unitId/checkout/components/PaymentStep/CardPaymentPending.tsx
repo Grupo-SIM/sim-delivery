@@ -45,7 +45,7 @@ export function CardPaymentPending({ onConfirmed, onFailed, token }: CardPayment
 	}, [data, settle]);
 
 	return (
-		<div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-6 text-center">
+		<div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card text-card-foreground p-6 text-center">
 			<LuLoaderCircle className="size-6 animate-spin text-primary" />
 			<p className="font-semibold">{t("store.checkout.payment.card.pending")}</p>
 			<p className="text-muted-foreground text-sm">{t("store.checkout.payment.card.pendingHint")}</p>

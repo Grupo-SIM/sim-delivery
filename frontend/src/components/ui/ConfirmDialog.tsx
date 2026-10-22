@@ -17,7 +17,7 @@ export function ConfirmDialog() {
 			urlKey={confirm ? "confirm" : "alert"}
 			title={
 				<span className="flex items-center gap-3">
-					<span className="grid size-9 place-items-center rounded-full bg-primary/10 text-primary">
+					<span className="grid size-9 place-items-center rounded-full bg-warning/10 text-warning">
 						<LuCircleAlert className="size-5" />
 					</span>
 					{title}

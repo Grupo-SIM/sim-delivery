@@ -119,7 +119,7 @@ export function CheckoutItemRow({ item, onEdit }: CheckoutItemRowProps) {
 				</div>
 			</div>
 			<textarea
-				className="mt-3 min-h-0 w-full resize-y rounded-md border border-input bg-surface px-3 py-2 text-sm placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+				className="mt-3 min-h-0 w-full resize-y rounded-md border border-input bg-surface text-card-foreground px-3 py-2 text-sm placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
 				onBlur={flushNote}
 				onChange={event => setLocalNote(event.currentTarget.value)}
 				placeholder={t("store.checkout.order.itemNotePlaceholder")}

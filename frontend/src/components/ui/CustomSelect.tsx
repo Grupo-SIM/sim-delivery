@@ -100,7 +100,7 @@ export function CustomSelect({
 				aria-haspopup="listbox"
 				aria-label={ariaLabel}
 				className={cn(
-					"flex h-11 w-full cursor-pointer items-center justify-between rounded-md border border-border bg-surface px-3 text-foreground text-sm transition-[border-color,box-shadow] duration-300",
+					"flex h-11 w-full cursor-pointer items-center justify-between rounded-md border border-border bg-surface px-3 text-card-foreground text-sm transition-[border-color,box-shadow] duration-300",
 					"hover:border-foreground/40 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1",
 					"disabled:cursor-not-allowed disabled:border-border disabled:bg-muted disabled:text-muted-foreground disabled:opacity-70 disabled:hover:border-border",
 					className,
@@ -127,7 +127,7 @@ export function CustomSelect({
 			{open &&
 				createPortal(
 					<ScrollArea
-						className="max-h-[260px] overflow-y-auto overflow-x-hidden rounded-md border border-border bg-card text-card-foreground shadow-medium"
+						className="max-h-[260px] overflow-y-auto overflow-x-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-medium"
 						onMouseDown={event => {
 							event.preventDefault();
 							event.stopPropagation();
@@ -150,8 +150,8 @@ export function CustomSelect({
 										{group.options.map(opt => (
 											<button
 												className={cn(
-													"w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-accent",
-													opt.value === value && "bg-accent/60 font-medium",
+													"w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-muted",
+													opt.value === value && "bg-primary font-medium text-primary-foreground hover:bg-primary/90",
 												)}
 												key={opt.value}
 												onClick={() => select(opt.value)}
@@ -171,8 +171,8 @@ export function CustomSelect({
 							: options?.map(opt => (
 									<button
 										className={cn(
-											"w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-accent",
-											opt.value === value && "bg-accent/60 font-medium",
+											"w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-muted",
+											opt.value === value && "bg-primary font-medium text-primary-foreground hover:bg-primary/90",
 										)}
 										key={opt.value}
 										onClick={() => select(opt.value)}

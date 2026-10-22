@@ -20,7 +20,7 @@ export function OptionImagePreviewModal({ alt, imageUrl, onClose }: OptionImageP
 		<Dialog.Root onOpenChange={open => !open && closeWithHistory()} open={imageUrl !== null}>
 			<Dialog.Portal>
 				<Dialog.Overlay className="fixed inset-0 z-[60] bg-black/55 backdrop-blur-sm" />
-				<Dialog.Content className="fixed top-1/2 left-1/2 z-[60] flex aspect-square h-[75dvh] w-[75dvh] max-w-[calc(100vw-1rem)] -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-hidden rounded-2xl bg-card p-1 shadow-2xl focus:outline-none">
+				<Dialog.Content className="fixed top-1/2 left-1/2 z-[60] flex aspect-square h-[75dvh] w-[75dvh] max-w-[calc(100vw-1rem)] -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-hidden rounded-2xl bg-card text-card-foreground p-1 shadow-2xl focus:outline-none">
 					<Dialog.Title className="sr-only">{alt}</Dialog.Title>
 					{imageUrl && (
 						<img

@@ -29,7 +29,7 @@ export function CustomerTopProducts({ orders }: CustomerTopProductsProps) {
 					{t("admin.customers.detail.emptyTopProducts")}
 				</p>
 			) : (
-				<ol className="divide-y divide-border rounded-lg border border-border bg-card">
+				<ol className="divide-y divide-border rounded-lg border border-border bg-card text-card-foreground">
 					{products.map((product, index) => (
 						<li className="flex items-center gap-3 px-4 py-3" key={product.name}>
 							<span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary/10 font-semibold text-primary text-xs">

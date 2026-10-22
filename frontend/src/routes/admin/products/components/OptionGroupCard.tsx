@@ -24,7 +24,7 @@ export function OptionGroupCard({
 	const canDrag = Boolean(dragHandleProps);
 
 	return (
-		<div className="overflow-hidden rounded-lg border border-border bg-surface">
+		<div className="overflow-hidden rounded-lg border border-border bg-surface text-card-foreground">
 			<div className="flex items-center justify-between gap-3 border-border border-b bg-muted/30 px-4 py-3">
 				<div className="flex min-w-0 items-center gap-2">
 					<button

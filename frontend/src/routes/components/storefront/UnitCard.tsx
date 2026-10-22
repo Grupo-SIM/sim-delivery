@@ -30,7 +30,7 @@ export function UnitCard({ unit }: UnitCardProps) {
 
 	return (
 		<Link
-			className="group relative flex min-h-64 flex-col overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-md transition duration-300 hover:-translate-y-1 hover:border-primary/60 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+			className="group relative flex min-h-64 flex-col overflow-hidden rounded-2xl border border-border bg-card text-card-foreground p-5 shadow-md transition duration-300 hover:-translate-y-1 hover:border-primary/60 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 			params={{ unitId: unit.slug }}
 			to="/$unitId"
 		>

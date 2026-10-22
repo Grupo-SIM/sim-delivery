@@ -167,7 +167,7 @@ export function OrderSummaryModal({ onClose, onEditEstimate, order, view }: Orde
 										</div>
 									</div>
 									{item.note && (
-										<p className="mt-3 break-words rounded-md border border-input bg-surface px-3 py-2 text-sm leading-5">
+										<p className="mt-3 break-words rounded-md border border-input bg-surface text-card-foreground px-3 py-2 text-sm leading-5">
 											{item.note}
 										</p>
 									)}

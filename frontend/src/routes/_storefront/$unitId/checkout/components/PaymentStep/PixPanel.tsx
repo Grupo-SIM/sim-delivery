@@ -88,7 +88,7 @@ export function PixPanel({ customerCpf, onConfirmed, onCpfSaved, orderId, slug }
 	if (needsCpf && !pix) {
 		return (
 			<form
-				className="space-y-4 rounded-xl border border-border bg-card p-4"
+				className="space-y-4 rounded-xl border border-border bg-card text-card-foreground p-4"
 				onSubmit={event => {
 					event.preventDefault();
 					if (!isValidCpf(cpfDigits)) return;
@@ -147,7 +147,7 @@ export function PixPanel({ customerCpf, onConfirmed, onCpfSaved, orderId, slug }
 
 	return (
 		<div className="space-y-4">
-			<div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-4">
+			<div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card text-card-foreground p-4">
 				<img
 					alt={t("store.checkout.payment.pix.qrAlt")}
 					className="size-52 rounded-lg bg-white p-2"

@@ -24,7 +24,7 @@ export function CollapsibleModalSection({
 			<button
 				aria-controls={contentId}
 				aria-expanded={isOpen}
-				className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-md border border-border px-3 py-2 text-left hover:bg-accent"
+				className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-md border border-border px-3 py-2 text-left hover:bg-muted"
 				onClick={() => setIsOpen(current => !current)}
 				type="button"
 			>

@@ -29,7 +29,7 @@ export function UnitReviews({ isOpen, onClose, unitId }: UnitReviewsProps) {
 			) : (
 				<div className="grid gap-3">
 					{reviewsQuery.data?.map(review => (
-						<div className="space-y-1 rounded-brand border border-border bg-card p-3" key={review.id}>
+						<div className="space-y-1 rounded-brand border border-border bg-card text-card-foreground p-3" key={review.id}>
 							<div className="flex items-center justify-between gap-2">
 								<span className="font-medium text-sm">{review.customerName}</span>
 								<span aria-hidden className="text-sm">

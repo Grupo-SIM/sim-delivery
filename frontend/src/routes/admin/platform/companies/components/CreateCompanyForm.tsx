@@ -29,7 +29,7 @@ export function CreateCompanyForm() {
 
 	return (
 		<form
-			className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4 sm:flex-row sm:items-end"
+			className="flex flex-col gap-4 rounded-lg border border-border bg-card text-card-foreground p-4 sm:flex-row sm:items-end"
 			onSubmit={event => {
 				event.preventDefault();
 				setError(null);

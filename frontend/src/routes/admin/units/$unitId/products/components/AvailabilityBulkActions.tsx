@@ -52,7 +52,7 @@ export function AvailabilityBulkActions({
 	}
 
 	return (
-		<section className="rounded-xl border border-border bg-card p-4 shadow-soft">
+		<section className="rounded-xl border border-border bg-card text-card-foreground p-4 shadow-soft">
 			<div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
 				<div className="max-w-xl">
 					<h2 className="font-semibold text-foreground">{t("admin.unitProducts.bulk.title")}</h2>

@@ -42,7 +42,7 @@ export function ThemeColorFields({ colors, mode, onChange, onCopy, onReset }: Th
 	return (
 		<div className="space-y-4">
 			{groups.map(group => (
-				<section className="overflow-hidden rounded-lg border border-border bg-card" key={group.name}>
+				<section className="overflow-hidden rounded-lg border border-border bg-card text-card-foreground" key={group.name}>
 					<h3 className="border-border border-b bg-muted/50 px-4 py-3 font-semibold text-sm">
 						{t(`admin.branding.colorGroups.${group.name}`)}
 					</h3>

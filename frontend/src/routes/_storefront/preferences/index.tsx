@@ -83,7 +83,7 @@ function PreferencesPage() {
 				subtitle={t("store.account.preferences.subtitle")}
 				title={t("store.account.preferences.title")}
 			/>
-			<div className="space-y-4 rounded-xl border border-border bg-card p-5">
+			<div className="space-y-4 rounded-xl border border-border bg-card text-card-foreground p-5">
 				<div>
 					<h2 className="font-semibold text-lg">{t("store.account.preferences.orderUpdates.title")}</h2>
 					<p className="mt-1 text-muted-foreground text-sm">{t("store.account.preferences.orderUpdates.subtitle")}</p>
@@ -115,7 +115,7 @@ function PreferencesPage() {
 					</label>
 				</div>
 				{error && <p className="text-destructive text-sm">{error}</p>}
-				{saved && <p className="text-primary text-sm">{t("store.account.preferences.saved")}</p>}
+				{saved && <p className="text-success text-sm">{t("store.account.preferences.saved")}</p>}
 				<Button disabled={updatePreferences.isPending} onClick={handleSave} type="button">
 					{updatePreferences.isPending
 						? t("store.account.preferences.saving")

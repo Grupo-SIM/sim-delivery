@@ -120,7 +120,7 @@ export function ColorField({ onChange, value }: ColorFieldProps) {
 			{open &&
 				createPortal(
 					<div
-						className="pointer-events-auto absolute w-56 overflow-hidden rounded-brand border border-border bg-popover shadow-medium"
+						className="pointer-events-auto absolute w-56 overflow-hidden rounded-brand border border-border bg-popover text-popover-foreground shadow-medium"
 						ref={popoverRef}
 						role="dialog"
 						style={{ left: pos.left, top: pos.top, zIndex: 9999 }}

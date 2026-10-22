@@ -24,7 +24,7 @@ export function ProfileSummaryCard({
 }: ProfileSummaryCardProps) {
 	const { t } = useTranslation();
 	return (
-		<section className="space-y-4 rounded-xl border border-border bg-card p-5">
+		<section className="space-y-4 rounded-xl border border-border bg-card text-card-foreground p-5">
 			<div className="flex items-center gap-4">
 				{user.image ? (
 					<img alt="" className="size-16 rounded-full object-cover" src={user.image} />

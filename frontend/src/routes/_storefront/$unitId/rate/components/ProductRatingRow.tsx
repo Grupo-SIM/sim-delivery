@@ -48,7 +48,7 @@ export function ProductRatingRow({ orderId, productId, productName, reviewed }: 
 	}
 
 	return (
-		<div className="space-y-3 rounded-brand border border-border bg-card p-4">
+		<div className="space-y-3 rounded-brand border border-border bg-card text-card-foreground p-4">
 			<p className="font-medium text-sm">{productName}</p>
 			<div className="flex gap-1" onMouseLeave={() => setHovered(0)}>
 				{[1, 2, 3, 4, 5].map(star => {
@@ -63,7 +63,7 @@ export function ProductRatingRow({ orderId, productId, productName, reviewed }: 
 						onMouseEnter={() => setHovered(star)}
 						type="button"
 					>
-						<LuStar className={isSelected ? "size-6 fill-warning text-warning" : "size-6 text-foreground"} />
+						<LuStar className={isSelected ? "size-6 fill-accent text-accent" : "size-6 text-foreground"} />
 						</button>
 					);
 				})}

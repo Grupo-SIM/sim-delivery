@@ -11,7 +11,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
-import { resolveThemeColors } from "../src/lib/theme-colors";
+import { resolveThemeColors, themeColorsToCss } from "../src/lib/theme-colors";
 import { fetchBrandingAsset, resolveBrandingAssetUrl } from "./branding-assets";
 import { squareIconSource } from "./branding-icons";
 
@@ -102,12 +102,8 @@ function extensionFrom(contentType: string | null, sourceUrl: string) {
 }
 
 function createBrandingCss(colors: ThemeColors, fontFamily: string, fontDisplay: string) {
-	const variables = (colorSet: Record<string, string>) =>
-		Object.entries(colorSet)
-			.map(([name, value]) => `--${name.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}:${value}`)
-			.join(";");
-	const fontVariables = `--font-sans:"${fontFamily}", system-ui, sans-serif;--font-display:"${fontDisplay}", "${fontFamily}", system-ui, sans-serif`;
-	return `:root{${variables(colors.light)};${fontVariables}}:root.dark{${variables(colors.dark)}}\n`;
+ const fontVariables = `--font-sans:"${fontFamily}", system-ui, sans-serif;--font-display:"${fontDisplay}", "${fontFamily}", system-ui, sans-serif`;
+ return `${themeColorsToCss(colors as Parameters<typeof themeColorsToCss>[0])}:root{${fontVariables}}\n`;
 }
 
 function googleFontsUrl(families: string[]) {

@@ -1,18 +1,18 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type BrandTone = "primary" | "accent" | "cyan" | "whatsapp" | "outline";
+type BrandTone = "primary" | "accent" | "secondary" | "whatsapp" | "outline";
 interface BrandButtonProps extends ComponentPropsWithoutRef<"button"> {
 	tone?: BrandTone;
 	fullWidth?: boolean;
 	children: ReactNode;
 }
 const tones: Record<BrandTone, string> = {
-	accent: "border-border bg-accent text-accent-foreground hover:bg-accent/90",
-	cyan: "border-border bg-secondary text-secondary-foreground hover:bg-secondary/80",
-	outline: "border-border bg-transparent text-foreground hover:bg-muted",
-	primary: "border-border bg-primary text-primary-foreground hover:bg-primary/90",
-	whatsapp: "border-border bg-success text-background hover:bg-success/90",
+	accent: "border-accent bg-accent text-accent-foreground hover:bg-accent/90",
+	secondary: "border-secondary bg-secondary text-secondary-foreground hover:bg-secondary/80",
+	outline: "border-border bg-transparent text-inherit hover:bg-muted",
+	primary: "border-primary bg-primary text-primary-foreground hover:bg-primary/90",
+	whatsapp: "border-success bg-success text-success-foreground hover:bg-success/90",
 };
 export function BrandButton({
 	children,

@@ -20,7 +20,7 @@ export function CategorySummary({ sections }: CategorySummaryProps) {
 					.filter(section => section.categoryId !== null)
 					.map(section => (
 						<button
-							className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+							className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-muted hover:text-foreground"
 							key={section.categoryId ?? "loose"}
 							onClick={() => jumpTo(section.categoryId)}
 							type="button"

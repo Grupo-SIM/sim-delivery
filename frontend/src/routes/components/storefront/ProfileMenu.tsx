@@ -76,7 +76,7 @@ export function ProfileMenu({
 	if (!isAuthenticated || !user) {
 		return (
 			<Link
-				className="storefront-sign-in rounded-full bg-primary px-4 py-2 font-semibold text-primary-foreground text-sm transition hover:opacity-90"
+				className="storefront-sign-in rounded-full bg-accent px-4 py-2 font-semibold text-accent-foreground text-sm transition hover:opacity-90"
 				search={{ redirectTo: currentPath }}
 				to="/identify"
 			>
@@ -114,7 +114,7 @@ export function ProfileMenu({
 				typeof document !== "undefined" &&
 				createPortal(
 					<div
-						className="fixed z-[9999] w-60 overflow-hidden rounded-xl border border-border bg-popover shadow-lg"
+						className="fixed z-[9999] w-60 overflow-hidden rounded-xl border border-border bg-popover text-popover-foreground shadow-lg"
 						ref={menuRef}
 						role="menu"
 						style={{ right: menuPosition.right, top: menuPosition.top }}

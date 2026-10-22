@@ -69,7 +69,7 @@ export function DeliveryCard({ delivery }: DeliveryCardProps) {
 	}
 
 	return (
-		<div className="space-y-3 rounded-lg border border-border bg-card p-4">
+		<div className="space-y-3 rounded-lg border border-border bg-card text-card-foreground p-4">
 			<div className="flex items-start justify-between gap-2">
 				<div>
 					<p className="font-semibold">{delivery.order.customerName}</p>

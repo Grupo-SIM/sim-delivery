@@ -9,7 +9,7 @@ interface IconBadgeProps extends ComponentPropsWithoutRef<"span"> {
 const toneClass: Record<NonNullable<IconBadgeProps["tone"]>, string> = {
 	default: "bg-muted text-muted-foreground",
 	destructive: "bg-destructive/15 text-destructive",
-	live: "animate-pulse bg-live/20 text-live",
+	live: "animate-pulse bg-destructive/15 text-destructive",
 	primary: "bg-primary/15 text-primary",
 	success: "bg-success/15 text-success",
 	warning: "bg-warning/15 text-warning",

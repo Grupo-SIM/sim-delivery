@@ -67,7 +67,7 @@ export function StoreToolbar({
 			<label className="store-search relative col-span-2 block md:col-span-1">
 				<span className="sr-only">{t("store.menu.searchPlaceholder")}</span>
 				<input
-					className="h-12 w-full rounded-lg border border-input bg-surface pr-11 pl-4 text-sm placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+					className="h-12 w-full rounded-lg border border-input bg-surface text-card-foreground pr-11 pl-4 text-sm placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
 					onChange={event => setLocalSearch(event.currentTarget.value)}
 					placeholder={`${t("store.menu.searchPlaceholder")}...`}
 					type="text"

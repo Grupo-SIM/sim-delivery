@@ -71,7 +71,7 @@ export function CreateCouponForm() {
 
 	return (
 		<form
-			className="group space-y-4 rounded-lg border border-border bg-card p-4"
+			className="group space-y-4 rounded-lg border border-border bg-card text-card-foreground p-4"
 			onSubmit={event => {
 				event.preventDefault();
 				submit();

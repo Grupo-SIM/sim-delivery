@@ -66,7 +66,7 @@ export function ProfileAddressSection({
 	}
 
 	return (
-		<section className="space-y-4 rounded-xl border border-border bg-card p-5">
+		<section className="space-y-4 rounded-xl border border-border bg-card text-card-foreground p-5">
 			<div className="flex items-center justify-between gap-3">
 				<h2 className="font-semibold text-lg">{t("store.account.profile.addresses")}</h2>
 				<Button onClick={() => setModal("create")} size="sm" type="button">

@@ -19,6 +19,7 @@
 	position: sticky;
 	top: 0;
 	color: var(--foreground);
+	color: var(--foreground);
 	background: var(--background);
 	border: 0;
 	backdrop-filter: none;
@@ -48,10 +49,10 @@
 .storefront-header .storefront-unit-name {
 	font-size: 16px;
 	font-weight: 800;
-	color: var(--foreground);
+	color: inherit;
 }
 .storefront-header a:has(> svg) {
-	color: var(--foreground);
+	color: inherit;
 }
 .storefront-header a > svg {
 	color: inherit;
@@ -66,8 +67,8 @@
 }
 .storefront-header .storefront-profile {
 	padding: 0;
-	background: var(--primary-foreground);
-	border-color: var(--primary-foreground);
+	background: var(--accent);
+	border-color: var(--accent);
 }
 .storefront-header .storefront-profile span {
 	width: 42px;
@@ -151,7 +152,7 @@
 	place-items: center;
 	width: 36px;
 	height: 36px;
-	color: var(--accent);
+	color: var(--primary-foreground);
 	background: var(--primary);
 	border-radius: 50%;
 }
@@ -179,13 +180,6 @@
 }
 .storefront .unit-hero-card {
 	border-radius: 20px;
-}
-.storefront .unit-hero-card:not(.unit-hero-photo) {
-	color: var(--accent-foreground);
-}
-.storefront .unit-hero-card:nth-child(even):not(.unit-hero-photo) {
-	color: var(--secondary-foreground);
-	background: var(--secondary);
 }
 .storefront .storefront-footer {
 	background: var(--background);
@@ -296,6 +290,7 @@
 /* Store menu: white toolbar, two-column cards, top category dock, full cart pill. */
 .storefront .storefront-banner {
 	padding: 16px;
+	color: var(--foreground);
 	background: var(--background);
 	border: 0;
 }
@@ -338,6 +333,7 @@
 	grid-template-columns: 1fr 1fr;
 	gap: 14px;
 	padding: 16px;
+	color: var(--card-foreground);
 	background: var(--card);
 	border-radius: 20px;
 	box-shadow: none;
@@ -353,7 +349,7 @@
 .storefront .store-delivery-fee p:last-child {
 	font-size: 16px;
 	font-weight: 800;
-	color: color-mix(in srgb, var(--success) 65%, #000);
+	color: var(--success);
 }
 .storefront .store-hours {
 	grid-row: 1;
@@ -431,6 +427,7 @@
 	top: var(--store-header-height);
 	bottom: auto;
 	padding: 0 20px 10px;
+	color: var(--primary-foreground);
 	background: var(--primary);
 	border: 0;
 	box-shadow: none;
@@ -624,7 +621,7 @@
 	padding: 0;
 	font-size: 14px;
 	font-weight: 800;
-	color: color-mix(in srgb, var(--success) 65%, #000);
+	color: var(--success);
 	text-transform: none;
 	letter-spacing: 0;
 	background: transparent;
@@ -785,4 +782,19 @@ html:has(.storefront) { scrollbar-color: var(--muted-foreground) var(--backgroun
 .storefront .store-banner-pagination button[aria-pressed="true"] {
 	width: 18px;
 	background: white;
+}
+
+/* Menu header is a brand surface; home header remains a page surface. */
+.storefront:has(.unit-store-content) > .storefront-header {
+ color: var(--primary-foreground);
+ background: var(--primary);
+}
+.storefront:has(.unit-store-content) > .storefront-header a:not(.storefront-sign-in) {
+ color: inherit;
+}
+.storefront .category-nav button:not([aria-pressed="true"]) {
+ color: var(--foreground);
+}
+.storefront .category-nav-docked button:not([aria-pressed="true"]) {
+ color: var(--primary-foreground);
 }

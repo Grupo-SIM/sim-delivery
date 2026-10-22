@@ -178,7 +178,7 @@ export function DashboardDateRangePicker({
 		<div
 			className={cn(
 				!inline &&
-					"absolute right-0 z-50 mt-2 w-80 rounded-xl border border-border bg-popover p-3 shadow-medium",
+					"absolute right-0 z-50 mt-2 w-80 rounded-xl border border-border bg-popover text-popover-foreground p-3 shadow-medium",
 				inline && "p-3",
 			)}
 			role="dialog"
@@ -186,7 +186,7 @@ export function DashboardDateRangePicker({
 			<div className="mb-3 flex items-center justify-between">
 				<button
 					aria-label="Mês anterior"
-					className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-input hover:bg-accent"
+					className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-input hover:bg-muted"
 					onClick={() => setCalendarMonth(month => new Date(month.getFullYear(), month.getMonth() - 1, 1))}
 					type="button"
 				>
@@ -197,7 +197,7 @@ export function DashboardDateRangePicker({
 				</strong>
 				<button
 					aria-label="Próximo mês"
-					className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-input hover:bg-accent"
+					className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-input hover:bg-muted"
 					onClick={() => setCalendarMonth(month => new Date(month.getFullYear(), month.getMonth() + 1, 1))}
 					type="button"
 				>
@@ -227,7 +227,7 @@ export function DashboardDateRangePicker({
 					return (
 						<button
 							className={cn(
-								"h-9 cursor-pointer rounded text-sm transition-colors hover:bg-accent/80",
+								"h-9 cursor-pointer rounded text-sm transition-colors hover:bg-muted",
 								!inMonth && "text-muted-foreground",
 								withinRange && "bg-primary/10",
 								isStartDate && "bg-warning font-semibold text-warning-foreground hover:bg-warning",
@@ -264,7 +264,7 @@ export function DashboardDateRangePicker({
 			<button
 				aria-expanded={open}
 				aria-haspopup="dialog"
-				className="flex h-11 min-w-48 cursor-pointer items-center gap-2 rounded-xl border border-input bg-background px-3 font-semibold text-sm shadow-sm outline-none ring-offset-background transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+				className="flex h-11 min-w-48 cursor-pointer items-center gap-2 rounded-xl border border-input bg-background px-3 font-semibold text-sm shadow-sm outline-none ring-offset-background transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 				onClick={() => (open ? closeCalendar() : openCalendar())}
 				type="button"
 			>

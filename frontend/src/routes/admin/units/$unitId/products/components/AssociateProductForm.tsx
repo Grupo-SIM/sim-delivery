@@ -65,7 +65,7 @@ export function AssociateProductForm({
 
 	return (
 		<form
-			className="grid gap-4 rounded-lg border border-border bg-card p-4 md:grid-cols-2"
+			className="grid gap-4 rounded-lg border border-border bg-card text-card-foreground p-4 md:grid-cols-2"
 			onSubmit={event => {
 				event.preventDefault();
 				setError(null);

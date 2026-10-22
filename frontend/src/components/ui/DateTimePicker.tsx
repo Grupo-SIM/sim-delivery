@@ -165,7 +165,7 @@ export function DateTimePicker({
 				/>
 				<button
 					aria-label="Selecionar data e hora"
-					className="absolute inset-y-0 right-0 flex w-11 cursor-pointer items-center justify-center rounded-r-md border-input border-l text-muted-foreground hover:bg-accent hover:text-foreground"
+					className="absolute inset-y-0 right-0 flex w-11 cursor-pointer items-center justify-center rounded-r-md border-input border-l text-muted-foreground hover:bg-muted hover:text-foreground"
 					onClick={openPicker}
 					ref={triggerRef}
 					type="button"
@@ -182,7 +182,7 @@ export function DateTimePicker({
 			{open &&
 				createPortal(
 					<div
-						className="w-80 rounded-md border border-border bg-popover p-3 shadow-medium"
+						className="w-80 rounded-md border border-border bg-popover text-popover-foreground p-3 shadow-medium"
 						ref={popupRef}
 						style={{ left: popupPosition.left, position: "fixed", top: popupPosition.top, zIndex: 9999 }}
 					>
@@ -230,7 +230,7 @@ export function DateTimePicker({
 									<button
 										className={cn(
 											"h-9 rounded text-sm",
-											inMonth ? "cursor-pointer hover:bg-accent" : "cursor-default",
+											inMonth ? "cursor-pointer hover:bg-muted" : "cursor-default",
 											selected && "bg-primary font-semibold text-primary-foreground hover:bg-primary",
 										)}
 										disabled={!inMonth}

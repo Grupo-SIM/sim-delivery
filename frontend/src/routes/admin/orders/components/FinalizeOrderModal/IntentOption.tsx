@@ -27,7 +27,7 @@ export function IntentOption({
 		<Button
 			aria-pressed={isSelected}
 			className={`h-auto min-h-20 justify-start gap-3 whitespace-normal px-4 py-3 text-left ${
-				isSelected ? colors : "border-border bg-card text-foreground"
+				isSelected ? colors : "border-border bg-card text-card-foreground"
 			}`}
 			onClick={onClick}
 			type="button"

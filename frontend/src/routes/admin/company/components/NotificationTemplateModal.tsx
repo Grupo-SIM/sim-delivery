@@ -91,7 +91,7 @@ export function NotificationTemplateModal({
 				<div className="grid grid-cols-2 gap-2 rounded-lg border border-border bg-muted/40 p-1" role="tablist">
 					<Button
 						aria-selected={channel === "whatsApp"}
-						className={cn("justify-center", channel === "whatsApp" && "border-success bg-success text-background hover:bg-success/90")}
+						className={cn("justify-center", channel === "whatsApp" && "border-success bg-success text-success-foreground hover:bg-success/90")}
 						onClick={() => setChannel("whatsApp")}
 						role="tab"
 						type="button"

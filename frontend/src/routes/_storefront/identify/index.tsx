@@ -45,7 +45,7 @@ function IdentifyPage() {
 					subtitle={t("store.account.identify.subtitle")}
 					title={t("store.account.identify.title")}
 				/>
-				<div className="identify-card rounded-brand border border-border bg-card p-4 sm:p-7">
+				<div className="identify-card rounded-brand border border-border bg-card text-card-foreground p-4 sm:p-7">
 					<IdentifyForm
 						returnTo={getSafeAuthRedirect(redirectTo)}
 					/>

@@ -45,7 +45,7 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 						src={item.imageUrl}
 					/>
 				) : (
-					<div className="flex h-full items-center justify-center bg-[#F1E6D6] text-muted-foreground/60">
+					<div className="flex h-full items-center justify-center bg-muted text-muted-foreground/60">
 						<img
 							alt={t("store.menu.imagePlaceholder")}
 							className="w-1/3 object-contain opacity-25 grayscale"
@@ -92,11 +92,11 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 								</span>
 							))}
 						{isPromotional && (
-							<Badge className="ml-2 border-success/30 bg-success/10 text-success">Oferta</Badge>
+							<Badge className="ml-2" tone="accent">Oferta</Badge>
 						)}
 					</div>
 					{item.cashbackPercent != null && (
-						<Badge className="border-success/30 bg-success/10 text-success">{item.cashbackPercent}%</Badge>
+						<Badge tone="accent">{item.cashbackPercent}%</Badge>
 					)}
 					<span
 						aria-hidden

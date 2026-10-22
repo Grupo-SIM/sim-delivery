@@ -28,7 +28,7 @@ export function ThemeEditor({
 
 	return (
 		<section className="space-y-4">
-			<div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4 lg:flex-row lg:items-center lg:justify-between">
+			<div className="flex flex-col gap-4 rounded-lg border border-border bg-surface text-card-foreground p-4 lg:flex-row lg:items-center lg:justify-between">
 				<div className="grid w-full grid-cols-2 gap-2 rounded-md border border-border p-2 lg:w-auto lg:min-w-80">
 					<Button
 						aria-pressed={mode === "light"}

@@ -254,7 +254,7 @@ export function ProductDetailsModal({
 												{t("store.product.noteLabel")}
 											</label>
 											<textarea
-												className="min-h-20 w-full rounded border border-input bg-surface p-3 placeholder:text-muted-foreground"
+												className="min-h-20 w-full rounded border border-input bg-surface text-card-foreground p-3 placeholder:text-muted-foreground"
 												id="product-note"
 												name="note"
 												onChange={event => setLocalNote(event.currentTarget.value)}

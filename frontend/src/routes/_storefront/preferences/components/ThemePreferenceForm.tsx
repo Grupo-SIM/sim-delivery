@@ -12,7 +12,7 @@ export function ThemePreferenceForm({ isSaving, mode, onChange }: ThemePreferenc
 	const { t } = useTranslation();
 
 	return (
-		<section className="space-y-4 rounded-xl border border-border bg-card p-5">
+		<section className="space-y-4 rounded-xl border border-border bg-card text-card-foreground p-5">
 			<div>
 				<h2 className="font-semibold text-lg">{t("store.account.preferences.appearance")}</h2>
 				<p className="text-muted-foreground text-sm">{t("store.account.preferences.appearanceHint")}</p>

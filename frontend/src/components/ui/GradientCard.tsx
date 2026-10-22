@@ -1,7 +1,7 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type GradientCardTone = "blue" | "yellow" | "cyan" | "ink" | "instagram";
+type GradientCardTone = "primary" | "accent" | "secondary" | "inverse";
 
 interface GradientCardProps extends ComponentPropsWithoutRef<"div"> {
 	children: ReactNode;
@@ -9,18 +9,17 @@ interface GradientCardProps extends ComponentPropsWithoutRef<"div"> {
 }
 
 /**
- * Signature storefront product card: a heavily-rounded, gradient-filled panel that
- * lifts on hover. Mirrors the storefront hero cards (blue / yellow / cyan).
+ * Signature storefront product card: a heavily-rounded, panel that
+ * lifts on hover. Uses the same semantic surface/text pairs as other brand components.
  */
 const toneClassName: Record<GradientCardTone, string> = {
-	blue: "bg-linear-135 from-primary to-primary/75 text-primary-foreground",
-	cyan: "bg-linear-135 from-secondary to-secondary/75 text-secondary-foreground",
-	ink: "bg-linear-135 from-foreground to-foreground/75 text-background",
-	instagram: "bg-linear-45 from-primary via-primary/85 to-accent text-primary-foreground",
-	yellow: "bg-linear-135 from-accent to-accent/75 text-accent-foreground",
+	primary: "bg-primary text-primary-foreground",
+	secondary: "bg-secondary text-secondary-foreground",
+	inverse: "bg-foreground text-background",
+	accent: "bg-accent text-accent-foreground",
 };
 
-export function GradientCard({ children, className, tone = "blue", ...props }: GradientCardProps) {
+export function GradientCard({ children, className, tone = "primary", ...props }: GradientCardProps) {
 	return (
 		<div
 			className={cn(

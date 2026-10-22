@@ -17,7 +17,7 @@ export function ProfileSecurityForm({ isSaving, onSave }: ProfileSecurityFormPro
 	const dirty = Boolean(currentPassword || password || confirmPassword);
 
 	return (
-		<section className="space-y-4 rounded-xl border border-border bg-card p-5">
+		<section className="space-y-4 rounded-xl border border-border bg-card text-card-foreground p-5">
 			<h2 className="font-semibold text-lg">{t("store.account.profile.security")}</h2>
 			<Label>
 				{t("store.account.profile.currentPassword")}

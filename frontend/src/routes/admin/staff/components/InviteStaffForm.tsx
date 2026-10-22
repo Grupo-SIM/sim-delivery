@@ -40,7 +40,7 @@ export function InviteStaffForm() {
 
 	return (
 		<form
-			className="grid gap-4 rounded-lg border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4"
+			className="grid gap-4 rounded-lg border border-border bg-card text-card-foreground p-4 sm:grid-cols-2 lg:grid-cols-4"
 			onSubmit={event => {
 				event.preventDefault();
 				setError(null);

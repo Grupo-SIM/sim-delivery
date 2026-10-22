@@ -16,7 +16,7 @@ export function CancellationByStage({ formatCents, isPending, rows }: Cancellati
 	return (
 		<section>
 			<h2 className="mb-3 font-semibold text-base">{title}</h2>
-			<ScrollArea className="rounded-md border border-border bg-card p-5">
+			<ScrollArea className="rounded-md border border-border bg-card text-card-foreground p-5">
 				{isPending ? (
 					<Skeleton className="h-32" />
 				) : rows.length === 0 ? (

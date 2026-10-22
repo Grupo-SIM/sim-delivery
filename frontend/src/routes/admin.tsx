@@ -34,7 +34,7 @@ function AdminLayout() {
 					: "admin-shell flex min-h-screen overflow-x-hidden"
 			}
 		>
-			<aside className="fixed inset-y-0 left-0 z-20 hidden w-60 flex-col border-border border-r bg-card md:flex">
+			<aside className="fixed inset-y-0 left-0 z-20 hidden w-60 flex-col border-border border-r bg-card text-card-foreground md:flex">
 				<AdminSidebar />
 			</aside>
 

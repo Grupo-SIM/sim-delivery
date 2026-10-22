@@ -87,7 +87,7 @@ export function CategoryNav({ onDockedChange, sections }: CategoryNavProps) {
 						.map(section => (
 							<button
 								aria-pressed={activeId === section.categoryId}
-								className="shrink-0 cursor-pointer rounded-full border border-border bg-card px-3 py-1 text-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+								className="shrink-0 cursor-pointer rounded-full border border-border bg-card text-card-foreground px-3 py-1 text-sm transition-colors hover:bg-muted hover:text-foreground"
 								key={section.categoryId ?? "loose"}
 								onClick={() => jumpTo(section.categoryId)}
 								type="button"

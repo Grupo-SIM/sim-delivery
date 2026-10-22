@@ -1,7 +1,7 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type BadgeTone = "primary" | "accent" | "cyan" | "success" | "danger" | "neutral";
+type BadgeTone = "primary" | "accent" | "secondary" | "success" | "danger" | "neutral";
 
 interface BadgeProps extends ComponentPropsWithoutRef<"span"> {
 	children: ReactNode;
@@ -9,8 +9,8 @@ interface BadgeProps extends ComponentPropsWithoutRef<"span"> {
 }
 
 const toneClassName: Record<BadgeTone, string> = {
-	accent: "border-accent/40 bg-accent/20 text-accent",
-	cyan: "border-secondary/40 bg-secondary/15 text-secondary",
+	accent: "border-accent bg-accent text-accent-foreground",
+	secondary: "border-secondary bg-secondary text-secondary-foreground",
 	danger: "border-destructive/30 bg-destructive/10 text-destructive",
 	neutral: "border-border bg-muted text-muted-foreground",
 	primary: "border-primary/30 bg-primary/10 text-primary",

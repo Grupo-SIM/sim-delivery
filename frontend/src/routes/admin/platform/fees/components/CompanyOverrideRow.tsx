@@ -25,7 +25,7 @@ export function CompanyOverrideRow({ calculationType, company, onReset, onSave }
 			<td className="px-3 py-3">
 				<NumericFormat
 					allowNegative={false}
-					className="h-9 w-full rounded-md border border-input bg-surface px-3 text-sm placeholder:text-muted-foreground/70"
+					className="h-9 w-full rounded-md border border-input bg-surface text-card-foreground px-3 text-sm placeholder:text-muted-foreground/70"
 					decimalScale={2}
 					decimalSeparator=","
 					isAllowed={({ floatValue }) => floatValue === undefined || (floatValue > 0 && (calculationType !== "percentage" || floatValue <= 100))}

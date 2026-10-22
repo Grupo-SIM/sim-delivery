@@ -69,7 +69,7 @@ export function TopPicksCarousel({ onSelect, sections }: TopPicksCarouselProps) 
 											: money.format(Number(item.fromPriceCents) / 100)}
 									</span>
 									{item.cashbackPercent != null && (
-										<Badge className="shrink-0 border-success/30 bg-success/10 text-success">
+										<Badge className="shrink-0" tone="accent">
 											{item.cashbackPercent}%
 										</Badge>
 									)}

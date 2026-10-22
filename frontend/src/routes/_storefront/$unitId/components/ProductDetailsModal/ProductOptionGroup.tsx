@@ -72,7 +72,7 @@ export function ProductOptionGroup({
 					</div>
 					<div className="flex shrink-0 items-center gap-2">
 						{complete ? (
-							<span className="font-bold text-primary" title={t("store.product.optional")}>
+							<span className="font-bold text-muted-foreground" title={t("store.product.optional")}>
 								✓
 							</span>
 						) : group.required ? (

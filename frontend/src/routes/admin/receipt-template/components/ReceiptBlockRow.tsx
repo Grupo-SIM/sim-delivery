@@ -26,7 +26,7 @@ export function ReceiptBlockRow({ block, meta, onChange, onRemove }: ReceiptBloc
 	return (
 		<div
 			className={cn(
-				"rounded-lg border border-border bg-card p-3 shadow-sm transition-[border-color,box-shadow,opacity]",
+				"rounded-lg border border-border bg-card text-card-foreground p-3 shadow-sm transition-[border-color,box-shadow,opacity]",
 				isDragging && "z-20 opacity-40 shadow-xl",
 			)}
 			ref={setNodeRef}

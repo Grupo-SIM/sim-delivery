@@ -21,11 +21,11 @@ export const referenceThemeColors: ThemeColors = {
 };
 
 export const colorLabels: Record<keyof ThemeColors["light"], string> = {
-	accent: "Destaque", accentForeground: "Texto de destaque", background: "Fundo", border: "Bordas",
+	accent: "Destaque promocional", accentForeground: "Texto de destaque", background: "Fundo", border: "Bordas",
 	card: "Cartões", cardForeground: "Texto dos cartões", destructive: "Erro / exclusão", foreground: "Texto",
 	input: "Borda dos campos", muted: "Fundo suave", mutedForeground: "Texto secundário", popover: "Popovers",
-	popoverForeground: "Texto dos popovers", primary: "Principal", primaryForeground: "Texto principal",
-	ring: "Foco", secondary: "Secundária", secondaryForeground: "Texto secundário da marca",
+	popoverForeground: "Texto dos popovers", primary: "Marca e ações", primaryForeground: "Texto sobre marca",
+	ring: "Foco", secondary: "Apoio da marca", secondaryForeground: "Texto sobre apoio da marca",
 	success: "Sucesso", surfaceSunken: "Fundo rebaixado", warning: "Avisos",
 };
 

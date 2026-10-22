@@ -164,7 +164,7 @@ function OrderTrackingPage() {
 						</div>
 					</div>
 
-					<ol className="space-y-0 rounded-lg border border-border bg-card p-5">
+					<ol className="space-y-0 rounded-lg border border-border bg-card text-card-foreground p-5">
 						{stages.map((status, index) => {
 							const copy = STATUS_COPY[
 								order.deliveryMethod === "pickup" && status === "entregue"
@@ -214,7 +214,7 @@ function OrderTrackingPage() {
 				</Link>
 			)}
 
-			<section className="space-y-3 rounded-lg border border-border bg-card p-5">
+			<section className="space-y-3 rounded-lg border border-border bg-card text-card-foreground p-5">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2 font-semibold">
 						<LuShoppingBag className="size-4" /> {order.unitName}

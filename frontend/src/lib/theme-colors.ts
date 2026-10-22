@@ -55,76 +55,31 @@ export const defaultThemeColors: ThemeColors = {
 	},
 };
 
-const legacyThemeColors: ThemeColors = {
-	dark: {
-		accent: "#FFED00",
-		accentForeground: "#0A0E1F",
-		background: "#0A0E1F",
-		border: "#2A315C",
-		card: "#121734",
-		cardForeground: "#EEF1F8",
-		destructive: "#F2543F",
-		foreground: "#EEF1F8",
-		input: "#2A315C",
-		muted: "#1B2145",
-		mutedForeground: "#9AA3C4",
-		popover: "#121734",
-		popoverForeground: "#EEF1F8",
-		primary: "#3342FF",
-		primaryForeground: "#FFFFFF",
-		ring: "#3342FF",
-		secondary: "#00E5FF",
-		secondaryForeground: "#062033",
-		success: "#1EBE5D",
-		surfaceSunken: "#1B2145",
-		warning: "#FFB800",
-	},
-	light: {
-		accent: "#FFED00",
-		accentForeground: "#0012FF",
-		background: "#F9FAFB",
-		border: "#E4E8F0",
-		card: "#FFFFFF",
-		cardForeground: "#1A1A2E",
-		destructive: "#E33E2B",
-		foreground: "#1A1A2E",
-		input: "#E4E8F0",
-		muted: "#EEF1F6",
-		mutedForeground: "#5B6472",
-		popover: "#FFFFFF",
-		popoverForeground: "#1A1A2E",
-		primary: "#0012FF",
-		primaryForeground: "#FFFFFF",
-		ring: "#0012FF",
-		secondary: "#00E5FF",
-		secondaryForeground: "#062033",
-		success: "#1EBE5D",
-		surfaceSunken: "#EEF1F6",
-		warning: "#FFB800",
-	},
-};
-
-function isLegacyThemeColors(themeColors: ThemeColors) {
-	return (["dark", "light"] as const).every(mode =>
-		Object.entries(legacyThemeColors[mode]).every(
-			([name, value]) => themeColors[mode][name as keyof ThemeColorSet] === value,
-		),
-	);
-}
-
+/** Saved palettes are authoritative; token usage never rewrites company colors. */
 export function resolveThemeColors(themeColors: GetBrandingQueryResponse["themeColors"]): ThemeColors {
-	if (!themeColors || isLegacyThemeColors(themeColors)) return defaultThemeColors;
-	return themeColors;
+ return themeColors ?? defaultThemeColors;
 }
 
 export function toThemeVariable(name: keyof ThemeColorSet) {
 	return name.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
 }
 
+/** Feedback has no editable text token; derive readable ink without changing saved colors. */
+export function feedbackForeground(hex: string) {
+ const channels = hex.slice(1).match(/../g)!.map(channel => {
+  const value = Number.parseInt(channel, 16) / 255;
+  return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+ });
+ const luminance = channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
+ return (luminance + 0.05) / 0.05 >= 1.05 / (luminance + 0.05) ? "#000000" : "#FFFFFF";
+}
+
 export function themeColorsToCss(colors: ThemeColors) {
-	const declarations = (colorSet: ThemeColorSet) =>
-		Object.entries(colorSet)
-			.map(([name, value]) => `--${toThemeVariable(name as keyof ThemeColorSet)}:${value}`)
-			.join(";");
-	return `:root{${declarations(colors.light)}}:root.dark{${declarations(colors.dark)}}`;
+ const declarations = (colorSet: ThemeColorSet) => Object.entries({
+  ...colorSet,
+  destructiveForeground: feedbackForeground(colorSet.destructive),
+  successForeground: feedbackForeground(colorSet.success),
+  warningForeground: feedbackForeground(colorSet.warning),
+ }).map(([name, value]) => `--${name.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}:${value}`).join(";");
+ return `:root{${declarations(colors.light)}}:root.dark{${declarations(colors.dark)}}`;
 }

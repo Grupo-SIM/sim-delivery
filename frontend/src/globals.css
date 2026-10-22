@@ -26,22 +26,15 @@
 	--color-accent: var(--accent);
 	--color-accent-foreground: var(--accent-foreground);
 	--color-destructive: var(--destructive);
+	--color-destructive-foreground: var(--destructive-foreground);
 	--color-border: var(--border);
 	--color-input: var(--input);
 	--color-ring: var(--ring);
 
-	/* Legacy aliases resolve through live company theme tokens. */
-	--color-brand-blue: var(--primary);
-	--color-brand-blue-light: var(--secondary);
-	--color-brand-yellow: var(--accent);
-	--color-brand-yellow-dark: var(--accent);
-	--color-brand-cyan: var(--secondary);
-	--color-brand-cyan-deep: var(--secondary);
-	--color-brand-red: var(--destructive);
-	--color-brand-ink: var(--foreground);
-	--color-whatsapp: var(--success);
 	--color-success: var(--success);
+	--color-success-foreground: var(--success-foreground);
 	--color-warning: var(--warning);
+	--color-warning-foreground: var(--warning-foreground);
 
 	/* Surface aliases (avoids hardcoding card/muted in every component) */
 	--color-surface: var(--surface);
@@ -95,6 +88,9 @@
 		--muted: #f5f5f5;
 		--muted-foreground: #525252;
 		--destructive: #000000;
+		--destructive-foreground: #ffffff;
+		--success-foreground: #ffffff;
+		--warning-foreground: #ffffff;
 
 		--border: #d4d4d4;
 		--input: #d4d4d4;
@@ -124,6 +120,9 @@
 		--muted: #262626;
 		--muted-foreground: #a3a3a3;
 		--destructive: #ffffff;
+		--destructive-foreground: #000000;
+		--success-foreground: #000000;
+		--warning-foreground: #000000;
 
 		--border: #404040;
 		--input: #404040;

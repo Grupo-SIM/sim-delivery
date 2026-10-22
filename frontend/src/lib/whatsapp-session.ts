@@ -3,7 +3,7 @@ export const statusTones = {
 	PASSKEY_CONFIRMATION_REQUIRED: "accent",
 	PASSKEY_REQUIRED: "accent",
 	SCAN_QR_CODE: "accent",
-	STARTING: "cyan",
+	STARTING: "secondary",
 	STOPPED: "neutral",
 	WORKING: "success",
 } as const;

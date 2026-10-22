@@ -21,7 +21,7 @@ export function CustomerMetrics({ customer }: CustomerMetricsProps) {
 	return (
 		<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 			{metrics.map(metric => (
-				<div className="rounded-lg border border-border bg-card p-4" key={metric.label}>
+				<div className="rounded-lg border border-border bg-card text-card-foreground p-4" key={metric.label}>
 					<p className="text-muted-foreground text-sm">{metric.label}</p>
 					<p className="mt-1 font-semibold text-lg">{metric.value}</p>
 				</div>

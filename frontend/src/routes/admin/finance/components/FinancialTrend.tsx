@@ -14,7 +14,7 @@ export function FinancialTrend({ formatCents, isPending, rows, title }: Financia
 	return (
 		<section>
 			<h2 className="mb-3 font-semibold text-base">{title}</h2>
-			<ScrollArea className="overflow-x-auto rounded-md border border-border bg-card p-5">
+			<ScrollArea className="overflow-x-auto rounded-md border border-border bg-card text-card-foreground p-5">
 				{isPending ? (
 					<Skeleton className="h-52 min-w-[36rem]" />
 				) : (

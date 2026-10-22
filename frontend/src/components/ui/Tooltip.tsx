@@ -41,7 +41,7 @@ export function Tooltip({ children, content, open, placement = "top" }: TooltipP
 					<span
 						aria-hidden={!isVisible}
 						className={cn(
-							"pointer-events-none fixed z-[9999] max-w-[320px] rounded-md border border-border bg-popover px-3 py-2 font-medium text-foreground text-xs leading-5 shadow-soft",
+							"pointer-events-none fixed z-[9999] max-w-[320px] rounded-md border border-border bg-popover px-3 py-2 font-medium text-popover-foreground text-xs leading-5 shadow-soft",
 							isVisible ? "opacity-100" : "opacity-0",
 						)}
 						role="tooltip"
