@@ -24,6 +24,7 @@ export function TypographySection({ fonts, onChange }: TypographySectionProps) {
 		>
 			<FontField
 				family={fonts.family}
+				onFamilyChange={family => onChange({ family, familyUrl: "" })}
 				label={t("admin.branding.fontFamily")}
 				onUploadError={uploadError}
 				onUrlChange={familyUrl => onChange({ familyUrl, ...(familyUrl && { family: "Brand Text" }) })}
@@ -36,6 +37,7 @@ export function TypographySection({ fonts, onChange }: TypographySectionProps) {
 
 			<FontField
 				family={fonts.display}
+				onFamilyChange={display => onChange({ display, displayUrl: "" })}
 				label={t("admin.branding.fontDisplay")}
 				onUploadError={uploadError}
 				onUrlChange={displayUrl => onChange({ displayUrl, ...(displayUrl && { display: "Brand Display" }) })}

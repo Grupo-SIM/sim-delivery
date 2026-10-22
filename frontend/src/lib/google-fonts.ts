@@ -19,6 +19,7 @@ function googleFontLinkId(family: string) {
 /** Injects (once per family) a Google Fonts stylesheet link so the family becomes usable via font-family. */
 export function loadGoogleFont(family: string | null | undefined) {
 	if (typeof document === "undefined" || !family?.trim()) return;
+	if (["arial", "times new roman"].includes(family.trim().toLowerCase())) return;
 
 	const id = googleFontLinkId(family);
 	if (document.getElementById(id)) return;

@@ -3,6 +3,26 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import { UpdateBranding } from "./UpdateBranding";
 
 describe("UpdateBranding", () => {
+	it("clears uploaded font URLs when choosing a family and preserves omitted font settings", async () => {
+		let persisted: Record<string, unknown> = {};
+		const prisma = {
+			company: {
+				update: async ({ data }: { data: Record<string, unknown> }) => {
+					persisted = data;
+					return { ...data, footerPaymentMethods: [], name: "Brand" };
+				},
+			},
+		} as unknown as PrismaInstance;
+		const useCase = new UpdateBranding(prisma);
+		await useCase.execute({ companyId: "cmp_1", fontFamily: "Montserrat", fontDisplay: "Poppins" });
+		expect(persisted.fontFamilyUrl).toBeNull();
+		expect(persisted.fontDisplayUrl).toBeNull();
+		await useCase.execute({ companyId: "cmp_1" });
+		expect(persisted.fontFamilyUrl).toBeUndefined();
+		expect(persisted.fontDisplayUrl).toBeUndefined();
+		await useCase.execute({ companyId: "cmp_1", fontFamily: "Brand Text", fontFamilyUrl: "https://example.com/font.woff2" });
+		expect(persisted.fontFamilyUrl).toBe("https://example.com/font.woff2");
+	});
 	it("persists and returns runtime footer details for scoped company", async () => {
 		const prisma = {
 			company: {

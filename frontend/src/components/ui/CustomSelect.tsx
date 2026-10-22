@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "./ScrollArea";
 
 export interface SelectOption {
+	fontFamily?: string;
 	imageUrl?: string;
 	label: string;
 	value: string;
@@ -114,7 +115,7 @@ export function CustomSelect({
 					{selected?.imageUrl && (
 						<img alt="" className="size-7 shrink-0 rounded object-cover" src={selected.imageUrl} />
 					)}
-					<span className="truncate">{selected?.label ?? "—"}</span>
+					<span className="truncate" style={{ fontFamily: selected?.fontFamily }}>{selected?.label ?? "—"}</span>
 				</span>
 				<LuChevronDown
 					className={cn(
@@ -162,7 +163,7 @@ export function CustomSelect({
 													{opt.imageUrl && (
 														<img alt="" className="size-8 shrink-0 rounded object-cover" src={opt.imageUrl} />
 													)}
-													<span className="truncate">{opt.label}</span>
+													<span className="truncate" style={{ fontFamily: opt.fontFamily }}>{opt.label}</span>
 												</span>
 											</button>
 										))}
@@ -183,7 +184,7 @@ export function CustomSelect({
 											{opt.imageUrl && (
 												<img alt="" className="size-8 shrink-0 rounded object-cover" src={opt.imageUrl} />
 											)}
-											<span className="truncate">{opt.label}</span>
+											<span className="truncate" style={{ fontFamily: opt.fontFamily }}>{opt.label}</span>
 										</span>
 									</button>
 								))}
