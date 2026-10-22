@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetBranding, useGetPublicUnits } from "@/lib/api";
 import { slug } from "@/lib/variant";
 import { StorefrontBannerCarousel, StorefrontBannerSkeleton } from "../components/storefront";
+import { UnitStoreSkeleton } from "./$unitId/components";
 import { unitSearchSchema } from "./components/unit-search";
 import { UnitHeroCard, UnitStorePage, WelcomeHero } from "./components";
 
@@ -14,7 +15,9 @@ function StorePage() {
 	const { data: branding, isPending: isBrandingPending } = useGetBranding(slug ? { slug } : undefined);
 	const { data: units, isError, isPending } = useGetPublicUnits({ slug });
 
-	if (!isPending && !isError && units.length === 1) {
+	if (isPending) return <UnitStoreSkeleton />;
+
+	if (!isError && units.length === 1) {
 		return <UnitStorePage homepage unitSlug={units[0].slug} />;
 	}
 
@@ -40,7 +43,7 @@ function StorePage() {
 			</section>
 
 			<section className="unit-selection mx-auto max-w-6xl px-5 pb-12">
-				{isPending || isBrandingPending ? (
+				{isBrandingPending ? (
 					<div className="grid grid-cols-2 gap-3 sm:gap-5">
 						<Skeleton className="aspect-[1.2] w-full rounded-3xl" />
 						<Skeleton className="aspect-[1.2] w-full rounded-3xl" />
