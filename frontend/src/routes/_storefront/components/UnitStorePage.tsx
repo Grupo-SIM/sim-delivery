@@ -19,7 +19,6 @@ import {
 	UnitStoreHeader,
 	UnitStoreSkeleton,
 } from "../$unitId/components";
-import { UnitStoreBanner } from "../$unitId/components/UnitStoreBanner";
 import { money } from "../$unitId/components/types";
 
 export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string; homepage?: boolean }) {
@@ -84,7 +83,6 @@ export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string
 				images={unit.bannerUrls.map((src, index) => ({ alt: `${unit.name} — banner ${index + 1}`, src }))}
 				label={t("store.unit.bannerCarousel")}
 			/>
-			<UnitStoreBanner urls={unit.bannerUrls} />
 			<Container className="unit-store-content space-y-6 py-5">
 				<UnitStoreHeader onReviewsClick={() => setReviewsOpen(true)} unit={unit} unitSlug={unitSlug} units={units} />
 
