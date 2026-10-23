@@ -15,20 +15,7 @@ export class UpdateMyCustomer {
 
 		try {
 			return await this.prisma.$transaction(async tx => {
-				const user = await tx.user.findUniqueOrThrow({ where: { id: userId } });
-				// Better Auth uses E.164, while the customer contact stores digits only.
-				const phoneNumber = `+${data.phone}`;
-				if (user.phoneNumber !== phoneNumber) {
-					await tx.user.update({
-						data: {
-							phoneNumber,
-							phoneNumberVerified: user.phoneNumber?.replace(/\D/g, "") === data.phone
-								? user.phoneNumberVerified
-								: false,
-						},
-						where: { id: userId },
-					});
-				}
+				// Tenant contact data must not replace the global authentication phone.
 				const customer = await tx.customer.upsert({
 					create: { companyId: company.id, cpf: data.cpf, phone: data.phone, userId },
 					update: { cpf: data.cpf, phone: data.phone },

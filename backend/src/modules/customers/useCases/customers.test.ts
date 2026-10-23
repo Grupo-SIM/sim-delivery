@@ -377,27 +377,48 @@ describe("customer profile mutations", () => {
 			slug: "demo",
 		});
 
-		expect(users.user_1).toMatchObject({ phoneNumber: "+5511999999999", phoneNumberVerified: false });
+		expect(users).toEqual({});
 		expect(addresses).toHaveLength(0);
 		expect(customers).toEqual([
 			expect.objectContaining({ cpf: "52998224725", phone: "5511999999999", userId: "user_1" }),
 		]);
 	});
 
-	it("preserves verification for the same phone and clears it for a different phone", async () => {
-		for (const previous of ["5511999999999", "+5511999999999", "+5581999999999"]) {
-			const { prisma, users } = makePrisma();
+	it("saves contact details without changing the global login phone or verification", async () => {
+		for (const previous of [null, "5511999999999", "+5511999999999", "+5581999999999"]) {
+			const { customers, prisma, users } = makePrisma();
 			users.user_1 = { phoneNumber: previous, phoneNumberVerified: true };
 			await new UpdateMyCustomer(prisma).execute("user_1", { cpf: "52998224725", phone: "5511999999999", slug: "demo" });
-			expect(users.user_1).toMatchObject({ phoneNumber: "+5511999999999", phoneNumberVerified: previous !== "+5581999999999" });
+			expect(users.user_1).toEqual({ phoneNumber: previous, phoneNumberVerified: true });
+			expect(customers[0]).toMatchObject({ cpf: "52998224725", phone: "5511999999999" });
 		}
 	});
 
-	it("rejects a phone owned by another account before changing customer data", async () => {
-		const { prisma, customers } = makePrisma();
-		prisma.user.update = (async () => { throw { code: "P2002" }; }) as unknown as typeof prisma.user.update;
+	it("completes an existing tenant profile when its contact phone belongs to another login", async () => {
+		const { prisma, customers, users } = makePrisma({
+			customer: { companyId: "cmp_1", cpf: null, id: "cust_1", phone: null, userId: "user_1" },
+		});
+		customers.push({ companyId: "other_company", cpf: "52998224725", id: "cust_other", phone: "5511999999999", userId: "user_1" });
+		users.user_1 = { phoneNumber: null, phoneNumberVerified: false };
+		users.other_user = { phoneNumber: "+5511999999999", phoneNumberVerified: false };
+		const originalUsers = structuredClone(users);
+		const originalOtherCustomer = { ...customers[1] };
+		prisma.user.update = (async () => { throw { code: "P2002", meta: { target: ["phoneNumber"] } }; }) as unknown as typeof prisma.user.update;
+
+		const result = await new UpdateMyCustomer(prisma).execute("user_1", { cpf: "52998224725", phone: "5511999999999", slug: "demo" });
+
+		expect(result).toMatchObject({ id: "cust_1", companyId: "cmp_1", cpf: "52998224725", phone: "5511999999999", userId: "user_1" });
+		expect(customers).toHaveLength(2);
+		expect(customers[1]).toEqual(originalOtherCustomer);
+		expect(users).toEqual(originalUsers);
+	});
+
+	it("still rejects a CPF conflict within the tenant", async () => {
+		const { prisma, customers, users } = makePrisma();
+		prisma.customer.upsert = (async () => { throw { code: "P2002", meta: { target: ["companyId", "cpf"] } }; }) as unknown as typeof prisma.customer.upsert;
 		await expect(new UpdateMyCustomer(prisma).execute("user_1", { cpf: "52998224725", phone: "5511999999999", slug: "demo" })).rejects.toThrow("ACCOUNT_ALREADY_EXISTS");
 		expect(customers).toHaveLength(0);
+		expect(users).toEqual({});
 	});
 
 	it("propagates unexpected transaction failures", async () => {

@@ -48,6 +48,9 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
 
 - Uma conta pode ter um cadastro de cliente por empresa, inclusive contas com papel
   `superAdmin` ou de funcionário. Esse cadastro não altera o papel de acesso da conta.
+- CPF e telefone de contato são dados do cadastro por empresa. Salvar esse contato não
+  altera o telefone global de autenticação nem sua verificação, mesmo quando o número
+  de contato pertence ao login de outra conta.
 - Endereços, pedidos, preferências, cartões e créditos pertencem ao cadastro da empresa;
   cadastrar ou comprar em outra empresa não reaproveita nem transfere esses dados.
 
