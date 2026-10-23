@@ -18,9 +18,8 @@
 	--navigation-height: 96px;
 	position: sticky;
 	top: 0;
-	color: var(--foreground);
-	color: var(--foreground);
-	background: var(--background);
+	color: var(--primary-foreground);
+	background: var(--primary);
 	border: 0;
 	backdrop-filter: none;
 }
@@ -52,6 +51,9 @@
 	color: inherit;
 }
 .storefront-header a:has(> svg) {
+	color: inherit;
+}
+.storefront-header a:not(.storefront-sign-in) {
 	color: inherit;
 }
 .storefront-header a > svg {
@@ -784,14 +786,6 @@ html:has(.storefront) { scrollbar-color: var(--muted-foreground) var(--backgroun
 	background: white;
 }
 
-/* Menu header is a brand surface; home header remains a page surface. */
-.storefront:has(.unit-store-content) > .storefront-header {
- color: var(--primary-foreground);
- background: var(--primary);
-}
-.storefront:has(.unit-store-content) > .storefront-header a:not(.storefront-sign-in) {
- color: inherit;
-}
 .storefront .category-nav button:not([aria-pressed="true"]) {
  color: var(--foreground);
 }
