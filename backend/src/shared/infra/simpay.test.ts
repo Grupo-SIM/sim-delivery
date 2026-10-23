@@ -71,3 +71,14 @@ it("blocks credential activation when pending historical payments cannot be prov
  expect(db.companySimpayIntegration.upsert).not.toHaveBeenCalled();
  expect(String(fetch.mock.calls[1][0])).toEndWith("/platform-registrations/company/compatibility");
 });
+
+it("preserves canonical error codes when Nest returns a generic exception message", async () => {
+ const { client } = fixture();
+ spyOn(globalThis, "fetch").mockResolvedValue(Response.json({ statusCode: 422, code: "DELIVERY_PROFILE_NOT_CONFIGURED", message: "Unprocessable Entity Exception", error: "UnprocessableEntityException" }, { status: 422 }));
+ await expect(client.getPaymentAttempt(scope, "attempt")).rejects.toMatchObject({ status: 422, code: "DELIVERY_PROFILE_NOT_CONFIGURED", message: "Unprocessable Entity Exception (DELIVERY_PROFILE_NOT_CONFIGURED)" });
+});
+it("preserves a code-only canonical rejection instead of hiding it behind HTTP status", async () => {
+ const { client } = fixture();
+ spyOn(globalThis, "fetch").mockResolvedValue(Response.json({ code: "INVALID_PAYMENT_CONTRACT" }, { status: 422 }));
+ await expect(client.getPaymentAttempt(scope, "attempt")).rejects.toMatchObject({ status: 422, code: "INVALID_PAYMENT_CONTRACT", message: "Erro na API canônica SIM INT PAY (HTTP 422) (INVALID_PAYMENT_CONTRACT)" });
+});

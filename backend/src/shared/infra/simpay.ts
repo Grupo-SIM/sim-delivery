@@ -169,7 +169,11 @@ export class SimpayClient {
 			...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
 		});
 		const data = await response.json().catch(() => null);
-		if (!response.ok || !data) throw new PaymentProviderError("Simpay", extractPaymentProviderMessage(data) || `Erro na API canônica SIM INT PAY (HTTP ${response.status})`, response.status, typeof data?.code === "string" ? data.code : undefined);
+		if (!response.ok || !data) {
+			const code = typeof data?.code === "string" ? data.code : undefined;
+			const message = extractPaymentProviderMessage(data) || `Erro na API canônica SIM INT PAY (HTTP ${response.status})`;
+			throw new PaymentProviderError("Simpay", code ? `${message} (${code})` : message, response.status, code);
+		}
 		return data as T;
 	}
 	private async save(companyId: string, result: RegistrationResult) {
