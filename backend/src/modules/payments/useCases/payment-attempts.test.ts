@@ -1,3 +1,4 @@
+import { PaymentProviderError } from "@/shared/infra/paymentProviderError";
 import { createHash } from "node:crypto";
 import { expect, mock, test } from "bun:test";
 import { startPaymentAttempt, recoverPaymentAttempt } from "./payment-attempts";
@@ -56,4 +57,12 @@ test("old active attempt retains original hash/contract while new attempts freez
  old.requestHash = createHash("sha256").update(JSON.stringify(data)).digest("hex");
  expect((await startPaymentAttempt(f.db, context, "pix")).created).toBe(false);
  expect(f.db.paymentAttempt.create).toHaveBeenCalledTimes(1);
+});
+
+test("recovery preserves provider failure details without unlocking the attempt", async () => {
+ const f = fixture(); await startPaymentAttempt(f.db, context, "pix");
+ const client = { getPaymentAttempt: mock(async () => { throw new PaymentProviderError("Simpay", "Credencial empresarial inválida", 401); }) };
+ await expect(recoverPaymentAttempt(f.db, client as unknown as SimpayClient, context, "attempt")).rejects.toMatchObject({ message: "PAYMENT_PROCESSING", description: "Credencial empresarial inválida" });
+ expect(f.db.payment.upsert).not.toHaveBeenCalled();
+ expect(f.saved().state).toBe("preparing");
 });

@@ -590,6 +590,41 @@ describe("CreatePixPayment", () => {
 		await expect(new CreatePixPayment(prisma, simpay).execute("user_1", body)).rejects.toThrow("PIX_FAILED");
 	});
 
+	it("allows PIX retry or card after a definitive PIX request rejection", async () => {
+		for (const status of [400, 422]) {
+			for (const method of ["pix", "card"]) {
+				const { prisma } = makeWorld();
+				const rejected = makeSimpay({ createPixPayment: async () => { throw new PaymentProviderError("Simpay", "Contrato inválido", status); } });
+				await expect(new CreatePixPayment(prisma, rejected.simpay).execute("user_1", body)).rejects.toMatchObject({ message: "PIX_FAILED", description: "Contrato inválido" });
+				const { calls, simpay } = makeSimpay();
+				if (method === "pix") {
+					await new CreatePixPayment(prisma, simpay).execute("user_1", body);
+				} else {
+					await cardUseCase(prisma, simpay, makeDom().dom).execute("user_1", {
+						...body, holderCpf: "11144477735",
+						card: { cvv: "123", expMonth: 12, expYear: 2030, holderName: "MARIA SILVA", number: "4242424242424242" },
+					});
+				}
+				expect(calls[method]).toHaveLength(1);
+			}
+		}
+	});
+
+	it("keeps uncertain PIX outcomes locked against retries and card switching", async () => {
+		for (const error of [new Error("timeout"), new PaymentProviderError("Simpay", "Gateway indisponível", 503), new PaymentProviderError("Simpay", "Em processamento", 409)]) {
+			const { prisma } = makeWorld();
+			const { simpay } = makeSimpay({ createPixPayment: async () => { throw error; } });
+			await expect(new CreatePixPayment(prisma, simpay).execute("user_1", body)).rejects.toThrow("PAYMENT_PROCESSING");
+			const active = await prisma.paymentAttempt.findFirst({ where: { orderId: body.orderId, state: { in: ["submitting"] } } });
+			expect(active).not.toBeNull();
+			const next = makeSimpay({ getPaymentAttempt: async () => { throw new Error("timeout"); } });
+			await expect(new CreatePixPayment(prisma, next.simpay).execute("user_1", body)).rejects.toThrow("PAYMENT_PROCESSING");
+			await expect(cardUseCase(prisma, next.simpay, makeDom().dom).execute("user_1", { ...body })).rejects.toThrow("PAYMENT_PROCESSING");
+			expect(next.calls.pix).toHaveLength(0);
+			expect(next.calls.card).toHaveLength(0);
+		}
+	});
+
 	it("does not charge for an order of another customer", async () => {
 		const { prisma } = makeWorld({ orders: [{ ...baseOrder, customerId: "cust_2" }] });
 		const { calls, simpay } = makeSimpay();

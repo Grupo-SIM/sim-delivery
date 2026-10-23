@@ -1,4 +1,4 @@
-import { isFinancialContractError } from "@/shared/infra/paymentProviderError";
+import { PaymentProviderError, isFinancialContractError, paymentProviderErrorDescription } from "@/shared/infra/paymentProviderError";
 import { attemptAllocation, startPaymentAttempt, recoverPaymentAttempt, recordAttemptResponse } from "./payment-attempts";
 import { DomainError } from "@/shared/errors";
 import type { SimpayClient } from "@/shared/infra/simpay";
@@ -53,7 +53,11 @@ export class CreatePixPayment {
 				await this.prisma.paymentAttempt.update({ where: { id: attempt.id }, data: { state: "failed" } });
 				throw new DomainError(PaymentErrors.PAYMENT_PROCESSING, error.message);
 			}
-			throw error;
+			if (error instanceof PaymentProviderError && [400, 422].includes(error.status ?? 0)) {
+				await this.prisma.paymentAttempt.update({ where: { id: attempt.id }, data: { state: "failed" } });
+				throw new DomainError(PaymentErrors.PIX_FAILED, error.message);
+			}
+			throw new DomainError(PaymentErrors.PAYMENT_PROCESSING, paymentProviderErrorDescription(error));
 		});
 
 		await recordAttemptResponse(this.prisma, attempt.id, pix);

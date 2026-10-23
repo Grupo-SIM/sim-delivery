@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { paymentProviderErrorDescription } from "@/shared/infra/paymentProviderError";
 import { DomainError } from "@/shared/errors";
 import { isApprovedSimpayStatus, isFailedSimpayStatus, type SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
@@ -25,7 +26,9 @@ export async function startPaymentAttempt(db: PrismaInstance, context: PayingCus
 }
 export async function recoverPaymentAttempt(db: PrismaInstance, client: SimpayClient, context: PayingCustomerContext, attemptId: string) {
 	if (!context.merchant) throw new DomainError(PaymentErrors.PAYMENT_PROCESSING);
-	const result = await client.getPaymentAttempt(context.merchant, attemptId).catch(() => null);
+	const result = await client.getPaymentAttempt(context.merchant, attemptId).catch(error => {
+		throw new DomainError(PaymentErrors.PAYMENT_PROCESSING, paymentProviderErrorDescription(error));
+	});
 	if (!result || !result.transactionId || !result.paymentId && !isApprovedSimpayStatus(result.status) && !isFailedSimpayStatus(result.status)) throw new DomainError(PaymentErrors.PAYMENT_PROCESSING);
 	const reference = result.paymentId ?? result.transactionId;
 	const attempt = await db.paymentAttempt.findUniqueOrThrow({ where: { id: attemptId } });
