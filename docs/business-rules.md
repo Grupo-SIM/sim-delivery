@@ -44,6 +44,13 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
 - `success`, `warning`, `destructive`: sucesso/conclusão, atenção/espera e erro/exclusão. Texto sobre fundos sólidos de estado é derivado para contraste, sem alterar a cor configurada.
 - `border`, `input`, `ring`: divisórias, bordas de campos e foco de teclado.
 
+## Cadastro de clientes
+
+- Uma conta pode ter um cadastro de cliente por empresa, inclusive contas com papel
+  `superAdmin` ou de funcionário. Esse cadastro não altera o papel de acesso da conta.
+- Endereços, pedidos, preferências, cartões e créditos pertencem ao cadastro da empresa;
+  cadastrar ou comprar em outra empresa não reaproveita nem transfere esses dados.
+
 ## Criação de pedidos
 
 - Pedido pendente de pagamento não bloqueia novos pedidos do mesmo cliente/unidade.

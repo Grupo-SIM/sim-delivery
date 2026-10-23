@@ -32,7 +32,7 @@ export class UpdateMyCustomer {
 				const customer = await tx.customer.upsert({
 					create: { companyId: company.id, cpf: data.cpf, phone: data.phone, userId },
 					update: { cpf: data.cpf, phone: data.phone },
-					where: { userId },
+					where: { companyId_userId: { companyId: company.id, userId } },
 				});
 
 				return tx.customer.findUniqueOrThrow({

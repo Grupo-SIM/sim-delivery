@@ -7,8 +7,11 @@ export class UpdateNotificationPreferences {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(userId: string, data: UpdateNotificationPreferencesBody): Promise<CustomerReturn> {
-		const customer = await this.prisma.customer.findUnique({
-			where: { userId },
+		const slug = process.env.COMPANY_SLUG?.trim();
+		if (!slug) throw new DomainError(CustomerErrors.COMPANY_NOT_FOUND);
+
+		const customer = await this.prisma.customer.findFirst({
+			where: { company: { slug }, userId },
 			include: { company: { select: { whatsAppConnection: { select: { connectedPhone: true } } } } },
 		});
 		if (!customer) throw new DomainError(CustomerErrors.CUSTOMER_NOT_FOUND);

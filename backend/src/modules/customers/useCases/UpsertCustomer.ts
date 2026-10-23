@@ -20,7 +20,7 @@ export class UpsertCustomer {
 				const customer = await tx.customer.upsert({
 					create: { companyId: company.id, cpf: cpf ?? null, userId },
 					update: { cpf: cpf ?? undefined },
-					where: { userId },
+					where: { companyId_userId: { companyId: company.id, userId } },
 				});
 
 				await tx.user.update({ data: { name }, where: { id: userId } });

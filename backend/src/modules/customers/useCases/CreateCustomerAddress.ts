@@ -13,7 +13,7 @@ export class CreateCustomerAddress {
 		const customer = await this.prisma.customer.upsert({
 			create: { companyId: company.id, userId },
 			update: {},
-			where: { userId },
+			where: { companyId_userId: { companyId: company.id, userId } },
 		});
 		const activeAddressCount = await this.prisma.address.count({
 			where: { customerId: customer.id, deletedAt: null },

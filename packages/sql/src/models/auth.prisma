@@ -61,7 +61,7 @@ model User {
 
     accounts   Account[]
     company    Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
-    customer   Customer?
+    customers  Customer[]
     deliveries Delivery[]
     preparedOrders Order[] @relation("PreparedOrders")
     staffUnits StaffUnit[]

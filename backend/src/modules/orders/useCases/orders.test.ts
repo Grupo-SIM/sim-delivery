@@ -139,9 +139,9 @@ function makeOrderPrisma(
 			}: {
 				create: { companyId: string; userId: string };
 				update: object;
-				where: { userId: string };
+				where: { companyId_userId: { companyId: string; userId: string } };
 			}) => {
-				if (storedCustomer?.userId === where.userId) return storedCustomer;
+				if (storedCustomer?.userId === where.companyId_userId.userId && storedCustomer?.companyId === where.companyId_userId.companyId) return storedCustomer;
 				storedCustomer = { id: "cust_created", ...create };
 				return storedCustomer;
 			},
@@ -226,6 +226,18 @@ describe("CreateOrder", () => {
 		).resolves.toMatchObject({
 			customerId: "cust_created",
 		});
+	});
+
+	it("creates a separate customer when the account already buys from another company", async () => {
+		const previousCustomer = { ...baseCustomer, companyId: "other_company" };
+		const { prisma } = makeOrderPrisma({ customer: previousCustomer });
+		const result = await new CreateOrder(prisma).execute("user_1", {
+			...baseBody,
+			addressId: null,
+			deliveryMethod: "pickup",
+		});
+		expect(result).toMatchObject({ customerId: "cust_created" });
+		expect(previousCustomer).toEqual({ ...baseCustomer, companyId: "other_company" });
 	});
 
 	it("throws INVALID_ITEM when unitProductId not found in unit", async () => {

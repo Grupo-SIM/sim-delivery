@@ -136,16 +136,16 @@ function makePrisma(
 				}: {
 					create: object;
 					update: object;
-					where: { userId: string };
+					where: { companyId_userId: { companyId: string; userId: string } };
 				}) => {
-					const existing = customers.find(customer => customer.userId === where.userId);
+					const existing = customers.find(customer => customer.userId === where.companyId_userId.userId && customer.companyId === where.companyId_userId.companyId);
 					if (existing) {
 						Object.assign(existing, update);
 						return existing;
 					}
 					const created = {
 						cpf: null,
-						id: "cust_1",
+						id: `cust_${customers.length + 1}`,
 						phone: null,
 						...create,
 					} as CustomerRecord;
@@ -459,5 +459,25 @@ describe("customer profile mutations", () => {
 
 		expect(addresses[0]).toMatchObject({ isDefault: false });
 		expect(addresses[1]).toMatchObject({ isDefault: true });
+	});
+});
+
+
+describe("customer tenancy", () => {
+	it("preserves the original company's profile and default address across registration, profile and address creation", async () => {
+		for (const action of ["register", "profile", "address"]) {
+			const { prisma, customers, addresses } = makePrisma({
+				customer: { companyId: "other_company", cpf: null, id: "cust_1", phone: null, userId: "user_1" },
+			});
+			addresses.push({ ...baseAddress, customerId: "cust_1", id: "addr_old", isDefault: true });
+			if (action === "register") await new UpsertCustomer(prisma).execute("user_1", { address: baseAddress, name: "Maria", slug: "demo" });
+			if (action === "profile") await new UpdateMyCustomer(prisma).execute("user_1", { cpf: "52998224725", phone: "5511999999999", slug: "demo" });
+			if (action === "address") await new CreateCustomerAddress(prisma).execute("user_1", { ...baseAddress, slug: "demo" });
+			expect(customers).toHaveLength(2);
+			expect(customers[0]).toMatchObject({ companyId: "other_company", cpf: null, phone: null });
+			expect(customers[1]).toMatchObject({ companyId: "cmp_1", id: "cust_2", userId: "user_1" });
+			expect(addresses[0]).toMatchObject({ customerId: "cust_1", isDefault: true });
+			if (action !== "profile") expect(addresses[1]).toMatchObject({ customerId: "cust_2", isDefault: true });
+		}
 	});
 });

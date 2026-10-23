@@ -1,10 +1,10 @@
 /// Consumer end-user of a company's storefront app. Created automatically at the first
-/// checkout (docs/07, docs/08). Strictly scoped by `companyId`; linked 1:1 to the Better
-/// Auth `User` that owns the login (role = customer).
+/// checkout (docs/07, docs/08). Strictly scoped by `companyId`; one record per company
+/// for the Better Auth `User` that owns the login, independently of their staff role.
 model Customer {
     id        String   @id @default(cuid())
     companyId String
-    userId    String   @unique
+    userId    String
     cpf       String?
     phone     String?
     /// Customer-selected channels for transactional order-status notifications.
@@ -25,6 +25,7 @@ model Customer {
     reviews          Review[]
     savedCards       SavedCard[]
 
+    @@unique([companyId, userId])
     @@unique([companyId, cpf])
     @@index([companyId])
     @@map("customer")

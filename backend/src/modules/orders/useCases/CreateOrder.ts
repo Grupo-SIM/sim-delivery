@@ -41,7 +41,7 @@ export class CreateOrder {
 		const customer = await this.prisma.customer.upsert({
 			create: { companyId: company.id, userId },
 			update: {},
-			where: { userId },
+			where: { companyId_userId: { companyId: company.id, userId } },
 		});
 		if (customer.companyId !== company.id) throw new DomainError(OrderErrors.CUSTOMER_NOT_FOUND);
 		const existingOrder = await this.findOrderByIdempotencyKey(customer.id, idempotencyKey);
