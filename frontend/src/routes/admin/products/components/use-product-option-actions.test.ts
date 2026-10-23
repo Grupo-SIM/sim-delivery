@@ -133,3 +133,33 @@ describe("independent option persistence", () => {
 		expect(updateGroup).not.toHaveBeenCalled();
 	});
 });
+
+
+describe("imported IDs containing path separators", () => {
+	it("encodes request IDs while preserving raw cache IDs", async () => {
+		const groupId = "size/product";
+		const optionId = "size-option/product";
+		const option = { ...savedOption, id: optionId };
+		const group = { ...savedGroup, id: groupId, options: [option] };
+		cache = [group];
+		const actions = useProductOptionActions("product");
+		await actions.saveOption(groupId, option);
+		expect(updateOption).toHaveBeenLastCalledWith("product", "size%2Fproduct", "size-option%2Fproduct", expect.anything());
+		await actions.saveGroup(group);
+		expect(updateGroup).toHaveBeenLastCalledWith("product", "size%2Fproduct", expect.anything());
+		await actions.reorderOptions(groupId, [option]);
+		expect(updateOption).toHaveBeenLastCalledWith("product", "size%2Fproduct", "size-option%2Fproduct", { sortOrder: 0 });
+		await actions.reorderGroups([group]);
+		expect(updateGroup).toHaveBeenLastCalledWith("product", "size%2Fproduct", { sortOrder: 0 });
+		expect(cache[0].id).toBe(groupId);
+		expect(cache[0].options[0].id).toBe(optionId);
+		await actions.addOption(groupId, savedOption);
+		expect(createOption).toHaveBeenLastCalledWith("product", "size%2Fproduct", expect.anything());
+		await actions.deleteOption(groupId, optionId);
+		expect(deleteOption).toHaveBeenLastCalledWith("product", "size%2Fproduct", "size-option%2Fproduct");
+		expect(cache[0].options.map(item => item.id)).toEqual(["created-option"]);
+		await actions.deleteGroup(groupId);
+		expect(deleteGroup).toHaveBeenLastCalledWith("product", "size%2Fproduct");
+		expect(cache).toEqual([]);
+	});
+});

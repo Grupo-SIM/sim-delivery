@@ -79,17 +79,17 @@ export function useProductOptionActions(productId: string | undefined) {
 		addOption: (groupId: string, option: EditableOption) =>
 			run(async () => {
 				const { id: _id, ...data } = option;
-				const created = await postProductsByProductIdOptionGroupsByGroupIdOptions(productId!, groupId, data);
+				const created = await postProductsByProductIdOptionGroupsByGroupIdOptions(productId!, encodeURIComponent(groupId), data);
 				updateOptions(groupId, current => [...current, { ...data, id: created.id }]);
 			}),
 		deleteGroup: (groupId: string) =>
 			run(async () => {
-				await deleteProductsByProductIdOptionGroupsByGroupId(productId!, groupId);
+				await deleteProductsByProductIdOptionGroupsByGroupId(productId!, encodeURIComponent(groupId));
 				updateGroups(current => current.filter(group => group.id !== groupId));
 			}),
 		deleteOption: (groupId: string, optionId: string) =>
 			run(async () => {
-				await deleteProductsByProductIdOptionGroupsByGroupIdOptionsByOptionId(productId!, groupId, optionId);
+				await deleteProductsByProductIdOptionGroupsByGroupIdOptionsByOptionId(productId!, encodeURIComponent(groupId), encodeURIComponent(optionId));
 				updateOptions(groupId, current => current.filter(option => option.id !== optionId));
 			}),
 		groups,
@@ -99,7 +99,7 @@ export function useProductOptionActions(productId: string | undefined) {
 			run(async () => {
 				await Promise.all(
 					ordered.map((group, sortOrder) =>
-						patchProductsByProductIdOptionGroupsByGroupId(productId!, group.id, { sortOrder }),
+						patchProductsByProductIdOptionGroupsByGroupId(productId!, encodeURIComponent(group.id), { sortOrder }),
 					),
 				);
 				updateGroups(() => ordered.map((group, sortOrder) => ({ ...group, sortOrder })));
@@ -108,7 +108,7 @@ export function useProductOptionActions(productId: string | undefined) {
 			run(async () => {
 				await Promise.all(
 					ordered.map((option, sortOrder) =>
-						patchProductsByProductIdOptionGroupsByGroupIdOptionsByOptionId(productId!, groupId, option.id, {
+						patchProductsByProductIdOptionGroupsByGroupIdOptionsByOptionId(productId!, encodeURIComponent(groupId), encodeURIComponent(option.id), {
 							sortOrder,
 						}),
 					),
@@ -119,13 +119,13 @@ export function useProductOptionActions(productId: string | undefined) {
 			run(async () => {
 				const { id, allowRepeatSelection, maxSelect, name, priceRule, required, sortOrder } = group;
 				const data = { allowRepeatSelection, maxSelect, name, priceRule, required, sortOrder };
-				await patchProductsByProductIdOptionGroupsByGroupId(productId!, id, data);
+				await patchProductsByProductIdOptionGroupsByGroupId(productId!, encodeURIComponent(id), data);
 				updateGroups(current => current.map(item => (item.id === id ? { ...item, ...data } : item)));
 			}),
 		saveOption: (groupId: string, option: EditableOption) =>
 			run(async () => {
 				const { id, ...data } = option;
-				await patchProductsByProductIdOptionGroupsByGroupIdOptionsByOptionId(productId!, groupId, id, data);
+				await patchProductsByProductIdOptionGroupsByGroupIdOptionsByOptionId(productId!, encodeURIComponent(groupId), encodeURIComponent(id), data);
 				updateOptions(groupId, current => current.map(item => (item.id === id ? option : item)));
 			}),
 	};
