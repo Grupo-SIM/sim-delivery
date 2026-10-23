@@ -91,8 +91,6 @@
 				"ga4Short": "GA4",
 				"gtmId": "ID do Google Tag Manager",
 				"gtmShort": "GTM",
-				"homepageBannerShort": "Banners da página inicial",
-				"homepageBannerUrls": "Banners da página inicial",
 				"insertOrderId": "Inserir código do pedido",
 				"insertCancelReason": "Inserir motivo do cancelamento",
 				"lightTheme": "Tema claro",
@@ -1651,7 +1649,10 @@
 			"title": "Entregas"
 		},
 		"media": {
+			"anyDimensions": "Dimensões: qualquer tamanho.",
+			"optionDimensions": "Miniatura: 56 × 56 px. Ampliação: até 75% da altura da tela, limitada à largura disponível; sem tamanho máximo fixo em pixels.",
 			"preview": "Prévia da imagem",
+			"recommendedDimensions": "Dimensões recomendadas: {{width}} × {{height}} px.",
 			"uploading": "Enviando imagem"
 		},
 		"rating": {
@@ -2022,8 +2023,6 @@
 			},
 			"chooseUnit": {
 				"available": "Disponível",
-				"bannerAlt": "Banner da página inicial",
-				"bannerCarousel": "Destaque da página inicial",
 				"delivery": "Entrega",
 				"empty": "Nenhuma unidade disponível ainda.",
 				"loadError": "Não foi possível carregar as unidades.",

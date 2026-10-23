@@ -72,6 +72,7 @@ export function OptionFormFields({ draftRef, onChange, onUploadingChange, option
 				<span>{t("admin.products.options.optionImage")}</span>
 				<MediaUrlInput
 					asset="product"
+					imageKind="option"
 					onUploadError={() => showToast(t("admin.products.create.uploadError"), "negative")}
 					onUploadingChange={onUploadingChange}
 					onValueChange={value => {

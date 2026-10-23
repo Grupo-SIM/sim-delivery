@@ -18,8 +18,16 @@ const acceptByAsset: Record<MediaAsset, string> = {
 	whatsapp: "image/jpeg,image/png,image/webp,application/pdf",
 };
 
+const dimensionsByAsset: Partial<Record<MediaAsset, { width: number; height: number }>> = {
+	banner: { width: 1112, height: 450 },
+	"mobile-icon": { width: 512, height: 512 },
+	product: { width: 408, height: 408 },
+	unit: { width: 263, height: 219 },
+};
+
 interface MediaUrlInputProps {
 	asset: MediaAsset;
+	imageKind?: "option";
 	onDeleteError?: () => void;
 	onUploadError: () => void;
 	onUploadingChange?: (isUploading: boolean) => void;
@@ -35,6 +43,7 @@ interface MediaUrlInputProps {
 
 export function MediaUrlInput({
 	asset,
+	imageKind,
 	onDeleteError,
 	onUploadError,
 	onUploadingChange,
@@ -53,6 +62,14 @@ export function MediaUrlInput({
 	const [isUploading, setIsUploading] = useState(false);
 	const [localValue, setLocalValue, flushValue] = useDebouncedInput(value, onValueChange);
 	const isImageAsset = !asset.startsWith("font-") && asset !== "whatsapp";
+	const dimensions = dimensionsByAsset[asset];
+	const dimensionHint = imageKind === "option"
+		? t("media.optionDimensions")
+		: dimensions
+			? t("media.recommendedDimensions", dimensions)
+			: asset === "logo" || asset === "whatsapp"
+				? t("media.anyDimensions")
+				: undefined;
 	const dropLabel = isImageAsset ? "Solte imagem aqui" : "Solte fonte aqui";
 
 	async function upload(file: File) {
@@ -175,6 +192,7 @@ export function MediaUrlInput({
 					{isUploading ? <LuLoaderCircle className="size-4 animate-spin" /> : <LuUpload className="size-4" />}
 				</button>
 			</div>
+			{dimensionHint && <p className="text-muted-foreground text-xs">{dimensionHint}</p>}
 			{preview && isImageAsset && localValue && (
 				<figure
 					className={cn(

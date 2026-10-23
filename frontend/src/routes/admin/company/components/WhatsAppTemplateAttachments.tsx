@@ -49,6 +49,7 @@ export function WhatsAppTemplateAttachments({
 				<div>
 					<p className="font-semibold text-sm">{t("admin.branding.attachments")}</p>
 					<p className="text-muted-foreground text-xs">{t("admin.branding.attachmentsHelp")}</p>
+					<p className="text-muted-foreground text-xs">{t("media.anyDimensions")}</p>
 				</div>
 				<Button
 					className="gap-2"

@@ -223,3 +223,11 @@ Delivery usa bootstrap `/platform-registrations/:companyId` e operações `/plat
   operacional; não apresentar como recusa de cartão.
 - Publicação: backend SimIntPay compatível, migration e Delivery detalhado, interface
   SimIntPay; somente então habilitar acordos após auditoria de vínculos.
+
+## Orientações de imagens no painel
+
+- Campos de imagem exibem orientação de dimensões antes e depois do upload. São recomendações, sem bloquear arquivos por resolução.
+- Logotipo e imagens anexas do WhatsApp aceitam qualquer dimensão.
+- Ícone mobile: idealmente 512 × 512 px; imagem da unidade: 263 × 219 px; banners da unidade: 1112 × 450 px; imagem do produto: 408 × 408 px.
+- Opções/complementos exibem miniatura de 56 × 56 px. A ampliação usa até 75% da altura da tela, limitada pela largura disponível, sem máximo fixo em pixels.
+- A página inicial não possui banners próprios; banners pertencem às unidades.
