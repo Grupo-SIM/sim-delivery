@@ -1,1 +1,1 @@
-ALTER TABLE "Company" DROP COLUMN "homepageBannerUrls";
+ALTER TABLE "company" DROP COLUMN "homepageBannerUrls";
