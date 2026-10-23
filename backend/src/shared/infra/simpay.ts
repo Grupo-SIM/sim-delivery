@@ -9,6 +9,8 @@ import { encryptSimpaySecret, decryptSimpaySecret } from "./simpay-secrets";
 import { extractPaymentProviderMessage, PaymentProviderError } from "./paymentProviderError";
 
 export interface SimpayPaymentAllocation {
+	itemsAmountCents?: number;
+	deliveryAmountCents?: number;
 	merchantAmountCents: number;
 	platformFeeCents: number;
 }
@@ -167,7 +169,7 @@ export class SimpayClient {
 			...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
 		});
 		const data = await response.json().catch(() => null);
-		if (!response.ok || !data) throw new PaymentProviderError("Simpay", extractPaymentProviderMessage(data) || `Erro na API canônica SIM INT PAY (HTTP ${response.status})`, response.status);
+		if (!response.ok || !data) throw new PaymentProviderError("Simpay", extractPaymentProviderMessage(data) || `Erro na API canônica SIM INT PAY (HTTP ${response.status})`, response.status, typeof data?.code === "string" ? data.code : undefined);
 		return data as T;
 	}
 	private async save(companyId: string, result: RegistrationResult) {

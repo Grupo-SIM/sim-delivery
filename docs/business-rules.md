@@ -136,9 +136,9 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
   taxas de receita, margem e recompensas empresariais. Reembolso atribui parcela comercial de modo
   proporcional ao total pago.
 - Pagamentos online enviam à SIM INT PAY uma divisão explícita em centavos: total do comprador,
-  parcela da empresa (`total − feeTotalCents`) e taxas da plataforma (`feeTotalCents`). A carteira
-  empresarial recebe integralmente sua parcela, incluindo frete e após descontos/créditos, sem
-  descontos adicionais de adquirente, liquidez ou serviço. Somente as taxas pertencem à plataforma.
+  parcela da empresa (`total − feeTotalCents`) e taxas da plataforma (`feeTotalCents`). A parcela comercial inclui frete e considera descontos/créditos. SimIntPay pode repartir
+  itens líquidos entre empresa e coprodutores configurados exclusivamente naquela plataforma, sem
+  descontos adicionais de adquirente, liquidez ou serviço. Somente as taxas pertencem à plataforma; frete fica integralmente com empresa.
 - A divisão é congelada na cobrança e reutilizada na confirmação e no estorno. Configuração
   posterior não recalcula pagamentos históricos. Novas cobranças exigem carteira empresarial
   identificada; ausência de CPF/CNPJ não permite fallback para a conta genérica Zero Grau.
@@ -212,3 +212,14 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
 ## Integração financeira canônica
 
 Delivery usa bootstrap `/platform-registrations/:companyId` e operações `/platforms/:tag/merchants/:companyId`. Credenciais empresariais ficam criptografadas e separadas do DTO público da empresa. Tokenização de cartões passa pela SIM INT PAY com mesma conta DOM explicitamente configurada; BIN nunca deriva do token. Cartões antigos sem metadados exigem nova digitação; substituir registro salvo exige consentimento. Tentativa de pagamento nasce antes da chamada externa com chave idempotente e divisão congelada; timeout mantém incerteza e nunca autoriza cobrança duplicada. Eventos canônicos usam HMAC do corpo bruto, segredo por empresa e inbox deduplicada. Histórico anterior preserva titular e carteira; callbacks antigos continuam aceitos durante drenagem.
+
+### Detalhamento comercial para SimIntPay
+
+- Novas tentativas online congelam itens líquidos (`total − taxas − frete`) e frete
+  separadamente, com chave idempotente estável. Tentativas anteriores mantêm contrato
+  original; não inferir ou preencher histórico retroativamente.
+- Contas e percentuais de coprodução pertencem exclusivamente à SimIntPay. Delivery
+  não escolhe, recebe ou aplica repasses. Configuração financeira inválida gera erro
+  operacional; não apresentar como recusa de cartão.
+- Publicação: backend SimIntPay compatível, migration e Delivery detalhado, interface
+  SimIntPay; somente então habilitar acordos após auditoria de vínculos.

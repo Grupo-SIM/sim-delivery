@@ -35,6 +35,7 @@ interface CustomerRow {
 }
 
 interface OrderRow {
+	deliveryFee?: number;
 	cashbackPercent: number;
 	customerId: string;
 	displayNumber: number;
@@ -390,7 +391,7 @@ describe("resolvePayingCustomer", () => {
 		const context = await resolvePayingCustomer(prisma, "user_1", body);
 
 		expect(context.document).toBe("52998224725");
-		expect(context.order).toEqual({ feeTotalCents: 0, id: "order_1", total: 5000, unitName: "Boa Viagem" });
+		expect(context.order).toEqual({ deliveryFee: 0, feeTotalCents: 0, id: "order_1", total: 5000, unitName: "Boa Viagem" });
 		expect(context.user.email).toBe("maria@example.com");
 	});
 
@@ -1463,7 +1464,7 @@ describe("DeleteSavedCard", () => {
 describe("platform fee allocation", () => {
 	it("sends the frozen fee separately from merchant proceeds for PIX and card", async () => {
 		for (const method of ["pix", "card"]) {
-			const { prisma } = makeWorld({ orders: [{ ...baseOrder, feeTotalCents: 537, total: 10537 }] });
+			const { prisma } = makeWorld({ orders: [{ ...baseOrder, deliveryFee: 1000, feeTotalCents: 537, total: 11537 }] });
 			const { calls, simpay } = makeSimpay();
 			if (method === "pix") {
 				await new CreatePixPayment(prisma, simpay).execute("user_1", { orderId: "order_1", slug: "zero-grau" });
@@ -1473,7 +1474,7 @@ describe("platform fee allocation", () => {
 					holderCpf: "11144477735", orderId: "order_1", slug: "zero-grau",
 				});
 			}
-			expect(calls[method][0]).toMatchObject({ price: 105.37, allocation: { merchantAmountCents: 10000, platformFeeCents: 537 } });
+			expect(calls[method][0]).toMatchObject({ price: 115.37, allocation: { merchantAmountCents: 11000, platformFeeCents: 537, itemsAmountCents: 10000, deliveryAmountCents: 1000 } });
 		}
 	});
 
@@ -1483,4 +1484,11 @@ describe("platform fee allocation", () => {
 		await new CreatePixPayment(prisma, simpay).execute("user_1", { orderId: "order_1", slug: "zero-grau" });
 		expect(calls.pix[0]).toMatchObject({ allocation: { merchantAmountCents: 5000, platformFeeCents: 0 } });
 	});
+});
+it("financial contract errors remain operational for PIX and card, never a card refusal", async () => {
+ const error = new PaymentProviderError("Simpay", "Detalhamento comercial inválido", 422, "COPRODUCTION_BASE_INVALID");
+ const { prisma } = makeWorld();
+ const { simpay } = makeSimpay({ createCardPayment: async () => { throw error; }, createPixPayment: async () => { throw error; } });
+ await expect(new CreatePixPayment(prisma, simpay).execute("user_1", { orderId: "order_1", slug: "zero-grau" })).rejects.toThrow("PAYMENT_PROCESSING");
+ await expect(cardUseCase(prisma, simpay, makeDom().dom).execute("user_1", { orderId: "order_1", slug: "zero-grau", holderCpf: "11144477735", card: { cvv: "123", expMonth: 12, expYear: 2030, holderName: "MARIA SILVA", number: "4242424242424242" } })).rejects.toThrow("PAYMENT_PROCESSING");
 });

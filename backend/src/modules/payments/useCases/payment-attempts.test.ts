@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { expect, mock, test } from "bun:test";
 import { startPaymentAttempt, recoverPaymentAttempt } from "./payment-attempts";
 import type { PrismaInstance } from "@/shared/infra/sql";
@@ -45,4 +46,14 @@ test("terminal rejection without acquirer ID recovers by transaction; pending wi
  expect((await recoverPaymentAttempt(f.db, client as unknown as SimpayClient, context, "attempt")).status).toBe("failed");
  expect(f.saved().providerTransactionId).toBe("transaction");
  expect(f.saved().providerPaymentId).toBe("transaction");
+});
+
+test("old active attempt retains original hash/contract while new attempts freeze item and freight cents", async () => {
+ const f = fixture(); const first = await startPaymentAttempt(f.db, context, "pix");
+ expect(first.attempt).toMatchObject({ itemsAmountCents: 10000, deliveryAmountCents: 0 });
+ const old = f.saved(); delete old.itemsAmountCents; delete old.deliveryAmountCents;
+ const data = { orderId: "order", companyId: "company", method: "pix", amountCents: 10537, merchantAmountCents: 10000, platformFeeCents: 537 };
+ old.requestHash = createHash("sha256").update(JSON.stringify(data)).digest("hex");
+ expect((await startPaymentAttempt(f.db, context, "pix")).created).toBe(false);
+ expect(f.db.paymentAttempt.create).toHaveBeenCalledTimes(1);
 });

@@ -1,4 +1,5 @@
-import { startPaymentAttempt, recoverPaymentAttempt, recordAttemptResponse } from "./payment-attempts";
+import { isFinancialContractError } from "@/shared/infra/paymentProviderError";
+import { attemptAllocation, startPaymentAttempt, recoverPaymentAttempt, recordAttemptResponse } from "./payment-attempts";
 import { DomainError } from "@/shared/errors";
 import type { SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
@@ -39,7 +40,7 @@ export class CreatePixPayment {
 		const phone = (customer.phone ?? user.phoneNumber ?? "").replace(/\D/g, "");
 		const pix = await this.simpay.createPixPayment({
 			idempotencyKey: attempt.id,
-			allocation: { merchantAmountCents: order.total - order.feeTotalCents, platformFeeCents: order.feeTotalCents },
+			allocation: attemptAllocation(attempt),
 			description: buildPaymentDescription(order),
 			document,
 			document_type: document.length === 11 ? "CPF" : "CNPJ",
@@ -47,7 +48,13 @@ export class CreatePixPayment {
 			mobile_phone: phone || undefined,
 			name: user.name,
 			price: order.total / 100,
-		}, merchant);
+		}, merchant).catch(async error => {
+			if (isFinancialContractError(error)) {
+				await this.prisma.paymentAttempt.update({ where: { id: attempt.id }, data: { state: "failed" } });
+				throw new DomainError(PaymentErrors.PAYMENT_PROCESSING, error.message);
+			}
+			throw error;
+		});
 
 		await recordAttemptResponse(this.prisma, attempt.id, pix);
 		// The gateway answers 201 even when DOM declines the charge (e.g. invalid CPF),

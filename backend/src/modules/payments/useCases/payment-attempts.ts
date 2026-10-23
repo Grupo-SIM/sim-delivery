@@ -8,13 +8,16 @@ import { ApplySimpayPaymentStatus } from "./ApplySimpayPaymentStatus";
 const active = ["preparing", "submitting", "pending"];
 export async function startPaymentAttempt(db: PrismaInstance, context: PayingCustomerContext, method: string) {
 	const data = { orderId: context.order.id, companyId: context.companyId, method, amountCents: context.order.total, merchantAmountCents: context.order.total - context.order.feeTotalCents, platformFeeCents: context.order.feeTotalCents };
-	const requestHash = createHash("sha256").update(JSON.stringify(data)).digest("hex");
+	const breakdown = { itemsAmountCents: data.merchantAmountCents - (context.order.deliveryFee ?? 0), deliveryAmountCents: context.order.deliveryFee ?? 0 };
+	if (breakdown.itemsAmountCents < 0 || breakdown.deliveryAmountCents < 0) throw new DomainError(PaymentErrors.PAYMENT_PROCESSING);
+	const hash = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
+	const requestHash = hash({ ...data, ...breakdown });
 	const saved = await db.paymentAttempt.findFirst({ where: { orderId: data.orderId, state: { in: active } } });
 	if (saved) {
-		if (saved.requestHash !== requestHash) throw new DomainError(PaymentErrors.PAYMENT_PROCESSING);
+		if (saved.requestHash !== (saved.itemsAmountCents == null ? hash(data) : requestHash)) throw new DomainError(PaymentErrors.PAYMENT_PROCESSING);
 		return { attempt: saved, created: false };
 	}
-	try { return { attempt: await db.paymentAttempt.create({ data: { ...data, requestHash } }), created: true }; }
+	try { return { attempt: await db.paymentAttempt.create({ data: { ...data, ...breakdown, requestHash } }), created: true }; }
 	catch (error) {
 		if ((error as { code?: string }).code !== "P2002") throw error;
 		throw new DomainError(PaymentErrors.PAYMENT_PROCESSING);
@@ -42,4 +45,9 @@ export async function recoverPaymentAttempt(db: PrismaInstance, client: SimpayCl
 }
 export async function recordAttemptResponse(db: PrismaInstance, id: string, response: { paymentId?: string; id?: string; transactionId?: string; status?: string }) {
 	await db.paymentAttempt.update({ where: { id }, data: { state: isFailedSimpayStatus(response.status) ? "failed" : "pending", providerPaymentId: response.paymentId ?? response.id, providerTransactionId: response.transactionId } });
+}
+
+export function attemptAllocation(attempt: { merchantAmountCents: number; platformFeeCents: number; itemsAmountCents?: number | null; deliveryAmountCents?: number | null }) {
+ return { merchantAmountCents: attempt.merchantAmountCents, platformFeeCents: attempt.platformFeeCents,
+  ...(attempt.itemsAmountCents != null && attempt.deliveryAmountCents != null ? { itemsAmountCents: attempt.itemsAmountCents, deliveryAmountCents: attempt.deliveryAmountCents } : {}) };
 }

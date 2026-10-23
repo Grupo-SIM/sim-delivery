@@ -21,6 +21,7 @@ export class PaymentProviderError extends Error {
 		readonly provider: "DOM" | "Simpay",
 		message: string,
 		readonly status?: number,
+		readonly code?: string,
 	) {
 		super(message);
 	}
@@ -28,4 +29,8 @@ export class PaymentProviderError extends Error {
 
 export function paymentProviderErrorDescription(error: unknown): string | undefined {
 	return error instanceof PaymentProviderError ? error.message : undefined;
+}
+
+export function isFinancialContractError(error: unknown): error is PaymentProviderError {
+ return error instanceof PaymentProviderError && !!error.code?.startsWith("COPRODUCTION_") && [400, 422].includes(error.status ?? 0);
 }

@@ -1,8 +1,8 @@
 import { DomainError } from "@/shared/errors";
 import { isValidCpf } from "@/shared/cpf";
 import type { CanonicalCardToken } from "@/shared/infra/simpay";
-import { startPaymentAttempt, recoverPaymentAttempt, recordAttemptResponse } from "./payment-attempts";
-import { PaymentProviderError, paymentProviderErrorDescription } from "@/shared/infra/paymentProviderError";
+import { attemptAllocation, startPaymentAttempt, recoverPaymentAttempt, recordAttemptResponse } from "./payment-attempts";
+import { PaymentProviderError, isFinancialContractError, paymentProviderErrorDescription } from "@/shared/infra/paymentProviderError";
 import { isApprovedSimpayStatus, isFailedSimpayStatus, type SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CardPaymentReturn, CreateCardPaymentBody } from "../dtos";
@@ -105,7 +105,7 @@ export class CreateCardPayment {
 				idempotencyKey: attempt.id,
 				bin,
 				brand,
-				allocation: { merchantAmountCents: order.total - order.feeTotalCents, platformFeeCents: order.feeTotalCents },
+				allocation: attemptAllocation(attempt),
 				description: buildPaymentDescription(order),
 				document: holderDocument,
 				document_type: holderDocument.length === 11 ? "CPF" : "CNPJ",
@@ -121,6 +121,10 @@ export class CreateCardPayment {
 			simpayPaymentId = result.paymentId ?? result.id ?? null;
 			gatewayStatus = result.status;
 		} catch (error) {
+			if (isFinancialContractError(error)) {
+				await this.prisma.paymentAttempt.update({ where: { id: attempt.id }, data: { state: "failed" } });
+				throw new DomainError(PaymentErrors.PAYMENT_PROCESSING, error.message);
+			}
 			if (error instanceof PaymentProviderError && [400, 422].includes(error.status ?? 0)) {
 				await this.prisma.paymentAttempt.update({ where: { id: attempt.id }, data: { state: "failed" } });
 				throw new DomainError(PaymentErrors.CARD_DECLINED, paymentProviderErrorDescription(error));

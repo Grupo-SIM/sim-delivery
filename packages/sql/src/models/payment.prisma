@@ -113,6 +113,8 @@ model PaymentAttempt {
     amountCents Int
     merchantAmountCents Int
     platformFeeCents Int
+    itemsAmountCents Int?
+    deliveryAmountCents Int?
     requestHash String
     providerTransactionId String?
     providerPaymentId String?
