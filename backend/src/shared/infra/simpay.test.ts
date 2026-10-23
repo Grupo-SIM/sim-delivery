@@ -3,7 +3,7 @@ import { SimpayClient, isApprovedSimpayStatus, isFailedSimpayStatus } from "./si
 import { decryptSimpaySecret, encryptSimpaySecret } from "./simpay-secrets";
 import type { PrismaInstance } from "./sql";
 const previous = { ...process.env };
-afterEach(() => { mock.restore(); for (const key of ["SIMPAY_PROVISIONING_TOKEN", "SIMPAY_CREDENTIALS_ENCRYPTION_KEY"]) { if (previous[key] === undefined) delete process.env[key]; else process.env[key] = previous[key]; } });
+afterEach(() => { mock.restore(); for (const key of ["SIMPAY_PROVISIONING_TOKEN", "SIMPAY_CREDENTIALS_ENCRYPTION_KEY", "BETTER_AUTH_SECRETS"]) { if (previous[key] === undefined) delete process.env[key]; else process.env[key] = previous[key]; } });
 const scope = { externalMerchantId: "company", integrationKey: "sim-delivery_shop" };
 const ready = { id: "platform", status: "READY", platform: { id: "platform", tag: "SHOP" }, merchant: { id: "merchant" }, credentials: { accessToken: "scoped-token", webhookSecret: "webhook-secret" } };
 function fixture(active = true) {
@@ -59,8 +59,8 @@ it("preserves provider errors, including non-JSON errors", async () => {
  const { client } = fixture(); spyOn(globalThis, "fetch").mockResolvedValueOnce(Response.json({ message: "Conflito" }, { status: 409 })).mockResolvedValueOnce(new Response("Bad gateway", { status: 502 }));
  await expect(client.getPaymentStatus("payment", scope)).rejects.toThrow("Conflito"); await expect(client.getPaymentStatus("payment", scope)).rejects.toThrow("HTTP 502");
 });
-it("detects wrong encryption key and requires encryption configuration", () => {
- fixture(); const encoded = encryptSimpaySecret("test-secret"); expect(decryptSimpaySecret(encoded)).toBe("test-secret"); process.env.SIMPAY_CREDENTIALS_ENCRYPTION_KEY = "cd".repeat(32); expect(() => decryptSimpaySecret(encoded)).toThrow(); delete process.env.SIMPAY_CREDENTIALS_ENCRYPTION_KEY; expect(() => encryptSimpaySecret("test")).toThrow("SIMPAY_CREDENTIALS_ENCRYPTION_KEY");
+it("detects wrong encryption key and preserves dedicated-key requirements for legacy ciphertext", () => {
+ fixture(); const encoded = encryptSimpaySecret("test-secret"); expect(decryptSimpaySecret(encoded)).toBe("test-secret"); process.env.SIMPAY_CREDENTIALS_ENCRYPTION_KEY = "cd".repeat(32); expect(() => decryptSimpaySecret(encoded)).toThrow(); delete process.env.SIMPAY_CREDENTIALS_ENCRYPTION_KEY; expect(() => decryptSimpaySecret(encoded)).toThrow("SIMPAY_CREDENTIALS_ENCRYPTION_KEY");
 });
 
 it("blocks credential activation when pending historical payments cannot be proven", async () => {
@@ -81,4 +81,15 @@ it("preserves a code-only canonical rejection instead of hiding it behind HTTP s
  const { client } = fixture();
  spyOn(globalThis, "fetch").mockResolvedValue(Response.json({ code: "INVALID_PAYMENT_CONTRACT" }, { status: 422 }));
  await expect(client.getPaymentAttempt(scope, "attempt")).rejects.toMatchObject({ status: 422, code: "INVALID_PAYMENT_CONTRACT", message: "Erro na API canônica SIM INT PAY (HTTP 422) (INVALID_PAYMENT_CONTRACT)" });
+});
+
+it("activates a company with existing auth secrets and no dedicated payment encryption variable", async () => {
+ const { client, saved } = fixture(false);
+ delete process.env.SIMPAY_CREDENTIALS_ENCRYPTION_KEY;
+ process.env.BETTER_AUTH_SECRETS = "1:existing-auth-secret-with-more-than-32-characters";
+ spyOn(globalThis, "fetch").mockResolvedValue(Response.json(ready));
+ expect(await client.provisionPlatform(scope, "Shop")).toEqual({ id: "platform", status: "READY" });
+ expect(saved().encryptedAccessToken).toStartWith("v2:1:");
+ expect(decryptSimpaySecret(saved().encryptedAccessToken)).toBe("scoped-token");
+ expect(decryptSimpaySecret(saved().encryptedWebhookSecret)).toBe("webhook-secret");
 });
