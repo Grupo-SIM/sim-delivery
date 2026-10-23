@@ -45,7 +45,7 @@ esboço original — **deduzido** do escopo de televenda/delivery e do benchmark
 ### Branding / footer (runtime)
 - Editar **footer por loja**: formas de pagamento, redes sociais, atendimento,
   localização, horário. Aplicado sem rebuild (ver [02](02-whitelabel-e-builds.md)).
-- Configurar os banners ordenados da página inicial e de cada unidade.
+- Configurar os banners ordenados de cada unidade.
 - Cores essenciais/ícone/splash são build-time (variante); ajustes finos de marca
   editáveis em runtime — divisão em [02](02-whitelabel-e-builds.md).
 

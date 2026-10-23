@@ -5,7 +5,6 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetBranding, useGetPublicUnits } from "@/lib/api";
 import { slug } from "@/lib/variant";
-import { StorefrontBannerCarousel, StorefrontBannerSkeleton } from "../components/storefront";
 import { UnitStoreSkeleton } from "./$unitId/components";
 import { unitSearchSchema } from "./components/unit-search";
 import { UnitHeroCard, UnitStorePage, WelcomeHero } from "./components";
@@ -23,17 +22,7 @@ function StorePage() {
 
 	return (
 		<div className="storefront-home bg-background">
-			{isBrandingPending ? (
-				<StorefrontBannerSkeleton />
-			) : branding?.homepageBannerUrls.length ? (
-				<StorefrontBannerCarousel
-					images={branding.homepageBannerUrls.map((src, index) => ({
-						alt: `${t("store.chooseUnit.bannerAlt")} ${index + 1}`,
-						src,
-					}))}
-					label={t("store.chooseUnit.bannerCarousel")}
-				/>
-			) : <WelcomeHero />}
+			<WelcomeHero />
 			<section className="unit-selection-heading mx-auto max-w-6xl px-5 pt-12 pb-8 sm:pt-16" id="unidades">
 				<p className="font-semibold text-primary text-sm">{branding?.companyName ?? "JB DELIVERY"}</p>
 				<h1 className="mt-2 max-w-2xl font-display text-4xl text-foreground sm:text-5xl">

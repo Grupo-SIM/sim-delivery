@@ -61,13 +61,11 @@ export const defaultOrderStatusEmailTemplates: OrderStatusEmailTemplates = Objec
 ) as OrderStatusEmailTemplates;
 
 export interface BrandAssetsState {
-	homepageBannerUrls: string[];
 	logoUrl: string;
 	mobileIconUrl: string;
 }
 
 export const emptyBrandAssets: BrandAssetsState = {
-	homepageBannerUrls: [""],
 	logoUrl: "",
 	mobileIconUrl: "",
 };

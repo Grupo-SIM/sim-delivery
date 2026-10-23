@@ -8,7 +8,6 @@ interface CompanyRow {
 	welcomeTitleAccent?: string;
 	welcomeDescription?: string;
 	footerPaymentMethods: string[];
-	homepageBannerUrls: string[];
 	id: string;
 	logoUrl: string | null;
 	name: string;
@@ -24,7 +23,6 @@ const baseCompany: CompanyRow = {
 	welcomeTitleAccent: "Vontade?",
 	welcomeDescription: "Tudo que você gosta, em casa.",
 	footerPaymentMethods: ["Pix"],
-	homepageBannerUrls: ["https://cdn.zero-grau.com/homepage-banner.png"],
 	id: "cmp_1",
 	logoUrl: "https://cdn.zero-grau.com/logo.png",
 	name: "Zero Grau",
@@ -65,7 +63,6 @@ describe("GetBranding", () => {
 			welcomeTitleAccent: "Vontade?",
 			welcomeDescription: "Tudo que você gosta, em casa.",
 			footerPaymentMethods: ["Pix"],
-			homepageBannerUrls: ["https://cdn.zero-grau.com/homepage-banner.png"],
 			logoUrl: "https://cdn.zero-grau.com/logo.png",
 			themeColors: { primary: "#ff0000" },
 			unitFallbackImageUrl: "https://cdn.zero-grau.com/unit-fallback.png",

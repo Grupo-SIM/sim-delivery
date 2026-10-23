@@ -40,7 +40,6 @@ describe("UpdateBranding", () => {
 					footerWhatsApp: data.footerWhatsApp ?? null,
 					ga4Id: null,
 					gtmId: null,
-					homepageBannerUrls: data.homepageBannerUrls ?? [],
 					logoUrl: null,
 					name: where.id,
 					orderStatusWhatsAppTemplates: null,
@@ -60,10 +59,10 @@ describe("UpdateBranding", () => {
 			footerPaymentMethods: ["Pix", "Crédito"],
 			footerSupportEmail: "contato@zero-grau.com",
 			footerWhatsApp: "5581999999999",
-			homepageBannerUrls: ["https://cdn.zero-grau.com/homepage-banner.png"],
 			unitFallbackImageUrl: "https://cdn.zero-grau.com/unit-fallback.png",
 		});
 
+		expect(result).not.toHaveProperty("homepageBannerUrls");
 		expect(result).toMatchObject({
 			companyName: "company_1",
 			welcomeEyebrow: "Seu pedido online",
@@ -74,7 +73,6 @@ describe("UpdateBranding", () => {
 			footerPaymentMethods: ["Pix", "Crédito"],
 			footerSupportEmail: "contato@zero-grau.com",
 			footerWhatsApp: "5581999999999",
-			homepageBannerUrls: ["https://cdn.zero-grau.com/homepage-banner.png"],
 			unitFallbackImageUrl: "https://cdn.zero-grau.com/unit-fallback.png",
 		});
 	});
@@ -109,22 +107,6 @@ describe("UpdateBranding", () => {
 		await expect(
 			new UpdateBranding(prisma).execute({ companyId: null as unknown as string }),
 		).rejects.toThrow("FORBIDDEN");
-	});
-
-	it("allows removing all homepage banners", async () => {
-		let persisted: unknown;
-		const prisma = {
-			company: {
-				update: async ({ data }: { data: Record<string, unknown> }) => {
-					persisted = data.homepageBannerUrls;
-					return { ...data, footerPaymentMethods: [], name: "Zero Grau" };
-				},
-			},
-		} as unknown as PrismaInstance;
-
-		await new UpdateBranding(prisma).execute({ companyId: "cmp_1", homepageBannerUrls: [] });
-
-		expect(persisted).toEqual([]);
 	});
 
 	it("updates only the caller's own company", async () => {
