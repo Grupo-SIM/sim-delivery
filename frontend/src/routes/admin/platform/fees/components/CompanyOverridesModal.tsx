@@ -29,23 +29,29 @@ export function CompanyOverridesModal({ fee, onClose }: CompanyOverridesModalPro
 			await putPlatformFeesByFeeIdCompaniesByCompanyId(fee!.id, companyId, { active, valueOverride });
 			await refresh();
 			showToast("Sobrescrita salva.", "positive");
-		} catch { void showAlert("Não foi possível salvar a sobrescrita."); }
+			return true;
+		} catch {
+			void showAlert("Não foi possível salvar a sobrescrita.");
+			return false;
+		}
 	}
 
 	async function reset(companyId: string) {
 		try {
 			await deletePlatformFeesByFeeIdCompaniesByCompanyId(fee!.id, companyId);
-			await refresh();
+			const result = await query.refetch();
 			showToast("Padrão global restaurado.", "info");
+			return result.data?.find(company => company.companyId === companyId);
 		} catch { void showAlert("Não foi possível restaurar o padrão."); }
 	}
 
 	return (
 		<Modal isOpen onClose={onClose} title={`Empresas — ${fee.name}`} urlKey="platform-fee-companies" urlState={fee.id}>
 			<p className="mb-4 text-muted-foreground text-sm">Valor vazio herda {fee.calculationType === "fixed" ? "o valor fixo" : "o percentual"} global.</p>
-			{query.isPending ? <Skeleton className="h-48 w-full" /> : query.isError ? <ErrorState title="Erro ao carregar empresas" /> : <DataTable>
+			{query.isPending ? <Skeleton className="h-48 w-full" /> : query.isError ? <ErrorState title="Erro ao carregar empresas" /> : <DataTable tableClassName="min-w-0 table-fixed">
+				<colgroup><col /><col className="w-[40%]" /><col className="w-14 sm:w-20" /><col className="w-16" /></colgroup>
 				<thead><tr className="border-border border-b text-left text-muted-foreground"><th className="px-3 py-2">Empresa</th><th className="px-3 py-2">Valor próprio</th><th className="px-3 py-2 text-center">Ativa</th><th className="px-3 py-2" /></tr></thead>
-				<tbody>{query.data?.map(company => <CompanyOverrideRow calculationType={fee.calculationType as "fixed" | "percentage"} company={company} key={company.companyId} onReset={companyId => void reset(companyId)} onSave={(...args) => void save(...args)} />)}</tbody>
+				<tbody>{query.data?.map(company => <CompanyOverrideRow calculationType={fee.calculationType as "fixed" | "percentage"} company={company} key={company.companyId} onReset={reset} onSave={save} />)}</tbody>
 			</DataTable>}
 		</Modal>
 	);
