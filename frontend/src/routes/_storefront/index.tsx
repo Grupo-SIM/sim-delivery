@@ -11,10 +11,11 @@ import { UnitHeroCard, UnitStorePage, WelcomeHero } from "./components";
 
 function StorePage() {
 	const { t } = useTranslation();
+	const { menuOnly } = Route.useSearch();
 	const { data: branding, isPending: isBrandingPending } = useGetBranding(slug ? { slug } : undefined);
 	const { data: units, isError, isPending } = useGetPublicUnits({ slug });
 
-	if (isPending) return <UnitStoreSkeleton />;
+	if (isPending) return <UnitStoreSkeleton menuOnly={menuOnly} />;
 
 	if (!isError && units.length === 1) {
 		return <UnitStorePage homepage unitSlug={units[0].slug} />;

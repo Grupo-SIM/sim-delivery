@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { Skeleton } from "@/components/ui/Skeleton";
 import { useGetPublicUnits, useGetPublicUnitsByUnitSlugMenu } from "@/lib/api";
 import { slug } from "@/lib/variant";
 import { StorefrontBannerCarousel } from "../../components/storefront";
@@ -24,12 +23,13 @@ import { money } from "../$unitId/components/types";
 export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string; homepage?: boolean }) {
 	const { t } = useTranslation();
 	const productModal = useSearch({ strict: false });
+	const menuOnly = productModal.menuOnly === true;
 	const navigate = useNavigate();
 	const unitsQuery = useGetPublicUnits({ slug });
 	const menu = useGetPublicUnitsByUnitSlugMenu(unitSlug, { slug });
 	const units = unitsQuery.data;
 	const unit = units?.find(item => item.slug === unitSlug);
-	useCartImages(unit?.id, menu.data);
+	useCartImages(menuOnly ? undefined : unit?.id, menu.data);
 	const [hoursOpen, setHoursOpen] = useState(false);
 	const [reviewsOpen, setReviewsOpen] = useState(false);
 	const [categoryNavDocked, setCategoryNavDocked] = useState(false);
@@ -63,7 +63,7 @@ export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string
 		if (unit) setSelectedUnit({ id: unit.id, name: unit.name, slug: unit.slug });
 	}, [unit, setSelectedUnit]);
 
-	if (unitsQuery.isPending) return <UnitStoreSkeleton />;
+	if (unitsQuery.isPending) return <UnitStoreSkeleton menuOnly={menuOnly} />;
 
 	if (unitsQuery.isError || !unit)
 		return (
@@ -79,20 +79,24 @@ export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string
 
 	return (
 		<>
-			<StorefrontBannerCarousel
-				images={unit.bannerUrls.map((src, index) => ({ alt: `${unit.name} — banner ${index + 1}`, src }))}
-				label={t("store.unit.bannerCarousel")}
-			/>
+			{!menuOnly && (
+				<StorefrontBannerCarousel
+					images={unit.bannerUrls.map((src, index) => ({ alt: `${unit.name} — banner ${index + 1}`, src }))}
+					label={t("store.unit.bannerCarousel")}
+				/>
+			)}
 			<Container className="unit-store-content space-y-6 py-5">
-				<UnitStoreHeader onReviewsClick={() => setReviewsOpen(true)} unit={unit} unitSlug={unitSlug} units={units} />
+				{!menuOnly && <UnitStoreHeader onReviewsClick={() => setReviewsOpen(true)} unit={unit} unitSlug={unitSlug} units={units} />}
 
 				{menu.isPending ? (
-					<Skeleton className="h-64 w-full" />
+					<UnitStoreSkeleton contentOnly menuOnly={menuOnly} />
 				) : menu.isError ? (
 					<ErrorState title={t("store.menu.loadError")} />
 				) : (
 					<MenuBrowser
-						header={
+						menuOnly={menuOnly}
+						taxes={productModal.taxes !== false}
+						header={!menuOnly && (
 							<div className="space-y-3">
 								<StoreToolbar
 									deliveryFee={fee}
@@ -111,7 +115,7 @@ export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string
 									</InfoPill>
 								)}
 							</div>
-						}
+						)}
 						modalNote={productModal.note}
 						modalOptions={productModal.options}
 						modalProductId={productModal.product}
@@ -126,16 +130,20 @@ export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string
 					/>
 				)}
 
-				<CartBar
-					categoryNavDocked={categoryNavDocked}
-					deliveryFee={fee}
-					minOrderCents={minOrder}
-					sections={menu.data ?? []}
-					unitId={unit.id}
-					unitSlug={unitSlug}
-				/>
-				<StoreHoursModal hours={unit.hours} isOpen={hoursOpen} onClose={() => setHoursOpen(false)} />
-				<UnitReviews isOpen={reviewsOpen} onClose={() => setReviewsOpen(false)} unitId={unit.id} />
+				{!menuOnly && (
+					<>
+						<CartBar
+							categoryNavDocked={categoryNavDocked}
+							deliveryFee={fee}
+							minOrderCents={minOrder}
+							sections={menu.data ?? []}
+							unitId={unit.id}
+							unitSlug={unitSlug}
+						/>
+						<StoreHoursModal hours={unit.hours} isOpen={hoursOpen} onClose={() => setHoursOpen(false)} />
+						<UnitReviews isOpen={reviewsOpen} onClose={() => setReviewsOpen(false)} unitId={unit.id} />
+					</>
+				)}
 			</Container>
 		</>
 	);

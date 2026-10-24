@@ -4,10 +4,12 @@ import { type MenuItem, type MenuSection, sectionAnchor } from "./types";
 
 interface MenuSectionBlockProps {
 	section: MenuSection;
-	onSelect: (item: MenuItem) => void;
+	onSelect?: (item: MenuItem) => void;
+	menuOnly?: boolean;
+	taxes?: boolean;
 }
 
-export function MenuSectionBlock({ onSelect, section }: MenuSectionBlockProps) {
+export function MenuSectionBlock({ onSelect, section, menuOnly = false, taxes = true }: MenuSectionBlockProps) {
 	const { t } = useTranslation();
 
 	return (
@@ -20,7 +22,7 @@ export function MenuSectionBlock({ onSelect, section }: MenuSectionBlockProps) {
 			</div>
 			<div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
 				{section.items.map(item => (
-					<MenuItemCard item={item} key={item.id} onSelect={onSelect} />
+					<MenuItemCard item={item} menuOnly={menuOnly} taxes={taxes} key={item.id} onSelect={onSelect} />
 				))}
 			</div>
 		</section>

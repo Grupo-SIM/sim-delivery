@@ -23,7 +23,7 @@ export function UnitSwitcher({ unitId, units }: UnitSwitcherProps) {
 			<CustomSelect
 				onChange={value => {
 					if (value !== unitId) {
-						void navigate({ params: { unitId: value }, to: "/$unitId" });
+						void navigate({ params: { unitId: value }, search: current => ({ menuOnly: current.menuOnly, taxes: current.taxes }), to: "/$unitId" });
 					}
 				}}
 				options={units.map(unit => ({ label: unit.name, value: unit.slug }))}

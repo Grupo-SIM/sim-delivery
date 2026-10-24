@@ -11,7 +11,7 @@ import type { CartItem, SelectedOption } from "@/stores";
 import { showToast, useCartStore } from "@/stores";
 import { displayedUnitPrice, feeUnitAmount, normalizeProductFees } from "@/lib/platform-fees";
 import { OptionImagePreviewModal } from "../OptionImagePreviewModal";
-import { applyOptionQuantity, findInvalidGroup, isGroupComplete, optionsPriceDelta } from "../product-options";
+import { hasPriceVariation, applyOptionQuantity, findInvalidGroup, isGroupComplete, optionsPriceDelta } from "../product-options";
 import { type MenuItem, money } from "../types";
 import { ProductOptionGroup } from "./ProductOptionGroup";
 import type { OptionImagePreview, ProductOption } from "./types";
@@ -26,6 +26,8 @@ interface ProductDetailsModalProps {
 	onClose: () => void;
 	onStateChange?: (options: SelectedOption[], note: string) => void;
 	unitId: string;
+	readOnly?: boolean;
+	taxes?: boolean;
 }
 
 function defaultOptions(item: MenuItem): SelectedOption[] {
@@ -78,6 +80,8 @@ export function ProductDetailsModal({
 	onClose,
 	onStateChange,
 	unitId,
+	readOnly = false,
+	taxes = true,
 }: ProductDetailsModalProps) {
 	const { t } = useTranslation();
 	const addItem = useCartStore(state => state.addItem);
@@ -93,7 +97,7 @@ export function ProductDetailsModal({
 	const [groupToScroll, setGroupToScroll] = useState<string | null>(null);
 	const [initializedModalKey, setInitializedModalKey] = useState<string | null>(null);
 	const optionGroupRefs = useRef(new Map<string, HTMLDivElement>());
-	const modalKey = item ? `${item.id}:${editingItem?.lineKey ?? "new"}` : null;
+	const modalKey = item ? `${item.id}:${editingItem?.lineKey ?? "new"}:${readOnly}` : null;
 
 	useEffect(() => {
 		if (!item) {
@@ -106,15 +110,15 @@ export function ProductDetailsModal({
 		setNote(nextNote);
 		setLocalNote(nextNote);
 		setQuantity(editingItem?.quantity ?? 1);
-		setExpandedGroupIds(new Set(item.optionGroups.filter(group => group.maxSelect == null).map(group => group.id)));
-		setOptions(editingItem?.options ?? optionsFromSearch(item, initialOptions));
+		setExpandedGroupIds(new Set(item.optionGroups.filter(group => readOnly || group.maxSelect == null).map(group => group.id)));
+		setOptions(readOnly ? [] : editingItem?.options ?? optionsFromSearch(item, initialOptions));
 		setInitializedModalKey(modalKey);
-	}, [editingItem, initialNote, initialOptions, initializedModalKey, item, modalKey, setLocalNote]);
+	}, [editingItem, initialNote, initialOptions, initializedModalKey, item, modalKey, readOnly, setLocalNote]);
 
 	useEffect(() => {
-		if (!item || initializedModalKey !== modalKey || !onStateChange) return;
+		if (readOnly || !item || initializedModalKey !== modalKey || !onStateChange) return;
 		onStateChange(options, note);
-	}, [initializedModalKey, item, modalKey, note, onStateChange, options]);
+	}, [initializedModalKey, item, modalKey, note, onStateChange, options, readOnly]);
 
 	useEffect(() => {
 		if (!item || !groupToScroll) return;
@@ -138,10 +142,12 @@ export function ProductDetailsModal({
 	const delta = optionsPriceDelta(selectedItem.optionGroups, options);
 	const merchantUnitPrice = Number(selectedItem.priceCents) + delta;
 	const productFees = normalizeProductFees(selectedItem.productFees);
-	const totalCents = displayedUnitPrice(merchantUnitPrice, productFees) * quantity;
+	const visibleFees = taxes ? productFees : [];
+	const totalCents = displayedUnitPrice(merchantUnitPrice, visibleFees) * quantity;
 	const invalidGroup = findInvalidGroup(selectedItem.optionGroups, options);
 
 	function setOptionQuantity(groupId: string, option: ProductOption, nextQuantity: number) {
+		if (readOnly) return;
 		const group = selectedItem.optionGroups.find(value => value.id === groupId);
 		if (!group) return;
 		setOptions(current => {
@@ -169,6 +175,7 @@ export function ProductDetailsModal({
 	}
 
 	function add() {
+		if (readOnly) return;
 		const input = {
 			id: selectedItem.id,
 			imageUrl: selectedItem.imageUrl,
@@ -237,6 +244,7 @@ export function ProductDetailsModal({
 													}}
 												>
 													<ProductOptionGroup
+														readOnly={readOnly}
 														expanded={expandedGroupIds.has(group.id)}
 														group={group}
 														onImagePreview={setImagePreview}
@@ -249,7 +257,7 @@ export function ProductDetailsModal({
 												</div>
 											))}
 
-										<div className="space-y-2">
+										{!readOnly && <div className="space-y-2">
 											<label className="font-semibold text-sm" htmlFor="product-note">
 												{t("store.product.noteLabel")}
 											</label>
@@ -261,7 +269,7 @@ export function ProductDetailsModal({
 												placeholder={t("store.product.notePlaceholder")}
 												value={localNote}
 											/>
-										</div>
+										</div>}
 									</div>
 								</ScrollArea>
 								<Scrollbar className="hidden lg:block" container={optionsViewport} persistent variant="prominent" />
@@ -271,7 +279,17 @@ export function ProductDetailsModal({
 					</ScrollArea>
 					<Scrollbar className="lg:hidden" container={contentViewport} persistent variant="prominent" />
 
-					<div className="flex items-center justify-between gap-4 border-border border-t pt-4">
+					{readOnly ? (
+						<div className="border-border border-t pt-4 font-bold text-lg">
+							{hasPriceVariation(selectedItem.optionGroups) && <span className="mr-2 font-normal text-muted-foreground text-sm">{t("store.product.from")}</span>}
+							{money.format(displayedUnitPrice(Number(selectedItem.fromPriceCents), visibleFees) / 100)}
+							{visibleFees.filter(fee => fee.displayMode === "product_explicit").map(fee => (
+								<span className="block font-normal text-muted-foreground text-xs" key={fee.id}>
+									+ {fee.name}: {money.format(feeUnitAmount(Number(selectedItem.fromPriceCents), fee) / 100)}
+								</span>
+							))}
+						</div>
+					) : <div className="flex items-center justify-between gap-4 border-border border-t pt-4">
 						<div className="flex items-center gap-2">
 							<Button
 								disabled={quantity === 1}
@@ -291,14 +309,14 @@ export function ProductDetailsModal({
 							<span>{t("store.cart.add")}</span>
 							<div className="text-right">
 								<span>{money.format(totalCents / 100)}</span>
-								{productFees.filter(fee => fee.displayMode === "product_explicit").map(fee => (
+								{visibleFees.filter(fee => fee.displayMode === "product_explicit").map(fee => (
 									<span className="block font-normal text-muted-foreground text-xs" key={fee.id}>
 										+ {fee.name}: {money.format((feeUnitAmount(merchantUnitPrice, fee) * quantity) / 100)}
 									</span>
 								))}
 							</div>
 						</Button>
-					</div>
+					</div>}
 				</div>
 			</Modal>
 			<OptionImagePreviewModal

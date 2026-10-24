@@ -7,6 +7,7 @@ import type { OptionImagePreview, ProductOption, ProductOptionGroup } from "./ty
 
 interface ProductOptionRowProps {
 	group: ProductOptionGroup;
+	readOnly?: boolean;
 	groupQuantity: number;
 	onImagePreview: (preview: OptionImagePreview) => void;
 	onQuantityChange: (option: ProductOption, quantity: number) => void;
@@ -16,6 +17,7 @@ interface ProductOptionRowProps {
 
 export function ProductOptionRow({
 	group,
+	readOnly = false,
 	groupQuantity,
 	onImagePreview,
 	onQuantityChange,
@@ -33,7 +35,7 @@ export function ProductOptionRow({
 	const rowDisabled = isToggle ? !selected && atLimit : atLimit;
 
 	function selectFromRow() {
-		if (rowDisabled) return;
+		if (readOnly || rowDisabled) return;
 		onQuantityChange(option, isToggle ? (selected ? 0 : 1) : (selected?.quantity ?? 0) + 1);
 	}
 
@@ -50,15 +52,15 @@ export function ProductOptionRow({
 
 	return (
 		<div
-			aria-checked={isToggle ? Boolean(selected) : undefined}
-			aria-disabled={rowDisabled}
+			aria-checked={!readOnly && isToggle ? Boolean(selected) : undefined}
+			aria-disabled={readOnly ? undefined : rowDisabled}
 			className={`flex min-w-0 items-center gap-3 px-4 py-3 transition-colors ${
 				selected ? "bg-primary/5" : ""
-			} ${rowDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:bg-muted/60"}`}
-			onClick={selectFromRow}
-			onKeyDown={handleRowKeyDown}
-			role={isToggle ? "checkbox" : "button"}
-			tabIndex={0}
+			} ${readOnly ? "" : rowDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:bg-muted/60"}`}
+			onClick={readOnly ? undefined : selectFromRow}
+			onKeyDown={readOnly ? undefined : handleRowKeyDown}
+			role={readOnly ? undefined : isToggle ? "checkbox" : "button"}
+			tabIndex={readOnly ? undefined : 0}
 		>
 			{option.imageUrl ? (
 				<button
@@ -82,7 +84,7 @@ export function ProductOptionRow({
 					</p>
 				)}
 			</div>
-			{isToggle ? (
+			{!readOnly && (isToggle ? (
 				<Checkbox
 					checked={Boolean(selected)}
 					disabled={!selected && atLimit}
@@ -113,7 +115,7 @@ export function ProductOptionRow({
 						+
 					</Button>
 				</div>
-			)}
+			))}
 		</div>
 	);
 }

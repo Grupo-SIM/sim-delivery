@@ -20,6 +20,7 @@ export function UnitHeroCard({ openLabel, unit }: UnitHeroCardProps) {
 				imageUrl && "unit-hero-photo text-primary-foreground",
 			)}
 			params={{ unitId: unit.slug }}
+			search={current => ({ menuOnly: current.menuOnly, taxes: current.taxes })}
 			to="/$unitId"
 		>
 			{imageUrl ? (

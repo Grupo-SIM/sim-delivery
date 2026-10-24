@@ -7,6 +7,7 @@ import type { OptionImagePreview, ProductOption, ProductOptionGroup as ProductOp
 
 interface ProductOptionGroupProps {
 	expanded: boolean;
+	readOnly?: boolean;
 	group: ProductOptionGroupType;
 	onImagePreview: (preview: OptionImagePreview) => void;
 	onQuantityChange: (option: ProductOption, quantity: number) => void;
@@ -16,6 +17,7 @@ interface ProductOptionGroupProps {
 
 export function ProductOptionGroup({
 	expanded,
+	readOnly = false,
 	group,
 	onImagePreview,
 	onQuantityChange,
@@ -26,8 +28,8 @@ export function ProductOptionGroup({
 	const groupSelected = options.filter(value => value.groupId === group.id);
 	const groupQuantity = groupSelected.reduce((sum, value) => sum + value.quantity, 0);
 	const complete = isGroupComplete(group, options);
-	const collapsed = complete && !expanded;
-	const summary =
+	const collapsed = (readOnly || complete) && !expanded;
+	const summary = readOnly ? group.options.map(option => option.name).join(", ") :
 		group.maxSelect === 1
 			? groupSelected[0]?.optionName
 			: groupSelected
@@ -58,9 +60,11 @@ export function ProductOptionGroup({
 			<button
 				className={`sticky top-0 z-10 block w-full min-w-0 border border-border bg-muted px-4 py-3 text-left shadow-sm ${
 					collapsed ? "rounded-brand" : "rounded-t-brand"
-				} ${complete ? "cursor-pointer" : "cursor-default"}
+				} ${readOnly || complete ? "cursor-pointer" : "cursor-default"}
 				}`}
-				onClick={() => complete && onToggleExpanded()}
+				onClick={() => (readOnly || complete) && onToggleExpanded()}
+				aria-expanded={!collapsed}
+				aria-label={(readOnly || complete) ? `${t(collapsed ? "actions.expand" : "actions.minimize")}: ${group.name}` : undefined}
 				type="button"
 			>
 				<div className="flex min-w-0 items-center justify-between gap-3">
@@ -71,7 +75,7 @@ export function ProductOptionGroup({
 						<h3 className="truncate font-semibold text-foreground">{group.name}</h3>
 					</div>
 					<div className="flex shrink-0 items-center gap-2">
-						{complete ? (
+						{!readOnly && (complete ? (
 							<span className="font-bold text-muted-foreground" title={t("store.product.optional")}>
 								✓
 							</span>
@@ -79,8 +83,8 @@ export function ProductOptionGroup({
 							<span className="rounded bg-foreground px-2 py-1 font-semibold text-[10px] text-background uppercase">
 								{t("store.product.required")}
 							</span>
-						) : null}
-						{complete && (
+						 ) : null)}
+						{(readOnly || complete) && (
 							<LuChevronDown
 								aria-hidden="true"
 								className={`text-muted-foreground transition-transform ${collapsed ? "" : "rotate-180"}`}
@@ -88,11 +92,11 @@ export function ProductOptionGroup({
 						)}
 					</div>
 				</div>
-				<p className="mt-1 break-words text-muted-foreground text-sm">{collapsed ? summary : chooseLabel()}</p>
+				{(!readOnly || collapsed) && <p className="mt-1 line-clamp-2 break-words text-muted-foreground text-sm">{collapsed ? summary : chooseLabel()}</p>}
 				{!collapsed && priceRuleHint && (
 					<p className="mt-1 text-muted-foreground text-xs leading-snug">{priceRuleHint}</p>
 				)}
-				{group.maxSelect != null && (
+				{!readOnly && group.maxSelect != null && (
 					<p className="mt-2 font-medium text-muted-foreground text-xs">
 						{t("store.product.selectionProgress", {
 							count: groupQuantity,
@@ -106,13 +110,14 @@ export function ProductOptionGroup({
 				<div className="grid auto-rows-fr divide-y divide-border overflow-hidden rounded-b-brand border-x border-b border-border">
 					{group.options.map(option => (
 						<ProductOptionRow
+							readOnly={readOnly}
 							group={group}
 							groupQuantity={groupQuantity}
 							key={option.id}
 							onImagePreview={onImagePreview}
 							onQuantityChange={onQuantityChange}
 							option={option}
-							selected={options.find(value => value.optionId === option.id)}
+							selected={readOnly ? undefined : options.find(value => value.optionId === option.id)}
 						/>
 					))}
 				</div>

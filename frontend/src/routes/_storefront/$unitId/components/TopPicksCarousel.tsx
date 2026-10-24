@@ -2,18 +2,20 @@ import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/ScrollArea";
+import { displayedUnitPrice } from "@/lib/platform-fees";
 import { hasPriceVariation } from "./product-options";
 import { type MenuItem, type MenuSection, money } from "./types";
 
 interface TopPicksCarouselProps {
 	sections: MenuSection[];
+	taxes?: boolean;
 	onSelect: (item: MenuItem) => void;
 }
 
 const MAX_PICKS = 10;
 
 /** "Os mais pedidos" strip: featuredRank items first (asc), then by popularity (desc). */
-export function TopPicksCarousel({ onSelect, sections }: TopPicksCarouselProps) {
+export function TopPicksCarousel({ onSelect, sections, taxes = true }: TopPicksCarouselProps) {
 	const { t } = useTranslation();
 
 	const allItems: MenuItem[] = [];
@@ -65,8 +67,8 @@ export function TopPicksCarousel({ onSelect, sections }: TopPicksCarouselProps) 
 								<div className="mt-auto flex items-center gap-2 pt-1">
 									<span className="font-semibold text-sm">
 										{hasPriceVariation(item.optionGroups)
-											? `${t("store.product.from")} ${money.format(Number(item.fromPriceCents) / 100)}`
-											: money.format(Number(item.fromPriceCents) / 100)}
+											? `${t("store.product.from")} ${money.format(displayedUnitPrice(Number(item.fromPriceCents), taxes ? item.productFees : []) / 100)}`
+											: money.format(displayedUnitPrice(Number(item.fromPriceCents), taxes ? item.productFees : []) / 100)}
 									</span>
 									{item.cashbackPercent != null && (
 										<Badge className="shrink-0" tone="accent">

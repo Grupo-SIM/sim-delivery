@@ -10,6 +10,8 @@ import type { MenuSection } from "./types";
 
 interface MenuBrowserProps {
 	header: ReactNode;
+	menuOnly?: boolean;
+	taxes?: boolean;
 	modalNote?: string;
 	modalOptions?: string;
 	modalProductId?: string;
@@ -25,6 +27,8 @@ interface MenuBrowserProps {
 
 export function MenuBrowser({
 	header,
+	menuOnly = false,
+	taxes = true,
 	modalNote,
 	modalOptions,
 	modalProductId,
@@ -73,7 +77,7 @@ export function MenuBrowser({
 				{hasCategories && <CategorySummary sections={filtered} />}
 				<div className="min-w-0 space-y-6">
 					{header}
-					{!query && <TopPicksCarousel onSelect={item => onOpenProductModal(item.id)} sections={sections} />}
+					{!menuOnly && !query && <TopPicksCarousel taxes={taxes} onSelect={item => onOpenProductModal(item.id)} sections={sections} />}
 
 					{filtered.length === 0 ? (
 						<EmptyState title={query ? t("store.menu.noResults") : t("store.menu.empty")} />
@@ -83,6 +87,8 @@ export function MenuBrowser({
 							{filtered.map(section => (
 								<MenuSectionBlock
 									key={section.categoryId ?? "loose"}
+									menuOnly={menuOnly}
+									taxes={taxes}
 									onSelect={item => onOpenProductModal(item.id)}
 									section={section}
 								/>
@@ -92,13 +98,15 @@ export function MenuBrowser({
 				</div>
 			</div>
 			<ProductDetailsModal
-				historyMode="none"
-				initialNote={modalNote}
-				initialOptions={modalOptions}
-				item={selectedItem}
-				onClose={onCloseProductModal}
-				onStateChange={updateProductModal}
-				unitId={unitId}
+					historyMode="none"
+					initialNote={modalNote}
+					initialOptions={modalOptions}
+					item={selectedItem}
+					onClose={onCloseProductModal}
+					onStateChange={menuOnly ? undefined : updateProductModal}
+				readOnly={menuOnly}
+				taxes={taxes}
+					unitId={unitId}
 			/>
 		</>
 	);

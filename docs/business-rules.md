@@ -26,6 +26,22 @@ O cabeçalho mostra apenas o logotipo da empresa, sem nome da empresa ou da unid
 Na seleção de unidades, unidades sem imagem própria usam o logotipo da empresa
 centralizado, sem recorte. Não há configuração separada de imagem padrão da unidade.
 
+O parâmetro `?menuOnly=true` no cardápio da unidade (ou na homepage com unidade única)
+ativa a visualização somente de consulta: categorias, produtos, imagens, descrições e
+preços. Produtos abrem detalhes e opções para consulta, incluindo ampliação das fotos,
+sem seleção de opções, observações, quantidades ou ações de carrinho. Oculta banners,
+detalhes da unidade, funcionamento, entrega, avaliações e cashback. Sem o parâmetro,
+ou com `menuOnly=false`, permanece a vitrine completa.
+
+O parâmetro `taxes=false` exibe preços comerciais sem taxas no catálogo, destaques e
+detalhes do produto. Com `taxes=true` ou ausente, respeita as regras de exibição das
+taxas cadastradas (embutidas, explícitas ou somente no checkout), independentemente
+de `menuOnly`. O parâmetro controla a apresentação; não altera taxas reais de pedidos
+ou itens adicionados ao carrinho na vitrine completa.
+
+`/$unitId/cardapio` redireciona, substituindo a entrada do histórico, para
+`/$unitId?menuOnly=true&taxes=false`.
+
 ## Tema visual
 
 - Sem preferência salva do usuário, aplicar tema padrão da empresa, inclusive antes do login.

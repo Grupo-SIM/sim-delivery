@@ -1,40 +1,43 @@
 import { useTranslation } from "react-i18next";
-import { LuPlus } from "react-icons/lu";
+import { LuEye, LuPlus } from "react-icons/lu";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { StarRating } from "@/components/ui/StarRating";
 import { useLiveBranding } from "@/hooks/use-live-branding";
 import { displayedUnitPrice, feeUnitAmount, normalizeProductFees } from "@/lib/platform-fees";
+import { cn } from "@/lib/utils";
 import { hasPriceVariation } from "./product-options";
 import { type MenuItem, money } from "./types";
 
 interface MenuItemCardProps {
 	item: MenuItem;
-	onSelect: (item: MenuItem) => void;
+	onSelect?: (item: MenuItem) => void;
+	menuOnly?: boolean;
+	taxes?: boolean;
 }
 
-export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
+export function MenuItemCard({ item, onSelect, menuOnly = false, taxes = true }: MenuItemCardProps) {
 	const { t } = useTranslation();
 	const { logoUrl, mobileIconUrl } = useLiveBranding();
 	const showFromPrice = hasPriceVariation(item.optionGroups);
 
-	const displayPriceCents = displayedUnitPrice(Number(item.fromPriceCents), item.productFees);
-	const productFees = normalizeProductFees(item.productFees);
+	const productFees = normalizeProductFees(taxes ? item.productFees : []);
+	const displayPriceCents = displayedUnitPrice(Number(item.fromPriceCents), productFees);
 	const displayPrice = money.format(displayPriceCents / 100);
 	const isPromotional = Number(item.priceCents) < Number(item.regularPriceCents);
 
 	return (
 		<Card
-			className="menu-item-card group flex h-full cursor-pointer flex-col overflow-hidden p-0 shadow-md transition duration-300 hover:-translate-y-0.5 hover:shadow-lg"
-			onClick={() => onSelect(item)}
+			className={cn("menu-item-card group flex h-full flex-col overflow-hidden p-0 shadow-md", onSelect && "cursor-pointer transition duration-300 hover:-translate-y-0.5 hover:shadow-lg")}
+			onClick={onSelect ? () => onSelect(item) : undefined}
 			onKeyDown={event => {
-				if (event.key === "Enter" || event.key === " ") {
+				if (onSelect && (event.key === "Enter" || event.key === " ")) {
 					event.preventDefault();
 					onSelect(item);
 				}
 			}}
-			role="button"
-			tabIndex={0}
+			role={onSelect ? "button" : undefined}
+			tabIndex={onSelect ? 0 : undefined}
 		>
 			<div className="aspect-[4/3] w-full overflow-hidden bg-muted">
 				{item.imageUrl ? (
@@ -56,7 +59,7 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 			</div>
 			<div className="menu-item-content flex min-w-0 flex-1 flex-col gap-2 p-3 sm:p-4">
 				<p className="font-semibold leading-tight">{item.title}</p>
-				{Number(item.ratingCount) > 0 && (
+				{!menuOnly && Number(item.ratingCount) > 0 && (
 					<StarRating average={item.ratingAverage} count={Number(item.ratingCount)} />
 				)}
 				{item.tags.length > 0 && (
@@ -77,7 +80,7 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 					<div>
 						{isPromotional && (
 							<span className="mr-2 text-muted-foreground text-xs line-through">
-								{money.format(Number(item.regularPriceCents) / 100)}
+								{money.format(displayedUnitPrice(Number(item.regularPriceCents), productFees) / 100)}
 							</span>
 						)}
 						{showFromPrice && (
@@ -95,15 +98,17 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
 							<Badge className="ml-2" tone="accent">Oferta</Badge>
 						)}
 					</div>
-					{item.cashbackPercent != null && (
+					{!menuOnly && item.cashbackPercent != null && (
 						<Badge tone="accent">{item.cashbackPercent}%</Badge>
 					)}
-					<span
-						aria-hidden
-						className="ml-auto grid size-10 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground shadow-md transition-transform group-hover:scale-105"
-					>
-						<LuPlus className="size-5" />
-					</span>
+					{onSelect && (
+						<span
+							aria-hidden
+							className="ml-auto grid size-10 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground shadow-md transition-transform group-hover:scale-105"
+						>
+							{menuOnly ? <LuEye className="size-5" /> : <LuPlus className="size-5" />}
+						</span>
+					)}
 				</div>
 			</div>
 		</Card>
