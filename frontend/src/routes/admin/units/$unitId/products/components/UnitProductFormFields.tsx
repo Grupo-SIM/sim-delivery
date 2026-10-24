@@ -204,7 +204,7 @@ export function UnitProductFormFields(props: UnitProductFormFieldsProps) {
 							type="button"
 						>
 							<span
-								className={`absolute top-1 size-4 rounded-full bg-background transition-transform ${available ? "translate-x-6" : "translate-x-1"}`}
+								className={`absolute top-1 left-0 size-4 rounded-full bg-background transition-transform ${available ? "translate-x-6" : "translate-x-1"}`}
 							/>
 						</button>
 					</div>
