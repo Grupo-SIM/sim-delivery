@@ -11,7 +11,7 @@ import {
 	useGetUnits,
 	useGetUnitsByUnitIdProducts,
 } from "@/lib/api";
-import { AssociateProductForm, AvailabilityBulkActions, UnitProductsTable } from "./components";
+import { AssociateProductForm, AvailabilityBulkActions, UnitMenuActions, UnitProductsTable } from "./components";
 
 function UnitProductsPage() {
 	const { t } = useTranslation();
@@ -35,6 +35,7 @@ function UnitProductsPage() {
 			</Link>
 
 			<SectionHeading
+				action={unit && <UnitMenuActions unitName={unit.name} unitSlug={unit.slug} />}
 				subtitle={t("admin.unitProducts.subtitle", { name: unit?.name ?? "" })}
 				title={t("admin.unitProducts.title")}
 			/>

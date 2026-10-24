@@ -1362,6 +1362,26 @@
 					"title": "Editar produto no cardápio"
 				},
 				"empty": "Nenhum produto no cardápio desta unidade ainda.",
+				"export": {
+					"empty": "Nenhum produto disponível para exportar.",
+					"includeTaxes": "Incluir taxas nos preços",
+					"menuTitle": "Cardápio",
+					"pdfAction": "Baixar PDF",
+					"pdfDescription": "Baixe o cardápio de {{name}} com categorias, produtos e opções disponíveis.",
+					"pdfError": "Não foi possível gerar o PDF do cardápio.",
+					"pdfSuccess": "PDF do cardápio baixado.",
+					"pdfTitle": "Baixar cardápio em PDF",
+					"preparing": "Preparando PDF...",
+					"qrAction": "QR code",
+					"qrAlt": "QR code do cardápio de {{name}}",
+					"qrDescription": "Compartilhe o cardápio de {{name}} para consulta, sem carrinho.",
+					"qrDownload": "Baixar QR code",
+					"qrError": "Não foi possível gerar o QR code.",
+					"qrSuccess": "QR code baixado.",
+					"qrTitle": "QR code do cardápio",
+					"withTaxes": "Com taxas",
+					"withoutTaxes": "Sem taxas"
+				},
 				"form": {
 					"available": "Disponível",
 					"categories": "Categorias",
