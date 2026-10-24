@@ -44,7 +44,7 @@ export function TopPicksCarousel({ onSelect, sections, taxes = true }: TopPicksC
 
 	return (
 		<section className="space-y-3">
-			<h2 className="font-semibold text-lg">{t("store.menu.topPicks")}</h2>
+			<h2 className="font-display text-lg">{t("store.menu.topPicks")}</h2>
 			<ScrollArea className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1">
 				{picks.map(item => (
 					<button

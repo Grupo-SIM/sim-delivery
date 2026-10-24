@@ -50,7 +50,7 @@ export function UnitHeroCard({ openLabel, unit }: UnitHeroCardProps) {
 				/>
 				{unit.isOpenNow ? openLabel : t("store.status.closed")}
 			</span>
-			<p className="relative mt-auto font-extrabold text-base leading-tight sm:text-2xl">{unit.name}</p>
+			<p className="relative mt-auto break-words font-display text-lg sm:text-2xl">{unit.name}</p>
 		</Link>
 	);
 }

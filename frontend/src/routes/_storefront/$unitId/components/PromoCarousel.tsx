@@ -29,7 +29,7 @@ export function PromoCarousel({ sections }: PromoCarouselProps) {
 
 	return (
 		<section className="space-y-3">
-			<h2 className="font-semibold text-lg">{t("store.menu.highlights")}</h2>
+			<h2 className="font-display text-lg">{t("store.menu.highlights")}</h2>
 			<ScrollArea className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-1">
 				{highlights.map(item => (
 					<Card className="flex w-40 shrink-0 flex-col overflow-hidden" key={item.id}>

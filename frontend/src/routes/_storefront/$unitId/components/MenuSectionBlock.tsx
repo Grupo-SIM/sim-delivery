@@ -15,7 +15,7 @@ export function MenuSectionBlock({ onSelect, section, menuOnly = false, taxes = 
 	return (
 		<section className="menu-section scroll-mt-36 space-y-3" id={sectionAnchor(section.categoryId)}>
 			<div className="flex items-center gap-3 border-border border-b pb-3">
-				<h2 className="font-semibold text-lg">{section.categoryName ?? t("store.menu.loose")}</h2>
+				<h2 className="font-display text-lg">{section.categoryName ?? t("store.menu.loose")}</h2>
 				<span className="rounded-full border border-border bg-muted px-2.5 py-1 font-semibold text-muted-foreground text-xs">
 					{section.items.length}
 				</span>

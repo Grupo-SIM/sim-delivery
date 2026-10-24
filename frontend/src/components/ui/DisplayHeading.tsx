@@ -17,7 +17,7 @@ const sizeClassName: Record<DisplaySize, string> = {
 };
 
 /**
- * Chunky brand headline set in Luckiest Guy (the storefront display face).
+ * Brand headline set in the active company’s display face.
  * Reserve for hero titles and section headers — never body copy.
  */
 export function DisplayHeading({

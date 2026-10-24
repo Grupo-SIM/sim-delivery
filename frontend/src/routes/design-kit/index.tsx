@@ -19,7 +19,7 @@ function DesignKitPage() {
 				<header className="space-y-3">
 					<Badge tone="accent">Design Kit</Badge>
 					<DisplayHeading as="h1" size="xl">
-						JB Delivery
+						{branding.companyName}
 					</DisplayHeading>
 					<p className="max-w-2xl text-lg text-muted-foreground">
 						Identidade visual do cardápio — cores, tipografia, componentes e animações da marca, sobre Base
@@ -46,22 +46,22 @@ function DesignKitPage() {
 
 				{/* Typography */}
 				<KitSection
-					description="Luckiest Guy para títulos de destaque; Outfit para todo o resto (400 → 900)."
+					description={`${branding.fontDisplay} para marca, unidades e títulos principais da vitrine; ${branding.fontFamily} para leitura, controles e telas operacionais.`}
 					title="Tipografia"
 				>
 					<div className="space-y-6 rounded-brand border border-border bg-card text-card-foreground p-8 shadow-soft">
 						<div className="space-y-1">
 							<span className="text-muted-foreground text-xs uppercase tracking-wide">
-								Display — Luckiest Guy
+								Destaque — {branding.fontDisplay}
 							</span>
 							<DisplayHeading size="lg">Monte do seu jeito</DisplayHeading>
 						</div>
 						<div className="space-y-2">
-							<span className="text-muted-foreground text-xs uppercase tracking-wide">Body — Outfit</span>
+							<span className="text-muted-foreground text-xs uppercase tracking-wide">Leitura — {branding.fontFamily}</span>
 							<p className="font-black text-3xl">Sorvete artesanal</p>
 							<p className="font-semibold text-xl">Açaí, milkshakes e pizza</p>
 							<p className="text-base">
-								Texto corrido em Outfit Regular, com ótima leitura em telas pequenas e grandes.
+								Texto corrido em {branding.fontFamily}, com ótima leitura em telas pequenas e grandes.
 							</p>
 						</div>
 					</div>

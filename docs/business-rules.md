@@ -48,6 +48,9 @@ ou itens adicionados ao carrinho na vitrine completa.
 - Com troca de tema habilitada, respeitar preferência salva do usuário. Com troca desabilitada, aplicar sempre tema padrão da empresa.
 - Tema do dispositivo só é aplicado quando não há preferência da conta nem da empresa.
 - Todas as empresas usam a mesma estrutura visual da vitrine, personalizada pelas cores, fontes e imagens do branding.
+- `fontDisplay` é a fonte de destaque da vitrine: marca no rodapé, nomes de unidades (navbar, cartões e cabeçalho), títulos principais, categorias e seções promocionais, além do nome do produto nos detalhes. Usar peso regular para evitar negrito artificial em fontes decorativas.
+- `fontFamily` é a fonte de leitura: descrições, preços, horários, endereços, navegação, botões, campos, títulos funcionais de formulários/modais e subtítulos de conta/checkout. Painéis administrativos e operacionais usam essa fonte também nos títulos, priorizando leitura de dados.
+- Ambas as fontes seguem o branding ativo da empresa; o kit visual deve mostrar seus nomes atuais, sem fixar fontes de uma marca específica.
 - Texto de abertura, título e descrição da página inicial são editáveis no branding da empresa; valores vazios usam os textos padrão.
 
 As cores seguem os mesmos papéis em todas as empresas; os valores da paleta salva não são convertidos para outra marca:

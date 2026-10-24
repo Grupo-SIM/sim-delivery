@@ -47,7 +47,7 @@ export function StorefrontHeader({
 							{companyName.slice(0, 2).toUpperCase()}
 						</span>
 					)}
-					{unitName && <span className="storefront-unit-name min-w-0 truncate text-sm">{unitName}</span>}
+					{unitName && <span className="storefront-unit-name min-w-0 truncate font-display text-lg">{unitName}</span>}
 				</Link>
 
 				{!menuOnly && (

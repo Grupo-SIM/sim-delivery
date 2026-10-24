@@ -221,7 +221,7 @@ export function ProductDetailsModal({
 						)}
 						<div className="flex min-h-0 min-w-0 flex-col gap-5">
 							<div className="shrink-0 space-y-2 sm:pr-8">
-								<h2 className="font-bold text-2xl text-foreground">{selectedItem.title}</h2>
+								<h2 className="break-words font-display text-2xl text-foreground">{selectedItem.title}</h2>
 								{selectedItem.description && (
 									<p className="whitespace-pre-line text-muted-foreground text-sm">{selectedItem.description}</p>
 								)}
