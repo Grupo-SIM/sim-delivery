@@ -1,7 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { CollapsibleFormSection } from "@/components/ui/CollapsibleFormSection";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
@@ -36,11 +37,15 @@ export function InviteStaffForm() {
 		{ label: t("admin.staff.roles.kitchen"), value: "kitchen" },
 		{ label: t("admin.staff.roles.courier"), value: "courier" },
 	];
+	const hasData = useMemo(
+		() => !!localName || !!localEmail || role !== "attendant" || unitIds.length > 0,
+		[localName, localEmail, role, unitIds],
+	);
 	const needsUnits = role !== "owner";
 
 	return (
 		<form
-			className="grid gap-4 rounded-lg border border-border bg-card text-card-foreground p-4 sm:grid-cols-2 lg:grid-cols-4"
+			className="group space-y-4 rounded-lg border border-border bg-card text-card-foreground p-4"
 			onSubmit={event => {
 				event.preventDefault();
 				setError(null);
@@ -63,6 +68,7 @@ export function InviteStaffForm() {
 				);
 			}}
 		>
+			<div className="grid gap-4 sm:grid-cols-2">
 			<Label>
 				<span>
 					{t("admin.staff.invite.name")} <RequiredMark />
@@ -74,6 +80,7 @@ export function InviteStaffForm() {
 					value={localName}
 				/>
 			</Label>
+			<CollapsibleFormSection expanded={hasData} visibleFrom="sm">
 			<Label>
 				<span>
 					{t("admin.staff.invite.email")} <RequiredMark />
@@ -86,6 +93,9 @@ export function InviteStaffForm() {
 					value={localEmail}
 				/>
 			</Label>
+			</CollapsibleFormSection>
+			</div>
+			<CollapsibleFormSection expanded={hasData}>
 			<div className="flex flex-col gap-1.5">
 				<span className="font-medium text-sm">{t("admin.staff.invite.role")}</span>
 				<CustomSelect
@@ -99,7 +109,7 @@ export function InviteStaffForm() {
 			</div>
 
 			{needsUnits && (
-				<fieldset className="sm:col-span-2 lg:col-span-4">
+				<fieldset className="space-y-2">
 					<legend className="font-medium text-sm">{t("admin.staff.invite.units")}</legend>
 					{unitsQuery.isPending ? (
 						<div className="mt-2 h-11 animate-pulse rounded-md bg-muted" />
@@ -114,7 +124,8 @@ export function InviteStaffForm() {
 				</fieldset>
 			)}
 
-			<div className="sm:col-span-2 lg:col-span-4">
+			</CollapsibleFormSection>
+			<div>
 				<Button
 					disabled={
 						isPending || unitsQuery.isPending || !name || !email || (needsUnits && unitIds.length === 0)

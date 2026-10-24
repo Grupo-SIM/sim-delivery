@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { NumericFormat } from "react-number-format";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
+import { CollapsibleFormSection } from "@/components/ui/CollapsibleFormSection";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
@@ -9,6 +10,7 @@ import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import type { FeeFormValue } from "./types";
 
 interface FeeFormProps {
+	collapsible?: boolean;
 	initial?: FeeFormValue;
 	isPending: boolean;
 	lockKind?: boolean;
@@ -25,9 +27,13 @@ const defaults: FeeFormValue = {
 	value: 0,
 };
 
-export function FeeForm({ initial = defaults, isPending, lockKind = false, onCancel, onSubmit }: FeeFormProps) {
+export function FeeForm({ collapsible = false, initial = defaults, isPending, lockKind = false, onCancel, onSubmit }: FeeFormProps) {
 	const [form, setForm] = useState(initial);
 	const [name, setName] = useDebouncedInput(form.name, value => setForm(current => ({ ...current, name: value })));
+	const hasData = useMemo(
+		() => !!name || Object.entries(defaults).some(([key, value]) => form[key as keyof FeeFormValue] !== value),
+		[form, name],
+	);
 	const displayOptions = form.applicationScope === "order"
 		? [{ label: "Somente no checkout", value: "checkout_only" }]
 		: [
@@ -37,11 +43,12 @@ export function FeeForm({ initial = defaults, isPending, lockKind = false, onCan
 			];
 
 	return (
-		<form className="space-y-4" onSubmit={event => { event.preventDefault(); onSubmit({ ...form, name }); }}>
+		<form className="group space-y-4" onSubmit={event => { event.preventDefault(); onSubmit({ ...form, name }); }}>
 			<Label>
 				<span>Nome <RequiredMark /></span>
 				<Input name="fee-name" onChange={event => setName(event.currentTarget.value)} placeholder="Ex: Taxa de serviço" required type="text" value={name} />
 			</Label>
+			<CollapsibleFormSection expanded={!collapsible || hasData}>
 			<div className="grid gap-4 sm:grid-cols-2">
 				<div className="space-y-2">
 					<p className="font-medium text-sm">Aplicação</p>
@@ -89,6 +96,7 @@ export function FeeForm({ initial = defaults, isPending, lockKind = false, onCan
 				}} />
 				Taxa ativa
 			</label>
+			</CollapsibleFormSection>
 			<div className="flex justify-end gap-2">
 				{onCancel && <Button onClick={onCancel} type="button" variant="outline">Descartar</Button>}
 				<Button disabled={isPending || !name.trim() || form.value <= 0} type="submit">Salvar</Button>

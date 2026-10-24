@@ -1,7 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { CollapsibleFormSection } from "@/components/ui/CollapsibleFormSection";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { getCompaniesQueryKey, usePostCompanies } from "@/lib/api";
@@ -23,13 +24,15 @@ export function CreateCompanyForm() {
 	const [slugEdited, setSlugEdited] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
+	const hasData = useMemo(() => !!name || !!slug, [name, slug]);
+
 	const { isPending, mutate } = usePostCompanies();
 
 	const effectiveSlug = slugEdited ? slug : slugify(name);
 
 	return (
 		<form
-			className="flex flex-col gap-4 rounded-lg border border-border bg-card text-card-foreground p-4 sm:flex-row sm:items-end"
+			className="group flex flex-col gap-4 rounded-lg border border-border bg-card text-card-foreground p-4 sm:flex-row sm:items-end"
 			onSubmit={event => {
 				event.preventDefault();
 				setError(null);
@@ -61,6 +64,7 @@ export function CreateCompanyForm() {
 					value={name}
 				/>
 			</Label>
+			<CollapsibleFormSection className="sm:flex-1" expanded={hasData} visibleFrom="sm">
 			<Label className="flex-1">
 				{t("admin.companies.create.slug")}
 				<Input
@@ -72,6 +76,7 @@ export function CreateCompanyForm() {
 					value={effectiveSlug}
 				/>
 			</Label>
+			</CollapsibleFormSection>
 			<Button disabled={isPending || !name} type="submit">
 				{isPending ? t("admin.companies.create.submitting") : t("admin.companies.create.submit")}
 			</Button>
