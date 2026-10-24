@@ -49,53 +49,53 @@ export function FeeForm({ collapsible = false, initial = defaults, isPending, lo
 				<Input name="fee-name" onChange={event => setName(event.currentTarget.value)} placeholder="Ex: Taxa de serviço" required type="text" value={name} />
 			</Label>
 			<CollapsibleFormSection expanded={!collapsible || hasData}>
-			<div className="grid gap-4 sm:grid-cols-2">
-				<div className="space-y-2">
-					<p className="font-medium text-sm">Aplicação</p>
-					<CustomSelect
-						disabled={lockKind}
-						onChange={value => setForm(current => ({
-							...current,
-							applicationScope: value as FeeFormValue["applicationScope"],
-							displayMode: value === "order" ? "checkout_only" : current.displayMode,
-						}))}
-						options={[{ label: "Por produto", value: "product" }, { label: "Por pedido", value: "order" }]}
-						value={form.applicationScope}
+				<div className="grid gap-4 sm:grid-cols-2">
+					<div className="space-y-2">
+						<p className="font-medium text-sm">Aplicação</p>
+						<CustomSelect
+							disabled={lockKind}
+							onChange={value => setForm(current => ({
+								...current,
+								applicationScope: value as FeeFormValue["applicationScope"],
+								displayMode: value === "order" ? "checkout_only" : current.displayMode,
+							}))}
+							options={[{ label: "Por produto", value: "product" }, { label: "Por pedido", value: "order" }]}
+							value={form.applicationScope}
+						/>
+					</div>
+					<div className="space-y-2">
+						<p className="font-medium text-sm">Cálculo</p>
+						<CustomSelect disabled={lockKind} onChange={value => setForm(current => ({ ...current, calculationType: value as FeeFormValue["calculationType"] }))} options={[{ label: "Percentual", value: "percentage" }, { label: "Valor fixo", value: "fixed" }]} value={form.calculationType} />
+					</div>
+				</div>
+				<Label>
+					<span>Valor <RequiredMark /></span>
+					<NumericFormat
+						allowNegative={false}
+						className="flex h-11 w-full rounded-md border border-input bg-surface text-card-foreground px-3 py-2 text-sm placeholder:text-muted-foreground/70"
+						decimalScale={form.calculationType === "percentage" ? 2 : 2}
+						decimalSeparator=","
+						isAllowed={({ floatValue }) => floatValue === undefined || (floatValue > 0 && (form.calculationType !== "percentage" || floatValue <= 100))}
+						name="fee-value"
+						onValueChange={({ floatValue }) => setForm(current => ({ ...current, value: Math.round((floatValue ?? 0) * (current.calculationType === "percentage" ? 100 : 100)) }))}
+						placeholder={form.calculationType === "percentage" ? "Ex: 2,00%" : "Ex: R$ 2,00"}
+						prefix={form.calculationType === "fixed" ? "R$ " : undefined}
+						suffix={form.calculationType === "percentage" ? "%" : undefined}
+						thousandSeparator="."
+						value={form.value / 100}
 					/>
-				</div>
+				</Label>
 				<div className="space-y-2">
-					<p className="font-medium text-sm">Cálculo</p>
-					<CustomSelect disabled={lockKind} onChange={value => setForm(current => ({ ...current, calculationType: value as FeeFormValue["calculationType"] }))} options={[{ label: "Percentual", value: "percentage" }, { label: "Valor fixo", value: "fixed" }]} value={form.calculationType} />
+					<p className="font-medium text-sm">Exibição</p>
+					<CustomSelect onChange={value => setForm(current => ({ ...current, displayMode: value as FeeFormValue["displayMode"] }))} options={displayOptions} value={form.displayMode} />
 				</div>
-			</div>
-			<Label>
-				<span>Valor <RequiredMark /></span>
-				<NumericFormat
-					allowNegative={false}
-					className="flex h-11 w-full rounded-md border border-input bg-surface text-card-foreground px-3 py-2 text-sm placeholder:text-muted-foreground/70"
-					decimalScale={form.calculationType === "percentage" ? 2 : 2}
-					decimalSeparator=","
-					isAllowed={({ floatValue }) => floatValue === undefined || (floatValue > 0 && (form.calculationType !== "percentage" || floatValue <= 100))}
-					name="fee-value"
-					onValueChange={({ floatValue }) => setForm(current => ({ ...current, value: Math.round((floatValue ?? 0) * (current.calculationType === "percentage" ? 100 : 100)) }))}
-					placeholder={form.calculationType === "percentage" ? "Ex: 2,00%" : "Ex: R$ 2,00"}
-					prefix={form.calculationType === "fixed" ? "R$ " : undefined}
-					suffix={form.calculationType === "percentage" ? "%" : undefined}
-					thousandSeparator="."
-					value={form.value / 100}
-				/>
-			</Label>
-			<div className="space-y-2">
-				<p className="font-medium text-sm">Exibição</p>
-				<CustomSelect onChange={value => setForm(current => ({ ...current, displayMode: value as FeeFormValue["displayMode"] }))} options={displayOptions} value={form.displayMode} />
-			</div>
-			<label className="flex cursor-pointer items-center gap-2 text-sm" htmlFor="fee-active">
-				<Checkbox checked={form.active} id="fee-active" onChange={event => {
-					const active = event.currentTarget.checked;
-					setForm(current => ({ ...current, active }));
-				}} />
-				Taxa ativa
-			</label>
+				<label className="flex cursor-pointer items-center gap-2 text-sm" htmlFor="fee-active">
+					<Checkbox checked={form.active} id="fee-active" onChange={event => {
+						const active = event.currentTarget.checked;
+						setForm(current => ({ ...current, active }));
+					}} />
+					Taxa ativa
+				</label>
 			</CollapsibleFormSection>
 			<div className="flex justify-end gap-2">
 				{onCancel && <Button onClick={onCancel} type="button" variant="outline">Descartar</Button>}

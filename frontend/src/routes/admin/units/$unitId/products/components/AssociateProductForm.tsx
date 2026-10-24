@@ -39,8 +39,29 @@ export function AssociateProductForm({
 	const [error, setError] = useState<string | null>(null);
 
 	const hasData = useMemo(
-		() => !!productId || categoriesOverridden || categoryIds.length > 0 || tagsOverridden || tagIds.length > 0 || !available || priceEnabled || priceReais !== 0 || stockEnabled || stock !== 0,
-		[productId, categoriesOverridden, categoryIds, tagsOverridden, tagIds, available, priceEnabled, priceReais, stockEnabled, stock],
+		() =>
+			!!productId ||
+			categoriesOverridden ||
+			categoryIds.length > 0 ||
+			tagsOverridden ||
+			tagIds.length > 0 ||
+			!available ||
+			priceEnabled ||
+			priceReais !== 0 ||
+			stockEnabled ||
+			stock !== 0,
+		[
+			productId,
+			categoriesOverridden,
+			categoryIds,
+			tagsOverridden,
+			tagIds,
+			available,
+			priceEnabled,
+			priceReais,
+			stockEnabled,
+			stock,
+		],
 	);
 
 	const { isPending, mutate } = usePostUnitsByUnitIdProducts();
@@ -73,7 +94,7 @@ export function AssociateProductForm({
 
 	return (
 		<form
-			className="group space-y-4 rounded-lg border border-border bg-card text-card-foreground p-4"
+			className="group space-y-4 rounded-lg border border-border bg-card p-4 text-card-foreground"
 			onSubmit={event => {
 				event.preventDefault();
 				setError(null);
@@ -102,34 +123,36 @@ export function AssociateProductForm({
 			}}
 		>
 			<div className="space-y-2">
-				<span className="font-medium text-sm">{t("admin.unitProducts.form.product")} <RequiredMark /></span>
+				<span className="font-medium text-sm">
+					{t("admin.unitProducts.form.product")} <RequiredMark />
+				</span>
 				<CustomSelect onChange={setProductId} options={productOptions} value={productId} />
 			</div>
 			<CollapsibleFormSection expanded={hasData}>
 				<div className="grid gap-4 md:grid-cols-2">
-			<UnitProductFormFields
-				available={available}
-				categories={categories}
-				categoriesOverridden={categoriesOverridden}
-				categoryIds={categoryIds}
-				onAvailableChange={setAvailable}
-				onCategoriesOverriddenChange={setCategoriesOverridden}
-				onCategoryIdsChange={setCategoryIds}
-				onPriceEnabledChange={setPriceEnabled}
-				onPriceReaisChange={setPriceReais}
-				onStockChange={setStock}
-				onStockEnabledChange={setStockEnabled}
-				onTagIdsChange={setTagIds}
-				onTagsOverriddenChange={setTagsOverridden}
-				priceEnabled={priceEnabled}
-				priceReais={priceReais}
-				selectedProduct={products.find(product => product.id === productId)}
-				stock={stock}
-				stockEnabled={stockEnabled}
-				tagIds={tagIds}
-				tags={tags}
-				tagsOverridden={tagsOverridden}
-			/>
+					<UnitProductFormFields
+						available={available}
+						categories={categories}
+						categoriesOverridden={categoriesOverridden}
+						categoryIds={categoryIds}
+						onAvailableChange={setAvailable}
+						onCategoriesOverriddenChange={setCategoriesOverridden}
+						onCategoryIdsChange={setCategoryIds}
+						onPriceEnabledChange={setPriceEnabled}
+						onPriceReaisChange={setPriceReais}
+						onStockChange={setStock}
+						onStockEnabledChange={setStockEnabled}
+						onTagIdsChange={setTagIds}
+						onTagsOverriddenChange={setTagsOverridden}
+						priceEnabled={priceEnabled}
+						priceReais={priceReais}
+						selectedProduct={products.find(product => product.id === productId)}
+						stock={stock}
+						stockEnabled={stockEnabled}
+						tagIds={tagIds}
+						tags={tags}
+						tagsOverridden={tagsOverridden}
+					/>
 				</div>
 			</CollapsibleFormSection>
 

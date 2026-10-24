@@ -65,17 +65,17 @@ export function CreateCompanyForm() {
 				/>
 			</Label>
 			<CollapsibleFormSection className="sm:flex-1" expanded={hasData} visibleFrom="sm">
-			<Label className="flex-1">
-				{t("admin.companies.create.slug")}
-				<Input
-					onChange={event => {
-						setSlugEdited(true);
-						setSlug(event.currentTarget.value);
-					}}
-					placeholder={t("admin.companies.create.slugPlaceholder")}
-					value={effectiveSlug}
-				/>
-			</Label>
+				<Label className="flex-1">
+					{t("admin.companies.create.slug")}
+					<Input
+						onChange={event => {
+							setSlugEdited(true);
+							setSlug(event.currentTarget.value);
+						}}
+						placeholder={t("admin.companies.create.slugPlaceholder")}
+						value={effectiveSlug}
+					/>
+				</Label>
 			</CollapsibleFormSection>
 			<Button disabled={isPending || !name} type="submit">
 				{isPending ? t("admin.companies.create.submitting") : t("admin.companies.create.submit")}

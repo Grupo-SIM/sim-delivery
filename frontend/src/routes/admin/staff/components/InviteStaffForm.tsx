@@ -45,7 +45,7 @@ export function InviteStaffForm() {
 
 	return (
 		<form
-			className="group space-y-4 rounded-lg border border-border bg-card text-card-foreground p-4"
+			className="group space-y-4 rounded-lg border border-border bg-card p-4 text-card-foreground"
 			onSubmit={event => {
 				event.preventDefault();
 				setError(null);
@@ -69,61 +69,60 @@ export function InviteStaffForm() {
 			}}
 		>
 			<div className="grid gap-4 sm:grid-cols-2">
-			<Label>
-				<span>
-					{t("admin.staff.invite.name")} <RequiredMark />
-				</span>
-				<Input
-					onChange={event => setLocalName(event.currentTarget.value)}
-					placeholder={t("admin.staff.invite.namePlaceholder")}
-					required
-					value={localName}
-				/>
-			</Label>
-			<CollapsibleFormSection expanded={hasData} visibleFrom="sm">
-			<Label>
-				<span>
-					{t("admin.staff.invite.email")} <RequiredMark />
-				</span>
-				<Input
-					onChange={event => setLocalEmail(event.currentTarget.value)}
-					placeholder={t("admin.staff.invite.emailPlaceholder")}
-					required
-					type="email"
-					value={localEmail}
-				/>
-			</Label>
-			</CollapsibleFormSection>
+				<Label>
+					<span>
+						{t("admin.staff.invite.name")} <RequiredMark />
+					</span>
+					<Input
+						onChange={event => setLocalName(event.currentTarget.value)}
+						placeholder={t("admin.staff.invite.namePlaceholder")}
+						required
+						value={localName}
+					/>
+				</Label>
+				<CollapsibleFormSection expanded={hasData} visibleFrom="sm">
+					<Label>
+						<span>
+							{t("admin.staff.invite.email")} <RequiredMark />
+						</span>
+						<Input
+							onChange={event => setLocalEmail(event.currentTarget.value)}
+							placeholder={t("admin.staff.invite.emailPlaceholder")}
+							required
+							type="email"
+							value={localEmail}
+						/>
+					</Label>
+				</CollapsibleFormSection>
 			</div>
 			<CollapsibleFormSection expanded={hasData}>
-			<div className="flex flex-col gap-1.5">
-				<span className="font-medium text-sm">{t("admin.staff.invite.role")}</span>
-				<CustomSelect
-					onChange={value => {
-						setRole(value as Role);
-						setUnitIds([]);
-					}}
-					options={roleOptions}
-					value={role}
-				/>
-			</div>
+				<div className="flex flex-col gap-1.5">
+					<span className="font-medium text-sm">{t("admin.staff.invite.role")}</span>
+					<CustomSelect
+						onChange={value => {
+							setRole(value as Role);
+							setUnitIds([]);
+						}}
+						options={roleOptions}
+						value={role}
+					/>
+				</div>
 
-			{needsUnits && (
-				<fieldset className="space-y-2">
-					<legend className="font-medium text-sm">{t("admin.staff.invite.units")}</legend>
-					{unitsQuery.isPending ? (
-						<div className="mt-2 h-11 animate-pulse rounded-md bg-muted" />
-					) : (
-						<StaffUnitSelector
-							idPrefix="invite-staff-unit"
-							onChange={setUnitIds}
-							unitIds={unitIds}
-							units={unitsQuery.data ?? []}
-						/>
-					)}
-				</fieldset>
-			)}
-
+				{needsUnits && (
+					<fieldset className="space-y-2">
+						<legend className="font-medium text-sm">{t("admin.staff.invite.units")}</legend>
+						{unitsQuery.isPending ? (
+							<div className="mt-2 h-11 animate-pulse rounded-md bg-muted" />
+						) : (
+							<StaffUnitSelector
+								idPrefix="invite-staff-unit"
+								onChange={setUnitIds}
+								unitIds={unitIds}
+								units={unitsQuery.data ?? []}
+							/>
+						)}
+					</fieldset>
+				)}
 			</CollapsibleFormSection>
 			<div>
 				<Button
