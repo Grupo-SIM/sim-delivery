@@ -79,6 +79,12 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
 - Nova chave de idempotência cria pedido independente. Repetir a mesma chave
   retorna o pedido já criado, sem duplicar reservas ou débitos de créditos.
 
+## Identificação dos pagamentos online
+
+- Descrição enviada ao SimIntPay: `Pedido <nome da empresa> - <nome da unidade>`.
+- IDs do gateway e da transação SimIntPay ficam associados ao pedido localmente,
+  nos registros de pagamento e tentativa; não precisam aparecer na descrição.
+
 ## Encerramento do expediente
 
 - Filtro de datas do painel de pedidos considera a data de abertura do expediente de cada

@@ -15,16 +15,13 @@ export interface PayingCustomerContext {
 	/** Customer document digits, when required by the payment method. */
 	document: string | null;
 	merchant: { cnpj: string; externalMerchantId: string; integrationKey: string; legalName: string } | undefined;
-	order: { deliveryFee: number; feeTotalCents: number; id: string; total: number; unitName: string };
+	order: { companyName: string; deliveryFee: number; feeTotalCents: number; id: string; total: number; unitName: string };
 	user: { email: string; id: string; name: string; phoneNumber: string | null };
 }
 
-/**
- * Description sent to the payment gateway. The `[Unidade - <name>]` tag lets the
- * Simpay dashboard tell each unit's transactions apart.
- */
-export function buildPaymentDescription(order: Pick<PayingCustomerContext["order"], "unitName">): string {
-	return `Pedido Zero Grau [Unidade - ${order.unitName}]`;
+/** Human-readable company and unit description sent to the payment gateway. */
+export function buildPaymentDescription(order: Pick<PayingCustomerContext["order"], "companyName" | "unitName">): string {
+	return `Pedido ${order.companyName} - ${order.unitName}`;
 }
 
 /**
@@ -85,7 +82,7 @@ export async function resolvePayingCustomer(
 		merchant: company?.cnpj
 			? { cnpj: company.cnpj, externalMerchantId: company.id, integrationKey: simpayIntegrationKey(company.slug), legalName: company.name }
 			: undefined,
-		order: { deliveryFee: order.deliveryFee ?? 0, feeTotalCents: order.feeTotalCents ?? 0, id: order.id, total: order.total, unitName: order.unit.name },
+		order: { companyName: company.name, deliveryFee: order.deliveryFee ?? 0, feeTotalCents: order.feeTotalCents ?? 0, id: order.id, total: order.total, unitName: order.unit.name },
 		user: {
 			email: customer.user.email,
 			id: customer.user.id,

@@ -18,6 +18,7 @@ import { buildPaymentDescription, resolvePayingCustomer } from "./resolvePayingC
 
 /** Shapes below mirror only the columns the use cases actually read. */
 interface CompanyRow {
+	name?: string;
 	cnpj?: string;
 	id: string;
 	slug: string;
@@ -75,7 +76,7 @@ interface SavedCardRow {
 	nickname?: string | null;
 }
 
-const baseCompany: CompanyRow = { cnpj: "10802530000107", id: "cmp_1", slug: "zero-grau" };
+const baseCompany: CompanyRow = { cnpj: "10802530000107", id: "cmp_1", slug: "zero-grau", name: "Zero Grau" };
 
 const baseCustomer: CustomerRow = {
 	companyId: "cmp_1",
@@ -326,12 +327,12 @@ function makeSimpay(overrides: Partial<Record<string, unknown>> = {}) {
 		createCardPayment: async (payload: unknown) => {
 			calls.card.push(payload);
 
-			return { id: "simpay_card_1", status: "COMPLETED" };
+			return { id: "simpay_card_1", paymentId: "simpay_card_1", transactionId: "transaction_card_1", status: "COMPLETED" };
 		},
 		createPixPayment: async (payload: unknown) => {
 			calls.pix.push(payload);
 
-			return pixSuccess;
+			return { ...pixSuccess, paymentId: "simpay_1", transactionId: "transaction_pix_1" };
 		},
 		getPaymentStatus: async () => ({ status: "PENDING" }),
 		getPixStatusDirect: async () => ({ status: "PENDING" }),
@@ -377,8 +378,9 @@ function cardUseCase(prisma: PrismaInstance, client: SimpayClient, dom: DomPagam
 }
 
 describe("buildPaymentDescription", () => {
-	it("tags the description with the unit name", () => {
-		expect(buildPaymentDescription(baseOrder)).toBe("Pedido Zero Grau [Unidade - Boa Viagem]");
+	it("uses the company and unit names without technical tags", () => {
+		expect(buildPaymentDescription({ companyName: "Zero Grau", unitName: "Tucumã" })).toBe("Pedido Zero Grau - Tucumã");
+		expect(buildPaymentDescription({ companyName: "Outra Empresa", unitName: "Centro" })).toBe("Pedido Outra Empresa - Centro");
 	});
 });
 
@@ -391,7 +393,7 @@ describe("resolvePayingCustomer", () => {
 		const context = await resolvePayingCustomer(prisma, "user_1", body);
 
 		expect(context.document).toBe("52998224725");
-		expect(context.order).toEqual({ deliveryFee: 0, feeTotalCents: 0, id: "order_1", total: 5000, unitName: "Boa Viagem" });
+		expect(context.order).toEqual({ companyName: "Zero Grau", deliveryFee: 0, feeTotalCents: 0, id: "order_1", total: 5000, unitName: "Boa Viagem" });
 		expect(context.user.email).toBe("maria@example.com");
 	});
 
@@ -483,8 +485,10 @@ describe("CreatePixPayment", () => {
 			pixQrcode: pixSuccess.pix_qrcode,
 		});
 		expect(payments).toHaveLength(1);
+		expect(payments[0]).toMatchObject({ orderId: "order_1", simpayPaymentId: "simpay_1" });
+		expect(await prisma.paymentAttempt.findFirst({ where: { orderId: "order_1", state: { in: ["pending"] } } })).toMatchObject({ orderId: "order_1", providerPaymentId: "simpay_1", providerTransactionId: "transaction_pix_1" });
 		expect(calls.pix[0]).toMatchObject({
-			description: "Pedido Zero Grau [Unidade - Boa Viagem]",
+			description: "Pedido Zero Grau - Boa Viagem",
 			document: "52998224725",
 			document_type: "CPF",
 			price: 50,
@@ -1096,9 +1100,10 @@ describe("CreateCardPayment", () => {
 		const result = await cardUseCase(prisma, simpay, dom).execute("user_1", body);
 
 		expect(result).toMatchObject({ status: "confirmed" });
-		expect(payments[0]).toMatchObject({ method: "credit_card", status: "confirmed" });
-		expect(calls.card[0]).toMatchObject({ brand: "visa", installments: 1, price: 50, token: "424242tok" });
+		expect(payments[0]).toMatchObject({ method: "credit_card", status: "confirmed", orderId: "order_1", simpayPaymentId: "simpay_card_1" });
+		expect(calls.card[0]).toMatchObject({ description: "Pedido Zero Grau - Boa Viagem", brand: "visa", installments: 1, price: 50, token: "424242tok" });
 		expect(cashbackLedger).toHaveLength(1);
+		expect(await prisma.paymentAttempt.findFirst({ where: { orderId: "order_1", state: { in: ["confirmed"] } } })).toMatchObject({ orderId: "order_1", providerPaymentId: "simpay_card_1", providerTransactionId: "transaction_card_1" });
 	});
 
 	it("keeps the order pending while Simpay has not approved the card", async () => {
