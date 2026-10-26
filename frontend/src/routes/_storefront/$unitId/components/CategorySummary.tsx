@@ -15,7 +15,7 @@ export function CategorySummary({ sections }: CategorySummaryProps) {
 
 	return (
 		<aside className="hidden lg:block">
-			<nav className="sticky top-4 space-y-1">
+			<nav className="sticky top-[calc(var(--store-header-height)+1rem)] space-y-1">
 				{sections
 					.filter(section => section.categoryId !== null)
 					.map(section => (
