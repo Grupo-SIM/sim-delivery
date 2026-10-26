@@ -214,6 +214,7 @@ function BrandingPage() {
 			) : (
 				<div className="space-y-3">
 					<ThemeSection
+						company={{ name: branding.companyName ?? "SIM Delivery", slug: slug || "empresa", themeColors, fontDisplay: fonts.display, fontFamily: fonts.family }}
 						allowThemeToggle={allowThemeToggle}
 						defaultTheme={defaultTheme}
 						onAllowThemeToggleChange={setAllowThemeToggle}

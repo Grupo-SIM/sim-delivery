@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuMoon, LuPalette, LuSun } from "react-icons/lu";
+import { DownloadVisualIdentityButton } from "@/components/branding/DownloadVisualIdentityButton";
+import type { VisualIdentityCompany } from "@/lib/visual-identity/template";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
@@ -10,6 +12,7 @@ import { PaletteSwatches } from "./PaletteSwatches";
 import { ThemePaletteModal } from "./ThemePaletteModal";
 
 interface ThemeSectionProps {
+	company: VisualIdentityCompany;
 	allowThemeToggle: boolean;
 	defaultTheme: keyof ThemeColors;
 	onAllowThemeToggleChange: (allowThemeToggle: boolean) => void;
@@ -19,6 +22,7 @@ interface ThemeSectionProps {
 }
 
 export function ThemeSection({
+	company,
 	allowThemeToggle,
 	defaultTheme,
 	onAllowThemeToggleChange,
@@ -82,6 +86,7 @@ export function ThemeSection({
 						<PaletteSwatches colors={themeColors.dark} />
 					</span>
 				</div>
+				<DownloadVisualIdentityButton company={company} showLabel />
 				<ImportPaletteButton onImport={onThemeColorsChange} />
 				<Button onClick={() => setIsPaletteOpen(true)} type="button" variant="outline">
 					<LuPalette aria-hidden /> {t("admin.branding.editPalette")}

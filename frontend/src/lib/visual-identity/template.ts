@@ -3,7 +3,7 @@ import { type ThemeColors, toThemeVariable } from "@/lib/theme-colors";
 import { colorLabels, companyPalette, referenceThemeColors } from "./palette";
 import template from "./template.html?raw";
 
-type Company = GetCompanies200[number];
+export type VisualIdentityCompany = Pick<GetCompanies200[number], "name" | "slug" | "themeColors" | "fontDisplay" | "fontFamily">;
 
 export function escapeHtml(value: string) {
 	return value.replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]!);
@@ -23,7 +23,7 @@ export function createVisualIdentitySvg(name: string, colors: ThemeColors) {
 	return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1580" viewBox="0 0 1200 1580" data-sim-delivery-palette="1"><rect width="1200" height="1580" fill="#FBF6EE"/><g font-family="sans-serif" fill="#1F1513"><text x="48" y="56" font-size="16">SIM DELIVERY / IDENTIDADE VISUAL</text><text x="48" y="108" font-size="36" font-weight="700">${escapeHtml(name.slice(0, 48))}</text>${sections}<text x="48" y="1540" font-size="14">Importe este SVG em Tema e cores para aplicar a paleta. Revise antes de salvar.</text></g></svg>`;
 }
 
-export function createVisualIdentityTemplate(company?: Company) {
+export function createVisualIdentityTemplate(company?: VisualIdentityCompany) {
 	const name = company?.name || "Sua marca no SIM Delivery";
 	const colors = company ? companyPalette(company.themeColors) : referenceThemeColors;
 	const displayFont = company?.fontDisplay || (company ? "Fonte padrão do sistema" : "Rubik");
@@ -33,11 +33,11 @@ export function createVisualIdentityTemplate(company?: Company) {
 		const mainTokens = new Set(["primary", "secondary", "accent", "background", "foreground", "card", "border", "mutedForeground"]);
 		const swatches = Object.entries(colorLabels).map(([token, label]) => {
 			const color = colors[mode][token as keyof typeof colorLabels];
-			return { token, html: `<div class="swatch"><div class="paint" style="background:${color}"></div><span>${label}</span><code>${color}</code></div>` };
+			return { token, html: `<label class="swatch"><input class="paint" style="background:${color}" type="color" data-token="${token}" data-variable="${toThemeVariable(token as keyof typeof colorLabels)}" value="${color}" aria-label="${label} (${mode === "light" ? "tema claro" : "tema escuro"})"><span>${label}</span><code>${color}</code></label>` };
 		});
 		const mainSwatches = swatches.filter(swatch => mainTokens.has(swatch.token)).map(swatch => swatch.html).join("");
 		const otherSwatches = swatches.filter(swatch => !mainTokens.has(swatch.token)).map(swatch => swatch.html).join("");
-		return `<section class="theme" style="${vars}"><div class="section-title"><h2>${mode === "light" ? "Tema claro" : "Tema escuro"}</h2><span>Paleta e aplicação</span></div><div class="preview"><div class="eyebrow">SEU DELIVERY, SUA IDENTIDADE</div><h3>${escapeHtml(name)}</h3><p>Seus favoritos, com o sabor da sua marca.</p><div class="sample-card"><span class="badge">Destaque</span><h4>Uma experiência feita para você</h4><p>Do primeiro pedido à próxima visita.</p><span class="sample-action">Ver cardápio →</span></div></div><div class="swatches">${mainSwatches}</div><details><summary>Expandir paleta completa</summary><div class="swatches">${otherSwatches}</div></details></section>`;
+		return `<section class="theme" data-theme="${mode}" style="${vars}"><div class="section-title"><h2>${mode === "light" ? "Tema claro" : "Tema escuro"}</h2><span>Paleta e aplicação</span></div><div class="preview"><div class="eyebrow">SEU DELIVERY, SUA IDENTIDADE</div><h3>${escapeHtml(name)}</h3><p>Seus favoritos, com o sabor da sua marca.</p><div class="sample-card"><span class="badge">Destaque</span><h4>Uma experiência feita para você</h4><p>Do primeiro pedido à próxima visita.</p><span class="sample-action">Ver cardápio →</span></div></div><div class="examples"><span class="secondary-example">Ação secundária</span><span class="muted-example">Conteúdo discreto</span><span class="popover-example">Popover · Mais opções</span><span class="status-example error-example">Erro / exclusão</span><span class="status-example success-example">Sucesso</span><span class="status-example warning-example">Aviso</span><input class="input-example" aria-label="Exemplo de campo com foco" placeholder="Campo com borda e foco" readonly></div><h3>Paleta completa</h3><p class="palette-hint">Clique em uma cor para editar. A prévia, o SVG e a impressão acompanham suas alterações.</p><div class="swatches">${mainSwatches}${otherSwatches}</div></section>`;
 	}).join("");
 	const svg = createVisualIdentitySvg(name, colors);
 	const replacements: Record<string, string> = {
@@ -50,7 +50,7 @@ export function createVisualIdentityTemplate(company?: Company) {
 	return template.replace(/\{\{(\w+)\}\}/g, (match, key: string) => replacements[key] ?? match);
 }
 
-export function downloadVisualIdentityTemplate(company?: Company) {
+export function downloadVisualIdentityTemplate(company?: VisualIdentityCompany) {
 	const blob = new Blob([createVisualIdentityTemplate(company)], { type: "text/html;charset=utf-8" });
 	const url = URL.createObjectURL(blob);
 	const link = document.createElement("a");
