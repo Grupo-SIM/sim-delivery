@@ -22,7 +22,8 @@ Pix pago confirmado no backend = **um** `Purchase` lógico (valor pago, timestam
 4. **Decidido:** adicionar banner de cookies e política de privacidade (hoje não existem; sem rotas, sem i18n, sem consentimento). Ver Etapa 0.
 5. **Decidido:** cartão aprovado também emite Purchase, pelo mesmo gancho `ConfirmPayment`. Distinção por `payment_method` (`pix` | `card`): Meta aceita parâmetros customizados em `custom_data` (evento tem metadados), então vai `custom_data.payment_method` na CAPI e coluna `paymentMethod` em `MarketingEvent`. `AddPaymentInfo` dispara no submit do `CardPaymentForm`; no Pix não.
 6. **Decidido:** cliente que recusa cookies de marketing ⇒ **nenhum** Purchase enviado (nem anônimo). Conciliação com banco continua possível pelos pedidos pagos (T14 considera `marketingConsent=false` como "não enviado por consentimento").
-7. **Pendente (jurídico):** revisar a minuta `docs/legal/politica-de-privacidade.md`, preencher campos `[...]` por loja e confirmar bases legais/retenção. Não bloqueia código.
+7. **Decidido:** a política é **por empresa** (controladora = empresa cliente; Grupo SIM = operador fixo). Rota renderiza com dados da empresa (razão social, CNPJ, encarregado, e-mail) vindos do branding/cadastro; precisa de campos novos em `Company`. Contrato de operação de dados Grupo SIM × empresa é tarefa jurídica externa.
+8. **Pendente (jurídico):** revisar a minuta `docs/legal/politica-de-privacidade.md`, preencher campos `[...]` por loja e confirmar bases legais/retenção. Não bloqueia código.
 
 ## Mapa do frontend (levantado)
 

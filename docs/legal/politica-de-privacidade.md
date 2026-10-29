@@ -1,6 +1,6 @@
 # Política de Privacidade — MINUTA
 
-> **Minuta para revisão jurídica.** Não publicar sem revisão. Itens entre `[colchetes]` precisam ser preenchidos por loja/empresa. Plano de implementação: `plans/0019-meta-pixel-capi.md` (Etapa 0).
+> **Minuta para revisão jurídica.** Modelo por loja: os campos da Loja (controladora) vêm do cadastro da empresa; o Grupo SIM aparece fixo como operador. Não publicar sem revisão. Itens entre `[colchetes]` precisam ser preenchidos por loja/empresa. Plano de implementação: `plans/0019-meta-pixel-capi.md` (Etapa 0).
 
 Última atualização: [DD/MM/AAAA]
 
@@ -9,7 +9,7 @@
 Esta Política explica como **[RAZÃO SOCIAL DA EMPRESA]**, CNPJ [00.000.000/0000-00], com sede em [endereço] ("**Loja**", "**nós**"), trata dados pessoais de quem acessa o site [https://delivery.estacao237ac.com] e faz pedidos de delivery, retirada ou consumo no local.
 
 - **Controladora:** a Loja, que decide como e por que seus dados são tratados.
-- **Operadora:** a plataforma de tecnologia que hospeda e opera o sistema de pedidos em nome da Loja ([NOME/CNPJ DA PLATAFORMA]).
+- **Operador:** **Grupo SIM** [razão social e CNPJ], desenvolvedor e provedor da plataforma de pedidos, que trata os dados apenas em nome e conforme as instruções da Loja. O Grupo SIM não usa seus dados para finalidades próprias.
 - **Encarregado (DPO):** [NOME], [e-mail de contato].
 
 ## 2. Dados que coletamos
@@ -57,7 +57,7 @@ Se você **recusar** cookies de marketing, não enviamos eventos de compra nem d
 
 ## 6. Com quem compartilhamos
 
-- **Operadora da plataforma** que hospeda o sistema.
+- **Grupo SIM** (operador), que hospeda o sistema em nome da Loja.
 - **Gateways e instituições de pagamento** (Pix e cartão): [NOME DO GATEWAY].
 - **Provedores de mensagens** (WhatsApp, e-mail) para avisos do pedido.
 - **Entregadores**, apenas nome, telefone e endereço necessários à entrega.
