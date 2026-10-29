@@ -20,8 +20,9 @@ Pix pago confirmado no backend = **um** `Purchase` lógico (valor pago, timestam
 3. **Decidido:** Purchase só via CAPI (sem `fbq('track','Purchase')` no navegador).
 
 4. **Decidido:** adicionar banner de cookies e política de privacidade (hoje não existem; sem rotas, sem i18n, sem consentimento). Ver Etapa 0.
-5. **Pendente:** pagamento por **cartão** (`CardPaymentForm`, `CardPaymentPending`) existe no checkout, mas a spec só trata Pix. Decidir se aprovação de cartão também gera Purchase (recomendado: sim, mesma regra "só após confirmação do backend", mesmo gancho `ConfirmPayment`) e se `AddPaymentInfo` dispara na escolha/preenchimento do cartão.
-6. **Pendente (jurídico):** revisão do texto da política e escolha da base legal (ver Etapa 0). Não bloqueia código.
+5. **Decidido:** cartão aprovado também emite Purchase, pelo mesmo gancho `ConfirmPayment`. Distinção por `payment_method` (`pix` | `card`): Meta aceita parâmetros customizados em `custom_data` (evento tem metadados), então vai `custom_data.payment_method` na CAPI e coluna `paymentMethod` em `MarketingEvent`. `AddPaymentInfo` dispara no submit do `CardPaymentForm`; no Pix não.
+6. **Decidido:** cliente que recusa cookies de marketing ⇒ **nenhum** Purchase enviado (nem anônimo). Conciliação com banco continua possível pelos pedidos pagos (T14 considera `marketingConsent=false` como "não enviado por consentimento").
+7. **Pendente (jurídico):** revisar a minuta `docs/legal/politica-de-privacidade.md`, preencher campos `[...]` por loja e confirmar bases legais/retenção. Não bloqueia código.
 
 ## Mapa do frontend (levantado)
 
@@ -41,11 +42,11 @@ Dados disponíveis para `contents`: `CartItem` tem `id` (unitProduct id), `produ
 
 ## Etapa 0 — Consentimento e privacidade (pré-requisito)
 
-- **Política de privacidade**: nova rota pública `routes/_storefront/privacidade/index.tsx` (ou por empresa, se cada loja precisar de controlador próprio — confirmar: o controlador dos dados é a empresa lojista; a plataforma é operadora). Conteúdo: dados coletados (nome, CPF, telefone, e-mail, endereço, pedidos), finalidades, uso de Meta Pixel/CAPI/GA4/GTM, compartilhamento com Meta (dados com hash), cookies, direitos do titular (art. 18 LGPD), contato do encarregado, retenção. **Texto deve ser revisado por jurídico** — eu redijo a minuta, não substituo parecer.
+- **Política de privacidade**: minuta pronta em `docs/legal/politica-de-privacidade.md` (pendente revisão jurídica). Nova rota pública `routes/_storefront/privacidade/index.tsx` (ou por empresa, se cada loja precisar de controlador próprio — confirmar: o controlador dos dados é a empresa lojista; a plataforma é operadora). Conteúdo: dados coletados (nome, CPF, telefone, e-mail, endereço, pedidos), finalidades, uso de Meta Pixel/CAPI/GA4/GTM, compartilhamento com Meta (dados com hash), cookies, direitos do titular (art. 18 LGPD), contato do encarregado, retenção. Texto final precisa de revisão jurídica; publicar na rota a partir da minuta (i18n pt-BR/en-US).
 - **Base legal**: dados do pedido/entrega/pagamento → execução de contrato (art. 7º, V). Pixel no navegador e envio de dados pessoais (e-mail, telefone) à Meta com fins de publicidade → **consentimento** (art. 7º, I) é o caminho mais seguro, em vez de legítimo interesse. Logo: o banner controla Pixel e o envio de PII à CAPI.
 - **Banner de cookies**: componente `components/consent/CookieBanner` (+ `useConsent`, store zustand persistido `stores/consent.ts`), categorias: necessários (sempre), analytics (GA4/GTM), marketing (Meta Pixel). Botões "Aceitar todos", "Recusar", "Personalizar" (mesmo peso visual, sem dark pattern); link para a política; reabrir preferências via rodapé. Modal de preferências usa `Modal` com `urlKey`/`urlState` (regra do projeto). i18n em todos os locales (`pt-BR`, `en-US`); `Checkbox` custom; sem `<select>` nativo.
 - **Integração**: `useTracking` só injeta Pixel/GA4/GTM após consentimento da categoria correspondente; helper `trackPixel` vira no-op sem consentimento de marketing. Consentimento revogado ⇒ parar de enviar (recarregar para limpar).
-- **Consentimento no backend**: enviar `marketingConsent: boolean` junto com `attribution` no `CreateOrder`; persistir no pedido. A CAPI só envia `em`/`ph`/`external_id`/`fbp`/`fbc`/IP/UA quando `marketingConsent=true`; sem consentimento, o Purchase ainda pode ser enviado só com `custom_data` (valor/moeda), ou não enviado — **decidir** (recomendado: não enviar quando recusado, por segurança; mensurar via relatórios internos).
+- **Consentimento no backend**: enviar `marketingConsent: boolean` junto com `attribution` no `CreateOrder`; persistir no pedido. A CAPI só envia `em`/`ph`/`external_id`/`fbp`/`fbc`/IP/UA quando `marketingConsent=true`; sem consentimento, **não** enviar Purchase (decisão 6); `MarketingEvent` fica `status=skipped_no_consent`.
 - Admin: indicar na tela de empresa que o Pixel só dispara com consentimento.
 
 ## Etapa 1 — Frontend: eventos do Pixel
@@ -68,7 +69,7 @@ Arquivos: `packages/sql/models` (+ migration), `backend/src/modules/orders` (`Cr
 1. Schema: em `Order` (ou tabela `OrderAttribution` 1:1): `fbp`, `fbc`, `fbclid`, `utm*` (source/medium/campaign/term/content), `clientIp`, `clientUserAgent`, `eventSourceUrl`. IP/UA capturados no `CreateOrder` a partir da requisição (headers `x-forwarded-for`/`user-agent` — validar proxy confiável), não do servidor depois.
 2. DTO `CreateOrder` (TypeBox, sem `t.Intersect`): campos opcionais `attribution` (`fbp`, `fbc`, `fbclid`, `utm*`, `sourceUrl`) e `marketingConsent` (boolean). `placeOrder` em `checkout/index.tsx` envia ambos. Frontend envia no submit do checkout. Regenerar SDK (`bun run export` no backend → `bun run generate` no frontend; skill `backend-endpoint-sdk`).
 3. Confirmação autenticada de Pix pago: já existe via webhook Simpay canônico + `ReconcilePendingPayments`. Auditar: assinatura/validação do webhook, confere valor e status final, status desconhecido/pendente nunca confirma. Cobre T10 (cliente fechou o navegador).
-4. Tabela `MarketingEvent` (outbox): `id`, `orderId`, `companyId`, `eventName` (`Purchase`), `eventId` (`purchase_<uuid>`, gerado na criação do registro), `eventTime` (timestamp real da confirmação, em segundos), `value`, `currency`, `payload` (json), `status` (`pending|sent|failed`), `attempts`, `nextAttemptAt`, `lastError`, `metaResponse`, `sentAt`. **Unique `(orderId, eventName)`** (idempotência camada B).
+4. Tabela `MarketingEvent` (outbox): `id`, `orderId`, `companyId`, `eventName` (`Purchase`), `eventId` (`purchase_<uuid>`, gerado na criação do registro), `eventTime` (timestamp real da confirmação, em segundos), `value`, `currency`, `payload` (json), `paymentMethod` (`pix|card`), `status` (`pending|sent|failed|skipped_no_consent`), `attempts`, `nextAttemptAt`, `lastError`, `metaResponse`, `sentAt`. **Unique `(orderId, eventName)`** (idempotência camada B).
 5. Gancho atômico: dentro da mesma transação que marca `payment.status = confirmed` em `ConfirmPayment` (só quando `count > 0`, ou seja, na transição real), inserir `MarketingEvent` com `createMany skipDuplicates` / catch de unique. Transação garante pedido pago ⇒ evento gravado; webhook repetido/paralelo ⇒ no-op.
 6. Fila/outbox: worker (padrão dos jobs existentes, ex. `CancelExpiredUnpaidOrders`/`ReconcilePendingPayments`) pega `pending` com `nextAttemptAt <= now` usando lock (`FOR UPDATE SKIP LOCKED` ou update condicional), envia, grava resposta; backoff exponencial; reenvia **mesmo** `event_id` e `event_time`. Limite de prazo da CAPI (7 dias de `event_time`) → marcar `failed` terminal com log.
 7. Logs de sucesso/falha/tentativas/resposta da Meta (colunas acima + log estruturado). Cancelamento/reembolso posterior: só registrar internamente (campo/ evento interno), sem tentar "desfazer" na Meta.
@@ -78,7 +79,7 @@ Arquivos: `packages/sql/models` (+ migration), `backend/src/modules/orders` (`Cr
 Arquivos: `backend/src/shared/infra/meta-capi.ts` (cliente, estilo de `simpay.ts`), `backend/src/env.ts`.
 
 1. `POST https://graph.facebook.com/<versão>/<pixelId>/events?access_token=...` (versão como constante configurável). Token em env/segredo ou coluna criptografada; nunca em `GetBranding`/frontend/repo.
-2. Payload: `event_name='Purchase'`, `event_id`, `event_time`, `action_source='website'`, `event_source_url`, `user_data`, `custom_data` (`value`, `currency='BRL'`, `content_ids`, `contents`, `content_type='product'`, `order_id` interno em custom_data opcional).
+2. Payload: `event_name='Purchase'`, `event_id`, `event_time`, `action_source='website'`, `event_source_url`, `user_data`, `custom_data` (`value`, `currency='BRL'`, `payment_method`, `content_ids`, `contents`, `content_type='product'`, `order_id` interno em custom_data opcional).
 3. `user_data`: `fbp`, `fbc`, `client_ip_address`, `client_user_agent` **sem hash**; `em`, `ph`, `fn`/`ln`, `external_id` com SHA-256 após normalização (lowercase/trim e-mail; telefone só dígitos com DDI `55`). Enviar só o que existe **e** só se `marketingConsent=true` no pedido (Etapa 0).
 4. Envio só da fila (nunca inline no webhook, para não atrasar a resposta ao gateway). Suporte a `test_event_code` via env para homologação.
 5. Env novas (`backend/src/env.ts`): `META_CAPI_API_VERSION`, `META_CAPI_TEST_EVENT_CODE` (opc.), token (conforme decisão 1). Sem token ⇒ evento fica `pending`/`skipped` com aviso, não quebra pagamento.
@@ -95,8 +96,9 @@ Automatizados (integração, `bun:test`, backend, DB descartável via `scripts/t
 
 | Teste | Cobertura |
 |---|---|
-| T04/T05 | Pix pendente/expirado/cancelado/falho ⇒ 0 `MarketingEvent` |
-| T06 | Pago ⇒ 1 evento, BRL, valor correto |
+| T04/T05 | Pix ou cartão pendente/expirado/cancelado/recusado ⇒ 0 Purchase enviável |
+| T06 | Pago (Pix e cartão) ⇒ 1 evento, BRL, valor correto, `payment_method` correto |
+| T06b | `marketingConsent=false` ⇒ `skipped_no_consent`, nada enviado |
 | T07 | Mesmo webhook 2+× ⇒ 1 registro |
 | T08 | Webhooks simultâneos (`Promise.all`) ⇒ 1 registro |
 | T09 | Endpoint de status/refresh ⇒ nenhum evento novo |
@@ -131,7 +133,7 @@ Manuais com pixel real/Eventos de teste (evidência com prints, sem PII): T01–
 
 ## Progresso
 
-- [ ] Decisões 5–6 confirmadas (1–4 decididas)
+- [ ] Revisão jurídica da minuta (decisões 1–6 decididas)
 - [ ] Etapa 0 (política de privacidade + banner de cookies + gating)
 - [ ] Etapa 1
 - [ ] Etapa 2
