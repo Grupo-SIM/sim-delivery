@@ -13,6 +13,7 @@ import {
 } from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
 import type { AppliedCoupon, CartItem } from "@/stores";
+import { CheckoutFees } from "./CheckoutFees";
 import { CheckoutItemRow } from "./CheckoutItemRow";
 
 export type DeliveryMethod = "delivery" | "pickup";
@@ -329,19 +330,11 @@ export function OrderReview({
 					<span className="text-muted-foreground">{t("store.checkout.order.itemsSubtotal")}</span>
 					<span>{formatMoney((subtotal + embeddedFeeTotalCents) / 100)}</span>
 				</div>
-				{feeQuote?.fees
-					.filter(fee => fee.displayMode !== "embedded")
-					.map(fee => (
-						<div className="flex justify-between" key={fee.id}>
-							<span className="text-muted-foreground">{fee.name}</span>
-							<span>+{formatMoney(Number(fee.amountCents) / 100)}</span>
-						</div>
-					))}
-				{Number(feeQuote?.visibleFeeTotalCents ?? 0) > 0 && (
-					<div className="flex justify-between font-medium">
-						<span>{t("store.checkout.order.feesTotal")}</span>
-						<span>{formatMoney(Number(feeQuote?.visibleFeeTotalCents ?? 0) / 100)}</span>
-					</div>
+				{feeQuote && Number(feeQuote.visibleFeeTotalCents) > 0 && (
+					<CheckoutFees
+						fees={feeQuote.fees.filter(fee => fee.displayMode !== "embedded")}
+						totalCents={Number(feeQuote.visibleFeeTotalCents)}
+					/>
 				)}
 				{deliveryMethod === "delivery" && (
 					<div className="flex justify-between">
