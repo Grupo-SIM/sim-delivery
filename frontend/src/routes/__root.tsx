@@ -1,10 +1,13 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { ConsentPreferences, CookieBanner } from "@/components/consent";
+import { useConsentStore } from "@/stores/consent";
 import { useLiveBranding } from "@/hooks/use-live-branding";
 import { useTracking } from "@/hooks/use-tracking";
 import { useSyncSession } from "@/hooks/useSyncSession";
 
 function RootComponent() {
 	useSyncSession();
+	const preferencesOpen = useConsentStore(state => state.preferencesOpen);
 
 	const branding = useLiveBranding();
 	useTracking({
@@ -18,6 +21,8 @@ function RootComponent() {
 			<main>
 				<Outlet />
 			</main>
+			<CookieBanner />
+			{preferencesOpen && <ConsentPreferences />}
 		</div>
 	);
 }

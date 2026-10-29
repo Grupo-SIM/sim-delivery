@@ -1,4 +1,8 @@
-import { useEffect } from "react";
+import { useRouterState } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
+import { captureAttribution, clearAttribution } from "@/lib/attribution";
+import { setMetaPixelId, trackMetaEvent } from "@/lib/meta-pixel";
+import { useConsentStore } from "@/stores/consent";
 
 interface TrackingIds {
 	ga4Id?: string | null;
@@ -6,43 +10,111 @@ interface TrackingIds {
 	metaPixelId?: string | null;
 }
 
-function injectScript(id: string, html: string) {
+type TrackingWindow = Window & {
+	dataLayer?: unknown[];
+	gtag?: (...args: unknown[]) => void;
+	fbq?: ((...args: unknown[]) => void) & { queue?: unknown[][]; callMethod?: (...args: unknown[]) => void; loaded?: boolean; version?: string; push?: unknown };
+};
+
+function loadScript(id: string, src: string) {
 	if (document.getElementById(id)) return;
-	const container = document.createElement("div");
-	container.innerHTML = html;
-	const scripts = Array.from(container.querySelectorAll("script"));
-	for (const s of scripts) {
-		const script = document.createElement("script");
-		if (s.src) script.src = s.src;
-		else script.textContent = s.textContent;
-		script.id = id;
-		document.head.appendChild(script);
+	const script = document.createElement("script");
+	script.id = id;
+	script.async = true;
+	script.src = src;
+	document.head.appendChild(script);
+}
+
+/** Revocation requires a fresh document: removing a script cannot unload executed vendor code. */
+function revokeTracking() {
+	setMetaPixelId(null);
+	clearAttribution();
+	for (const cookie of document.cookie.split(";")) {
+		const name = cookie.split("=")[0]?.trim();
+		if (!name || !/^(_ga(?:_|$)|_gid$|_gat(?:_|$)|_gcl_)/.test(name)) continue;
+		const parts = window.location.hostname.split(".");
+		for (let index = 0; index < parts.length; index++) {
+			document.cookie = `${name}=; Max-Age=0; path=/; domain=${parts.slice(index).join(".")}`;
+		}
+		document.cookie = `${name}=; Max-Age=0; path=/`;
 	}
+	const target = window as TrackingWindow;
+	target.fbq?.("consent", "revoke");
+	target.gtag?.("consent", "update", { ad_storage: "denied", analytics_storage: "denied", ad_user_data: "denied", ad_personalization: "denied" });
+	// Let the preference modal finish its history.back() before reloading the document.
+	window.setTimeout(() => window.location.reload(), 150);
 }
 
 export function useTracking({ ga4Id, gtmId, metaPixelId }: TrackingIds) {
+	const analytics = useConsentStore(state => state.analytics);
+	const marketing = useConsentStore(state => state.marketing);
+	const path = useRouterState({ select: state => state.location.pathname });
+	const previous = useRef({ analytics, marketing });
+	const initializedPixel = useRef<string | null>(null);
+	const pageView = useRef<string | null>(null);
+	const googleConsentInitialized = useRef(false);
+
 	useEffect(() => {
-		if (ga4Id) {
-			injectScript(
-				`ga4-${ga4Id}`,
-				`<script async src="https://www.googletagmanager.com/gtag/js?id=${ga4Id}"></script>`,
-			);
-			injectScript(
-				`ga4-init-${ga4Id}`,
-				`<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ga4Id}');</script>`,
-			);
+		// Subscribe synchronously so queued callbacks cannot track between revocation and render.
+		return useConsentStore.subscribe((next, old) => {
+			if ((old.marketing && !next.marketing) || (old.analytics && !next.analytics)) revokeTracking();
+		});
+	}, []);
+
+	useEffect(() => {
+		if ((previous.current.analytics && !analytics) || (previous.current.marketing && !marketing)) return;
+		previous.current = { analytics, marketing };
+		const target = window as TrackingWindow;
+		if (analytics) {
+			target.dataLayer ??= [];
+			target.gtag ??= function () { target.dataLayer?.push(arguments); };
+			target.gtag("consent", googleConsentInitialized.current ? "update" : "default", { analytics_storage: "granted", ad_storage: marketing ? "granted" : "denied", ad_user_data: marketing ? "granted" : "denied", ad_personalization: marketing ? "granted" : "denied" });
+			googleConsentInitialized.current = true;
+			if (ga4Id && /^G-[A-Z0-9]+$/.test(ga4Id) && !document.getElementById(`ga4-${ga4Id}`)) {
+				target.gtag("js", new Date());
+				target.gtag("config", ga4Id);
+				loadScript(`ga4-${ga4Id}`, `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(ga4Id)}`);
+			}
+			if (gtmId && /^GTM-[A-Z0-9]+$/.test(gtmId) && !document.getElementById(`gtm-${gtmId}`)) {
+				target.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
+				loadScript(`gtm-${gtmId}`, `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(gtmId)}`);
+			}
 		}
-		if (gtmId) {
-			injectScript(
-				`gtm-${gtmId}`,
-				`<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${gtmId}');</script>`,
-			);
+		if (marketing) captureAttribution();
+		else clearAttribution();
+		if (initializedPixel.current && initializedPixel.current !== metaPixelId) {
+			// An executed vendor library cannot be safely retargeted/unloaded in-place.
+			revokeTracking();
+			return;
 		}
-		if (metaPixelId) {
-			injectScript(
-				`meta-pixel-${metaPixelId}`,
-				`<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${metaPixelId}');fbq('track','PageView');</script>`,
-			);
+		if (!marketing || !metaPixelId || !/^\d+$/.test(metaPixelId)) {
+			setMetaPixelId(null);
+			return;
 		}
-	}, [ga4Id, gtmId, metaPixelId]);
+		if (!target.fbq) {
+			const fbq: NonNullable<TrackingWindow["fbq"]> = (...args) => {
+				if (!useConsentStore.getState().marketing && args[0] !== "consent") return;
+				if (fbq.callMethod) fbq.callMethod(...args);
+				else fbq.queue?.push(args);
+			};
+			fbq.queue = [];
+			fbq.loaded = true;
+			fbq.version = "2.0";
+			fbq.push = fbq;
+			target.fbq = fbq;
+		}
+		if (initializedPixel.current !== metaPixelId) {
+			target.fbq("consent", "grant");
+			target.fbq("init", metaPixelId);
+			initializedPixel.current = metaPixelId;
+			pageView.current = null;
+		}
+		setMetaPixelId(metaPixelId);
+		loadScript("meta-pixel-library", "https://connect.facebook.net/en_US/fbevents.js");
+		const pageKey = `${metaPixelId}:${path}`;
+		if (pageView.current !== pageKey) {
+			trackMetaEvent("PageView");
+			pageView.current = pageKey;
+		}
+	}, [analytics, marketing, ga4Id, gtmId, metaPixelId, path]);
 }

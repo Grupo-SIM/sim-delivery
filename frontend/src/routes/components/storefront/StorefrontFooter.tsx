@@ -1,3 +1,7 @@
+import { Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import { useConsentStore } from "@/stores/consent";
 import type { StorefrontBranding } from "./types";
 
 interface StorefrontFooterProps {
@@ -5,6 +9,8 @@ interface StorefrontFooterProps {
 }
 
 export function StorefrontFooter({ branding }: StorefrontFooterProps) {
+	const { t } = useTranslation("common");
+	const openPreferences = useConsentStore(state => state.openPreferences);
 	const companyName = branding?.companyName ?? "JB Delivery";
 	const year = new Date().getFullYear();
 	const contactItems = [
@@ -28,6 +34,10 @@ export function StorefrontFooter({ branding }: StorefrontFooterProps) {
 			<div className="mx-auto max-w-6xl px-5 py-9">
 				<div className="storefront-footer-content grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 					<div className="space-y-3">
+							<div className="flex flex-wrap items-center gap-3 text-sm">
+								<Link className="cursor-pointer underline underline-offset-4" to="/privacidade">{t("privacy.policyLink")}</Link>
+								<Button onClick={openPreferences} size="sm" type="button" variant="outline">{t("privacy.preferencesTitle")}</Button>
+							</div>
 						<div className="flex items-center gap-3">
 							{branding?.logoUrl && (
 								<img alt="" className="h-10 w-10 rounded-lg object-contain dark:bg-white dark:p-1" src={branding.logoUrl} />

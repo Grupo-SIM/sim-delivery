@@ -15,13 +15,14 @@
 				"allColorsCopied": "Cores copiadas de {{mode}}.",
 				"allColorsReset": "Cores restauradas para o padrão.",
 				"allowThemeToggle": "Permitir que cada usuário escolha o tema nas configurações.",
+				"assetsSummaryEmpty": "Nenhuma imagem enviada",
 				"attachmentCount_one": "{{count}} anexo",
 				"attachmentCount_other": "{{count}} anexos",
 				"attachmentRemoved": "Anexo removido. Salve para publicar.",
 				"attachments": "Anexos",
 				"attachmentsHelp": "Até 3 imagens ou PDFs, com 10 MB por arquivo.",
 				"attachmentsUploaded": "Anexo enviado. Salve para publicar.",
-				"assetsSummaryEmpty": "Nenhuma imagem enviada",
+				"cancelReasonPreview": "Produto indisponível.",
 				"colorCopied": "Cor copiada de {{mode}}.",
 				"colorGroups": {
 					"actions": "Marca, ações e destaques",
@@ -54,16 +55,16 @@
 					"surfaceSunken": "Superfície rebaixada",
 					"warning": "Alerta"
 				},
+				"consentNotice": "Pixel, Google Analytics e Google Tag Manager só carregam após o consentimento da categoria correspondente. A API de Conversões só envia eventos quando o cliente autoriza marketing.",
 				"copyAllColors": "Copiar tudo do {{mode}}",
 				"copyColor": "Copiar {{color}} do {{mode}}",
 				"copyFromTheme": "Copiar do {{mode}}",
 				"darkTheme": "Tema escuro",
 				"defaultTheme": "Tema padrão da empresa",
 				"defaultThemeHint": "Usado para todos quando a troca estiver desabilitada.",
-				"cancelReasonPreview": "Produto indisponível.",
 				"editPalette": "Editar paleta de cores",
-				"emailNotificationPlaceholder": "Ex: Seu pedido {{orderId}} já está sendo preparado com carinho.",
 				"emailFormattingHelp": "Use {{orderId}} no título, subtítulo ou texto para mostrar o código do pedido. Quebras de linha são preservadas no e-mail.",
+				"emailNotificationPlaceholder": "Ex: Seu pedido {{orderId}} já está sendo preparado com carinho.",
 				"emailNotificationsHelp": "Personalize título, subtítulo e texto de cada e-mail. Os textos atuais já são os padrões da empresa.",
 				"emailNotificationsSummary": "Corpo e prévia de todos os e-mails de pedido",
 				"emailPreviewCompanyName": "Sua empresa",
@@ -91,15 +92,30 @@
 				"ga4Short": "GA4",
 				"gtmId": "ID do Google Tag Manager",
 				"gtmShort": "GTM",
-				"insertOrderId": "Inserir código do pedido",
 				"insertCancelReason": "Inserir motivo do cancelamento",
+				"insertOrderId": "Inserir código do pedido",
+				"legalName": "Razão social",
+				"legalNamePlaceholder": "Ex: Estação 237 Comércio de Alimentos Ltda.",
 				"lightTheme": "Tema claro",
 				"loadError": "Não foi possível carregar as configurações da empresa.",
 				"logoShort": "Logotipo",
 				"logoUpload": "Enviar logotipo",
 				"logoUrl": "URL do logotipo",
+				"metaCapiToken": "Token da API de Conversões da Meta",
+				"metaCapiTokenConfigured": "Token configurado (••••••••)",
+				"metaCapiTokenError": "Não foi possível atualizar o token da Meta.",
+				"metaCapiTokenHelp": "O token é secreto e nunca é exibido. Deixe o campo vazio para manter o token atual.",
+				"metaCapiTokenMissing": "Token não configurado",
+				"metaCapiTokenPlaceholder": "Cole um novo token de acesso",
+				"metaCapiTokenRemove": "Remover token",
+				"metaCapiTokenRemoveConfirm": "Remover o token? O envio de conversões será interrompido.",
+				"metaCapiTokenRemoveConfirmLabel": "Confirmar remoção",
+				"metaCapiTokenRemoved": "Token da Meta removido.",
+				"metaCapiTokenSave": "Salvar token",
+				"metaCapiTokenSaved": "Token da Meta salvo.",
 				"metaPixelId": "ID do Meta Pixel",
 				"metaPixelShort": "Meta Pixel",
+				"missingCnpjWarning": "CNPJ não cadastrado. A política de privacidade exibirá esse dado como pendente. Cadastre o CNPJ nas configurações financeiras da empresa.",
 				"mobileIconHint": "Se não for enviado, o logotipo será usado com uma margem de segurança automática.",
 				"mobileIconShort": "Ícone mobile",
 				"mobileIconUpload": "Enviar ícone mobile",
@@ -131,6 +147,14 @@
 				},
 				"paletteApplied": "Tema salvo!",
 				"paletteHint": "Ao salvar, as cores são publicadas imediatamente.",
+				"paletteImport": {
+					"action": "Importar imagem da paleta (SVG)",
+					"error": "Arquivo inválido. Use a imagem SVG baixada no template SIM Delivery, com todas as cores em HEX.",
+					"hint": "Na página de identidade visual, baixe a imagem SVG. Importe aqui para preencher os temas claro e escuro; revise as cores e clique em Salvar para aplicar. PNG, JPG e capturas de tela não preservam os campos da paleta.",
+					"loading": "Importando paleta…",
+					"success": "Paleta importada. Revise as cores e salve para aplicar."
+				},
+				"privacySummaryEmpty": "Dados para a política de privacidade",
 				"removeAttachment": "Remover {{filename}}",
 				"resetAllColors": "Restaurar cores",
 				"resetColor": "Restaurar {{color}} para a cor padrão",
@@ -141,6 +165,7 @@
 				"sectionAssets": "Logotipo e imagens",
 				"sectionFooter": "Rodapé da loja",
 				"sectionNotifications": "Notificações do pedido",
+				"sectionPrivacy": "Privacidade e dados da empresa",
 				"sectionTheme": "Tema e cores",
 				"sectionTracking": "Rastreamento de marketing",
 				"sectionTypography": "Tipografia",
@@ -151,19 +176,14 @@
 				"themeToggleOff": "troca desativada",
 				"themeToggleOn": "usuário pode trocar",
 				"title": "Configurações da empresa",
+				"trackingSettingsLoadError": "Não foi possível carregar o status do token da Meta.",
+				"trackingSettingsRetry": "Tentar novamente",
 				"trackingSummaryEmpty": "Nenhum ID configurado",
 				"typographySummaryEmpty": "Fontes padrão do sistema",
 				"uploadError": "Não foi possível enviar o arquivo.",
 				"welcomeDescription": "Descrição da página inicial",
 				"welcomeEyebrow": "Texto de abertura",
-				"welcomeTitle": "Título da página inicial",
-				"paletteImport": {
-					"action": "Importar imagem da paleta (SVG)",
-					"error": "Arquivo inválido. Use a imagem SVG baixada no template SIM Delivery, com todas as cores em HEX.",
-					"hint": "Na página de identidade visual, baixe a imagem SVG. Importe aqui para preencher os temas claro e escuro; revise as cores e clique em Salvar para aplicar. PNG, JPG e capturas de tela não preservam os campos da paleta.",
-					"loading": "Importando paleta…",
-					"success": "Paleta importada. Revise as cores e salve para aplicar."
-				}
+				"welcomeTitle": "Título da página inicial"
 			},
 			"categories": {
 				"columns": {
@@ -1674,6 +1694,73 @@
 			"preview": "Prévia da imagem",
 			"recommendedDimensions": "Dimensões recomendadas: {{width}} × {{height}} px.",
 			"uploading": "Enviando imagem"
+		},
+		"privacy": {
+			"acceptAll": "Aceitar todos",
+			"address": "Endereço da empresa",
+			"analytics": "Análise de navegação",
+			"analyticsDescription": "Google Analytics e Google Tag Manager para medir visitas e uso do site.",
+			"cnpj": "CNPJ",
+			"contact": "Contato de privacidade / encarregado",
+			"controller": "Controladora — empresa responsável pela loja",
+			"cookiesDescription": "Usamos cookies necessários para pedidos e segurança. Você escolhe se permite análise de navegação e publicidade. Recusar não impede fazer pedidos.",
+			"cookiesTitle": "Sua privacidade importa",
+			"customize": "Personalizar",
+			"discard": "Descartar",
+			"draftWarning": "Minuta em revisão jurídica. Este texto ainda precisa de aprovação e confirmação dos dados da empresa, bases legais e prazos de retenção antes da publicação definitiva.",
+			"identityTitle": "Quem trata seus dados",
+			"loadError": "Não foi possível carregar os dados da empresa. Tente novamente mais tarde.",
+			"loading": "Carregando dados da empresa",
+			"marketing": "Marketing",
+			"marketingDescription": "Meta Pixel e API de Conversões para medir anúncios e conversões.",
+			"necessary": "Necessários (sempre ativos)",
+			"necessaryDescription": "Sessão, segurança, carrinho e funcionamento dos pedidos.",
+			"operator": "O Grupo SIM desenvolve e opera a plataforma de pedidos em nome e conforme as instruções da Loja, sem usar os dados para finalidades próprias. Sua identificação jurídica está pendente de confirmação.",
+			"pending": "Pendente de preenchimento pela empresa",
+			"policyLink": "Política de privacidade",
+			"preferencesDescription": "Cookies opcionais ficam desativados até sua autorização. Você pode mudar sua escolha a qualquer momento.",
+			"preferencesTitle": "Preferências de cookies",
+			"reject": "Recusar",
+			"save": "Salvar",
+			"saved": "Preferências de privacidade salvas.",
+			"sections": {
+				"changes": {
+					"body": "Esta política pode mudar para refletir ajustes no serviço ou na legislação. Mudanças nas finalidades que exigem consentimento serão apresentadas para nova escolha. Data e versão finais dependem da revisão jurídica.",
+					"title": "Alterações desta política"
+				},
+				"children": {
+					"body": "A plataforma não é direcionada a crianças. Caso dados de menores sejam tratados, serão observadas as regras aplicáveis e seu melhor interesse. Informe ao contato da empresa qualquer tratamento indevido.",
+					"title": "Crianças e adolescentes"
+				},
+				"collection": {
+					"body": "Cadastro e contato: nome, CPF, telefone/WhatsApp e e-mail. Entrega: CEP, rua, número, complemento, bairro e cidade. Pedidos: itens, observações, valores, cupom e forma de entrega. Pagamentos: status e identificador da transação Pix/cartão; não armazenamos o número completo do cartão, processado pelo gateway. Fidelidade: cashback, pontos e histórico. Avaliações: notas e comentários. Navegação: IP, navegador, páginas e produtos vistos, cookies e origem da visita (UTMs e fbclid), mediante consentimento quando não essenciais.",
+					"title": "Dados que coletamos"
+				},
+				"purposes": {
+					"body": "Usamos dados para cadastro, autenticação, atendimento, preparo e entrega dos pedidos, processamento de pagamentos e programas de fidelidade: execução de contrato (art. 7º, V, LGPD). Documentos fiscais e obrigações legais: cumprimento de obrigação legal (art. 7º, II). Segurança e prevenção a fraude: legítimo interesse (art. 7º, IX), respeitados seus direitos. Análise de navegação e publicidade dependem de consentimento (art. 7º, I), revogável nas preferências.",
+					"title": "Finalidades e bases legais"
+				},
+				"retention": {
+					"body": "Mantemos dados pelo tempo necessário ao pedido, à relação com o cliente, às obrigações fiscais/legais e ao exercício regular de direitos. Prazos específicos por categoria e os prazos dos cookies ainda dependem de confirmação jurídica. Você pode solicitar exclusão; dados sujeitos a retenção legal ou necessários à defesa de direitos podem ser preservados.",
+					"title": "Retenção e exclusão"
+				},
+				"rights": {
+					"body": "Você pode pedir confirmação de tratamento, acesso, correção, anonimização, bloqueio ou eliminação de dados desnecessários ou tratados irregularmente, portabilidade nos termos aplicáveis, informação sobre compartilhamento e consequências de não consentir, eliminação de dados tratados por consentimento e revogação do consentimento. Também pode se opor a tratamento irregular e apresentar petição à ANPD. Use o contato de privacidade da empresa acima; poderemos verificar sua identidade para proteger seus dados.",
+					"title": "Seus direitos (art. 18 da LGPD)"
+				},
+				"security": {
+					"body": "Adotamos controles de acesso, comunicação protegida e medidas técnicas e organizacionais para reduzir riscos. Nenhum sistema é totalmente livre de riscos. Incidentes serão tratados conforme a legislação aplicável.",
+					"title": "Segurança"
+				},
+				"sharing": {
+					"body": "Compartilhamos somente dados necessários com o Grupo SIM (operador), provedores de infraestrutura, gateway de pagamento, entregadores e serviços indispensáveis ao pedido. Com consentimento, compartilhamos dados de publicidade com a Meta e de análise com o Google. Esses fornecedores podem tratar dados fora do Brasil; devem ser observadas as garantias legais aplicáveis às transferências internacionais. Não vendemos seus dados pessoais.",
+					"title": "Compartilhamento e transferências internacionais"
+				},
+				"tracking": {
+					"body": "Cookies necessários mantêm sessão, segurança e carrinho. Cookies de análise (Google Analytics/Google Tag Manager) e marketing (Meta Pixel) só são ativados com sua autorização. Com marketing autorizado, a API de Conversões pode informar à Meta visitas, produtos, ações do pedido e compras efetivamente pagas, incluindo valor, moeda e identificadores de evento, cookies e origem. E-mail, telefone e outros identificadores pessoais enviados à Meta são normalizados e protegidos com hash SHA-256; hash não torna esses dados anônimos. IP e navegador podem integrar os dados técnicos. Sem consentimento de marketing, não enviamos esses eventos à Meta. Recusar não impede comprar; revogar interrompe novos envios e limpa identificadores locais acessíveis, mas não desfaz tratamentos anteriores.",
+					"title": "Cookies, Meta Pixel, CAPI e Google"
+				}
+			}
 		},
 		"rating": {
 			"count": "{{count}} avaliação",

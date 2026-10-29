@@ -30,6 +30,7 @@ import { Route as AdminCouponsIndexRouteImport } from './routes/admin/coupons/in
 import { Route as AdminCompanyIndexRouteImport } from './routes/admin/company/index'
 import { Route as AdminCategoriesIndexRouteImport } from './routes/admin/categories/index'
 import { Route as StorefrontProfileIndexRouteImport } from './routes/_storefront/profile/index'
+import { Route as StorefrontPrivacidadeIndexRouteImport } from './routes/_storefront/privacidade/index'
 import { Route as StorefrontPreferencesIndexRouteImport } from './routes/_storefront/preferences/index'
 import { Route as StorefrontOrdersIndexRouteImport } from './routes/_storefront/orders/index'
 import { Route as StorefrontIdentifyIndexRouteImport } from './routes/_storefront/identify/index'
@@ -152,6 +153,12 @@ const StorefrontProfileIndexRoute = StorefrontProfileIndexRouteImport.update({
   path: '/profile/',
   getParentRoute: () => StorefrontRoute,
 } as any)
+const StorefrontPrivacidadeIndexRoute =
+  StorefrontPrivacidadeIndexRouteImport.update({
+    id: '/privacidade/',
+    path: '/privacidade/',
+    getParentRoute: () => StorefrontRoute,
+  } as any)
 const StorefrontPreferencesIndexRoute =
   StorefrontPreferencesIndexRouteImport.update({
     id: '/preferences/',
@@ -256,6 +263,7 @@ export interface FileRoutesByFullPath {
   '/identify/': typeof StorefrontIdentifyIndexRoute
   '/orders/': typeof StorefrontOrdersIndexRoute
   '/preferences/': typeof StorefrontPreferencesIndexRoute
+  '/privacidade/': typeof StorefrontPrivacidadeIndexRoute
   '/profile/': typeof StorefrontProfileIndexRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
   '/admin/company/': typeof AdminCompanyIndexRoute
@@ -293,6 +301,7 @@ export interface FileRoutesByTo {
   '/identify': typeof StorefrontIdentifyIndexRoute
   '/orders': typeof StorefrontOrdersIndexRoute
   '/preferences': typeof StorefrontPreferencesIndexRoute
+  '/privacidade': typeof StorefrontPrivacidadeIndexRoute
   '/profile': typeof StorefrontProfileIndexRoute
   '/admin/categories': typeof AdminCategoriesIndexRoute
   '/admin/company': typeof AdminCompanyIndexRoute
@@ -333,6 +342,7 @@ export interface FileRoutesById {
   '/_storefront/identify/': typeof StorefrontIdentifyIndexRoute
   '/_storefront/orders/': typeof StorefrontOrdersIndexRoute
   '/_storefront/preferences/': typeof StorefrontPreferencesIndexRoute
+  '/_storefront/privacidade/': typeof StorefrontPrivacidadeIndexRoute
   '/_storefront/profile/': typeof StorefrontProfileIndexRoute
   '/admin/categories/': typeof AdminCategoriesIndexRoute
   '/admin/company/': typeof AdminCompanyIndexRoute
@@ -373,6 +383,7 @@ export interface FileRouteTypes {
     | '/identify/'
     | '/orders/'
     | '/preferences/'
+    | '/privacidade/'
     | '/profile/'
     | '/admin/categories/'
     | '/admin/company/'
@@ -410,6 +421,7 @@ export interface FileRouteTypes {
     | '/identify'
     | '/orders'
     | '/preferences'
+    | '/privacidade'
     | '/profile'
     | '/admin/categories'
     | '/admin/company'
@@ -449,6 +461,7 @@ export interface FileRouteTypes {
     | '/_storefront/identify/'
     | '/_storefront/orders/'
     | '/_storefront/preferences/'
+    | '/_storefront/privacidade/'
     | '/_storefront/profile/'
     | '/admin/categories/'
     | '/admin/company/'
@@ -634,6 +647,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StorefrontProfileIndexRouteImport
       parentRoute: typeof StorefrontRoute
     }
+    '/_storefront/privacidade/': {
+      id: '/_storefront/privacidade/'
+      path: '/privacidade'
+      fullPath: '/privacidade/'
+      preLoaderRoute: typeof StorefrontPrivacidadeIndexRouteImport
+      parentRoute: typeof StorefrontRoute
+    }
     '/_storefront/preferences/': {
       id: '/_storefront/preferences/'
       path: '/preferences'
@@ -755,6 +775,7 @@ interface StorefrontRouteChildren {
   StorefrontIdentifyIndexRoute: typeof StorefrontIdentifyIndexRoute
   StorefrontOrdersIndexRoute: typeof StorefrontOrdersIndexRoute
   StorefrontPreferencesIndexRoute: typeof StorefrontPreferencesIndexRoute
+  StorefrontPrivacidadeIndexRoute: typeof StorefrontPrivacidadeIndexRoute
   StorefrontProfileIndexRoute: typeof StorefrontProfileIndexRoute
   StorefrontUnitIdCardapioIndexRoute: typeof StorefrontUnitIdCardapioIndexRoute
   StorefrontUnitIdCheckoutIndexRoute: typeof StorefrontUnitIdCheckoutIndexRoute
@@ -770,6 +791,7 @@ const StorefrontRouteChildren: StorefrontRouteChildren = {
   StorefrontIdentifyIndexRoute: StorefrontIdentifyIndexRoute,
   StorefrontOrdersIndexRoute: StorefrontOrdersIndexRoute,
   StorefrontPreferencesIndexRoute: StorefrontPreferencesIndexRoute,
+  StorefrontPrivacidadeIndexRoute: StorefrontPrivacidadeIndexRoute,
   StorefrontProfileIndexRoute: StorefrontProfileIndexRoute,
   StorefrontUnitIdCardapioIndexRoute: StorefrontUnitIdCardapioIndexRoute,
   StorefrontUnitIdCheckoutIndexRoute: StorefrontUnitIdCheckoutIndexRoute,
