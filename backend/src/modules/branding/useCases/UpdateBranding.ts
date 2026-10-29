@@ -1,3 +1,4 @@
+import { encryptSimpaySecret } from "@/shared/infra/simpay-secrets";
 import { UserErrors } from "@/modules/users/errors";
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
@@ -9,7 +10,13 @@ export class UpdateBranding {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute({
-		welcomeEyebrow,
+		metaCapiToken,
+        legalName,
+        cnpj,
+        address,
+        privacyContactEmail,
+        privacyContactPhone,
+        welcomeEyebrow,
 		welcomeTitle,
 		welcomeTitleAccent,
 		welcomeDescription,
@@ -40,6 +47,13 @@ export class UpdateBranding {
 
 		const company = await this.prisma.company.update({
 			data: {
+    metaCapiToken: metaCapiToken === undefined ? undefined : metaCapiToken.trim() ? encryptSimpaySecret(metaCapiToken.trim()) : null,
+    legalName: legalName === undefined ? undefined : legalName.trim() || null,
+    cnpj: cnpj === undefined ? undefined : cnpj.trim() || null,
+    address: address === undefined ? undefined : address.trim() || null,
+    privacyContactEmail: privacyContactEmail === undefined ? undefined : privacyContactEmail.trim() || null,
+    privacyContactPhone: privacyContactPhone === undefined ? undefined : privacyContactPhone.trim() || null,
+
 				welcomeEyebrow,
 				welcomeTitle,
 				welcomeTitleAccent,
@@ -87,6 +101,12 @@ export class UpdateBranding {
 				gtmId: true,
 				logoUrl: true,
 				metaPixelId: true,
+                legalName: true,
+                cnpj: true,
+                address: true,
+                privacyContactEmail: true,
+                privacyContactPhone: true,
+
 				mobileIconUrl: true,
 				name: true,
 				orderStatusEmailTemplates: true,
@@ -120,6 +140,12 @@ export class UpdateBranding {
 			gtmId: company.gtmId ?? null,
 			logoUrl: company.logoUrl ?? null,
 			metaPixelId: company.metaPixelId ?? null,
+            legalName: company.legalName ?? null,
+            cnpj: company.cnpj ?? null,
+            address: company.address ?? null,
+            privacyContactEmail: company.privacyContactEmail ?? null,
+            privacyContactPhone: company.privacyContactPhone ?? null,
+
 			mobileIconUrl: company.mobileIconUrl ?? null,
 			orderStatusEmailTemplates: normalizeOrderStatusEmailTemplates(company.orderStatusEmailTemplates),
 			orderStatusWhatsAppTemplates: normalizeOrderStatusWhatsAppTemplates(

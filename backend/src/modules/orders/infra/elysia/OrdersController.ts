@@ -178,7 +178,7 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 				"/",
 				async ({ body, createOrder, request }) => {
 					const { userId } = await AuthGuard.execute(request.headers);
-					const order = await createOrder.execute(userId, body);
+					const order = await createOrder.execute(userId, body, { ip: request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? request.headers.get("x-real-ip") ?? undefined, userAgent: request.headers.get("user-agent") ?? undefined });
 					orderEvents.publish(order.companyId, order.unitId);
 					return order;
 				},

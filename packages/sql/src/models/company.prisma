@@ -39,6 +39,12 @@ model Company {
     /// Ordered receipt layout blocks configured by company managers.
     receiptTemplate Json?
     /// Marketing tracking IDs injected into the store at runtime.
+    legalName String?
+    address String?
+    privacyContactEmail String?
+    privacyContactPhone String?
+    metaCapiToken String?
+    marketingEvents MarketingEvent[]
     metaPixelId String?
     ga4Id       String?
     gtmId       String?

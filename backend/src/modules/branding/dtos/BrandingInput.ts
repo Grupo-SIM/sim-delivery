@@ -85,6 +85,13 @@ export const ThemeMode = t.Union([t.Literal("dark"), t.Literal("light")]);
 export type ThemeMode = typeof ThemeMode.static;
 
 export const UpdateBrandingBody = t.Object({
+    metaCapiToken: t.Optional(t.String({ maxLength: 4096 })),
+    legalName: t.Optional(t.String({ maxLength: 500 })),
+    cnpj: t.Optional(t.String({ maxLength: 500 })),
+    address: t.Optional(t.String({ maxLength: 500 })),
+    privacyContactEmail: t.Optional(t.String({ maxLength: 500 })),
+    privacyContactPhone: t.Optional(t.String({ maxLength: 500 })),
+
 	welcomeEyebrow: t.Optional(t.String({ maxLength: 100 })),
 	welcomeTitle: t.Optional(t.String({ maxLength: 100 })),
 	welcomeTitleAccent: t.Optional(t.String({ maxLength: 100 })),

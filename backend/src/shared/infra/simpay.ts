@@ -170,7 +170,7 @@ export class SimpayClient {
 		});
 		const data = await response.json().catch(() => null);
 		if (!response.ok || !data) {
-			const code = typeof data?.code === "string" ? data.code : undefined;
+			const code = data && typeof data === "object" && "code" in data && typeof data.code === "string" ? data.code : undefined;
 			const message = extractPaymentProviderMessage(data) || `Erro na API canônica SIM INT PAY (HTTP ${response.status})`;
 			throw new PaymentProviderError("Simpay", code ? `${message} (${code})` : message, response.status, code);
 		}

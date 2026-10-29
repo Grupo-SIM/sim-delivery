@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { DomainError } from "@/shared/errors";
 import type { OrderStatusEmailTemplate, OrderStatusWhatsAppTemplate } from "@/modules/branding/dtos";
 import { orderEvents } from "@/shared/infra/OrderEvents";
@@ -23,16 +24,17 @@ export class ConfirmPayment {
 
 		const order = await this.prisma.order.findUniqueOrThrow({
 			include: {
-				company: { select: { orderStatusEmailTemplates: true, orderStatusWhatsAppTemplates: true, whatsAppConnection: { select: { connectedPhone: true, sessionName: true } } } },
+				company: { select: { metaPixelId: true, metaCapiToken: true, orderStatusEmailTemplates: true, orderStatusWhatsAppTemplates: true, whatsAppConnection: { select: { connectedPhone: true, sessionName: true } } } },
 				customer: {
 					select: {
 						notificationEmail: true,
 						notificationWhatsApp: true,
 						phone: true,
-						user: { select: { email: true, phoneNumber: true } },
+						user: { select: { email: true, name: true, emailVerified: true, phoneNumber: true } },
 					},
 				},
-				unit: { include: { whatsAppConnection: { select: { connectedPhone: true, sessionName: true } } } },
+				items: true,
+                unit: { include: { whatsAppConnection: { select: { connectedPhone: true, sessionName: true } } } },
 			},
 			where: { id: payment.orderId },
 		});
@@ -49,8 +51,9 @@ export class ConfirmPayment {
 		const confirmed = await this.prisma.$transaction(async tx => {
 			// Webhooks can be retried or delivered concurrently. Claiming the pending
 			// row inside the transaction ensures rewards and order transition run once.
-			const { count } = await tx.payment.updateMany({
-				data: { confirmedAt: new Date(), status: "confirmed" },
+			const confirmedAt = new Date();
+            const { count } = await tx.payment.updateMany({
+				data: { confirmedAt, status: "confirmed" },
 				where: {
 					id: payment.id,
 					...(expectedSimpayPaymentId ? { simpayPaymentId: expectedSimpayPaymentId } : {}),
@@ -59,7 +62,36 @@ export class ConfirmPayment {
 			});
 			if (count === 0) return false;
 
-			await tx.order.update({
+			const attribution = order.marketingAttribution as { consent?: boolean; consentVersion?: string; consentedAt?: string; fbp?: string; fbc?: string; sourceUrl?: string; ip?: string; userAgent?: string } | null;
+            if ((payment.method === "pix" || payment.method === "credit_card") && order.total > 0 && attribution?.consent === true && attribution.consentVersion && attribution.consentedAt && order.company.metaPixelId && order.company.metaCapiToken) {
+                const hash = (value: string) => createHash("sha256").update(value).digest("hex");
+                const phone = (order.customer.phone ?? order.customer.user.phoneNumber ?? "").replace(/\D/g, "");
+                const normalizedPhone = phone.length === 10 || phone.length === 11 ? `55${phone}` : phone;
+                const email = order.customer.user.email.trim().toLowerCase();
+                const names = order.customer.user.name.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z\s]/g, "").trim().split(/\s+/);
+                const eventId = `purchase_${order.id}`;
+                await tx.marketingEvent.upsert({ where: { orderId_eventName: { orderId: order.id, eventName: "Purchase" } }, update: {}, create: {
+                    companyId: order.companyId, orderId: order.id, eventName: "Purchase", eventId,
+                    paymentMethod: payment.method === "credit_card" ? "card" : "pix", eventTime: confirmedAt,
+                    payload: {
+                        event_name: "Purchase", event_id: eventId, event_time: Math.floor(confirmedAt.getTime() / 1000), action_source: "website",
+                        event_source_url: attribution.sourceUrl,
+                        user_data: {
+                            em: order.customer.user.emailVerified && !email.endsWith("@phone.local") ? [hash(email)] : undefined,
+                            ph: normalizedPhone ? [hash(normalizedPhone)] : undefined,
+                            fn: names[0] ? [hash(names[0])] : undefined,
+                            ln: names.length > 1 ? [hash(names.slice(1).join(" "))] : undefined,
+                            external_id: [hash(order.customerId)], country: [hash("br")],
+                            fbp: attribution.fbp, fbc: attribution.fbc, client_ip_address: attribution.ip, client_user_agent: attribution.userAgent,
+                        },
+                        custom_data: { currency: "BRL", value: order.total / 100, order_id: order.id, payment_method: payment.method === "credit_card" ? "card" : "pix",
+                            content_type: "product", content_ids: order.items.map(item => item.productId), num_items: order.items.reduce((sum, item) => sum + item.quantity, 0),
+                            contents: order.items.map(item => ({ id: item.productId, quantity: item.quantity, item_price: item.unitPrice / 100 })),
+                        },
+                    },
+                } });
+            }
+            await tx.order.update({
 				data: { status: "recebido" },
 				where: { id: order.id },
 			});

@@ -11,7 +11,7 @@ beforeEach(() => {
 afterEach(() => {
 	if (previous.dedicated === undefined) delete process.env.SIMPAY_CREDENTIALS_ENCRYPTION_KEY;
 	else process.env.SIMPAY_CREDENTIALS_ENCRYPTION_KEY = previous.dedicated;
-	if (previous.auth === undefined) delete process.env.BETTER_AUTH_SECRETS;
+	if (previous.auth === undefined) Reflect.deleteProperty(process.env, "BETTER_AUTH_SECRETS");
 	else process.env.BETTER_AUTH_SECRETS = previous.auth;
 });
 
@@ -52,7 +52,7 @@ test("rejects changed, removed or tampered secret versions", () => {
 });
 test("rejects missing, weak, malformed or duplicate auth secrets without exposing them", () => {
 	for (const value of [undefined, "1:secret", "not-a-versioned-secret", `x:${original}`, `1:${original},1:${rotated}`]) {
-		if (value === undefined) delete process.env.BETTER_AUTH_SECRETS;
+		if (value === undefined) Reflect.deleteProperty(process.env, "BETTER_AUTH_SECRETS");
 		else process.env.BETTER_AUTH_SECRETS = value;
 		expect(() => encryptSimpaySecret("provider-token")).toThrow("BETTER_AUTH_SECRETS");
 	}

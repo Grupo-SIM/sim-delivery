@@ -29,6 +29,12 @@ export class GetBranding {
 				gtmId: true,
 				logoUrl: true,
 				metaPixelId: true,
+                legalName: true,
+                cnpj: true,
+                address: true,
+                privacyContactEmail: true,
+                privacyContactPhone: true,
+
 				mobileIconUrl: true,
 				name: true,
 				orderStatusEmailTemplates: true,
@@ -62,6 +68,12 @@ export class GetBranding {
 			gtmId: company?.gtmId ?? null,
 			logoUrl: company?.logoUrl ?? null,
 			metaPixelId: company?.metaPixelId ?? null,
+            legalName: company?.legalName ?? null,
+            cnpj: company?.cnpj ?? null,
+            address: company?.address ?? null,
+            privacyContactEmail: company?.privacyContactEmail ?? null,
+            privacyContactPhone: company?.privacyContactPhone ?? null,
+
 			mobileIconUrl: company?.mobileIconUrl ?? null,
 			orderStatusEmailTemplates: normalizeOrderStatusEmailTemplates(company?.orderStatusEmailTemplates),
 			orderStatusWhatsAppTemplates: normalizeOrderStatusWhatsAppTemplates(

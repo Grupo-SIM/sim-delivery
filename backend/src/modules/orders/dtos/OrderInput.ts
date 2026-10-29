@@ -53,7 +53,16 @@ export const CreateOrderItemBody = t.Object({
 	unitProductId: t.String({ minLength: 1 }),
 });
 export type CreateOrderItemBody = typeof CreateOrderItemBody.static;
+export const MarketingAttribution = t.Object({
+    consent: t.Literal(true),
+    utm: t.Optional(t.Object({source: t.Optional(t.String({maxLength:200})),medium: t.Optional(t.String({maxLength:200})),campaign: t.Optional(t.String({maxLength:200})),term: t.Optional(t.String({maxLength:200})),content: t.Optional(t.String({maxLength:200}))})),
+    consentVersion: t.String({ minLength: 1, maxLength: 64 }),
+    fbp: t.Optional(t.String({ maxLength: 256, pattern: "^fb\\.[0-9]+\\.[0-9]+\\.[A-Za-z0-9_-]+$" })),
+    fbc: t.Optional(t.String({ maxLength: 1024, pattern: "^fb\\.[0-9]+\\.[0-9]+\\.[A-Za-z0-9_-]+$" })),
+    sourceUrl: t.Optional(t.String({ format: "uri", pattern: "^https?://", maxLength: 2048 })),
+});
 export const CreateOrderBody = t.Object({
+    marketingAttribution: t.Optional(MarketingAttribution),
 	addressId: t.Optional(t.Nullable(t.String({ minLength: 1 }))),
 	couponCode: t.Optional(t.String()),
 	deliveryMethod: t.Union([t.Literal("delivery"), t.Literal("pickup")]),

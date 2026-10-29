@@ -14,7 +14,7 @@ import { OrderErrors } from "../errors";
 export class CreateOrder {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(userId: string, data: CreateOrderBody): Promise<OrderReturn> {
+	async execute(userId: string, data: CreateOrderBody, requestContext?: { ip?: string; userAgent?: string }): Promise<OrderReturn> {
 		const {
 			addressId,
 			couponCode,
@@ -284,7 +284,14 @@ export class CreateOrder {
 			const order = await this.prisma.$transaction(async tx => {
 			const created = await tx.order.create({
 				data: {
-					addressId: addressId ?? null,
+					marketingAttribution: data.marketingAttribution ? {
+                        ...data.marketingAttribution,
+                        sourceUrl: data.marketingAttribution.sourceUrl ? (() => { const url = new URL(data.marketingAttribution.sourceUrl); return `${url.origin}${url.pathname}`; })() : undefined,
+                        consentedAt: new Date().toISOString(),
+                        ip: requestContext?.ip?.slice(0, 64),
+                        userAgent: requestContext?.userAgent?.slice(0, 1024),
+                    } : undefined,
+                    addressId: addressId ?? null,
 					cashbackCentsRedeemed,
 					companyId: company.id,
 					couponId,

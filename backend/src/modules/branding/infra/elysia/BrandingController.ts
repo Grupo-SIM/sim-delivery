@@ -1,4 +1,4 @@
-import Elysia from "elysia";
+import Elysia, { t } from "elysia";
 import { CompanyScopeGuard } from "@/modules/users/guards";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
 import { prisma } from "@/shared/infra/sql";
@@ -15,7 +15,14 @@ export const BrandingController = new Elysia({ prefix: "/branding" })
 		query: GetBrandingQuery,
 		response: BrandingReturn,
 	})
-	.put(
+	.get("/tracking-settings", async ({ request, set }) => {
+        const scope = await CompanyScopeGuard.execute(request.headers);
+        CompanyScopeGuard.authorize(scope, "branding", "read");
+        set.headers["Cache-Control"] = "no-store";
+        const company = await prisma.company.findUniqueOrThrow({ where: { id: scope.companyId! }, select: { metaCapiToken: true } });
+        return { hasMetaCapiToken: Boolean(company.metaCapiToken) };
+    }, { response: t.Object({ hasMetaCapiToken: t.Boolean() }) })
+    .put(
 		"/",
 		async ({ body, request }) => {
 			const scope = await CompanyScopeGuard.execute(request.headers);

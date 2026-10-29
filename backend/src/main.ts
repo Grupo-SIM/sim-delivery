@@ -1,3 +1,4 @@
+import { startMetaCapiWorker } from "./shared/infra/MetaCapiWorker";
 import { startExpiredUnpaidOrderCancellation } from "./modules/orders/useCases";
 import { startPendingPaymentReconciliation } from "./modules/payments/useCases";
 import { server } from "./server";
@@ -15,6 +16,7 @@ await new SeedOwner(prisma, input => auth.api.signUpEmail(input)).execute();
 const whatsApp = createWhatsAppProvider();
 startExpiredUnpaidOrderCancellation(prisma, whatsApp);
 startWhatsAppOutboxWorker(prisma, whatsApp);
+startMetaCapiWorker(prisma);
 startPendingPaymentReconciliation(prisma, simpay);
 
 server.listen(process.env.PORT || 3333);

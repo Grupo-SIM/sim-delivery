@@ -7,6 +7,8 @@ model Order {
     unitId         String
     customerId     String
     /// Client-generated UUID that makes checkout retries return this same order.
+    marketingAttribution Json?
+    marketingEvents MarketingEvent[]
     idempotencyKey String?
     preparedById   String?
     addressId      String?

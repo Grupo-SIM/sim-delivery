@@ -1,0 +1,22 @@
+model MarketingEvent {
+    id String @id @default(cuid())
+    companyId String
+    company Company @relation(fields: [companyId], references: [id])
+    orderId String
+    order Order @relation(fields: [orderId], references: [id])
+    eventName String @default("Purchase")
+    eventId String @unique
+    paymentMethod String
+    eventTime DateTime
+    payload Json
+    attempts Int @default(0)
+    nextRetryAt DateTime @default(now())
+    lockedAt DateTime?
+    lockToken String?
+    sentAt DateTime?
+    failedAt DateTime?
+    lastError String?
+    createdAt DateTime @default(now())
+    @@unique([orderId, eventName])
+    @@index([sentAt, failedAt, nextRetryAt])
+}

@@ -14,6 +14,9 @@ const phoneOtpProvider = new phoneOtpProviders[process.env.PHONE_OTP_DRIVER as P
 
 export const auth = betterAuth({
 	basePath: "/auth",
+    databaseHooks: { user: { create: { after: async user => {
+        await prisma.user.update({ where: { id: user.id }, data: { registrationEventPendingAt: new Date() } });
+    } } } },
 	database: prismaAdapter(prisma, {
 		provider: "postgresql",
 	}),
