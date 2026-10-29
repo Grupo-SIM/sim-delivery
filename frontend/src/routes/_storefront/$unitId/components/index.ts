@@ -4,6 +4,7 @@ export { DesktopCart } from "./DesktopCart";
 export { InfoPill } from "./InfoPill";
 export { MenuBrowser } from "./MenuBrowser";
 export { OptionImagePreviewModal } from "./OptionImagePreviewModal";
+export { ProductFeeSummary } from "./ProductFeeSummary";
 export { ProductDetailsModal } from "./ProductDetailsModal";
 export { StoreHoursModal } from "./StoreHoursModal";
 export { StoreToolbar } from "./StoreToolbar";

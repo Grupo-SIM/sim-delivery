@@ -48,3 +48,9 @@ export function embeddedUnitFees(priceCents: number, fees: ApiFee[] | undefined)
 export function displayedUnitPrice(priceCents: number, fees: ApiFee[] | undefined) {
 	return priceCents + embeddedUnitFees(priceCents, fees);
 }
+
+export function explicitUnitFees(priceCents: number, fees: ApiFee[] | undefined) {
+	return normalizeProductFees(fees)
+		.filter(fee => fee.applicationScope === "product" && fee.displayMode === "product_explicit")
+		.reduce((sum, fee) => sum + feeUnitAmount(priceCents, fee), 0);
+}

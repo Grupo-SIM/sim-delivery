@@ -4,8 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { StarRating } from "@/components/ui/StarRating";
 import { useLiveBranding } from "@/hooks/use-live-branding";
-import { displayedUnitPrice, feeUnitAmount, normalizeProductFees } from "@/lib/platform-fees";
+import { displayedUnitPrice, normalizeProductFees } from "@/lib/platform-fees";
 import { cn } from "@/lib/utils";
+import { ProductFeeSummary } from "./ProductFeeSummary";
 import { hasPriceVariation } from "./product-options";
 import { type MenuItem, money } from "./types";
 
@@ -87,13 +88,7 @@ export function MenuItemCard({ item, onSelect, menuOnly = false, taxes = true }:
 							<span className="block text-[11px] text-muted-foreground">{t("store.product.from")}</span>
 						)}
 						<span className="font-bold text-lg">{displayPrice}</span>
-						{productFees
-							.filter(fee => fee.displayMode === "product_explicit")
-							.map(fee => (
-								<span className="block text-muted-foreground text-xs" key={fee.id}>
-									+ {fee.name}: {money.format(feeUnitAmount(Number(item.fromPriceCents), fee) / 100)}
-								</span>
-							))}
+						<ProductFeeSummary priceCents={Number(item.fromPriceCents)} fees={productFees} className="text-muted-foreground" />
 						{isPromotional && (
 							<Badge className="ml-2" tone="accent">Oferta</Badge>
 						)}

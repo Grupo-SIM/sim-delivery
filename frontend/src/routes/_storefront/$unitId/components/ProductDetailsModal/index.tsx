@@ -10,7 +10,8 @@ import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { closeActiveModalHistory } from "@/hooks/use-modal-history";
 import type { CartItem, SelectedOption } from "@/stores";
 import { showToast, useCartStore } from "@/stores";
-import { displayedUnitPrice, feeUnitAmount, normalizeProductFees } from "@/lib/platform-fees";
+import { displayedUnitPrice, normalizeProductFees } from "@/lib/platform-fees";
+import { ProductFeeSummary } from "../ProductFeeSummary";
 import { OptionImagePreviewModal } from "../OptionImagePreviewModal";
 import { hasPriceVariation, applyOptionQuantity, findInvalidGroup, isGroupComplete, optionsPriceDelta } from "../product-options";
 import { type MenuItem, money } from "../types";
@@ -293,11 +294,7 @@ export function ProductDetailsModal({
 						<div className="border-border border-t pt-4 font-bold text-lg">
 							{hasPriceVariation(selectedItem.optionGroups) && <span className="mr-2 font-normal text-muted-foreground text-sm">{t("store.product.from")}</span>}
 							{money.format(displayedUnitPrice(Number(selectedItem.fromPriceCents), visibleFees) / 100)}
-							{visibleFees.filter(fee => fee.displayMode === "product_explicit").map(fee => (
-								<span className="block font-normal text-muted-foreground text-xs" key={fee.id}>
-									+ {fee.name}: {money.format(feeUnitAmount(Number(selectedItem.fromPriceCents), fee) / 100)}
-								</span>
-							))}
+							<ProductFeeSummary priceCents={Number(selectedItem.fromPriceCents)} fees={visibleFees} className="text-muted-foreground" />
 						</div>
 					) : <div className="flex items-center justify-between gap-4 border-border border-t pt-4">
 						<div className="flex items-center gap-2">
@@ -319,11 +316,7 @@ export function ProductDetailsModal({
 							<span>{t("store.cart.add")}</span>
 							<div className="text-right">
 								<span>{money.format(totalCents / 100)}</span>
-								{visibleFees.filter(fee => fee.displayMode === "product_explicit").map(fee => (
-									<span className="block font-normal text-muted-foreground text-xs" key={fee.id}>
-										+ {fee.name}: {money.format((feeUnitAmount(merchantUnitPrice, fee) * quantity) / 100)}
-									</span>
-								))}
+								<ProductFeeSummary priceCents={merchantUnitPrice} fees={visibleFees} quantity={quantity} />
 							</div>
 						</Button>
 					</div>}
