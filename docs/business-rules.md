@@ -259,6 +259,19 @@ Delivery usa bootstrap `/platform-registrations/:companyId` e operações `/plat
 - Publicação: backend SimIntPay compatível, migration e Delivery detalhado, interface
   SimIntPay; somente então habilitar acordos após auditoria de vínculos.
 
+## Privacidade, consentimento e mensuração de marketing
+
+- Cada empresa é controladora dos dados dos seus clientes; Grupo SIM atua como operador da plataforma. A política de privacidade usa razão social, CNPJ, endereço e contatos da empresa, nunca dados de outra loja ou de uma variante fixa. Campos ausentes devem ser identificados, sem inventar dados jurídicos. A minuta jurídica exige revisão antes de publicação definitiva.
+- Cookies essenciais independem de consentimento. Analytics (GA4/GTM) e marketing (Meta Pixel/CAPI) exigem escolhas separadas, inicialmente desativadas. Aceitar e recusar têm o mesmo destaque. O cliente pode revisar ou revogar escolhas pelo rodapé sem perder carrinho, identificação ou capacidade de comprar.
+- Sem consentimento de marketing, não carregar Pixel, capturar ou persistir atribuição de marketing, nem enviar eventos à Meta, inclusive `Purchase`. Revogar limpa identificadores de marketing mantidos no navegador e bloqueia novos eventos.
+- Atribuição do pedido é congelada no checkout somente com consentimento de marketing: versão do consentimento, cookies Meta, origem sem dados sensíveis e contexto técnico necessário. IP e navegador são obtidos pelo servidor. Não reconstruir atribuição de pedidos antigos.
+- Um pagamento online Pix ou cartão confirmado pelo backend gera um único `Purchase` lógico por pedido consentido. Pagamento pendente, falho, expirado ou cancelado, telas de sucesso, recargas, polling e webhooks repetidos não geram novas compras. Pagamentos presenciais/dinheiro não geram `Purchase`.
+- O `Purchase` usa `order.total` como valor pago, moeda `BRL`, timestamp da aprovação e `event_id` persistente. Pix e cartão distinguem-se pelo parâmetro `payment_method`. Compra é enviada exclusivamente pelo backend; navegador nunca envia `Purchase`.
+- Confirmação financeira não depende da Meta. Evento de marketing nasce atomicamente com a confirmação em uma outbox; falhas de envio não desfazem pagamento, cashback ou atualização do pedido. Tentativas reutilizam o mesmo evento e timestamp, com limite, backoff e bloqueio de processamento concorrente.
+- Pixel e token CAPI pertencem à empresa. Token permanece criptografado e somente gravável; consultas públicas, HTML, SDK de resposta e logs nunca recebem seu valor. Administração recebe apenas indicação de configuração. Desabilitar ou corrigir credenciais não altera o histórico financeiro.
+- Dados pessoais enviados à CAPI restringem-se aos necessários para matching. E-mail e telefone são normalizados e enviados com SHA-256; identificadores técnicos exigidos pela Meta não são substituídos por hashes. Conteúdo integral de pedidos, observações e dados de pagamento não integram eventos de marketing.
+- Eventos de funil representam ações reais: produto aberto, item efetivamente adicionado, checkout iniciado, cartão submetido, busca, clique de WhatsApp e primeiro cadastro. Renderização, recarga ou retorno de cliente existente não equivalem a nova ação. Mensuração nunca bloqueia navegação ou compra.
+
 ## Orientações de imagens no painel
 
 - Campos de imagem exibem orientação de dimensões antes e depois do upload. São recomendações, sem bloquear arquivos por resolução.

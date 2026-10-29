@@ -45,6 +45,10 @@ Pix pago confirmado no backend = **um** `Purchase` lógico (valor pago, timestam
 
 Dados disponíveis para `contents`: `CartItem` tem `id` (unitProduct id), `productId`, `priceCents`, `quantity`, `options`. **Escolha de `content_ids`: usar `productId`** (estável entre unidades) em todos os eventos e na CAPI; `value` = Σ `priceCents × quantity` em BRL (converter centavos → reais).
 
+## Execução — 29/10/2026
+
+Implementação em andamento em worktree isolado, com frentes paralelas de backend/outbox, consentimento/privacidade, funil Pixel e administração. Validação exclusivamente local, sem migração em banco compartilhado nem envio à Meta. Regras de negócio adicionadas; [guia operacional](../docs/meta-tracking-operations.md) descreve ativação, retenção e homologação externa pendente. Conclusão e evidências serão registradas após integração e validação.
+
 ## Etapa 0 — Consentimento e privacidade (pré-requisito)
 
 - **Política de privacidade**: minuta pronta em `docs/legal/politica-de-privacidade.md` (pendente revisão jurídica). Nova rota pública `routes/_storefront/privacidade/index.tsx` (ou por empresa, se cada loja precisar de controlador próprio — confirmar: o controlador dos dados é a empresa lojista; a plataforma é operadora). Conteúdo: dados coletados (nome, CPF, telefone, e-mail, endereço, pedidos), finalidades, uso de Meta Pixel/CAPI/GA4/GTM, compartilhamento com Meta (dados com hash), cookies, direitos do titular (art. 18 LGPD), contato do encarregado, retenção. Texto final precisa de revisão jurídica; publicar na rota a partir da minuta (i18n pt-BR/en-US).
@@ -138,11 +142,22 @@ Manuais com pixel real/Eventos de teste (evidência com prints, sem PII): T01–
 
 ## Progresso
 
-- [ ] Revisão jurídica da minuta (decisões 1–6 decididas)
-- [ ] Etapa 0 (política de privacidade + banner de cookies + gating)
-- [ ] Etapa 1
-- [ ] Etapa 2
-- [ ] Etapa 3
-- [ ] Etapa 4
-- [ ] Etapa 5 (T01–T14)
-- [ ] Etapa 6
+- [ ] Revisão jurídica da minuta — pendência externa; página identifica minuta em revisão.
+- [x] Etapa 0 (política de privacidade + banner flutuante não bloqueante + gating)
+- [x] Etapa 1 — eventos de funil consentidos e atribuição com UTMs.
+- [x] Etapa 2 — snapshot do checkout, credenciais criptografadas e outbox atômica.
+- [x] Etapa 3 — worker CAPI, retries, lease, expiração e retenção; ativação desabilitada por padrão.
+- [x] Etapa 4 — unicidade por empresa/pedido/evento e event_id persistente.
+- [ ] Etapa 5 (T01–T14) — validação local concluída abaixo; homologação externa Meta e pagamentos reais pendentes de autorização.
+- [x] Etapa 6 — regras de negócio e guia operacional documentados; nenhuma ativação externa executada.
+
+### Evidências locais — 29/10/2026
+
+- Integração com PostgreSQL descartável, transporte Meta falso: 7 cenários, 39 assertions; concorrência, idempotência, métodos elegíveis, consentimento, token secreto, retries, expiração e retenção.
+- Hook backend: 611 testes passaram, 4 ignorados, 0 falhas, 1.284 assertions. Testes existentes de loader de tracking: 4 passaram.
+- `check-types` passou para `sql`, `frontend` e `backend`; primeiro passe revelou acesso incorreto a `AuthGuard.id` e dois erros de narrowing preexistentes, corrigidos antes do passe final.
+- Build de `backend` e `frontend` passou usando exclusivamente banco e assets locais descartáveis. SDK e árvore de rotas regenerados, sem edição manual.
+- Navegador desktop/mobile: banner flutuante no rodapé, cliques fora do card preservados, sem overflow horizontal; personalização, descarte, recusa e política renderizaram sem erros. Destinos externos bloqueados; nenhum Pixel/GA4/GTM carregado antes de consentimento.
+- Hooks foram invocados normalmente, porém filtros de frontend/type/format não selecionaram arquivos neste worktree. Checks/builds escopados foram executados separadamente antes da integração.
+
+Plano permanece em andamento apenas pelas pendências de revisão jurídica e homologação externa; não marcar T01–T14 integralmente concluídos sem evidência no ambiente autorizado. Ver [guia operacional](../docs/meta-tracking-operations.md).
