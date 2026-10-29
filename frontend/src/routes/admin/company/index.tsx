@@ -27,6 +27,7 @@ import {
 	FooterSection,
 	type FooterState,
 	NotificationTemplatesSection,
+	PrivacySection,
 	ORDER_STATUS_TEMPLATE_KEYS,
 	type OrderStatusTemplates,
 	type OrderStatusEmailTemplates,
@@ -37,7 +38,7 @@ import {
 } from "./components";
 
 /** One skeleton per collapsed section card, so the loading state mirrors the settled layout. */
-const sectionSkeletonKeys = ["theme", "assets", "typography", "footer", "notifications", "tracking"] as const;
+const sectionSkeletonKeys = ["privacy", "theme", "assets", "typography", "footer", "notifications", "tracking"] as const;
 
 function BrandingPage() {
 	const { t } = useTranslation();
@@ -58,6 +59,10 @@ function BrandingPage() {
 	const [fonts, setFonts] = useState<FontsState>(emptyFonts);
 	const [footer, setFooter] = useState<FooterState>(emptyFooter);
 	const [tracking, setTracking] = useState<TrackingState>(emptyTracking);
+	const [legalName, setLegalName] = useState("");
+	const [address, setAddress] = useState("");
+	const [privacyContactEmail, setPrivacyContactEmail] = useState("");
+	const [privacyContactPhone, setPrivacyContactPhone] = useState("");
 	const [whatsAppOpen, setWhatsAppOpen] = useState(false);
 	const [orderStatusTemplates, setOrderStatusTemplates] =
 		useState<OrderStatusTemplates>(defaultOrderStatusTemplates);
@@ -70,6 +75,10 @@ function BrandingPage() {
 			setWelcomeEyebrow(branding.welcomeEyebrow ?? "");
 			setWelcomeTitle([branding.welcomeTitle, branding.welcomeTitleAccent].filter(Boolean).join(" "));
 			setWelcomeDescription(branding.welcomeDescription ?? "");
+			setLegalName(branding.legalName ?? "");
+			setAddress(branding.address ?? "");
+			setPrivacyContactEmail(branding.privacyContactEmail ?? "");
+			setPrivacyContactPhone(branding.privacyContactPhone ?? "");
 			setAllowThemeToggle(branding.allowThemeToggle);
 			setDefaultTheme(branding.defaultTheme);
 			setThemeColors(resolveThemeColors(branding.themeColors));
@@ -126,6 +135,10 @@ function BrandingPage() {
 	}, [branding, initialized]);
 
 	const serializedSettings = JSON.stringify({
+		legalName: legalName.trim(),
+		address: address.trim(),
+		privacyContactEmail: privacyContactEmail.trim(),
+		privacyContactPhone: privacyContactPhone.trim(),
 		welcomeEyebrow,
 		welcomeDescription,
 		welcomeTitle: welcomeTitle.trim().split(/\s+/)[0] || "",
@@ -213,6 +226,7 @@ function BrandingPage() {
 				<ErrorState title={t("admin.branding.loadError")} />
 			) : (
 				<div className="space-y-3">
+					<PrivacySection address={address} cnpj={branding.cnpj} legalName={legalName} onAddressChange={setAddress} onLegalNameChange={setLegalName} onPrivacyContactEmailChange={setPrivacyContactEmail} onPrivacyContactPhoneChange={setPrivacyContactPhone} privacyContactEmail={privacyContactEmail} privacyContactPhone={privacyContactPhone} />
 					<ThemeSection
 						company={{ name: branding.companyName ?? "SIM Delivery", slug: slug || "empresa", themeColors, fontDisplay: fonts.display, fontFamily: fonts.family }}
 						allowThemeToggle={allowThemeToggle}

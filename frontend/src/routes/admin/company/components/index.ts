@@ -5,6 +5,7 @@ export * from "./FontField";
 export * from "./FooterSection";
 export * from "./NotificationTemplatesSection";
 export * from "./PaletteSwatches";
+export * from "./PrivacySection";
 export * from "./ThemeColorFields";
 export * from "./ThemeEditor";
 export * from "./ThemePaletteModal";

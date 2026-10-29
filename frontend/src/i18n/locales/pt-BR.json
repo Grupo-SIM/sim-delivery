@@ -154,6 +154,12 @@
 					"loading": "Importando paleta…",
 					"success": "Paleta importada. Revise as cores e salve para aplicar."
 				},
+				"privacyAddress": "Endereço da empresa",
+				"privacyAddressPlaceholder": "Ex: Rua das Flores, 123, Centro, Rio Branco - AC, 69900-000",
+				"privacyContactEmail": "E-mail de contato para privacidade",
+				"privacyContactEmailPlaceholder": "privacidade@minhaloja.com.br",
+				"privacyContactPhone": "Telefone de contato para privacidade",
+				"privacyContactPhonePlaceholder": "(68) 99999-9999",
 				"privacySummaryEmpty": "Dados para a política de privacidade",
 				"removeAttachment": "Remover {{filename}}",
 				"resetAllColors": "Restaurar cores",

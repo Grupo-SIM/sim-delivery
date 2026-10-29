@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { LuChartNoAxesCombined } from "react-icons/lu";
 import { CollapsibleSection } from "@/components/ui/CollapsibleSection";
 import { TextField } from "@/components/ui/TextField";
+import { MetaCapiTokenField } from "./MetaCapiTokenField";
 import type { TrackingState } from "./types";
 
 interface TrackingSectionProps {
@@ -29,6 +30,8 @@ export function TrackingSection({ onChange, tracking }: TrackingSectionProps) {
 				placeholder="1234567890"
 				value={tracking.metaPixelId}
 			/>
+			<MetaCapiTokenField />
+			<p className="rounded-md border bg-muted/30 p-3 text-sm text-muted-foreground">{t("admin.branding.consentNotice")}</p>
 			<TextField
 				label={t("admin.branding.ga4Id")}
 				onValueChange={ga4Id => onChange({ ga4Id })}
