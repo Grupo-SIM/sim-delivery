@@ -146,7 +146,7 @@ Manuais com pixel real/Eventos de teste (evidência com prints, sem PII): T01–
 - [x] Etapa 0 (política de privacidade + banner flutuante não bloqueante + gating)
 - [x] Etapa 1 — eventos de funil consentidos e atribuição com UTMs.
 - [x] Etapa 2 — snapshot do checkout, credenciais criptografadas e outbox atômica.
-- [x] Etapa 3 — worker CAPI, retries, lease, expiração e retenção; ativação desabilitada por padrão.
+- [x] Etapa 3 — worker CAPI, retries, lease, expiração e retenção; habilitado por padrão, condicionado a token/Pixel por empresa e consentimento; `META_CAPI_ENABLED=false` permite desligamento explícito.
 - [x] Etapa 4 — unicidade por empresa/pedido/evento e event_id persistente.
 - [ ] Etapa 5 (T01–T14) — validação local concluída abaixo; homologação externa Meta e pagamentos reais pendentes de autorização.
 - [x] Etapa 6 — regras de negócio e guia operacional documentados; nenhuma ativação externa executada.

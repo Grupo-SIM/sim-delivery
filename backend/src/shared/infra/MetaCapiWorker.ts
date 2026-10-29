@@ -19,7 +19,7 @@ export class MetaCapiWorker {
 		await this.prisma.marketingEvent.updateMany({ where: { createdAt: { lt: new Date(now.getTime() - maxAgeMs) } }, data: { payload: {} } });
 		await this.prisma.order.updateMany({ where: { createdAt: { lt: new Date(now.getTime() - maxAgeMs) } }, data: { marketingAttribution: {} } });
 		const candidates = await this.prisma.marketingEvent.findMany({
-			where: { sentAt: null, failedAt: null, nextRetryAt: { lte: now }, OR: [{ lockedAt: null }, { lockedAt: { lt: new Date(now.getTime() - leaseMs) } }] },
+			where: { company: { metaCapiToken: { not: null }, metaPixelId: { not: null } }, sentAt: null, failedAt: null, nextRetryAt: { lte: now }, OR: [{ lockedAt: null }, { lockedAt: { lt: new Date(now.getTime() - leaseMs) } }] },
 			orderBy: { nextRetryAt: "asc" }, take: 25,
 		});
 		let delivered = 0;
@@ -65,7 +65,7 @@ export class MetaCapiWorker {
 }
 
 export function startMetaCapiWorker(prisma: PrismaInstance) {
-	if (process.env.META_CAPI_ENABLED !== "true") return;
+	if (process.env.META_CAPI_ENABLED === "false") return;
 	const worker = new MetaCapiWorker(prisma);
 	let running = false;
 	const run = async () => {

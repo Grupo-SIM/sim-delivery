@@ -26,7 +26,8 @@ export const BrandingController = new Elysia({ prefix: "/branding" })
 		"/",
 		async ({ body, request }) => {
 			const scope = await CompanyScopeGuard.execute(request.headers);
-			CompanyScopeGuard.authorize(scope, "branding", "update");
+			const isManagerTrackingUpdate = scope.role === "manager" && Object.keys(body).every(key => key === "metaCapiToken" || key === "metaPixelId");
+			if (!isManagerTrackingUpdate) CompanyScopeGuard.authorize(scope, "branding", "update");
 			return updateBranding.execute({ ...body, companyId: scope.companyId! });
 		},
 		{ body: UpdateBrandingBody, response: BrandingReturn },

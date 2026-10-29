@@ -12,7 +12,8 @@ Implementação: [plano 0019](../plans/0019-meta-pixel-capi.md). Regras: [consen
 
 ## Ativação controlada
 
-- CAPI permanece desativada por padrão. O worker inicia com o backend somente quando `META_CAPI_ENABLED=true`.
+- CAPI habilitada por padrão: o worker inicia com o backend e seleciona somente eventos de empresas com token CAPI e Pixel configurados. Sem token, não tenta enviar nem consome tentativas. O envio continua exigindo consentimento de marketing registrado no pedido.
+- `META_CAPI_ENABLED=false` desliga explicitamente o worker inteiro. Não é necessário definir `true` para habilitá-lo; a configuração da empresa controla sua elegibilidade.
 - Para homologação autorizada, usar `META_CAPI_TEST_EVENT_CODE` fornecido pelo Meta Events Manager. Remover após homologação; não usar código de teste em produção.
 - Validar no dataset da empresa consentida. Identificadores da especificação Estação 237 não são defaults globais para outras empresas.
 - Não inserir Pixel manualmente em HTML/GTM para contornar o banner. Analytics e marketing são categorias distintas.
