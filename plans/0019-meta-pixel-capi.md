@@ -22,7 +22,11 @@ Pix pago confirmado no backend = **um** `Purchase` lógico (valor pago, timestam
 4. **Decidido:** adicionar banner de cookies e política de privacidade (hoje não existem; sem rotas, sem i18n, sem consentimento). Ver Etapa 0.
 5. **Decidido:** cartão aprovado também emite Purchase, pelo mesmo gancho `ConfirmPayment`. Distinção por `payment_method` (`pix` | `card`): Meta aceita parâmetros customizados em `custom_data` (evento tem metadados), então vai `custom_data.payment_method` na CAPI e coluna `paymentMethod` em `MarketingEvent`. `AddPaymentInfo` dispara no submit do `CardPaymentForm`; no Pix não.
 6. **Decidido:** cliente que recusa cookies de marketing ⇒ **nenhum** Purchase enviado (nem anônimo). Conciliação com banco continua possível pelos pedidos pagos (T14 considera `marketingConsent=false` como "não enviado por consentimento").
-7. **Decidido:** a política é **por empresa** (controladora = empresa cliente; Grupo SIM = operador fixo). Rota renderiza com dados da empresa (razão social, CNPJ, encarregado, e-mail) vindos do branding/cadastro; precisa de campos novos em `Company`. Contrato de operação de dados Grupo SIM × empresa é tarefa jurídica externa.
+7. **Decidido:** a política é **por empresa** (controladora = empresa cliente; Grupo SIM = operador fixo). Dados da controladora na rota:
+   - **CNPJ:** já existe (`Company.cnpj`, opcional, usado no merchant SIM INT PAY). Sem CNPJ cadastrado, a política mostra o campo como pendente e o admin é avisado.
+   - **Razão social:** novo `Company.legalName String?` (não reaproveitar `name`, que é nome fantasia: Zero Grau, Estação 237). Campo editável na tela de empresa do admin; i18n em todos os locales.
+   - **E-mail de privacidade/encarregado:** e-mail do **dono da empresa**, sem campo novo. Resolver pelo usuário com role `owner` da empresa (fonte atual); `Company.ownerEmail` é só e-mail de provisionamento inicial e serve de fallback. Endpoint público devolve apenas esse e-mail, nunca outros dados do usuário. Validar na implementação se o schema liga o usuário owner à empresa.
+   - Contrato de operação de dados Grupo SIM × empresa é tarefa jurídica externa.
 8. **Pendente (jurídico):** revisar a minuta `docs/legal/politica-de-privacidade.md`, preencher campos `[...]` por loja e confirmar bases legais/retenção. Não bloqueia código.
 
 ## Mapa do frontend (levantado)
