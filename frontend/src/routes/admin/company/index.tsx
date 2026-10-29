@@ -145,10 +145,10 @@ function BrandingPage() {
 					footerSupportEmail: footer.supportEmail.trim() || undefined,
 					footerText: footer.text.trim() || undefined,
 					footerWhatsApp: footer.whatsApp.trim() || undefined,
-					ga4Id: tracking.ga4Id.trim() || undefined,
-					gtmId: tracking.gtmId.trim() || undefined,
+					ga4Id: tracking.ga4Id.trim(),
+					gtmId: tracking.gtmId.trim(),
 					logoUrl: assets.logoUrl.trim() || undefined,
-					metaPixelId: tracking.metaPixelId.trim() || undefined,
+					metaPixelId: tracking.metaPixelId.trim(),
 					mobileIconUrl: assets.mobileIconUrl.trim() || undefined,
 					orderStatusEmailTemplates: Object.fromEntries(
 						ORDER_STATUS_TEMPLATE_KEYS.map(status => [
