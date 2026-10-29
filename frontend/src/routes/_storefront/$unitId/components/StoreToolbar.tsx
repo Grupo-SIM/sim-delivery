@@ -1,3 +1,4 @@
+import { trackMetaEvent } from "@/lib/meta-pixel";
 import { useTranslation } from "react-i18next";
 import { LuClock3, LuSearch, LuTruck } from "react-icons/lu";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
@@ -29,7 +30,10 @@ export function StoreToolbar({
 	unitId,
 }: StoreToolbarProps) {
 	const { t } = useTranslation();
-	const [localSearch, setLocalSearch] = useDebouncedInput(search, onSearchChange);
+	const [localSearch, setLocalSearch] = useDebouncedInput(search, value => {
+		onSearchChange(value);
+		if (value.trim()) trackMetaEvent("Search", { search_string: value.trim() });
+	});
 	const today = hours.find(day => Number(day.weekday) === new Date().getDay());
 	const todayHours =
 		today && !today.closed && today.opensAt && today.closesAt ? `${today.opensAt}–${today.closesAt}` : null;

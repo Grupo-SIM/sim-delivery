@@ -1,3 +1,5 @@
+import { getCheckoutAttribution } from "@/lib/attribution";
+import { onMetaPixelReady, trackMetaEvent } from "@/lib/meta-pixel";
 import { useCartImages } from "@/hooks/use-cart-images";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, Navigate, redirect, useNavigate } from "@tanstack/react-router";
@@ -136,6 +138,20 @@ function CheckoutPage() {
 
 	const step: Step = placedOrder ? "payment" : reviewStep;
 
+	useEffect(() => onMetaPixelReady(() => {
+		if (!unit || cartItems.length === 0 || placedOrder || unit.id !== useCartStore.getState().unitId) return;
+		const key = getCheckoutIdempotencyKey();
+		try {
+			if (sessionStorage.getItem("meta-checkout-event") === key) return;
+			if (trackMetaEvent("InitiateCheckout", {
+				content_ids: cartItems.map(item => item.productId), content_type: "product",
+				contents: cartItems.map(item => ({ id: item.productId, quantity: item.quantity })),
+				currency: "BRL", num_items: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+				value: cartTotalCents(cartItems) / 100,
+			}, `checkout_${key}`)) sessionStorage.setItem("meta-checkout-event", key);
+		} catch { /* Storage restrictions must not break checkout. */ }
+	}), [cartItems, getCheckoutIdempotencyKey, placedOrder, unit]);
+
 	function handleChangeDeliveryMethod(method: DeliveryMethod) {
 		setDeliveryMethod(method);
 		setStoredMethod(unitId, method);
@@ -188,6 +204,7 @@ function CheckoutPage() {
 					couponCode: appliedCoupon?.code,
 					deliveryMethod: resolvedDeliveryMethod,
 					idempotencyKey: getCheckoutIdempotencyKey(),
+					marketingAttribution: getCheckoutAttribution(),
 					items: cartItems.map(item => ({
 						note: item.note || undefined,
 						options: item.options.map(option => ({

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Container } from "@/components/ui/Container";
 import { getSafeAuthRedirect } from "@/lib/auth-redirect";
 import { authClient } from "@/lib/auth-client";
+import { trackNewRegistration } from "@/lib/registration-tracking";
 import { mapSessionUser, useAuthStore } from "@/stores/auth";
 
 interface MagicLinkSearch {
@@ -46,6 +47,7 @@ function MagicLinkVerifyPage() {
 				return;
 			}
 
+			trackNewRegistration(session.data.user.id);
 			setUser(mapSessionUser(session.data.user));
 			void navigate({
 				params: { unitId: unitId ?? "" },

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { authClient } from "@/lib/auth-client";
+import { trackNewRegistration } from "@/lib/registration-tracking";
 import { requestMagicLink as sendMagicLinkRequest } from "@/lib/request-magic-link";
 import { cn } from "@/lib/utils";
 import { mapSessionUser, useAuthStore } from "@/stores/auth";
@@ -108,6 +109,7 @@ export function IdentifyForm({ returnTo, unitSlug }: IdentifyFormProps) {
 				setError(t("store.checkout.identify.errors.otpInvalid"));
 				return;
 			}
+			trackNewRegistration(session.data.user.id);
 			setUser(mapSessionUser(session.data.user));
 		} catch {
 			setError(t("store.checkout.identify.errors.otpInvalid"));

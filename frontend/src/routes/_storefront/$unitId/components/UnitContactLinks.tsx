@@ -1,3 +1,4 @@
+import { trackMetaEvent } from "@/lib/meta-pixel";
 import type { IconType } from "react-icons";
 import { FaFacebookF, FaInstagram, FaWhatsapp, FaXTwitter } from "react-icons/fa6";
 import { LuPhone } from "react-icons/lu";
@@ -39,6 +40,11 @@ export function UnitContactLinks({ unit }: UnitContactLinksProps) {
 						aria-label={label}
 						className="inline-flex size-9 cursor-pointer items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 						href={href}
+						onClick={() => {
+							if (label === "WhatsApp" || href.startsWith("tel:")) {
+								trackMetaEvent("Contact", { contact_method: label === "WhatsApp" ? "whatsapp" : "phone" });
+							}
+						}}
 						rel={external ? "noreferrer" : undefined}
 						target={external ? "_blank" : undefined}
 					>

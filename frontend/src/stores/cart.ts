@@ -1,3 +1,4 @@
+import { trackMetaEvent } from "@/lib/meta-pixel";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { ProductFee } from "@/lib/platform-fees";
@@ -59,7 +60,8 @@ export function makeLineKey(id: string, options: SelectedOption[]): string {
 export const useCartStore = create<CartState>()(
 	persist(
 		(set, get) => ({
-			addItem: (unitId, item, quantity = 1, note = "") =>
+			addItem: (unitId, item, quantity = 1, note = "") => {
+				if (!Number.isFinite(quantity) || quantity <= 0) return;
 				set(state => {
 					// Switching units starts a fresh cart (one unit at a time).
 					const base = state.unitId === unitId ? state.items : [];
@@ -71,7 +73,13 @@ export const useCartStore = create<CartState>()(
 							)
 						: [...base, { ...item, lineKey, note, quantity }];
 					return { checkoutIdempotencyKey: null, items, unitId };
-				}),
+				});
+				trackMetaEvent("AddToCart", {
+					content_ids: [item.productId], content_type: "product", currency: "BRL",
+					contents: [{ id: item.productId, quantity }],
+					value: displayedUnitPrice(item.priceCents, item.productFees ?? []) * quantity / 100,
+				});
+			},
 			checkoutIdempotencyKey: null,
 			clear: () => set({ checkoutIdempotencyKey: null, items: [], unitId: null }),
 			getCheckoutIdempotencyKey: () => {

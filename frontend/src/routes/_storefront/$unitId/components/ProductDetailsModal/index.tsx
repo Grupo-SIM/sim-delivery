@@ -1,3 +1,4 @@
+import { onMetaPixelReady, trackMetaEvent } from "@/lib/meta-pixel";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaCartShopping } from "react-icons/fa6";
@@ -96,6 +97,15 @@ export function ProductDetailsModal({
 	const [optionsViewport, setOptionsViewport] = useState<HTMLDivElement | null>(null);
 	const [groupToScroll, setGroupToScroll] = useState<string | null>(null);
 	const [initializedModalKey, setInitializedModalKey] = useState<string | null>(null);
+	const viewedProduct = useRef<string | null>(null);
+	useEffect(() => onMetaPixelReady(() => {
+		if (!item) { viewedProduct.current = null; return; }
+		if (viewedProduct.current === item.productId) return;
+		if (trackMetaEvent("ViewContent", {
+			content_ids: [item.productId], content_type: "product", currency: "BRL",
+			value: displayedUnitPrice(Number(item.priceCents), normalizeProductFees(item.productFees)) / 100,
+		})) viewedProduct.current = item.productId;
+	}), [item]);
 	const optionGroupRefs = useRef(new Map<string, HTMLDivElement>());
 	const modalKey = item ? `${item.id}:${editingItem?.lineKey ?? "new"}:${readOnly}` : null;
 
