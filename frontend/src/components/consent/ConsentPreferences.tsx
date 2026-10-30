@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,7 @@ export function ConsentPreferences() {
 	return (
 		<Modal historyMode="none" isOpen={isOpen} onClose={closeWithHistory} title={t("privacy.preferencesTitle")} urlKey="cookie-preferences">
 			<div className="space-y-5">
-				<p className="text-muted-foreground text-sm">{t("privacy.preferencesDescription")}</p>
+				<p className="text-muted-foreground text-sm">{t("privacy.preferencesDescription")} <Link className="cursor-pointer underline underline-offset-4" onClick={closeWithHistory} to="/privacidade">{t("privacy.policyLink")}</Link></p>
 				<label className="flex cursor-not-allowed items-start gap-3 rounded-xl border border-border p-4">
 					<Checkbox aria-label={t("privacy.necessary")} checked disabled />
 					<span><span className="block font-medium">{t("privacy.necessary")}</span><span className="text-muted-foreground text-sm">{t("privacy.necessaryDescription")}</span></span>
