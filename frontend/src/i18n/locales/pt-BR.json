@@ -289,6 +289,59 @@
 					"title": "Editar empresa — {{name}}"
 				},
 				"empty": "Nenhuma empresa ainda.",
+				"fees": {
+					"action": "Taxas efetivas",
+					"columns": {
+						"coverage": "Cobertura",
+						"cost": "Custo da adquirente",
+						"fixed": "Fixo",
+						"lane": "Modalidade",
+						"rate": "Percentual"
+					},
+					"coverage": {
+						"notCounted": "Não conta neste modo",
+						"ok": "Coberto",
+						"short": "Abaixo do custo"
+					},
+					"extras": {
+						"disabled": "Neste modo as taxas extras não são cobradas nos pedidos.",
+						"empty": "Nenhuma taxa extra ativa para esta empresa.",
+						"hint": "Somadas ao preço do comprador. Valores por empresa são ajustados na tela de taxas.",
+						"title": "Taxas extras (SIM Delivery)"
+					},
+					"lane": {
+						"creditCard_one": "Crédito {{count}}x",
+						"creditCard_other": "Crédito {{count}}x"
+					},
+					"loadError": "Não foi possível carregar as taxas da empresa.",
+					"method": {
+						"DEBIT_CARD": "Cartão de débito",
+						"PIX": "Pix"
+					},
+					"mode": {
+						"both": "SimIntPay + extras",
+						"bothHint": "A empresa paga as taxas da SimIntPay e as taxas extras somam ao preço do comprador.",
+						"extras": "Somente extras",
+						"extrasHint": "Apenas as taxas extras cobrem o custo da adquirente. As taxas SimIntPay não entram na cobertura.",
+						"simintpay": "Somente SimIntPay",
+						"simintpayHint": "As taxas extras deixam de ser cobradas nos pedidos. Só as taxas SimIntPay cobrem o custo.",
+						"title": "Taxas aplicadas"
+					},
+					"saveError": "Não foi possível salvar. As taxas podem estar abaixo do custo da adquirente ou ter mudado; recarregue e tente novamente.",
+					"saved": "Taxas da empresa atualizadas.",
+					"scope": {
+						"order": "Por pedido",
+						"product": "Por produto"
+					},
+					"simintpay": {
+						"fixed": "Valor fixo SimIntPay ({{lane}})",
+						"hint": "Descontadas do lojista pela SimIntPay. O custo da adquirente é global e define o mínimo.",
+						"rate": "Percentual SimIntPay ({{lane}})",
+						"title": "Taxas SimIntPay"
+					},
+					"title": "Taxas de {{name}}",
+					"underCovered": "As taxas efetivas desta empresa não cobrem o custo das adquirentes em alguma modalidade."
+				},
 				"loadError": "Não foi possível carregar as empresas.",
 				"owner": {
 					"action": "Criar dono",
