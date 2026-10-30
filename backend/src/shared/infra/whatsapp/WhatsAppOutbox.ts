@@ -2,6 +2,7 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import type { WhatsAppProvider, WhatsAppSender } from "./WhatsAppProvider";
 import type { WhatsAppAttachment } from "./WhatsAppMessage";
 import { InvalidWhatsAppPhoneError } from "./WahaClient";
+import { buildCompanyWhatsAppSessionName } from "./session-name";
 
 type OutboxClient = Pick<PrismaInstance, "whatsAppNotification">;
 
@@ -81,10 +82,15 @@ export class ProcessWhatsAppOutbox {
 
 	async execute(now = new Date()): Promise<number> {
 		if (this.provider.deliveryMode !== "outbox") return 0;
+		// Each deploy serves one company: only send its own notifications, through its own session.
+		const slug = process.env.COMPANY_SLUG?.trim();
+		if (!slug) return 0;
+		const companySession = buildCompanyWhatsAppSessionName(slug);
 		const candidates = await this.prisma.whatsAppNotification.findMany({
 			orderBy: { createdAt: "asc" },
 			take: BATCH_SIZE,
 			where: {
+				company: { slug },
 				OR: [
 					{ nextAttemptAt: { lte: now }, status: "pending" },
 					{ leaseUntil: { lt: now }, status: "processing" },
@@ -109,10 +115,10 @@ export class ProcessWhatsAppOutbox {
 
 			const attempt = candidate.attempts + 1;
 			try {
-				let sessionName = candidate.sessionName ?? undefined;
-				if (sessionName && this.provider.getSessionStatus) {
+				let sessionName = candidate.sessionName ?? companySession;
+				if (sessionName !== companySession && this.provider.getSessionStatus) {
 					const sessionStatus = await this.provider.getSessionStatus(sessionName);
-					if (sessionStatus !== "WORKING") sessionName = undefined;
+					if (sessionStatus !== "WORKING") sessionName = companySession;
 				}
 				await this.provider.sendMessage(
 					candidate.recipient,

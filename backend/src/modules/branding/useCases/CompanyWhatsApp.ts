@@ -1,15 +1,14 @@
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { getWahaClientOptions, WahaClient, WahaRequestError, type WahaSessionInfo } from "@/shared/infra/whatsapp";
+import { buildCompanyWhatsAppSessionName } from "@/shared/infra/whatsapp/session-name";
 import { WhatsAppSessionRecovery } from "@/shared/infra/whatsapp/WhatsAppSessionRecovery";
 import { UnitErrors } from "@/modules/units/errors";
 import type { CompanyWhatsAppReturn } from "../dtos";
 
 type Connection = NonNullable<Awaited<ReturnType<PrismaInstance["companyWhatsAppConnection"]["findUnique"]>>>;
 
-export function buildCompanyWhatsAppSessionName(companySlug: string): string {
-	return `sim-delivery_${companySlug}`;
-}
+export { buildCompanyWhatsAppSessionName };
 
 function asReturn(connection: Connection, status = connection.lastStatus): CompanyWhatsAppReturn {
 	return {

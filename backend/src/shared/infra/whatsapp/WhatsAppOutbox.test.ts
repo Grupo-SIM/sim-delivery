@@ -1,4 +1,4 @@
-import { describe, expect, it, mock, spyOn } from "bun:test";
+import { beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { WhatsAppProvider } from "./WhatsAppProvider";
 import { ProcessWhatsAppOutbox } from "./WhatsAppOutbox";
@@ -46,6 +46,10 @@ function world(sendMessage: WhatsAppProvider["sendMessage"], row = notification(
 }
 
 describe("ProcessWhatsAppOutbox", () => {
+	beforeEach(() => {
+		process.env.COMPANY_SLUG = "acme";
+	});
+
 	it("uses the unit session when it is working", async () => {
 		const sendMessage = mock(() => Promise.resolve());
 		const { prisma, provider } = world(sendMessage, notification({ sessionName: "sim-delivery_acme_centro" }));
@@ -60,7 +64,7 @@ describe("ProcessWhatsAppOutbox", () => {
 		);
 	});
 
-	it("falls back to the global session when the unit session is stopped", async () => {
+	it("falls back to the company session when the unit session is stopped", async () => {
 		const sendMessage = mock(() => Promise.resolve());
 		const { prisma, provider } = world(sendMessage, notification({ sessionName: "sim-delivery_acme_centro" }));
 		provider.getSessionStatus = mock(() => Promise.resolve("STOPPED"));
@@ -70,7 +74,7 @@ describe("ProcessWhatsAppOutbox", () => {
 		expect(sendMessage).toHaveBeenCalledWith(
 			"5581999999999",
 			{ attachments: [], text: "Pedido pronto" },
-			undefined,
+			"sim-delivery_acme",
 		);
 	});
 
@@ -95,7 +99,7 @@ describe("ProcessWhatsAppOutbox", () => {
 		const { prisma, provider, updates } = world(sendMessage);
 
 		expect(await new ProcessWhatsAppOutbox(prisma, provider).execute(new Date("2026-09-14T10:01:00Z"))).toBe(1);
-		expect(sendMessage).toHaveBeenCalledWith("5581999999999", { attachments: [], text: "Pedido pronto" }, undefined);
+		expect(sendMessage).toHaveBeenCalledWith("5581999999999", { attachments: [], text: "Pedido pronto" }, "sim-delivery_acme");
 		expect(updates).toHaveLength(2);
 		expect(updates[1]).toEqual(expect.objectContaining({ data: expect.objectContaining({ status: "sent" }) }));
 	});
@@ -114,7 +118,7 @@ describe("ProcessWhatsAppOutbox", () => {
 		expect(sendMessage).toHaveBeenCalledWith(
 			"5581999999999",
 			{ attachments: [attachment], text: "Pedido pronto" },
-			undefined,
+			"sim-delivery_acme",
 		);
 	});
 
@@ -145,5 +149,16 @@ describe("ProcessWhatsAppOutbox", () => {
 
 		expect(updates[1]).toEqual(expect.objectContaining({ data: expect.objectContaining({ status: "failed" }) }));
 		log.mockRestore();
+	});
+});
+
+describe("ProcessWhatsAppOutbox company scope", () => {
+	it("does nothing without a company slug", async () => {
+		process.env.COMPANY_SLUG = "";
+		const sendMessage = mock(() => Promise.resolve());
+		const { prisma, provider } = world(sendMessage, notification());
+
+		expect(await new ProcessWhatsAppOutbox(prisma, provider).execute(new Date("2026-09-14T10:01:00Z"))).toBe(0);
+		expect(sendMessage).not.toHaveBeenCalled();
 	});
 });
