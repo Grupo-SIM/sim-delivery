@@ -1,0 +1,23 @@
+name: sim-delivery-production
+x-backend-image: &backend-image ${BACKEND_IMAGE:-ghcr.io/grupo-sim/sim-delivery_backend_${COMPANY_SLUG:?Set COMPANY_SLUG or BACKEND_IMAGE}:latest}
+x-after-migrate: &after-migrate
+  depends_on:
+    migrate:
+      condition: service_completed_successfully
+services:
+  migrate:
+    env_file: .env
+    image: *backend-image
+    restart: "no"
+    working_dir: /app/packages/sql
+    command: ["bun", "run", "migrate:deploy"]
+  api:
+    <<: *after-migrate
+    env_file: .env
+    image: *backend-image
+    restart: unless-stopped
+    ports: ["127.0.0.1:3333:3333"]
+  frontend:
+    image: ${FRONTEND_IMAGE:-ghcr.io/grupo-sim/sim-delivery_frontend_${COMPANY_SLUG:?Set COMPANY_SLUG or FRONTEND_IMAGE}:latest}
+    restart: unless-stopped
+    ports: ["127.0.0.1:5173:5173"]

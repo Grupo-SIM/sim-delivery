@@ -24,10 +24,23 @@ O frontend não recebe o email de provisionamento, senhas ou credenciais do banc
 
 O novo campo `ownerEmail` exige aplicar a migração
 `20261018020000_add_company_owner_email` antes de publicar a nova aplicação ou compilar
-imagens que consultem esse campo. A aplicação da migração no ambiente de destino é
-uma etapa operacional separada; editar o cadastro ou executar o build não a aplica.
+imagens que consultem esse campo. Editar o cadastro ou executar o build não aplica a
+migração; no servidor, o serviço `migrate` de `compose.production.yaml` a aplica no deploy
+(veja "Migrações no deploy").
 O arquivo `rollback.sql` da mesma pasta desfaz a coluna após rollback da aplicação,
 com perda dos emails de provisionamento salvos.
+
+## Migrações no deploy
+
+`compose.production.yaml` define um serviço `migrate` de execução única, que usa a
+imagem do backend e roda `bun run migrate:deploy` em `packages/sql`. O serviço `api`
+depende dele com `service_completed_successfully`: só sobe depois que as migrações
+terminam, e uma migração com falha aborta o `docker compose up` e mantém os containers
+anteriores. O compose não conhece a ferramenta de migração, apenas o script do pacote
+SQL. `BACKEND_IMAGE` (e `FRONTEND_IMAGE`) sobrescrevem a imagem; sem eles, o compose usa
+`latest` da empresa definida em `COMPANY_SLUG`. Em deploys reais, prefira fixar a imagem
+por digest. Como a migração roda antes da nova `api`, mantenha-as retrocompatíveis
+(expandir agora, contrair em um release posterior).
 
 ## Build local e Docker
 

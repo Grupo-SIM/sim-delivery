@@ -35,9 +35,10 @@ COPY --from=build /app/backend/node_modules ./backend/node_modules
 COPY --from=build /app/packages/sql/node_modules ./packages/sql/node_modules
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/backend/package.json /app/backend/tsconfig.json ./backend/
-COPY --from=build /app/packages/sql/package.json ./packages/sql/
+COPY --from=build /app/packages/sql/package.json /app/packages/sql/prisma.config.ts ./packages/sql/
 COPY --from=build /app/backend/dist ./backend/dist
 COPY --from=build /app/packages/sql/out ./packages/sql/out
+COPY --from=build /app/packages/sql/src ./packages/sql/src
 
 WORKDIR /app/backend
 
