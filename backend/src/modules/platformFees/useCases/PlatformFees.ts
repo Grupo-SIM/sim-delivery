@@ -9,6 +9,7 @@ import type {
 	UpsertCompanyFeeOverrideBody,
 } from "../dtos";
 import { PlatformFeeErrors } from "../errors";
+import type { CompanyFees } from "./CompanyFees";
 
 const INVALID_FEE = PlatformFeeErrors.INVALID_PLATFORM_FEE;
 const FEE_NOT_FOUND = PlatformFeeErrors.PLATFORM_FEE_NOT_FOUND;
@@ -60,7 +61,10 @@ function mapFee(fee: {
 const feeInclude = { _count: { select: { companyOverrides: true } } } as const;
 
 export class PlatformFees {
-	constructor(private readonly prisma: PrismaInstance) {}
+	constructor(
+		private readonly prisma: PrismaInstance,
+		private readonly companyFees?: Pick<CompanyFees, "assertCovered">,
+	) {}
 
 	async list(): Promise<PlatformFeeListReturn> {
 		return (await this.prisma.platformFee.findMany({
@@ -140,11 +144,21 @@ export class PlatformFees {
 			fixedValue: fixedOverride ?? fee.fixedValue,
 			percentageValue: percentageOverride ?? fee.percentageValue,
 		});
+		const where = { feeId_companyId: { companyId, feeId } };
+		const previous = await this.prisma.companyFeeOverride.findUnique({ where });
 		await this.prisma.companyFeeOverride.upsert({
 			create: { active: input.active, companyId, feeId, fixedOverride, percentageOverride },
 			update: { active: input.active, fixedOverride, percentageOverride },
-			where: { feeId_companyId: { companyId, feeId } },
+			where,
 		});
+		try {
+			await this.companyFees?.assertCovered(companyId);
+		} catch (error) {
+			// Restore the previous exception so rejected values never reach orders.
+			if (previous) await this.prisma.companyFeeOverride.update({ data: { active: previous.active, fixedOverride: previous.fixedOverride, percentageOverride: previous.percentageOverride }, where });
+			else await this.prisma.companyFeeOverride.delete({ where });
+			throw error;
+		}
 	}
 
 	async resetCompany(feeId: string, companyId: string): Promise<void> {

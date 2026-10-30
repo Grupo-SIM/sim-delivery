@@ -78,3 +78,42 @@ export const EffectiveFeeReturn = t.Object({
 export type EffectiveFeeReturn = typeof EffectiveFeeReturn.static;
 export const EffectiveFeeListReturn = t.Array(EffectiveFeeReturn);
 export type EffectiveFeeListReturn = typeof EffectiveFeeListReturn.static;
+
+export const PlatformFeeModeDto = t.Union([t.Literal("both"), t.Literal("simintpay"), t.Literal("extras")]);
+
+const SimintpayLane = t.Object({
+	channel: t.Literal("ONLINE"),
+	fixedCents: t.Integer({ maximum: 1_000_000_000, minimum: 0 }),
+	installments: t.Integer({ maximum: 12, minimum: 1 }),
+	method: t.Union([t.Literal("PIX"), t.Literal("DEBIT_CARD"), t.Literal("CREDIT_CARD")]),
+	ratePpm: t.Integer({ maximum: 1_000_000, minimum: 0 }),
+});
+
+const FeeComponentsDto = t.Object({ fixedCents: t.Integer(), ratePpm: t.Integer() });
+
+export const UpdateCompanyFeesBody = t.Object({
+	mode: t.Optional(PlatformFeeModeDto),
+	simintpay: t.Optional(t.Object({ lanes: t.Array(SimintpayLane, { maxItems: 14 }), version: t.String() })),
+});
+export type UpdateCompanyFeesBody = typeof UpdateCompanyFeesBody.static;
+
+export const CompanyFeesReturn = t.Object({
+	/** Per lane: acquirer cost, what the company pays to cover it and any shortfall. */
+	coverage: t.Array(
+		t.Object({
+			cost: FeeComponentsDto,
+			covered: FeeComponentsDto,
+			fixedShortfallCents: t.Integer(),
+			installments: t.Integer(),
+			method: t.String(),
+			rateShortfallPpm: t.Integer(),
+		}),
+	),
+	/** Surcharges added to the buyer price in this app, after company overrides. Empty when mode is simintpay. */
+	extras: EffectiveFeeListReturn,
+	mode: PlatformFeeModeDto,
+	/** SimIntPay's own fees, deducted from the seller. Not counted when mode is extras. */
+	simintpay: t.Object({ lanes: t.Array(SimintpayLane), version: t.String() }),
+	underCovered: t.Boolean(),
+});
+export type CompanyFeesReturn = typeof CompanyFeesReturn.static;

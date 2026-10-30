@@ -164,6 +164,14 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
   Exceção empresarial sobrescreve cada componente separadamente (vazio herda o global).
   Valor fixo usa centavos; percentual usa basis points e arredonda por unidade, somando o fixo depois. Taxas acumulam sem
   incidência entre si e preservam preço e margem cadastrados pelo lojista.
+- Há dois conjuntos de taxas por empresa: as **da SimIntPay** (descontadas do lojista pela SimIntPay, por
+  modalidade e parcela) e as **extras** deste app (`PlatformFee`, somadas ao preço do comprador). Adicionais do
+  `owner` na SimIntPay são outro tipo e são ignorados aqui. Custos das adquirentes são globais (a mais cara entre
+  as ativas define o piso por modalidade/parcela), nunca por empresa ou lojista.
+- `platformFeeMode` da empresa define o que cobre o custo: `both` (SimIntPay + extras, padrão), `simintpay`
+  (extras não são cobradas nos pedidos) ou `extras` (apenas extras contam; taxas SimIntPay não entram na
+  cobertura). Percentual e fixo são comparados separadamente ao custo; salvar taxas SimIntPay, exceções ou modo que
+  deixem a cobertura abaixo do custo é rejeitado. Somente `superAdmin` vê as taxas efetivas e edita as da SimIntPay.
 - Total: `max(0, subtotal − cupom − cashback − fidelidade) + frete + taxas`. Créditos nunca cobrem
   frete ou taxas. Cashback e fidelidade futuros ignoram taxas.
 - `product_explicit` mostra base e taxa no produto; `embedded` mostra preço visual acrescido sem

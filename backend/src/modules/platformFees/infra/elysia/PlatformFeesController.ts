@@ -6,13 +6,15 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import { UserErrors } from "@/modules/users/errors";
 import {
 	CompanyFeeOverrideListReturn,
+	CompanyFeesReturn,
 	CreatePlatformFeeBody,
 	PlatformFeeListReturn,
 	PlatformFeeReturn,
+	UpdateCompanyFeesBody,
 	UpdatePlatformFeeBody,
 	UpsertCompanyFeeOverrideBody,
 } from "../../dtos";
-import { PlatformFees } from "../../useCases";
+import { CompanyFees, PlatformFees } from "../../useCases";
 
 async function requireSuperAdmin(request: Request, prisma: PrismaInstance) {
 	const auth = await AuthGuard.execute(request.headers);
@@ -28,12 +30,22 @@ export const PlatformFeesController = new Elysia({ detail: { tags: ["Platform Fe
 	.use(GlobalPlugin)
 	.group("/platform-fees", app =>
 		app
-			.decorate(({ prisma }) => ({ platformFees: new PlatformFees(prisma), prisma }))
+			.decorate(({ prisma }) => {
+				const companyFees = new CompanyFees(prisma);
+				return { companyFees, platformFees: new PlatformFees(prisma, companyFees), prisma };
+			})
 			.onBeforeHandle(async ({ request, prisma }) => requireSuperAdmin(request, prisma))
 			.get("/", ({ platformFees }) => platformFees.list(), { response: PlatformFeeListReturn })
 			.post("/", ({ body, platformFees }) => platformFees.create(body), {
 				body: CreatePlatformFeeBody,
 				response: PlatformFeeReturn,
+			})
+			.get("/by-company/:companyId", ({ companyFees, params }) => companyFees.get(params.companyId), {
+				response: CompanyFeesReturn,
+			})
+			.put("/by-company/:companyId", ({ body, companyFees, params }) => companyFees.update(params.companyId, body), {
+				body: UpdateCompanyFeesBody,
+				response: CompanyFeesReturn,
 			})
 			.patch("/:feeId", ({ body, params, platformFees }) => platformFees.update(params.feeId, body), {
 				body: UpdatePlatformFeeBody,

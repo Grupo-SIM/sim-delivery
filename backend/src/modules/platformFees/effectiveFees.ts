@@ -1,7 +1,18 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { EffectiveFeeReturn } from "./dtos";
 
+/** Surcharges charged to buyers; `simintpay` mode leaves cost recovery entirely to SimIntPay's own fees. */
 export async function listEffectiveFees(
+	prisma: PrismaInstance,
+	companyId: string,
+): Promise<EffectiveFeeReturn[]> {
+	const company = await prisma.company?.findUnique({ select: { platformFeeMode: true }, where: { id: companyId } });
+	if (company?.platformFeeMode === "simintpay") return [];
+	return listCompanySurcharges(prisma, companyId);
+}
+
+/** Active surcharges after company overrides, regardless of the company's fee mode. */
+export async function listCompanySurcharges(
 	prisma: PrismaInstance,
 	companyId: string,
 ): Promise<EffectiveFeeReturn[]> {

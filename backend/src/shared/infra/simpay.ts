@@ -84,6 +84,21 @@ export interface SimpayMerchantScope {
 	integrationKey: string;
 }
 
+export interface SimpayFeeLane {
+	channel: "ONLINE";
+	fixedCents: number;
+	installments: number;
+	method: "CREDIT_CARD" | "DEBIT_CARD" | "PIX";
+	ratePpm: number;
+}
+
+export interface SimpayCompanyFees {
+	/** Global acquirer cost per lane: what SimIntPay pays regardless of seller. */
+	costs: SimpayFeeLane[];
+	lanes: SimpayFeeLane[];
+	version: string;
+}
+
 export function simpayIntegrationKey(companySlug: string): string {
 	return `sim-delivery_${companySlug}`;
 }
@@ -203,6 +218,13 @@ export class SimpayClient {
 		const result = await this.json<RegistrationResult>(`/platform-registrations/${encodeURIComponent(scope.externalMerchantId)}/owner`, { provisioning: true, method: "PUT", body: { ...owner, slug: scope.integrationKey.replace(/^sim-delivery_/, "") } });
 		await this.save(scope.externalMerchantId, result);
 		return { id: result.merchant!.id };
+	}
+	/** SimIntPay's own (subtractive) fees for one company, read with the provisioning credential. */
+	async companyFees(companyId: string): Promise<SimpayCompanyFees> {
+		return this.json(`/platform-registrations/${encodeURIComponent(companyId)}/fees`, { provisioning: true });
+	}
+	async saveCompanyFees(companyId: string, input: { lanes: SimpayFeeLane[]; version: string }): Promise<SimpayCompanyFees> {
+		return this.json(`/platform-registrations/${encodeURIComponent(companyId)}/fees`, { body: input, method: "PUT", provisioning: true });
 	}
 	private async access(scope: SimpayMerchantScope) {
 		let integration = await this.db.companySimpayIntegration.findUnique({ where: { companyId: scope.externalMerchantId } });
