@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createDeploymentDefaults } from "../src/shared/deployment-config";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const brandingPath = join(ROOT, "backend", "src", "shared", "infra", "branding.ts");
@@ -68,6 +69,7 @@ try {
 }
 
 if (!company) throw new Error(`Company not found: ${slug}`);
+const deploymentDefaults = createDeploymentDefaults(company);
 
 
 const colors = (company.themeColors as ThemeColors | null)?.light;
@@ -113,6 +115,11 @@ export const emailBranding: EmailBranding = ${JSON.stringify(
 		"\t",
 	)};
 `,
+);
+
+await writeFile(
+	join(ROOT, "backend", "src", "shared", "infra", "deployment-defaults.ts"),
+	`import type { DeploymentDefaults } from "../deployment-config";\n\nexport const deploymentDefaults: DeploymentDefaults = ${JSON.stringify(deploymentDefaults, null, "\t")};\n`,
 );
 
 console.log(`Injected backend email branding for ${company.name} (${slug}).`);
