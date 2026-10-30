@@ -57,6 +57,7 @@ export const MarketingAttribution = t.Object({
     consent: t.Literal(true),
     utm: t.Optional(t.Object({source: t.Optional(t.String({maxLength:200})),medium: t.Optional(t.String({maxLength:200})),campaign: t.Optional(t.String({maxLength:200})),term: t.Optional(t.String({maxLength:200})),content: t.Optional(t.String({maxLength:200}))})),
     consentVersion: t.String({ minLength: 1, maxLength: 64 }),
+    deviceId: t.Optional(t.String({ format: "uuid" })),
     fbp: t.Optional(t.String({ maxLength: 256, pattern: "^fb\\.[0-9]+\\.[0-9]+\\.[A-Za-z0-9_-]+$" })),
     fbc: t.Optional(t.String({ maxLength: 1024, pattern: "^fb\\.[0-9]+\\.[0-9]+\\.[A-Za-z0-9_-]+$" })),
     sourceUrl: t.Optional(t.String({ format: "uri", pattern: "^https?://", maxLength: 2048 })),

@@ -62,7 +62,7 @@ export class ConfirmPayment {
 			});
 			if (count === 0) return false;
 
-			const attribution = order.marketingAttribution as { consent?: boolean; consentVersion?: string; consentedAt?: string; fbp?: string; fbc?: string; sourceUrl?: string; ip?: string; userAgent?: string } | null;
+			const attribution = order.marketingAttribution as { consent?: boolean; consentVersion?: string; consentedAt?: string; deviceId?: string; fbp?: string; fbc?: string; sourceUrl?: string; ip?: string; userAgent?: string } | null;
             if ((payment.method === "pix" || payment.method === "credit_card") && order.total > 0 && attribution?.consent === true && attribution.consentVersion && attribution.consentedAt && order.company.metaPixelId && order.company.metaCapiToken) {
                 const hash = (value: string) => createHash("sha256").update(value).digest("hex");
                 const phone = (order.customer.phone ?? order.customer.user.phoneNumber ?? "").replace(/\D/g, "");
@@ -81,7 +81,7 @@ export class ConfirmPayment {
                             ph: normalizedPhone ? [hash(normalizedPhone)] : undefined,
                             fn: names[0] ? [hash(names[0])] : undefined,
                             ln: names.length > 1 ? [hash(names.slice(1).join(" "))] : undefined,
-                            external_id: [hash(order.customerId)], country: [hash("br")],
+                            external_id: [hash(order.customerId), ...(attribution.deviceId ? [hash(attribution.deviceId)] : [])], country: [hash("br")],
                             fbp: attribution.fbp, fbc: attribution.fbc, client_ip_address: attribution.ip, client_user_agent: attribution.userAgent,
                         },
                         custom_data: { currency: "BRL", value: order.total / 100, order_id: order.id, payment_method: payment.method === "credit_card" ? "card" : "pix",
