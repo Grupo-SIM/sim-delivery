@@ -4,6 +4,8 @@ import { CancelExpiredUnpaidOrders } from "./CancelExpiredUnpaidOrders";
 
 describe("CancelExpiredUnpaidOrders", () => {
 	it("cancels expired unpaid orders and notifies their customers", async () => {
+		process.env.COMPANY_SLUG = "zero-grau";
+		const findManyCalls: unknown[] = [];
 		const updateManyCalls: unknown[] = [];
 		const statusEvents: unknown[] = [];
 		const notifications: unknown[] = [];
@@ -11,7 +13,9 @@ describe("CancelExpiredUnpaidOrders", () => {
 			$transaction: async (fn: (tx: unknown) => Promise<unknown>) => fn(prisma),
 			inventoryReservation: { findMany: async () => [], updateMany: async () => ({ count: 0 }) },
 			order: {
-				findMany: async () => [
+				findMany: async (args: unknown) => {
+					findManyCalls.push(args);
+					return [
 					{
 						company: {
 							orderStatusWhatsAppTemplates: null,
@@ -21,7 +25,8 @@ describe("CancelExpiredUnpaidOrders", () => {
 					displayNumber: 154,
 					id: "ord_1",
 					},
-				],
+					];
+				},
 				updateMany: async (args: unknown) => {
 					updateManyCalls.push(args);
 					return { count: 1 };
@@ -41,6 +46,9 @@ describe("CancelExpiredUnpaidOrders", () => {
 		);
 
 		expect(cancelled).toBe(1);
+		expect(findManyCalls).toEqual([
+			expect.objectContaining({ where: expect.objectContaining({ company: { slug: "zero-grau" } }) }),
+		]);
 		expect(updateManyCalls).toEqual([
 			expect.objectContaining({
 				data: { cancelReason: "Pagamento não confirmado em até 1 hora.", status: "cancelado" },

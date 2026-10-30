@@ -19,6 +19,9 @@ export class CancelExpiredUnpaidOrders {
 	) {}
 
 	async execute(now = new Date()): Promise<number> {
+		const slug = process.env.COMPANY_SLUG?.trim();
+		if (!slug) return 0;
+
 		const expiresAt = new Date(now.getTime() - EXPIRATION_MS);
 		const orders = await this.prisma.order.findMany({
 			include: {
@@ -33,7 +36,7 @@ export class CancelExpiredUnpaidOrders {
 				},
 				unit: { select: { whatsAppConnection: { select: { connectedPhone: true, sessionName: true } } } },
 			},
-			where: { createdAt: { lt: expiresAt }, status: "awaiting_payment" },
+			where: { company: { slug }, createdAt: { lt: expiresAt }, status: "awaiting_payment" },
 		});
 
 		let cancelled = 0;
