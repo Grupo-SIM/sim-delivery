@@ -1,6 +1,6 @@
 import { useRouterState } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
-import { captureAttribution, clearAttribution } from "@/lib/attribution";
+import { captureAttribution, clearAttribution, getDeviceId } from "@/lib/attribution";
 import { setMetaPixelId, trackMetaEvent } from "@/lib/meta-pixel";
 import { useConsentStore } from "@/stores/consent";
 
@@ -105,7 +105,8 @@ export function useTracking({ ga4Id, gtmId, metaPixelId }: TrackingIds) {
 		}
 		if (initializedPixel.current !== metaPixelId) {
 			target.fbq("consent", "grant");
-			target.fbq("init", metaPixelId);
+			const deviceId = getDeviceId();
+			target.fbq("init", metaPixelId, deviceId ? { external_id: deviceId } : {});
 			initializedPixel.current = metaPixelId;
 			pageView.current = null;
 		}

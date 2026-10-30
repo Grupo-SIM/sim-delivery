@@ -41,7 +41,7 @@ Você pode **recusar** cookies não essenciais pelo banner sem perder o acesso a
 
 - **Necessários:** sessão, carrinho, preferências e segurança. Sempre ativos.
 - **Analytics:** Google Analytics / Google Tag Manager, para entender o uso do site. Só com consentimento.
-- **Marketing:** Meta Pixel (Meta Platforms, Inc.), para medir resultados de anúncios e criar públicos. Grava os cookies `_fbp` e `_fbc`. Só com consentimento.
+- **Marketing:** Meta Pixel (Meta Platforms, Inc.), para medir resultados de anúncios e criar públicos. Grava os cookies `_fbp` e `_fbc` e um identificador aleatório do navegador (armazenamento local), usado como identificador externo para associar a navegação anônima ao pedido, mesmo sem login. Só com consentimento.
 
 Você pode mudar sua escolha a qualquer momento em **"Preferências de cookies"** no rodapé do site. Também pode bloquear cookies nas configurações do navegador, o que pode afetar algumas funções.
 

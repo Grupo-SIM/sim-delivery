@@ -1,6 +1,7 @@
 import { CONSENT_VERSION, hasMarketingConsent } from "@/stores/consent";
 
 const STORAGE_KEY = "marketing-attribution";
+const DEVICE_KEY = "marketing-device-id";
 const MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000;
 const UTM_KEYS = ["source", "medium", "campaign", "content", "term"] as const;
 interface Attribution { fbc?: string; sourceUrl: string; capturedAt: number; utm?: Record<string, string> }
@@ -12,7 +13,7 @@ function sourceUrl() {
 
 export function clearAttribution() {
 	if (typeof window === "undefined") return;
-	try { localStorage.removeItem(STORAGE_KEY); } catch { /* Storage can be blocked. */ }
+	try { localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(DEVICE_KEY); } catch { /* Storage can be blocked. */ }
 	for (const name of ["_fbp", "_fbc"]) {
 		const parts = window.location.hostname.split(".");
 		for (let i = 0; i < parts.length; i++) {
@@ -59,6 +60,18 @@ function cookie(name: string) {
 	} catch { return undefined; }
 }
 
+/** Random per-browser ID, independent of login; only created/read with marketing consent and wiped on revoke. */
+export function getDeviceId() {
+	if (typeof window === "undefined" || !hasMarketingConsent()) return undefined;
+	try {
+		const existing = localStorage.getItem(DEVICE_KEY);
+		if (existing && /^[0-9a-f-]{36}$/.test(existing)) return existing;
+		const id = crypto.randomUUID();
+		localStorage.setItem(DEVICE_KEY, id);
+		return id;
+	} catch { return undefined; }
+}
+
 /** Re-read consent at submit time, never reuse an earlier consent snapshot. */
 export function getCheckoutAttribution() {
 	if (typeof window === "undefined" || !hasMarketingConsent()) return undefined;
@@ -67,6 +80,7 @@ export function getCheckoutAttribution() {
 	return {
 		consent: true as const,
 		consentVersion: CONSENT_VERSION,
+		deviceId: getDeviceId(),
 		fbp: cookie("_fbp"),
 		fbc: attribution?.fbc ?? cookie("_fbc"),
 		sourceUrl: sourceUrl(),
