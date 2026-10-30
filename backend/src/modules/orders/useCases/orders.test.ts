@@ -554,6 +554,7 @@ describe("UpdateOrderStatus", () => {
 					attachments: [],
 					text: "Seu pedido #154 já está sendo preparado com carinho. Assim que ficar pronto, seguirá para entrega.",
 				},
+				"unit-session",
 			],
 		]);
 	});

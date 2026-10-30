@@ -1,9 +1,13 @@
-import { describe, expect, it, mock } from "bun:test";
+import { beforeEach, describe, expect, it, mock } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { WahaClient } from "@/shared/infra/whatsapp";
 import { WahaPhoneOtpProvider } from "./WahaPhoneOtpProvider";
 
 describe("WahaPhoneOtpProvider", () => {
+	beforeEach(() => {
+		process.env.COMPANY_SLUG = "acme";
+	});
+
 	it("sends the Better Auth code with expiry and safety copy", async () => {
 		const sendText = mock(() => Promise.resolve());
 		const database = {

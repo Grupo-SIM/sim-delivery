@@ -53,7 +53,7 @@ export async function dispatchWhatsApp({
 	}
 
 	try {
-		await provider.sendMessage(phone, { attachments, text: message });
+		await provider.sendMessage(phone, { attachments, text: message }, sessionName ?? undefined);
 	} catch (error) {
 		console.error("Failed to send direct WhatsApp notification", error);
 	}

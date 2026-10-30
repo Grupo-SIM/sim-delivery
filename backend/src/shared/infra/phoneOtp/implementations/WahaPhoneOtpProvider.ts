@@ -15,10 +15,12 @@ export class WahaPhoneOtpProvider extends PhoneOtpProvider {
 	}
 
 	async sendCode(phoneNumber: string, code: string): Promise<void> {
-		const company = await this.database.company.findFirst({
+		const slug = process.env.COMPANY_SLUG?.trim();
+		const company = slug && await this.database.company.findFirst({
+			where: { slug },
 			select: { whatsAppConnection: { select: { connectedPhone: true, sessionName: true } } },
 		});
-		const connection = company?.whatsAppConnection;
+		const connection = company ? company.whatsAppConnection : undefined;
 		if (!connection?.connectedPhone) {
 			throw new APIError("FORBIDDEN", {
 				code: "PHONE_LOGIN_NOT_ENABLED",

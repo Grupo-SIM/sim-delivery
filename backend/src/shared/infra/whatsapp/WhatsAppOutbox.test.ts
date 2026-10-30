@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { WhatsAppProvider } from "./WhatsAppProvider";
-import { ProcessWhatsAppOutbox } from "./WhatsAppOutbox";
+import { dispatchWhatsApp, ProcessWhatsAppOutbox } from "./WhatsAppOutbox";
 import { InvalidWhatsAppPhoneError } from "./WahaClient";
 
 function notification(overrides: Record<string, unknown> = {}) {
@@ -160,5 +160,24 @@ describe("ProcessWhatsAppOutbox company scope", () => {
 
 		expect(await new ProcessWhatsAppOutbox(prisma, provider).execute(new Date("2026-09-14T10:01:00Z"))).toBe(0);
 		expect(sendMessage).not.toHaveBeenCalled();
+	});
+});
+
+describe("dispatchWhatsApp direct mode", () => {
+	it("sends through the given company session", async () => {
+		const sendMessage = mock(() => Promise.resolve());
+		await dispatchWhatsApp({
+			companyId: "company_1",
+			deduplicationKey: "k",
+			message: "oi",
+			orderId: "order_1",
+			orderStatus: "pronto",
+			phone: "5581999999999",
+			prisma: {} as never,
+			provider: { deliveryMode: "direct", sendMessage },
+			sessionName: "sim-delivery_acme",
+			unitId: "unit_1",
+		});
+		expect(sendMessage).toHaveBeenCalledWith("5581999999999", { attachments: [], text: "oi" }, "sim-delivery_acme");
 	});
 });

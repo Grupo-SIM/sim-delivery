@@ -715,6 +715,7 @@ describe("ConfirmPayment", () => {
 					attachments: [],
 					text: "Recebemos seu pedido #154 e ele já entrou na fila de preparo.",
 				},
+				"unit-session",
 			],
 		]);
 	});

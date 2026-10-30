@@ -66,6 +66,7 @@ describe("CancelExpiredUnpaidOrders", () => {
 					attachments: [],
 					text: "Seu pedido #154 foi cancelado.\nMotivo: Pagamento não confirmado em até 1 hora.",
 				},
+				"company-session",
 			],
 		]);
 	});
