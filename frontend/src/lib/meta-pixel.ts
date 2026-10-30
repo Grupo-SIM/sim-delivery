@@ -1,6 +1,7 @@
 import { hasMarketingConsent } from "@/stores/consent";
 
 type MetaEvent = "PageView" | "ViewContent" | "AddToCart" | "InitiateCheckout" | "AddPaymentInfo" | "CompleteRegistration" | "Search" | "Contact";
+type MetaCustomEvent = "StartRegistration";
 type MetaPayload = Record<string, unknown>;
 let pixelId: string | null = null;
 const readyListeners = new Set<() => void>();
@@ -26,6 +27,19 @@ export function trackMetaEvent(event: MetaEvent, payload: MetaPayload = {}, even
 		const fbq = (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq;
 		if (typeof fbq !== "function") return false;
 		fbq("trackSingle", pixelId, event, payload, ...(eventId ? [{ eventID: eventId }] : []));
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+/** Custom (non-standard) events need trackSingleCustom; same consent and failure rules as trackMetaEvent. */
+export function trackMetaCustomEvent(event: MetaCustomEvent, payload: MetaPayload = {}, eventId?: string): boolean {
+	if (typeof window === "undefined" || !hasMarketingConsent() || !pixelId) return false;
+	try {
+		const fbq = (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq;
+		if (typeof fbq !== "function") return false;
+		fbq("trackSingleCustom", pixelId, event, payload, ...(eventId ? [{ eventID: eventId }] : []));
 		return true;
 	} catch {
 		return false;

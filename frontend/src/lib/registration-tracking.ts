@@ -1,8 +1,18 @@
 import { postUsersRegistrationEvent } from "@/lib/api";
-import { onMetaPixelReady, trackMetaEvent } from "@/lib/meta-pixel";
+import { onMetaPixelReady, trackMetaCustomEvent, trackMetaEvent } from "@/lib/meta-pixel";
 import { hasMarketingConsent } from "@/stores/consent";
 
 const pending = new Map<string, Promise<void>>();
+const STARTED_KEY = "registration-started";
+
+/** Once per browser session, on the first keystroke in the identify form. */
+export function trackRegistrationStart() {
+	if (!hasMarketingConsent()) return;
+	try {
+		if (sessionStorage.getItem(STARTED_KEY)) return;
+		if (trackMetaCustomEvent("StartRegistration", {}, `start_registration_${crypto.randomUUID()}`)) sessionStorage.setItem(STARTED_KEY, "1");
+	} catch { /* Tracking is optional. */ }
+}
 
 /** Server consumes a short-lived marker written only by actual account creation. */
 export function trackNewRegistration(userId: string) {

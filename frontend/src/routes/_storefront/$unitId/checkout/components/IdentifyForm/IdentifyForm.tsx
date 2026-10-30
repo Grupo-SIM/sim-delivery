@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { authClient } from "@/lib/auth-client";
-import { trackNewRegistration } from "@/lib/registration-tracking";
+import { trackNewRegistration, trackRegistrationStart } from "@/lib/registration-tracking";
 import { requestMagicLink as sendMagicLinkRequest } from "@/lib/request-magic-link";
 import { cn } from "@/lib/utils";
 import { mapSessionUser, useAuthStore } from "@/stores/auth";
@@ -210,7 +210,7 @@ export function IdentifyForm({ returnTo, unitSlug }: IdentifyFormProps) {
 						className={cn("h-12 rounded-pill pr-10 pl-10", identifierKind && "border-success/60")}
 						inputMode={identifierKind === "phone" ? "tel" : "email"}
 						name="identifier"
-						onChange={event => { setIdentifier(formatBrazilianWhatsAppInput(event.currentTarget.value)); setError(null); }}
+						onChange={event => { trackRegistrationStart(); setIdentifier(formatBrazilianWhatsAppInput(event.currentTarget.value)); setError(null); }}
 						placeholder={isPasswordLogin ? "voce@email.com" : t("store.checkout.identify.contactPlaceholder")}
 						type="text"
 						value={identifier}
