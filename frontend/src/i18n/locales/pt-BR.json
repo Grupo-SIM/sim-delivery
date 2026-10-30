@@ -1891,7 +1891,7 @@
 				"checkout": "Finalizar pedido",
 				"clear": "Limpar carrinho",
 				"clearConfirm": "Remover todos os itens do carrinho?",
-				"deliveryFee": "Taxa de entrega",
+				"deliveryFee": "Entrega",
 				"empty": "Seu carrinho está vazio.",
 				"minOrderProgress": "Faltam {{amount}} para o pedido mínimo",
 				"notePlaceholder": "Observações (ex: sem cebola)",

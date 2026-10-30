@@ -23,13 +23,13 @@ export function CheckoutFees({ fees, totalCents }: CheckoutFeesProps) {
 					<Tooltip content={t("store.checkout.order.feesDetails")}>
 						<Button
 							aria-label={t("store.checkout.order.feesDetails")}
-							className="size-6"
+							className="size-[1em] rounded-[2px]"
 							onClick={() => setIsOpen(true)}
 							size="icon"
 							type="button"
 							variant="outline"
 						>
-							<LuPlus aria-hidden="true" className="size-3.5" />
+							<LuPlus aria-hidden="true" className="size-[0.75em]" />
 						</Button>
 					</Tooltip>
 				</div>
