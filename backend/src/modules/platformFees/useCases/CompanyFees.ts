@@ -20,15 +20,14 @@ export class CompanyFees {
 	async update(companyId: string, input: UpdateCompanyFeesBody): Promise<CompanyFeesReturn> {
 		const current = await this.mode(companyId);
 		const mode = input.mode ?? current;
-		let provider = await this.provider.companyFees(companyId);
+		let provider = { ...(await this.provider.companyFees(companyId)), mode };
 		if (input.simintpay) provider = { ...provider, ...input.simintpay, lanes: this.merge(provider, input.simintpay.lanes) };
 		const result = await this.build(companyId, mode, provider);
 		if (result.underCovered) throw new DomainError(PlatformFeeErrors.FEES_BELOW_ACQUIRER_COST);
-		if (input.simintpay) {
-			provider = await this.provider.saveCompanyFees(companyId, {
-				lanes: input.simintpay.lanes,
-				version: input.simintpay.version,
-			});
+		if (input.simintpay || mode !== current) {
+			// SimIntPay owns the mode and the SimIntPay fees; the local column only mirrors it for pricing.
+			const version = input.simintpay?.version ?? provider.version;
+			provider = await this.provider.saveCompanyFees(companyId, { lanes: input.simintpay?.lanes ?? [], mode, version });
 		}
 		if (mode !== current) await this.prisma.company.update({ data: { platformFeeMode: mode }, where: { id: companyId } });
 		return this.build(companyId, mode, provider);
@@ -62,7 +61,7 @@ export class CompanyFees {
 		});
 		return {
 			coverage,
-			extras: mode === "simintpay" ? [] : surcharges,
+			extras: mode === "SIMINTPAY_ONLY" ? [] : surcharges,
 			mode,
 			simintpay: { lanes: provider.lanes, version: provider.version },
 			underCovered: hasShortfall(coverage),

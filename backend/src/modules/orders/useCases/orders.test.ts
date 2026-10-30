@@ -21,6 +21,7 @@ function makeOrderPrisma(
 		address?: typeof baseAddress | null;
 		company?: typeof baseCompany | null;
 		customer?: typeof baseCustomer | null;
+		feeMode?: string;
 		platformFees?: Array<Record<string, unknown> & { id: string }>;
 		unit?: typeof baseUnit | null;
 		unitProducts?: (typeof baseUnitProduct)[];
@@ -30,6 +31,7 @@ function makeOrderPrisma(
 		address = baseAddress,
 		company = baseCompany,
 		customer = baseCustomer,
+		feeMode = "ADDITIVE_ONLY",
 		platformFees = [],
 		unit = baseUnit,
 		unitProducts = [baseUnitProduct],
@@ -125,8 +127,8 @@ function makeOrderPrisma(
 					: null,
 		},
 		company: {
-			findUnique: async ({ where }: { where: { slug?: string } }) =>
-				company?.slug === where.slug ? company : null,
+			findUnique: async ({ where }: { where: { id?: string; slug?: string } }) =>
+				where.id ? { platformFeeMode: feeMode } : company?.slug === where.slug ? company : null,
 		},
 		customer: {
 			findFirst: async ({ where }: { where: { companyId: string; userId: string } }) =>
@@ -319,6 +321,17 @@ describe("CreateOrder", () => {
 		});
 
 		expect(orders).toHaveLength(2);
+	});
+
+	it("freezes the fee mode on the order and charges no surcharge in SIMINTPAY_ONLY", async () => {
+		const platformFees = [{ active: true, applicationScope: "order", companyOverrides: [], displayMode: "checkout_only", fixedValue: 75, id: "fee_order", name: "Operação", percentageValue: 0 }];
+		const additive = makeOrderPrisma({ platformFees });
+		await new CreateOrder(additive.prisma).execute("user_1", baseBody);
+		expect(additive.orders[0]).toMatchObject({ feeMode: "ADDITIVE_ONLY", feeTotalCents: 75 });
+
+		const simintpay = makeOrderPrisma({ feeMode: "SIMINTPAY_ONLY", platformFees });
+		await new CreateOrder(simintpay.prisma).execute("user_1", baseBody);
+		expect(simintpay.orders[0]).toMatchObject({ feeMode: "SIMINTPAY_ONLY", feeTotalCents: 0 });
 	});
 
 	it("uses priceCentsOverride when set", async () => {

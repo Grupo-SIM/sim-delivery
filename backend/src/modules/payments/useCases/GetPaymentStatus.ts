@@ -19,7 +19,7 @@ export class GetPaymentStatus {
 		if (!payment) throw new DomainError(PaymentErrors.PAYMENT_NOT_FOUND);
 		if (!reconcileRemote || payment.status !== "pending" || !payment.simpayPaymentId) return { status: payment.status };
 
-		let remote: { coproductionCents: number; status: string };
+		let remote: { coproductionCents: number; simintpayFeeCents: number; status: string };
 		try {
 			const merchant = payment.order?.company
 				? { externalMerchantId: payment.order.company.id, integrationKey: simpayIntegrationKey(payment.order.company.slug) }
@@ -41,6 +41,7 @@ export class GetPaymentStatus {
 			remote.status,
 			undefined,
 			remote.coproductionCents,
+			remote.simintpayFeeCents,
 		);
 		return { status: result.status };
 	}

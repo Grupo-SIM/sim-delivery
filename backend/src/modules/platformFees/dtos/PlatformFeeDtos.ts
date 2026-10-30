@@ -79,7 +79,7 @@ export type EffectiveFeeReturn = typeof EffectiveFeeReturn.static;
 export const EffectiveFeeListReturn = t.Array(EffectiveFeeReturn);
 export type EffectiveFeeListReturn = typeof EffectiveFeeListReturn.static;
 
-export const PlatformFeeModeDto = t.Union([t.Literal("both"), t.Literal("simintpay"), t.Literal("extras")]);
+export const PlatformFeeModeDto = t.Union([t.Literal("SIMINTPAY_ONLY"), t.Literal("ADDITIVE_ONLY"), t.Literal("BOTH")]);
 
 const SimintpayLane = t.Object({
 	channel: t.Literal("ONLINE"),
@@ -109,10 +109,10 @@ export const CompanyFeesReturn = t.Object({
 			rateShortfallPpm: t.Integer(),
 		}),
 	),
-	/** Surcharges added to the buyer price in this app, after company overrides. Empty when mode is simintpay. */
+	/** Surcharges added to the buyer price in this app, after company overrides. Empty when mode is SIMINTPAY_ONLY. */
 	extras: EffectiveFeeListReturn,
 	mode: PlatformFeeModeDto,
-	/** SimIntPay's own fees, deducted from the seller. Not counted when mode is extras. */
+	/** SimIntPay's own fees, deducted from the seller. Not counted when mode is ADDITIVE_ONLY. */
 	simintpay: t.Object({ lanes: t.Array(SimintpayLane), version: t.String() }),
 	underCovered: t.Boolean(),
 });

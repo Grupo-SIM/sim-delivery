@@ -13,24 +13,24 @@ describe("fee coverage", () => {
 		).toEqual({ fixedCents: 100, ratePpm: 45_000 });
 	});
 
-	it("counts both fee sets in both mode", () => {
+	it("counts both fee sets in BOTH mode", () => {
 		const lanes = evaluateCoverage({
 			costs: [pix],
-			mode: "both",
+			mode: "BOTH",
 			simintpay: [{ ...pix, fixedCents: 0, ratePpm: 5_000 }],
 			surcharges: { fixedCents: 50, ratePpm: 5_000 },
 		});
 		expect(hasShortfall(lanes)).toBe(false);
 	});
 
-	it("ignores surcharges in simintpay mode and SimIntPay fees in extras mode", () => {
+	it("ignores surcharges in SIMINTPAY_ONLY mode and SimIntPay fees in ADDITIVE_ONLY mode", () => {
 		const input = { costs: [pix], simintpay: [{ ...pix, fixedCents: 0, ratePpm: 5_000 }], surcharges: { fixedCents: 100, ratePpm: 20_000 } };
-		expect(evaluateCoverage({ ...input, mode: "simintpay" })[0]).toMatchObject({ fixedShortfallCents: 50, rateShortfallPpm: 4_800 });
-		expect(evaluateCoverage({ ...input, mode: "extras" })[0]).toMatchObject({ fixedShortfallCents: 0, rateShortfallPpm: 0 });
+		expect(evaluateCoverage({ ...input, mode: "SIMINTPAY_ONLY" })[0]).toMatchObject({ fixedShortfallCents: 50, rateShortfallPpm: 4_800 });
+		expect(evaluateCoverage({ ...input, mode: "ADDITIVE_ONLY" })[0]).toMatchObject({ fixedShortfallCents: 0, rateShortfallPpm: 0 });
 	});
 
 	it("reports a lane SimIntPay has no fee for as fully uncovered", () => {
-		const [lane] = evaluateCoverage({ costs: [pix], mode: "simintpay", simintpay: [], surcharges: { fixedCents: 0, ratePpm: 0 } });
+		const [lane] = evaluateCoverage({ costs: [pix], mode: "SIMINTPAY_ONLY", simintpay: [], surcharges: { fixedCents: 0, ratePpm: 0 } });
 		expect(lane).toMatchObject({ fixedShortfallCents: 50, rateShortfallPpm: 9_800 });
 	});
 });

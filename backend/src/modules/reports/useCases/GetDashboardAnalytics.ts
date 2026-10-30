@@ -24,7 +24,7 @@ export class GetDashboardAnalytics {
 				deliveryFee: true,
 				deliveryMethod: true,
 				feeTotalCents: true,
-				payment: { select: { coproductionCents: true } },
+				payment: { select: { coproductionCents: true, simintpayFeeCents: true } },
 				total: true,
 				unitId: true,
 			},

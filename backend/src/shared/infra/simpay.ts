@@ -9,6 +9,8 @@ import { encryptSimpaySecret, decryptSimpaySecret } from "./simpay-secrets";
 import { extractPaymentProviderMessage, PaymentProviderError } from "./paymentProviderError";
 
 export interface SimpayPaymentAllocation {
+	/** Frozen on the order; SimIntPay deducts its fee from the merchant share unless this is ADDITIVE_ONLY. */
+	feeMode?: "ADDITIVE_ONLY" | "BOTH" | "SIMINTPAY_ONLY";
 	itemsAmountCents?: number;
 	deliveryAmountCents?: number;
 	merchantAmountCents: number;
@@ -93,6 +95,8 @@ export interface SimpayFeeLane {
 }
 
 export interface SimpayCompanyFees {
+	/** Which fee sets SimIntPay applies to this company's payments. */
+	mode: "ADDITIVE_ONLY" | "BOTH" | "SIMINTPAY_ONLY";
 	/** Global acquirer cost per lane: what SimIntPay pays regardless of seller. */
 	costs: SimpayFeeLane[];
 	lanes: SimpayFeeLane[];
@@ -168,7 +172,7 @@ export function isFailedSimpayStatus(status: unknown): boolean {
 	return FAILED_PAYMENT_STATUSES.has(normalizePaymentStatus(status));
 }
 
-type CanonicalPayment = { transactionId: string; paymentId: string | null; status: string; amountCents: number; coproductionCents?: number; qrCode?: string | null; pixContent?: string | null; pixExpire?: string | null };
+type CanonicalPayment = { transactionId: string; paymentId: string | null; status: string; amountCents: number; coproductionCents?: number; simintpayFeeCents?: number; qrCode?: string | null; pixContent?: string | null; pixExpire?: string | null };
 type RegistrationResult = { id: string; status: "PENDING_OWNER" | "READY"; platform?: { id: string; tag: string }; merchant?: { id: string }; credentials?: { accessToken: string; webhookSecret: string } };
 export interface CanonicalCardToken { token: string; bin: string; last4: string; brand: string; expiryMonth: string; expiryYear: string; holderName: string; customerId: string }
 function baseUrl() { return (process.env.SIMPAY_API_URL?.trim() || "https://simpay-back.simintermediacoes.com").replace(/\/+$/, ""); }
@@ -223,7 +227,7 @@ export class SimpayClient {
 	async companyFees(companyId: string): Promise<SimpayCompanyFees> {
 		return this.json(`/platform-registrations/${encodeURIComponent(companyId)}/fees`, { provisioning: true });
 	}
-	async saveCompanyFees(companyId: string, input: { lanes: SimpayFeeLane[]; version: string }): Promise<SimpayCompanyFees> {
+	async saveCompanyFees(companyId: string, input: { lanes: SimpayFeeLane[]; mode?: SimpayCompanyFees["mode"]; version: string }): Promise<SimpayCompanyFees> {
 		return this.json(`/platform-registrations/${encodeURIComponent(companyId)}/fees`, { body: input, method: "PUT", provisioning: true });
 	}
 	private async access(scope: SimpayMerchantScope) {
@@ -263,10 +267,10 @@ export class SimpayClient {
 		return { transactionId: result.transactionId, paymentId: result.paymentId ?? result.transactionId, status: result.status };
 	}
 	async getPaymentAttempt(scope: SimpayMerchantScope, key: string): Promise<CanonicalPayment> { return this.scoped(scope, `/payment-attempts/${encodeURIComponent(key)}`); }
-	async getPaymentStatus(paymentId: string, scope?: SimpayMerchantScope): Promise<{ coproductionCents: number; paymentId: string; status: string }> {
+	async getPaymentStatus(paymentId: string, scope?: SimpayMerchantScope): Promise<{ coproductionCents: number; paymentId: string; simintpayFeeCents: number; status: string }> {
 		if (!scope) throw new PaymentProviderError("Simpay", "Pagamento histórico exige associação empresarial explícita.", 422);
 		const result = await this.scoped<CanonicalPayment>(scope, `/payments/${encodeURIComponent(paymentId)}`);
-		return { coproductionCents: result.coproductionCents ?? 0, paymentId: result.paymentId ?? result.transactionId, status: result.status };
+		return { coproductionCents: result.coproductionCents ?? 0, simintpayFeeCents: result.simintpayFeeCents ?? 0, paymentId: result.paymentId ?? result.transactionId, status: result.status };
 	}
 	async getPixStatusDirect(paymentId: string, scope?: SimpayMerchantScope) { return this.getPaymentStatus(paymentId, scope); }
 	async getWithdrawalSummary(scope: SimpayMerchantScope): Promise<SimpayWithdrawalSummary> {

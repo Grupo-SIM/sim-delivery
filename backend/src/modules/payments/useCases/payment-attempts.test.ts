@@ -1,7 +1,7 @@
 import { PaymentProviderError } from "@/shared/infra/paymentProviderError";
 import { createHash } from "node:crypto";
 import { expect, mock, test } from "bun:test";
-import { startPaymentAttempt, recoverPaymentAttempt } from "./payment-attempts";
+import { attemptAllocation, startPaymentAttempt, recoverPaymentAttempt } from "./payment-attempts";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { SimpayClient } from "@/shared/infra/simpay";
 import type { PayingCustomerContext } from "./resolvePayingCustomer";
@@ -65,4 +65,10 @@ test("recovery preserves provider failure details without unlocking the attempt"
  await expect(recoverPaymentAttempt(f.db, client as unknown as SimpayClient, context, "attempt")).rejects.toMatchObject({ message: "PAYMENT_PROCESSING", description: "Credencial empresarial inválida" });
  expect(f.db.payment.upsert).not.toHaveBeenCalled();
  expect(f.saved().state).toBe("preparing");
+});
+
+test("attempt allocation sends the fee mode frozen on the order and defaults to additive-only", () => {
+ const base = { merchantAmountCents: 10000, platformFeeCents: 0 };
+ expect(attemptAllocation({ ...base, feeMode: "SIMINTPAY_ONLY" })).toMatchObject({ feeMode: "SIMINTPAY_ONLY", platformFeeCents: 0 });
+ expect(attemptAllocation(base)).toMatchObject({ feeMode: "ADDITIVE_ONLY" });
 });

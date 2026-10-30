@@ -42,15 +42,16 @@ export async function drainCanonicalWebhooks(db: PrismaInstance, client: SimpayC
 			await db.payment.update({ where: { id: payment.id }, data: { simpayPaymentId: reference } });
 			await db.paymentAttempt.update({ where: { id: attempt.id }, data: { providerTransactionId: event.transactionId, providerPaymentId: reference } });
 			let coproductionCents = 0;
+			let simintpayFeeCents = 0;
 			if (isApprovedSimpayStatus(event.status)) {
 				// The frozen coproduction share must be stored with the confirmation; retry from the inbox if unavailable.
 				const company = await db.company.findUnique({ where: { id: row.companyId }, select: { slug: true } });
 				if (!company) continue;
 				try {
-					coproductionCents = (await client.getPaymentStatus(reference, { externalMerchantId: row.companyId, integrationKey: simpayIntegrationKey(company.slug) })).coproductionCents;
+					({ coproductionCents, simintpayFeeCents } = await client.getPaymentStatus(reference, { externalMerchantId: row.companyId, integrationKey: simpayIntegrationKey(company.slug) }));
 				} catch { continue; }
 			}
-			const result = await new ApplySimpayPaymentStatus(db).execute(reference, event.status, row.companyId, coproductionCents);
+			const result = await new ApplySimpayPaymentStatus(db).execute(reference, event.status, row.companyId, coproductionCents, simintpayFeeCents);
 			if (result.status !== "pending") await db.paymentAttempt.update({ where: { id: attempt.id }, data: { state: result.status === "confirmed" ? "confirmed" : "failed" } });
 		} else {
 			if (!event.withdrawalId) continue;

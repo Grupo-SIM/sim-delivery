@@ -12,13 +12,13 @@ export interface AppliedPaymentStatus {
 export class ApplySimpayPaymentStatus {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(simpayPaymentId: string, remoteStatus: string, companyId?: string, coproductionCents = 0): Promise<AppliedPaymentStatus> {
+	async execute(simpayPaymentId: string, remoteStatus: string, companyId?: string, coproductionCents = 0, simintpayFeeCents = 0): Promise<AppliedPaymentStatus> {
 		const payment = await this.prisma.payment.findFirst({ where: { simpayPaymentId, ...(companyId ? { order: { companyId } } : {}) } });
 		if (!payment) return { found: false, status: "not_found" };
 		if (payment.status !== "pending") return { found: true, status: payment.status };
 
 		if (isApprovedSimpayStatus(remoteStatus)) {
-			if (coproductionCents > 0) await this.prisma.payment.update({ data: { coproductionCents }, where: { id: payment.id } });
+			if (coproductionCents > 0 || simintpayFeeCents > 0) await this.prisma.payment.update({ data: { coproductionCents, simintpayFeeCents }, where: { id: payment.id } });
 			const confirmed = await new ConfirmPayment(this.prisma).execute(payment.token, simpayPaymentId);
 			const status = confirmed
 				? "confirmed"

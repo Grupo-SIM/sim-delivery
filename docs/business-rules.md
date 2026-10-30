@@ -164,14 +164,21 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
   Exceção empresarial sobrescreve cada componente separadamente (vazio herda o global).
   Valor fixo usa centavos; percentual usa basis points e arredonda por unidade, somando o fixo depois. Taxas acumulam sem
   incidência entre si e preservam preço e margem cadastrados pelo lojista.
-- Há dois conjuntos de taxas por empresa: as **da SimIntPay** (descontadas do lojista pela SimIntPay, por
-  modalidade e parcela) e as **extras** deste app (`PlatformFee`, somadas ao preço do comprador). Adicionais do
+- Há dois conjuntos de taxas por empresa: as **aditivas** deste app (`PlatformFee`, somadas ao preço do comprador)
+  e as **da SimIntPay** (descontadas do valor do lojista pela SimIntPay, por modalidade e parcela). Adicionais do
   `owner` na SimIntPay são outro tipo e são ignorados aqui. Custos das adquirentes são globais (a mais cara entre
   as ativas define o piso por modalidade/parcela), nunca por empresa ou lojista.
-- `platformFeeMode` da empresa define o que cobre o custo: `both` (SimIntPay + extras, padrão), `simintpay`
-  (extras não são cobradas nos pedidos) ou `extras` (apenas extras contam; taxas SimIntPay não entram na
-  cobertura). Percentual e fixo são comparados separadamente ao custo; salvar taxas SimIntPay, exceções ou modo que
-  deixem a cobertura abaixo do custo é rejeitado. Somente `superAdmin` vê as taxas efetivas e edita as da SimIntPay.
+- O modo de taxas da empresa vive na SimIntPay (`Platform.deliveryFeeMode`) e é espelhado em
+  `Company.platformFeeMode`: `ADDITIVE_ONLY` (padrão; só taxas aditivas, a SimIntPay não desconta nada),
+  `SIMINTPAY_ONLY` (nenhuma taxa aditiva; a SimIntPay desconta suas taxas do lojista) ou `BOTH`. O modo é congelado
+  no pedido (`Order.feeMode`) e enviado a cada tentativa de pagamento; a SimIntPay calcula a taxa `sim` (fixo +
+  percentual sobre o total do comprador) e a deduz da parcela do lojista, sem alterar o total do comprador.
+  Somente o dono da SimIntPay altera modo e taxas.
+- Percentual e fixo são comparados separadamente ao custo global; salvar taxas SimIntPay, exceções ou modo que
+  deixem a cobertura abaixo do custo é rejeitado.
+- Relatórios do lojista usam o total após taxas efetivas e coprodução: `total − taxas aditivas − coprodução −
+  taxa SimIntPay` (`Payment.simintpayFeeCents`, congelada na confirmação). Para a SimIntPay, o custo da adquirente
+  é custo e as taxas aditivas e SimIntPay são receita.
 - Total: `max(0, subtotal − cupom − cashback − fidelidade) + frete + taxas`. Créditos nunca cobrem
   frete ou taxas. Cashback e fidelidade futuros ignoram taxas.
 - `product_explicit` mostra base e taxa no produto; `embedded` mostra preço visual acrescido sem

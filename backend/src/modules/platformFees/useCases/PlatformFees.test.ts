@@ -68,3 +68,14 @@ describe("platform fee inheritance", () => {
 		expect(data?.deletedAt).toBeInstanceOf(Date);
 	});
 });
+
+describe("fee mode gate on surcharges", () => {
+	const fee = { active: true, applicationScope: "product", companyOverrides: [], createdAt: new Date(), deletedAt: null, displayMode: "checkout_only", fixedValue: 0, id: "fee", name: "Taxa", percentageValue: 400 };
+	const prismaFor = (platformFeeMode: string) =>
+		({ company: { findUnique: async () => ({ platformFeeMode }) }, platformFee: { findMany: async () => [fee] } }) as unknown as PrismaInstance;
+
+	it("drops surcharges only in SIMINTPAY_ONLY", async () => {
+		expect(await listEffectiveFees(prismaFor("SIMINTPAY_ONLY"), "company")).toEqual([]);
+		for (const mode of ["ADDITIVE_ONLY", "BOTH"]) expect(await listEffectiveFees(prismaFor(mode), "company")).toHaveLength(1);
+	});
+});

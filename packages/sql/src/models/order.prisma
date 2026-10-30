@@ -22,6 +22,8 @@ model Order {
     loyaltyPointsRedeemed Int      @default(0)
     /// Platform surcharges charged on top of merchant prices.
     feeTotalCents         Int      @default(0)
+    /// Fee mode frozen when the order was priced; SimIntPay applies exactly this one to its payments.
+    feeMode               String   @default("ADDITIVE_ONLY")
     total                 Int
     /// "delivery" or "pickup"
     deliveryMethod String

@@ -1,6 +1,6 @@
 import type { EffectiveFeeReturn } from "./dtos";
 
-export const PLATFORM_FEE_MODES = ["both", "simintpay", "extras"] as const;
+export const PLATFORM_FEE_MODES = ["SIMINTPAY_ONLY", "ADDITIVE_ONLY", "BOTH"] as const;
 export type PlatformFeeMode = (typeof PLATFORM_FEE_MODES)[number];
 
 export interface FeeComponents {
@@ -42,8 +42,8 @@ export function evaluateCoverage(input: {
 }): CoverageLane[] {
 	return input.costs.map(cost => {
 		const sim = input.simintpay.find(lane => lane.method === cost.method && lane.installments === cost.installments);
-		const simPart = input.mode === "extras" ? { fixedCents: 0, ratePpm: 0 } : (sim ?? { fixedCents: 0, ratePpm: 0 });
-		const extraPart = input.mode === "simintpay" ? { fixedCents: 0, ratePpm: 0 } : input.surcharges;
+		const simPart = input.mode === "ADDITIVE_ONLY" ? { fixedCents: 0, ratePpm: 0 } : (sim ?? { fixedCents: 0, ratePpm: 0 });
+		const extraPart = input.mode === "SIMINTPAY_ONLY" ? { fixedCents: 0, ratePpm: 0 } : input.surcharges;
 		const covered = { fixedCents: simPart.fixedCents + extraPart.fixedCents, ratePpm: simPart.ratePpm + extraPart.ratePpm };
 		return {
 			cost: { fixedCents: cost.fixedCents, ratePpm: cost.ratePpm },

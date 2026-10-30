@@ -15,7 +15,7 @@ export interface PayingCustomerContext {
 	/** Customer document digits, when required by the payment method. */
 	document: string | null;
 	merchant: { cnpj: string; externalMerchantId: string; integrationKey: string; legalName: string } | undefined;
-	order: { companyName: string; deliveryFee: number; feeTotalCents: number; id: string; total: number; unitName: string };
+	order: { companyName: string; deliveryFee: number; feeMode: string; feeTotalCents: number; id: string; total: number; unitName: string };
 	user: { email: string; id: string; name: string; phoneNumber: string | null };
 }
 
@@ -82,7 +82,7 @@ export async function resolvePayingCustomer(
 		merchant: company?.cnpj
 			? { cnpj: company.cnpj, externalMerchantId: company.id, integrationKey: simpayIntegrationKey(company.slug), legalName: company.name }
 			: undefined,
-		order: { companyName: company.name, deliveryFee: order.deliveryFee ?? 0, feeTotalCents: order.feeTotalCents ?? 0, id: order.id, total: order.total, unitName: order.unit.name },
+		order: { companyName: company.name, deliveryFee: order.deliveryFee ?? 0, feeMode: order.feeMode ?? "ADDITIVE_ONLY", feeTotalCents: order.feeTotalCents ?? 0, id: order.id, total: order.total, unitName: order.unit.name },
 		user: {
 			email: customer.user.email,
 			id: customer.user.id,

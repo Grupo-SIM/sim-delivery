@@ -16,7 +16,7 @@ interface MetricsOrder {
 	deliveryMethod: string;
 	discountCents: number;
 	feeTotalCents: number;
-	payment: { coproductionCents: number } | null;
+	payment: { coproductionCents: number; simintpayFeeCents: number } | null;
 	cashbackCentsRedeemed: number;
 	loyaltyPointsRedeemed: number;
 	items: { costCents: number | null; netRevenueCents: number | null; total: number }[];
@@ -69,7 +69,7 @@ export class GetBusinessMetrics {
 			include: {
 				coupon: { select: { code: true, type: true } },
 				items: { select: { costCents: true, netRevenueCents: true, total: true } },
-				payment: { select: { coproductionCents: true } },
+				payment: { select: { coproductionCents: true, simintpayFeeCents: true } },
 				statusEvents: { orderBy: { createdAt: "asc" } },
 				unit: { select: { name: true } },
 			},

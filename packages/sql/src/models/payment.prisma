@@ -17,6 +17,8 @@ model Payment {
     refundedAmount  Int      @default(0)
     /// Cents of the commercial share owed to coproducers, frozen by SIM INT PAY; reports deduct it from company revenue.
     coproductionCents Int    @default(0)
+    /// SimIntPay fee deducted from the merchant share (SIMINTPAY_ONLY and BOTH); zero otherwise.
+    simintpayFeeCents Int    @default(0)
     /// Set when the first refund completes.
     refundedAt      DateTime?
     /// DOM payment id returned by the Simpay backend; used for status polling.
@@ -115,6 +117,7 @@ model PaymentAttempt {
     amountCents Int
     merchantAmountCents Int
     platformFeeCents Int
+    feeMode String @default("ADDITIVE_ONLY")
     itemsAmountCents Int?
     deliveryAmountCents Int?
     requestHash String

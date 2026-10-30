@@ -14,7 +14,7 @@ interface FinancialOrder {
 	discountCents: number;
 	feeTotalCents: number;
 	items: { costCents: number | null; netRevenueCents: number | null; total: number }[];
-	payment: { confirmedAt: Date | null; coproductionCents?: number; method: string; status: string } | null;
+	payment: { confirmedAt: Date | null; coproductionCents?: number; method: string; simintpayFeeCents?: number; status: string } | null;
 	refundedCents: number;
 	statusEvents: { createdAt: Date; status: string }[];
 	total: number;
@@ -24,7 +24,7 @@ interface FinancialOrder {
 interface CancelledOrder {
 	feeTotalCents: number;
 	items: { costCents: number | null }[];
-	payment: { coproductionCents?: number; status: string } | null;
+	payment: { coproductionCents?: number; simintpayFeeCents?: number; status: string } | null;
 	refundedCents: number;
 	statusEvents: { createdAt: Date; status: string }[];
 	total: number;
@@ -51,7 +51,7 @@ function amountChange(current: number, previous: number) {
 	return ((current - previous) / previous) * 100;
 }
 
-function merchantRefund(order: { feeTotalCents: number; payment?: { coproductionCents?: number | null } | null; refundedCents: number; total: number }) {
+function merchantRefund(order: { feeTotalCents: number; payment?: { coproductionCents?: number | null; simintpayFeeCents?: number | null } | null; refundedCents: number; total: number }) {
 	return order.total > 0 ? Math.round((order.refundedCents * merchantAmount(order)) / order.total) : 0;
 }
 
@@ -231,7 +231,7 @@ export class GetFinancialAnalytics {
 		const cancelledOrders = await this.prisma.order.findMany({
 			include: {
 				items: { select: { costCents: true } },
-				payment: { select: { coproductionCents: true, status: true } },
+				payment: { select: { coproductionCents: true, simintpayFeeCents: true, status: true } },
 				statusEvents: { orderBy: { createdAt: "asc" } },
 			},
 			where: {

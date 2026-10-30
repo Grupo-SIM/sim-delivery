@@ -395,7 +395,7 @@ describe("resolvePayingCustomer", () => {
 		const context = await resolvePayingCustomer(prisma, "user_1", body);
 
 		expect(context.document).toBe("52998224725");
-		expect(context.order).toEqual({ companyName: "Zero Grau", deliveryFee: 0, feeTotalCents: 0, id: "order_1", total: 5000, unitName: "Boa Viagem" });
+		expect(context.order).toEqual({ companyName: "Zero Grau", deliveryFee: 0, feeMode: "ADDITIVE_ONLY", feeTotalCents: 0, id: "order_1", total: 5000, unitName: "Boa Viagem" });
 		expect(context.user.email).toBe("maria@example.com");
 	});
 

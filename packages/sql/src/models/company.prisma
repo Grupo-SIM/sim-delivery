@@ -3,8 +3,8 @@ model Company {
     id         String   @id @default(cuid())
     name       String
     slug       String   @unique
-    /// Which fee sets cover SimIntPay costs: both | simintpay (no surcharges) | extras (surcharges only).
-    platformFeeMode String @default("both")
+    /// Which fees apply to payments: ADDITIVE_ONLY | SIMINTPAY_ONLY | BOTH. Mirrors the mode kept by SimIntPay.
+    platformFeeMode String @default("ADDITIVE_ONLY")
     /// Per-company deployment configuration, consumed by static storefront builds.
     packageName String?  @unique
     siteUrl     String?
