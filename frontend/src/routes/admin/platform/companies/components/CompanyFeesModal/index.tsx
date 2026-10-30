@@ -23,7 +23,7 @@ interface CompanyFeesModalProps {
 	onClose: () => void;
 }
 
-const MODES: FeeMode[] = ["both", "simintpay", "extras"];
+const MODES: FeeMode[] = ["ADDITIVE_ONLY", "SIMINTPAY_ONLY", "BOTH"];
 
 function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees }) {
 	const { t } = useTranslation();
@@ -97,7 +97,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 						{fees.simintpay.lanes.map(lane => (
 							<SimintpayLaneRow
 								coverage={coverage.get(laneId(lane))}
-								disabled={mode === "extras"}
+								disabled={mode === "ADDITIVE_ONLY"}
 								draft={drafts[laneId(lane)]!}
 								key={laneId(lane)}
 								lane={lane}

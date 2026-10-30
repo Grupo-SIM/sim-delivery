@@ -304,10 +304,10 @@
 						"short": "Abaixo do custo"
 					},
 					"extras": {
-						"disabled": "Neste modo as taxas extras não são cobradas nos pedidos.",
+						"disabled": "Neste modo as taxas aditivas não são cobradas nos pedidos.",
 						"empty": "Nenhuma taxa extra ativa para esta empresa.",
 						"hint": "Somadas ao preço do comprador. Valores por empresa são ajustados na tela de taxas.",
-						"title": "Taxas extras (SIM Delivery)"
+						"title": "Taxas aditivas (SIM Delivery)"
 					},
 					"lane": {
 						"creditCard_one": "Crédito {{count}}x",
@@ -319,12 +319,12 @@
 						"PIX": "Pix"
 					},
 					"mode": {
-						"both": "SimIntPay + extras",
-						"bothHint": "A empresa paga as taxas da SimIntPay e as taxas extras somam ao preço do comprador.",
-						"extras": "Somente extras",
-						"extrasHint": "Apenas as taxas extras cobrem o custo da adquirente. As taxas SimIntPay não entram na cobertura.",
-						"simintpay": "Somente SimIntPay",
-						"simintpayHint": "As taxas extras deixam de ser cobradas nos pedidos. Só as taxas SimIntPay cobrem o custo.",
+						"ADDITIVE_ONLY": "Somente taxas aditivas",
+						"ADDITIVE_ONLYHint": "As taxas aditivas somam ao preço do comprador. A SimIntPay não desconta suas taxas do lojista.",
+						"BOTH": "Taxas aditivas e SimIntPay",
+						"BOTHHint": "As taxas aditivas somam ao comprador e a SimIntPay também desconta suas taxas do lojista.",
+						"SIMINTPAY_ONLY": "Somente taxas SimIntPay",
+						"SIMINTPAY_ONLYHint": "A SimIntPay desconta suas taxas do valor do lojista. Nenhuma taxa aditiva é cobrada do comprador.",
 						"title": "Taxas aplicadas"
 					},
 					"saveError": "Não foi possível salvar. As taxas podem estar abaixo do custo da adquirente ou ter mudado; recarregue e tente novamente.",
@@ -335,7 +335,7 @@
 					},
 					"simintpay": {
 						"fixed": "Valor fixo SimIntPay ({{lane}})",
-						"hint": "Descontadas do lojista pela SimIntPay. O custo da adquirente é global e define o mínimo.",
+						"hint": "Descontadas do lojista pela SimIntPay quando o modo inclui taxas SimIntPay. O custo da adquirente é global e define o mínimo.",
 						"rate": "Percentual SimIntPay ({{lane}})",
 						"title": "Taxas SimIntPay"
 					},

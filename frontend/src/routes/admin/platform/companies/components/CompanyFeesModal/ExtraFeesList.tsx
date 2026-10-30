@@ -9,7 +9,7 @@ interface ExtraFeesListProps {
 
 export function ExtraFeesList({ extras, mode }: ExtraFeesListProps) {
 	const { t } = useTranslation();
-	if (mode === "simintpay") {
+	if (mode === "SIMINTPAY_ONLY") {
 		return <p className="text-muted-foreground text-sm">{t("admin.companies.fees.extras.disabled")}</p>;
 	}
 	if (extras.length === 0) {
