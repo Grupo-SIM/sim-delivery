@@ -47,7 +47,7 @@ export function createPermissions(role: Role) {
 
 	permix.setup({
 		branding: {
-			read: mgmt || isAttendant,
+			read: staffRead,
 			update: isOwner,
 		},
 		company: {

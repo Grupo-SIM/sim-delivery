@@ -86,6 +86,13 @@ describe("createPermissions matrix", () => {
 		expect(createPermissions("manager").check("branding", "update")).toBe(false);
 	});
 
+	it("every dashboard role may read branding", () => {
+		for (const role of ["superAdmin", "owner", "manager", "attendant", "kitchen", "courier"] as const) {
+			expect(createPermissions(role).check("branding", "read")).toBe(true);
+		}
+		expect(createPermissions("customer").check("branding", "read")).toBe(false);
+	});
+
 	it("only owner and superAdmin may invite another owner", () => {
 		expect(createPermissions("superAdmin").check("staff", "inviteOwner")).toBe(true);
 		expect(createPermissions("owner").check("staff", "inviteOwner")).toBe(true);
