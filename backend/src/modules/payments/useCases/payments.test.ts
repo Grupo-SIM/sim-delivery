@@ -1,4 +1,4 @@
-import { describe, expect, it, mock } from "bun:test";
+import { beforeEach, describe, expect, it, mock } from "bun:test";
 interface DomPagamentosClient {
  createCustomer(payload: unknown): Promise<string>;
  createCardToken(id: string, payload: unknown): Promise<{ brand: string; expiryMonth: string; expiryYear: string; holderName: string; last4: string; token: string }>;
@@ -157,11 +157,13 @@ function makeWorld(opts: WorldOptions = {}) {
 				const customer = customers.find(candidate => candidate.id === order?.customerId);
 				return customer?.userId === where.order.customer.userId;
 			}) ?? null,
-		findMany: async ({ where }: { where: { method: { in: string[] } } }) =>
+		findMany: async ({ where }: { where: { method: { in: string[] }; order?: { companyId?: string } } }) =>
 			payments
 				.filter(payment => {
 					const order = orders.find(candidate => candidate.id === payment.orderId);
+					const orderCompanyId = customers.find(candidate => candidate.id === order?.customerId)?.companyId;
 					return (
+						(!where.order?.companyId || orderCompanyId === where.order.companyId) &&
 						where.method.in.includes(payment.method) &&
 						payment.status === "pending" &&
 						payment.simpayPaymentId !== null &&
@@ -930,6 +932,26 @@ describe("ApplySimpayPaymentStatus", () => {
 });
 
 describe("ReconcilePendingPayments", () => {
+	beforeEach(() => {
+		process.env.COMPANY_SLUG = baseCompany.slug;
+	});
+
+	it("ignores payments from other companies and does nothing without a company slug", async () => {
+		const { payments, prisma } = makeWorld({
+			payments: [{ amount: 5000, id: "pay_1", method: "credit_card", orderId: "order_1", pixContent: null, pixQrcode: null, simpayPaymentId: "simpay_1", status: "pending", token: "token_1" }],
+		});
+		const getPaymentStatus = mock(async () => ({ status: "COMPLETED" }));
+		const { simpay } = makeSimpay({ getPaymentStatus });
+
+		process.env.COMPANY_SLUG = "other-company";
+		expect(await new ReconcilePendingPayments(prisma, simpay).execute()).toBe(0);
+		process.env.COMPANY_SLUG = "";
+		expect(await new ReconcilePendingPayments(prisma, simpay).execute()).toBe(0);
+
+		expect(getPaymentStatus).not.toHaveBeenCalled();
+		expect(payments[0]?.status).toBe("pending");
+	});
+
 	it("confirms an asynchronous card without an open checkout", async () => {
 		const { payments, prisma, orders, cashbackLedger } = makeWorld({
 			companies: [{ ...baseCompany, cnpj: "10802530000107" }],

@@ -14,7 +14,13 @@ export class ReconcilePendingPayments {
 	) {}
 
 	async execute(): Promise<number> {
-		const attempts = await this.prisma.paymentAttempt.findMany({ where: { state: { in: ["submitting", "pending"] } }, orderBy: { updatedAt: "asc" }, take: 100 });
+		// Each deploy serves one company; never reconcile (and notify) another company's payments.
+		const slug = process.env.COMPANY_SLUG?.trim();
+		if (!slug) return 0;
+		const company = await this.prisma.company.findUnique({ select: { id: true }, where: { slug } });
+		if (!company) return 0;
+
+		const attempts = await this.prisma.paymentAttempt.findMany({ where: { companyId: company.id, state: { in: ["submitting", "pending"] } }, orderBy: { updatedAt: "asc" }, take: 100 });
 		for (const attempt of attempts) {
 			try {
 				const order = await this.prisma.order.findUnique({ where: { id: attempt.orderId }, include: { customer: true, company: true } });
@@ -23,12 +29,12 @@ export class ReconcilePendingPayments {
 				await recoverPaymentAttempt(this.prisma, this.simpay, context, attempt.id);
 			} catch { /* Preserve uncertainty; never issue a second charge. */ }
 		}
-		await drainCanonicalWebhooks(this.prisma, this.simpay);
+		await drainCanonicalWebhooks(this.prisma, this.simpay, company.id);
 		const payments = await this.prisma.payment.findMany({
 			select: { method: true, order: { select: { company: { select: { cnpj: true, id: true, slug: true } } } }, simpayPaymentId: true },
 			where: {
 				method: { in: ["pix", "credit_card"] },
-				order: { status: "awaiting_payment" },
+				order: { companyId: company.id, status: "awaiting_payment" },
 				simpayPaymentId: { not: null },
 				status: "pending",
 			},
