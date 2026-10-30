@@ -11,29 +11,29 @@ describe("platform fee inheritance", () => {
 					{
 						active: true,
 						applicationScope: "product",
-						calculationType: "percentage",
-						companyOverrides: [{ active: true, companyId: "company", valueOverride: 350 }],
+						companyOverrides: [{ active: true, companyId: "company", fixedOverride: null, percentageOverride: 350 }],
 						displayMode: "checkout_only",
+						fixedValue: 100,
 						id: "overridden",
 						name: "Serviço",
-						value: 200,
+						percentageValue: 200,
 					},
 					{
 						active: true,
 						applicationScope: "order",
-						calculationType: "fixed",
-						companyOverrides: [{ active: false, companyId: "company", valueOverride: null }],
+						companyOverrides: [{ active: false, companyId: "company", fixedOverride: null, percentageOverride: null }],
 						displayMode: "checkout_only",
+						fixedValue: 100,
 						id: "disabled",
 						name: "Operação",
-						value: 100,
+						percentageValue: 0,
 					},
 				],
 			},
 		} as unknown as PrismaInstance;
 
 		expect(await listEffectiveFees(prisma, "company")).toEqual([
-			expect.objectContaining({ id: "overridden", value: 350 }),
+			expect.objectContaining({ fixedValue: 100, id: "overridden", percentageValue: 350 }),
 		]);
 	});
 

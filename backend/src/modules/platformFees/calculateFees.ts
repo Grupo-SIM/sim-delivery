@@ -17,8 +17,8 @@ export interface CalculatedFee extends EffectiveFeeReturn {
 	items: CalculatedItemFee[];
 }
 
-function percentageAmount(cents: number, basisPoints: number) {
-	return Math.floor((cents * basisPoints + 5_000) / 10_000);
+function feeAmount(cents: number, fee: EffectiveFeeReturn) {
+	return Math.floor((cents * fee.percentageValue + 5_000) / 10_000) + fee.fixedValue;
 }
 
 export function calculatePlatformFees(
@@ -28,15 +28,11 @@ export function calculatePlatformFees(
 	const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
 	const calculated = fees.map(fee => {
 		if (fee.applicationScope === "order") {
-			const amountCents =
-				fee.calculationType === "fixed" ? fee.value : percentageAmount(subtotal, fee.value);
+			const amountCents = feeAmount(subtotal, fee);
 			return { ...fee, amountCents, items: [] };
 		}
 		const feeItems = items.map(item => {
-			const unitAmountCents =
-				fee.calculationType === "fixed"
-					? fee.value
-					: percentageAmount(item.unitPrice, fee.value);
+			const unitAmountCents = feeAmount(item.unitPrice, fee);
 			return {
 				amountCents: unitAmountCents * item.quantity,
 				itemKey: item.key,

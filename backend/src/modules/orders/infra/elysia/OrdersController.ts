@@ -145,7 +145,11 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 							.filter(fee => fee.displayMode === "embedded")
 							.reduce((sum, fee) => sum + fee.amountCents, 0),
 						feeTotalCents: calculated.feeTotalCents,
-						fees: calculated.fees.map(({ value, ...fee }) => ({ ...fee, configuredValue: value })),
+						fees: calculated.fees.map(({ fixedValue, percentageValue, ...fee }) => ({
+						...fee,
+						configuredFixed: fixedValue,
+						configuredPercentage: percentageValue,
+					})),
 						visibleFeeTotalCents: calculated.fees
 							.filter(fee => fee.displayMode !== "embedded")
 							.reduce((sum, fee) => sum + fee.amountCents, 0),

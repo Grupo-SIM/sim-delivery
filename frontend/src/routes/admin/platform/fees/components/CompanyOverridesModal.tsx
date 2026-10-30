@@ -10,7 +10,7 @@ import {
 } from "@/lib/api";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { showAlert, showToast } from "@/stores";
-import { CompanyOverrideRow } from "./CompanyOverrideRow";
+import { CompanyOverrideRow, type FeeOverrideValues } from "./CompanyOverrideRow";
 import type { PlatformFee } from "./types";
 
 interface CompanyOverridesModalProps {
@@ -24,9 +24,9 @@ export function CompanyOverridesModal({ fee, onClose }: CompanyOverridesModalPro
 	if (!fee) return null;
 	const refresh = () => queryClient.invalidateQueries({ queryKey: getPlatformFeesByFeeIdCompaniesQueryKey(fee.id) });
 
-	async function save(companyId: string, active: boolean, valueOverride: number | null) {
+	async function save(companyId: string, values: FeeOverrideValues) {
 		try {
-			await putPlatformFeesByFeeIdCompaniesByCompanyId(fee!.id, companyId, { active, valueOverride });
+			await putPlatformFeesByFeeIdCompaniesByCompanyId(fee!.id, companyId, values);
 			await refresh();
 			showToast("Sobrescrita salva.", "positive");
 			return true;
@@ -47,11 +47,11 @@ export function CompanyOverridesModal({ fee, onClose }: CompanyOverridesModalPro
 
 	return (
 		<Modal isOpen onClose={onClose} title={`Empresas — ${fee.name}`} urlKey="platform-fee-companies" urlState={fee.id}>
-			<p className="mb-4 text-muted-foreground text-sm">Valor vazio herda {fee.calculationType === "fixed" ? "o valor fixo" : "o percentual"} global.</p>
+			<p className="mb-4 text-muted-foreground text-sm">Campo vazio herda o valor global.</p>
 			{query.isPending ? <Skeleton className="h-48 w-full" /> : query.isError ? <ErrorState title="Erro ao carregar empresas" /> : <DataTable tableClassName="min-w-0 table-fixed">
 				<colgroup><col /><col className="w-[40%]" /><col className="w-14 sm:w-20" /><col className="w-16" /></colgroup>
-				<thead><tr className="border-border border-b text-left text-muted-foreground"><th className="px-3 py-2">Empresa</th><th className="px-3 py-2">Valor próprio</th><th className="px-3 py-2 text-center">Ativa</th><th className="px-3 py-2" /></tr></thead>
-				<tbody>{query.data?.map(company => <CompanyOverrideRow calculationType={fee.calculationType as "fixed" | "percentage"} company={company} key={company.companyId} onReset={reset} onSave={save} />)}</tbody>
+				<thead><tr className="border-border border-b text-left text-muted-foreground"><th className="px-3 py-2">Empresa</th><th className="px-3 py-2">Percentual</th><th className="px-3 py-2">Valor fixo</th><th className="px-3 py-2 text-center">Ativa</th><th className="px-3 py-2" /></tr></thead>
+				<tbody>{query.data?.map(company => <CompanyOverrideRow company={company} key={company.companyId} onReset={reset} onSave={save} />)}</tbody>
 			</DataTable>}
 		</Modal>
 	);

@@ -160,7 +160,9 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
   a taxa; remover a exceção restaura herança. Exclusão global é lógica e não altera pedidos antigos.
 - Taxa `product` incide por unidade sobre preço comercial efetivo, incluindo promoção e opções.
   Taxa `order` incide uma vez sobre subtotal comercial e aceita apenas exibição `checkout_only`.
-- Valor fixo usa centavos; percentual usa basis points e arredonda por unidade. Taxas acumulam sem
+- Uma taxa combina percentual e valor fixo (ex.: 4% + R$ 1,00); ao menos um deve ser maior que zero.
+  Exceção empresarial sobrescreve cada componente separadamente (vazio herda o global).
+  Valor fixo usa centavos; percentual usa basis points e arredonda por unidade, somando o fixo depois. Taxas acumulam sem
   incidência entre si e preservam preço e margem cadastrados pelo lojista.
 - Total: `max(0, subtotal − cupom − cashback − fidelidade) + frete + taxas`. Créditos nunca cobrem
   frete ou taxas. Cashback e fidelidade futuros ignoram taxas.

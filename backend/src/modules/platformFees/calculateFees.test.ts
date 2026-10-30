@@ -5,10 +5,10 @@ import type { EffectiveFeeReturn } from "./dtos";
 function fee(input: Partial<EffectiveFeeReturn> & Pick<EffectiveFeeReturn, "id">): EffectiveFeeReturn {
 	return {
 		applicationScope: "product",
-		calculationType: "percentage",
 		displayMode: "checkout_only",
+		fixedValue: 0,
 		name: input.id,
-		value: 200,
+		percentageValue: 200,
 		...input,
 	};
 }
@@ -18,7 +18,7 @@ describe("calculatePlatformFees", () => {
 		const result = calculatePlatformFees(
 			[
 				fee({ id: "percentage" }),
-				fee({ calculationType: "fixed", id: "fixed", value: 25 }),
+				fee({ fixedValue: 25, id: "fixed", percentageValue: 0 }),
 			],
 			[{ key: "line", quantity: 3, unitPrice: 2_000 }],
 		);
@@ -29,8 +29,8 @@ describe("calculatePlatformFees", () => {
 	it("calculates order fees from merchant subtotal without fee-on-fee", () => {
 		const result = calculatePlatformFees(
 			[
-				fee({ applicationScope: "product", id: "product", value: 500 }),
-				fee({ applicationScope: "order", id: "order", value: 200 }),
+				fee({ applicationScope: "product", id: "product", percentageValue: 500 }),
+				fee({ applicationScope: "order", id: "order", percentageValue: 200 }),
 			],
 			[
 				{ key: "a", quantity: 2, unitPrice: 1_000 },
@@ -40,8 +40,20 @@ describe("calculatePlatformFees", () => {
 		expect(result.fees.map(item => item.amountCents)).toEqual([125, 50]);
 	});
 
+	it("combines percentage and fixed amounts in a single fee", () => {
+		const result = calculatePlatformFees(
+			[
+				fee({ fixedValue: 100, id: "product", percentageValue: 400 }),
+				fee({ applicationScope: "order", fixedValue: 100, id: "order", percentageValue: 400 }),
+			],
+			[{ key: "line", quantity: 2, unitPrice: 2_500 }],
+		);
+		expect(result.fees.map(item => item.amountCents)).toEqual([400, 300]);
+		expect(result.fees[0].items[0].unitAmountCents).toBe(200);
+	});
+
 	it("rounds percentage to nearest cent per product unit", () => {
-		const result = calculatePlatformFees([fee({ id: "round", value: 333 })], [
+		const result = calculatePlatformFees([fee({ id: "round", percentageValue: 333 })], [
 			{ key: "line", quantity: 2, unitPrice: 101 },
 		]);
 		expect(result.feeTotalCents).toBe(6);

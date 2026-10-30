@@ -1,7 +1,8 @@
 import { t } from "elysia";
 
 export const FeeApplicationScope = t.Union([t.Literal("product"), t.Literal("order")]);
-export const FeeCalculationType = t.Union([t.Literal("fixed"), t.Literal("percentage")]);
+const FeePercentage = t.Integer({ maximum: 10_000, minimum: 0 });
+const FeeFixed = t.Integer({ maximum: 2_147_483_647, minimum: 0 });
 export const FeeDisplayMode = t.Union([
 	t.Literal("product_explicit"),
 	t.Literal("embedded"),
@@ -11,10 +12,10 @@ export const FeeDisplayMode = t.Union([
 export const CreatePlatformFeeBody = t.Object({
 	active: t.Optional(t.Boolean()),
 	applicationScope: FeeApplicationScope,
-	calculationType: FeeCalculationType,
 	displayMode: FeeDisplayMode,
+	fixedValue: t.Optional(FeeFixed),
 	name: t.String({ maxLength: 120, minLength: 1 }),
-	value: t.Integer({ maximum: 2_147_483_647, minimum: 1 }),
+	percentageValue: t.Optional(FeePercentage),
 });
 export type CreatePlatformFeeBody = typeof CreatePlatformFeeBody.static;
 
@@ -22,29 +23,31 @@ export const UpdatePlatformFeeBody = t.Partial(
 	t.Object({
 		active: t.Boolean(),
 		displayMode: FeeDisplayMode,
+		fixedValue: FeeFixed,
 		name: t.String({ maxLength: 120, minLength: 1 }),
-		value: t.Integer({ maximum: 2_147_483_647, minimum: 1 }),
+		percentageValue: FeePercentage,
 	}),
 );
 export type UpdatePlatformFeeBody = typeof UpdatePlatformFeeBody.static;
 
 export const UpsertCompanyFeeOverrideBody = t.Object({
 	active: t.Boolean(),
-	valueOverride: t.Optional(t.Nullable(t.Integer({ maximum: 2_147_483_647, minimum: 1 }))),
+	fixedOverride: t.Optional(t.Nullable(FeeFixed)),
+	percentageOverride: t.Optional(t.Nullable(FeePercentage)),
 });
 export type UpsertCompanyFeeOverrideBody = typeof UpsertCompanyFeeOverrideBody.static;
 
 export const PlatformFeeReturn = t.Object({
 	active: t.Boolean(),
 	applicationScope: t.String(),
-	calculationType: t.String(),
 	companyOverrideCount: t.Integer(),
 	createdAt: t.Date(),
 	displayMode: t.String(),
+	fixedValue: t.Integer(),
 	id: t.String(),
 	name: t.String(),
+	percentageValue: t.Integer(),
 	updatedAt: t.Date(),
-	value: t.Integer(),
 });
 export type PlatformFeeReturn = typeof PlatformFeeReturn.static;
 export const PlatformFeeListReturn = t.Array(PlatformFeeReturn);
@@ -54,9 +57,11 @@ export const CompanyFeeOverrideReturn = t.Object({
 	active: t.Boolean(),
 	companyId: t.String(),
 	companyName: t.String(),
-	effectiveValue: t.Integer(),
+	effectiveFixed: t.Integer(),
+	effectivePercentage: t.Integer(),
+	fixedOverride: t.Nullable(t.Integer()),
 	inherited: t.Boolean(),
-	valueOverride: t.Nullable(t.Integer()),
+	percentageOverride: t.Nullable(t.Integer()),
 });
 export type CompanyFeeOverrideReturn = typeof CompanyFeeOverrideReturn.static;
 export const CompanyFeeOverrideListReturn = t.Array(CompanyFeeOverrideReturn);
@@ -64,11 +69,11 @@ export type CompanyFeeOverrideListReturn = typeof CompanyFeeOverrideListReturn.s
 
 export const EffectiveFeeReturn = t.Object({
 	applicationScope: t.String(),
-	calculationType: t.String(),
 	displayMode: t.String(),
+	fixedValue: t.Integer(),
 	id: t.String(),
 	name: t.String(),
-	value: t.Integer(),
+	percentageValue: t.Integer(),
 });
 export type EffectiveFeeReturn = typeof EffectiveFeeReturn.static;
 export const EffectiveFeeListReturn = t.Array(EffectiveFeeReturn);

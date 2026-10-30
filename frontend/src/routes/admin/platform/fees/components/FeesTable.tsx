@@ -6,6 +6,7 @@ import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { deletePlatformFeesByFeeId } from "@/lib/api";
+import { formatFeeAmount } from "@/lib/platform-fees";
 import { showAlert, showToast } from "@/stores";
 import type { PlatformFee } from "./types";
 
@@ -13,12 +14,6 @@ interface FeesTableProps {
 	fees: PlatformFee[];
 	onCompanies: (fee: PlatformFee) => void;
 	onEdit: (fee: PlatformFee) => void;
-}
-
-function formatValue(fee: PlatformFee) {
-	return fee.calculationType === "percentage"
-		? `${(Number(fee.value) / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}%`
-		: (Number(fee.value) / 100).toLocaleString("pt-BR", { currency: "BRL", style: "currency" });
 }
 
 export function FeesTable({ fees, onCompanies, onEdit }: FeesTableProps) {
@@ -40,7 +35,7 @@ export function FeesTable({ fees, onCompanies, onEdit }: FeesTableProps) {
 				<tr className="border-border border-b last:border-0" key={fee.id}>
 					<td className="px-4 py-3 font-medium">{fee.name}</td>
 					<td className="px-4 py-3">{fee.applicationScope === "product" ? "Por produto" : "Por pedido"}</td>
-					<td className="px-4 py-3">{formatValue(fee)}</td>
+					<td className="px-4 py-3">{formatFeeAmount(fee.percentageValue, fee.fixedValue)}</td>
 					<td className="px-4 py-3">{{ checkout_only: "Checkout", embedded: "Embutida", product_explicit: "Explícita" }[fee.displayMode]}</td>
 					<td className="px-4 py-3">{fee.active ? "Ativa" : "Inativa"}</td>
 					<td className="px-4 py-3"><div className="flex justify-end gap-2">

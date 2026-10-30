@@ -18,11 +18,11 @@ export async function listEffectiveFees(
 		return [
 			{
 				applicationScope: fee.applicationScope as EffectiveFeeReturn["applicationScope"],
-				calculationType: fee.calculationType as EffectiveFeeReturn["calculationType"],
 				displayMode: fee.displayMode as EffectiveFeeReturn["displayMode"],
+				fixedValue: override?.fixedOverride ?? fee.fixedValue,
 				id: fee.id,
 				name: fee.name,
-				value: override?.valueOverride ?? fee.value,
+				percentageValue: override?.percentageOverride ?? fee.percentageValue,
 			},
 		];
 	});

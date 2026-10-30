@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { NumericFormat } from "react-number-format";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { CollapsibleFormSection } from "@/components/ui/CollapsibleFormSection";
@@ -7,6 +6,7 @@ import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { FeeValueInput } from "./FeeValueInput";
 import type { FeeFormValue } from "./types";
 
 interface FeeFormProps {
@@ -21,10 +21,10 @@ interface FeeFormProps {
 const defaults: FeeFormValue = {
 	active: true,
 	applicationScope: "product",
-	calculationType: "percentage",
 	displayMode: "checkout_only",
+	fixedValue: 0,
 	name: "",
-	value: 0,
+	percentageValue: 0,
 };
 
 export function FeeForm({ collapsible = false, initial = defaults, isPending, lockKind = false, onCancel, onSubmit }: FeeFormProps) {
@@ -63,28 +63,18 @@ export function FeeForm({ collapsible = false, initial = defaults, isPending, lo
 							value={form.applicationScope}
 						/>
 					</div>
-					<div className="space-y-2">
-						<p className="font-medium text-sm">Cálculo</p>
-						<CustomSelect disabled={lockKind} onChange={value => setForm(current => ({ ...current, calculationType: value as FeeFormValue["calculationType"] }))} options={[{ label: "Percentual", value: "percentage" }, { label: "Valor fixo", value: "fixed" }]} value={form.calculationType} />
-					</div>
 				</div>
-				<Label>
-					<span>Valor <RequiredMark /></span>
-					<NumericFormat
-						allowNegative={false}
-						className="flex h-11 w-full rounded-md border border-input bg-surface text-card-foreground px-3 py-2 text-sm placeholder:text-muted-foreground/70"
-						decimalScale={form.calculationType === "percentage" ? 2 : 2}
-						decimalSeparator=","
-						isAllowed={({ floatValue }) => floatValue === undefined || (floatValue > 0 && (form.calculationType !== "percentage" || floatValue <= 100))}
-						name="fee-value"
-						onValueChange={({ floatValue }) => setForm(current => ({ ...current, value: Math.round((floatValue ?? 0) * (current.calculationType === "percentage" ? 100 : 100)) }))}
-						placeholder={form.calculationType === "percentage" ? "Ex: 2,00%" : "Ex: R$ 2,00"}
-						prefix={form.calculationType === "fixed" ? "R$ " : undefined}
-						suffix={form.calculationType === "percentage" ? "%" : undefined}
-						thousandSeparator="."
-						value={form.value / 100}
-					/>
-				</Label>
+				<div className="grid gap-4 sm:grid-cols-2">
+					<Label>
+						<span>Percentual</span>
+						<FeeValueInput kind="percentage" name="fee-percentage" onChange={percentageValue => setForm(current => ({ ...current, percentageValue }))} value={form.percentageValue} />
+					</Label>
+					<Label>
+						<span>Valor fixo</span>
+						<FeeValueInput kind="fixed" name="fee-fixed" onChange={fixedValue => setForm(current => ({ ...current, fixedValue }))} value={form.fixedValue} />
+					</Label>
+				</div>
+				<p className="text-muted-foreground text-xs">Informe um ou ambos. Ex: 4% + R$ 1,00.</p>
 				<div className="space-y-2">
 					<p className="font-medium text-sm">Exibição</p>
 					<CustomSelect onChange={value => setForm(current => ({ ...current, displayMode: value as FeeFormValue["displayMode"] }))} options={displayOptions} value={form.displayMode} />
@@ -99,7 +89,7 @@ export function FeeForm({ collapsible = false, initial = defaults, isPending, lo
 			</CollapsibleFormSection>
 			<div className="flex justify-end gap-2">
 				{onCancel && <Button onClick={onCancel} type="button" variant="outline">Descartar</Button>}
-				<Button disabled={isPending || !name.trim() || form.value <= 0} type="submit">Salvar</Button>
+				<Button disabled={isPending || !name.trim() || (form.percentageValue <= 0 && form.fixedValue <= 0)} type="submit">Salvar</Button>
 			</div>
 		</form>
 	);

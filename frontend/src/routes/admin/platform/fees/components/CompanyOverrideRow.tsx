@@ -1,53 +1,75 @@
 import { useRef, useState } from "react";
-import { NumericFormat } from "react-number-format";
 import { LuRotateCcw } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { Tooltip } from "@/components/ui/Tooltip";
-import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import type { GetPlatformFeesByFeeIdCompanies200 } from "@/lib/api";
+import { OverrideValueInput } from "./OverrideValueInput";
 
 type CompanyFee = GetPlatformFeesByFeeIdCompanies200[number];
 
-interface CompanyOverrideRowProps {
-	calculationType: "fixed" | "percentage";
-	company: CompanyFee;
-	onReset: (companyId: string) => Promise<CompanyFee | undefined>;
-	onSave: (companyId: string, active: boolean, valueOverride: number | null) => Promise<boolean>;
+export interface FeeOverrideValues {
+	active: boolean;
+	fixedOverride: number | null;
+	percentageOverride: number | null;
 }
 
-export function CompanyOverrideRow({ calculationType, company, onReset, onSave }: CompanyOverrideRowProps) {
-	const [active, setActive] = useState(company.active);
-	const [value, setValue] = useState(company.valueOverride == null ? "" : String(Number(company.valueOverride) / 100));
-	const activeRef = useRef(active);
-	const pending = useRef(Promise.resolve());
-	const lastSubmitted = useRef<{ active: boolean; valueOverride: number | null } | null>({ active, valueOverride: company.valueOverride == null ? null : Number(company.valueOverride) });
+interface CompanyOverrideRowProps {
+	company: CompanyFee;
+	onReset: (companyId: string) => Promise<CompanyFee | undefined>;
+	onSave: (companyId: string, values: FeeOverrideValues) => Promise<boolean>;
+}
 
-	function save(nextActive: boolean, nextValue: string) {
-		const valueOverride = nextValue === "" ? null : Math.round(Number(nextValue) * 100);
-		if (lastSubmitted.current?.active === nextActive && lastSubmitted.current.valueOverride === valueOverride) return;
-		const submitted = { active: nextActive, valueOverride };
-		lastSubmitted.current = submitted;
+function toInput(cents: number | string | null) {
+	return cents == null ? "" : String(Number(cents) / 100);
+}
+
+function toCents(input: string) {
+	return input === "" ? null : Math.round(Number(input) * 100);
+}
+
+function toValues(company: CompanyFee): FeeOverrideValues {
+	return {
+		active: company.active,
+		fixedOverride: company.fixedOverride == null ? null : Number(company.fixedOverride),
+		percentageOverride: company.percentageOverride == null ? null : Number(company.percentageOverride),
+	};
+}
+
+export function CompanyOverrideRow({ company, onReset, onSave }: CompanyOverrideRowProps) {
+	const [active, setActive] = useState(company.active);
+	const [resetKey, setResetKey] = useState(0);
+	const current = useRef(toInputs(company));
+	const pending = useRef(Promise.resolve());
+	const lastSubmitted = useRef<FeeOverrideValues | null>(toValues(company));
+
+	function toInputs(source: CompanyFee) {
+		return { active: source.active, fixed: toInput(source.fixedOverride), percentage: toInput(source.percentageOverride) };
+	}
+
+	function save() {
+		const values: FeeOverrideValues = {
+			active: current.current.active,
+			fixedOverride: toCents(current.current.fixed),
+			percentageOverride: toCents(current.current.percentage),
+		};
+		const last = lastSubmitted.current;
+		if (last?.active === values.active && last.fixedOverride === values.fixedOverride && last.percentageOverride === values.percentageOverride) return;
+		lastSubmitted.current = values;
 		pending.current = pending.current.then(async () => {
-			const saved = await onSave(company.companyId, nextActive, valueOverride);
-			if (!saved && lastSubmitted.current === submitted) lastSubmitted.current = null;
+			const saved = await onSave(company.companyId, values);
+			if (!saved && lastSubmitted.current === values) lastSubmitted.current = null;
 		});
 	}
 
-	const [localValue, setLocalValue, flushValue] = useDebouncedInput(value, next => {
-		setValue(next);
-		save(activeRef.current, next);
-	});
-
 	function reset() {
-		flushValue();
 		pending.current = pending.current.then(async () => {
 			const restored = await onReset(company.companyId);
 			if (!restored) return;
-			activeRef.current = restored.active;
+			current.current = toInputs(restored);
 			setActive(restored.active);
-			setValue(restored.valueOverride == null ? "" : String(Number(restored.valueOverride) / 100));
-			lastSubmitted.current = { active: restored.active, valueOverride: restored.valueOverride == null ? null : Number(restored.valueOverride) };
+			setResetKey(key => key + 1);
+			lastSubmitted.current = toValues(restored);
 		});
 	}
 
@@ -55,31 +77,30 @@ export function CompanyOverrideRow({ calculationType, company, onReset, onSave }
 		<tr className="border-border border-b last:border-0">
 			<td className="break-words px-3 py-3 font-medium">{company.companyName}</td>
 			<td className="px-3 py-3">
-				<NumericFormat
-					allowNegative={false}
-					className="h-9 min-w-0 w-full rounded-md border border-input bg-surface text-card-foreground px-3 text-sm placeholder:text-muted-foreground/70"
-					decimalScale={2}
-					decimalSeparator=","
-					isAllowed={({ floatValue }) => floatValue === undefined || (floatValue > 0 && (calculationType !== "percentage" || floatValue <= 100))}
-					aria-label={`Valor próprio de ${company.companyName}`}
-					inputMode="decimal"
-					name={`company-fee-${company.companyId}`}
-					onBlur={flushValue}
-					onValueChange={(values, source) => { if (source.source === "event") setLocalValue(values.value); }}
-					placeholder={calculationType === "fixed" ? "Ex: R$ 2,00" : "Ex: 2,00%"}
-					prefix={calculationType === "fixed" ? "R$ " : undefined}
-					suffix={calculationType === "percentage" ? "%" : undefined}
-					thousandSeparator="."
-					value={localValue}
-					valueIsNumericString
+				<OverrideValueInput
+					key={`percentage-${resetKey}`}
+					kind="percentage"
+					label={`Percentual próprio de ${company.companyName}`}
+					name={`company-fee-percentage-${company.companyId}`}
+					onCommit={value => { current.current.percentage = value; save(); }}
+					value={current.current.percentage}
+				/>
+			</td>
+			<td className="px-3 py-3">
+				<OverrideValueInput
+					key={`fixed-${resetKey}`}
+					kind="fixed"
+					label={`Valor fixo próprio de ${company.companyName}`}
+					name={`company-fee-fixed-${company.companyId}`}
+					onCommit={value => { current.current.fixed = value; save(); }}
+					value={current.current.fixed}
 				/>
 			</td>
 			<td className="px-3 py-3 text-center">
 				<Checkbox aria-label={`Ativar em ${company.companyName}`} checked={active} onChange={event => {
-					activeRef.current = event.currentTarget.checked;
-					setActive(activeRef.current);
-					flushValue();
-					save(activeRef.current, localValue);
+					current.current.active = event.currentTarget.checked;
+					setActive(current.current.active);
+					save();
 				}} />
 			</td>
 			<td className="px-3 py-3">

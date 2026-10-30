@@ -4,8 +4,8 @@ import { __nullable__ } from "sql/typebox";
 export const OrderFeeReturn = t.Object({
 	amountCents: t.Integer(),
 	applicationScope: t.String(),
-	calculationType: t.String(),
-	configuredValue: t.Integer(),
+	configuredFixed: t.Integer(),
+	configuredPercentage: t.Integer(),
 	displayMode: t.String(),
 	id: t.String(),
 	name: t.String(),

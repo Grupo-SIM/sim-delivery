@@ -1,42 +1,51 @@
 export interface ProductFee {
 	applicationScope: "order" | "product";
-	calculationType: "fixed" | "percentage";
 	displayMode: "checkout_only" | "embedded" | "product_explicit";
+	fixedValue: number;
 	id: string;
 	name: string;
-	value: number;
+	percentageValue: number;
 }
 
 interface ApiFee {
 	applicationScope: string;
-	calculationType: string;
 	displayMode: string;
+	fixedValue: number | string;
 	id: string;
 	name: string;
-	value: number | string;
+	percentageValue: number | string;
 }
 
 export function normalizeProductFees(fees: ApiFee[] | undefined): ProductFee[] {
 	return (fees ?? []).flatMap(fee => {
 		if (
 			!(["order", "product"] as string[]).includes(fee.applicationScope) ||
-			!(["fixed", "percentage"] as string[]).includes(fee.calculationType) ||
 			!(["checkout_only", "embedded", "product_explicit"] as string[]).includes(fee.displayMode)
 		) return [];
 		return [{
 			...fee,
 			applicationScope: fee.applicationScope as ProductFee["applicationScope"],
-			calculationType: fee.calculationType as ProductFee["calculationType"],
 			displayMode: fee.displayMode as ProductFee["displayMode"],
-			value: Number(fee.value),
+			fixedValue: Number(fee.fixedValue),
+			percentageValue: Number(fee.percentageValue),
 		}];
 	});
 }
 
 export function feeUnitAmount(priceCents: number, fee: ProductFee) {
-	return fee.calculationType === "fixed"
-		? Number(fee.value)
-		: Math.floor((priceCents * Number(fee.value) + 5_000) / 10_000);
+	return Math.floor((priceCents * Number(fee.percentageValue) + 5_000) / 10_000) + Number(fee.fixedValue);
+}
+
+/** Formats a fee as "4,00%", "R$ 1,00" or "4,00% + R$ 1,00". */
+export function formatFeeAmount(percentageValue: number | string, fixedValue: number | string) {
+	const parts = [];
+	if (Number(percentageValue) > 0) {
+		parts.push(`${(Number(percentageValue) / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}%`);
+	}
+	if (Number(fixedValue) > 0) {
+		parts.push((Number(fixedValue) / 100).toLocaleString("pt-BR", { currency: "BRL", style: "currency" }));
+	}
+	return parts.join(" + ") || "—";
 }
 
 export function embeddedUnitFees(priceCents: number, fees: ApiFee[] | undefined) {

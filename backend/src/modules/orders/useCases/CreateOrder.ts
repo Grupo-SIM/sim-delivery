@@ -371,8 +371,8 @@ export class CreateOrder {
 					data: {
 						amountCents: fee.amountCents,
 						applicationScope: fee.applicationScope,
-						calculationType: fee.calculationType,
-						configuredValue: fee.value,
+						configuredFixed: fee.fixedValue,
+						configuredPercentage: fee.percentageValue,
 						displayMode: fee.displayMode,
 						name: fee.name,
 						orderId: created.id,

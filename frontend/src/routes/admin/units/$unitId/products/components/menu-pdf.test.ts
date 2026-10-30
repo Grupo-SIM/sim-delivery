@@ -18,9 +18,9 @@ const item: UnitMenuSections[number]["items"][number] = {
 	popularity: 0,
 	priceCents: 1000,
 	productFees: [
-		{ id: "embedded", name: "Embutida", applicationScope: "product", calculationType: "fixed", displayMode: "embedded", value: 100 },
-		{ id: "explicit", name: "Explicita", applicationScope: "product", calculationType: "fixed", displayMode: "product_explicit", value: 50 },
-		{ id: "checkout", name: "SomenteCheckout", applicationScope: "product", calculationType: "fixed", displayMode: "checkout_only", value: 900 },
+		{ id: "embedded", name: "Embutida", applicationScope: "product", displayMode: "embedded", fixedValue: 100, percentageValue: 0 },
+		{ id: "explicit", name: "Explicita", applicationScope: "product", displayMode: "product_explicit", fixedValue: 50, percentageValue: 0 },
+		{ id: "checkout", name: "SomenteCheckout", applicationScope: "product", displayMode: "checkout_only", fixedValue: 900, percentageValue: 0 },
 	],
 	productId: "product", productSlug: "sorvete", ratingAverage: null, ratingCount: 0,
 	regularPriceCents: 1000, tags: [], title: "Sorvete",

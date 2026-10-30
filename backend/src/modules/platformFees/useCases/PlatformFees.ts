@@ -19,14 +19,14 @@ function normalizedName(name: string) {
 
 function validateFee(input: {
 	applicationScope: string;
-	calculationType: string;
 	displayMode: string;
-	value: number;
+	fixedValue: number;
+	percentageValue: number;
 }) {
 	if (input.applicationScope === "order" && input.displayMode !== "checkout_only") {
 		throw new DomainError(INVALID_FEE);
 	}
-	if (input.calculationType === "percentage" && input.value > 10_000) {
+	if (input.percentageValue <= 0 && input.fixedValue <= 0) {
 		throw new DomainError(INVALID_FEE);
 	}
 }
@@ -35,25 +35,25 @@ function mapFee(fee: {
 	_count: { companyOverrides: number };
 	active: boolean;
 	applicationScope: string;
-	calculationType: string;
 	createdAt: Date;
 	displayMode: string;
+	fixedValue: number;
 	id: string;
 	name: string;
+	percentageValue: number;
 	updatedAt: Date;
-	value: number;
 }): PlatformFeeReturn {
 	return {
 		active: fee.active,
 		applicationScope: fee.applicationScope as PlatformFeeReturn["applicationScope"],
-		calculationType: fee.calculationType as PlatformFeeReturn["calculationType"],
 		companyOverrideCount: fee._count.companyOverrides,
 		createdAt: fee.createdAt,
 		displayMode: fee.displayMode as PlatformFeeReturn["displayMode"],
+		fixedValue: fee.fixedValue,
 		id: fee.id,
 		name: fee.name,
+		percentageValue: fee.percentageValue,
 		updatedAt: fee.updatedAt,
-		value: fee.value,
 	};
 }
 
@@ -72,9 +72,10 @@ export class PlatformFees {
 
 	async create(input: CreatePlatformFeeBody): Promise<PlatformFeeReturn> {
 		const name = normalizedName(input.name);
-		validateFee(input);
+		const values = { fixedValue: input.fixedValue ?? 0, percentageValue: input.percentageValue ?? 0 };
+		validateFee({ ...input, ...values });
 		const fee = await this.prisma.platformFee.create({
-			data: { ...input, active: input.active ?? true, name, nameKey: name.toLocaleLowerCase() },
+			data: { ...input, ...values, active: input.active ?? true, name, nameKey: name.toLocaleLowerCase() },
 			include: feeInclude,
 		});
 		return mapFee(fee);
@@ -116,9 +117,11 @@ export class PlatformFees {
 				active: override?.active ?? fee.active,
 				companyId: company.id,
 				companyName: company.name,
-				effectiveValue: override?.valueOverride ?? fee.value,
+				effectiveFixed: override?.fixedOverride ?? fee.fixedValue,
+				effectivePercentage: override?.percentageOverride ?? fee.percentageValue,
+				fixedOverride: override?.fixedOverride ?? null,
 				inherited: !override,
-				valueOverride: override?.valueOverride ?? null,
+				percentageOverride: override?.percentageOverride ?? null,
 			};
 		});
 	}
@@ -130,11 +133,16 @@ export class PlatformFees {
 	): Promise<void> {
 		const fee = await this.prisma.platformFee.findFirst({ where: { deletedAt: null, id: feeId } });
 		if (!fee) throw new DomainError(FEE_NOT_FOUND);
-		const value = input.valueOverride ?? fee.value;
-		validateFee({ ...fee, value });
+		const fixedOverride = input.fixedOverride ?? null;
+		const percentageOverride = input.percentageOverride ?? null;
+		validateFee({
+			...fee,
+			fixedValue: fixedOverride ?? fee.fixedValue,
+			percentageValue: percentageOverride ?? fee.percentageValue,
+		});
 		await this.prisma.companyFeeOverride.upsert({
-			create: { active: input.active, companyId, feeId, valueOverride: input.valueOverride ?? null },
-			update: { active: input.active, valueOverride: input.valueOverride ?? null },
+			create: { active: input.active, companyId, feeId, fixedOverride, percentageOverride },
+			update: { active: input.active, fixedOverride, percentageOverride },
 			where: { feeId_companyId: { companyId, feeId } },
 		});
 	}

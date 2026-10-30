@@ -6,10 +6,10 @@ model PlatformFee {
     nameKey             String   @unique
     /// product | order
     applicationScope    String
-    /// fixed | percentage
-    calculationType     String
-    /// Fixed cents or percentage basis points, according to calculationType.
-    value               Int
+    /// Percentage basis points charged on the base amount (0 = none).
+    percentageValue     Int      @default(0)
+    /// Fixed cents added on top of the percentage (0 = none).
+    fixedValue          Int      @default(0)
     /// product_explicit | embedded | checkout_only
     displayMode         String
     active              Boolean  @default(true)
@@ -28,7 +28,10 @@ model PlatformFee {
 model CompanyFeeOverride {
     feeId         String
     companyId     String
-    valueOverride Int?
+    /// Null inherits the global percentage basis points.
+    percentageOverride Int?
+    /// Null inherits the global fixed cents.
+    fixedOverride      Int?
     active        Boolean
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
@@ -48,8 +51,8 @@ model OrderFeeSnapshot {
     platformFeeId    String?
     name             String
     applicationScope String
-    calculationType  String
-    configuredValue  Int
+    configuredPercentage Int @default(0)
+    configuredFixed      Int @default(0)
     displayMode      String
     amountCents      Int
     createdAt        DateTime @default(now())

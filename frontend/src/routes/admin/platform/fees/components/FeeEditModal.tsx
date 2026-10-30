@@ -19,8 +19,9 @@ export function FeeEditModal({ fee, onClose }: FeeEditModalProps) {
 			await patchPlatformFeesByFeeId(fee!.id, {
 				active: value.active,
 				displayMode: value.displayMode,
+				fixedValue: value.fixedValue,
 				name: value.name,
-				value: value.value,
+				percentageValue: value.percentageValue,
 			});
 			await queryClient.invalidateQueries({ queryKey: ["Platform Fees"] });
 			showToast("Taxa atualizada.", "positive");
@@ -36,10 +37,10 @@ export function FeeEditModal({ fee, onClose }: FeeEditModalProps) {
 				initial={{
 					active: fee.active,
 					applicationScope: fee.applicationScope as FeeFormValue["applicationScope"],
-					calculationType: fee.calculationType as FeeFormValue["calculationType"],
 					displayMode: fee.displayMode as FeeFormValue["displayMode"],
+					fixedValue: Number(fee.fixedValue),
 					name: fee.name,
-					value: Number(fee.value),
+					percentageValue: Number(fee.percentageValue),
 				}}
 				isPending={false}
 				lockKind
