@@ -17,7 +17,6 @@ export function AdminBrand() {
 					{companyName.slice(0, 2).toUpperCase()}
 				</span>
 			)}
-			<span className="truncate font-extrabold text-base">Admin</span>
 		</Link>
 	);
 }
