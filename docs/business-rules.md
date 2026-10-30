@@ -174,6 +174,9 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
   parcela da empresa (`total − feeTotalCents`) e taxas da plataforma (`feeTotalCents`). A parcela comercial inclui frete e considera descontos/créditos. SimIntPay pode repartir
   itens líquidos entre empresa e coprodutores configurados exclusivamente naquela plataforma, sem
   descontos adicionais de adquirente, liquidez ou serviço. Somente as taxas pertencem à plataforma; frete fica integralmente com empresa.
+- Relatórios financeiros (receita, margem, dashboard) descontam da parcela da empresa a parcela de
+  coprodutores informada pela SIM INT PAY (`Payment.coproductionCents`), gravada na confirmação e
+  nunca recalculada; pagamentos históricos permanecem com zero. Reembolso é proporcional à parcela líquida.
 - A divisão é congelada na cobrança e reutilizada na confirmação e no estorno. Configuração
   posterior não recalcula pagamentos históricos. Novas cobranças exigem carteira empresarial
   identificada; ausência de CPF/CNPJ não permite fallback para a conta genérica Zero Grau.

@@ -1,5 +1,6 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { FinancialAnalyticsReturn, GetDashboardAnalyticsQuery } from "../dtos";
+import { merchantAmount } from "../utils/merchantAmount";
 import { getOrdersByPeriod } from "../utils/ordersByPeriod";
 import { CANCELLED, COMPLETED } from "../utils/orderStatus";
 import { getReportDateRange, type ReportGroupBy } from "../utils/reportPeriod";
@@ -13,7 +14,7 @@ interface FinancialOrder {
 	discountCents: number;
 	feeTotalCents: number;
 	items: { costCents: number | null; netRevenueCents: number | null; total: number }[];
-	payment: { confirmedAt: Date | null; method: string; status: string } | null;
+	payment: { confirmedAt: Date | null; coproductionCents?: number; method: string; status: string } | null;
 	refundedCents: number;
 	statusEvents: { createdAt: Date; status: string }[];
 	total: number;
@@ -23,7 +24,7 @@ interface FinancialOrder {
 interface CancelledOrder {
 	feeTotalCents: number;
 	items: { costCents: number | null }[];
-	payment: { status: string } | null;
+	payment: { coproductionCents?: number; status: string } | null;
 	refundedCents: number;
 	statusEvents: { createdAt: Date; status: string }[];
 	total: number;
@@ -50,11 +51,7 @@ function amountChange(current: number, previous: number) {
 	return ((current - previous) / previous) * 100;
 }
 
-function merchantAmount(order: { feeTotalCents: number; total: number }) {
-	return Math.max(0, order.total - (order.feeTotalCents ?? 0));
-}
-
-function merchantRefund(order: { feeTotalCents: number; refundedCents: number; total: number }) {
+function merchantRefund(order: { feeTotalCents: number; payment?: { coproductionCents?: number | null } | null; refundedCents: number; total: number }) {
 	return order.total > 0 ? Math.round((order.refundedCents * merchantAmount(order)) / order.total) : 0;
 }
 
@@ -234,7 +231,7 @@ export class GetFinancialAnalytics {
 		const cancelledOrders = await this.prisma.order.findMany({
 			include: {
 				items: { select: { costCents: true } },
-				payment: { select: { status: true } },
+				payment: { select: { coproductionCents: true, status: true } },
 				statusEvents: { orderBy: { createdAt: "asc" } },
 			},
 			where: {

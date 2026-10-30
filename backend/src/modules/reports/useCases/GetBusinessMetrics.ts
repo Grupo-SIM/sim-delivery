@@ -2,6 +2,7 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import type { BusinessMetricsReturn, GetDashboardAnalyticsQuery } from "../dtos";
 import { CANCELLED, COMPLETED } from "../utils/orderStatus";
 import { getReportDateRange } from "../utils/reportPeriod";
+import { merchantAmount } from "../utils/merchantAmount";
 
 const HOUR_LABELS = Array.from({ length: 24 }, (_, hour) => String(hour));
 const WEEKDAY_LABELS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
@@ -15,6 +16,7 @@ interface MetricsOrder {
 	deliveryMethod: string;
 	discountCents: number;
 	feeTotalCents: number;
+	payment: { coproductionCents: number } | null;
 	cashbackCentsRedeemed: number;
 	loyaltyPointsRedeemed: number;
 	items: { costCents: number | null; netRevenueCents: number | null; total: number }[];
@@ -67,6 +69,7 @@ export class GetBusinessMetrics {
 			include: {
 				coupon: { select: { code: true, type: true } },
 				items: { select: { costCents: true, netRevenueCents: true, total: true } },
+				payment: { select: { coproductionCents: true } },
 				statusEvents: { orderBy: { createdAt: "asc" } },
 				unit: { select: { name: true } },
 			},
@@ -117,7 +120,7 @@ export class GetBusinessMetrics {
 			if (globalFirst && periodFirst && globalFirst.getTime() === periodFirst.getTime()) newCustomers += 1;
 		}
 		const returningCustomers = customerIds.length - newCustomers;
-		const totalRevenue = completed.reduce((sum, order) => sum + order.total - (order.feeTotalCents ?? 0), 0);
+		const totalRevenue = completed.reduce((sum, order) => sum + merchantAmount(order), 0);
 
 		return {
 			newCustomers,
@@ -143,7 +146,7 @@ export class GetBusinessMetrics {
 			discountCents += order.discountCents;
 			cashbackRedeemedCents += order.cashbackCentsRedeemed;
 			loyaltyPointsRedeemed += order.loyaltyPointsRedeemed;
-			grossRevenueCents += order.total - (order.feeTotalCents ?? 0) + order.discountCents + order.cashbackCentsRedeemed;
+			grossRevenueCents += merchantAmount(order) + order.discountCents + order.cashbackCentsRedeemed;
 			if (order.couponId && order.coupon) {
 				couponOrderCount += 1;
 				const row = byCoupon.get(order.couponId) ?? {
@@ -155,7 +158,7 @@ export class GetBusinessMetrics {
 				};
 				row.orderCount += 1;
 				row.discountCents += order.discountCents;
-				row.revenueCents += order.total - (order.feeTotalCents ?? 0);
+				row.revenueCents += merchantAmount(order);
 				byCoupon.set(order.couponId, row);
 			}
 		}
@@ -193,13 +196,13 @@ export class GetBusinessMetrics {
 			const hourKey = String(order.createdAt.getHours());
 			const hourRow = byHour.get(hourKey) ?? { orderCount: 0, revenueCents: 0 };
 			hourRow.orderCount += 1;
-			hourRow.revenueCents += order.total - (order.feeTotalCents ?? 0);
+			hourRow.revenueCents += merchantAmount(order);
 			byHour.set(hourKey, hourRow);
 
 			const weekdayKey = String((order.createdAt.getDay() + 6) % 7);
 			const weekdayRow = byWeekday.get(weekdayKey) ?? { orderCount: 0, revenueCents: 0 };
 			weekdayRow.orderCount += 1;
-			weekdayRow.revenueCents += order.total - (order.feeTotalCents ?? 0);
+			weekdayRow.revenueCents += merchantAmount(order);
 			byWeekday.set(weekdayKey, weekdayRow);
 		}
 
@@ -252,7 +255,7 @@ export class GetBusinessMetrics {
 				unitName: order.unit.name,
 			};
 			row.orderCount += 1;
-			row.netRevenueCents += order.total - (order.feeTotalCents ?? 0);
+			row.netRevenueCents += merchantAmount(order);
 			for (const item of order.items) {
 				if (item.costCents === null) continue;
 				row.knownCostCents += item.costCents;

@@ -47,7 +47,7 @@ export class ReconcilePendingPayments {
 				const remote = payment.method === "pix"
 					? await this.simpay.getPixStatusDirect(paymentId, merchant)
 					: await this.simpay.getPaymentStatus(paymentId, merchant);
-				const result = await applyStatus.execute(paymentId, remote.status);
+				const result = await applyStatus.execute(paymentId, remote.status, undefined, remote.coproductionCents);
 				if (result.status !== "pending") reconciled += 1;
 			} catch (error) {
 				console.error(`Failed to reconcile payment ${paymentId}`, error);

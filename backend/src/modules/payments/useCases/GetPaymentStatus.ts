@@ -19,7 +19,7 @@ export class GetPaymentStatus {
 		if (!payment) throw new DomainError(PaymentErrors.PAYMENT_NOT_FOUND);
 		if (!reconcileRemote || payment.status !== "pending" || !payment.simpayPaymentId) return { status: payment.status };
 
-		let remote: { status: string };
+		let remote: { coproductionCents: number; status: string };
 		try {
 			const merchant = payment.order?.company
 				? { externalMerchantId: payment.order.company.id, integrationKey: simpayIntegrationKey(payment.order.company.slug) }
@@ -39,6 +39,8 @@ export class GetPaymentStatus {
 		const result = await new ApplySimpayPaymentStatus(this.prisma).execute(
 			payment.simpayPaymentId,
 			remote.status,
+			undefined,
+			remote.coproductionCents,
 		);
 		return { status: result.status };
 	}

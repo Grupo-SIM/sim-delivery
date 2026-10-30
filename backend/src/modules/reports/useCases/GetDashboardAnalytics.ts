@@ -3,6 +3,7 @@ import type { DashboardAnalyticsReturn, GetDashboardAnalyticsQuery } from "../dt
 import { getOrdersByPeriod } from "../utils/ordersByPeriod";
 import { COMPLETED } from "../utils/orderStatus";
 import { getDefaultReportGroupBy, getReportDateRange } from "../utils/reportPeriod";
+import { merchantAmount } from "../utils/merchantAmount";
 
 export class GetDashboardAnalytics {
 	constructor(private readonly prisma: PrismaInstance) {}
@@ -23,6 +24,7 @@ export class GetDashboardAnalytics {
 				deliveryFee: true,
 				deliveryMethod: true,
 				feeTotalCents: true,
+				payment: { select: { coproductionCents: true } },
 				total: true,
 				unitId: true,
 			},
@@ -76,7 +78,7 @@ export class GetDashboardAnalytics {
 			};
 
 			row.orderCount += 1;
-			row.totalRevenue += Math.max(0, order.total - (order.feeTotalCents ?? 0));
+			row.totalRevenue += merchantAmount(order);
 			deliveryRadiusPerformance.set(key, row);
 		}
 

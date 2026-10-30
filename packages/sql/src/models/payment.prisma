@@ -15,6 +15,8 @@ model Payment {
     amount          Int
     /// Cents refunded so far across all `Refund` records; never exceeds `amount`.
     refundedAmount  Int      @default(0)
+    /// Cents of the commercial share owed to coproducers, frozen by SIM INT PAY; reports deduct it from company revenue.
+    coproductionCents Int    @default(0)
     /// Set when the first refund completes.
     refundedAt      DateTime?
     /// DOM payment id returned by the Simpay backend; used for status polling.

@@ -4,7 +4,7 @@ import { Value } from "@sinclair/typebox/value";
 import { DomainError } from "@/shared/errors";
 import { decryptSimpaySecret } from "@/shared/infra/simpay-secrets";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import type { SimpayClient } from "@/shared/infra/simpay";
+import { isApprovedSimpayStatus, simpayIntegrationKey, type SimpayClient } from "@/shared/infra/simpay";
 import { WithdrawalService } from "@/modules/withdrawals/service";
 import { WithdrawalErrors } from "@/modules/withdrawals/errors";
 import { ApplySimpayPaymentStatus } from "./ApplySimpayPaymentStatus";
@@ -41,7 +41,16 @@ export async function drainCanonicalWebhooks(db: PrismaInstance, client: SimpayC
 			if (payment.simpayPaymentId && payment.simpayPaymentId !== reference && payment.simpayPaymentId !== event.transactionId) continue;
 			await db.payment.update({ where: { id: payment.id }, data: { simpayPaymentId: reference } });
 			await db.paymentAttempt.update({ where: { id: attempt.id }, data: { providerTransactionId: event.transactionId, providerPaymentId: reference } });
-			const result = await new ApplySimpayPaymentStatus(db).execute(reference, event.status, row.companyId);
+			let coproductionCents = 0;
+			if (isApprovedSimpayStatus(event.status)) {
+				// The frozen coproduction share must be stored with the confirmation; retry from the inbox if unavailable.
+				const company = await db.company.findUnique({ where: { id: row.companyId }, select: { slug: true } });
+				if (!company) continue;
+				try {
+					coproductionCents = (await client.getPaymentStatus(reference, { externalMerchantId: row.companyId, integrationKey: simpayIntegrationKey(company.slug) })).coproductionCents;
+				} catch { continue; }
+			}
+			const result = await new ApplySimpayPaymentStatus(db).execute(reference, event.status, row.companyId, coproductionCents);
 			if (result.status !== "pending") await db.paymentAttempt.update({ where: { id: attempt.id }, data: { state: result.status === "confirmed" ? "confirmed" : "failed" } });
 		} else {
 			if (!event.withdrawalId) continue;
