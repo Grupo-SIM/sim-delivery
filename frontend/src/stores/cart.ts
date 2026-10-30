@@ -37,10 +37,13 @@ export interface CartState {
 	syncImages: (unitId: string, products: { id: string; imageUrl: string }[]) => void;
 	addItem: (unitId: string, item: CartItemInput, quantity?: number, note?: string) => void;
 	checkoutIdempotencyKey: string | null;
+	/** True once InitiateCheckout fired for this cart; survives cart edits and signup round-trips, reset by clear(). */
+	checkoutTracked: boolean;
 	clear: () => void;
 	/** Stable request key for the current cart, persisted across checkout refreshes. */
 	getCheckoutIdempotencyKey: () => string;
 	items: CartItem[];
+	markCheckoutTracked: () => void;
 	removeItem: (lineKey: string) => void;
 	replaceItem: (unitId: string, lineKey: string, item: CartItemInput, quantity: number, note: string) => void;
 	setNote: (lineKey: string, note: string) => void;
@@ -81,7 +84,8 @@ export const useCartStore = create<CartState>()(
 				});
 			},
 			checkoutIdempotencyKey: null,
-			clear: () => set({ checkoutIdempotencyKey: null, items: [], unitId: null }),
+			checkoutTracked: false,
+			clear: () => set({ checkoutIdempotencyKey: null, checkoutTracked: false, items: [], unitId: null }),
 			getCheckoutIdempotencyKey: () => {
 				const existing = get().checkoutIdempotencyKey;
 				if (existing) return existing;
@@ -91,6 +95,7 @@ export const useCartStore = create<CartState>()(
 				return checkoutIdempotencyKey;
 			},
 			items: [],
+			markCheckoutTracked: () => set({ checkoutTracked: true }),
 			removeItem: lineKey =>
 				set(state => {
 					const items = state.items.filter(line => line.lineKey !== lineKey);

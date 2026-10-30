@@ -132,16 +132,14 @@ function CheckoutPage() {
 
 	useEffect(() => onMetaPixelReady(() => {
 		if (!unit || cartItems.length === 0 || placedOrder || unit.id !== useCartStore.getState().unitId) return;
+		if (useCartStore.getState().checkoutTracked) return;
 		const key = getCheckoutIdempotencyKey();
-		try {
-			if (sessionStorage.getItem("meta-checkout-event") === key) return;
-			if (trackMetaEvent("InitiateCheckout", {
-				content_ids: cartItems.map(item => item.productId), content_type: "product",
-				contents: cartItems.map(item => ({ id: item.productId, quantity: item.quantity })),
-				currency: "BRL", num_items: cartItems.reduce((sum, item) => sum + item.quantity, 0),
-				value: cartTotalCents(cartItems) / 100,
-			}, `checkout_${key}`)) sessionStorage.setItem("meta-checkout-event", key);
-		} catch { /* Storage restrictions must not break checkout. */ }
+		if (trackMetaEvent("InitiateCheckout", {
+			content_ids: cartItems.map(item => item.productId), content_type: "product",
+			contents: cartItems.map(item => ({ id: item.productId, quantity: item.quantity })),
+			currency: "BRL", num_items: cartItems.reduce((sum, item) => sum + item.quantity, 0),
+			value: cartTotalCents(cartItems) / 100,
+		}, `checkout_${key}`)) useCartStore.getState().markCheckoutTracked();
 	}), [cartItems, getCheckoutIdempotencyKey, placedOrder, unit]);
 
 	function handleChangeDeliveryMethod(method: DeliveryMethod) {
