@@ -2,12 +2,8 @@ import path from "node:path";
 import { MailProvidersEnum, StorageProvidersEnum } from "@hyoretsu/providers";
 import { Value } from "@sinclair/typebox/value";
 import { t, type UnwrapSchema } from "elysia";
-import { applyDeploymentDefaults } from "@/shared/deployment-config";
-import { deploymentDefaults } from "@/shared/infra/deployment-defaults";
 import { PhoneOtpProvidersEnum } from "@/shared/infra/phoneOtp";
 import { NodeEnv } from "@/shared/types";
-
-applyDeploymentDefaults(process.env, deploymentDefaults);
 
 const defaultPort = "3333";
 const port = (process.env.PORT ?? defaultPort) as string;

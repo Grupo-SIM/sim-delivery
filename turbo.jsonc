@@ -19,9 +19,9 @@
 			"cache": false,
 			"dependsOn": ["sql#export"],
 			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV"],
-			"inputs": ["scripts/inject.ts", "src/shared/deployment-config.ts", ".env*"],
+			"inputs": ["scripts/inject.ts", ".env*"],
 			"outputLogs": "new-only",
-			"outputs": ["src/shared/infra/branding.ts", "src/shared/infra/deployment-defaults.ts"]
+			"outputs": ["src/shared/infra/branding.ts"]
 		},
 		"build": {
 			"dependsOn": ["^export", "generate"],
