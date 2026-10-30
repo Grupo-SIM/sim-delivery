@@ -70,12 +70,9 @@ function CheckoutPage() {
 	const { data: menu } = useQuery(getPublicUnitsByUnitSlugMenuQueryOptions(unitSlug, { slug: slug ?? "" }));
 	useCartImages(unitId, menu);
 	const availableMethods = unit?.deliveryMethods ?? ["delivery"];
-	const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>(() =>
-		getMethod(unitId, availableMethods),
-	);
-	const resolvedDeliveryMethod = availableMethods.includes(deliveryMethod)
-		? deliveryMethod
-		: getMethod(unitId, availableMethods);
+	// Subscribe to the persisted choice so it resolves once the unit loads after a reload.
+	useDeliveryMethodStore(state => state.methods[unitId]);
+	const resolvedDeliveryMethod = getMethod(unitId, availableMethods);
 	const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(() => getStoredCoupon(unitId));
 	const [cashbackRedeemCents, setCashbackRedeemCents] = useState(0);
 	const [loyaltyRedeemPoints, setLoyaltyRedeemPoints] = useState(0);
@@ -88,11 +85,6 @@ function CheckoutPage() {
 	useEffect(() => {
 		setAppliedCoupon(getStoredCoupon(unitId));
 	}, [getStoredCoupon, unitId]);
-
-	useEffect(() => {
-		if (!unitId) return;
-		setDeliveryMethod(resolvedDeliveryMethod);
-	}, [resolvedDeliveryMethod, unitId]);
 
 	const createAddress = usePostCustomersMeAddresses({
 		// Customer response is stored locally after submit. Avoid Kubb's broad
@@ -153,7 +145,6 @@ function CheckoutPage() {
 	}), [cartItems, getCheckoutIdempotencyKey, placedOrder, unit]);
 
 	function handleChangeDeliveryMethod(method: DeliveryMethod) {
-		setDeliveryMethod(method);
 		setStoredMethod(unitId, method);
 	}
 
