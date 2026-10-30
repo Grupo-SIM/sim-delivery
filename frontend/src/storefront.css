@@ -330,44 +330,50 @@
 	display: none;
 }
 .storefront .store-toolbar {
-	grid-template-columns: 1fr 1fr;
-	gap: 14px;
+	gap: 12px;
 	padding: 16px;
 	color: var(--card-foreground);
 	background: var(--card);
 	border-radius: 20px;
 	box-shadow: none;
 }
-.storefront .store-delivery-fee {
-	grid-row: 1;
-	grid-column: 1;
-	padding: 0;
-}
-.storefront .store-delivery-fee > svg {
-	display: none;
-}
-.storefront .store-delivery-fee p:last-child {
-	font-size: 16px;
-	font-weight: 800;
-	color: var(--success);
+@media (min-width: 768px) {
+	.storefront .store-toolbar {
+		gap: 16px;
+	}
 }
 .storefront .store-hours {
-	grid-row: 1;
-	grid-column: 2;
-	padding: 3px 10px;
+	padding: 8px 14px;
 	border: 1px solid var(--border);
-	border-radius: 10px;
+	border-radius: 14px;
+	background: var(--card);
+	color: var(--card-foreground);
+	transition: background-color 0.15s ease, border-color 0.15s ease;
 }
-.storefront .store-hours > svg {
-	display: none;
+.storefront .store-hours:hover {
+	background: var(--muted);
+}
+.storefront .store-hours svg {
+	flex-shrink: 0;
+	color: var(--primary);
+}
+.storefront .store-hours p:first-child {
+	font-size: 11px;
+	color: var(--muted-foreground);
+	line-height: 1.2;
 }
 .storefront .store-hours p:nth-child(2) {
-	font-size: 16px;
-	font-weight: 800;
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--foreground);
+	line-height: 1.2;
+}
+.storefront .store-hours p:nth-child(3) {
+	font-size: 11px;
+	color: var(--muted-foreground);
+	line-height: 1.2;
 }
 .storefront .store-delivery-method {
-	grid-row: 2;
-	grid-column: 1 / -1;
 	padding: 0;
 }
 .storefront .store-delivery-method > p:first-child {
@@ -381,19 +387,18 @@
 	border-radius: 999px;
 }
 .storefront .delivery-method-selector button {
-	padding: 10px 12px;
-	font-weight: 800;
+	padding: 10px 14px;
+	font-weight: 700;
 	border: 1px solid transparent;
 	border-radius: 999px;
 }
 .storefront .delivery-method-selector button[aria-pressed="true"] {
 	color: var(--primary);
 	background: var(--card);
-	box-shadow: 0 3px 6px color-mix(in srgb, var(--foreground) 12%, transparent);
+	box-shadow: 0 2px 6px color-mix(in srgb, var(--foreground) 10%, transparent);
 }
 .storefront .store-search {
-	grid-row: 3;
-	grid-column: 1 / -1;
+	width: 100%;
 }
 .storefront .store-search input {
 	padding-right: 14px;
@@ -401,7 +406,7 @@
 	font-size: 15px;
 	background: var(--background);
 	border-width: 1.5px;
-	border-radius: 15px;
+	border-radius: 14px;
 }
 .storefront .store-search svg {
 	right: auto;
@@ -687,11 +692,6 @@ html:has(.storefront) { scrollbar-color: var(--muted-foreground) var(--backgroun
 	.storefront .storefront-banner > div {
 		border-radius: 20px;
 	}
-	.storefront .store-hours {
-		padding: 0 0 0 12px;
-		border-width: 0 0 0 1px;
-		border-radius: 0;
-	}
 	.storefront .store-toolbar {
 		gap: 16px;
 		padding: 16px;
@@ -746,11 +746,6 @@ html:has(.storefront) { scrollbar-color: var(--muted-foreground) var(--backgroun
 }
 .storefront .unit-store-header > div:last-child {
 	margin-top: 4px;
-}
-.storefront .store-hours {
-	padding: 0 0 0 12px;
-	border-width: 0 0 0 1px;
-	border-radius: 0;
 }
 .storefront .store-banner-image {
 	width: 100%;
