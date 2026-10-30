@@ -99,7 +99,6 @@ export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string
 						header={!menuOnly && (
 							<div className="space-y-3">
 								<StoreToolbar
-									deliveryFee={fee}
 									deliveryMethods={unit.deliveryMethods}
 									hours={unit.hours}
 									onHoursClick={() => setHoursOpen(true)}

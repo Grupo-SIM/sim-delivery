@@ -1,13 +1,11 @@
 import { trackMetaEvent } from "@/lib/meta-pixel";
 import { useTranslation } from "react-i18next";
-import { LuClock3, LuSearch, LuTruck } from "react-icons/lu";
+import { LuClock3, LuSearch } from "react-icons/lu";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { DeliveryMethodSelector } from "./DeliveryMethodSelector";
 import type { StoreHours } from "./store-hours-types";
-import { money } from "./types";
 
 interface StoreToolbarProps {
-	deliveryFee: number;
 	deliveryMethods: string[];
 	hours: StoreHours[];
 	onHoursClick: () => void;
@@ -19,7 +17,6 @@ interface StoreToolbarProps {
 }
 
 export function StoreToolbar({
-	deliveryFee,
 	deliveryMethods,
 	hours,
 	onHoursClick,
@@ -38,22 +35,13 @@ export function StoreToolbar({
 	const todayHours =
 		today && !today.closed && today.opensAt && today.closesAt ? `${today.opensAt}–${today.closesAt}` : null;
 	return (
-		<div className="store-toolbar grid grid-cols-2 gap-3 rounded-xl border border-border bg-muted/70 p-3 shadow-sm md:grid-cols-[1fr_1.2fr_1fr_minmax(15rem,1.4fr)] md:items-center">
-			<div className="store-delivery-fee flex items-center gap-3 px-2">
-				<LuTruck className="size-5 text-primary" />
-				<div>
-					<p className="text-muted-foreground text-xs">{t("store.cart.deliveryFee")}</p>
-					<p className="font-semibold text-sm">
-						{deliveryFee > 0 ? money.format(deliveryFee / 100) : t("store.unit.freeDelivery")}
-					</p>
-				</div>
-			</div>
+		<div className="store-toolbar grid grid-cols-2 gap-3 rounded-xl border border-border bg-muted/70 p-3 shadow-sm md:grid-cols-[1.2fr_1fr_minmax(15rem,1.4fr)] md:items-center">
 			<div className="store-delivery-method space-y-1 px-2">
 				<p className="text-muted-foreground text-xs">{t("store.unit.deliveryMethods")}</p>
 				<DeliveryMethodSelector deliveryMethods={deliveryMethods} unitId={unitId} />
 			</div>
 			<button
-				className="store-hours col-span-2 flex cursor-pointer items-center gap-3 rounded-lg border border-border px-2 py-1.5 text-left transition-colors hover:bg-muted md:col-span-1"
+				className="store-hours col-span-2 flex w-fit justify-self-start cursor-pointer items-center gap-3 rounded-lg border border-border px-2 py-1.5 text-left transition-colors hover:bg-muted md:col-span-1"
 				onClick={onHoursClick}
 				type="button"
 			>
