@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { showToast } from "@/stores";
@@ -6,11 +6,12 @@ import { useConsentStore } from "@/stores/consent";
 
 export function CookieBanner() {
 	const { t } = useTranslation("common");
+	const isAdmin = useRouterState({ select: state => state.location.pathname === "/admin" || state.location.pathname.startsWith("/admin/") });
 	const decidedAt = useConsentStore(state => state.decidedAt);
 	const setConsent = useConsentStore(state => state.setConsent);
 	const openPreferences = useConsentStore(state => state.openPreferences);
 	const preferencesOpen = useConsentStore(state => state.preferencesOpen);
-	if (decidedAt || preferencesOpen) return null;
+	if (isAdmin || decidedAt || preferencesOpen) return null;
 	const choose = (accepted: boolean) => {
 		setConsent({ analytics: accepted, marketing: accepted });
 		showToast(t("privacy.saved"), "positive");
