@@ -1,4 +1,8 @@
 import type { DeploymentDefaults } from "../deployment-config";
 
-// Replaced by scripts/inject.ts for each company build. No tenant defaults in an unconfigured checkout.
-export const deploymentDefaults: DeploymentDefaults = {};
+export const deploymentDefaults: DeploymentDefaults = {
+	"API_URL": "https://api.delivery.zerograusorvetesac.com",
+	"APP_URL": "https://delivery.zerograusorvetesac.com",
+	"COMPANY_SLUG": "zero-grau",
+	"OWNER_NAME": "Zero Grau"
+};
