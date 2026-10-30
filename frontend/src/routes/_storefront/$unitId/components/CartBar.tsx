@@ -64,7 +64,7 @@ export function CartBar({
 				</Button>
 			</div>
 			<CartModal
-				deliveryFee={deliveryFee}
+				deliveryFee={isDelivery ? deliveryFee : 0}
 				minOrderCents={isDelivery ? minOrderCents : 0}
 				onClose={() => setOpen(false)}
 				open={open}
