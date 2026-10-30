@@ -8,9 +8,10 @@ interface DeliveryMethodSelectorProps {
 
 export function DeliveryMethodSelector({ deliveryMethods, unitId }: DeliveryMethodSelectorProps) {
 	const { t } = useTranslation();
-	const getMethod = useDeliveryMethodStore(state => state.getMethod);
+	const storedMethod = useDeliveryMethodStore(state => state.methods[unitId]);
 	const setMethod = useDeliveryMethodStore(state => state.setMethod);
-	const current = getMethod(unitId, deliveryMethods);
+	const fallbackMethod = deliveryMethods.includes("delivery") ? "delivery" : "pickup";
+	const current = storedMethod && deliveryMethods.includes(storedMethod) ? storedMethod : fallbackMethod;
 
 	if (deliveryMethods.length === 0) return <p className="font-semibold text-sm">—</p>;
 
