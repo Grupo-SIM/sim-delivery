@@ -2,10 +2,11 @@ import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { cn } from "@/lib/utils";
 import { OverrideValueInput } from "@/routes/admin/platform/fees/components/OverrideValueInput";
-import { type CoverageLane, type LaneDraft, type SimintpayLane, ppmToPercent, centsToReais } from "./types";
+import { type CoverageLane, type LaneDraft, type SimintpayLane, ppmToPercent, centsToReais, percentToPpm, reaisToCents } from "./types";
 
 interface SimintpayLaneRowProps {
 	accepted: boolean;
+	applied: boolean;
 	coverage: CoverageLane | undefined;
 	draft: LaneDraft;
 	lane: SimintpayLane;
@@ -19,13 +20,13 @@ function formatCost(ratePpm: number | string, fixedCents: number | string) {
 	return `${percent}% + ${fixed}`;
 }
 
-export function SimintpayLaneRow({ accepted, coverage, draft, lane, onAcceptedChange, onChange }: SimintpayLaneRowProps) {
+export function SimintpayLaneRow({ accepted, applied, coverage, draft, lane, onAcceptedChange, onChange }: SimintpayLaneRowProps) {
 	const { t } = useTranslation();
 	const label =
 		lane.method === "CREDIT_CARD"
 			? t("admin.companies.fees.lane.creditCard", { count: Number(lane.installments) })
 			: t(`admin.companies.fees.method.${lane.method}`, { defaultValue: lane.method });
-	const short = accepted && coverage && (Number(coverage.rateShortfallPpm) > 0 || Number(coverage.fixedShortfallCents) > 0);
+	const short = coverage && (Number(coverage.rateShortfallPpm) > 0 || Number(coverage.fixedShortfallCents) > 0);
 
 	return (
 		<tr className={cn("border-border/60 border-b last:border-0", !accepted && "opacity-50")}>
@@ -59,14 +60,15 @@ export function SimintpayLaneRow({ accepted, coverage, draft, lane, onAcceptedCh
 					value={draft.fixed}
 				/>
 			</td>
+			<td className="px-3 py-2 text-sm tabular-nums">
+				{!accepted ? t("admin.companies.fees.coverage.notAccepted") : !applied ? t("admin.companies.fees.summary.notApplied") : formatCost(percentToPpm(draft.rate), reaisToCents(draft.fixed))}
+			</td>
 			<td className={cn("px-3 py-2 text-sm", short ? "text-destructive" : "text-muted-foreground")}>
-				{!accepted
-					? t("admin.companies.fees.coverage.notAccepted")
-					: coverage
+				{coverage
 						? short
 							? t("admin.companies.fees.coverage.short")
 							: t("admin.companies.fees.coverage.ok")
-						: "—"}
+						: t("admin.companies.fees.coverage.notAccepted")}
 			</td>
 		</tr>
 	);

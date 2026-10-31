@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { LuBuilding2, LuPencil, LuTrash2 } from "react-icons/lu";
+import { LuPencil, LuTrash2 } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { DataTable } from "@/components/ui/DataTable";
@@ -12,11 +12,10 @@ import type { PlatformFee } from "./types";
 
 interface FeesTableProps {
 	fees: PlatformFee[];
-	onCompanies: (fee: PlatformFee) => void;
 	onEdit: (fee: PlatformFee) => void;
 }
 
-export function FeesTable({ fees, onCompanies, onEdit }: FeesTableProps) {
+export function FeesTable({ fees, onEdit }: FeesTableProps) {
 	const queryClient = useQueryClient();
 	if (fees.length === 0) return <EmptyState title="Nenhuma taxa cadastrada" />;
 
@@ -38,7 +37,6 @@ export function FeesTable({ fees, onCompanies, onEdit }: FeesTableProps) {
 					<td className="px-4 py-3">{formatFeeAmount(fee.percentageValue, fee.fixedValue)}</td>
 					<td className="px-4 py-3">{{ checkout_only: "Checkout", embedded: "Embutida", product_explicit: "Explícita" }[fee.displayMode]}</td>
 					<td className="px-4 py-3"><div className="flex justify-end gap-2">
-						<Tooltip content="Empresas"><Button aria-label="Empresas" onClick={() => onCompanies(fee)} size="icon" type="button" variant="outline"><LuBuilding2 /></Button></Tooltip>
 						<Tooltip content="Editar"><Button aria-label="Editar" onClick={() => onEdit(fee)} size="icon" type="button" variant="outline"><LuPencil /></Button></Tooltip>
 						<ConfirmActionButton aria-label="Excluir" confirmation={`Excluir ${fee.name}?`} confirmLabel="Excluir" idleIcon={<LuTrash2 />} onConfirm={() => void remove(fee)} size="icon" tooltip="Excluir" type="button" variant="outline"><span className="sr-only">Excluir</span></ConfirmActionButton>
 					</div></td>

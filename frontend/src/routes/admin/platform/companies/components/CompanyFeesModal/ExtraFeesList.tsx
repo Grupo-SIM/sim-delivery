@@ -1,32 +1,22 @@
 import { useTranslation } from "react-i18next";
-import { formatFeeAmount } from "@/lib/platform-fees";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { useGetPlatformFees } from "@/lib/api";
+import { ExtraFeeRow } from "./ExtraFeeRow";
 import type { CompanyFees } from "./types";
 
 interface ExtraFeesListProps {
-	extras: CompanyFees["extras"];
+	companyId: string;
 	mode: CompanyFees["mode"];
 }
 
-export function ExtraFeesList({ extras, mode }: ExtraFeesListProps) {
+export function ExtraFeesList({ companyId, mode }: ExtraFeesListProps) {
 	const { t } = useTranslation();
-	if (mode === "SIMINTPAY_ONLY") {
-		return <p className="text-muted-foreground text-sm">{t("admin.companies.fees.extras.disabled")}</p>;
-	}
-	if (extras.length === 0) {
-		return <p className="text-muted-foreground text-sm">{t("admin.companies.fees.extras.empty")}</p>;
-	}
-	return (
-		<ul className="divide-y divide-border/60 rounded-md border border-border/60">
-			{extras.map(fee => (
-				<li className="flex items-center justify-between gap-3 px-3 py-2 text-sm" key={fee.id}>
-					<span className="font-medium">{fee.name}</span>
-					<span className="text-muted-foreground">
-						{t(`admin.companies.fees.scope.${fee.applicationScope}`, { defaultValue: fee.applicationScope })}
-						{" · "}
-						{formatFeeAmount(fee.percentageValue, fee.fixedValue)}
-					</span>
-				</li>
-			))}
-		</ul>
-	);
+	const query = useGetPlatformFees();
+	if (query.isPending) return <div className="space-y-3"><Skeleton className="h-40 w-full" /><Skeleton className="h-40 w-full" /></div>;
+	if (query.isError) return <ErrorState title={t("admin.companies.fees.loadError")} />;
+	return <div className="space-y-3">
+		{mode === "SIMINTPAY_ONLY" && <p className="text-muted-foreground text-sm">{t("admin.companies.fees.extras.disabled")}</p>}
+		{query.data.length === 0 ? <p className="text-muted-foreground text-sm">{t("admin.companies.fees.extras.empty")}</p> : query.data.map(fee => <ExtraFeeRow companyId={companyId} fee={fee} key={fee.id} />)}
+	</div>;
 }

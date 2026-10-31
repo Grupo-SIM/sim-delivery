@@ -294,11 +294,12 @@
 					"action": "Taxas efetivas",
 					"columns": {
 						"accepted": "Aceita",
-						"coverage": "Cobertura",
+						"coverage": "Cobertura salva",
 						"cost": "Custo da adquirente",
 						"fixed": "Fixo",
 						"lane": "Modalidade",
-						"rate": "Percentual"
+						"rate": "Percentual",
+						"effective": "Desconto do lojista (rascunho)"
 					},
 					"coverage": {
 						"notAccepted": "Modalidade não aceita",
@@ -308,7 +309,7 @@
 					"extras": {
 						"disabled": "Neste modo as taxas aditivas não são cobradas nos pedidos.",
 						"empty": "Nenhuma taxa extra ativa para esta empresa.",
-						"hint": "Somadas ao preço do comprador. Valores por empresa são ajustados na tela de taxas.",
+						"hint": "Associe taxas e ajuste os valores desta empresa. Campos vazios usam o padrão da plataforma. Salve cada taxa separadamente.",
 						"title": "Taxas aditivas (SIM Delivery)"
 					},
 					"lane": {
@@ -341,6 +342,17 @@
 						"hint": "Descontadas do lojista pela SimIntPay quando o modo inclui taxas SimIntPay. O custo da adquirente é global e define o mínimo.",
 						"rate": "Percentual SimIntPay ({{lane}})",
 						"title": "Taxas SimIntPay"
+					},
+					"summary": {
+						"bases": "Percentuais por produto, pedido e transação usam bases diferentes. Não são somados em uma taxa única; o valor em reais depende da compra.",
+						"buyer": "Acréscimos ao preço do comprador",
+						"merchant": "Desconto do recebimento do lojista:",
+						"merchantActive": "veja percentual + valor fixo por modalidade aceita na tabela abaixo.",
+						"merchantDisabled": "não aplicado neste modo.",
+						"notApplied": "Não aplicado neste modo",
+						"saved": "Acréscimos e cobertura refletem os valores salvos. Modo, aceite e desconto na tabela são rascunhos até salvar; editar não recalcula a cobertura.",
+						"title": "Como as taxas são aplicadas",
+						"unavailable": "As associações não vieram na resposta do modo salvo. Salve o novo modo para carregar os acréscimos efetivos; nenhum valor é presumido."
 					},
 					"title": "Taxas de {{name}}",
 					"underCovered": "As taxas efetivas desta empresa não cobrem o custo das adquirentes em alguma modalidade."

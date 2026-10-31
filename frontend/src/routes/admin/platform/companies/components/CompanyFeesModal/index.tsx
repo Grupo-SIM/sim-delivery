@@ -12,6 +12,7 @@ import {
 	useGetPlatformFeesByCompanyByCompanyId,
 } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
+import { EffectiveFeesSummary } from "./EffectiveFeesSummary";
 import { ExtraFeesList } from "./ExtraFeesList";
 import { SimintpayLaneRow, initialDraft } from "./SimintpayLaneRow";
 import { type CompanyFees, type FeeMode, type LaneDraft, compareLanes, laneId, percentToPpm, reaisToCents } from "./types";
@@ -90,10 +91,12 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 				<p className="text-muted-foreground text-xs">{t(`admin.companies.fees.mode.${mode}Hint`)}</p>
 			</section>
 
+			<EffectiveFeesSummary fees={fees} mode={mode} />
+
 			<section className="space-y-2">
 				<h3 className="font-semibold text-sm">{t("admin.companies.fees.extras.title")}</h3>
 				<p className="text-muted-foreground text-xs">{t("admin.companies.fees.extras.hint")}</p>
-				<ExtraFeesList extras={fees.extras} mode={mode} />
+				<ExtraFeesList companyId={companyId} mode={mode} />
 			</section>
 
 			<section className="space-y-2">
@@ -107,6 +110,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 							<th className="px-3 py-1 font-medium">{t("admin.companies.fees.columns.cost")}</th>
 							<th className="px-3 py-1 font-medium">{t("admin.companies.fees.columns.rate")}</th>
 							<th className="px-3 py-1 font-medium">{t("admin.companies.fees.columns.fixed")}</th>
+							<th className="px-3 py-1 font-medium">{t("admin.companies.fees.columns.effective")}</th>
 							<th className="px-3 py-1 font-medium">{t("admin.companies.fees.columns.coverage")}</th>
 						</tr>
 					</thead>
@@ -115,6 +119,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 							<SimintpayLaneRow
 								coverage={coverage.get(laneId(lane))}
 								accepted={!disabledLanes.has(laneId(lane))}
+								applied={mode !== "ADDITIVE_ONLY"}
 								draft={drafts[laneId(lane)]!}
 								key={laneId(lane)}
 								lane={lane}
