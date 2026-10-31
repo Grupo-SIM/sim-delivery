@@ -41,13 +41,20 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 			await putPlatformFeesByCompanyByCompanyId(companyId, {
 				mode,
 				simintpay: {
-					lanes: fees.simintpay.lanes.map(lane => ({
-						channel: lane.channel,
-						fixedCents: reaisToCents(drafts[laneId(lane)]!.fixed),
-						installments: Number(lane.installments),
-						method: lane.method,
-						ratePpm: percentToPpm(drafts[laneId(lane)]!.rate),
-					})),
+					// BOLETO is read-only: returned by the API but not accepted in the update body.
+					lanes: fees.simintpay.lanes.flatMap(lane =>
+						lane.method === "BOLETO"
+							? []
+							: [
+									{
+										channel: lane.channel,
+										fixedCents: reaisToCents(drafts[laneId(lane)]!.fixed),
+										installments: Number(lane.installments),
+										method: lane.method,
+										ratePpm: percentToPpm(drafts[laneId(lane)]!.rate),
+									},
+								],
+					),
 					version: fees.simintpay.version,
 				},
 			});
