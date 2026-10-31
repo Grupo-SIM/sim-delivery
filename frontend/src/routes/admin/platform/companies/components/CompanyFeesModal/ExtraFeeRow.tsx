@@ -28,7 +28,7 @@ export function ExtraFeeRow({ companyId, draft, fee, onDraftChange }: { companyI
 			<Tooltip content="Editar associação"><Button aria-label={`Editar associação de ${fee.name}`} onClick={() => setEditing(true)} size="icon" type="button" variant="outline"><LuPencil /></Button></Tooltip>
 		</div>
 		<Modal isOpen={editing} onClose={() => setEditing(false)} title={`Taxa da empresa · ${fee.name}`} urlKey="company-extra-fee" urlState={`${companyId}:${fee.id}`}>
-			{editing && <ExtraFeeEditor association={association} draft={draft} fee={fee} onApply={onDraftChange} />}
+			{editing && <ExtraFeeEditor association={association} draft={draft} fee={fee} onApply={onDraftChange} onClose={() => setEditing(false)} />}
 		</Modal>
 	</>;
 }

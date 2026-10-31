@@ -11,7 +11,7 @@ import { OverrideValueInput } from "../../../fees/components/OverrideValueInput"
 type Association = GetPlatformFeesByFeeIdCompanies200[number];
 type Fee = GetPlatformFees200[number];
 
-export function ExtraFeeEditor({ association, draft, fee, onApply }: { association: Association; draft?: ExtraFeeDraft; fee: Fee; onApply: (draft: ExtraFeeDraft) => void }) {
+export function ExtraFeeEditor({ association, draft, fee, onApply, onClose }: { association: Association; draft?: ExtraFeeDraft; fee: Fee; onApply: (draft: ExtraFeeDraft) => void; onClose: () => void }) {
 	const initial = (): ExtraFeeDraft => draft ?? { active: association.active, fixed: association.fixedOverride == null ? "" : String(Number(association.fixedOverride) / 100), percentage: association.percentageOverride == null ? "" : String(Number(association.percentageOverride) / 100), reset: false };
 	const [values, setValues] = useState(initial);
 	const current = useRef(values);
@@ -19,7 +19,7 @@ export function ExtraFeeEditor({ association, draft, fee, onApply }: { associati
 	function apply(next: ExtraFeeDraft) {
 		onApply(next);
 		showToast("Alteração aplicada. Salve a empresa para confirmar.", "info");
-		history.back();
+		onClose();
 	}
 	return <fieldset className="space-y-3 rounded-md border border-border/60 p-3">
 		<div className="flex flex-wrap items-center justify-between gap-2"><div><p className="font-medium text-sm">{fee.name}</p><p className="text-muted-foreground text-xs">Padrão: {formatFeeAmount(fee.percentageValue, fee.fixedValue)} · {association.inherited ? "Herdado da plataforma" : "Personalizado para esta empresa"}</p></div><label className="flex cursor-pointer items-center gap-2 text-sm"><Checkbox checked={values.active} onChange={event => set({ active: event.currentTarget.checked })} />Associada à empresa</label></div>
