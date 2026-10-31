@@ -26,7 +26,7 @@ export function ExtraFeesList({ companyId, drafts, mode, onDraftChange }: ExtraF
 
 	const associated = entries.filter(entry => entry.active);
 	const available = entries.filter(entry => !entry.active && entry.association);
-	const selected = available.find(entry => entry.fee.id === selectedId) ?? available[0];
+	const selected = available.find(entry => entry.fee.id === selectedId);
 
 	function associate() {
 		if (!selected?.association) return;
@@ -45,9 +45,9 @@ export function ExtraFeesList({ companyId, drafts, mode, onDraftChange }: ExtraF
 		{mode === "SIMINTPAY_ONLY" && <p className="text-muted-foreground text-sm">{t("admin.companies.fees.extras.disabled")}</p>}
 		{associated.length === 0 && <p className="text-muted-foreground text-sm">{t("admin.companies.fees.extras.empty")}</p>}
 		{associated.map(({ draft, fee }) => <ExtraFeeRow companyId={companyId} draft={draft} fee={fee} key={fee.id} onDraftChange={next => onDraftChange(fee.id, next)} />)}
-		{selected && <div className="flex items-center gap-2">
-			<CustomSelect ariaLabel="Taxa a associar" className="min-w-0 flex-1" onChange={setSelectedId} options={available.map(entry => ({ label: entry.fee.name, value: entry.fee.id }))} value={selected.fee.id} />
-			<Button onClick={associate} type="button" variant="outline"><LuPlus />Associar taxa</Button>
+		{available.length > 0 && <div className="flex items-center gap-2">
+			<CustomSelect ariaLabel="Taxa a associar" className="min-w-0 flex-1" onChange={setSelectedId} options={available.map(entry => ({ label: entry.fee.name, value: entry.fee.id }))} placeholder="Selecione uma taxa" value={selectedId} />
+			<Button disabled={!selected} onClick={associate} type="button" variant="outline"><LuPlus />Associar taxa</Button>
 		</div>}
 	</div>;
 }

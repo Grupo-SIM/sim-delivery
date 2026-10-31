@@ -23,6 +23,7 @@ interface CustomSelectProps {
 	groups?: SelectGroup[];
 	onChange: (value: string) => void;
 	options?: SelectOption[];
+	placeholder?: string;
 	value: string;
 }
 
@@ -39,6 +40,7 @@ export function CustomSelect({
 	groups,
 	onChange,
 	options,
+	placeholder = "—",
 	value,
 }: CustomSelectProps) {
 	const [open, setOpen] = useState(false);
@@ -115,7 +117,7 @@ export function CustomSelect({
 					{selected?.imageUrl && (
 						<img alt="" className="size-7 shrink-0 rounded object-cover" src={selected.imageUrl} />
 					)}
-					<span className="truncate" style={{ fontFamily: selected?.fontFamily }}>{selected?.label ?? "—"}</span>
+					<span className="truncate" style={{ fontFamily: selected?.fontFamily }}>{selected?.label ?? placeholder}</span>
 				</span>
 				<LuChevronDown
 					className={cn(
