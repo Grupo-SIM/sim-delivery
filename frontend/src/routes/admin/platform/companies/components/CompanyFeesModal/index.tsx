@@ -36,6 +36,10 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 	const [disabledLanes, setDisabledLanes] = useState<Set<string>>(() => new Set(fees.disabledLanes));
 	const [saving, setSaving] = useState(false);
 	const lanes = useMemo(() => [...fees.simintpay.lanes].sort(compareLanes), [fees.simintpay.lanes]);
+	const orderedLanes = useMemo(
+		() => [...lanes].sort((a, b) => Number(disabledLanes.has(laneId(a))) - Number(disabledLanes.has(laneId(b)))),
+		[disabledLanes, lanes],
+	);
 	const coverage = useMemo(() => new Map(fees.coverage.map(lane => [laneId(lane), lane])), [fees.coverage]);
 
 	async function save() {
@@ -115,7 +119,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 						</tr>
 					</thead>
 					<tbody>
-						{lanes.map(lane => (
+						{orderedLanes.map(lane => (
 							<SimintpayLaneRow
 								coverage={coverage.get(laneId(lane))}
 								accepted={!disabledLanes.has(laneId(lane))}
