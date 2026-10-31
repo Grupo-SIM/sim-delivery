@@ -9,63 +9,31 @@ export const FeeDisplayMode = t.Union([
 	t.Literal("checkout_only"),
 ]);
 
-export const CreatePlatformFeeBody = t.Object({
-	active: t.Optional(t.Boolean()),
-	applicationScope: FeeApplicationScope,
-	displayMode: FeeDisplayMode,
-	fixedValue: t.Optional(FeeFixed),
-	name: t.String({ maxLength: 120, minLength: 1 }),
-	percentageValue: t.Optional(FeePercentage),
-});
-export type CreatePlatformFeeBody = typeof CreatePlatformFeeBody.static;
-
-export const UpdatePlatformFeeBody = t.Partial(
-	t.Object({
-		active: t.Boolean(),
-		displayMode: FeeDisplayMode,
-		fixedValue: FeeFixed,
-		name: t.String({ maxLength: 120, minLength: 1 }),
-		percentageValue: FeePercentage,
-	}),
-);
-export type UpdatePlatformFeeBody = typeof UpdatePlatformFeeBody.static;
-
-export const UpsertCompanyFeeOverrideBody = t.Object({
-	active: t.Boolean(),
+/** Edit of one catalog fee as seen by one company; SimIntPay validates and saves it atomically with mode/lanes. */
+export const CompanyAdditiveFeeEdit = t.Object({
+	associated: t.Optional(t.Boolean()),
+	feeId: t.String(),
 	fixedOverride: t.Optional(t.Nullable(FeeFixed)),
 	percentageOverride: t.Optional(t.Nullable(FeePercentage)),
+	reset: t.Optional(t.Boolean()),
 });
-export type UpsertCompanyFeeOverrideBody = typeof UpsertCompanyFeeOverrideBody.static;
 
-export const PlatformFeeReturn = t.Object({
+/** SimIntPay catalog fee plus this company's association and overrides. */
+export const CompanyAdditiveFeeReturn = t.Object({
 	active: t.Boolean(),
-	applicationScope: t.String(),
-	companyOverrideCount: t.Integer(),
-	createdAt: t.Date(),
-	displayMode: t.String(),
+	applicationScope: FeeApplicationScope,
+	associated: t.Boolean(),
+	displayMode: FeeDisplayMode,
+	effectiveFixedValue: t.Integer(),
+	effectivePercentageValue: t.Integer(),
+	fixedOverride: t.Nullable(t.Integer()),
 	fixedValue: t.Integer(),
 	id: t.String(),
 	name: t.String(),
-	percentageValue: t.Integer(),
-	updatedAt: t.Date(),
-});
-export type PlatformFeeReturn = typeof PlatformFeeReturn.static;
-export const PlatformFeeListReturn = t.Array(PlatformFeeReturn);
-export type PlatformFeeListReturn = typeof PlatformFeeListReturn.static;
-
-export const CompanyFeeOverrideReturn = t.Object({
-	active: t.Boolean(),
-	companyId: t.String(),
-	companyName: t.String(),
-	effectiveFixed: t.Integer(),
-	effectivePercentage: t.Integer(),
-	fixedOverride: t.Nullable(t.Integer()),
-	inherited: t.Boolean(),
 	percentageOverride: t.Nullable(t.Integer()),
+	percentageValue: t.Integer(),
 });
-export type CompanyFeeOverrideReturn = typeof CompanyFeeOverrideReturn.static;
-export const CompanyFeeOverrideListReturn = t.Array(CompanyFeeOverrideReturn);
-export type CompanyFeeOverrideListReturn = typeof CompanyFeeOverrideListReturn.static;
+export type CompanyAdditiveFeeReturn = typeof CompanyAdditiveFeeReturn.static;
 
 export const EffectiveFeeReturn = t.Object({
 	applicationScope: t.String(),
@@ -105,6 +73,7 @@ export type CompanyFeeDefaultsReturn = typeof CompanyFeeDefaultsReturn.static;
 const FeeComponentsDto = t.Object({ fixedCents: t.Integer(), ratePpm: t.Integer() });
 
 export const UpdateCompanyFeesBody = t.Object({
+	additiveFees: t.Optional(t.Array(CompanyAdditiveFeeEdit, { maxItems: 200 })),
 	/** Lanes (`METHOD/installments`) to ignore for this platform, e.g. `CREDIT_CARD/2`. */
 	disabledLanes: t.Optional(t.Array(t.String({ pattern: "^(PIX|BOLETO|DEBIT_CARD|CREDIT_CARD)/\\d{1,2}$" }), { maxItems: 14 })),
 	mode: t.Optional(PlatformFeeModeDto),
@@ -113,6 +82,8 @@ export const UpdateCompanyFeesBody = t.Object({
 export type UpdateCompanyFeesBody = typeof UpdateCompanyFeesBody.static;
 
 export const CompanyFeesReturn = t.Object({
+	/** Whole SimIntPay additive catalog with this company's association and overrides. */
+	additiveFees: t.Array(CompanyAdditiveFeeReturn),
 	/** Per lane: acquirer cost, what the company pays to cover it and any shortfall. */
 	coverage: t.Array(
 		t.Object({
@@ -126,8 +97,6 @@ export const CompanyFeesReturn = t.Object({
 	),
 	/** Lanes (`METHOD/installments`) the platform does not accept. */
 	disabledLanes: t.Array(t.String()),
-	/** Surcharges added to the buyer price in this app, after company overrides. Empty when mode is SIMINTPAY_ONLY. */
-	extras: EffectiveFeeListReturn,
 	mode: PlatformFeeModeDto,
 	/** SimIntPay's own fees, deducted from the seller. Not counted when mode is ADDITIVE_ONLY. */
 	simintpay: t.Object({ lanes: t.Array(SimintpayLaneReturn), version: t.String() }),

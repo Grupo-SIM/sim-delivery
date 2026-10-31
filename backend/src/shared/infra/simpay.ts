@@ -8,7 +8,15 @@ import { prisma, type PrismaInstance } from "./sql";
 import { encryptSimpaySecret, decryptSimpaySecret } from "./simpay-secrets";
 import { extractPaymentProviderMessage, PaymentProviderError } from "./paymentProviderError";
 
+export interface SimpayAllocationItem {
+	key: string;
+	quantity: number;
+	unitPriceCents: number;
+}
+
 export interface SimpayPaymentAllocation {
+	/** Lets SimIntPay recompute the additive surcharge; it rejects with 409 FEE_MISMATCH on divergence. */
+	items?: SimpayAllocationItem[];
 	itemsAmountCents?: number;
 	deliveryAmountCents?: number;
 	merchantAmountCents: number;
@@ -92,7 +100,56 @@ export interface SimpayFeeLane {
 	ratePpm: number;
 }
 
+export interface SimpayAdditiveFee {
+	active: boolean;
+	applicationScope: "order" | "product";
+	displayMode: "checkout_only" | "embedded" | "product_explicit";
+	fixedValue: number;
+	id: string;
+	name: string;
+	percentageValue: number;
+}
+
+export interface SimpayCompanyAdditiveFee extends SimpayAdditiveFee {
+	associated: boolean;
+	effectiveFixedValue: number;
+	effectivePercentageValue: number;
+	fixedOverride: number | null;
+	percentageOverride: number | null;
+}
+
+export interface SimpayAdditiveFeeInput {
+	active?: boolean;
+	applicationScope: SimpayAdditiveFee["applicationScope"];
+	displayMode: SimpayAdditiveFee["displayMode"];
+	fixedValue: number;
+	name: string;
+	percentageValue: number;
+}
+
+export interface SimpayAdditiveFeeEdit {
+	associated?: boolean;
+	feeId: string;
+	fixedOverride?: number | null;
+	percentageOverride?: number | null;
+	reset?: boolean;
+}
+
+export interface SimpayCoverageLane {
+	cost: { fixedCents: number; ratePpm: number };
+	covered: { fixedCents: number; ratePpm: number };
+	fixedShortfallCents: number;
+	installments: number;
+	method: string;
+	rateShortfallPpm: number;
+}
+
 export interface SimpayCompanyFees {
+	/** Whole additive catalog with this company's association and overrides. */
+	additiveFees?: SimpayCompanyAdditiveFee[];
+	/** Per enabled lane, computed by SimIntPay with the platform's mode. */
+	coverage?: SimpayCoverageLane[];
+	underCovered?: boolean;
 	/** Which fee sets SimIntPay applies to this company's payments. */
 	mode: "ADDITIVE_ONLY" | "BOTH" | "SIMINTPAY_ONLY";
 	/** Global acquirer cost per lane: what SimIntPay pays regardless of seller. */
@@ -192,6 +249,7 @@ export class SimpayClient {
 			headers: { Accept: "application/json", "Content-Type": "application/json", [options.provisioning ? "x-provisioning-token" : "x-access-token"]: token },
 			...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
 		});
+		if (response.status === 204) return undefined as T;
 		const data = await response.json().catch(() => null);
 		if (!response.ok || !data) {
 			const code = data && typeof data === "object" && "code" in data && typeof data.code === "string" ? data.code : undefined;
@@ -236,7 +294,19 @@ export class SimpayClient {
 	async feeDefaults(): Promise<SimpayFeeDefaults> {
 		return this.json("/platform-registrations/fees/defaults", { provisioning: true });
 	}
-	async saveCompanyFees(companyId: string, input: { disabledLanes?: string[]; lanes: SimpayFeeLane[]; mode?: SimpayCompanyFees["mode"]; version: string }): Promise<SimpayCompanyFees> {
+	async listAdditiveFees(): Promise<SimpayAdditiveFee[]> {
+		return this.json("/platform-registrations/fees/additive", { provisioning: true });
+	}
+	async createAdditiveFee(input: SimpayAdditiveFeeInput): Promise<SimpayAdditiveFee> {
+		return this.json("/platform-registrations/fees/additive", { body: input, method: "POST", provisioning: true });
+	}
+	async updateAdditiveFee(id: string, input: Partial<SimpayAdditiveFeeInput>): Promise<SimpayAdditiveFee> {
+		return this.json(`/platform-registrations/fees/additive/${encodeURIComponent(id)}`, { body: input, method: "PATCH", provisioning: true });
+	}
+	async deleteAdditiveFee(id: string): Promise<void> {
+		await this.json(`/platform-registrations/fees/additive/${encodeURIComponent(id)}`, { method: "DELETE", provisioning: true });
+	}
+	async saveCompanyFees(companyId: string, input: { additiveFees?: SimpayAdditiveFeeEdit[]; disabledLanes?: string[]; lanes: SimpayFeeLane[]; mode?: SimpayCompanyFees["mode"]; version: string }): Promise<SimpayCompanyFees> {
 		return this.json(`/platform-registrations/${encodeURIComponent(companyId)}/fees`, { body: input, method: "PUT", provisioning: true });
 	}
 	private async access(scope: SimpayMerchantScope) {

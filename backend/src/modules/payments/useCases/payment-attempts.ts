@@ -50,7 +50,7 @@ export async function recordAttemptResponse(db: PrismaInstance, id: string, resp
 	await db.paymentAttempt.update({ where: { id }, data: { state: isFailedSimpayStatus(response.status) ? "failed" : "pending", providerPaymentId: response.paymentId ?? response.id, providerTransactionId: response.transactionId } });
 }
 
-export function attemptAllocation(attempt: { merchantAmountCents: number; platformFeeCents: number; itemsAmountCents?: number | null; deliveryAmountCents?: number | null }) {
- return { merchantAmountCents: attempt.merchantAmountCents, platformFeeCents: attempt.platformFeeCents,
+export function attemptAllocation(attempt: { merchantAmountCents: number; platformFeeCents: number; itemsAmountCents?: number | null; deliveryAmountCents?: number | null }, items?: { id: string; quantity: number; unitPrice: number }[]) {
+ return { ...(items?.length ? { items: items.map(item => ({ key: item.id, quantity: item.quantity, unitPriceCents: item.unitPrice })) } : {}), merchantAmountCents: attempt.merchantAmountCents, platformFeeCents: attempt.platformFeeCents,
   ...(attempt.itemsAmountCents != null && attempt.deliveryAmountCents != null ? { itemsAmountCents: attempt.itemsAmountCents, deliveryAmountCents: attempt.deliveryAmountCents } : {}) };
 }

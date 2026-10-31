@@ -77,7 +77,6 @@ model Company {
     inventorySettings InventorySettings?
     withdrawals Withdrawal[]
     simpayIntegration CompanySimpayIntegration?
-    feeOverrides CompanyFeeOverride[]
 
     @@map("company")
 }

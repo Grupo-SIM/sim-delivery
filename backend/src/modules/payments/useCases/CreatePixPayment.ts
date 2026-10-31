@@ -40,7 +40,7 @@ export class CreatePixPayment {
 		const phone = (customer.phone ?? user.phoneNumber ?? "").replace(/\D/g, "");
 		const pix = await this.simpay.createPixPayment({
 			idempotencyKey: attempt.id,
-			allocation: attemptAllocation(attempt),
+			allocation: attemptAllocation(attempt, order.items),
 			description: buildPaymentDescription(order),
 			document,
 			document_type: document.length === 11 ? "CPF" : "CNPJ",

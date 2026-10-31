@@ -1,13 +1,9 @@
 import { simpay, type SimpayClient, type SimpayCompanyFees } from "@/shared/infra/simpay";
-import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CompanyFeeDefaultsReturn, CompanyFeesReturn, UpdateCompanyFeesBody } from "../dtos";
 import { invalidateCompanyFeeMode, rememberCompanyFeeMode } from "../companyFeeMode";
-import { listCompanySurcharges } from "../effectiveFees";
-import { evaluateCoverage, hasShortfall, surchargeComponents } from "../feeCoverage";
 
 export class CompanyFees {
 	constructor(
-		private readonly prisma: PrismaInstance,
 		private readonly provider: Pick<SimpayClient, "companyFees" | "saveCompanyFees"> = simpay,
 		private readonly defaultsProvider: Pick<SimpayClient, "feeDefaults"> = simpay,
 	) {}
@@ -20,52 +16,36 @@ export class CompanyFees {
 	async get(companyId: string): Promise<CompanyFeesReturn> {
 		const provider = await this.provider.companyFees(companyId);
 		rememberCompanyFeeMode(companyId, provider);
-		return this.build(companyId, provider);
+		return this.build(provider);
 	}
 
-	/** SimIntPay owns the mode and its fees; Delivery only forwards the edit; SimIntPay validates it against acquirer cost. */
+	/** SimIntPay owns mode, lanes and additive fees; Delivery forwards the edit, which SimIntPay validates against acquirer cost atomically. */
 	async update(companyId: string, input: UpdateCompanyFeesBody): Promise<CompanyFeesReturn> {
 		const current = await this.provider.companyFees(companyId);
 		const disabledLanes = input.disabledLanes ?? current.disabledLanes;
-		let provider: SimpayCompanyFees = { ...current, disabledLanes, mode: input.mode ?? current.mode };
-		if (input.simintpay) provider = { ...provider, ...input.simintpay, lanes: this.merge(provider, input.simintpay.lanes) };
-		if (input.simintpay || input.disabledLanes || provider.mode !== current.mode) {
-			invalidateCompanyFeeMode(companyId);
-			provider = await this.provider.saveCompanyFees(companyId, {
-				disabledLanes,
-				lanes: input.simintpay?.lanes ?? [],
-				mode: provider.mode,
-				version: input.simintpay?.version ?? current.version,
-			});
-			rememberCompanyFeeMode(companyId, provider);
-		}
-		return this.build(companyId, provider);
-	}
-
-	private merge(provider: SimpayCompanyFees, edits: SimpayCompanyFees["lanes"]) {
-		const lanes = provider.lanes.filter(
-			lane => !edits.some(edit => edit.method === lane.method && edit.installments === lane.installments),
-		);
-		return [...lanes, ...edits];
-	}
-
-	private async build(companyId: string, provider: SimpayCompanyFees): Promise<CompanyFeesReturn> {
-		const mode = provider.mode;
-		const surcharges = await listCompanySurcharges(this.prisma, companyId);
-		const coverage = evaluateCoverage({
-			costs: provider.costs,
-			disabledLanes: provider.disabledLanes,
+		const mode = input.mode ?? current.mode;
+		const changed = !!input.simintpay || !!input.disabledLanes || !!input.additiveFees?.length || mode !== current.mode;
+		if (!changed) return this.build(current);
+		invalidateCompanyFeeMode(companyId);
+		const saved = await this.provider.saveCompanyFees(companyId, {
+			...(input.additiveFees?.length ? { additiveFees: input.additiveFees } : {}),
+			disabledLanes,
+			lanes: input.simintpay?.lanes ?? [],
 			mode,
-			simintpay: provider.lanes,
-			surcharges: surchargeComponents(surcharges),
+			version: input.simintpay?.version ?? current.version,
 		});
+		rememberCompanyFeeMode(companyId, saved);
+		return this.build(saved);
+	}
+
+	private build(provider: SimpayCompanyFees): CompanyFeesReturn {
 		return {
-			coverage,
+			additiveFees: provider.additiveFees ?? [],
+			coverage: provider.coverage ?? [],
 			disabledLanes: provider.disabledLanes ?? [],
-			extras: mode === "SIMINTPAY_ONLY" ? [] : surcharges,
-			mode,
+			mode: provider.mode,
 			simintpay: { lanes: provider.lanes, version: provider.version },
-			underCovered: hasShortfall(coverage),
+			underCovered: provider.underCovered ?? false,
 		};
 	}
 }

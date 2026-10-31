@@ -105,7 +105,7 @@ export class CreateCardPayment {
 				idempotencyKey: attempt.id,
 				bin,
 				brand,
-				allocation: attemptAllocation(attempt),
+				allocation: attemptAllocation(attempt, order.items),
 				description: buildPaymentDescription(order),
 				document: holderDocument,
 				document_type: holderDocument.length === 11 ? "CPF" : "CNPJ",
