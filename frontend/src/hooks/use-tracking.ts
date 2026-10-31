@@ -1,6 +1,6 @@
 import { useRouterState } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
-import { captureAttribution, clearAttribution, getDeviceId } from "@/lib/attribution";
+import { captureAttribution, clearAttribution, getDeviceId, watchMetaCookies } from "@/lib/attribution";
 import { setMetaPixelId, trackMetaEvent } from "@/lib/meta-pixel";
 import { useConsentStore } from "@/stores/consent";
 
@@ -112,6 +112,7 @@ export function useTracking({ ga4Id, gtmId, metaPixelId }: TrackingIds) {
 		}
 		setMetaPixelId(metaPixelId);
 		loadScript("meta-pixel-library", "https://connect.facebook.net/en_US/fbevents.js");
+		watchMetaCookies();
 		const pageKey = `${metaPixelId}:${path}`;
 		if (pageView.current !== pageKey) {
 			trackMetaEvent("PageView");

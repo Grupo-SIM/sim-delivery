@@ -4,7 +4,7 @@ const STORAGE_KEY = "marketing-attribution";
 const DEVICE_KEY = "marketing-device-id";
 const MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000;
 const UTM_KEYS = ["source", "medium", "campaign", "content", "term"] as const;
-interface Attribution { fbc?: string; sourceUrl: string; capturedAt: number; utm?: Record<string, string> }
+interface Attribution { fbc?: string; fbp?: string; sourceUrl: string; capturedAt: number; utm?: Record<string, string> }
 
 /** Deliberately omit query/hash: checkout and magic links may contain personal data/tokens. */
 function sourceUrl() {
@@ -27,7 +27,8 @@ function readAttribution(): Attribution | undefined {
 	try {
 		const value = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null") as Attribution | null;
 		if (value && typeof value.capturedAt === "number" && value.capturedAt <= Date.now() && Date.now() - value.capturedAt < MAX_AGE_MS && typeof value.sourceUrl === "string") {
-			return { ...value, fbc: typeof value.fbc === "string" && /^fb\.\d+\.\d+\.[A-Za-z0-9_-]{1,500}$/.test(value.fbc) ? value.fbc : undefined };
+			const valid = (id: unknown) => typeof id === "string" && /^fb\.\d+\.\d+\.[A-Za-z0-9_-]{1,500}$/.test(id) ? id : undefined;
+			return { ...value, fbc: valid(value.fbc), fbp: valid(value.fbp) };
 		}
 	} catch { /* Invalid or unavailable storage is not fatal. */ }
 	return undefined;
@@ -51,6 +52,36 @@ export function captureAttribution() {
 			localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...previous, capturedAt: Date.now(), sourceUrl: sourceUrl(), utm: Object.keys(utm).length ? utm : previous?.utm }));
 		}
 	} catch { /* Attribution is optional. */ }
+	snapshotMetaCookies();
+}
+
+/** Keep the earliest _fbp/_fbc seen, so a later cookie loss or late Pixel load can't leave the order without them. */
+function snapshotMetaCookies() {
+	try {
+		const fbp = cookie("_fbp");
+		const fbc = cookie("_fbc");
+		if (!fbp && !fbc) return;
+		const previous = readAttribution();
+		if ((!fbp || previous?.fbp) && (!fbc || previous?.fbc)) return;
+		localStorage.setItem(STORAGE_KEY, JSON.stringify({
+			capturedAt: Date.now(),
+			sourceUrl: sourceUrl(),
+			...previous,
+			fbc: previous?.fbc ?? fbc,
+			fbp: previous?.fbp ?? fbp,
+		}));
+	} catch { /* Attribution is optional. */ }
+}
+
+/** _fbp is created by fbevents.js after it loads; poll briefly and persist it the moment it appears. */
+export function watchMetaCookies() {
+	if (typeof window === "undefined" || !hasMarketingConsent()) return;
+	let attempts = 0;
+	const timer = window.setInterval(() => {
+		if (!hasMarketingConsent() || ++attempts > 40) return window.clearInterval(timer);
+		snapshotMetaCookies();
+		if (cookie("_fbp")) window.clearInterval(timer);
+	}, 500);
 }
 
 function cookie(name: string) {
@@ -81,7 +112,7 @@ export function getCheckoutAttribution() {
 		consent: true as const,
 		consentVersion: CONSENT_VERSION,
 		deviceId: getDeviceId(),
-		fbp: cookie("_fbp"),
+		fbp: cookie("_fbp") ?? attribution?.fbp,
 		fbc: attribution?.fbc ?? cookie("_fbc"),
 		sourceUrl: sourceUrl(),
 		utm: attribution?.utm ? Object.fromEntries(UTM_KEYS.flatMap(key => {
