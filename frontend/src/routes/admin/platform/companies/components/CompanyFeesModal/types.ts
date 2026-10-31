@@ -38,3 +38,17 @@ export function compareLanes(a: { installments: number | string; method: string 
 	const method = METHOD_ORDER.indexOf(a.method) - METHOD_ORDER.indexOf(b.method);
 	return method || Number(a.installments) - Number(b.installments);
 }
+
+/** Pending company-specific edit of an additive fee; only sent when the whole modal is saved. */
+export interface ExtraFeeDraft {
+	active: boolean;
+	/** Reais, empty = platform default. */
+	fixed: string;
+	/** Percent, empty = platform default. */
+	percentage: string;
+	/** Drop the company exception entirely. */
+	reset: boolean;
+}
+
+export const percentToBasisPoints = (percent: string) => (percent === "" ? null : Math.round(Number(percent) * 100));
+export const reaisToNullableCents = (reais: string) => (reais === "" ? null : Math.round(Number(reais) * 100));

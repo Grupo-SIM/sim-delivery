@@ -7,14 +7,17 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/Skeleton";
 import {
+	deletePlatformFeesByFeeIdCompaniesByCompanyId,
 	getPlatformFeesByCompanyByCompanyIdQueryKey,
+	getPlatformFeesByFeeIdCompaniesQueryKey,
 	putPlatformFeesByCompanyByCompanyId,
+	putPlatformFeesByFeeIdCompaniesByCompanyId,
 	useGetPlatformFeesByCompanyByCompanyId,
 } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 import { ExtraFeesList } from "./ExtraFeesList";
 import { SimintpayLaneRow, initialDraft } from "./SimintpayLaneRow";
-import { type CompanyFees, type FeeMode, type LaneDraft, compareLanes, laneId, percentToPpm, reaisToCents } from "./types";
+import { type CompanyFees, type FeeMode, type ExtraFeeDraft, type LaneDraft, compareLanes, laneId, percentToBasisPoints, percentToPpm, reaisToCents, reaisToNullableCents } from "./types";
 
 interface CompanyFeesModalProps {
 	companyId: string;
@@ -33,6 +36,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 		Object.fromEntries(fees.simintpay.lanes.map(lane => [laneId(lane), initialDraft(lane)])),
 	);
 	const [disabledLanes, setDisabledLanes] = useState<Set<string>>(() => new Set(fees.disabledLanes));
+	const [extraDrafts, setExtraDrafts] = useState<Record<string, ExtraFeeDraft>>({});
 	const [saving, setSaving] = useState(false);
 	const lanes = useMemo(() => [...fees.simintpay.lanes].sort(compareLanes), [fees.simintpay.lanes]);
 	const orderedLanes = useMemo(
@@ -44,6 +48,17 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 	async function save() {
 		setSaving(true);
 		try {
+			await Promise.all(
+				Object.entries(extraDrafts).map(([feeId, draft]) =>
+					draft.reset
+						? deletePlatformFeesByFeeIdCompaniesByCompanyId(feeId, companyId)
+						: putPlatformFeesByFeeIdCompaniesByCompanyId(feeId, companyId, {
+								active: draft.active,
+								fixedOverride: reaisToNullableCents(draft.fixed),
+								percentageOverride: percentToBasisPoints(draft.percentage),
+							}),
+				),
+			);
 			await putPlatformFeesByCompanyByCompanyId(companyId, {
 				disabledLanes: [...disabledLanes].sort(),
 				mode,
@@ -65,7 +80,10 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 					version: fees.simintpay.version,
 				},
 			});
-			await queryClient.invalidateQueries({ queryKey: getPlatformFeesByCompanyByCompanyIdQueryKey(companyId) });
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: getPlatformFeesByCompanyByCompanyIdQueryKey(companyId) }),
+				...Object.keys(extraDrafts).map(feeId => queryClient.invalidateQueries({ queryKey: getPlatformFeesByFeeIdCompaniesQueryKey(feeId) })),
+			]);
 			showToast(t("admin.companies.fees.saved"), "positive");
 			history.back();
 		} catch {
@@ -97,7 +115,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 			<section className="space-y-2">
 				<h3 className="font-semibold text-sm">{t("admin.companies.fees.extras.title")}</h3>
 				<p className="text-muted-foreground text-xs">{t("admin.companies.fees.extras.hint")}</p>
-				<ExtraFeesList companyId={companyId} mode={mode} />
+				<ExtraFeesList companyId={companyId} drafts={extraDrafts} mode={mode} onDraftChange={(feeId, draft) => setExtraDrafts(current => ({ ...current, [feeId]: draft }))} />
 			</section>
 
 			<section className="space-y-2">
