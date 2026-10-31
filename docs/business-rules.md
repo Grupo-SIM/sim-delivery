@@ -167,7 +167,10 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
 - Há dois conjuntos de taxas por empresa: as **aditivas** deste app (`PlatformFee`, somadas ao preço do comprador)
   e as **da SimIntPay** (descontadas do valor do lojista pela SimIntPay, por modalidade e parcela). Adicionais do
   `owner` na SimIntPay são outro tipo e são ignorados aqui. Custos das adquirentes são globais (a mais cara entre
-  as ativas define o piso por modalidade/parcela), nunca por empresa ou lojista.
+  as ativas define o piso por modalidade/parcela), nunca por empresa ou lojista. O percentual mínimo inclui
+  a taxa de aquisição **mais os juros do parcelamento** da adquirente, mesmo quando esses componentes são
+  cadastrados separadamente na SimIntPay. A SimIntPay entrega esse percentual efetivo em `costs[].ratePpm`;
+  o Delivery compara esse valor integral, sem somar juros novamente. Cobertura igual ao piso é suficiente.
 - O modo de taxas da empresa pertence à SimIntPay (`Platform.deliveryFeeMode`); este app não guarda cópia e apenas
   o consome (cache de 60 s) e o edita pela SimIntPay. Padrão `SIMINTPAY_ONLY`: `ADDITIVE_ONLY` (só taxas aditivas; a
   SimIntPay não desconta nada), `SIMINTPAY_ONLY` (nenhuma taxa aditiva; a SimIntPay desconta suas taxas do lojista)

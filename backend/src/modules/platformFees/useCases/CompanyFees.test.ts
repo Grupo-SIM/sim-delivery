@@ -5,9 +5,9 @@ import { CompanyFees } from "./CompanyFees";
 
 const lane = (ratePpm: number) => ({ channel: "ONLINE" as const, fixedCents: 0, installments: 1, method: "PIX" as const, ratePpm });
 
-function setup(mode: string, options: { failSave?: boolean } = {}) {
+function setup(mode: string, options: { failSave?: boolean; provider?: Partial<SimpayCompanyFees> } = {}) {
 	const state = { mode, saved: undefined as unknown };
-	let provider: SimpayCompanyFees = { costs: [lane(9_800)], disabledLanes: [], lanes: [lane(10_000)], mode: mode as SimpayCompanyFees["mode"], version: "1" };
+	let provider: SimpayCompanyFees = { costs: [lane(9_800)], disabledLanes: [], lanes: [lane(10_000)], mode: mode as SimpayCompanyFees["mode"], version: "1", ...options.provider };
 	const prisma = {
 		platformFee: { findMany: async () => [] },
 	} as unknown as PrismaInstance;
@@ -25,6 +25,23 @@ function setup(mode: string, options: { failSave?: boolean } = {}) {
 }
 
 describe("company fees", () => {
+	it("uses the upstream acquiring floor including installment interest for reads and saves", async () => {
+		// Upstream folds 4% acquiring + 6% installment interest into the existing ratePpm contract.
+		const cost = { ...lane(100_000), installments: 12, method: "CREDIT_CARD" as const };
+		const { fees, state } = setup("SIMINTPAY_ONLY", { provider: { costs: [cost], lanes: [{ ...cost, ratePpm: 90_000 }] } });
+		const result = await fees.get("interest-company");
+		expect(result.underCovered).toBe(true);
+		expect(result.coverage[0]).toMatchObject({ cost: { ratePpm: 100_000 }, rateShortfallPpm: 10_000 });
+		await expect(fees.assertCovered("interest-company")).rejects.toThrow();
+		await expect(fees.update("interest-company", { simintpay: { lanes: [{ ...cost, ratePpm: 90_000 }], version: "1" } })).rejects.toThrow();
+		expect(state.saved).toBeUndefined();
+
+		const saved = await fees.update("interest-company", { simintpay: { lanes: [cost], version: "1" } });
+		expect(saved.underCovered).toBe(false);
+		expect(saved.coverage[0]).toMatchObject({ covered: { ratePpm: 100_000 }, rateShortfallPpm: 0 });
+		expect(state.saved).toMatchObject({ lanes: [cost] });
+	});
+
 	it("rejects SimIntPay fees below the acquirer cost and does not save them", async () => {
 		const { fees, state } = setup("BOTH");
 		await expect(fees.update("c", { simintpay: { lanes: [lane(1_000)], version: "1" } })).rejects.toThrow();
