@@ -4,6 +4,8 @@ export type CompanyFees = GetPlatformFeesByCompanyByCompanyId200;
 export type SimintpayLane = CompanyFees["simintpay"]["lanes"][number];
 export type CoverageLane = CompanyFees["coverage"][number];
 export type FeeMode = CompanyFees["mode"];
+/** Catalog fee with this company's association and overrides, straight from SimIntPay. */
+export type CompanyAdditiveFee = CompanyFees["additiveFees"][number];
 
 /** Inputs hold decimal strings the user sees: percent ("4,5") and reais ("1"). */
 export interface LaneDraft {

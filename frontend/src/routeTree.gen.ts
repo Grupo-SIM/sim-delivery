@@ -35,7 +35,6 @@ import { Route as StorefrontPreferencesIndexRouteImport } from './routes/_storef
 import { Route as StorefrontOrdersIndexRouteImport } from './routes/_storefront/orders/index'
 import { Route as StorefrontIdentifyIndexRouteImport } from './routes/_storefront/identify/index'
 import { Route as StorefrontUnitIdIndexRouteImport } from './routes/_storefront/$unitId/index'
-import { Route as AdminPlatformFeesIndexRouteImport } from './routes/admin/platform/fees/index'
 import { Route as AdminPlatformCompaniesIndexRouteImport } from './routes/admin/platform/companies/index'
 import { Route as AdminInventoryMovementsIndexRouteImport } from './routes/admin/inventory/movements/index'
 import { Route as AdminFinanceProductsIndexRouteImport } from './routes/admin/finance/products/index'
@@ -180,11 +179,6 @@ const StorefrontUnitIdIndexRoute = StorefrontUnitIdIndexRouteImport.update({
   path: '/$unitId/',
   getParentRoute: () => StorefrontRoute,
 } as any)
-const AdminPlatformFeesIndexRoute = AdminPlatformFeesIndexRouteImport.update({
-  id: '/platform/fees/',
-  path: '/platform/fees/',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminPlatformCompaniesIndexRoute =
   AdminPlatformCompaniesIndexRouteImport.update({
     id: '/platform/companies/',
@@ -287,7 +281,6 @@ export interface FileRoutesByFullPath {
   '/admin/finance/products/': typeof AdminFinanceProductsIndexRoute
   '/admin/inventory/movements/': typeof AdminInventoryMovementsIndexRoute
   '/admin/platform/companies/': typeof AdminPlatformCompaniesIndexRoute
-  '/admin/platform/fees/': typeof AdminPlatformFeesIndexRoute
   '/$unitId/checkout/thank-you/': typeof StorefrontUnitIdCheckoutThankYouIndexRoute
   '/admin/units/$unitId/products/': typeof AdminUnitsUnitIdProductsIndexRoute
 }
@@ -325,7 +318,6 @@ export interface FileRoutesByTo {
   '/admin/finance/products': typeof AdminFinanceProductsIndexRoute
   '/admin/inventory/movements': typeof AdminInventoryMovementsIndexRoute
   '/admin/platform/companies': typeof AdminPlatformCompaniesIndexRoute
-  '/admin/platform/fees': typeof AdminPlatformFeesIndexRoute
   '/$unitId/checkout/thank-you': typeof StorefrontUnitIdCheckoutThankYouIndexRoute
   '/admin/units/$unitId/products': typeof AdminUnitsUnitIdProductsIndexRoute
 }
@@ -366,7 +358,6 @@ export interface FileRoutesById {
   '/admin/finance/products/': typeof AdminFinanceProductsIndexRoute
   '/admin/inventory/movements/': typeof AdminInventoryMovementsIndexRoute
   '/admin/platform/companies/': typeof AdminPlatformCompaniesIndexRoute
-  '/admin/platform/fees/': typeof AdminPlatformFeesIndexRoute
   '/_storefront/$unitId/checkout/thank-you/': typeof StorefrontUnitIdCheckoutThankYouIndexRoute
   '/admin/units/$unitId/products/': typeof AdminUnitsUnitIdProductsIndexRoute
 }
@@ -407,7 +398,6 @@ export interface FileRouteTypes {
     | '/admin/finance/products/'
     | '/admin/inventory/movements/'
     | '/admin/platform/companies/'
-    | '/admin/platform/fees/'
     | '/$unitId/checkout/thank-you/'
     | '/admin/units/$unitId/products/'
   fileRoutesByTo: FileRoutesByTo
@@ -445,7 +435,6 @@ export interface FileRouteTypes {
     | '/admin/finance/products'
     | '/admin/inventory/movements'
     | '/admin/platform/companies'
-    | '/admin/platform/fees'
     | '/$unitId/checkout/thank-you'
     | '/admin/units/$unitId/products'
   id:
@@ -485,7 +474,6 @@ export interface FileRouteTypes {
     | '/admin/finance/products/'
     | '/admin/inventory/movements/'
     | '/admin/platform/companies/'
-    | '/admin/platform/fees/'
     | '/_storefront/$unitId/checkout/thank-you/'
     | '/admin/units/$unitId/products/'
   fileRoutesById: FileRoutesById
@@ -682,13 +670,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StorefrontUnitIdIndexRouteImport
       parentRoute: typeof StorefrontRoute
     }
-    '/admin/platform/fees/': {
-      id: '/admin/platform/fees/'
-      path: '/platform/fees'
-      fullPath: '/admin/platform/fees/'
-      preLoaderRoute: typeof AdminPlatformFeesIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/admin/platform/companies/': {
       id: '/admin/platform/companies/'
       path: '/platform/companies'
@@ -825,7 +806,6 @@ interface AdminRouteChildren {
   AdminFinanceProductsIndexRoute: typeof AdminFinanceProductsIndexRoute
   AdminInventoryMovementsIndexRoute: typeof AdminInventoryMovementsIndexRoute
   AdminPlatformCompaniesIndexRoute: typeof AdminPlatformCompaniesIndexRoute
-  AdminPlatformFeesIndexRoute: typeof AdminPlatformFeesIndexRoute
   AdminUnitsUnitIdProductsIndexRoute: typeof AdminUnitsUnitIdProductsIndexRoute
 }
 
@@ -848,7 +828,6 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminFinanceProductsIndexRoute: AdminFinanceProductsIndexRoute,
   AdminInventoryMovementsIndexRoute: AdminInventoryMovementsIndexRoute,
   AdminPlatformCompaniesIndexRoute: AdminPlatformCompaniesIndexRoute,
-  AdminPlatformFeesIndexRoute: AdminPlatformFeesIndexRoute,
   AdminUnitsUnitIdProductsIndexRoute: AdminUnitsUnitIdProductsIndexRoute,
 }
 

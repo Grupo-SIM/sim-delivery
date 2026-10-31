@@ -7,11 +7,8 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/Skeleton";
 import {
-	deletePlatformFeesByFeeIdCompaniesByCompanyId,
 	getPlatformFeesByCompanyByCompanyIdQueryKey,
-	getPlatformFeesByFeeIdCompaniesQueryKey,
 	putPlatformFeesByCompanyByCompanyId,
-	putPlatformFeesByFeeIdCompaniesByCompanyId,
 	useGetPlatformFeesByCompanyByCompanyId,
 	useGetPlatformFeesByCompanyDefaults,
 } from "@/lib/api";
@@ -49,7 +46,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 	const globalDefaults = useMemo(() => new Map(defaults?.lanes.map(lane => [laneId(lane), lane])), [defaults]);
 	const coverage = useMemo(() => new Map(fees.coverage.map(lane => [laneId(lane), lane])), [fees.coverage]);
 
-	const { entries: extraEntries } = useExtraFeeEntries(companyId, extraDrafts);
+	const extraEntries = useExtraFeeEntries(fees.additiveFees, extraDrafts);
 	const surcharge = useMemo(() => {
 		const active = mode === "SIMINTPAY_ONLY" ? [] : extraEntries.filter(entry => entry.active);
 		return { fixedCents: active.reduce((sum, entry) => sum + entry.fixedCents, 0), ratePpm: active.reduce((sum, entry) => sum + entry.ratePpm, 0) };
@@ -58,18 +55,14 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 	async function save() {
 		setSaving(true);
 		try {
-			await Promise.all(
-				Object.entries(extraDrafts).map(([feeId, draft]) =>
-					draft.reset
-						? deletePlatformFeesByFeeIdCompaniesByCompanyId(feeId, companyId)
-						: putPlatformFeesByFeeIdCompaniesByCompanyId(feeId, companyId, {
-								active: draft.active,
-								fixedOverride: reaisToNullableCents(draft.fixed),
-								percentageOverride: percentToBasisPoints(draft.percentage),
-							}),
-				),
-			);
 			await putPlatformFeesByCompanyByCompanyId(companyId, {
+				additiveFees: Object.entries(extraDrafts).map(([feeId, draft]) => ({
+					associated: draft.active,
+					feeId,
+					fixedOverride: draft.reset ? null : reaisToNullableCents(draft.fixed),
+					percentageOverride: draft.reset ? null : percentToBasisPoints(draft.percentage),
+					reset: draft.reset || undefined,
+				})),
 				disabledLanes: [...disabledLanes].sort(),
 				mode,
 				simintpay: {
@@ -90,10 +83,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 					version: fees.simintpay.version,
 				},
 			});
-			await Promise.all([
-				queryClient.invalidateQueries({ queryKey: getPlatformFeesByCompanyByCompanyIdQueryKey(companyId) }),
-				...Object.keys(extraDrafts).map(feeId => queryClient.invalidateQueries({ queryKey: getPlatformFeesByFeeIdCompaniesQueryKey(feeId) })),
-			]);
+			await queryClient.invalidateQueries({ queryKey: getPlatformFeesByCompanyByCompanyIdQueryKey(companyId) });
 			showToast(t("admin.companies.fees.saved"), "positive");
 			history.back();
 		} catch {
@@ -125,7 +115,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 			<section className="space-y-2">
 				<h3 className="font-semibold text-sm">{t("admin.companies.fees.extras.title")}</h3>
 				<p className="text-muted-foreground text-xs">{t("admin.companies.fees.extras.hint")}</p>
-				<ExtraFeesList companyId={companyId} drafts={extraDrafts} mode={mode} onDraftChange={(feeId, draft) => setExtraDrafts(current => ({ ...current, [feeId]: draft }))} />
+				<ExtraFeesList additiveFees={fees.additiveFees} companyId={companyId} drafts={extraDrafts} mode={mode} onDraftChange={(feeId, draft) => setExtraDrafts(current => ({ ...current, [feeId]: draft }))} />
 			</section>
 
 			<section className="space-y-2">

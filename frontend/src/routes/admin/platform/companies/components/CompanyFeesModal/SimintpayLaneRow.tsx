@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { cn } from "@/lib/utils";
-import { OverrideValueInput } from "@/routes/admin/platform/fees/components/OverrideValueInput";
+import { OverrideValueInput } from "./OverrideValueInput";
 import { type CoverageLane, type LaneDraft, type SimintpayLane, ppmToPercent, centsToReais, percentToPpm, reaisToCents } from "./types";
 
 interface SimintpayLaneRowProps {

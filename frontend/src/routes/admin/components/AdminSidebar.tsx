@@ -7,7 +7,6 @@ import {
 	LuClipboardList,
 	LuFolderTree,
 	LuLandmark,
-	LuBadgeDollarSign,
 	LuLogOut,
 	LuPackage,
 	LuPackageOpen,
@@ -128,7 +127,6 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 
 			{isSuperAdmin(role) && (
 				<AdminNavGroup label={t("admin.dashboard.nav.platform")}>
-					<AdminNavItem icon={LuBadgeDollarSign} label="Taxas" onNavigate={onNavigate} to="/admin/platform/fees" />
 					<AdminNavItem
 						icon={LuBuilding2}
 						label={t("admin.companies.title")}
