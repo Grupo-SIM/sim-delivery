@@ -1,8 +1,6 @@
-import { DomainError } from "@/shared/errors";
 import { simpay, type SimpayClient, type SimpayCompanyFees } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CompanyFeesReturn, UpdateCompanyFeesBody } from "../dtos";
-import { PlatformFeeErrors } from "../errors";
 import { invalidateCompanyFeeMode, rememberCompanyFeeMode } from "../companyFeeMode";
 import { listCompanySurcharges } from "../effectiveFees";
 import { evaluateCoverage, hasShortfall, surchargeComponents } from "../feeCoverage";
@@ -19,13 +17,12 @@ export class CompanyFees {
 		return this.build(companyId, provider);
 	}
 
-	/** SimIntPay owns the mode and its fees; Delivery only forwards the edit after checking acquirer cost. */
+	/** SimIntPay owns the mode and its fees; Delivery only forwards the edit; SimIntPay validates it against acquirer cost. */
 	async update(companyId: string, input: UpdateCompanyFeesBody): Promise<CompanyFeesReturn> {
 		const current = await this.provider.companyFees(companyId);
 		const disabledLanes = input.disabledLanes ?? current.disabledLanes;
 		let provider: SimpayCompanyFees = { ...current, disabledLanes, mode: input.mode ?? current.mode };
 		if (input.simintpay) provider = { ...provider, ...input.simintpay, lanes: this.merge(provider, input.simintpay.lanes) };
-		if ((await this.build(companyId, provider)).underCovered) throw new DomainError(PlatformFeeErrors.FEES_BELOW_ACQUIRER_COST);
 		if (input.simintpay || input.disabledLanes || provider.mode !== current.mode) {
 			invalidateCompanyFeeMode(companyId);
 			provider = await this.provider.saveCompanyFees(companyId, {
@@ -37,11 +34,6 @@ export class CompanyFees {
 			rememberCompanyFeeMode(companyId, provider);
 		}
 		return this.build(companyId, provider);
-	}
-
-	/** Throws when the company's current fees (as they stand) no longer cover acquirer cost. */
-	async assertCovered(companyId: string): Promise<void> {
-		if ((await this.get(companyId)).underCovered) throw new DomainError(PlatformFeeErrors.FEES_BELOW_ACQUIRER_COST);
 	}
 
 	private merge(provider: SimpayCompanyFees, edits: SimpayCompanyFees["lanes"]) {

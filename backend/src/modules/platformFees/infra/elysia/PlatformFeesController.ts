@@ -32,7 +32,7 @@ export const PlatformFeesController = new Elysia({ detail: { tags: ["Platform Fe
 		app
 			.decorate(({ prisma }) => {
 				const companyFees = new CompanyFees(prisma);
-				return { companyFees, platformFees: new PlatformFees(prisma, companyFees), prisma };
+				return { companyFees, platformFees: new PlatformFees(prisma), prisma };
 			})
 			.onBeforeHandle(async ({ request, prisma }) => requireSuperAdmin(request, prisma))
 			.get("/", ({ platformFees }) => platformFees.list(), { response: PlatformFeeListReturn })
