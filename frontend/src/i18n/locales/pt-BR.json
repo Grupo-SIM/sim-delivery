@@ -294,12 +294,12 @@
 					"action": "Taxas efetivas",
 					"columns": {
 						"accepted": "Aceita",
-						"coverage": "Cobertura salva",
+						"coverage": "Cobertura",
 						"cost": "Custo da adquirente",
 						"fixed": "Fixo",
 						"lane": "Modalidade",
 						"rate": "Percentual",
-						"effective": "Desconto do lojista (rascunho)"
+						"effective": "Taxa efetiva do lojista"
 					},
 					"coverage": {
 						"notAccepted": "Modalidade não aceita",
@@ -342,9 +342,6 @@
 						"hint": "Descontadas do lojista pela SimIntPay quando o modo inclui taxas SimIntPay. O custo da adquirente é global e define o mínimo.",
 						"rate": "Percentual SimIntPay ({{lane}})",
 						"title": "Taxas SimIntPay"
-					},
-					"summary": {
-						"notApplied": "Não aplicado neste modo"
 					},
 					"title": "Taxas de {{name}}",
 					"underCovered": "As taxas efetivas desta empresa não cobrem o custo das adquirentes em alguma modalidade."

@@ -12,6 +12,8 @@ interface SimintpayLaneRowProps {
 	/** Global SimIntPay fee for this lane, shown as placeholder while a field is empty. */
 	globalDefault: SimintpayLane | undefined;
 	lane: SimintpayLane;
+	/** Sum of the additive fees charged in the current mode. */
+	surcharge: { fixedCents: number; ratePpm: number };
 	onAcceptedChange: (accepted: boolean) => void;
 	onChange: (draft: LaneDraft) => void;
 }
@@ -22,13 +24,15 @@ function formatCost(ratePpm: number | string, fixedCents: number | string) {
 	return `${percent}% + ${fixed}`;
 }
 
-export function SimintpayLaneRow({ accepted, applied, coverage, draft, globalDefault, lane, onAcceptedChange, onChange }: SimintpayLaneRowProps) {
+export function SimintpayLaneRow({ accepted, applied, coverage, draft, globalDefault, lane, surcharge, onAcceptedChange, onChange }: SimintpayLaneRowProps) {
 	const { t } = useTranslation();
 	const label =
 		lane.method === "CREDIT_CARD"
 			? t("admin.companies.fees.lane.creditCard", { count: Number(lane.installments) })
 			: t(`admin.companies.fees.method.${lane.method}`, { defaultValue: lane.method });
-	const short = coverage && (Number(coverage.rateShortfallPpm) > 0 || Number(coverage.fixedShortfallCents) > 0);
+	const effectiveRatePpm = surcharge.ratePpm + (applied ? percentToPpm(draft.rate) : 0);
+	const effectiveFixedCents = surcharge.fixedCents + (applied ? reaisToCents(draft.fixed) : 0);
+	const short = coverage && (effectiveRatePpm < Number(coverage.cost.ratePpm) || effectiveFixedCents < Number(coverage.cost.fixedCents));
 
 	return (
 		<tr className={cn("border-border/60 border-b last:border-0", !accepted && "opacity-50")}>
@@ -65,7 +69,7 @@ export function SimintpayLaneRow({ accepted, applied, coverage, draft, globalDef
 				/>
 			</td>
 			<td className="px-3 py-2 text-sm tabular-nums">
-				{!accepted ? t("admin.companies.fees.coverage.notAccepted") : !applied ? t("admin.companies.fees.summary.notApplied") : formatCost(percentToPpm(draft.rate), reaisToCents(draft.fixed))}
+				{!accepted ? t("admin.companies.fees.coverage.notAccepted") : formatCost(effectiveRatePpm, effectiveFixedCents)}
 			</td>
 			<td className={cn("px-3 py-2 text-sm", short ? "text-destructive" : "text-muted-foreground")}>
 				{coverage

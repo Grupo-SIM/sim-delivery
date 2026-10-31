@@ -18,6 +18,7 @@ import {
 import { showAlert, showToast } from "@/stores";
 import { ExtraFeesList } from "./ExtraFeesList";
 import { SimintpayLaneRow, initialDraft } from "./SimintpayLaneRow";
+import { useExtraFeeEntries } from "./use-extra-fee-entries";
 import { type CompanyFees, type FeeMode, type ExtraFeeDraft, type LaneDraft, compareLanes, laneId, percentToBasisPoints, percentToPpm, reaisToCents, reaisToNullableCents } from "./types";
 
 interface CompanyFeesModalProps {
@@ -47,6 +48,12 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 	const { data: defaults } = useGetPlatformFeesByCompanyDefaults();
 	const globalDefaults = useMemo(() => new Map(defaults?.lanes.map(lane => [laneId(lane), lane])), [defaults]);
 	const coverage = useMemo(() => new Map(fees.coverage.map(lane => [laneId(lane), lane])), [fees.coverage]);
+
+	const { entries: extraEntries } = useExtraFeeEntries(companyId, extraDrafts);
+	const surcharge = useMemo(() => {
+		const active = mode === "SIMINTPAY_ONLY" ? [] : extraEntries.filter(entry => entry.active);
+		return { fixedCents: active.reduce((sum, entry) => sum + entry.fixedCents, 0), ratePpm: active.reduce((sum, entry) => sum + entry.ratePpm, 0) };
+	}, [extraEntries, mode]);
 
 	async function save() {
 		setSaving(true);
@@ -142,6 +149,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 								coverage={coverage.get(laneId(lane))}
 								accepted={!disabledLanes.has(laneId(lane))}
 								applied={mode !== "ADDITIVE_ONLY"}
+								surcharge={surcharge}
 								draft={drafts[laneId(lane)]!}
 								globalDefault={globalDefaults.get(laneId(lane))}
 								key={laneId(lane)}
