@@ -14,6 +14,7 @@ import { PaymentIdentityForm } from "./PaymentIdentityForm";
 import { hasCompletePaymentIdentity } from "./payment-identity";
 import { PixPanel } from "./PixPanel";
 import { syncCardPaymentStatus } from "./sync-card-payment-status";
+import { trackAddPaymentInfoOnce } from "./track-payment-info";
 
 type PaymentMethod = "card" | "pix";
 
@@ -56,6 +57,7 @@ export function PaymentStep({
 	const { isPending: isPayingCard, mutate: payWithCard } = usePostPaymentsCard();
 
 	function handleCardSubmit(value: CardPaymentValue) {
+		trackAddPaymentInfoOnce(orderId, amountCents, "card");
 		payWithCard(
 			{ data: { ...value, orderId, slug } },
 			{
@@ -139,6 +141,7 @@ export function PaymentStep({
 
 					{method === "pix" && (
 				<PixPanel
+					amountCents={amountCents}
 					customerCpf={pixCpf}
 					onConfirmed={onConfirmed}
 					onCpfSaved={setPixCpf}

@@ -9,9 +9,11 @@ import { paymentStatusClient } from "@/lib/api/payment-status-client";
 import { formatMoney } from "@/lib/formatMoney";
 import { isValidCpf } from "@/lib/cpf";
 import { showAlert } from "@/stores";
+import { trackAddPaymentInfoOnce } from "./track-payment-info";
 import { usePaymentStatusEvents } from "./usePaymentStatusEvents";
 
 interface PixPanelProps {
+	amountCents: number;
 	customerCpf: string | null;
 	onConfirmed: () => void;
 	onCpfSaved: (cpf: string) => void;
@@ -19,7 +21,7 @@ interface PixPanelProps {
 	slug: string;
 }
 
-export function PixPanel({ customerCpf, onConfirmed, onCpfSaved, orderId, slug }: PixPanelProps) {
+export function PixPanel({ amountCents, customerCpf, onConfirmed, onCpfSaved, orderId, slug }: PixPanelProps) {
 	const { t } = useTranslation();
 	const [pix, setPix] = useState<PostPaymentsPix200 | null>(null);
 	const [copied, setCopied] = useState(false);
@@ -38,12 +40,13 @@ export function PixPanel({ customerCpf, onConfirmed, onCpfSaved, orderId, slug }
 		try {
 			const payment = await createPix({ data: { cpf: cpfDigits || undefined, orderId, slug } });
 			setPix(payment);
+			trackAddPaymentInfoOnce(orderId, amountCents, "pix");
 			if (cpfDigits) onCpfSaved(cpfDigits);
 		} catch {
 			setFailed(true);
 			void showAlert(t("store.checkout.payment.pix.error"));
 		}
-	}, [cpfDigits, createPix, onCpfSaved, orderId, slug, t]);
+	}, [amountCents, cpfDigits, createPix, onCpfSaved, orderId, slug, t]);
 
 	useEffect(() => {
 		if (needsCpf || requestedRef.current) return;

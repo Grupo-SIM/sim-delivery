@@ -1,4 +1,3 @@
-import { trackMetaEvent } from "@/lib/meta-pixel";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaCcAmex, FaCcDiscover, FaCcMastercard, FaCcVisa, FaCreditCard } from "react-icons/fa";
@@ -91,7 +90,6 @@ export function CardPaymentForm({
 
 	function handleSubmit() {
 		if (!canSubmit || isPending) return;
-		trackMetaEvent("AddPaymentInfo", { currency: "BRL", value: amountCents / 100, payment_method: "card" });
 		onSubmit(
 			usingSavedCard
 				? { holderCpf: holderCpfRequired ? holderCpf : undefined, savedCardId: selected }
