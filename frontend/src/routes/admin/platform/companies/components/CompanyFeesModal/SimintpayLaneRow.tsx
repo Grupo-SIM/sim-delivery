@@ -44,6 +44,7 @@ export function SimintpayLaneRow({ accepted, applied, coverage, draft, lane, onA
 			</td>
 			<td className="px-3 py-2">
 				<OverrideValueInput
+					defaultValue={Number(lane.ratePpm) / 10_000}
 					kind="percentage"
 					label={t("admin.companies.fees.simintpay.rate", { lane: label })}
 					name={`rate-${lane.method}-${lane.installments}`}
@@ -53,6 +54,7 @@ export function SimintpayLaneRow({ accepted, applied, coverage, draft, lane, onA
 			</td>
 			<td className="px-3 py-2">
 				<OverrideValueInput
+					defaultValue={Number(lane.fixedCents) / 100}
 					kind="fixed"
 					label={t("admin.companies.fees.simintpay.fixed", { lane: label })}
 					name={`fixed-${lane.method}-${lane.installments}`}
