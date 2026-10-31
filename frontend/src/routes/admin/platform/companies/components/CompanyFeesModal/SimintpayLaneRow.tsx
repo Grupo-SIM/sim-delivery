@@ -9,6 +9,8 @@ interface SimintpayLaneRowProps {
 	applied: boolean;
 	coverage: CoverageLane | undefined;
 	draft: LaneDraft;
+	/** Global SimIntPay fee for this lane, shown as placeholder while a field is empty. */
+	globalDefault: SimintpayLane | undefined;
 	lane: SimintpayLane;
 	onAcceptedChange: (accepted: boolean) => void;
 	onChange: (draft: LaneDraft) => void;
@@ -20,7 +22,7 @@ function formatCost(ratePpm: number | string, fixedCents: number | string) {
 	return `${percent}% + ${fixed}`;
 }
 
-export function SimintpayLaneRow({ accepted, applied, coverage, draft, lane, onAcceptedChange, onChange }: SimintpayLaneRowProps) {
+export function SimintpayLaneRow({ accepted, applied, coverage, draft, globalDefault, lane, onAcceptedChange, onChange }: SimintpayLaneRowProps) {
 	const { t } = useTranslation();
 	const label =
 		lane.method === "CREDIT_CARD"
@@ -44,7 +46,7 @@ export function SimintpayLaneRow({ accepted, applied, coverage, draft, lane, onA
 			</td>
 			<td className="px-3 py-2">
 				<OverrideValueInput
-					defaultValue={Number(lane.ratePpm) / 10_000}
+					defaultValue={globalDefault && Number(globalDefault.ratePpm) / 10_000}
 					kind="percentage"
 					label={t("admin.companies.fees.simintpay.rate", { lane: label })}
 					name={`rate-${lane.method}-${lane.installments}`}
@@ -54,7 +56,7 @@ export function SimintpayLaneRow({ accepted, applied, coverage, draft, lane, onA
 			</td>
 			<td className="px-3 py-2">
 				<OverrideValueInput
-					defaultValue={Number(lane.fixedCents) / 100}
+					defaultValue={globalDefault && Number(globalDefault.fixedCents) / 100}
 					kind="fixed"
 					label={t("admin.companies.fees.simintpay.fixed", { lane: label })}
 					name={`fixed-${lane.method}-${lane.installments}`}

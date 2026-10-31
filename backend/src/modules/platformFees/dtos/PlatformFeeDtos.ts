@@ -95,6 +95,13 @@ const SimintpayLaneReturn = t.Object({
 	method: t.Union([t.Literal("BOLETO"), ...SimintpayLane.properties.method.anyOf]),
 });
 
+/** Global SimIntPay fee and highest acquirer cost per lane, before any company override. Super admin only. */
+export const CompanyFeeDefaultsReturn = t.Object({
+	costs: t.Array(SimintpayLaneReturn),
+	lanes: t.Array(SimintpayLaneReturn),
+});
+export type CompanyFeeDefaultsReturn = typeof CompanyFeeDefaultsReturn.static;
+
 const FeeComponentsDto = t.Object({ fixedCents: t.Integer(), ratePpm: t.Integer() });
 
 export const UpdateCompanyFeesBody = t.Object({

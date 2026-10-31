@@ -103,6 +103,11 @@ export interface SimpayCompanyFees {
 	version: string;
 }
 
+export interface SimpayFeeDefaults {
+	costs: SimpayFeeLane[];
+	lanes: SimpayFeeLane[];
+}
+
 export function simpayIntegrationKey(companySlug: string): string {
 	return `sim-delivery_${companySlug}`;
 }
@@ -226,6 +231,10 @@ export class SimpayClient {
 	/** SimIntPay's own (subtractive) fees for one company, read with the provisioning credential. */
 	async companyFees(companyId: string): Promise<SimpayCompanyFees> {
 		return this.json(`/platform-registrations/${encodeURIComponent(companyId)}/fees`, { provisioning: true });
+	}
+	/** Global SimIntPay fees (no company override) and the highest acquirer cost per lane. Admin-only data. */
+	async feeDefaults(): Promise<SimpayFeeDefaults> {
+		return this.json("/platform-registrations/fees/defaults", { provisioning: true });
 	}
 	async saveCompanyFees(companyId: string, input: { disabledLanes?: string[]; lanes: SimpayFeeLane[]; mode?: SimpayCompanyFees["mode"]; version: string }): Promise<SimpayCompanyFees> {
 		return this.json(`/platform-registrations/${encodeURIComponent(companyId)}/fees`, { body: input, method: "PUT", provisioning: true });

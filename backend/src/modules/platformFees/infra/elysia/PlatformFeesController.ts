@@ -5,6 +5,7 @@ import { GlobalPlugin } from "@/shared/infra/elysia/global";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { UserErrors } from "@/modules/users/errors";
 import {
+	CompanyFeeDefaultsReturn,
 	CompanyFeeOverrideListReturn,
 	CompanyFeesReturn,
 	CreatePlatformFeeBody,
@@ -39,6 +40,9 @@ export const PlatformFeesController = new Elysia({ detail: { tags: ["Platform Fe
 			.post("/", ({ body, platformFees }) => platformFees.create(body), {
 				body: CreatePlatformFeeBody,
 				response: PlatformFeeReturn,
+			})
+			.get("/by-company-defaults", ({ companyFees }) => companyFees.defaults(), {
+				response: CompanyFeeDefaultsReturn,
 			})
 			.get("/by-company/:companyId", ({ companyFees, params }) => companyFees.get(params.companyId), {
 				response: CompanyFeesReturn,

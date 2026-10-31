@@ -13,6 +13,7 @@ import {
 	putPlatformFeesByCompanyByCompanyId,
 	putPlatformFeesByFeeIdCompaniesByCompanyId,
 	useGetPlatformFeesByCompanyByCompanyId,
+	useGetPlatformFeesByCompanyDefaults,
 } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 import { ExtraFeesList } from "./ExtraFeesList";
@@ -43,6 +44,8 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 		() => [...lanes].sort((a, b) => Number(disabledLanes.has(laneId(a))) - Number(disabledLanes.has(laneId(b)))),
 		[disabledLanes, lanes],
 	);
+	const { data: defaults } = useGetPlatformFeesByCompanyDefaults();
+	const globalDefaults = useMemo(() => new Map(defaults?.lanes.map(lane => [laneId(lane), lane])), [defaults]);
 	const coverage = useMemo(() => new Map(fees.coverage.map(lane => [laneId(lane), lane])), [fees.coverage]);
 
 	async function save() {
@@ -140,6 +143,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 								accepted={!disabledLanes.has(laneId(lane))}
 								applied={mode !== "ADDITIVE_ONLY"}
 								draft={drafts[laneId(lane)]!}
+								globalDefault={globalDefaults.get(laneId(lane))}
 								key={laneId(lane)}
 								lane={lane}
 								onAcceptedChange={accepted =>

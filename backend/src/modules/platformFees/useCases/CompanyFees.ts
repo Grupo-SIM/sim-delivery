@@ -1,6 +1,6 @@
 import { simpay, type SimpayClient, type SimpayCompanyFees } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import type { CompanyFeesReturn, UpdateCompanyFeesBody } from "../dtos";
+import type { CompanyFeeDefaultsReturn, CompanyFeesReturn, UpdateCompanyFeesBody } from "../dtos";
 import { invalidateCompanyFeeMode, rememberCompanyFeeMode } from "../companyFeeMode";
 import { listCompanySurcharges } from "../effectiveFees";
 import { evaluateCoverage, hasShortfall, surchargeComponents } from "../feeCoverage";
@@ -9,7 +9,13 @@ export class CompanyFees {
 	constructor(
 		private readonly prisma: PrismaInstance,
 		private readonly provider: Pick<SimpayClient, "companyFees" | "saveCompanyFees"> = simpay,
+		private readonly defaultsProvider: Pick<SimpayClient, "feeDefaults"> = simpay,
 	) {}
+
+	/** Global SimIntPay fees and acquirer cost, so the admin sees what an empty override falls back to. */
+	defaults(): Promise<CompanyFeeDefaultsReturn> {
+		return this.defaultsProvider.feeDefaults();
+	}
 
 	async get(companyId: string): Promise<CompanyFeesReturn> {
 		const provider = await this.provider.companyFees(companyId);
