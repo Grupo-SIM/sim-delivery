@@ -309,7 +309,7 @@
 					"extras": {
 						"disabled": "Neste modo as taxas aditivas não são cobradas nos pedidos.",
 						"empty": "Nenhuma taxa extra ativa para esta empresa.",
-						"hint": "Associe taxas e ajuste os valores desta empresa. Campos vazios usam o padrão da plataforma. Salve cada taxa separadamente.",
+						"hint": "Associe taxas e ajuste os valores desta empresa. Campos vazios usam o padrão da plataforma. As alterações só são salvas e validadas ao salvar o modal.",
 						"title": "Taxas aditivas"
 					},
 					"lane": {
