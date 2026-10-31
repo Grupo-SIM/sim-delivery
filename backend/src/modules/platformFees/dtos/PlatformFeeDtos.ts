@@ -89,6 +89,12 @@ const SimintpayLane = t.Object({
 	ratePpm: t.Integer({ maximum: 1_000_000, minimum: 0 }),
 });
 
+/** Lanes SimIntPay returns; BOLETO is read-only here and cannot be edited through UpdateCompanyFeesBody. */
+const SimintpayLaneReturn = t.Object({
+	...SimintpayLane.properties,
+	method: t.Union([t.Literal("BOLETO"), ...SimintpayLane.properties.method.anyOf]),
+});
+
 const FeeComponentsDto = t.Object({ fixedCents: t.Integer(), ratePpm: t.Integer() });
 
 export const UpdateCompanyFeesBody = t.Object({
@@ -113,7 +119,7 @@ export const CompanyFeesReturn = t.Object({
 	extras: EffectiveFeeListReturn,
 	mode: PlatformFeeModeDto,
 	/** SimIntPay's own fees, deducted from the seller. Not counted when mode is ADDITIVE_ONLY. */
-	simintpay: t.Object({ lanes: t.Array(SimintpayLane), version: t.String() }),
+	simintpay: t.Object({ lanes: t.Array(SimintpayLaneReturn), version: t.String() }),
 	underCovered: t.Boolean(),
 });
 export type CompanyFeesReturn = typeof CompanyFeesReturn.static;
