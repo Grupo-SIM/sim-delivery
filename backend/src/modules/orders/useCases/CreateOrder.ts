@@ -5,7 +5,7 @@ import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
 import { LoyaltyErrors } from "@/modules/loyalty/errors";
 import { GetLoyaltyBalance } from "@/modules/loyalty/useCases";
 import { calculatePlatformFees } from "@/modules/platformFees/calculateFees";
-import { getCompanyFeeMode, listEffectiveFees } from "@/modules/platformFees/effectiveFees";
+import { listEffectiveFees } from "@/modules/platformFees/effectiveFees";
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CreateOrderBody, OrderReturn } from "../dtos";
@@ -236,7 +236,6 @@ export class CreateOrder {
 
 		const subtotal = resolvedItems.reduce((sum, i) => sum + i.total, 0);
 		const deliveryFee = deliveryMethod === "delivery" ? unit.deliveryFee : 0;
-		const feeMode = await getCompanyFeeMode(this.prisma, company.id);
 		const effectiveFees = await listEffectiveFees(this.prisma, company.id);
 		const calculatedFees = calculatePlatformFees(
 			effectiveFees,
@@ -302,7 +301,6 @@ export class CreateOrder {
 					discountCents,
 					idempotencyKey,
 					loyaltyPointsRedeemed,
-					feeMode,
 					feeTotalCents: calculatedFees.feeTotalCents,
 					subtotal,
 					total,

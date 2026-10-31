@@ -1,4 +1,5 @@
-import { describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it } from "bun:test";
+import { setFeeModeSource } from "@/modules/platformFees/companyFeeMode";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { ListPublicMenu } from "./ListPublicMenu";
 
@@ -95,6 +96,8 @@ const product = (id: string, over: Partial<Assoc["product"]> = {}): Assoc["produ
 });
 
 describe("ListPublicMenu", () => {
+	beforeEach(() => setFeeModeSource({ companyFees: async () => ({ costs: [], lanes: [], mode: "ADDITIVE_ONLY", version: "1" }) }));
+
 	it("returns [] for a missing unit", async () => {
 		const prisma = prismaWith(null);
 		expect(await new ListPublicMenu(prisma).execute("demo", "nope")).toEqual([]);

@@ -1,19 +1,13 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { EffectiveFeeReturn } from "./dtos";
-import type { PlatformFeeMode } from "./feeCoverage";
-
-/** Lightweight test/local adapters without a company model keep the historical additive-only behavior. */
-export async function getCompanyFeeMode(prisma: PrismaInstance, companyId: string): Promise<PlatformFeeMode> {
-	const company = await prisma.company?.findUnique({ select: { platformFeeMode: true }, where: { id: companyId } });
-	return (company?.platformFeeMode as PlatformFeeMode | undefined) ?? "ADDITIVE_ONLY";
-}
+import { getCompanyFeeMode } from "./companyFeeMode";
 
 /** Surcharges charged to buyers; `SIMINTPAY_ONLY` mode leaves cost recovery entirely to SimIntPay's own fees. */
 export async function listEffectiveFees(
 	prisma: PrismaInstance,
 	companyId: string,
 ): Promise<EffectiveFeeReturn[]> {
-	if ((await getCompanyFeeMode(prisma, companyId)) === "SIMINTPAY_ONLY") return [];
+	if ((await getCompanyFeeMode(companyId)) === "SIMINTPAY_ONLY") return [];
 	return listCompanySurcharges(prisma, companyId);
 }
 

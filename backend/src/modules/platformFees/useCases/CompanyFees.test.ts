@@ -9,10 +9,6 @@ function setup(mode: string, options: { failSave?: boolean } = {}) {
 	const state = { mode, saved: undefined as unknown };
 	let provider: SimpayCompanyFees = { costs: [lane(9_800)], lanes: [lane(10_000)], mode: mode as SimpayCompanyFees["mode"], version: "1" };
 	const prisma = {
-		company: {
-			findUnique: async () => ({ platformFeeMode: state.mode }),
-			update: async ({ data }: { data: { platformFeeMode: string } }) => void (state.mode = data.platformFeeMode),
-		},
 		platformFee: { findMany: async () => [] },
 	} as unknown as PrismaInstance;
 	const client = {
@@ -21,6 +17,7 @@ function setup(mode: string, options: { failSave?: boolean } = {}) {
 			if (options.failSave) throw new Error("SimIntPay unavailable");
 			state.saved = input;
 			provider = { ...provider, lanes: input.lanes.length ? input.lanes : provider.lanes, mode: input.mode ?? provider.mode, version: "2" };
+			state.mode = provider.mode;
 			return provider;
 		},
 	};
@@ -54,6 +51,7 @@ describe("company fees", () => {
 		const result = await fees.update("c", { mode: "SIMINTPAY_ONLY" });
 		expect(state.saved).toMatchObject({ lanes: [], mode: "SIMINTPAY_ONLY", version: "1" });
 		expect(state.mode).toBe("SIMINTPAY_ONLY");
+		expect(result.mode).toBe("SIMINTPAY_ONLY");
 		expect(result.extras).toEqual([]);
 	});
 

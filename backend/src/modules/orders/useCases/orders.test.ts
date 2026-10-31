@@ -1,6 +1,7 @@
-import { describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { DisabledWhatsAppProvider } from "@/shared/infra/whatsapp";
+import { setFeeModeSource } from "@/modules/platformFees/companyFeeMode";
 import { CreateOrder } from "./CreateOrder";
 import { GetCustomerOrder } from "./GetCustomerOrder";
 import { ListCustomerOrders } from "./ListCustomerOrders";
@@ -21,7 +22,6 @@ function makeOrderPrisma(
 		address?: typeof baseAddress | null;
 		company?: typeof baseCompany | null;
 		customer?: typeof baseCustomer | null;
-		feeMode?: string;
 		platformFees?: Array<Record<string, unknown> & { id: string }>;
 		unit?: typeof baseUnit | null;
 		unitProducts?: (typeof baseUnitProduct)[];
@@ -31,7 +31,6 @@ function makeOrderPrisma(
 		address = baseAddress,
 		company = baseCompany,
 		customer = baseCustomer,
-		feeMode = "ADDITIVE_ONLY",
 		platformFees = [],
 		unit = baseUnit,
 		unitProducts = [baseUnitProduct],
@@ -128,7 +127,7 @@ function makeOrderPrisma(
 		},
 		company: {
 			findUnique: async ({ where }: { where: { id?: string; slug?: string } }) =>
-				where.id ? { platformFeeMode: feeMode } : company?.slug === where.slug ? company : null,
+				company?.slug === where.slug ? company : null,
 		},
 		customer: {
 			findFirst: async ({ where }: { where: { companyId: string; userId: string } }) =>
@@ -198,6 +197,8 @@ const baseBody = {
 };
 
 describe("CreateOrder", () => {
+	beforeEach(() => setFeeModeSource({ companyFees: async () => ({ costs: [], lanes: [], mode: "ADDITIVE_ONLY", version: "1" }) }));
+
 	it("throws COMPANY_NOT_FOUND when slug unknown", async () => {
 		const { prisma } = makeOrderPrisma({ company: null });
 		await expect(new CreateOrder(prisma).execute("user_1", { ...baseBody, slug: "unknown" })).rejects.toThrow(
@@ -323,15 +324,17 @@ describe("CreateOrder", () => {
 		expect(orders).toHaveLength(2);
 	});
 
-	it("freezes the fee mode on the order and charges no surcharge in SIMINTPAY_ONLY", async () => {
+	it("charges no surcharge when SimIntPay dictates SIMINTPAY_ONLY", async () => {
 		const platformFees = [{ active: true, applicationScope: "order", companyOverrides: [], displayMode: "checkout_only", fixedValue: 75, id: "fee_order", name: "Operação", percentageValue: 0 }];
+		setFeeModeSource({ companyFees: async () => ({ costs: [], lanes: [], mode: "ADDITIVE_ONLY", version: "1" }) });
 		const additive = makeOrderPrisma({ platformFees });
 		await new CreateOrder(additive.prisma).execute("user_1", baseBody);
-		expect(additive.orders[0]).toMatchObject({ feeMode: "ADDITIVE_ONLY", feeTotalCents: 75 });
+		expect(additive.orders[0]).toMatchObject({ feeTotalCents: 75 });
 
-		const simintpay = makeOrderPrisma({ feeMode: "SIMINTPAY_ONLY", platformFees });
+		setFeeModeSource({ companyFees: async () => ({ costs: [], lanes: [], mode: "SIMINTPAY_ONLY", version: "1" }) });
+		const simintpay = makeOrderPrisma({ platformFees });
 		await new CreateOrder(simintpay.prisma).execute("user_1", baseBody);
-		expect(simintpay.orders[0]).toMatchObject({ feeMode: "SIMINTPAY_ONLY", feeTotalCents: 0 });
+		expect(simintpay.orders[0]).toMatchObject({ feeTotalCents: 0 });
 	});
 
 	it("uses priceCentsOverride when set", async () => {

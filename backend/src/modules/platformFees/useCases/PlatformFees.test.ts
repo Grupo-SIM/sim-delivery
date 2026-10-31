@@ -1,4 +1,6 @@
 import { describe, expect, it } from "bun:test";
+import { setFeeModeSource } from "../companyFeeMode";
+import { PaymentProviderError } from "@/shared/infra/paymentProviderError";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { listEffectiveFees } from "../effectiveFees";
 import { PlatformFees } from "./PlatformFees";
@@ -71,11 +73,31 @@ describe("platform fee inheritance", () => {
 
 describe("fee mode gate on surcharges", () => {
 	const fee = { active: true, applicationScope: "product", companyOverrides: [], createdAt: new Date(), deletedAt: null, displayMode: "checkout_only", fixedValue: 0, id: "fee", name: "Taxa", percentageValue: 400 };
-	const prismaFor = (platformFeeMode: string) =>
-		({ company: { findUnique: async () => ({ platformFeeMode }) }, platformFee: { findMany: async () => [fee] } }) as unknown as PrismaInstance;
+	const prisma = { platformFee: { findMany: async () => [fee] } } as unknown as PrismaInstance;
+	const useMode = (mode: "ADDITIVE_ONLY" | "BOTH" | "SIMINTPAY_ONLY") =>
+		setFeeModeSource({ companyFees: async () => ({ costs: [], lanes: [], mode, version: "1" }) });
 
-	it("drops surcharges only in SIMINTPAY_ONLY", async () => {
-		expect(await listEffectiveFees(prismaFor("SIMINTPAY_ONLY"), "company")).toEqual([]);
-		for (const mode of ["ADDITIVE_ONLY", "BOTH"]) expect(await listEffectiveFees(prismaFor(mode), "company")).toHaveLength(1);
+	it("drops surcharges only when SimIntPay dictates SIMINTPAY_ONLY", async () => {
+		useMode("SIMINTPAY_ONLY");
+		expect(await listEffectiveFees(prisma, "company")).toEqual([]);
+		for (const mode of ["ADDITIVE_ONLY", "BOTH"] as const) {
+			useMode(mode);
+			expect(await listEffectiveFees(prisma, "company")).toHaveLength(1);
+		}
+	});
+
+	it("caches the mode and treats a company unknown to SimIntPay as additive-only", async () => {
+		let calls = 0;
+		setFeeModeSource({ companyFees: async () => (calls++, { costs: [], lanes: [], mode: "SIMINTPAY_ONLY", version: "1" }) });
+		await listEffectiveFees(prisma, "cached");
+		await listEffectiveFees(prisma, "cached");
+		expect(calls).toBe(1);
+		setFeeModeSource({ companyFees: async () => { throw new PaymentProviderError("Simpay", "not found", 404); } });
+		expect(await listEffectiveFees(prisma, "unknown")).toHaveLength(1);
+	});
+
+	it("fails instead of guessing the mode when SimIntPay is unavailable", async () => {
+		setFeeModeSource({ companyFees: async () => { throw new PaymentProviderError("Simpay", "down", 503); } });
+		await expect(listEffectiveFees(prisma, "company")).rejects.toThrow("down");
 	});
 });

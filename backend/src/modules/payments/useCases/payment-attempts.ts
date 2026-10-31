@@ -8,7 +8,7 @@ import type { PayingCustomerContext } from "./resolvePayingCustomer";
 import { ApplySimpayPaymentStatus } from "./ApplySimpayPaymentStatus";
 const active = ["preparing", "submitting", "pending"];
 export async function startPaymentAttempt(db: PrismaInstance, context: PayingCustomerContext, method: string) {
-	const data = { orderId: context.order.id, companyId: context.companyId, method, amountCents: context.order.total, merchantAmountCents: context.order.total - context.order.feeTotalCents, platformFeeCents: context.order.feeTotalCents, feeMode: context.order.feeMode };
+	const data = { orderId: context.order.id, companyId: context.companyId, method, amountCents: context.order.total, merchantAmountCents: context.order.total - context.order.feeTotalCents, platformFeeCents: context.order.feeTotalCents };
 	const breakdown = { itemsAmountCents: data.merchantAmountCents - (context.order.deliveryFee ?? 0), deliveryAmountCents: context.order.deliveryFee ?? 0 };
 	if (breakdown.itemsAmountCents < 0 || breakdown.deliveryAmountCents < 0) throw new DomainError(PaymentErrors.PAYMENT_PROCESSING);
 	const hash = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
@@ -50,7 +50,7 @@ export async function recordAttemptResponse(db: PrismaInstance, id: string, resp
 	await db.paymentAttempt.update({ where: { id }, data: { state: isFailedSimpayStatus(response.status) ? "failed" : "pending", providerPaymentId: response.paymentId ?? response.id, providerTransactionId: response.transactionId } });
 }
 
-export function attemptAllocation(attempt: { feeMode?: string; merchantAmountCents: number; platformFeeCents: number; itemsAmountCents?: number | null; deliveryAmountCents?: number | null }) {
- return { feeMode: (attempt.feeMode ?? "ADDITIVE_ONLY") as "ADDITIVE_ONLY" | "BOTH" | "SIMINTPAY_ONLY", merchantAmountCents: attempt.merchantAmountCents, platformFeeCents: attempt.platformFeeCents,
+export function attemptAllocation(attempt: { merchantAmountCents: number; platformFeeCents: number; itemsAmountCents?: number | null; deliveryAmountCents?: number | null }) {
+ return { merchantAmountCents: attempt.merchantAmountCents, platformFeeCents: attempt.platformFeeCents,
   ...(attempt.itemsAmountCents != null && attempt.deliveryAmountCents != null ? { itemsAmountCents: attempt.itemsAmountCents, deliveryAmountCents: attempt.deliveryAmountCents } : {}) };
 }

@@ -1,4 +1,5 @@
-import { describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it } from "bun:test";
+import { setFeeModeSource } from "@/modules/platformFees/companyFeeMode";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { ListPublicUnits } from "./ListPublicUnits";
 
@@ -47,6 +48,8 @@ function prismaWith(
 }
 
 describe("ListPublicUnits", () => {
+	beforeEach(() => setFeeModeSource({ companyFees: async () => ({ costs: [], lanes: [], mode: "ADDITIVE_ONLY", version: "1" }) }));
+
 	it("returns [] without a slug", async () => {
 		const prisma = prismaWith({ id: "c1", slug: "bliss" });
 		expect(await new ListPublicUnits(prisma).execute(undefined)).toEqual([]);

@@ -9,8 +9,6 @@ import { encryptSimpaySecret, decryptSimpaySecret } from "./simpay-secrets";
 import { extractPaymentProviderMessage, PaymentProviderError } from "./paymentProviderError";
 
 export interface SimpayPaymentAllocation {
-	/** Frozen on the order; SimIntPay deducts its fee from the merchant share unless this is ADDITIVE_ONLY. */
-	feeMode?: "ADDITIVE_ONLY" | "BOTH" | "SIMINTPAY_ONLY";
 	itemsAmountCents?: number;
 	deliveryAmountCents?: number;
 	merchantAmountCents: number;

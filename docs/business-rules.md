@@ -168,12 +168,14 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
   e as **da SimIntPay** (descontadas do valor do lojista pela SimIntPay, por modalidade e parcela). Adicionais do
   `owner` na SimIntPay são outro tipo e são ignorados aqui. Custos das adquirentes são globais (a mais cara entre
   as ativas define o piso por modalidade/parcela), nunca por empresa ou lojista.
-- O modo de taxas da empresa vive na SimIntPay (`Platform.deliveryFeeMode`) e é espelhado em
-  `Company.platformFeeMode`: `ADDITIVE_ONLY` (padrão; só taxas aditivas, a SimIntPay não desconta nada),
-  `SIMINTPAY_ONLY` (nenhuma taxa aditiva; a SimIntPay desconta suas taxas do lojista) ou `BOTH`. O modo é congelado
-  no pedido (`Order.feeMode`) e enviado a cada tentativa de pagamento; a SimIntPay calcula a taxa `sim` (fixo +
-  percentual sobre o total do comprador) e a deduz da parcela do lojista, sem alterar o total do comprador.
-  Somente o dono da SimIntPay altera modo e taxas.
+- O modo de taxas da empresa pertence à SimIntPay (`Platform.deliveryFeeMode`); este app não guarda cópia e apenas
+  o consome (cache de 60 s) e o edita pela SimIntPay. Padrão `SIMINTPAY_ONLY`: `ADDITIVE_ONLY` (só taxas aditivas; a
+  SimIntPay não desconta nada), `SIMINTPAY_ONLY` (nenhuma taxa aditiva; a SimIntPay desconta suas taxas do lojista)
+  ou `BOTH`. Empresa ainda desconhecida pela SimIntPay (404) segue como `ADDITIVE_ONLY`; qualquer outra falha
+  impede precificar, em vez de adivinhar o modo. O pedido é precificado com o modo vigente e a SimIntPay o aplica no
+  pagamento: se o modo mudar antes disso e houver taxa aditiva enviada em `SIMINTPAY_ONLY`, a cobrança é recusada
+  (`FEE_MODE_CHANGED`) e o pedido deve ser refeito. A taxa `sim` (fixo + percentual sobre o total do comprador) sai
+  da parcela do lojista, sem alterar o total do comprador. Somente o dono da SimIntPay altera modo e taxas.
 - Percentual e fixo são comparados separadamente ao custo global; salvar taxas SimIntPay, exceções ou modo que
   deixem a cobertura abaixo do custo é rejeitado.
 - Relatórios do lojista usam o total após taxas efetivas e coprodução: `total − taxas aditivas − coprodução −
