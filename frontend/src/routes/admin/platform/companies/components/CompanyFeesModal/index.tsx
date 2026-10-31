@@ -14,7 +14,7 @@ import {
 import { showAlert, showToast } from "@/stores";
 import { ExtraFeesList } from "./ExtraFeesList";
 import { SimintpayLaneRow, initialDraft } from "./SimintpayLaneRow";
-import { type CompanyFees, type FeeMode, type LaneDraft, laneId, percentToPpm, reaisToCents } from "./types";
+import { type CompanyFees, type FeeMode, type LaneDraft, compareLanes, laneId, percentToPpm, reaisToCents } from "./types";
 
 interface CompanyFeesModalProps {
 	companyId: string;
@@ -32,17 +32,20 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 	const [drafts, setDrafts] = useState<Record<string, LaneDraft>>(() =>
 		Object.fromEntries(fees.simintpay.lanes.map(lane => [laneId(lane), initialDraft(lane)])),
 	);
+	const [disabledLanes, setDisabledLanes] = useState<Set<string>>(() => new Set(fees.disabledLanes));
 	const [saving, setSaving] = useState(false);
+	const lanes = useMemo(() => [...fees.simintpay.lanes].sort(compareLanes), [fees.simintpay.lanes]);
 	const coverage = useMemo(() => new Map(fees.coverage.map(lane => [laneId(lane), lane])), [fees.coverage]);
 
 	async function save() {
 		setSaving(true);
 		try {
 			await putPlatformFeesByCompanyByCompanyId(companyId, {
+				disabledLanes: [...disabledLanes].sort(),
 				mode,
 				simintpay: {
 					// BOLETO is read-only: returned by the API but not accepted in the update body.
-					lanes: fees.simintpay.lanes.flatMap(lane =>
+					lanes: lanes.flatMap(lane =>
 						lane.method === "BOLETO"
 							? []
 							: [
@@ -88,11 +91,18 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 			</section>
 
 			<section className="space-y-2">
+				<h3 className="font-semibold text-sm">{t("admin.companies.fees.extras.title")}</h3>
+				<p className="text-muted-foreground text-xs">{t("admin.companies.fees.extras.hint")}</p>
+				<ExtraFeesList extras={fees.extras} mode={mode} />
+			</section>
+
+			<section className="space-y-2">
 				<h3 className="font-semibold text-sm">{t("admin.companies.fees.simintpay.title")}</h3>
 				<p className="text-muted-foreground text-xs">{t("admin.companies.fees.simintpay.hint")}</p>
 				<table className="w-full text-left text-sm">
 					<thead className="text-muted-foreground text-xs">
 						<tr>
+							<th className="px-3 py-1 font-medium">{t("admin.companies.fees.columns.accepted")}</th>
 							<th className="px-3 py-1 font-medium">{t("admin.companies.fees.columns.lane")}</th>
 							<th className="px-3 py-1 font-medium">{t("admin.companies.fees.columns.cost")}</th>
 							<th className="px-3 py-1 font-medium">{t("admin.companies.fees.columns.rate")}</th>
@@ -101,24 +111,26 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 						</tr>
 					</thead>
 					<tbody>
-						{fees.simintpay.lanes.map(lane => (
+						{lanes.map(lane => (
 							<SimintpayLaneRow
 								coverage={coverage.get(laneId(lane))}
-								disabled={mode === "ADDITIVE_ONLY"}
+								accepted={!disabledLanes.has(laneId(lane))}
 								draft={drafts[laneId(lane)]!}
 								key={laneId(lane)}
 								lane={lane}
+								onAcceptedChange={accepted =>
+									setDisabledLanes(current => {
+										const next = new Set(current);
+										if (accepted) next.delete(laneId(lane));
+										else next.add(laneId(lane));
+										return next;
+									})
+								}
 								onChange={draft => setDrafts(current => ({ ...current, [laneId(lane)]: draft }))}
 							/>
 						))}
 					</tbody>
 				</table>
-			</section>
-
-			<section className="space-y-2">
-				<h3 className="font-semibold text-sm">{t("admin.companies.fees.extras.title")}</h3>
-				<p className="text-muted-foreground text-xs">{t("admin.companies.fees.extras.hint")}</p>
-				<ExtraFeesList extras={fees.extras} mode={mode} />
 			</section>
 
 			<div className="flex justify-end gap-2">

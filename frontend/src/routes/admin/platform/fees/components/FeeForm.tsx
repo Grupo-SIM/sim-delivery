@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/Checkbox";
 import { CollapsibleFormSection } from "@/components/ui/CollapsibleFormSection";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
@@ -79,13 +78,6 @@ export function FeeForm({ collapsible = false, initial = defaults, isPending, lo
 					<p className="font-medium text-sm">Exibição</p>
 					<CustomSelect onChange={value => setForm(current => ({ ...current, displayMode: value as FeeFormValue["displayMode"] }))} options={displayOptions} value={form.displayMode} />
 				</div>
-				<label className="flex cursor-pointer items-center gap-2 text-sm" htmlFor="fee-active">
-					<Checkbox checked={form.active} id="fee-active" onChange={event => {
-						const active = event.currentTarget.checked;
-						setForm(current => ({ ...current, active }));
-					}} />
-					Taxa ativa
-				</label>
 			</CollapsibleFormSection>
 			<div className="flex justify-end gap-2">
 				{onCancel && <Button onClick={onCancel} type="button" variant="outline">Descartar</Button>}

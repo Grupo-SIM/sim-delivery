@@ -30,14 +30,13 @@ export function FeesTable({ fees, onCompanies, onEdit }: FeesTableProps) {
 
 	return (
 		<DataTable>
-			<thead><tr className="border-border border-b text-left text-muted-foreground"><th className="px-4 py-3">Nome</th><th className="px-4 py-3">Aplicação</th><th className="px-4 py-3">Valor</th><th className="px-4 py-3">Exibição</th><th className="px-4 py-3">Status</th><th className="px-4 py-3" /></tr></thead>
+			<thead><tr className="border-border border-b text-left text-muted-foreground"><th className="px-4 py-3">Nome</th><th className="px-4 py-3">Aplicação</th><th className="px-4 py-3">Valor</th><th className="px-4 py-3">Exibição</th><th className="px-4 py-3" /></tr></thead>
 			<tbody>{fees.map(fee => (
 				<tr className="border-border border-b last:border-0" key={fee.id}>
 					<td className="px-4 py-3 font-medium">{fee.name}</td>
 					<td className="px-4 py-3">{fee.applicationScope === "product" ? "Por produto" : "Por pedido"}</td>
 					<td className="px-4 py-3">{formatFeeAmount(fee.percentageValue, fee.fixedValue)}</td>
 					<td className="px-4 py-3">{{ checkout_only: "Checkout", embedded: "Embutida", product_explicit: "Explícita" }[fee.displayMode]}</td>
-					<td className="px-4 py-3">{fee.active ? "Ativa" : "Inativa"}</td>
 					<td className="px-4 py-3"><div className="flex justify-end gap-2">
 						<Tooltip content="Empresas"><Button aria-label="Empresas" onClick={() => onCompanies(fee)} size="icon" type="button" variant="outline"><LuBuilding2 /></Button></Tooltip>
 						<Tooltip content="Editar"><Button aria-label="Editar" onClick={() => onEdit(fee)} size="icon" type="button" variant="outline"><LuPencil /></Button></Tooltip>

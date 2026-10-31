@@ -1,13 +1,15 @@
 import { useTranslation } from "react-i18next";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { cn } from "@/lib/utils";
 import { OverrideValueInput } from "@/routes/admin/platform/fees/components/OverrideValueInput";
 import { type CoverageLane, type LaneDraft, type SimintpayLane, ppmToPercent, centsToReais } from "./types";
 
 interface SimintpayLaneRowProps {
+	accepted: boolean;
 	coverage: CoverageLane | undefined;
-	disabled: boolean;
 	draft: LaneDraft;
 	lane: SimintpayLane;
+	onAcceptedChange: (accepted: boolean) => void;
 	onChange: (draft: LaneDraft) => void;
 }
 
@@ -17,16 +19,24 @@ function formatCost(ratePpm: number | string, fixedCents: number | string) {
 	return `${percent}% + ${fixed}`;
 }
 
-export function SimintpayLaneRow({ coverage, disabled, draft, lane, onChange }: SimintpayLaneRowProps) {
+export function SimintpayLaneRow({ accepted, coverage, draft, lane, onAcceptedChange, onChange }: SimintpayLaneRowProps) {
 	const { t } = useTranslation();
 	const label =
 		lane.method === "CREDIT_CARD"
 			? t("admin.companies.fees.lane.creditCard", { count: Number(lane.installments) })
 			: t(`admin.companies.fees.method.${lane.method}`, { defaultValue: lane.method });
-	const short = coverage && (Number(coverage.rateShortfallPpm) > 0 || Number(coverage.fixedShortfallCents) > 0);
+	const short = accepted && coverage && (Number(coverage.rateShortfallPpm) > 0 || Number(coverage.fixedShortfallCents) > 0);
 
 	return (
-		<tr className="border-border/60 border-b last:border-0">
+		<tr className={cn("border-border/60 border-b last:border-0", !accepted && "opacity-50")}>
+			<td className="px-3 py-2">
+				<Checkbox
+					aria-label={t("admin.companies.fees.accepted", { lane: label })}
+					checked={accepted}
+					name={`accepted-${lane.method}-${lane.installments}`}
+					onChange={event => onAcceptedChange(event.currentTarget.checked)}
+				/>
+			</td>
 			<td className="px-3 py-2 font-medium">{label}</td>
 			<td className="px-3 py-2 text-muted-foreground">
 				{coverage ? formatCost(coverage.cost.ratePpm, coverage.cost.fixedCents) : "—"}
@@ -50,8 +60,8 @@ export function SimintpayLaneRow({ coverage, disabled, draft, lane, onChange }: 
 				/>
 			</td>
 			<td className={cn("px-3 py-2 text-sm", short ? "text-destructive" : "text-muted-foreground")}>
-				{disabled
-					? t("admin.companies.fees.coverage.notCounted")
+				{!accepted
+					? t("admin.companies.fees.coverage.notAccepted")
 					: coverage
 						? short
 							? t("admin.companies.fees.coverage.short")

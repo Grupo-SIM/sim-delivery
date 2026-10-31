@@ -290,8 +290,10 @@
 				},
 				"empty": "Nenhuma empresa ainda.",
 				"fees": {
+					"accepted": "Aceitar {{lane}}",
 					"action": "Taxas efetivas",
 					"columns": {
+						"accepted": "Aceita",
 						"coverage": "Cobertura",
 						"cost": "Custo da adquirente",
 						"fixed": "Fixo",
@@ -299,7 +301,7 @@
 						"rate": "Percentual"
 					},
 					"coverage": {
-						"notCounted": "Não conta neste modo",
+						"notAccepted": "Modalidade não aceita",
 						"ok": "Coberto",
 						"short": "Abaixo do custo"
 					},
@@ -315,6 +317,7 @@
 					},
 					"loadError": "Não foi possível carregar as taxas da empresa.",
 					"method": {
+						"BOLETO": "Boleto",
 						"DEBIT_CARD": "Cartão de débito",
 						"PIX": "Pix"
 					},

@@ -30,3 +30,11 @@ export function centsToReais(cents: number | string) {
 export function reaisToCents(reais: string) {
 	return Math.round(Number(reais || 0) * 100);
 }
+
+const METHOD_ORDER = ["CREDIT_CARD", "DEBIT_CARD", "PIX", "BOLETO"];
+
+/** Payment method first, then installments numerically (10x after 2x). */
+export function compareLanes(a: { installments: number | string; method: string }, b: { installments: number | string; method: string }) {
+	const method = METHOD_ORDER.indexOf(a.method) - METHOD_ORDER.indexOf(b.method);
+	return method || Number(a.installments) - Number(b.installments);
+}
