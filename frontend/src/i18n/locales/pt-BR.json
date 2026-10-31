@@ -344,15 +344,7 @@
 						"title": "Taxas SimIntPay"
 					},
 					"summary": {
-						"bases": "Percentuais por produto, pedido e transação usam bases diferentes. Não são somados em uma taxa única; o valor em reais depende da compra.",
-						"buyer": "Acréscimos ao preço do comprador",
-						"merchant": "Desconto do recebimento do lojista:",
-						"merchantActive": "veja percentual + valor fixo por modalidade aceita na tabela abaixo.",
-						"merchantDisabled": "não aplicado neste modo.",
-						"notApplied": "Não aplicado neste modo",
-						"saved": "Acréscimos e cobertura refletem os valores salvos. Modo, aceite e desconto na tabela são rascunhos até salvar; editar não recalcula a cobertura.",
-						"title": "Como as taxas são aplicadas",
-						"unavailable": "As associações não vieram na resposta do modo salvo. Salve o novo modo para carregar os acréscimos efetivos; nenhum valor é presumido."
+						"notApplied": "Não aplicado neste modo"
 					},
 					"title": "Taxas de {{name}}",
 					"underCovered": "As taxas efetivas desta empresa não cobrem o custo das adquirentes em alguma modalidade."

@@ -12,7 +12,6 @@ import {
 	useGetPlatformFeesByCompanyByCompanyId,
 } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
-import { EffectiveFeesSummary } from "./EffectiveFeesSummary";
 import { ExtraFeesList } from "./ExtraFeesList";
 import { SimintpayLaneRow, initialDraft } from "./SimintpayLaneRow";
 import { type CompanyFees, type FeeMode, type LaneDraft, compareLanes, laneId, percentToPpm, reaisToCents } from "./types";
@@ -94,8 +93,6 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 				/>
 				<p className="text-muted-foreground text-xs">{t(`admin.companies.fees.mode.${mode}Hint`)}</p>
 			</section>
-
-			<EffectiveFeesSummary fees={fees} mode={mode} />
 
 			<section className="space-y-2">
 				<h3 className="font-semibold text-sm">{t("admin.companies.fees.extras.title")}</h3>
