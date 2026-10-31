@@ -96,7 +96,7 @@ const product = (id: string, over: Partial<Assoc["product"]> = {}): Assoc["produ
 });
 
 describe("ListPublicMenu", () => {
-	beforeEach(() => setFeeModeSource({ companyFees: async () => ({ costs: [], lanes: [], mode: "ADDITIVE_ONLY", version: "1" }) }));
+	beforeEach(() => setFeeModeSource({ companyFees: async () => ({ costs: [], disabledLanes: [], lanes: [], mode: "ADDITIVE_ONLY", version: "1" }) }));
 
 	it("returns [] for a missing unit", async () => {
 		const prisma = prismaWith(null);

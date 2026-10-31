@@ -22,12 +22,14 @@ export class CompanyFees {
 	/** SimIntPay owns the mode and its fees; Delivery only forwards the edit after checking acquirer cost. */
 	async update(companyId: string, input: UpdateCompanyFeesBody): Promise<CompanyFeesReturn> {
 		const current = await this.provider.companyFees(companyId);
-		let provider: SimpayCompanyFees = { ...current, mode: input.mode ?? current.mode };
+		const disabledLanes = input.disabledLanes ?? current.disabledLanes;
+		let provider: SimpayCompanyFees = { ...current, disabledLanes, mode: input.mode ?? current.mode };
 		if (input.simintpay) provider = { ...provider, ...input.simintpay, lanes: this.merge(provider, input.simintpay.lanes) };
 		if ((await this.build(companyId, provider)).underCovered) throw new DomainError(PlatformFeeErrors.FEES_BELOW_ACQUIRER_COST);
-		if (input.simintpay || provider.mode !== current.mode) {
+		if (input.simintpay || input.disabledLanes || provider.mode !== current.mode) {
 			invalidateCompanyFeeMode(companyId);
 			provider = await this.provider.saveCompanyFees(companyId, {
+				disabledLanes,
 				lanes: input.simintpay?.lanes ?? [],
 				mode: provider.mode,
 				version: input.simintpay?.version ?? current.version,
@@ -54,12 +56,14 @@ export class CompanyFees {
 		const surcharges = await listCompanySurcharges(this.prisma, companyId);
 		const coverage = evaluateCoverage({
 			costs: provider.costs,
+			disabledLanes: provider.disabledLanes,
 			mode,
 			simintpay: provider.lanes,
 			surcharges: surchargeComponents(surcharges),
 		});
 		return {
 			coverage,
+			disabledLanes: provider.disabledLanes ?? [],
 			extras: mode === "SIMINTPAY_ONLY" ? [] : surcharges,
 			mode,
 			simintpay: { lanes: provider.lanes, version: provider.version },

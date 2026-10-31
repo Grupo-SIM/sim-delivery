@@ -48,7 +48,7 @@ function prismaWith(
 }
 
 describe("ListPublicUnits", () => {
-	beforeEach(() => setFeeModeSource({ companyFees: async () => ({ costs: [], lanes: [], mode: "ADDITIVE_ONLY", version: "1" }) }));
+	beforeEach(() => setFeeModeSource({ companyFees: async () => ({ costs: [], disabledLanes: [], lanes: [], mode: "ADDITIVE_ONLY", version: "1" }) }));
 
 	it("returns [] without a slug", async () => {
 		const prisma = prismaWith({ id: "c1", slug: "bliss" });

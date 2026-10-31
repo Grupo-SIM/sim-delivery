@@ -33,4 +33,19 @@ describe("fee coverage", () => {
 		const [lane] = evaluateCoverage({ costs: [pix], mode: "SIMINTPAY_ONLY", simintpay: [], surcharges: { fixedCents: 0, ratePpm: 0 } });
 		expect(lane).toMatchObject({ fixedShortfallCents: 50, rateShortfallPpm: 9_800 });
 	});
+
+	it("skips disabled lanes so only accepted modalities must be covered", () => {
+		const credit1 = { fixedCents: 100, installments: 1, method: "CREDIT_CARD", ratePpm: 39_900 };
+		const credit12 = { fixedCents: 100, installments: 12, method: "CREDIT_CARD", ratePpm: 120_000 };
+		const input = {
+			costs: [credit1, credit12],
+			mode: "SIMINTPAY_ONLY" as const,
+			simintpay: [{ ...credit1, ratePpm: 60_000 }],
+			surcharges: { fixedCents: 0, ratePpm: 0 },
+		};
+		expect(hasShortfall(evaluateCoverage(input))).toBe(true);
+		const lanes = evaluateCoverage({ ...input, disabledLanes: ["CREDIT_CARD/12"] });
+		expect(lanes).toHaveLength(1);
+		expect(hasShortfall(lanes)).toBe(false);
+	});
 });

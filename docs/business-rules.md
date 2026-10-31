@@ -177,7 +177,12 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
   (`FEE_MODE_CHANGED`) e o pedido deve ser refeito. A taxa `sim` (fixo + percentual sobre o total do comprador) sai
   da parcela do lojista, sem alterar o total do comprador. Somente o dono da SimIntPay altera modo e taxas.
 - Percentual e fixo são comparados separadamente ao custo global; salvar taxas SimIntPay, exceções ou modo que
-  deixem a cobertura abaixo do custo é rejeitado.
+  deixem a cobertura abaixo do custo é rejeitado. A comparação usa as **taxas efetivas da empresa** (SimIntPay +
+  aditivas, conforme o modo) e vale para os três modos; só o modal de taxas da empresa a julga. A tela global de
+  taxas cria templates genéricos, sem ativação nem validação de cobertura (ativar/associar é por empresa).
+- Modalidades que a plataforma não aceita (ex.: SIM Delivery só aceita crédito 1x e Pix) ficam em
+  `Platform.deliveryDisabledLanes` na SimIntPay e são desconsideradas na cobertura; a SimIntPay rejeita cobranças
+  nessas modalidades.
 - Relatórios do lojista usam o total após taxas efetivas e coprodução: `total − taxas aditivas − coprodução −
   taxa SimIntPay` (`Payment.simintpayFeeCents`, congelada na confirmação). Para a SimIntPay, o custo da adquirente
   é custo e as taxas aditivas e SimIntPay são receita.

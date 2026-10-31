@@ -13,6 +13,8 @@ export interface LaneId {
 	method: string;
 }
 
+export const laneKey = (lane: LaneId) => `${lane.method}/${lane.installments}`;
+
 export interface CoverageLane extends LaneId {
 	/** What SimIntPay pays the acquirer. */
 	cost: FeeComponents;
@@ -36,11 +38,16 @@ export function surchargeComponents(fees: Pick<EffectiveFeeReturn, "fixedValue" 
  */
 export function evaluateCoverage(input: {
 	costs: (FeeComponents & LaneId)[];
+	/** Lanes (`METHOD/installments`) the platform does not accept; they are not evaluated. */
+	disabledLanes?: string[];
 	mode: PlatformFeeMode;
 	simintpay: (FeeComponents & LaneId)[];
 	surcharges: FeeComponents;
 }): CoverageLane[] {
-	return input.costs.map(cost => {
+	const disabled = new Set(input.disabledLanes);
+	return input.costs
+		.filter(cost => !disabled.has(laneKey(cost)))
+		.map(cost => {
 		const sim = input.simintpay.find(lane => lane.method === cost.method && lane.installments === cost.installments);
 		const simPart = input.mode === "ADDITIVE_ONLY" ? { fixedCents: 0, ratePpm: 0 } : (sim ?? { fixedCents: 0, ratePpm: 0 });
 		const extraPart = input.mode === "SIMINTPAY_ONLY" ? { fixedCents: 0, ratePpm: 0 } : input.surcharges;

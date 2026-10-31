@@ -88,7 +88,7 @@ export interface SimpayFeeLane {
 	channel: "ONLINE";
 	fixedCents: number;
 	installments: number;
-	method: "CREDIT_CARD" | "DEBIT_CARD" | "PIX";
+	method: "BOLETO" | "CREDIT_CARD" | "DEBIT_CARD" | "PIX";
 	ratePpm: number;
 }
 
@@ -97,6 +97,8 @@ export interface SimpayCompanyFees {
 	mode: "ADDITIVE_ONLY" | "BOTH" | "SIMINTPAY_ONLY";
 	/** Global acquirer cost per lane: what SimIntPay pays regardless of seller. */
 	costs: SimpayFeeLane[];
+	/** `METHOD/installments` lanes this platform does not accept; excluded from coverage. */
+	disabledLanes: string[];
 	lanes: SimpayFeeLane[];
 	version: string;
 }
@@ -225,7 +227,7 @@ export class SimpayClient {
 	async companyFees(companyId: string): Promise<SimpayCompanyFees> {
 		return this.json(`/platform-registrations/${encodeURIComponent(companyId)}/fees`, { provisioning: true });
 	}
-	async saveCompanyFees(companyId: string, input: { lanes: SimpayFeeLane[]; mode?: SimpayCompanyFees["mode"]; version: string }): Promise<SimpayCompanyFees> {
+	async saveCompanyFees(companyId: string, input: { disabledLanes?: string[]; lanes: SimpayFeeLane[]; mode?: SimpayCompanyFees["mode"]; version: string }): Promise<SimpayCompanyFees> {
 		return this.json(`/platform-registrations/${encodeURIComponent(companyId)}/fees`, { body: input, method: "PUT", provisioning: true });
 	}
 	private async access(scope: SimpayMerchantScope) {

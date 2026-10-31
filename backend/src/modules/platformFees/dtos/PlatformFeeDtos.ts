@@ -98,6 +98,8 @@ const SimintpayLaneReturn = t.Object({
 const FeeComponentsDto = t.Object({ fixedCents: t.Integer(), ratePpm: t.Integer() });
 
 export const UpdateCompanyFeesBody = t.Object({
+	/** Lanes (`METHOD/installments`) to ignore for this platform, e.g. `CREDIT_CARD/2`. */
+	disabledLanes: t.Optional(t.Array(t.String({ pattern: "^(PIX|BOLETO|DEBIT_CARD|CREDIT_CARD)/\\d{1,2}$" }), { maxItems: 14 })),
 	mode: t.Optional(PlatformFeeModeDto),
 	simintpay: t.Optional(t.Object({ lanes: t.Array(SimintpayLane, { maxItems: 14 }), version: t.String() })),
 });
@@ -115,6 +117,8 @@ export const CompanyFeesReturn = t.Object({
 			rateShortfallPpm: t.Integer(),
 		}),
 	),
+	/** Lanes (`METHOD/installments`) the platform does not accept. */
+	disabledLanes: t.Array(t.String()),
 	/** Surcharges added to the buyer price in this app, after company overrides. Empty when mode is SIMINTPAY_ONLY. */
 	extras: EffectiveFeeListReturn,
 	mode: PlatformFeeModeDto,

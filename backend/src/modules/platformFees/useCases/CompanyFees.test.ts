@@ -7,7 +7,7 @@ const lane = (ratePpm: number) => ({ channel: "ONLINE" as const, fixedCents: 0, 
 
 function setup(mode: string, options: { failSave?: boolean } = {}) {
 	const state = { mode, saved: undefined as unknown };
-	let provider: SimpayCompanyFees = { costs: [lane(9_800)], lanes: [lane(10_000)], mode: mode as SimpayCompanyFees["mode"], version: "1" };
+	let provider: SimpayCompanyFees = { costs: [lane(9_800)], disabledLanes: [], lanes: [lane(10_000)], mode: mode as SimpayCompanyFees["mode"], version: "1" };
 	const prisma = {
 		platformFee: { findMany: async () => [] },
 	} as unknown as PrismaInstance;

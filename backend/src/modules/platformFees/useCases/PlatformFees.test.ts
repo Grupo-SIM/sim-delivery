@@ -75,7 +75,7 @@ describe("fee mode gate on surcharges", () => {
 	const fee = { active: true, applicationScope: "product", companyOverrides: [], createdAt: new Date(), deletedAt: null, displayMode: "checkout_only", fixedValue: 0, id: "fee", name: "Taxa", percentageValue: 400 };
 	const prisma = { platformFee: { findMany: async () => [fee] } } as unknown as PrismaInstance;
 	const useMode = (mode: "ADDITIVE_ONLY" | "BOTH" | "SIMINTPAY_ONLY") =>
-		setFeeModeSource({ companyFees: async () => ({ costs: [], lanes: [], mode, version: "1" }) });
+		setFeeModeSource({ companyFees: async () => ({ costs: [], disabledLanes: [], lanes: [], mode, version: "1" }) });
 
 	it("drops surcharges only when SimIntPay dictates SIMINTPAY_ONLY", async () => {
 		useMode("SIMINTPAY_ONLY");
@@ -88,7 +88,7 @@ describe("fee mode gate on surcharges", () => {
 
 	it("caches the mode and treats a company unknown to SimIntPay as additive-only", async () => {
 		let calls = 0;
-		setFeeModeSource({ companyFees: async () => (calls++, { costs: [], lanes: [], mode: "SIMINTPAY_ONLY", version: "1" }) });
+		setFeeModeSource({ companyFees: async () => (calls++, { costs: [], disabledLanes: [], lanes: [], mode: "SIMINTPAY_ONLY", version: "1" }) });
 		await listEffectiveFees(prisma, "cached");
 		await listEffectiveFees(prisma, "cached");
 		expect(calls).toBe(1);
