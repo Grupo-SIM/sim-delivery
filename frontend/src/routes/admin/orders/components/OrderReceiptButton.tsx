@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { getOrdersByOrderIdReceipt } from "@/lib/api";
 import { showAlert } from "@/stores";
-import { openPdfWindow, showPdfBlob } from "../-open-pdf-blob";
+import { prepareReceiptTarget, printReceiptPdf } from "../-open-pdf-blob";
 import { getOrderReceiptLabels } from "../-receipt-labels";
 
 interface OrderReceiptButtonProps {
@@ -17,7 +17,7 @@ export function OrderReceiptButton({ orderId }: OrderReceiptButtonProps) {
 	const [isPreparing, setIsPreparing] = useState(false);
 
 	async function handlePrint() {
-		const pdfWindow = openPdfWindow();
+		const pdfWindow = prepareReceiptTarget();
 		setIsPreparing(true);
 		try {
 			const [receipt, { createOrderReceiptPdf }] = await Promise.all([
@@ -28,7 +28,7 @@ export function OrderReceiptButton({ orderId }: OrderReceiptButtonProps) {
 				receipt,
 				getOrderReceiptLabels(t, receipt.payment?.method, receipt.payment?.status, receipt.status),
 			);
-			showPdfBlob(pdf.output("blob"), pdfWindow, `pedido-${orderId}.pdf`);
+			await printReceiptPdf(pdf.output("blob"), pdfWindow, `pedido-${orderId}.pdf`);
 		} catch {
 			pdfWindow?.close();
 			void showAlert(t("admin.orders.receipt.error"), t("admin.orders.receipt.errorTitle"));
