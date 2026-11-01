@@ -1,23 +1,40 @@
-import type { SimpayCompanyAdditiveFee } from "@/shared/infra/simpay";
+import type { PrismaInstance } from "@/shared/infra/sql";
 import type { EffectiveFeeReturn } from "./dtos";
-import { getCompanyFeeSettings } from "./companyFeeMode";
-
-/** Active associated SimIntPay additive fees with the company's overrides applied. */
-export function toEffectiveFees(fees: SimpayCompanyAdditiveFee[]): EffectiveFeeReturn[] {
-	return fees
-		.filter(fee => fee.active && fee.associated)
-		.map(fee => ({
-			applicationScope: fee.applicationScope,
-			displayMode: fee.displayMode,
-			fixedValue: fee.effectiveFixedValue,
-			id: fee.id,
-			name: fee.name,
-			percentageValue: fee.effectivePercentageValue,
-		}));
-}
+import { getCompanyFeeMode } from "./companyFeeMode";
 
 /** Surcharges charged to buyers; `SIMINTPAY_ONLY` mode leaves cost recovery entirely to SimIntPay's own fees. */
-export async function listEffectiveFees(companyId: string): Promise<EffectiveFeeReturn[]> {
-	const { additiveFees, mode } = await getCompanyFeeSettings(companyId);
-	return mode === "SIMINTPAY_ONLY" ? [] : toEffectiveFees(additiveFees);
+export async function listEffectiveFees(
+	prisma: PrismaInstance,
+	companyId: string,
+): Promise<EffectiveFeeReturn[]> {
+	if ((await getCompanyFeeMode(companyId)) === "SIMINTPAY_ONLY") return [];
+	return listCompanySurcharges(prisma, companyId);
+}
+
+/** Active surcharges after company overrides, regardless of the company's fee mode. */
+export async function listCompanySurcharges(
+	prisma: PrismaInstance,
+	companyId: string,
+): Promise<EffectiveFeeReturn[]> {
+	// Keeps lightweight test/local adapters compatible; production Prisma always exposes this model.
+	if (!prisma.platformFee) return [];
+	const fees = await prisma.platformFee.findMany({
+		include: { companyOverrides: { where: { companyId } } },
+		orderBy: { createdAt: "asc" },
+		where: { active: true, deletedAt: null },
+	});
+	return fees.flatMap(fee => {
+		const override = fee.companyOverrides[0];
+		if (override?.active === false) return [];
+		return [
+			{
+				applicationScope: fee.applicationScope as EffectiveFeeReturn["applicationScope"],
+				displayMode: fee.displayMode as EffectiveFeeReturn["displayMode"],
+				fixedValue: override?.fixedOverride ?? fee.fixedValue,
+				id: fee.id,
+				name: fee.name,
+				percentageValue: override?.percentageOverride ?? fee.percentageValue,
+			},
+		];
+	});
 }

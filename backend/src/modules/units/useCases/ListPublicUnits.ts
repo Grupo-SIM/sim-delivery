@@ -39,7 +39,7 @@ export class ListPublicUnits {
 				by: ["orderId"],
 				where: { companyId: company.id },
 			}),
-			listEffectiveFees(company.id),
+			listEffectiveFees(this.prisma, company.id),
 		]);
 		const reviewedOrders = await this.prisma.order.findMany({
 			select: { id: true, unitId: true },

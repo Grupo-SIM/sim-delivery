@@ -236,7 +236,7 @@ export class CreateOrder {
 
 		const subtotal = resolvedItems.reduce((sum, i) => sum + i.total, 0);
 		const deliveryFee = deliveryMethod === "delivery" ? unit.deliveryFee : 0;
-		const effectiveFees = await listEffectiveFees(company.id);
+		const effectiveFees = await listEffectiveFees(this.prisma, company.id);
 		const calculatedFees = calculatePlatformFees(
 			effectiveFees,
 			resolvedItems.map(item => ({

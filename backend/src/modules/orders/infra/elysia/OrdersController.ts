@@ -139,7 +139,7 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 						}];
 					});
 					if (resolvedItems.length !== body.items.length) throw new DomainError(OrderErrors.INVALID_ITEM);
-					const calculated = calculatePlatformFees(await listEffectiveFees(company.id), resolvedItems);
+					const calculated = calculatePlatformFees(await listEffectiveFees(prisma, company.id), resolvedItems);
 					return {
 						embeddedFeeTotalCents: calculated.fees
 							.filter(fee => fee.displayMode === "embedded")

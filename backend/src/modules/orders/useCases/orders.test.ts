@@ -17,19 +17,6 @@ const baseAddress = { customerId: "cust_1", deletedAt: null, id: "addr_1" };
 const baseProduct = { basePriceCents: 1000, id: "prod_1", title: "Pão de queijo" };
 const baseUnitProduct = { id: "up_1", priceCentsOverride: null, product: baseProduct, unitId: "unit_1" };
 
-let feeMode: "ADDITIVE_ONLY" | "BOTH" | "SIMINTPAY_ONLY" = "ADDITIVE_ONLY";
-function feeSource(fees: Array<Record<string, unknown> & { id: string }>) {
-	const additiveFees = fees.map(fee => ({
-		associated: true,
-		effectiveFixedValue: fee.fixedValue,
-		effectivePercentageValue: fee.percentageValue,
-		fixedOverride: null,
-		percentageOverride: null,
-		...fee,
-	}));
-	setFeeModeSource({ companyFees: async () => ({ additiveFees, costs: [], disabledLanes: [], lanes: [], mode: feeMode, version: "1" }) } as never);
-}
-
 function makeOrderPrisma(
 	opts: {
 		address?: typeof baseAddress | null;
@@ -48,7 +35,6 @@ function makeOrderPrisma(
 		unit = baseUnit,
 		unitProducts = [baseUnitProduct],
 	} = opts;
-	feeSource(platformFees);
 	let storedCustomer = customer;
 
 	const orders: object[] = [];
@@ -185,6 +171,7 @@ function makeOrderPrisma(
 					: null;
 			},
 		},
+		platformFee: { findMany: async () => platformFees },
 		unit: {
 			findFirst: async ({ where }: { where: { active: boolean; companyId: string; slug: string } }) =>
 				unit?.active === where.active && unit?.companyId === where.companyId && unit?.slug === where.slug
@@ -210,10 +197,7 @@ const baseBody = {
 };
 
 describe("CreateOrder", () => {
-	beforeEach(() => {
-		feeMode = "ADDITIVE_ONLY";
-		feeSource([]);
-	});
+	beforeEach(() => setFeeModeSource({ companyFees: async () => ({ costs: [], disabledLanes: [], lanes: [], mode: "ADDITIVE_ONLY", version: "1" }) }));
 
 	it("throws COMPANY_NOT_FOUND when slug unknown", async () => {
 		const { prisma } = makeOrderPrisma({ company: null });
@@ -341,12 +325,13 @@ describe("CreateOrder", () => {
 	});
 
 	it("charges no surcharge when SimIntPay dictates SIMINTPAY_ONLY", async () => {
-		const platformFees = [{ active: true, applicationScope: "order", displayMode: "checkout_only", fixedValue: 75, id: "fee_order", name: "Operação", percentageValue: 0 }];
+		const platformFees = [{ active: true, applicationScope: "order", companyOverrides: [], displayMode: "checkout_only", fixedValue: 75, id: "fee_order", name: "Operação", percentageValue: 0 }];
+		setFeeModeSource({ companyFees: async () => ({ costs: [], disabledLanes: [], lanes: [], mode: "ADDITIVE_ONLY", version: "1" }) });
 		const additive = makeOrderPrisma({ platformFees });
 		await new CreateOrder(additive.prisma).execute("user_1", baseBody);
 		expect(additive.orders[0]).toMatchObject({ feeTotalCents: 75 });
 
-		feeMode = "SIMINTPAY_ONLY";
+		setFeeModeSource({ companyFees: async () => ({ costs: [], disabledLanes: [], lanes: [], mode: "SIMINTPAY_ONLY", version: "1" }) });
 		const simintpay = makeOrderPrisma({ platformFees });
 		await new CreateOrder(simintpay.prisma).execute("user_1", baseBody);
 		expect(simintpay.orders[0]).toMatchObject({ feeTotalCents: 0 });
@@ -368,6 +353,7 @@ describe("CreateOrder", () => {
 				{
 					active: true,
 					applicationScope: "product",
+					companyOverrides: [],
 					displayMode: "embedded",
 					fixedValue: 0,
 					id: "fee_percent",
@@ -377,6 +363,7 @@ describe("CreateOrder", () => {
 				{
 					active: true,
 					applicationScope: "order",
+					companyOverrides: [],
 					displayMode: "checkout_only",
 					fixedValue: 75,
 					id: "fee_order",

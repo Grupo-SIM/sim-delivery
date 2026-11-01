@@ -10,6 +10,7 @@
 		"export": "bun run inject && bun ./src/generateOpenApi.ts",
 		"inject": "bun ./scripts/inject.ts",
 		"reconcile:simpay-payments": "bun ./scripts/reconcile-simpay-payments.ts",
+		"sync:additive-fees": "bun ./scripts/sync-additive-fees-to-simintpay.ts",
 		"start": "NODE_ENV=production bun dist/main.js",
 		"test:unit": "bun test --coverage"
 	},

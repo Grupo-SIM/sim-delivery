@@ -24,7 +24,7 @@ export class ListPublicMenu {
 		if (!unit) {
 			return [];
 		}
-		const productFees = (await listEffectiveFees(company!.id)).filter(
+		const productFees = (await listEffectiveFees(this.prisma, company!.id)).filter(
 			fee => fee.applicationScope === "product",
 		);
 
