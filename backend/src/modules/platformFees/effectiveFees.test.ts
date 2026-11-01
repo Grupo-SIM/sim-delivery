@@ -13,6 +13,7 @@ function setup(fees: Partial<SimpayCompanyFees>) {
 	const written: string[] = [];
 	const rows = [{ active: true, applicationScope: "order", companyOverrides: [] as Array<{ active: boolean }>, createdAt: new Date(), deletedAt: null, displayMode: "checkout_only", fixedValue: 0, id: "f1", name: "Taxa", percentageValue: 500 }];
 	const prisma = {
+		companySimpayIntegration: { findUnique: async () => ({ additiveFeeRevision: "1", additiveFeeOverridden: false }) },
 		companyFeeOverride: {
 			upsert: async ({ where }: { where: { feeId_companyId: { feeId: string } } }) => {
 				written.push(where.feeId_companyId.feeId);
@@ -29,21 +30,21 @@ afterEach(() => setFeeModeSource(null));
 
 describe("buyer surcharges", () => {
 	it("uses SimIntPay effective totals as synthetic fees", async () => {
-		const { prisma, written } = setup({ additiveFees: { delivery: totals(500, 0), effective: totals(500, 0), override: null } });
+		const { prisma, written } = setup({ additiveFees: { effective: totals(500, 0), revision: "1" } });
 		const fees = await listEffectiveFees(prisma, "c");
 		expect(fees).toMatchObject([{ applicationScope: "order", percentageValue: 500 }]);
 		expect(written).toEqual([]);
 	});
 
-	it("charges the override and undoes associations once", async () => {
-		const { prisma, written } = setup({ additiveFees: { delivery: totals(500, 0), effective: totals(0, 200), override: totals(0, 200) } });
+	it("charges external actual rates without mutating associations on pricing", async () => {
+		const { prisma, written } = setup({ additiveFees: { effective: totals(0, 200), revision: "2" } });
 		expect(await listEffectiveFees(prisma, "c")).toMatchObject([{ applicationScope: "product", percentageValue: 200 }]);
 		await listEffectiveFees(prisma, "c");
-		expect(written).toEqual(["f1"]);
+		expect(written).toEqual([]);
 	});
 
 	it("charges nothing in SIMINTPAY_ONLY and falls back to local fees for unknown totals", async () => {
-		expect(await listEffectiveFees(setup({ mode: "SIMINTPAY_ONLY", additiveFees: { delivery: totals(5, 0), effective: totals(5, 0), override: null } }).prisma, "c")).toEqual([]);
+		expect(await listEffectiveFees(setup({ mode: "SIMINTPAY_ONLY", additiveFees: { effective: totals(5, 0), revision: "1" } }).prisma, "c")).toEqual([]);
 		expect(await listEffectiveFees(setup({}).prisma, "c")).toMatchObject([{ id: "f1", percentageValue: 500 }]);
 	});
 });

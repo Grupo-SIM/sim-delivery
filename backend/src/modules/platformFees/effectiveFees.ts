@@ -2,7 +2,6 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import type { EffectiveFeeReturn } from "./dtos";
 import { productDisplayModeOf, syntheticFees } from "./additiveTotals";
 import { getCompanyFeeSnapshot } from "./companyFeeMode";
-import { undoAssociationsWhileOverridden } from "./overrideAssociations";
 
 /**
  * Surcharges charged to buyers, built from SimIntPay's effective totals (its admin may override Delivery's sum) as one
@@ -17,10 +16,10 @@ export async function listEffectiveFees(
 	if (snapshot?.mode === "SIMINTPAY_ONLY") return [];
 	const totals = snapshot?.additiveFees;
 	if (!totals) return listCompanySurcharges(prisma, companyId);
-	if (totals.override) {
-		await undoAssociationsWhileOverridden(prisma, companyId, totals);
-		return syntheticFees(totals.effective);
-	}
+	// Pricing consumes actual provider rates; provenance mutations belong to the serialized sync/admin path.
+	const integration = await prisma.companySimpayIntegration.findUnique({ where: { companyId } });
+	const owned = integration && !integration.additiveFeeOverridden && integration.additiveFeeRevision === totals.revision;
+	if (!owned) return syntheticFees(totals.effective);
 	return syntheticFees(totals.effective, productDisplayModeOf(await listCompanySurcharges(prisma, companyId)));
 }
 

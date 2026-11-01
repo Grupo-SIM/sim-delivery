@@ -1,6 +1,7 @@
 import { PaymentProviderError } from "@/shared/infra/paymentProviderError";
 import { simpay, type SimpayAdditiveTotals, type SimpayClient, type SimpayCompanyFees } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
+import { acknowledgeAdditiveFees, additiveFeeOwnership, withAdditiveFeeLock } from "./additiveFeeProvenance";
 import { emptyTotals, sameTotals, sumAdditiveTotals } from "./additiveTotals";
 import { invalidateCompanyFeeMode, rememberCompanyFeeMode } from "./companyFeeMode";
 import { listCompanySurcharges } from "./effectiveFees";
@@ -31,6 +32,10 @@ export class AdditiveFeeSync {
 	 * SimIntPay admin override is active nothing is pushed: associations are undone instead and SimIntPay's total rules.
 	 */
 	async push(companyId: string, options: { dryRun?: boolean } = {}): Promise<{ result: PushResult; totals: SimpayAdditiveTotals }> {
+		return withAdditiveFeeLock(this.prisma, companyId, tx => new AdditiveFeeSync(tx, this.provider).pushLocked(companyId, options));
+	}
+
+	private async pushLocked(companyId: string, options: { dryRun?: boolean }): Promise<{ result: PushResult; totals: SimpayAdditiveTotals }> {
 		let current: SimpayCompanyFees;
 		try {
 			current = await this.provider.companyFees(companyId);
@@ -38,21 +43,27 @@ export class AdditiveFeeSync {
 			if (error instanceof PaymentProviderError && error.status === 404) return { result: "skipped-unregistered", totals: emptyTotals() };
 			throw error;
 		}
-		if (current.additiveFees?.override) {
-			if (!options.dryRun) await undoAssociationsWhileOverridden(this.prisma, companyId, current.additiveFees);
-			return { result: "skipped-overridden", totals: current.additiveFees.effective };
+		const ownership = await additiveFeeOwnership(this.prisma, companyId, current.additiveFees, !options.dryRun);
+		if (ownership.overridden) {
+			if (!options.dryRun && !ownership.protected) await undoAssociationsWhileOverridden(this.prisma, companyId, true);
+			return { result: "skipped-overridden", totals: current.additiveFees?.effective ?? emptyTotals() };
 		}
 		const totals = await this.resolve(companyId);
-		if (sameTotals(current.additiveFees?.delivery, totals)) return { result: "skipped-unchanged", totals };
+		if (sameTotals(current.additiveFees?.effective, totals)) {
+			if (!options.dryRun) await acknowledgeAdditiveFees(this.prisma, companyId, ownership.revision, current.additiveFees!.revision);
+			return { result: "skipped-unchanged", totals };
+		}
 		if (!options.dryRun) {
 			// Empty lanes leave SimIntPay's lane fees untouched; mode and disabled lanes are echoed back.
 			const saved = await this.provider.saveCompanyFees(companyId, {
 				additiveFees: totals,
+				additiveRevision: current.additiveFees!.revision,
 				disabledLanes: current.disabledLanes,
 				lanes: [],
 				mode: current.mode,
 				version: current.version,
 			});
+			await acknowledgeAdditiveFees(this.prisma, companyId, ownership.revision, saved.additiveFees!.revision);
 			invalidateCompanyFeeMode(companyId);
 			if (saved?.mode) rememberCompanyFeeMode(companyId, saved);
 		}

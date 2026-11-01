@@ -171,7 +171,7 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
   a taxa de aquisição **mais os juros do parcelamento** da adquirente, mesmo quando esses componentes são
   cadastrados separadamente na SimIntPay. A SimIntPay entrega esse percentual efetivo em `costs[].ratePpm`;
   o Delivery compara esse valor integral, sem somar juros novamente. Cobertura igual ao piso é suficiente.
-- O modo de taxas da empresa pertence à SimIntPay (`Platform.deliveryFeeMode`); este app não guarda cópia e apenas
+- O modo de taxas da empresa pertence à SimIntPay (`Platform.feeMode`); este app não guarda cópia e apenas
   o consome (cache de 60 s) e o edita pela SimIntPay. Padrão `SIMINTPAY_ONLY`: `ADDITIVE_ONLY` (só taxas aditivas; a
   SimIntPay não desconta nada), `SIMINTPAY_ONLY` (nenhuma taxa aditiva; a SimIntPay desconta suas taxas do lojista)
   ou `BOTH`. Empresa ainda desconhecida pela SimIntPay (404) segue como `ADDITIVE_ONLY`; qualquer outra falha
@@ -184,8 +184,28 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
   aditivas, conforme o modo) e vale para os três modos; só o modal de taxas da empresa a julga. A tela global de
   taxas cria templates genéricos, sem ativação nem validação de cobertura (ativar/associar é por empresa).
 - Modalidades que a plataforma não aceita (ex.: SIM Delivery só aceita crédito 1x e Pix) ficam em
-  `Platform.deliveryDisabledLanes` na SimIntPay e são desconsideradas na cobertura; a SimIntPay rejeita cobranças
+  `Platform.disabledPaymentLanes` na SimIntPay e são desconsideradas na cobertura; a SimIntPay rejeita cobranças
   nessas modalidades.
+- SimIntPay guarda apenas quatro taxas genéricas em `PlatformAdditiveFees` (pedido/produto, percentual em basis
+  points e fixo em centavos), não catálogo ou relação de override. Cada escrita aditiva incrementa revisão, mesmo
+  com valores idênticos. Delivery guarda revisão reconhecida e override na integração empresarial. Escritas usam
+  comparação atômica de revisão; editar modalidades não muda revisão aditiva. Revisão externa controla preço e
+  desativa associações aplicáveis (`active=false`), sem alterar catálogo ou outras empresas. Estado desconhecido
+  protege valores existentes sem desativar associações até handoff explícito. Retomar controle exige revisão
+  esperada via `backend/scripts/import-additive-fee-provenance.ts --release-company=...`, depois reassociar taxas.
+  `backend/scripts/sync-additive-fees-to-simintpay.ts` nunca sobrescreve taxas protegidas/externas.
+- Handoff operacional (não executado automaticamente): aplicar primeiro a migração genérica SimIntPay e a
+  migração de proveniência Delivery. Exportar somente `companyId`, `platformId`, `revision` como string e
+  `overridden` da tabela `LegacyPlatformAdditiveTotalsBackup` para um array JSON, sem credenciais. Conferir em
+  dry-run `bun backend/scripts/import-additive-fee-provenance.ts --file=/caminho/export.json`; o script valida
+  plataforma vinculada, empresa, revisão atual e estado ainda não inicializado. `--apply` permite apenas banco
+  local, exige revisão ainda igual à exportada e não escreve na SimIntPay. Bancos remotos exigem autorização e
+  execução operacional separada; não executar migrações nem importações remotas durante desenvolvimento. Após
+  importar, sincronizar empresas pertencentes ao Delivery; overrides continuam protegidos. Para devolver controle,
+  revisar `--release-company=<id> --expected-revision=<revisão atual>` em dry-run, aplicar explicitamente e depois
+  reassociar taxas. Associações já desativadas não são restauradas implicitamente. Se uma escrita no provedor
+  confirmar mas a resposta ou commit local falhar, a revisão seguinte é tratada conservadoramente como externa;
+  revisar valores e liberar controle explicitamente. Não há transação distribuída nem retry cego de escrita.
 - Relatórios do lojista usam o total após taxas efetivas e coprodução: `total − taxas aditivas − coprodução −
   taxa SimIntPay` (`Payment.simintpayFeeCents`, congelada na confirmação). Para a SimIntPay, o custo da adquirente
   é custo e as taxas aditivas e SimIntPay são receita.

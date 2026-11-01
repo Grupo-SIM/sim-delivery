@@ -113,12 +113,10 @@ export interface SimpayAdditiveTotals {
 }
 
 export interface SimpayAdditiveFees {
-	/** Total pushed by Delivery from its fee associations. */
-	delivery: SimpayAdditiveTotals;
-	/** Total set by a SimIntPay admin; replaces `delivery` while present. */
-	override: SimpayAdditiveTotals | null;
-	/** `override ?? delivery`: what buyers are charged and coverage is computed from. */
+	/** Actual generic rates charged by SimIntPay; provenance belongs to Delivery. */
 	effective: SimpayAdditiveTotals;
+	/** Changes on every additive write, including same-value administrative writes. */
+	revision: string;
 }
 
 export interface SimpayCompanyFees {
@@ -267,7 +265,7 @@ export class SimpayClient {
 	async feeDefaults(): Promise<SimpayFeeDefaults> {
 		return this.json("/platform-registrations/fees/defaults", { provisioning: true });
 	}
-	async saveCompanyFees(companyId: string, input: { additiveFees?: SimpayAdditiveTotals; disabledLanes?: string[]; lanes: SimpayFeeLane[]; mode?: SimpayCompanyFees["mode"]; version: string }): Promise<SimpayCompanyFees> {
+	async saveCompanyFees(companyId: string, input: { additiveFees?: SimpayAdditiveTotals; additiveRevision?: string; disabledLanes?: string[]; lanes: SimpayFeeLane[]; mode?: SimpayCompanyFees["mode"]; version: string }): Promise<SimpayCompanyFees> {
 		return this.json(`/platform-registrations/${encodeURIComponent(companyId)}/fees`, { body: input, method: "PUT", provisioning: true });
 	}
 	private async access(scope: SimpayMerchantScope) {

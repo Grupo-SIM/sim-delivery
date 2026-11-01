@@ -103,6 +103,9 @@ model CompanySimpayIntegration {
     status String @default("PENDING_OWNER")
     encryptedAccessToken String?
     encryptedWebhookSecret String?
+    /// Last provider additive revision acknowledged by Delivery; null protects existing provider configuration.
+    additiveFeeRevision String?
+    additiveFeeOverridden Boolean @default(false)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     @@map("company_simpay_integration")
