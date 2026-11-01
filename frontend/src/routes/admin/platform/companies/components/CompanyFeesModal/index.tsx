@@ -17,6 +17,8 @@ import {
 } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 import { ExtraFeesList } from "./ExtraFeesList";
+import { overriddenSurcharge } from "./overridden-fee-lines";
+import { OverriddenFeesList } from "./OverriddenFeesList";
 import { SimintpayLaneRow, initialDraft } from "./SimintpayLaneRow";
 import { useExtraFeeEntries } from "./use-extra-fee-entries";
 import { type CompanyFees, type FeeMode, type ExtraFeeDraft, type LaneDraft, compareLanes, laneId, percentToBasisPoints, percentToPpm, reaisToCents, reaisToNullableCents } from "./types";
@@ -50,10 +52,13 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 	const coverage = useMemo(() => new Map(fees.coverage.map(lane => [laneId(lane), lane])), [fees.coverage]);
 
 	const { entries: extraEntries } = useExtraFeeEntries(companyId, extraDrafts);
+	const overridden = fees.additiveOverride != null;
 	const surcharge = useMemo(() => {
+		// While SimIntPay overrides the total it is what the seller is charged, whatever the drafts say.
+		if (overridden) return mode === "SIMINTPAY_ONLY" ? { fixedCents: 0, ratePpm: 0 } : overriddenSurcharge(fees.additiveOverride);
 		const active = mode === "SIMINTPAY_ONLY" ? [] : extraEntries.filter(entry => entry.active);
 		return { fixedCents: active.reduce((sum, entry) => sum + entry.fixedCents, 0), ratePpm: active.reduce((sum, entry) => sum + entry.ratePpm, 0) };
-	}, [extraEntries, mode]);
+	}, [extraEntries, fees.additiveOverride, mode, overridden]);
 
 	async function save() {
 		setSaving(true);
@@ -124,8 +129,10 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 
 			<section className="space-y-2">
 				<h3 className="font-semibold text-sm">{t("admin.companies.fees.extras.title")}</h3>
-				<p className="text-muted-foreground text-xs">{t("admin.companies.fees.extras.hint")}</p>
-				<ExtraFeesList companyId={companyId} drafts={extraDrafts} mode={mode} onDraftChange={(feeId, draft) => setExtraDrafts(current => ({ ...current, [feeId]: draft }))} />
+				{overridden ? <OverriddenFeesList additiveOverride={fees.additiveOverride} /> : <>
+					<p className="text-muted-foreground text-xs">{t("admin.companies.fees.extras.hint")}</p>
+					<ExtraFeesList companyId={companyId} drafts={extraDrafts} mode={mode} onDraftChange={(feeId, draft) => setExtraDrafts(current => ({ ...current, [feeId]: draft }))} />
+				</>}
 			</section>
 
 			<section className="space-y-2">
