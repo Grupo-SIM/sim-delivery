@@ -100,19 +100,30 @@ export interface SimpayFeeLane {
 	ratePpm: number;
 }
 
-/** Resolved additive value pushed to SimIntPay: active, associated, overrides already applied. */
-export interface SimpayAdditiveValue {
-	applicationScope: "order" | "product";
-	/** Delivery's platform fee id; opaque to SimIntPay. */
-	externalId: string;
+/** Sum of the active additive fees of one scope: basis points and cents. */
+export interface SimpayAdditiveScopeTotal {
 	fixedValue: number;
-	name: string;
 	percentageValue: number;
 }
 
+/** Additive surcharge totals per application scope; zeros mean none. SimIntPay stores sums only. */
+export interface SimpayAdditiveTotals {
+	order: SimpayAdditiveScopeTotal;
+	product: SimpayAdditiveScopeTotal;
+}
+
+export interface SimpayAdditiveFees {
+	/** Total pushed by Delivery from its fee associations. */
+	delivery: SimpayAdditiveTotals;
+	/** Total set by a SimIntPay admin; replaces `delivery` while present. */
+	override: SimpayAdditiveTotals | null;
+	/** `override ?? delivery`: what buyers are charged and coverage is computed from. */
+	effective: SimpayAdditiveTotals;
+}
+
 export interface SimpayCompanyFees {
-	/** Additive values SimIntPay currently stores for this company's platform. */
-	additiveFees?: SimpayAdditiveValue[];
+	/** Additive totals SimIntPay stores for this company's platform. */
+	additiveFees?: SimpayAdditiveFees;
 	/** Which fee sets SimIntPay applies to this company's payments. */
 	mode: "ADDITIVE_ONLY" | "BOTH" | "SIMINTPAY_ONLY";
 	/** Global acquirer cost per lane: what SimIntPay pays regardless of seller. */
@@ -256,7 +267,7 @@ export class SimpayClient {
 	async feeDefaults(): Promise<SimpayFeeDefaults> {
 		return this.json("/platform-registrations/fees/defaults", { provisioning: true });
 	}
-	async saveCompanyFees(companyId: string, input: { additiveFees?: SimpayAdditiveValue[]; disabledLanes?: string[]; lanes: SimpayFeeLane[]; mode?: SimpayCompanyFees["mode"]; version: string }): Promise<SimpayCompanyFees> {
+	async saveCompanyFees(companyId: string, input: { additiveFees?: SimpayAdditiveTotals; disabledLanes?: string[]; lanes: SimpayFeeLane[]; mode?: SimpayCompanyFees["mode"]; version: string }): Promise<SimpayCompanyFees> {
 		return this.json(`/platform-registrations/${encodeURIComponent(companyId)}/fees`, { body: input, method: "PUT", provisioning: true });
 	}
 	private async access(scope: SimpayMerchantScope) {

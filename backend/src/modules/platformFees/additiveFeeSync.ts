@@ -1,41 +1,21 @@
 import { PaymentProviderError } from "@/shared/infra/paymentProviderError";
-import { simpay, type SimpayAdditiveValue, type SimpayClient, type SimpayCompanyFees } from "@/shared/infra/simpay";
+import { simpay, type SimpayAdditiveTotals, type SimpayClient, type SimpayCompanyFees } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import type { EffectiveFeeReturn } from "./dtos";
+import { emptyTotals, sameTotals, sumAdditiveTotals } from "./additiveTotals";
+import { invalidateCompanyFeeMode, rememberCompanyFeeMode } from "./companyFeeMode";
 import { listCompanySurcharges } from "./effectiveFees";
+import { undoAssociationsWhileOverridden } from "./overrideAssociations";
 
 export type AdditiveFeeProvider = Pick<SimpayClient, "companyFees" | "saveCompanyFees">;
 
-/** Flat value list SimIntPay stores: only active fees with company overrides already applied. */
-export function toAdditiveValues(fees: EffectiveFeeReturn[]): SimpayAdditiveValue[] {
-	return fees
-		.map(fee => ({
-			applicationScope: fee.applicationScope as SimpayAdditiveValue["applicationScope"],
-			externalId: fee.id,
-			fixedValue: fee.fixedValue,
-			name: fee.name,
-			percentageValue: fee.percentageValue,
-		}))
-		.sort((a, b) => a.externalId.localeCompare(b.externalId));
+/** Delivery's total: the sum per scope of the company's active resolved fees (company overrides applied). */
+export async function resolveAdditiveTotals(prisma: PrismaInstance, companyId: string): Promise<SimpayAdditiveTotals> {
+	return sumAdditiveTotals(await listCompanySurcharges(prisma, companyId));
 }
 
-export function resolveAdditiveValues(prisma: PrismaInstance, companyId: string) {
-	return listCompanySurcharges(prisma, companyId).then(toAdditiveValues);
-}
+export type PushResult = "pushed" | "skipped-overridden" | "skipped-unchanged" | "skipped-unregistered";
 
-export function sameAdditiveValues(a: SimpayAdditiveValue[] | undefined, b: SimpayAdditiveValue[]) {
-	const normalize = (values: SimpayAdditiveValue[]) =>
-		JSON.stringify(
-			[...values]
-				.sort((x, y) => x.externalId.localeCompare(y.externalId))
-				.map(v => [v.externalId, v.name, v.applicationScope, v.percentageValue, v.fixedValue]),
-		);
-	return normalize(a ?? []) === normalize(b);
-}
-
-export type PushResult = "pushed" | "skipped-unchanged" | "skipped-unregistered";
-
-/** Resolves a company's additive fees and replaces SimIntPay's stored list; Delivery owns the catalog. */
+/** Resolves a company's additive totals and stores them in SimIntPay as Delivery's total; Delivery owns the catalog. */
 export class AdditiveFeeSync {
 	constructor(
 		private readonly prisma: PrismaInstance,
@@ -43,37 +23,46 @@ export class AdditiveFeeSync {
 	) {}
 
 	resolve(companyId: string) {
-		return resolveAdditiveValues(this.prisma, companyId);
+		return resolveAdditiveTotals(this.prisma, companyId);
 	}
 
-	/** Pushes only when SimIntPay's list differs. Companies SimIntPay does not know are skipped. */
-	async push(companyId: string, options: { dryRun?: boolean } = {}): Promise<{ result: PushResult; values: SimpayAdditiveValue[] }> {
+	/**
+	 * Pushes only when SimIntPay's Delivery total differs. Companies SimIntPay does not know are skipped. While a
+	 * SimIntPay admin override is active nothing is pushed: associations are undone instead and SimIntPay's total rules.
+	 */
+	async push(companyId: string, options: { dryRun?: boolean } = {}): Promise<{ result: PushResult; totals: SimpayAdditiveTotals }> {
 		let current: SimpayCompanyFees;
 		try {
 			current = await this.provider.companyFees(companyId);
 		} catch (error) {
-			if (error instanceof PaymentProviderError && error.status === 404) return { result: "skipped-unregistered", values: [] };
+			if (error instanceof PaymentProviderError && error.status === 404) return { result: "skipped-unregistered", totals: emptyTotals() };
 			throw error;
 		}
-		const values = await this.resolve(companyId);
-		if (sameAdditiveValues(current.additiveFees, values)) return { result: "skipped-unchanged", values };
+		if (current.additiveFees?.override) {
+			if (!options.dryRun) await undoAssociationsWhileOverridden(this.prisma, companyId, current.additiveFees);
+			return { result: "skipped-overridden", totals: current.additiveFees.effective };
+		}
+		const totals = await this.resolve(companyId);
+		if (sameTotals(current.additiveFees?.delivery, totals)) return { result: "skipped-unchanged", totals };
 		if (!options.dryRun) {
 			// Empty lanes leave SimIntPay's lane fees untouched; mode and disabled lanes are echoed back.
-			await this.provider.saveCompanyFees(companyId, {
-				additiveFees: values,
+			const saved = await this.provider.saveCompanyFees(companyId, {
+				additiveFees: totals,
 				disabledLanes: current.disabledLanes,
 				lanes: [],
 				mode: current.mode,
 				version: current.version,
 			});
+			invalidateCompanyFeeMode(companyId);
+			if (saved?.mode) rememberCompanyFeeMode(companyId, saved);
 		}
-		return { result: "pushed", values };
+		return { result: "pushed", totals };
 	}
 
-	/** Resyncs the given companies (all when omitted) with limited concurrency; returns per-company failures. */
+/** Resyncs the given companies (all when omitted) with limited concurrency; returns per-company failures. */
 	async pushMany(companyIds?: string[], options: { concurrency?: number; dryRun?: boolean } = {}) {
 		const ids = companyIds ?? (await this.prisma.company.findMany({ select: { id: true } })).map(company => company.id);
-		const outcomes: Array<{ companyId: string; error?: unknown; result?: PushResult; values?: SimpayAdditiveValue[] }> = [];
+		const outcomes: Array<{ companyId: string; error?: unknown; result?: PushResult; totals?: SimpayAdditiveTotals }> = [];
 		const queue = [...ids];
 		const worker = async () => {
 			for (let id = queue.shift(); id !== undefined; id = queue.shift()) {

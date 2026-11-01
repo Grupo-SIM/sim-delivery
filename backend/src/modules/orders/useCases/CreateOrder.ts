@@ -6,6 +6,7 @@ import { LoyaltyErrors } from "@/modules/loyalty/errors";
 import { GetLoyaltyBalance } from "@/modules/loyalty/useCases";
 import { calculatePlatformFees } from "@/modules/platformFees/calculateFees";
 import { listEffectiveFees } from "@/modules/platformFees/effectiveFees";
+import { isSyntheticFee } from "@/modules/platformFees/additiveTotals";
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CreateOrderBody, OrderReturn } from "../dtos";
@@ -376,7 +377,7 @@ export class CreateOrder {
 						displayMode: fee.displayMode,
 						name: fee.name,
 						orderId: created.id,
-						platformFeeId: fee.id,
+						platformFeeId: isSyntheticFee(fee.id) ? null : fee.id,
 					},
 				});
 				if (fee.items.length > 0) {

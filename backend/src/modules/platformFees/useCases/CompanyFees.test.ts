@@ -50,7 +50,7 @@ describe("company fees", () => {
 	it("pushes a mode-only change to SimIntPay without touching its lanes", async () => {
 		const { fees, state } = setup("BOTH");
 		const result = await fees.update("c", { mode: "SIMINTPAY_ONLY" });
-		expect(state.saved).toMatchObject({ additiveFees: [], lanes: [], mode: "SIMINTPAY_ONLY", version: "1" });
+		expect(state.saved).toMatchObject({ additiveFees: expect.anything(), lanes: [], mode: "SIMINTPAY_ONLY", version: "1" });
 		expect(state.mode).toBe("SIMINTPAY_ONLY");
 		expect(result.mode).toBe("SIMINTPAY_ONLY");
 		expect(result.extras).toEqual([]);
@@ -60,5 +60,24 @@ describe("company fees", () => {
 		const { fees, state } = setup("BOTH", { failSave: true });
 		await expect(fees.update("c", { mode: "SIMINTPAY_ONLY" })).rejects.toThrow("SimIntPay unavailable");
 		expect(state.mode).toBe("BOTH");
+	});
+
+	it("reports the SimIntPay override, hides local extras and computes coverage from the effective total", async () => {
+		const totals = (percentageValue: number) => ({ order: { fixedValue: 0, percentageValue }, product: { fixedValue: 0, percentageValue: 0 } });
+		const { fees } = setup("BOTH", {
+			provider: { additiveFees: { delivery: totals(500), effective: totals(0), override: totals(0) }, costs: [lane(9_800)], lanes: [lane(0)] },
+		});
+		const result = await fees.get("c");
+		expect(result.additiveOverride).toEqual(totals(0));
+		expect(result.effectiveTotals).toEqual(totals(0));
+		expect(result.extras).toEqual([]);
+		expect(result.underCovered).toBe(true);
+	});
+
+	it("does not push Delivery totals while overridden", async () => {
+		const totals = { order: { fixedValue: 0, percentageValue: 100 }, product: { fixedValue: 0, percentageValue: 0 } };
+		const { fees, state } = setup("BOTH", { provider: { additiveFees: { delivery: totals, effective: totals, override: totals } } });
+		await fees.update("c", { mode: "SIMINTPAY_ONLY" });
+		expect((state.saved as { additiveFees?: unknown }).additiveFees).toBeUndefined();
 	});
 });

@@ -66,3 +66,11 @@ export function evaluateCoverage(input: {
 export function hasShortfall(lanes: CoverageLane[]) {
 	return lanes.some(lane => lane.fixedShortfallCents > 0 || lane.rateShortfallPpm > 0);
 }
+
+/** Same as `surchargeComponents`, for SimIntPay's per-scope totals: both scopes' percentages and fixed parts add up. */
+export function totalsComponents(totals: {
+	order: { fixedValue: number; percentageValue: number };
+	product: { fixedValue: number; percentageValue: number };
+}): FeeComponents {
+	return surchargeComponents([totals.order, totals.product]);
+}

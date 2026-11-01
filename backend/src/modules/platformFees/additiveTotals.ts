@@ -1,0 +1,51 @@
+import type { SimpayAdditiveTotals } from "@/shared/infra/simpay";
+import type { EffectiveFeeReturn } from "./dtos";
+
+export const SYNTHETIC_FEE_PREFIX = "additive-total:";
+
+export const emptyTotals = (): SimpayAdditiveTotals => ({
+	order: { fixedValue: 0, percentageValue: 0 },
+	product: { fixedValue: 0, percentageValue: 0 },
+});
+
+export const isSyntheticFee = (id: string) => id.startsWith(SYNTHETIC_FEE_PREFIX);
+
+/** Sums resolved fees per scope; this is all SimIntPay stores. */
+export function sumAdditiveTotals(
+	fees: Pick<EffectiveFeeReturn, "applicationScope" | "fixedValue" | "percentageValue">[],
+): SimpayAdditiveTotals {
+	const totals = emptyTotals();
+	for (const fee of fees) {
+		const scope = fee.applicationScope === "product" ? totals.product : totals.order;
+		scope.fixedValue += fee.fixedValue;
+		scope.percentageValue += fee.percentageValue;
+	}
+	return totals;
+}
+
+export function sameTotals(a: SimpayAdditiveTotals | undefined, b: SimpayAdditiveTotals) {
+	return (["order", "product"] as const).every(
+		scope => a?.[scope].fixedValue === b[scope].fixedValue && a?.[scope].percentageValue === b[scope].percentageValue,
+	);
+}
+
+/**
+ * Buyer surcharges as SimIntPay recomputes them: one synthetic fee per non-zero scope, so rounding matches
+ * `calculatePlatformFees` (order: once on the subtotal; product: per unit, times quantity).
+ * Product fees stay embedded only when every real product fee was embedded.
+ */
+export function syntheticFees(totals: SimpayAdditiveTotals, productDisplayMode: EffectiveFeeReturn["displayMode"] = "product_explicit"): EffectiveFeeReturn[] {
+	const fees: EffectiveFeeReturn[] = [];
+	if (totals.order.percentageValue > 0 || totals.order.fixedValue > 0) {
+		fees.push({ applicationScope: "order", displayMode: "checkout_only", id: `${SYNTHETIC_FEE_PREFIX}order`, name: "Taxa", ...totals.order });
+	}
+	if (totals.product.percentageValue > 0 || totals.product.fixedValue > 0) {
+		fees.push({ applicationScope: "product", displayMode: productDisplayMode, id: `${SYNTHETIC_FEE_PREFIX}product`, name: "Taxa", ...totals.product });
+	}
+	return fees;
+}
+
+export function productDisplayModeOf(fees: Pick<EffectiveFeeReturn, "applicationScope" | "displayMode">[]) {
+	const product = fees.filter(fee => fee.applicationScope === "product");
+	return product.length > 0 && product.every(fee => fee.displayMode === "embedded") ? "embedded" : "product_explicit";
+}

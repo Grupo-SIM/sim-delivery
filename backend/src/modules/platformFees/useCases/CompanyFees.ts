@@ -2,9 +2,11 @@ import { simpay, type SimpayClient, type SimpayCompanyFees } from "@/shared/infr
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CompanyFeeDefaultsReturn, CompanyFeesReturn, UpdateCompanyFeesBody } from "../dtos";
 import { invalidateCompanyFeeMode, rememberCompanyFeeMode } from "../companyFeeMode";
-import { resolveAdditiveValues } from "../additiveFeeSync";
+import { resolveAdditiveTotals } from "../additiveFeeSync";
+import { sumAdditiveTotals } from "../additiveTotals";
+import { undoAssociationsWhileOverridden } from "../overrideAssociations";
 import { listCompanySurcharges } from "../effectiveFees";
-import { evaluateCoverage, hasShortfall, surchargeComponents } from "../feeCoverage";
+import { evaluateCoverage, hasShortfall, totalsComponents } from "../feeCoverage";
 
 export class CompanyFees {
 	constructor(
@@ -33,7 +35,8 @@ export class CompanyFees {
 		if (input.simintpay || input.disabledLanes || provider.mode !== current.mode) {
 			invalidateCompanyFeeMode(companyId);
 			provider = await this.provider.saveCompanyFees(companyId, {
-				additiveFees: await resolveAdditiveValues(this.prisma, companyId),
+				// Delivery's total never touches a SimIntPay override; while one is active nothing is pushed over it.
+				additiveFees: current.additiveFees?.override ? undefined : await resolveAdditiveTotals(this.prisma, companyId),
 				disabledLanes,
 				lanes: input.simintpay?.lanes ?? [],
 				mode: provider.mode,
@@ -53,18 +56,24 @@ export class CompanyFees {
 
 	private async build(companyId: string, provider: SimpayCompanyFees): Promise<CompanyFeesReturn> {
 		const mode = provider.mode;
-		const surcharges = await listCompanySurcharges(this.prisma, companyId);
+		const overridden = provider.additiveFees?.override != null;
+		if (overridden) await undoAssociationsWhileOverridden(this.prisma, companyId, provider.additiveFees);
+		// The seller is charged SimIntPay's effective total; the named list is only meaningful without an override.
+		const surcharges = overridden ? [] : await listCompanySurcharges(this.prisma, companyId);
+		const effective = provider.additiveFees?.effective ?? sumAdditiveTotals(surcharges);
 		const coverage = evaluateCoverage({
 			costs: provider.costs,
 			disabledLanes: provider.disabledLanes,
 			mode,
 			simintpay: provider.lanes,
-			surcharges: surchargeComponents(surcharges),
+			surcharges: totalsComponents(effective),
 		});
 		return {
+			additiveOverride: overridden ? provider.additiveFees!.effective : null,
 			coverage,
 			disabledLanes: provider.disabledLanes ?? [],
-			extras: mode === "SIMINTPAY_ONLY" ? [] : surcharges,
+			effectiveTotals: effective,
+			extras: mode === "SIMINTPAY_ONLY" || overridden ? [] : surcharges,
 			mode,
 			simintpay: { lanes: provider.lanes, version: provider.version },
 			underCovered: hasShortfall(coverage),

@@ -112,7 +112,13 @@ export const UpdateCompanyFeesBody = t.Object({
 });
 export type UpdateCompanyFeesBody = typeof UpdateCompanyFeesBody.static;
 
+const AdditiveScopeTotalReturn = t.Object({ fixedValue: t.Integer(), percentageValue: t.Integer() });
+export const AdditiveTotalsReturn = t.Object({ order: AdditiveScopeTotalReturn, product: AdditiveScopeTotalReturn });
+export type AdditiveTotalsReturn = typeof AdditiveTotalsReturn.static;
+
 export const CompanyFeesReturn = t.Object({
+	/** Set while a SimIntPay admin overrides the total: Delivery associations are undone and this total rules. */
+	additiveOverride: t.Nullable(AdditiveTotalsReturn),
 	/** Per lane: acquirer cost, what the company pays to cover it and any shortfall. */
 	coverage: t.Array(
 		t.Object({
@@ -126,6 +132,8 @@ export const CompanyFeesReturn = t.Object({
 	),
 	/** Lanes (`METHOD/installments`) the platform does not accept. */
 	disabledLanes: t.Array(t.String()),
+	/** SimIntPay effective additive total (override ?? Delivery sum) that buyers are charged. */
+	effectiveTotals: AdditiveTotalsReturn,
 	/** Surcharges added to the buyer price in this app, after company overrides. Empty when mode is SIMINTPAY_ONLY. */
 	extras: EffectiveFeeListReturn,
 	mode: PlatformFeeModeDto,

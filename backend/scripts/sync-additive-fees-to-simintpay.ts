@@ -1,6 +1,6 @@
 /**
- * One-off: resolves each company's additive fees (active, associated, overrides applied) and replaces the list stored
- * in SimIntPay. Only pushes when SimIntPay's list differs, so it is safe to re-run.
+ * One-off: sums each company's additive fees per scope (active, associated, overrides applied) and stores the total
+ * in SimIntPay as the Delivery total. Skips companies under a SimIntPay override; only pushes when the total differs, so it is safe to re-run.
  *
  * Dry run by default; pass --execute to write to SimIntPay. Optionally limit to companies with --company=<id>.
  *
@@ -17,7 +17,8 @@ const outcomes = await new AdditiveFeeSync(prisma).pushMany(only ? [only] : unde
 console.table(outcomes.map(outcome => ({
 	companyId: outcome.companyId,
 	error: outcome.error instanceof Error ? outcome.error.message : "",
-	fees: outcome.values?.length ?? 0,
+	order: outcome.totals ? `${outcome.totals.order.percentageValue}bp + ${outcome.totals.order.fixedValue}c` : "",
+	product: outcome.totals ? `${outcome.totals.product.percentageValue}bp + ${outcome.totals.product.fixedValue}c` : "",
 	result: outcome.result ?? "failed",
 })));
 

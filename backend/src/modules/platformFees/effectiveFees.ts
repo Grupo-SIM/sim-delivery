@@ -1,14 +1,27 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { EffectiveFeeReturn } from "./dtos";
-import { getCompanyFeeMode } from "./companyFeeMode";
+import { productDisplayModeOf, syntheticFees } from "./additiveTotals";
+import { getCompanyFeeSnapshot } from "./companyFeeMode";
+import { undoAssociationsWhileOverridden } from "./overrideAssociations";
 
-/** Surcharges charged to buyers; `SIMINTPAY_ONLY` mode leaves cost recovery entirely to SimIntPay's own fees. */
+/**
+ * Surcharges charged to buyers, built from SimIntPay's effective totals (its admin may override Delivery's sum) as one
+ * synthetic fee per scope, so SimIntPay recomputes the same cents. `SIMINTPAY_ONLY` mode leaves cost recovery entirely
+ * to SimIntPay's own fees. Without SimIntPay data the local resolved fees are used.
+ */
 export async function listEffectiveFees(
 	prisma: PrismaInstance,
 	companyId: string,
 ): Promise<EffectiveFeeReturn[]> {
-	if ((await getCompanyFeeMode(companyId)) === "SIMINTPAY_ONLY") return [];
-	return listCompanySurcharges(prisma, companyId);
+	const snapshot = await getCompanyFeeSnapshot(companyId);
+	if (snapshot?.mode === "SIMINTPAY_ONLY") return [];
+	const totals = snapshot?.additiveFees;
+	if (!totals) return listCompanySurcharges(prisma, companyId);
+	if (totals.override) {
+		await undoAssociationsWhileOverridden(prisma, companyId, totals);
+		return syntheticFees(totals.effective);
+	}
+	return syntheticFees(totals.effective, productDisplayModeOf(await listCompanySurcharges(prisma, companyId)));
 }
 
 /** Active surcharges after company overrides, regardless of the company's fee mode. */
