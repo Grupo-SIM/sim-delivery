@@ -30,8 +30,12 @@ export function SimintpayLaneRow({ accepted, applied, coverage, draft, globalDef
 		lane.method === "CREDIT_CARD"
 			? t("admin.companies.fees.lane.creditCard", { count: Number(lane.installments) })
 			: t(`admin.companies.fees.method.${lane.method}`, { defaultValue: lane.method });
-	const effectiveRatePpm = surcharge.ratePpm + (applied ? percentToPpm(draft.rate) : 0);
-	const effectiveFixedCents = surcharge.fixedCents + (applied ? reaisToCents(draft.fixed) : 0);
+	const defaultRate = globalDefault ? ppmToPercent(globalDefault.ratePpm) : "";
+	const defaultFixed = globalDefault ? centsToReais(globalDefault.fixedCents) : "";
+	const rate = draft.rate === "" ? defaultRate : draft.rate;
+	const fixed = draft.fixed === "" ? defaultFixed : draft.fixed;
+	const effectiveRatePpm = surcharge.ratePpm + (applied ? percentToPpm(rate) : 0);
+	const effectiveFixedCents = surcharge.fixedCents + (applied ? reaisToCents(fixed) : 0);
 	const short = coverage && (effectiveRatePpm < Number(coverage.cost.ratePpm) || effectiveFixedCents < Number(coverage.cost.fixedCents));
 
 	return (
@@ -55,7 +59,7 @@ export function SimintpayLaneRow({ accepted, applied, coverage, draft, globalDef
 					label={t("admin.companies.fees.simintpay.rate", { lane: label })}
 					name={`rate-${lane.method}-${lane.installments}`}
 					onCommit={rate => onChange({ ...draft, rate })}
-					value={draft.rate}
+					value={globalDefault && Number(draft.rate) === Number(defaultRate) ? "" : draft.rate}
 				/>
 			</td>
 			<td className="px-3 py-2">
@@ -65,7 +69,7 @@ export function SimintpayLaneRow({ accepted, applied, coverage, draft, globalDef
 					label={t("admin.companies.fees.simintpay.fixed", { lane: label })}
 					name={`fixed-${lane.method}-${lane.installments}`}
 					onCommit={fixed => onChange({ ...draft, fixed })}
-					value={draft.fixed}
+					value={globalDefault && Number(draft.fixed) === Number(defaultFixed) ? "" : draft.fixed}
 				/>
 			</td>
 			<td className="px-3 py-2 text-sm tabular-nums">

@@ -96,10 +96,14 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 							: [
 									{
 										channel: lane.channel,
-										fixedCents: reaisToCents(drafts[laneId(lane)]!.fixed),
+										fixedCents: drafts[laneId(lane)]!.fixed === ""
+											? Number(globalDefaults.get(laneId(lane))?.fixedCents ?? lane.fixedCents)
+											: reaisToCents(drafts[laneId(lane)]!.fixed),
 										installments: Number(lane.installments),
 										method: lane.method,
-										ratePpm: percentToPpm(drafts[laneId(lane)]!.rate),
+										ratePpm: drafts[laneId(lane)]!.rate === ""
+											? Number(globalDefaults.get(laneId(lane))?.ratePpm ?? lane.ratePpm)
+											: percentToPpm(drafts[laneId(lane)]!.rate),
 									},
 								],
 					),
