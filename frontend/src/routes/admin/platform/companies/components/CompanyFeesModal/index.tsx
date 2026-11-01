@@ -60,6 +60,17 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 		return { fixedCents: active.reduce((sum, entry) => sum + entry.fixedCents, 0), ratePpm: active.reduce((sum, entry) => sum + entry.ratePpm, 0) };
 	}, [extraEntries, fees.additiveOverride, mode, overridden]);
 
+	const underCovered = lanes.some(lane => {
+		const id = laneId(lane);
+		if (disabledLanes.has(id)) return false;
+		const cost = coverage.get(id)?.cost;
+		if (!cost) return false;
+		const draft = drafts[id] ?? initialDraft(lane);
+		const ratePpm = surcharge.ratePpm + (mode === "ADDITIVE_ONLY" ? 0 : percentToPpm(draft.rate));
+		const fixedCents = surcharge.fixedCents + (mode === "ADDITIVE_ONLY" ? 0 : reaisToCents(draft.fixed));
+		return ratePpm < Number(cost.ratePpm) || fixedCents < Number(cost.fixedCents);
+	});
+
 	async function save() {
 		setSaving(true);
 		try {
@@ -110,7 +121,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 
 	return (
 		<div className="space-y-6">
-			{fees.underCovered && (
+			{underCovered && (
 				<p className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-destructive text-sm" role="alert">
 					{t("admin.companies.fees.underCovered")}
 				</p>
