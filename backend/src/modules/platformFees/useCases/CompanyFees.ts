@@ -21,6 +21,30 @@ export class CompanyFees {
 		return this.defaultsProvider.feeDefaults();
 	}
 
+	/** Ids of companies whose effective fees do not cover acquirer cost (including none configured). Unreachable ones are skipped. */
+	async underCoveredCompanyIds(): Promise<string[]> {
+		const companies = await this.prisma.company.findMany({ select: { id: true } });
+		const flagged = await Promise.all(
+			companies.map(async ({ id }) => {
+				try {
+					const provider = await this.provider.companyFees(id);
+					if (!provider.additiveFees) return null;
+					const coverage = evaluateCoverage({
+						costs: provider.costs,
+						disabledLanes: provider.disabledLanes,
+						mode: provider.mode,
+						simintpay: provider.lanes,
+						surcharges: totalsComponents(provider.additiveFees.effective),
+					});
+					return hasShortfall(coverage) ? id : null;
+				} catch {
+					return null;
+				}
+			}),
+		);
+		return flagged.filter((id): id is string => id !== null);
+	}
+
 	async get(companyId: string): Promise<CompanyFeesReturn> {
 		return withAdditiveFeeLock(this.prisma, companyId, async tx => {
 			const provider = await this.provider.companyFees(companyId);

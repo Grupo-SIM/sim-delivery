@@ -44,6 +44,9 @@ export const PlatformFeesController = new Elysia({ detail: { tags: ["Platform Fe
 			.get("/by-company-defaults", ({ companyFees }) => companyFees.defaults(), {
 				response: CompanyFeeDefaultsReturn,
 			})
+			.get("/under-covered-companies", ({ companyFees }) => companyFees.underCoveredCompanyIds(), {
+				response: t.Array(t.String()),
+			})
 			.get("/by-company/:companyId", ({ companyFees, params }) => companyFees.get(params.companyId), {
 				response: CompanyFeesReturn,
 			})
