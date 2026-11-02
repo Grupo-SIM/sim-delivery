@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import { calculatePlatformFees } from "./calculateFees";
-import { productDisplayModeOf, sumAdditiveTotals, syntheticFees } from "./additiveTotals";
+import { checkoutOnlyProductTotals, productDisplayModeOf, sumAdditiveTotals, syntheticFees } from "./additiveTotals";
 import { totalsComponents } from "./feeCoverage";
 
 describe("additive totals", () => {
@@ -27,5 +27,14 @@ describe("additive totals", () => {
 		expect(productDisplayModeOf([{ applicationScope: "product", displayMode: "embedded" }])).toBe("embedded");
 		expect(productDisplayModeOf([{ applicationScope: "product", displayMode: "embedded" }, { applicationScope: "product", displayMode: "product_explicit" }])).toBe("product_explicit");
 		expect(productDisplayModeOf([])).toBe("product_explicit");
+	});
+
+	it("splits checkout-only product fees from the product-visible total", () => {
+		const totals = { order: { fixedValue: 0, percentageValue: 0 }, product: { fixedValue: 100, percentageValue: 600 } };
+		const checkoutOnly = checkoutOnlyProductTotals([{ applicationScope: "product", displayMode: "checkout_only", fixedValue: 100, percentageValue: 600 }]);
+		const fees = syntheticFees(totals, "product_explicit", checkoutOnly);
+		expect(fees).toHaveLength(1);
+		expect(fees[0]).toMatchObject({ displayMode: "checkout_only", fixedValue: 100, percentageValue: 600 });
+		expect(productDisplayModeOf([{ applicationScope: "product", displayMode: "checkout_only" }])).toBe("product_explicit");
 	});
 });
