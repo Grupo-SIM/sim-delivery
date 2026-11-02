@@ -380,6 +380,7 @@
 				},
 				"subtitle": "Clientes atendidos pela plataforma.",
 				"title": "Empresas",
+				"underCovered": "Taxas não configuradas ou abaixo da cobertura (prejuízo).",
 				"visualIdentity": {
 					"download": "Baixar template genérico de identidade visual",
 					"downloadCompany": "Baixar identidade visual de {{name}}",

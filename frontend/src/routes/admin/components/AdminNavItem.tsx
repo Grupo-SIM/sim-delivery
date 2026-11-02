@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { IconType } from "react-icons";
+import { LuTriangleAlert } from "react-icons/lu";
+import { Tooltip } from "@/components/ui/Tooltip";
 
 interface NavItemProps {
 	exact?: boolean;
@@ -7,9 +9,11 @@ interface NavItemProps {
 	label: string;
 	onNavigate?: () => void;
 	to: string;
+	/** Tooltip text; when set, a warning marker is shown next to the label. */
+	warning?: string;
 }
 
-export function AdminNavItem({ exact = false, icon: Icon, label, onNavigate, to }: NavItemProps) {
+export function AdminNavItem({ exact = false, icon: Icon, label, onNavigate, to, warning }: NavItemProps) {
 	return (
 		<Link
 			activeOptions={{ exact }}
@@ -20,6 +24,11 @@ export function AdminNavItem({ exact = false, icon: Icon, label, onNavigate, to 
 		>
 			<Icon className="size-4 shrink-0" />
 			{label}
+			{warning && (
+				<Tooltip content={warning}>
+					<LuTriangleAlert aria-label={warning} className="size-4 shrink-0 text-destructive" />
+				</Tooltip>
+			)}
 		</Link>
 	);
 }

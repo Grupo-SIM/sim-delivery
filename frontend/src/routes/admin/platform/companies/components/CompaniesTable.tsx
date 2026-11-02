@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
-import type { GetCompanies200 } from "@/lib/api";
+import { type GetCompanies200, useGetPlatformFeesUnderCoveredCompanies } from "@/lib/api";
 import { CompanyRow } from "./CompanyRow";
 
 interface CompaniesTableProps {
@@ -9,6 +9,7 @@ interface CompaniesTableProps {
 }
 
 export function CompaniesTable({ companies }: CompaniesTableProps) {
+	const { data: underCovered = [] } = useGetPlatformFeesUnderCoveredCompanies();
 	const { t } = useTranslation();
 
 	if (companies.length === 0) {
@@ -33,7 +34,7 @@ export function CompaniesTable({ companies }: CompaniesTableProps) {
 			</thead>
 			<tbody>
 				{companies.map(company => (
-					<CompanyRow company={company} key={company.id} />
+					<CompanyRow company={company} key={company.id} underCovered={underCovered.includes(company.id)} />
 				))}
 			</tbody>
 		</DataTable>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuLandmark, LuPencil, LuPercent, LuUserPlus } from "react-icons/lu";
+import { LuLandmark, LuPencil, LuPercent, LuTriangleAlert, LuUserPlus } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/Tooltip";
 import type { GetCompanies200 } from "@/lib/api";
@@ -12,9 +12,10 @@ import { WithdrawalSettingsModal } from "./WithdrawalSettingsModal";
 
 interface CompanyRowProps {
 	company: GetCompanies200[number];
+	underCovered?: boolean;
 }
 
-export function CompanyRow({ company }: CompanyRowProps) {
+export function CompanyRow({ company, underCovered = false }: CompanyRowProps) {
 	const { t } = useTranslation();
 	const [financialOpen, setFinancialOpen] = useState(false);
 	const [editOpen, setEditOpen] = useState(false);
@@ -23,7 +24,16 @@ export function CompanyRow({ company }: CompanyRowProps) {
 
 	return (
 		<tr className="border-border/60 border-b last:border-0">
-			<td className="px-4 py-3 font-medium">{company.name}</td>
+			<td className="px-4 py-3 font-medium">
+				<span className="inline-flex items-center gap-2">
+					{company.name}
+					{underCovered && (
+						<Tooltip content={t("admin.companies.underCovered")}>
+							<LuTriangleAlert aria-label={t("admin.companies.underCovered")} className="size-4 text-destructive" />
+						</Tooltip>
+					)}
+				</span>
+			</td>
 			<td className="px-4 py-3 text-muted-foreground">{company.slug}</td>
 			<td className="px-4 py-3 text-muted-foreground">
 				{new Date(company.createdAt).toLocaleDateString()}

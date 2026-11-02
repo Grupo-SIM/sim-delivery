@@ -10,6 +10,7 @@ import {
 	deletePlatformFeesByFeeIdCompaniesByCompanyId,
 	getPlatformFeesByCompanyByCompanyIdQueryKey,
 	getPlatformFeesByFeeIdCompaniesQueryKey,
+	getPlatformFeesUnderCoveredCompaniesQueryKey,
 	putPlatformFeesByCompanyByCompanyId,
 	putPlatformFeesByFeeIdCompaniesByCompanyId,
 	useGetPlatformFeesByCompanyByCompanyId,
@@ -112,6 +113,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 			});
 			await Promise.all([
 				queryClient.invalidateQueries({ queryKey: getPlatformFeesByCompanyByCompanyIdQueryKey(companyId) }),
+				queryClient.invalidateQueries({ queryKey: getPlatformFeesUnderCoveredCompaniesQueryKey() }),
 				...Object.keys(extraDrafts).map(feeId => queryClient.invalidateQueries({ queryKey: getPlatformFeesByFeeIdCompaniesQueryKey(feeId) })),
 			]);
 			showToast(t("admin.companies.fees.saved"), "positive");

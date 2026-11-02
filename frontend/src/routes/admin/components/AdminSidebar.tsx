@@ -19,6 +19,7 @@ import {
 	LuTicket,
 	LuUsers,
 } from "react-icons/lu";
+import { useGetPlatformFeesUnderCoveredCompanies } from "@/lib/api";
 import { ScrollArea } from "@/components/ui/ScrollArea";
 import { canCustomizeReceipt, isAttendant, isManager, requiresSelectedUnit } from "@/lib/staff-guard";
 import { isSuperAdmin, useAuthStore } from "@/stores/auth";
@@ -34,6 +35,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 	const attendant = isAttendant(role);
 	const manager = isManager(role);
 	const needsUnitSelection = requiresSelectedUnit(role);
+	const { data: underCovered = [] } = useGetPlatformFeesUnderCoveredCompanies({ query: { enabled: isSuperAdmin(role) } });
 
 	async function handleLogout() {
 		await logout();
@@ -134,6 +136,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 						label={t("admin.companies.title")}
 						onNavigate={onNavigate}
 						to="/admin/platform/companies"
+						warning={underCovered.length > 0 ? t("admin.companies.underCovered") : undefined}
 					/>
 				</AdminNavGroup>
 			)}
