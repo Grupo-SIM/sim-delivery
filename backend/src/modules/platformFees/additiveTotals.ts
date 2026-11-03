@@ -39,7 +39,7 @@ function componentsOf(
 	const matching = local.filter(fee => fee.applicationScope === scope && filter(fee));
 	const fixedValue = matching.reduce((sum, fee) => sum + fee.fixedValue, 0);
 	const percentageValue = matching.reduce((sum, fee) => sum + fee.percentageValue, 0);
-	if (matching.length < 2 || fixedValue !== rates.fixedValue || percentageValue !== rates.percentageValue) return {};
+	if (matching.length === 0 || fixedValue !== rates.fixedValue || percentageValue !== rates.percentageValue) return {};
 	return { components: matching.map(({ fixedValue, name, percentageValue }) => ({ fixedValue, name, percentageValue })) };
 }
 
