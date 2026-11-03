@@ -11,7 +11,7 @@ function setup(mode: string, options: { failSave?: boolean; provider?: Partial<S
 	let provider: SimpayCompanyFees = { additiveFees: { effective: zero, revision: "0" }, costs: [lane(9_800)], disabledLanes: [], lanes: [lane(10_000)], mode: mode as SimpayCompanyFees["mode"], version: "1", ...options.provider };
 	const prisma = {
 		$transaction: async (run: (tx: unknown) => Promise<unknown>) => run(prisma),
-		$queryRaw: async () => { state.locks++; return []; },
+		$executeRaw: async () => { state.locks++; return 0; },
 		companySimpayIntegration: {
 			findUnique: async () => ({ ...state.integration }),
 			updateMany: async ({ where, data }: { where: { additiveFeeRevision: string | null }; data: Partial<typeof state.integration> }) => {

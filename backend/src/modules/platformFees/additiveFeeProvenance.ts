@@ -4,7 +4,7 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 /** Serialize provider observations with writes and their local acknowledgment across backend processes. */
 export async function withAdditiveFeeLock<T>(prisma: PrismaInstance, companyId: string, run: (tx: PrismaInstance) => Promise<T>): Promise<T> {
 	return prisma.$transaction(async tx => {
-		await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtextextended(${`additive-fees:${companyId}`}, 0))`;
+		await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${`additive-fees:${companyId}`}, 0))`;
 		return run(tx as unknown as PrismaInstance);
 	}, { timeout: 45_000 });
 }

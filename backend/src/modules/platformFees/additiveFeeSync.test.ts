@@ -57,7 +57,7 @@ function setup(current: Partial<SimpayCompanyFees> & { notFound?: boolean } = {}
 	};
 	const prisma = {
 		$transaction: async (run: (tx: unknown) => Promise<unknown>) => run(prisma),
-		$queryRaw: async () => { state.locks++; return []; },
+		$executeRaw: async () => { state.locks++; return 0; },
 		companySimpayIntegration: {
 			findUnique: async () => ({ ...state.integration }),
 			updateMany: async ({ where, data }: { where: { additiveFeeRevision: string | null; additiveFeeOverridden?: boolean }; data: Partial<typeof state.integration> }) => {
