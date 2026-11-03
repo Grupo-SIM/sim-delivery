@@ -3,7 +3,7 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CompanyFeeDefaultsReturn, CompanyFeesReturn, UpdateCompanyFeesBody } from "../dtos";
 import { invalidateCompanyFeeMode, rememberCompanyFeeMode } from "../companyFeeMode";
 import { resolveAdditiveTotals } from "../additiveFeeSync";
-import { acknowledgeAdditiveFees, additiveFeeOwnership, withAdditiveFeeLock } from "../additiveFeeProvenance";
+import { acknowledgeAdditiveFees, acknowledgeOverrideEdit, additiveFeeOwnership, withAdditiveFeeLock } from "../additiveFeeProvenance";
 import { sumAdditiveTotals } from "../additiveTotals";
 import { undoAssociationsWhileOverridden } from "../overrideAssociations";
 import { listCompanySurcharges } from "../effectiveFees";
@@ -64,18 +64,20 @@ export class CompanyFees {
 		const disabledLanes = input.disabledLanes ?? current.disabledLanes;
 		let provider: SimpayCompanyFees = { ...current, disabledLanes, mode: input.mode ?? current.mode };
 		if (input.simintpay) provider = { ...provider, ...input.simintpay, lanes: this.merge(provider, input.simintpay.lanes) };
-		if (input.simintpay || input.disabledLanes || provider.mode !== current.mode) {
+		const editedOverride = input.additiveFees && ownership.overridden ? input.additiveFees : undefined;
+		if (editedOverride || input.simintpay || input.disabledLanes || provider.mode !== current.mode) {
 			invalidateCompanyFeeMode(companyId);
 			provider = await this.provider.saveCompanyFees(companyId, {
 				// Delivery's total never touches a SimIntPay override; while one is active nothing is pushed over it.
-				additiveFees: ownership.overridden ? undefined : await resolveAdditiveTotals(this.prisma, companyId),
-				additiveRevision: ownership.overridden ? undefined : current.additiveFees!.revision,
+				additiveFees: editedOverride ?? (ownership.overridden ? undefined : await resolveAdditiveTotals(this.prisma, companyId)),
+				additiveRevision: editedOverride || !ownership.overridden ? current.additiveFees!.revision : undefined,
 				disabledLanes,
 				lanes: input.simintpay?.lanes ?? [],
 				mode: provider.mode,
 				version: input.simintpay?.version ?? current.version,
 			});
-			if (!ownership.overridden) await acknowledgeAdditiveFees(this.prisma, companyId, ownership.revision, provider.additiveFees!.revision);
+			if (editedOverride) await acknowledgeOverrideEdit(this.prisma, companyId, provider.additiveFees!.revision);
+			else if (!ownership.overridden) await acknowledgeAdditiveFees(this.prisma, companyId, ownership.revision, provider.additiveFees!.revision);
 			rememberCompanyFeeMode(companyId, provider);
 		}
 		return this.build(companyId, provider);

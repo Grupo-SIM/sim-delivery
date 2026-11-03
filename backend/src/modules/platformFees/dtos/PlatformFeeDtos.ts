@@ -112,17 +112,19 @@ export type CompanyFeeDefaultsReturn = typeof CompanyFeeDefaultsReturn.static;
 
 const FeeComponentsDto = t.Object({ fixedCents: t.Integer(), ratePpm: t.Integer() });
 
+const AdditiveScopeTotalReturn = t.Object({ fixedValue: t.Integer(), percentageValue: t.Integer() });
+export const AdditiveTotalsReturn = t.Object({ order: AdditiveScopeTotalReturn, product: AdditiveScopeTotalReturn });
+export type AdditiveTotalsReturn = typeof AdditiveTotalsReturn.static;
+
 export const UpdateCompanyFeesBody = t.Object({
+	/** New SimIntPay-defined additive total; only accepted while that total overrides Delivery's associations. */
+	additiveFees: t.Optional(AdditiveTotalsReturn),
 	/** Lanes (`METHOD/installments`) to ignore for this platform, e.g. `CREDIT_CARD/2`. */
 	disabledLanes: t.Optional(t.Array(t.String({ pattern: "^(PIX|BOLETO|DEBIT_CARD|CREDIT_CARD)/\\d{1,2}$" }), { maxItems: 14 })),
 	mode: t.Optional(PlatformFeeModeDto),
 	simintpay: t.Optional(t.Object({ lanes: t.Array(SimintpayLane, { maxItems: 14 }), version: t.String() })),
 });
 export type UpdateCompanyFeesBody = typeof UpdateCompanyFeesBody.static;
-
-const AdditiveScopeTotalReturn = t.Object({ fixedValue: t.Integer(), percentageValue: t.Integer() });
-export const AdditiveTotalsReturn = t.Object({ order: AdditiveScopeTotalReturn, product: AdditiveScopeTotalReturn });
-export type AdditiveTotalsReturn = typeof AdditiveTotalsReturn.static;
 
 export const CompanyFeesReturn = t.Object({
 	/** Set while a SimIntPay admin overrides the total: Delivery associations are undone and this total rules. */
