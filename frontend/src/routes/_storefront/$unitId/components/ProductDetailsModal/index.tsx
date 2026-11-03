@@ -243,7 +243,7 @@ export function ProductDetailsModal({
 									className="scrollbar-none lg:h-full lg:overflow-y-auto"
 									ref={setOptionsViewport}
 								>
-									<div className="space-y-5 pr-5">
+									<div className="space-y-5 lg:pr-5">
 										{selectedItem.optionGroups
 											.filter(group => group.options.length > 0)
 											.map(group => (
@@ -296,22 +296,23 @@ export function ProductDetailsModal({
 							{money.format(displayedUnitPrice(Number(selectedItem.fromPriceCents), visibleFees) / 100)}
 							<ProductFeeSummary priceCents={Number(selectedItem.fromPriceCents)} fees={visibleFees} className="text-muted-foreground" />
 						</div>
-					) : <div className="flex items-center justify-between gap-4 border-border border-t pt-4">
-						<div className="flex items-center gap-2">
+					) : <div className="flex items-center justify-between gap-3 border-border border-t pt-4 sm:gap-4">
+						<div className="flex shrink-0 items-center gap-1 sm:gap-2">
 							<Button
 								disabled={quantity === 1}
 								onClick={() => setQuantity(value => value - 1)}
+								className="w-10 px-0"
 								type="button"
 								variant="outline"
 							>
 								−
 							</Button>
 							<span className="w-6 text-center">{quantity}</span>
-							<Button onClick={() => setQuantity(value => value + 1)} type="button" variant="outline">
+							<Button className="w-10 px-0" onClick={() => setQuantity(value => value + 1)} type="button" variant="outline">
 								+
 							</Button>
 						</div>
-						<Button className="gap-3" disabled={Boolean(invalidGroup)} onClick={add} type="button">
+						<Button className="h-auto min-h-10 min-w-0 flex-1 justify-between gap-2 px-3 py-1.5 sm:gap-3 sm:px-4" disabled={Boolean(invalidGroup)} onClick={add} type="button">
 							<FaCartShopping aria-hidden="true" />
 							<span>{t("store.cart.add")}</span>
 							<div className="text-right">
