@@ -1,4 +1,4 @@
-import type { CompanyFees } from "./types";
+import { centsToReais, percentToBasisPoints, ppmToPercent, reaisToCents, type CompanyFees } from "./types";
 
 export type OverriddenScope = "order" | "product";
 
@@ -24,5 +24,35 @@ export function overriddenSurcharge(additiveOverride: CompanyFees["additiveOverr
 	return {
 		fixedCents: lines.reduce((sum, line) => sum + line.fixedCents, 0),
 		ratePpm: lines.reduce((sum, line) => sum + line.percentageBasisPoints * 100, 0),
+	};
+}
+
+export const OVERRIDDEN_SCOPES = ["order", "product"] as const;
+
+export type OverrideDraft = Record<OverriddenScope, { fixed: string; percentage: string }>;
+
+export function initialOverrideDraft(additiveOverride: CompanyFees["additiveOverride"]): OverrideDraft {
+	const draftOf = (scope: OverriddenScope) => ({
+		fixed: centsToReais(additiveOverride?.[scope].fixedValue ?? 0),
+		percentage: ppmToPercent(Number(additiveOverride?.[scope].percentageValue ?? 0) * 100),
+	});
+	return { order: draftOf("order"), product: draftOf("product") };
+}
+
+/** Totals for the update body; empty fields mean zero. */
+export function overrideDraftTotals(draft: OverrideDraft) {
+	const totalOf = (scope: OverriddenScope) => ({
+		fixedValue: reaisToCents(draft[scope].fixed || "0"),
+		percentageValue: percentToBasisPoints(draft[scope].percentage) ?? 0,
+	});
+	return { order: totalOf("order"), product: totalOf("product") };
+}
+
+/** Surcharge of the edited override draft. */
+export function overrideDraftSurcharge(draft: OverrideDraft) {
+	const totals = overrideDraftTotals(draft);
+	return {
+		fixedCents: totals.order.fixedValue + totals.product.fixedValue,
+		ratePpm: (totals.order.percentageValue + totals.product.percentageValue) * 100,
 	};
 }

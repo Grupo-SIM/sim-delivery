@@ -18,7 +18,7 @@ import {
 } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 import { ExtraFeesList } from "./ExtraFeesList";
-import { overriddenSurcharge } from "./overridden-fee-lines";
+import { initialOverrideDraft, overrideDraftSurcharge, overrideDraftTotals, type OverrideDraft } from "./overridden-fee-lines";
 import { OverriddenFeesList } from "./OverriddenFeesList";
 import { SimintpayLaneRow, initialDraft } from "./SimintpayLaneRow";
 import { useExtraFeeEntries } from "./use-extra-fee-entries";
@@ -42,6 +42,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 	);
 	const [disabledLanes, setDisabledLanes] = useState<Set<string>>(() => new Set(fees.disabledLanes));
 	const [extraDrafts, setExtraDrafts] = useState<Record<string, ExtraFeeDraft>>({});
+	const [overrideDraft, setOverrideDraft] = useState<OverrideDraft>(() => initialOverrideDraft(fees.additiveOverride));
 	const [saving, setSaving] = useState(false);
 	const lanes = useMemo(() => [...fees.simintpay.lanes].sort(compareLanes), [fees.simintpay.lanes]);
 	const orderedLanes = useMemo(
@@ -56,10 +57,10 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 	const overridden = fees.additiveOverride != null;
 	const surcharge = useMemo(() => {
 		// While SimIntPay overrides the total it is what the seller is charged, whatever the drafts say.
-		if (overridden) return mode === "SIMINTPAY_ONLY" ? { fixedCents: 0, ratePpm: 0 } : overriddenSurcharge(fees.additiveOverride);
+		if (overridden) return mode === "SIMINTPAY_ONLY" ? { fixedCents: 0, ratePpm: 0 } : overrideDraftSurcharge(overrideDraft);
 		const active = mode === "SIMINTPAY_ONLY" ? [] : extraEntries.filter(entry => entry.active);
 		return { fixedCents: active.reduce((sum, entry) => sum + entry.fixedCents, 0), ratePpm: active.reduce((sum, entry) => sum + entry.ratePpm, 0) };
-	}, [extraEntries, fees.additiveOverride, mode, overridden]);
+	}, [extraEntries, mode, overrideDraft, overridden]);
 
 	const underCovered = lanes.some(lane => {
 		const id = laneId(lane);
@@ -87,6 +88,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 				),
 			);
 			await putPlatformFeesByCompanyByCompanyId(companyId, {
+				additiveFees: overridden ? overrideDraftTotals(overrideDraft) : undefined,
 				disabledLanes: [...disabledLanes].sort(),
 				mode,
 				simintpay: {
@@ -146,7 +148,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 
 			<section className="space-y-2">
 				<h3 className="font-semibold text-sm">{t("admin.companies.fees.extras.title")}</h3>
-				{overridden ? <OverriddenFeesList additiveOverride={fees.additiveOverride} /> : <>
+				{overridden ? <OverriddenFeesList draft={overrideDraft} onChange={(scope, value) => setOverrideDraft(current => ({ ...current, [scope]: { ...current[scope], ...value } }))} /> : <>
 					<p className="text-muted-foreground text-xs">{t("admin.companies.fees.extras.hint")}</p>
 					<ExtraFeesList companyId={companyId} drafts={extraDrafts} mode={mode} onDraftChange={(feeId, draft) => setExtraDrafts(current => ({ ...current, [feeId]: draft }))} />
 				</>}
