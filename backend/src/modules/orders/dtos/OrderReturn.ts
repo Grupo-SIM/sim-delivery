@@ -17,6 +17,7 @@ export const QuoteOrderFeesReturn = t.Object({
 	fees: t.Array(
 		t.Object({
 			...OrderFeeReturn.properties,
+			components: t.Optional(t.Array(t.Object({ amountCents: t.Integer(), name: t.String() }))),
 			items: t.Array(
 				t.Object({
 					amountCents: t.Integer(),

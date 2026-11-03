@@ -67,8 +67,16 @@ export type CompanyFeeOverrideReturn = typeof CompanyFeeOverrideReturn.static;
 export const CompanyFeeOverrideListReturn = t.Array(CompanyFeeOverrideReturn);
 export type CompanyFeeOverrideListReturn = typeof CompanyFeeOverrideListReturn.static;
 
+export const EffectiveFeeComponent = t.Object({
+	fixedValue: t.Integer(),
+	name: t.String(),
+	percentageValue: t.Integer(),
+});
+
 export const EffectiveFeeReturn = t.Object({
 	applicationScope: t.String(),
+	/** Real fees merged into a synthetic one; display-only, never priced. */
+	components: t.Optional(t.Array(EffectiveFeeComponent)),
 	displayMode: t.String(),
 	fixedValue: t.Integer(),
 	id: t.String(),

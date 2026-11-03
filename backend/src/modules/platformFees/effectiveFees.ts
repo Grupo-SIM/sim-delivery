@@ -21,7 +21,7 @@ export async function listEffectiveFees(
 	const owned = integration && !integration.additiveFeeOverridden && integration.additiveFeeRevision === totals.revision;
 	if (!owned) return syntheticFees(totals.effective);
 	const local = await listCompanySurcharges(prisma, companyId);
-	return syntheticFees(totals.effective, productDisplayModeOf(local), checkoutOnlyProductTotals(local));
+	return syntheticFees(totals.effective, productDisplayModeOf(local), checkoutOnlyProductTotals(local), local);
 }
 
 /** Active surcharges after company overrides, regardless of the company's fee mode. */

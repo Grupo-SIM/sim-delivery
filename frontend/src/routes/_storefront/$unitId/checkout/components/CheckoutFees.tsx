@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/formatMoney";
 
 interface CheckoutFeesProps {
-	fees: { amountCents: number | string; id: string; name: string }[];
+	fees: { amountCents: number | string; components?: { amountCents: number | string; name: string }[]; id: string; name: string }[];
 	totalCents: number;
 }
 
@@ -43,12 +43,14 @@ export function CheckoutFees({ fees, totalCents }: CheckoutFeesProps) {
 				urlKey="checkout-fees"
 			>
 				<div className="space-y-3">
-					{fees.map(fee => (
-						<div className="flex justify-between gap-4 text-sm" key={fee.id}>
-							<span>{fee.name}</span>
-							<span className="shrink-0">{formatMoney(Number(fee.amountCents) / 100)}</span>
-						</div>
-					))}
+					{fees
+						.flatMap(fee => fee.components?.map(component => ({ ...component, id: `${fee.id}:${component.name}` })) ?? [fee])
+						.map(fee => (
+							<div className="flex justify-between gap-4 text-sm" key={fee.id}>
+								<span>{fee.name}</span>
+								<span className="shrink-0">{formatMoney(Number(fee.amountCents) / 100)}</span>
+							</div>
+						))}
 					<div className="flex justify-between gap-4 border-t border-border pt-3 font-semibold text-sm">
 						<span>{t("store.checkout.order.feesTotal")}</span>
 						<span className="shrink-0">{formatMoney(totalCents / 100)}</span>
