@@ -297,7 +297,8 @@ try {
 		}
 	
 		const conf = JSON.parse(await Bun.file(tauriConfPath).text());
-		conf.identifier = packageName;
+		// Tauri bundle identifiers reject underscores; Android maps hyphens back to underscores.
+		conf.identifier = packageName.replaceAll("_", "-");
 		conf.productName = company.name || "Delivery";
 		if (conf.app?.windows?.[0]) conf.app.windows[0].title = company.name || "Delivery";
 		await writeFile(join(stage, "tauri.conf.json"), `${JSON.stringify(conf, null, "\t")}\n`);
