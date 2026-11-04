@@ -128,31 +128,40 @@ jobs:
           registry: ghcr.io
           secrets: DATABASE_URL=${{ secrets.DATABASE_URL }}
 
-  # desktop:
-  #   name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Build & release ${{ matrix.platform }} app
-  #   needs: detect
-  #   # Only the Tauri frontend produces these apps; skip when it isn't affected.
-  #   if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'frontend') }}
-  #   permissions:
-  #     # tauri-action creates the GitHub release / uploads the installers.
-  #     contents: write
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       slug: ${{ fromJSON(needs.detect.outputs.slugs) }}
-  #       platform: [windows-latest, ubuntu-latest, macos-latest]
-  #   runs-on: ${{ matrix.platform }}
-  #   env:
-  #     VITE_COMPANY_SLUG: ${{ matrix.slug }}
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v5
+  desktop:
+    name: ${{ matrix.slug }} / Build & release ${{ matrix.platform }} app
+    needs: detect
+    # Only the Tauri frontend produces these apps; skip when it isn't affected.
+    if: ${{ contains(fromJSON(needs.detect.outputs.tasks).build, 'frontend') }}
+    permissions:
+      # tauri-action creates the GitHub release / uploads the installers.
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        slug: ${{ fromJSON(needs.detect.outputs.slugs) }}
+        platform: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.platform }}
+    env:
+      COMPANY_SLUG: ${{ matrix.slug }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      VITE_COMPANY_SLUG: ${{ matrix.slug }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
 
-  #     - name: Build & release desktop app
-  #       uses: hyoretsu/gh-actions/tauri-build@main
-  #       with:
-  #         github-token: ${{ secrets.GITHUB_TOKEN }}
-  #         release-name: Template App v__VERSION__
+      # The `printers` crate (silent receipt printing) links CUPS on Linux; macOS ships it.
+      - name: Install CUPS headers
+        if: ${{ runner.os == 'Linux' }}
+        run: sudo apt-get update && sudo apt-get install -y libcups2-dev
+
+      - name: Build & release desktop app
+        uses: hyoretsu/gh-actions/tauri-build@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # One release per company: every variant shares the app version.
+          tag-name: ${{ matrix.slug }}-v__VERSION__
+          release-name: ${{ matrix.slug }} v__VERSION__
 
   # android:
   #   name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Build & release Android app
