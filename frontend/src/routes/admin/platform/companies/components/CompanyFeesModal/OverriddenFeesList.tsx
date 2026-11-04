@@ -1,14 +1,18 @@
+import { LuLink } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/components/ui/button";
 import { OverrideValueInput } from "@/routes/admin/platform/fees/components/OverrideValueInput";
 import { OVERRIDDEN_SCOPES, type OverrideDraft, type OverriddenScope } from "./overridden-fee-lines";
 
 interface OverriddenFeesListProps {
 	draft: OverrideDraft;
+	onRelease: () => void;
+	releasing: boolean;
 	onChange: (scope: OverriddenScope, value: Partial<OverrideDraft[OverriddenScope]>) => void;
 }
 
 /** Editable total of the additive fees while SimIntPay overrides it: no names, no associations. Saved with the modal. */
-export function OverriddenFeesList({ draft, onChange }: OverriddenFeesListProps) {
+export function OverriddenFeesList({ draft, onChange, onRelease, releasing }: OverriddenFeesListProps) {
 	const { t } = useTranslation();
 	return <div className="space-y-3">
 		<p className="text-muted-foreground text-sm">{t("admin.companies.fees.extras.overridden")}</p>
@@ -22,5 +26,9 @@ export function OverriddenFeesList({ draft, onChange }: OverriddenFeesListProps)
 				</div>
 			</div>;
 		})}
+		<div className="space-y-1">
+			<Button disabled={releasing} onClick={onRelease} size="sm" type="button" variant="outline"><LuLink />{t("admin.companies.fees.extras.release")}</Button>
+			<p className="text-muted-foreground text-xs">{t("admin.companies.fees.extras.releaseHint")}</p>
+		</div>
 	</div>;
 }

@@ -312,6 +312,9 @@
 						"hint": "Associe taxas e ajuste os valores desta empresa. Campos vazios usam o padrão da plataforma. As alterações só são salvas e validadas ao salvar o modal.",
 						"overridden": "O total das taxas aditivas desta empresa foi definido pela SimIntPay e vale no lugar das associações.",
 						"overriddenNone": "Nenhuma taxa aditiva é cobrada.",
+						"release": "Reassociar taxas no Delivery",
+						"releaseHint": "Devolve o controle ao Delivery: associe as taxas e salve para enviar o novo total à SimIntPay. O total atual da SimIntPay continua até lá.",
+						"released": "Controle devolvido ao Delivery. Associe as taxas e salve.",
 						"scope": {
 							"order": "Por pedido",
 							"product": "Por produto"

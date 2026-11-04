@@ -127,6 +127,22 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 		}
 	}
 
+	async function release() {
+		setSaving(true);
+		try {
+			await putPlatformFeesByCompanyByCompanyId(companyId, { releaseAdditiveOverride: true });
+			await Promise.all([
+				queryClient.invalidateQueries({ queryKey: getPlatformFeesByCompanyByCompanyIdQueryKey(companyId) }),
+				queryClient.invalidateQueries({ queryKey: getPlatformFeesUnderCoveredCompaniesQueryKey() }),
+			]);
+			showToast(t("admin.companies.fees.extras.released"), "positive");
+		} catch {
+			void showAlert(t("admin.companies.fees.saveError"));
+		} finally {
+			setSaving(false);
+		}
+	}
+
 	return (
 		<div className="space-y-6">
 			{underCovered && (
@@ -148,7 +164,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 
 			<section className="space-y-2">
 				<h3 className="font-semibold text-sm">{t("admin.companies.fees.extras.title")}</h3>
-				{overridden ? <OverriddenFeesList draft={overrideDraft} onChange={(scope, value) => setOverrideDraft(current => ({ ...current, [scope]: { ...current[scope], ...value } }))} /> : <>
+				{overridden ? <OverriddenFeesList draft={overrideDraft} onRelease={release} releasing={saving} onChange={(scope, value) => setOverrideDraft(current => ({ ...current, [scope]: { ...current[scope], ...value } }))} /> : <>
 					<p className="text-muted-foreground text-xs">{t("admin.companies.fees.extras.hint")}</p>
 					<ExtraFeesList companyId={companyId} drafts={extraDrafts} mode={mode} onDraftChange={(feeId, draft) => setExtraDrafts(current => ({ ...current, [feeId]: draft }))} />
 				</>}
