@@ -3,6 +3,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { magicLink, phoneNumber } from "better-auth/plugins";
 import { MagicLinkEmail, ResetPasswordEmail } from "./emails";
+import { TAURI_ORIGINS } from "./elysia/cors";
 import { type PhoneOtpProviderKey, phoneOtpProviders } from "./phoneOtp";
 import { prisma } from "./sql";
 import { normalizeBrazilianWhatsAppPhone } from "./whatsapp";
@@ -88,9 +89,10 @@ export const auth = betterAuth({
 	// CORS_WHITELIST pointing at the production URL.
 	trustedOrigins:
 		process.env.NODE_ENV === "production"
-			? process.env.CORS_WHITELIST!.split(",")
+			? [...process.env.CORS_WHITELIST!.split(","), ...TAURI_ORIGINS]
 			: [
 					...process.env.CORS_WHITELIST!.split(","),
+					...TAURI_ORIGINS,
 					"http://localhost:3000",
 					"http://localhost:3333",
 					"http://localhost:5173",
