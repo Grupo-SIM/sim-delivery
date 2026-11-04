@@ -33,11 +33,6 @@ export async function acknowledgeAdditiveFees(prisma: PrismaInstance, companyId:
 	});
 }
 
-/** Records the revision of an additive total written from Delivery over an override, which stays in force. */
-export async function acknowledgeOverrideEdit(prisma: PrismaInstance, companyId: string, revision: string) {
-	await prisma.companySimpayIntegration.updateMany({ where: { companyId }, data: { additiveFeeOverridden: true, additiveFeeRevision: revision } });
-}
-
 /** Returns the additive total to Delivery's catalog, acknowledging the provider's current revision as its own. */
 export async function releaseAdditiveOverride(prisma: PrismaInstance, companyId: string, revision: string) {
 	await prisma.companySimpayIntegration.updateMany({ where: { companyId }, data: { additiveFeeOverridden: false, additiveFeeRevision: revision } });

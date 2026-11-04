@@ -117,12 +117,10 @@ export const AdditiveTotalsReturn = t.Object({ order: AdditiveScopeTotalReturn, 
 export type AdditiveTotalsReturn = typeof AdditiveTotalsReturn.static;
 
 export const UpdateCompanyFeesBody = t.Object({
-	/** New SimIntPay-defined additive total; only accepted while that total overrides Delivery's associations. */
-	additiveFees: t.Optional(AdditiveTotalsReturn),
 	/** Lanes (`METHOD/installments`) to ignore for this platform, e.g. `CREDIT_CARD/2`. */
 	disabledLanes: t.Optional(t.Array(t.String({ pattern: "^(PIX|BOLETO|DEBIT_CARD|CREDIT_CARD)/\\d{1,2}$" }), { maxItems: 14 })),
 	mode: t.Optional(PlatformFeeModeDto),
-	/** Hands the additive total back to Delivery's associations; SimIntPay's total stays until the next push. */
+	/** Hands the additive total back to Delivery's associations and pushes their total, replacing SimIntPay's. */
 	releaseAdditiveOverride: t.Optional(t.Boolean()),
 	simintpay: t.Optional(t.Object({ lanes: t.Array(SimintpayLane, { maxItems: 14 }), version: t.String() })),
 });

@@ -18,7 +18,7 @@ import {
 } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
 import { ExtraFeesList } from "./ExtraFeesList";
-import { initialOverrideDraft, overrideDraftSurcharge, overrideDraftTotals, type OverrideDraft } from "./overridden-fee-lines";
+import { overriddenSurcharge } from "./overridden-fee-lines";
 import { OverriddenFeesList } from "./OverriddenFeesList";
 import { SimintpayLaneRow, initialDraft } from "./SimintpayLaneRow";
 import { useExtraFeeEntries } from "./use-extra-fee-entries";
@@ -42,7 +42,6 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 	);
 	const [disabledLanes, setDisabledLanes] = useState<Set<string>>(() => new Set(fees.disabledLanes));
 	const [extraDrafts, setExtraDrafts] = useState<Record<string, ExtraFeeDraft>>({});
-	const [overrideDraft, setOverrideDraft] = useState<OverrideDraft>(() => initialOverrideDraft(fees.additiveOverride));
 	const [saving, setSaving] = useState(false);
 	const lanes = useMemo(() => [...fees.simintpay.lanes].sort(compareLanes), [fees.simintpay.lanes]);
 	const orderedLanes = useMemo(
@@ -55,12 +54,14 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 
 	const { entries: extraEntries } = useExtraFeeEntries(companyId, extraDrafts);
 	const overridden = fees.additiveOverride != null;
+	// Associating a fee over the SimIntPay total hands the total back to Delivery on save.
+	const associating = overridden && Object.values(extraDrafts).some(draft => draft.active && !draft.reset);
 	const surcharge = useMemo(() => {
-		// While SimIntPay overrides the total it is what the seller is charged, whatever the drafts say.
-		if (overridden) return mode === "SIMINTPAY_ONLY" ? { fixedCents: 0, ratePpm: 0 } : overrideDraftSurcharge(overrideDraft);
+		// Until a fee is associated, SimIntPay's total is what the seller is charged, whatever the drafts say.
+		if (overridden && !associating) return mode === "SIMINTPAY_ONLY" ? { fixedCents: 0, ratePpm: 0 } : overriddenSurcharge(fees.additiveOverride);
 		const active = mode === "SIMINTPAY_ONLY" ? [] : extraEntries.filter(entry => entry.active);
 		return { fixedCents: active.reduce((sum, entry) => sum + entry.fixedCents, 0), ratePpm: active.reduce((sum, entry) => sum + entry.ratePpm, 0) };
-	}, [extraEntries, mode, overrideDraft, overridden]);
+	}, [associating, extraEntries, fees.additiveOverride, mode, overridden]);
 
 	const underCovered = lanes.some(lane => {
 		const id = laneId(lane);
@@ -76,6 +77,8 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 	async function save() {
 		setSaving(true);
 		try {
+			// Release first: while overridden, Delivery undoes any association it sees.
+			if (associating) await putPlatformFeesByCompanyByCompanyId(companyId, { releaseAdditiveOverride: true });
 			await Promise.all(
 				Object.entries(extraDrafts).map(([feeId, draft]) =>
 					draft.reset
@@ -88,7 +91,6 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 				),
 			);
 			await putPlatformFeesByCompanyByCompanyId(companyId, {
-				additiveFees: overridden ? overrideDraftTotals(overrideDraft) : undefined,
 				disabledLanes: [...disabledLanes].sort(),
 				mode,
 				simintpay: {
@@ -127,22 +129,6 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 		}
 	}
 
-	async function release() {
-		setSaving(true);
-		try {
-			await putPlatformFeesByCompanyByCompanyId(companyId, { releaseAdditiveOverride: true });
-			await Promise.all([
-				queryClient.invalidateQueries({ queryKey: getPlatformFeesByCompanyByCompanyIdQueryKey(companyId) }),
-				queryClient.invalidateQueries({ queryKey: getPlatformFeesUnderCoveredCompaniesQueryKey() }),
-			]);
-			showToast(t("admin.companies.fees.extras.released"), "positive");
-		} catch {
-			void showAlert(t("admin.companies.fees.saveError"));
-		} finally {
-			setSaving(false);
-		}
-	}
-
 	return (
 		<div className="space-y-6">
 			{underCovered && (
@@ -164,10 +150,9 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 
 			<section className="space-y-2">
 				<h3 className="font-semibold text-sm">{t("admin.companies.fees.extras.title")}</h3>
-				{overridden ? <OverriddenFeesList draft={overrideDraft} onRelease={release} releasing={saving} onChange={(scope, value) => setOverrideDraft(current => ({ ...current, [scope]: { ...current[scope], ...value } }))} /> : <>
-					<p className="text-muted-foreground text-xs">{t("admin.companies.fees.extras.hint")}</p>
-					<ExtraFeesList companyId={companyId} drafts={extraDrafts} mode={mode} onDraftChange={(feeId, draft) => setExtraDrafts(current => ({ ...current, [feeId]: draft }))} />
-				</>}
+				{overridden && <OverriddenFeesList additiveOverride={fees.additiveOverride} />}
+				<p className="text-muted-foreground text-xs">{t("admin.companies.fees.extras.hint")}</p>
+				<ExtraFeesList companyId={companyId} drafts={extraDrafts} mode={mode} onDraftChange={(feeId, draft) => setExtraDrafts(current => ({ ...current, [feeId]: draft }))} />
 			</section>
 
 			<section className="space-y-2">
