@@ -101,7 +101,7 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 	const associationsQuery = useGetUnitsByUnitIdProducts(unit?.id ?? "", { query: { enabled: Boolean(unit) } });
 	const productsQuery = useGetProducts({ query: { enabled: Boolean(unit) } });
 	const productOptions = useMemo(() => {
-		const names = new Map((productsQuery.data ?? []).map(product => [product.id, product.name]));
+		const names = new Map((productsQuery.data ?? []).map(product => [product.id, product.title]));
 		return (associationsQuery.data ?? []).map(association => ({
 			label: names.get(association.productId) ?? association.productId,
 			value: association.id,
