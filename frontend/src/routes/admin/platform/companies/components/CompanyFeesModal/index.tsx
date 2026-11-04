@@ -150,9 +150,9 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 
 			<section className="space-y-2">
 				<h3 className="font-semibold text-sm">{t("admin.companies.fees.extras.title")}</h3>
-				{overridden && <OverriddenFeesList additiveOverride={fees.additiveOverride} />}
+				{overridden && !associating && <OverriddenFeesList additiveOverride={fees.additiveOverride} />}
 				<p className="text-muted-foreground text-xs">{t("admin.companies.fees.extras.hint")}</p>
-				<ExtraFeesList companyId={companyId} drafts={extraDrafts} mode={mode} onDraftChange={(feeId, draft) => setExtraDrafts(current => ({ ...current, [feeId]: draft }))} />
+				<ExtraFeesList companyId={companyId} drafts={extraDrafts} mode={mode} overridden={overridden} onDraftChange={(feeId, draft) => setExtraDrafts(current => ({ ...current, [feeId]: draft }))} />
 			</section>
 
 			<section className="space-y-2">
