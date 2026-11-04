@@ -3,10 +3,9 @@ import { useTranslation } from "react-i18next";
 import { LuPrinter } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/Tooltip";
-import { getOrdersByOrderIdReceipt } from "@/lib/api";
 import { showAlert } from "@/stores";
 import { prepareReceiptTarget, printReceiptPdf } from "../-open-pdf-blob";
-import { getOrderReceiptLabels } from "../-receipt-labels";
+import { createOrderReceiptBlob } from "../-create-receipt-blob";
 
 interface OrderReceiptButtonProps {
 	orderId: string;
@@ -20,15 +19,8 @@ export function OrderReceiptButton({ orderId }: OrderReceiptButtonProps) {
 		const pdfWindow = prepareReceiptTarget();
 		setIsPreparing(true);
 		try {
-			const [receipt, { createOrderReceiptPdf }] = await Promise.all([
-				getOrdersByOrderIdReceipt(orderId),
-				import("../-order-receipt-pdf"),
-			]);
-			const pdf = createOrderReceiptPdf(
-				receipt,
-				getOrderReceiptLabels(t, receipt.payment?.method, receipt.payment?.status, receipt.status),
-			);
-			await printReceiptPdf(pdf.output("blob"), pdfWindow, `pedido-${orderId}.pdf`);
+			const blob = await createOrderReceiptBlob(orderId, t);
+			await printReceiptPdf(blob, pdfWindow, `pedido-${orderId}.pdf`);
 		} catch (error) {
 			console.error("Receipt print failed", error);
 			pdfWindow?.close();

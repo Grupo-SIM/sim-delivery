@@ -654,6 +654,14 @@
 					"saved": "Responsável pela cozinha salvo.",
 					"saving": "Salvando..."
 				},
+				"autoPrint": {
+					"disabled": "Impressão automática desativada.",
+					"enabled": "Impressão automática ativada.",
+					"error": "Não foi possível imprimir o pedido automaticamente.",
+					"label": "Imprimir pedidos automaticamente",
+					"noPrinter": "Nenhuma impressora disponível.",
+					"printer": "Impressora"
+				},
 				"columns": {
 					"customer": "Cliente",
 					"date": "Data",

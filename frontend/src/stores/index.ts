@@ -15,3 +15,4 @@ export { showAlert, showConfirm, useDialogStore } from "./dialog";
 export { type SelectedUnit, useSelectedUnitStore } from "./selected-unit";
 export { useAdminSelectedUnitStore } from "./admin-selected-unit";
 export { showToast } from "./toast";
+export { useAutoPrintStore } from "./auto-print";
