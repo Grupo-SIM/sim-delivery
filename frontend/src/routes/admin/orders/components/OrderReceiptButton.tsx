@@ -29,7 +29,8 @@ export function OrderReceiptButton({ orderId }: OrderReceiptButtonProps) {
 				getOrderReceiptLabels(t, receipt.payment?.method, receipt.payment?.status, receipt.status),
 			);
 			await printReceiptPdf(pdf.output("blob"), pdfWindow, `pedido-${orderId}.pdf`);
-		} catch {
+		} catch (error) {
+			console.error("Receipt print failed", error);
 			pdfWindow?.close();
 			void showAlert(t("admin.orders.receipt.error"), t("admin.orders.receipt.errorTitle"));
 		} finally {
