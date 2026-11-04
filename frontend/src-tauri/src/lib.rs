@@ -33,6 +33,24 @@ async fn print_pdf(printer: String, pdf: Vec<u8>) -> Result<u64, String> {
         .map_err(|error| error.message)
 }
 
+/// Saves a PDF to the temp dir and opens it in the OS default viewer, which provides the print dialog.
+#[tauri::command]
+#[allow(deprecated)]
+fn open_pdf(app: AppHandle, pdf: Vec<u8>, filename: String) -> Result<(), String> {
+    use tauri_plugin_shell::ShellExt;
+
+    let stem = std::path::Path::new(&filename)
+        .file_stem()
+        .and_then(|stem| stem.to_str())
+        .filter(|stem| !stem.is_empty())
+        .unwrap_or("recibo");
+    let path = std::env::temp_dir().join(format!("{stem}.pdf"));
+    std::fs::write(&path, pdf).map_err(|error| error.to_string())?;
+    app.shell()
+        .open(path.to_string_lossy().into_owned(), None)
+        .map_err(|error| error.to_string())
+}
+
 fn show_main_window(app: &AppHandle) {
     if let Some(window) = app.get_webview_window("main") {
         let _ = window.show();
@@ -76,7 +94,7 @@ pub fn run() {
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_statusbar_style::init())
-        .invoke_handler(tauri::generate_handler![list_printers, print_pdf])
+        .invoke_handler(tauri::generate_handler![list_printers, open_pdf, print_pdf])
         .setup(|app| {
             #[cfg(desktop)]
             setup_tray(app.handle())?;

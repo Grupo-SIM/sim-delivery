@@ -18,3 +18,9 @@ export async function printPdfNatively(printer: string, pdf: Blob): Promise<void
 	const bytes = Array.from(new Uint8Array(await pdf.arrayBuffer()));
 	await invoke("print_pdf", { pdf: bytes, printer });
 }
+
+/** Opens a PDF in the OS default viewer so the user can print it with the system dialog. */
+export async function openPdfNatively(pdf: Blob, filename: string): Promise<void> {
+	const bytes = Array.from(new Uint8Array(await pdf.arrayBuffer()));
+	await invoke("open_pdf", { filename, pdf: bytes });
+}
