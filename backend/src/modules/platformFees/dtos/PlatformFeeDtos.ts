@@ -122,6 +122,8 @@ export const UpdateCompanyFeesBody = t.Object({
 	/** Lanes (`METHOD/installments`) to ignore for this platform, e.g. `CREDIT_CARD/2`. */
 	disabledLanes: t.Optional(t.Array(t.String({ pattern: "^(PIX|BOLETO|DEBIT_CARD|CREDIT_CARD)/\\d{1,2}$" }), { maxItems: 14 })),
 	mode: t.Optional(PlatformFeeModeDto),
+	/** Hands the additive total back to Delivery's associations; SimIntPay's total stays until the next push. */
+	releaseAdditiveOverride: t.Optional(t.Boolean()),
 	simintpay: t.Optional(t.Object({ lanes: t.Array(SimintpayLane, { maxItems: 14 }), version: t.String() })),
 });
 export type UpdateCompanyFeesBody = typeof UpdateCompanyFeesBody.static;

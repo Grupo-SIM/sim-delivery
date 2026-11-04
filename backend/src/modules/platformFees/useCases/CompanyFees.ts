@@ -3,7 +3,7 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CompanyFeeDefaultsReturn, CompanyFeesReturn, UpdateCompanyFeesBody } from "../dtos";
 import { invalidateCompanyFeeMode, rememberCompanyFeeMode } from "../companyFeeMode";
 import { resolveAdditiveTotals } from "../additiveFeeSync";
-import { acknowledgeAdditiveFees, acknowledgeOverrideEdit, additiveFeeOwnership, withAdditiveFeeLock } from "../additiveFeeProvenance";
+import { acknowledgeAdditiveFees, acknowledgeOverrideEdit, releaseAdditiveOverride, additiveFeeOwnership, withAdditiveFeeLock } from "../additiveFeeProvenance";
 import { sumAdditiveTotals } from "../additiveTotals";
 import { undoAssociationsWhileOverridden } from "../overrideAssociations";
 import { listCompanySurcharges } from "../effectiveFees";
@@ -60,7 +60,11 @@ export class CompanyFees {
 
 	private async updateLocked(companyId: string, input: UpdateCompanyFeesBody): Promise<CompanyFeesReturn> {
 		const current = await this.provider.companyFees(companyId);
-		const ownership = await additiveFeeOwnership(this.prisma, companyId, current.additiveFees);
+		let ownership = await additiveFeeOwnership(this.prisma, companyId, current.additiveFees);
+		if (input.releaseAdditiveOverride && ownership.overridden && current.additiveFees) {
+			await releaseAdditiveOverride(this.prisma, companyId, current.additiveFees.revision);
+			ownership = await additiveFeeOwnership(this.prisma, companyId, current.additiveFees);
+		}
 		const disabledLanes = input.disabledLanes ?? current.disabledLanes;
 		let provider: SimpayCompanyFees = { ...current, disabledLanes, mode: input.mode ?? current.mode };
 		if (input.simintpay) provider = { ...provider, ...input.simintpay, lanes: this.merge(provider, input.simintpay.lanes) };
