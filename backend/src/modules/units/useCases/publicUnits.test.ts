@@ -6,6 +6,7 @@ import { ListPublicUnits } from "./ListPublicUnits";
 function prismaWith(
 	company: { id: string; slug: string } | null,
 	units: Array<{
+		bannerProductIds?: string[];
 		bannerUrls?: string[];
 		companyId: string;
 		id: string;
@@ -39,6 +40,8 @@ function prismaWith(
 					.filter(unit => unit.companyId === where.companyId)
 					.map(unit => ({
 						...unit,
+						bannerProductIds: unit.bannerProductIds ?? [],
+						bannerUrls: unit.bannerUrls ?? [],
 						hours: unit.hours ?? [],
 						promotionalImages: [],
 						whatsAppConnection: unit.whatsAppConnection ?? null,
@@ -63,6 +66,7 @@ describe("ListPublicUnits", () => {
 	it("returns only the matched company's units with computed status", async () => {
 		const prisma = prismaWith({ id: "c1", slug: "bliss" }, [
 			{
+				bannerProductIds: ["up_1"],
 				bannerUrls: ["https://example.com/ipes.png", "https://example.com/ipes-2.png"],
 				companyId: "c1",
 				hours: [{ closed: false, closesAt: "18:00", opensAt: "09:00", weekday: 5 }],
@@ -76,6 +80,7 @@ describe("ListPublicUnits", () => {
 		const result = await new ListPublicUnits(prisma).execute("bliss");
 		expect(result).toHaveLength(1);
 		expect(result[0]).toMatchObject({
+			bannerProductIds: ["up_1", ""],
 			bannerUrls: ["https://example.com/ipes.png", "https://example.com/ipes-2.png"],
 			hours: [{ closed: false, closesAt: "18:00", opensAt: "09:00", weekday: 5 }],
 			id: "u1",

@@ -8,6 +8,7 @@ const SWIPE_THRESHOLD_PX = 48;
 interface StorefrontBanner {
 	href?: string | null;
 	alt: string;
+	onSelect?: () => void;
 	src: string;
 }
 
@@ -88,9 +89,14 @@ export function StorefrontBannerCarousel({ className, images, label }: Storefron
 				>
 					{images.map((image, index) => {
 						const content = <img alt={image.alt} className="h-full w-full object-cover" src={image.src} />;
+						const interactive = index === currentIndex;
 						return (
 							<div aria-hidden={index !== currentIndex} className="h-full w-full shrink-0" key={`${image.src}-${index}`}>
-								{image.href ? <a className="block h-full w-full cursor-pointer" href={image.href} rel="noopener noreferrer" tabIndex={index === currentIndex ? 0 : -1} target="_blank">{content}</a> : content}
+								{image.onSelect ? (
+									<button className="block h-full w-full cursor-pointer" onClick={image.onSelect} tabIndex={interactive ? 0 : -1} type="button">
+										{content}
+									</button>
+								) : image.href ? <a className="block h-full w-full cursor-pointer" href={image.href} rel="noopener noreferrer" tabIndex={index === currentIndex ? 0 : -1} target="_blank">{content}</a> : content}
 							</div>
 						);
 					})}

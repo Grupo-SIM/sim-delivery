@@ -61,6 +61,7 @@ export class ListPublicUnits {
 			const rating = ratingsByUnit.get(unit.id);
 			return {
 				addressLine: unit.addressLine,
+				bannerProductIds: unit.bannerUrls.map((_, index) => unit.bannerProductIds[index] ?? ""),
 				bannerUrls: unit.bannerUrls,
 				city: unit.city,
 				deliveryFee: unit.deliveryFee,

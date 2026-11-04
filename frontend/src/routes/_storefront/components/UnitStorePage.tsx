@@ -81,7 +81,15 @@ export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string
 		<>
 			{!menuOnly && (
 				<StorefrontBannerCarousel
-					images={unit.bannerUrls.map((src, index) => ({ alt: `${unit.name} — banner ${index + 1}`, src }))}
+					images={unit.bannerUrls.map((src, index) => {
+						const productId = unit.bannerProductIds[index];
+						const linked = productId && (!menu.data || menu.data.some(section => section.items.some(item => item.id === productId)));
+						return {
+							alt: `${unit.name} — banner ${index + 1}`,
+							onSelect: linked ? () => openProductModal(productId) : undefined,
+							src,
+						};
+					})}
 					label={t("store.unit.bannerCarousel")}
 				/>
 			)}
