@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { LuChevronDown } from "react-icons/lu";
+import { LuChevronDown, LuSearch } from "react-icons/lu";
+import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "./ScrollArea";
 
@@ -24,6 +25,9 @@ interface CustomSelectProps {
 	onChange: (value: string) => void;
 	options?: SelectOption[];
 	placeholder?: string;
+	/** Shows a search box that filters options by label (accent/case-insensitive). */
+	searchPlaceholder?: string;
+	searchable?: boolean;
 	value: string;
 }
 
@@ -31,6 +35,10 @@ interface DropdownPos {
 	left: number;
 	top: number;
 	width: number;
+}
+
+function normalize(text: string) {
+	return text.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
 }
 
 export function CustomSelect({
@@ -41,15 +49,27 @@ export function CustomSelect({
 	onChange,
 	options,
 	placeholder = "—",
+	searchPlaceholder = "Buscar...",
+	searchable = false,
 	value,
 }: CustomSelectProps) {
 	const [open, setOpen] = useState(false);
 	const [pos, setPos] = useState<DropdownPos>({ left: 0, top: 0, width: 0 });
 	const triggerRef = useRef<HTMLButtonElement>(null);
 	const dropdownRef = useRef<HTMLDivElement>(null);
+	const [query, setQuery] = useState("");
+	const [localQuery, setLocalQuery] = useDebouncedInput(query, setQuery, 150);
 
 	const allOptions: SelectOption[] = groups ? groups.flatMap(g => g.options) : (options ?? []);
 	const selected = allOptions.find(o => o.value === value);
+
+	const normalizedQuery = normalize(query);
+	const matches = (option: SelectOption) => !normalizedQuery || normalize(option.label).includes(normalizedQuery);
+	const visibleOptions = options?.filter(matches);
+	const visibleGroups = groups
+		?.map(group => ({ ...group, options: group.options.filter(matches) }))
+		.filter(group => group.options.length > 0);
+	const isEmpty = (visibleGroups ?? visibleOptions ?? []).length === 0;
 
 	function toggleDropdown() {
 		if (open) {
@@ -60,6 +80,8 @@ export function CustomSelect({
 		if (!triggerRef.current) return;
 		const rect = triggerRef.current.getBoundingClientRect();
 		setPos({ left: rect.left, top: rect.bottom + 4, width: rect.width });
+		setQuery("");
+		setLocalQuery("");
 		setOpen(true);
 	}
 
@@ -132,9 +154,12 @@ export function CustomSelect({
 					<ScrollArea
 						className="max-h-[260px] overflow-y-auto overflow-x-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-medium"
 						onMouseDown={event => {
-							event.preventDefault();
+							if (!(event.target instanceof HTMLInputElement)) event.preventDefault();
 							event.stopPropagation();
 						}}
+						// Keep wheel/touch scrolling working inside modals that lock outside scroll.
+						onTouchMove={event => event.stopPropagation()}
+						onWheel={event => event.stopPropagation()}
 						ref={dropdownRef}
 						role="listbox"
 						style={{
@@ -146,8 +171,27 @@ export function CustomSelect({
 							zIndex: 9999,
 						}}
 					>
-						{groups
-							? groups.map(group => (
+						{searchable && (
+							<div className="sticky top-0 z-10 border-border border-b bg-popover p-2">
+								<div className="relative">
+									<LuSearch aria-hidden className="-translate-y-1/2 absolute top-1/2 left-2.5 size-4 text-muted-foreground" />
+									<input
+										autoFocus
+										className="h-9 w-full rounded-md border border-border bg-surface pr-3 pl-8 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+										name="select-search"
+										onChange={event => setLocalQuery(event.currentTarget.value)}
+										placeholder={searchPlaceholder}
+										type="text"
+										value={localQuery}
+									/>
+								</div>
+							</div>
+						)}
+						{isEmpty && searchable && (
+							<p className="px-3 py-2 text-muted-foreground text-sm">—</p>
+						)}
+						{visibleGroups
+							? visibleGroups.map(group => (
 									<div key={group.label}>
 										<p className="px-3 py-1.5 font-semibold text-muted-foreground text-xs">{group.label}</p>
 										{group.options.map(opt => (
@@ -171,7 +215,7 @@ export function CustomSelect({
 										))}
 									</div>
 								))
-							: options?.map(opt => (
+							: visibleOptions?.map(opt => (
 									<button
 										className={cn(
 											"w-full cursor-pointer px-3 py-2 text-left text-sm hover:bg-muted",

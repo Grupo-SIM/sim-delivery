@@ -65,6 +65,8 @@ export function BannerImagesEditor({
 						<CustomSelect
 							ariaLabel={t("admin.units.banner.product")}
 							onChange={value => updateProduct(index, value)}
+							searchPlaceholder={t("admin.units.banner.productSearch")}
+							searchable
 							options={[{ label: t("admin.units.banner.productNone"), value: "" }, ...productOptions]}
 							value={bannerProductIds[index] ?? ""}
 						/>

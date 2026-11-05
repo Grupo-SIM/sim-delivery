@@ -1559,6 +1559,7 @@
 					"limitHint": "Até 10 imagens, exibidas nesta ordem.",
 					"product": "Produto vinculado (opcional)",
 					"productNone": "Sem vínculo",
+					"productSearch": "Buscar produto pelo nome...",
 					"save": "Salvar banner",
 					"saving": "Salvando...",
 					"title": "Banners da unidade",
