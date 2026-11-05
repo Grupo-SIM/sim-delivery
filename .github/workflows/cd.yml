@@ -149,7 +149,8 @@ jobs:
       fail-fast: false
       matrix:
         slug: ${{ fromJSON(needs.detect.outputs.slugs) }}
-        platform: [windows-latest, ubuntu-latest, macos-latest]
+        # Linux/macOS builds disabled for now; re-add ubuntu-latest / macos-latest to re-enable.
+        platform: [windows-latest]
     runs-on: ${{ matrix.platform }}
     env:
       COMPANY_SLUG: ${{ matrix.slug }}
