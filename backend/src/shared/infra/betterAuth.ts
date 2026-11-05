@@ -14,6 +14,12 @@ const accessVerificationExpiresIn = 30 * 60;
 const phoneOtpProvider = new phoneOtpProviders[process.env.PHONE_OTP_DRIVER as PhoneOtpProviderKey]();
 
 export const auth = betterAuth({
+	// Tauri webviews (tauri.localhost) call the API cross-site; default SameSite=Lax cookies would never be
+	// stored or sent, so sign-in appears to succeed but the session read comes back empty.
+	advanced: {
+		defaultCookieAttributes:
+			process.env.NODE_ENV === "production" ? { sameSite: "none", secure: true } : undefined,
+	},
 	basePath: "/auth",
     databaseHooks: { user: { create: { after: async user => {
         await prisma.user.update({ where: { id: user.id }, data: { registrationEventPendingAt: new Date() } });
