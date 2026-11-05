@@ -5,8 +5,8 @@
 	"type": "module",
 	"scripts": {
 		"build": "bun ./scripts/build.ts",
-		"check-types": "bun run inject && tsc --noEmit",
-		"dev": "bun run inject && bun --watch src/main.ts",
+		"check-types": "tsc --noEmit",
+		"dev": "bun --watch src/main.ts",
 		"export": "bun run inject && bun ./src/generateOpenApi.ts",
 		"inject": "bun ./scripts/inject.ts",
 		"reconcile:simpay-payments": "bun ./scripts/reconcile-simpay-payments.ts",

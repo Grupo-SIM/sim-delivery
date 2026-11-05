@@ -3,7 +3,7 @@
 	"tasks": {
 		"backend#build": {
 			"cache": false,
-			"dependsOn": ["^export", "generate"],
+			"dependsOn": ["backend#inject", "^export", "generate"],
 			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
 			"inputs": ["scripts/inject.ts", "src/**", ".env*"],
 			"outputLogs": "new-only",
@@ -11,7 +11,7 @@
 		},
 		"backend#dev": {
 			"cache": false,
-			"dependsOn": ["^export", "generate"],
+			"dependsOn": ["backend#inject", "^export", "generate"],
 			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
 			"persistent": true
 		},
@@ -49,7 +49,7 @@
 		},
 		"frontend#build": {
 			"cache": false,
-			"dependsOn": ["^export", "generate"],
+			"dependsOn": ["frontend#inject", "^export", "generate"],
 			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
 			"inputs": ["src/**", "!src/**/generated/**"],
 			"outputLogs": "new-only",
@@ -57,7 +57,7 @@
 		},
 		"frontend#dev": {
 			"cache": false,
-			"dependsOn": ["^export", "generate"],
+			"dependsOn": ["frontend#inject", "^export", "generate"],
 			"persistent": true,
 			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"]
 		},
@@ -110,34 +110,34 @@
 		},
 		"backend#check-types": {
 			"cache": false,
-			"dependsOn": ["^export", "generate"],
+			"dependsOn": ["backend#inject", "^export", "generate"],
 			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"]
 		},
 		"frontend#check-types": {
 			"cache": false,
-			"dependsOn": ["^export", "generate"],
+			"dependsOn": ["frontend#inject", "^export", "generate"],
 			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"]
 		},
 		"frontend#build:tauri": {
 			"cache": false,
-			"dependsOn": ["^export", "generate"],
+			"dependsOn": ["frontend#inject", "^export", "generate"],
 			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"]
 		},
 		"frontend#dev:android": {
 			"cache": false,
-			"dependsOn": ["^export", "generate"],
+			"dependsOn": ["frontend#inject", "^export", "generate"],
 			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
 			"persistent": true
 		},
 		"frontend#dev:desktop": {
 			"cache": false,
-			"dependsOn": ["^export", "generate"],
+			"dependsOn": ["frontend#inject", "^export", "generate"],
 			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
 			"persistent": true
 		},
 		"frontend#dev:ios": {
 			"cache": false,
-			"dependsOn": ["^export", "generate"],
+			"dependsOn": ["frontend#inject", "^export", "generate"],
 			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
 			"persistent": true
 		}

@@ -155,6 +155,17 @@ jobs:
         if: ${{ runner.os == 'Linux' }}
         run: sudo apt-get update && sudo apt-get install -y libcups2-dev
 
+      # tauri validates the bundle identifier before beforeBuildCommand runs, so branding
+      # (including the per-company identifier) must be injected beforehand.
+      - name: Set up Bun for branding injection
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies for branding injection
+        run: bun install --frozen-lockfile --linker=isolated
+
+      - name: Inject company branding
+        run: bunx turbo frontend#inject
+
       - name: Build & release desktop app
         uses: hyoretsu/gh-actions/tauri-build@main
         with:

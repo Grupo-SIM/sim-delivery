@@ -32,7 +32,7 @@
 		],
 		"targets": "all"
 	},
-	"identifier": "com.jbmidia.zero-grau",
+	"identifier": "com.jbmidia.zero_grau",
 	"productName": "Zero Grau",
 	"version": "1.0.0"
 }
