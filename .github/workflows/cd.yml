@@ -29,6 +29,15 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: oven-sh/setup-bun@v2
 
+      - name: Cache Bun packages
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
       - name: Install dependencies for manual run
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: bun install
@@ -159,6 +168,14 @@ jobs:
       # (including the per-company identifier) must be injected beforehand.
       - name: Set up Bun for branding injection
         uses: oven-sh/setup-bun@v2
+
+      - name: Cache Bun packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
 
       - name: Install dependencies for branding injection
         run: bun install --frozen-lockfile --linker=isolated

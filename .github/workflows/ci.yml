@@ -94,6 +94,15 @@ jobs:
         if: matrix.package == 'backend'
         uses: oven-sh/setup-bun@v2
 
+      - name: Cache Bun packages
+        if: matrix.package == 'backend'
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
       - name: Install dependencies for backend branding injection
         if: matrix.package == 'backend'
         run: bun install --frozen-lockfile --linker=isolated
