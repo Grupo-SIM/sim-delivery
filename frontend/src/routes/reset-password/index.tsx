@@ -1,3 +1,4 @@
+import { BackButton } from "@/components/ui/BackButton";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -55,7 +56,9 @@ function PasswordResetPage() {
 
 	return (
 		<Container className="flex min-h-screen items-center justify-center py-10" size="sm">
-			<Card className="w-full max-w-md">
+			<div className="w-full max-w-md space-y-4">
+			<BackButton />
+			<Card className="w-full">
 				<CardHeader>
 					<CardTitle>{t("auth.resetPassword.title")}</CardTitle>
 					<CardDescription>{t("auth.resetPassword.subtitle")}</CardDescription>
@@ -110,6 +113,7 @@ function PasswordResetPage() {
 					)}
 				</CardContent>
 			</Card>
+			</div>
 		</Container>
 	);
 }

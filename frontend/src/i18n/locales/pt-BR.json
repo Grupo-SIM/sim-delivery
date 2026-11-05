@@ -1,6 +1,7 @@
 {
 	"common": {
 		"actions": {
+			"back": "Voltar",
 			"cancel": "Cancelar",
 			"confirm": "Confirmar",
 			"discard": "Descartar",

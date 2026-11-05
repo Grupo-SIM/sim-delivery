@@ -1,7 +1,8 @@
-import { Link, useSearch } from "@tanstack/react-router";
+import { Link, useRouterState, useSearch } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { LuMapPin } from "react-icons/lu";
+import { BackButton } from "@/components/ui/BackButton";
 import { getStaffAreaPath, isOperationalStaff, isStaff } from "@/lib/staff-guard";
 import { useAuthStore } from "@/stores/auth";
 import { ProfileMenu } from "./ProfileMenu";
@@ -35,10 +36,15 @@ export function StorefrontHeader({
 	const role = useAuthStore(state => state.role);
 	const companyName = branding?.companyName ?? "JB Delivery";
 	const staffAreaPath = getStaffAreaPath(role);
+	const isHome = useRouterState({ select: state => state.location.pathname === "/" });
 
 	return (
 		<header className="storefront-header relative z-30 border-border/70 border-b bg-background/95 backdrop-blur">
 			<div className="mx-auto flex min-h-20 max-w-6xl items-center justify-between gap-5 px-5 py-3">
+				<div className="flex min-w-0 items-center gap-3">
+				{!isHome && (
+					<BackButton />
+				)}
 				<Link aria-label={companyName} className="flex min-w-0 items-center gap-3" search={menuOnly ? { menuOnly: true, taxes } : undefined} to="/">
 					{branding?.logoUrl ? (
 						<img alt="" className="h-12 w-12 rounded-xl object-contain" src={branding.logoUrl} />
@@ -49,6 +55,7 @@ export function StorefrontHeader({
 					)}
 					{unitName && <span className="storefront-unit-name min-w-0 truncate font-display text-lg">{unitName}</span>}
 				</Link>
+				</div>
 
 				{!menuOnly && (
 					<div className="flex items-center gap-4">

@@ -1,3 +1,4 @@
+import { BackButton } from "@/components/ui/BackButton";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Container } from "@/components/ui/Container";
@@ -33,6 +34,7 @@ function CourierPage() {
 
 	return (
 		<Container className="space-y-6 py-8">
+			<BackButton />
 			<SectionHeading subtitle={t("courier.subtitle")} title={t("courier.title")} />
 
 			{isPending ? (
