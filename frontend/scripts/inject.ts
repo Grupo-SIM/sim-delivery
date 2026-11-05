@@ -335,7 +335,10 @@ try {
 	await copyFile(join(stage, "tauri.conf.json"), join(FRONTEND, "src-tauri", "tauri.conf.json"));
 	await copyFile(join(stage, "index.html"), join(FRONTEND, "index.html"));
 } finally {
-	await rm(stage, { recursive: true, force: true });
+	// Temp cleanup is best-effort: Windows may still hold handles (EBUSY) and the OS reaps tmpdir.
+	await rm(stage, { force: true, maxRetries: 5, recursive: true, retryDelay: 200 }).catch(error => {
+		console.warn(`Could not remove temp dir ${stage}: ${error}`);
+	});
 }
 
 console.log(`Injected branding for ${company.name} (${slug}).`);

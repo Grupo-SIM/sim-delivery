@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import sharp from "sharp";
 
 // Native app stores need at most 1024px. Larger square sources can exceed
@@ -5,7 +6,8 @@ import sharp from "sharp";
 const MAX_ICON_SIZE = 1024;
 
 export async function squareIconSource(sourcePath: string, outputPath: string, extraPadding = 0): Promise<string> {
-	const image = sharp(sourcePath);
+	// Read into memory: on Windows sharp/libvips keeps path inputs mapped, locking the file (EBUSY on cleanup).
+	const image = sharp(await readFile(sourcePath));
 	const { width, height } = await image.metadata();
 	if (!width || !height) throw new Error("Branding icon source has no dimensions.");
 
