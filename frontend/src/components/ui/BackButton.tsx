@@ -14,7 +14,7 @@ export function BackButton({ className }: BackButtonProps) {
 
 	return (
 		<button
-			aria-label={t("common.actions.back")}
+			aria-label={t("actions.back")}
 			className={cn(
 				"flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border transition-colors hover:bg-muted",
 				className,
