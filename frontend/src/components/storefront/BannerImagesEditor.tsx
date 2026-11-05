@@ -1,27 +1,25 @@
 import { useTranslation } from "react-i18next";
 import { LuPlus } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
-import { CustomSelect, type SelectOption } from "@/components/ui/CustomSelect";
 import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { showToast } from "@/stores";
+import { BannerLinkField } from "./BannerLinkField";
 
 const MAX_BANNERS = 10;
 
 interface BannerImagesEditorProps {
-	bannerProductIds: string[];
+	bannerLinks: string[];
 	bannerUrls: string[];
 	onChange: (bannerUrls: string[]) => void;
-	onProductChange: (bannerProductIds: string[]) => void;
+	onLinkChange: (bannerLinks: string[]) => void;
 	onUploadError: () => void;
-	productOptions: SelectOption[];
 }
 
 export function BannerImagesEditor({
-	bannerProductIds,
+	bannerLinks,
 	bannerUrls,
 	onChange,
-	onProductChange,
-	productOptions,
+	onLinkChange,
 	onUploadError,
 }: BannerImagesEditorProps) {
 	const { t } = useTranslation();
@@ -33,10 +31,10 @@ export function BannerImagesEditor({
 		onChange(nextBannerUrls);
 	}
 
-	function updateProduct(index: number, value: string) {
-		const nextProductIds = bannerUrls.map((_, position) => bannerProductIds[position] ?? "");
-		nextProductIds[index] = value;
-		onProductChange(nextProductIds);
+	function updateLink(index: number, value: string) {
+		const nextLinks = bannerUrls.map((_, position) => bannerLinks[position] ?? "");
+		nextLinks[index] = value;
+		onLinkChange(nextLinks);
 	}
 
 	function addBanner() {
@@ -60,17 +58,7 @@ export function BannerImagesEditor({
 						uploadLabel={t("admin.units.banner.upload")}
 						value={bannerUrl}
 					/>
-					<div className="space-y-1">
-						<p className="text-muted-foreground text-xs">{t("admin.units.banner.product")}</p>
-						<CustomSelect
-							ariaLabel={t("admin.units.banner.product")}
-							onChange={value => updateProduct(index, value)}
-							searchPlaceholder={t("admin.units.banner.productSearch")}
-							searchable
-							options={[{ label: t("admin.units.banner.productNone"), value: "" }, ...productOptions]}
-							value={bannerProductIds[index] ?? ""}
-						/>
-					</div>
+					<BannerLinkField onChange={value => updateLink(index, value)} value={bannerLinks[index] ?? ""} />
 				</div>
 			))}
 			<div className="flex flex-wrap items-center justify-between gap-3">

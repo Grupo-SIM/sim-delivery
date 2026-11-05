@@ -12,7 +12,7 @@ const PublicUnitHoursReturn = t.Object({
 /** Customer-facing shape of a unit: only the fields the storefront needs (docs/04, docs/08). */
 export const PublicUnitReturn = t.Object({
 	addressLine: t.Nullable(t.String()),
-	bannerProductIds: t.Array(t.String()),
+	bannerLinks: t.Array(t.String()),
 	bannerUrls: t.Array(t.String()),
 	city: t.Nullable(t.String()),
 	deliveryFee: t.Integer(),

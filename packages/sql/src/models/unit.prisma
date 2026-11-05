@@ -16,8 +16,8 @@ model Unit {
     imageUrl     String?
     /// Ordered storefront banners rendered as a carousel only on this unit's page.
     bannerUrls   String[] @default([])
-    /// Optional UnitProduct id per banner (same index as `bannerUrls`, "" = no link); clicking opens that product modal.
-    bannerProductIds String[] @default([])
+    /// Optional link per banner (same index as `bannerUrls`, "" = none). Same-app links navigate in place; others open a new tab.
+    bannerLinks  String[] @default([])
     // Address (deduced from CEP on the client app; see docs/08).
     zipCode      String?
     addressLine  String?

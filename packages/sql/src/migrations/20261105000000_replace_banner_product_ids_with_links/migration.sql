@@ -1,0 +1,3 @@
+ALTER TABLE "unit"
+DROP COLUMN "bannerProductIds",
+ADD COLUMN "bannerLinks" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];

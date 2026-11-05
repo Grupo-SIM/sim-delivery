@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BannerImagesEditor } from "@/components/storefront";
 import { Button } from "@/components/ui/button";
@@ -12,14 +12,7 @@ import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { Modal } from "@/components/ui/Modal";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
-import {
-	type GetUnits200,
-	getCepByCep,
-	getUnitsQueryKey,
-	useGetProducts,
-	useGetUnitsByUnitIdProducts,
-	usePatchUnitsByUnitId,
-} from "@/lib/api";
+import { type GetUnits200, getCepByCep, getUnitsQueryKey, usePatchUnitsByUnitId } from "@/lib/api";
 import { showAlert } from "@/stores";
 
 type Unit = GetUnits200[number];
@@ -96,17 +89,8 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 	const { isPending: isSaving, mutate } = usePatchUnitsByUnitId();
 	const [address, setAddress] = useState<AddressState>(emptyAddress);
 	const [availability, setAvailability] = useState<Availability>("auto");
-	const [bannerProductIds, setBannerProductIds] = useState<string[]>([""]);
+	const [bannerLinks, setBannerLinks] = useState<string[]>([""]);
 	const [bannerUrls, setBannerUrls] = useState<string[]>([""]);
-	const associationsQuery = useGetUnitsByUnitIdProducts(unit?.id ?? "", { query: { enabled: Boolean(unit) } });
-	const productsQuery = useGetProducts({ query: { enabled: Boolean(unit) } });
-	const productOptions = useMemo(() => {
-		const names = new Map((productsQuery.data ?? []).map(product => [product.id, product.title]));
-		return (associationsQuery.data ?? []).map(association => ({
-			label: names.get(association.productId) ?? association.productId,
-			value: association.id,
-		}));
-	}, [associationsQuery.data, productsQuery.data]);
 	const [cashback, setCashback] = useState(0);
 	const [cepError, setCepError] = useState<string | null>(null);
 	const [imageUrl, setImageUrl] = useState("");
@@ -126,7 +110,7 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 		setAddress(toAddressState(unit));
 		setAvailability(toAvailability(unit?.isOpenManual ?? null));
 		setBannerUrls(unit?.bannerUrls.length ? unit.bannerUrls : [""]);
-		setBannerProductIds(unit?.bannerUrls.length ? unit.bannerUrls.map((_, index) => unit.bannerProductIds[index] ?? "") : [""]);
+		setBannerLinks(unit?.bannerUrls.length ? unit.bannerUrls.map((_, index) => unit.bannerLinks[index] ?? "") : [""]);
 		setCashback(unit?.cashbackPercent ?? 0);
 		setCepError(null);
 		setImageUrl(unit?.imageUrl ?? "");
@@ -172,8 +156,8 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 			{
 				data: {
 					...address,
-					bannerProductIds: bannerUrls.flatMap((bannerUrl, index) =>
-						bannerUrl.trim() ? [bannerProductIds[index] ?? ""] : [],
+					bannerLinks: bannerUrls.flatMap((bannerUrl, index) =>
+						bannerUrl.trim() ? [(bannerLinks[index] ?? "").trim()] : [],
 					),
 					bannerUrls: bannerUrls.map(bannerUrl => bannerUrl.trim()).filter(Boolean),
 					cashbackPercent: cashback,
@@ -399,12 +383,11 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 				<section className="space-y-4 border-border border-t pt-6">
 					<h2 className="font-semibold text-lg">{t("admin.units.banner.title")}</h2>
 					<BannerImagesEditor
-						bannerProductIds={bannerProductIds}
+						bannerLinks={bannerLinks}
 						bannerUrls={bannerUrls}
 						onChange={setBannerUrls}
-						onProductChange={setBannerProductIds}
+						onLinkChange={setBannerLinks}
 						onUploadError={() => void showAlert(t("admin.units.banner.uploadError"))}
-						productOptions={productOptions}
 					/>
 				</section>
 

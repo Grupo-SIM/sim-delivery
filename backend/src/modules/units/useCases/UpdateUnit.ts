@@ -15,14 +15,6 @@ export class UpdateUnit {
 			throw new DomainError(UnitErrors.UNIT_NOT_FOUND);
 		}
 
-		const productIds = [...new Set(data.bannerProductIds?.filter(Boolean))];
-		if (productIds.length > 0) {
-			const count = await this.prisma.unitProduct.count({ where: { id: { in: productIds }, unitId } });
-			if (count !== productIds.length) {
-				throw new DomainError(UnitErrors.INVALID_BANNER_PRODUCT);
-			}
-		}
-
 		return this.prisma.unit.update({
 			data: { ...data, ...(data.name && { slug: slugify(data.name, "unidade") }) },
 			where: { id: unitId },

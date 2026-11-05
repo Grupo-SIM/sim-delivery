@@ -1,10 +1,11 @@
 import { useCartImages } from "@/hooks/use-cart-images";
-import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useNavigate, useRouter, useSearch } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useGetPublicUnits, useGetPublicUnitsByUnitSlugMenu } from "@/lib/api";
+import { branding } from "@/lib/branding";
 import { slug } from "@/lib/variant";
 import { StorefrontBannerCarousel } from "../../components/storefront";
 import { useSelectedUnitStore } from "@/stores";
@@ -20,11 +21,25 @@ import {
 } from "../$unitId/components";
 import { money } from "../$unitId/components/types";
 
+/** Returns path+query+hash when `link` points at this app (relative or same origin as the app URL), else null. */
+function toInternalPath(link: string) {
+	try {
+		const base = new URL(import.meta.env.VITE_APP_URL || branding.siteUrl || window.location.origin);
+		const url = new URL(link, base);
+		const origins = [base.origin, window.location.origin];
+		if (!origins.includes(url.origin)) return null;
+		return `${url.pathname}${url.search}${url.hash}`;
+	} catch {
+		return null;
+	}
+}
+
 export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string; homepage?: boolean }) {
 	const { t } = useTranslation();
 	const productModal = useSearch({ strict: false });
 	const menuOnly = productModal.menuOnly === true;
 	const navigate = useNavigate();
+	const router = useRouter();
 	const unitsQuery = useGetPublicUnits({ slug });
 	const menu = useGetPublicUnitsByUnitSlugMenu(unitSlug, { slug });
 	const units = unitsQuery.data;
@@ -82,11 +97,12 @@ export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string
 			{!menuOnly && (
 				<StorefrontBannerCarousel
 					images={unit.bannerUrls.map((src, index) => {
-						const productId = unit.bannerProductIds[index];
-						const linked = productId && (!menu.data || menu.data.some(section => section.items.some(item => item.id === productId)));
+						const link = unit.bannerLinks[index]?.trim();
+						const internalPath = link ? toInternalPath(link) : null;
 						return {
 							alt: `${unit.name} — banner ${index + 1}`,
-							onSelect: linked ? () => openProductModal(productId) : undefined,
+							href: link && !internalPath ? link : undefined,
+							onSelect: internalPath ? () => router.history.push(internalPath) : undefined,
 							src,
 						};
 					})}
