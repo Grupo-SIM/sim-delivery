@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { LuInfo } from "react-icons/lu";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { buttonClassName } from "@/components/ui/button-styles";
@@ -201,6 +202,10 @@ function FinancePage() {
 					</Button>
 				</div>
 			</div>
+			<p className="flex items-start gap-2 rounded-brand border border-border bg-card/50 px-3 py-2 text-muted-foreground text-sm">
+				<LuInfo aria-hidden className="mt-0.5 size-4 shrink-0" />
+				Apenas compras concluídas entram nas estatísticas deste relatório.
+			</p>
 			<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
 				{cards.map(card => (
 					<StatCard
