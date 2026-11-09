@@ -64,15 +64,23 @@ try {
 		},
 		where: { slug },
 	});
+} catch (error) {
+	// First deployment: migrations have not created the schema yet.
+	const missingTable =
+		(error as { code?: string })?.code === "P2021" || String(error).includes("TableDoesNotExist");
+	if (!missingTable) throw error;
+	console.warn("Company table does not exist yet; injecting backend defaults.");
+	company = null;
 } finally {
 	await prisma.$disconnect();
 }
 
-if (!company) throw new Error(`Company not found: ${slug}`);
-const deploymentDefaults = createDeploymentDefaults(company);
+if (!company) console.warn(`Company "${slug}" not found; injecting backend defaults.`);
+const deploymentDefaults = company ? createDeploymentDefaults(company) : { COMPANY_SLUG: slug };
+const companyName = company?.name ?? slug;
 
 
-const colors = (company.themeColors as ThemeColors | null)?.light;
+const colors = (company?.themeColors as ThemeColors | null)?.light;
 const themeColors = {
 	background: colors?.background?.trim() || "#ffffff",
 	border: colors?.border?.trim() || "#d4d4d4",
@@ -106,9 +114,9 @@ await writeFile(
 
 export const emailBranding: EmailBranding = ${JSON.stringify(
 		{
-			companyName: company.name,
-			fontFamily: company.fontFamily?.trim() || "Inter",
-			logoUrl: company.logoUrl?.trim() || null,
+			companyName,
+			fontFamily: company?.fontFamily?.trim() || "Inter",
+			logoUrl: company?.logoUrl?.trim() || null,
 			themeColors,
 		},
 		null,
@@ -122,4 +130,4 @@ await writeFile(
 	`import type { DeploymentDefaults } from "../deployment-config";\n\nexport const deploymentDefaults: DeploymentDefaults = ${JSON.stringify(deploymentDefaults, null, "\t")};\n`,
 );
 
-console.log(`Injected backend email branding for ${company.name} (${slug}).`);
+console.log(`Injected backend email branding for ${companyName} (${slug}).`);
