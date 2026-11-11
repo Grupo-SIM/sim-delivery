@@ -1,3 +1,4 @@
+import { closeActiveModalHistory } from "@/hooks/use-modal-history";
 import { NumericFormat } from "react-number-format";
 import { LuClock3, LuTimerOff } from "react-icons/lu";
 import { Button } from "@/components/ui/button";
@@ -79,7 +80,7 @@ export function PhaseEstimateModal({
 					</div>
 				</div>
 				<div className="flex flex-col-reverse gap-2 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
-					<Button className="sm:self-start" onClick={() => window.history.back()} type="button" variant="outline">
+					<Button className="sm:self-start" onClick={() => closeActiveModalHistory()} type="button" variant="outline">
 						Cancelar
 					</Button>
 					<div className="grid gap-2 sm:flex">

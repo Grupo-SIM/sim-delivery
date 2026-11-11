@@ -21,6 +21,8 @@ import {
 } from "../$unitId/components";
 import { money } from "../$unitId/components/types";
 
+const PRODUCT_MODAL_ENTRY = "productModalEntry";
+
 /** Returns path+query+hash when `link` points at this app (relative or same origin as the app URL), else null. */
 function toInternalPath(link: string) {
 	try {
@@ -56,6 +58,7 @@ export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string
 			params: { unitId: unitSlug },
 			resetScroll: false,
 			search: current => ({ ...current, note: undefined, options: undefined, product: productId }),
+			state: ((current: object) => ({ ...current, [PRODUCT_MODAL_ENTRY]: true })) as never,
 			to: homepage ? "/" : "/$unitId",
 		});
 	}, [homepage, navigate, unitSlug]);
@@ -66,13 +69,25 @@ export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string
 			replace: true,
 			resetScroll: false,
 			search: current => ({ ...current, note: note || undefined, options, product: current.product }),
+			state: ((current: object) => current) as never,
 			to: homepage ? "/" : "/$unitId",
 		});
 	}, [homepage, navigate, unitSlug]);
 
+	// Direct links (e.g. Instagram) have no app entry before the modal: going back would leave the page.
 	const closeProductModal = useCallback(() => {
-		window.history.back();
-	}, []);
+		if ((router.state.location.state as Record<string, unknown>)[PRODUCT_MODAL_ENTRY]) {
+			router.history.back();
+			return;
+		}
+		void navigate({
+			params: { unitId: unitSlug },
+			replace: true,
+			resetScroll: false,
+			search: current => ({ ...current, note: undefined, options: undefined, product: undefined }),
+			to: homepage ? "/" : "/$unitId",
+		});
+	}, [homepage, navigate, router, unitSlug]);
 
 	useEffect(() => {
 		if (unit) setSelectedUnit({ id: unit.id, name: unit.name, slug: unit.slug });

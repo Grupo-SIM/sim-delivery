@@ -1,3 +1,4 @@
+import { closeActiveModalHistory } from "@/hooks/use-modal-history";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LuCircleCheck, LuCircleX, LuPackageCheck } from "react-icons/lu";
@@ -85,7 +86,7 @@ export function FinalizeOrderModal({
 				)}
 
 				<div className="flex flex-col-reverse gap-2 border-border/70 border-t pt-5 sm:flex-row sm:justify-end">
-					<Button onClick={() => window.history.back()} type="button" variant="outline">
+					<Button onClick={() => closeActiveModalHistory()} type="button" variant="outline">
 						{t("admin.orders.updateStatus.cancel")}
 					</Button>
 					<Button
