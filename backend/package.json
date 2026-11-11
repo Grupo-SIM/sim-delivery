@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "bun ./scripts/build.ts",
-		"check-types": "tsc --noEmit",
+		"check-types": "bun check",
 		"dev": "bun --watch src/main.ts",
 		"export": "bun run inject && bun ./src/generateOpenApi.ts",
 		"inject": "bun ./scripts/inject.ts",
