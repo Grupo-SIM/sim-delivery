@@ -76,7 +76,7 @@ export function UnitStorePage({ unitSlug, homepage = false }: { unitSlug: string
 
 	// Direct links (e.g. Instagram) have no app entry before the modal: going back would leave the page.
 	const closeProductModal = useCallback(() => {
-		if ((router.state.location.state as Record<string, unknown>)[PRODUCT_MODAL_ENTRY]) {
+		if ((router.state.location.state as unknown as Record<string, unknown>)[PRODUCT_MODAL_ENTRY]) {
 			router.history.back();
 			return;
 		}
