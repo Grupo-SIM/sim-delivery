@@ -173,12 +173,13 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
   o Delivery compara esse valor integral, sem somar juros novamente. Cobertura igual ao piso é suficiente.
 - O modo de taxas da empresa pertence à SimIntPay (`Platform.feeMode`); este app não guarda cópia e apenas
   o consome (cache de 60 s) e o edita pela SimIntPay. Padrão `SIMINTPAY_ONLY`: `ADDITIVE_ONLY` (só taxas aditivas; a
-  SimIntPay não desconta nada), `SIMINTPAY_ONLY` (nenhuma taxa aditiva; a SimIntPay desconta suas taxas do lojista)
+  SimIntPay não desconta nada), `SIMINTPAY_ONLY` (nenhuma taxa aditiva)
   ou `BOTH`. Empresa ainda desconhecida pela SimIntPay (404) segue como `ADDITIVE_ONLY`; qualquer outra falha
-  impede precificar, em vez de adivinhar o modo. O pedido é precificado com o modo vigente e a SimIntPay o aplica no
-  pagamento: se o modo mudar antes disso e houver taxa aditiva enviada em `SIMINTPAY_ONLY`, a cobrança é recusada
-  (`FEE_MODE_CHANGED`) e o pedido deve ser refeito. A taxa `sim` (fixo + percentual sobre o total do comprador) sai
-  da parcela do lojista, sem alterar o total do comprador. Somente o dono da SimIntPay altera modo e taxas.
+  impede precificar, em vez de adivinhar o modo. O pedido é precificado com o modo vigente: em `SIMINTPAY_ONLY` não leva taxa aditiva. Pagamentos do
+  Delivery são cobrados pela SimIntPay somente com taxas aditivas: ela não desconta taxa SimIntPay, taxa alvo, custo da
+  adquirente nem juros do valor do lojista, que recebe exatamente `merchantAmountCents`; `platformFeeCents` é receita
+  da plataforma. Com itens, a SimIntPay recalcula a taxa aditiva dos totais da empresa e recusa divergência com
+  409 `FEE_MISMATCH` (o pedido deve ser refeito). Somente o dono da SimIntPay altera modo e taxas.
 - Percentual e fixo são comparados separadamente ao custo global; salvar taxas SimIntPay, exceções ou modo que
   deixem a cobertura abaixo do custo é rejeitado. A comparação usa as **taxas efetivas da empresa** (SimIntPay +
   aditivas, conforme o modo) e vale para os três modos; só o modal de taxas da empresa a julga. A tela global de

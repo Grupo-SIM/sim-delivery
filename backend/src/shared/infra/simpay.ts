@@ -15,7 +15,7 @@ export interface SimpayAllocationItem {
 }
 
 export interface SimpayPaymentAllocation {
-	/** Lets SimIntPay recompute the additive surcharge; it rejects with 409 FEE_MISMATCH on divergence. */
+	/** Lets SimIntPay recompute the additive surcharge from the company's totals; it rejects with 409 FEE_MISMATCH on divergence. */
 	items?: SimpayAllocationItem[];
 	itemsAmountCents?: number;
 	deliveryAmountCents?: number;
