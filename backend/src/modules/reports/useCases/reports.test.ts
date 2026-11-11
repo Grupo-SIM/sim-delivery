@@ -458,6 +458,19 @@ describe("GetFinancialAnalytics", () => {
 		});
 	});
 
+	it("treats delivery fee as a merchant cost when computing net revenue", async () => {
+		const prisma = makeFinancialPrisma(
+			[{ deliveryFee: 2000, items: [{ costCents: 0, total: 48699 }], payment: null, total: 48699 }],
+			[],
+		);
+
+		const result = await new GetFinancialAnalytics(prisma).execute("cmp_1", {});
+
+		expect(result.summary.grossRevenueCents).toBe(48699);
+		expect(result.summary.deliveryFeeCents).toBe(2000);
+		expect(result.summary.netRevenueCents).toBe(46699);
+	});
+
 	it("subtracts refunds from net revenue and gross profit", async () => {
 		const prisma = makeFinancialPrisma(
 			[

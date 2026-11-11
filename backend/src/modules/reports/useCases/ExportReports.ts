@@ -4,6 +4,7 @@ import type { GetReportsQuery } from "../dtos";
 import { getReportDateRange } from "../utils/reportPeriod";
 import { buildReportSheets } from "../utils/reportSheets";
 import type { GetBestSellers } from "./GetBestSellers";
+import type { GetBusinessMetrics } from "./GetBusinessMetrics";
 import type { GetDashboardAnalytics } from "./GetDashboardAnalytics";
 import type { GetFinancialAnalytics } from "./GetFinancialAnalytics";
 import type { GetRevenueSummary } from "./GetRevenueSummary";
@@ -15,16 +16,18 @@ export class ExportReports {
 		private readonly getBestSellers: GetBestSellers,
 		private readonly getDashboardAnalytics: GetDashboardAnalytics,
 		private readonly getFinancialAnalytics: GetFinancialAnalytics,
+		private readonly getBusinessMetrics: GetBusinessMetrics,
 	) {}
 
 	async execute(companyId: string | null, query: GetReportsQuery, permittedUnitIds?: string[]): Promise<Buffer> {
 		const now = new Date();
 		const { since, until } = getReportDateRange(query.period, query.startDate, query.endDate, now);
-		const [summary, bestSellers, analytics, financial, orders] = await Promise.all([
+		const [summary, bestSellers, analytics, financial, business, orders] = await Promise.all([
 			this.getRevenueSummary.execute(companyId, query, permittedUnitIds),
 			this.getBestSellers.execute(companyId, query, null, permittedUnitIds),
 			this.getDashboardAnalytics.execute(companyId, query, permittedUnitIds),
 			this.getFinancialAnalytics.execute(companyId, query, permittedUnitIds),
+			this.getBusinessMetrics.execute(companyId, query, permittedUnitIds),
 			this.prisma.order.findMany({
 				include: {
 					coupon: { select: { code: true } },
@@ -47,7 +50,7 @@ export class ExportReports {
 			}),
 		]);
 		return writeXlsxFile(
-			buildReportSheets({ analytics, bestSellers, financial, now, orders, since, summary, until }),
+			buildReportSheets({ analytics, bestSellers, business, financial, now, orders, since, summary, until }),
 		).toBuffer();
 	}
 }

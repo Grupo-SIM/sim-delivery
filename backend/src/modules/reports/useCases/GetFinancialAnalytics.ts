@@ -115,7 +115,7 @@ function summarize(orders: FinancialOrder[]) {
 	const summary = emptySummary();
 	for (const order of orders) {
 		summary.orderCount += 1;
-		summary.netRevenueCents += merchantAmount(order);
+		summary.netRevenueCents += merchantAmount(order) - order.deliveryFee;
 		summary.deliveryFeeCents += order.deliveryFee;
 		summary.discountCents += order.discountCents;
 		summary.cashbackRedeemedCents += order.cashbackCentsRedeemed;
@@ -292,7 +292,7 @@ export class GetFinancialAnalytics {
 			if (!row) continue;
 			const orderSummary = summarize([order]);
 			row.orderCount += 1;
-			row.netRevenueCents += merchantAmount(order) - merchantRefund(order);
+			row.netRevenueCents += merchantAmount(order) - order.deliveryFee - merchantRefund(order);
 			row.grossProfitCents += orderSummary.grossProfitCents;
 		}
 		const byPayment = new Map<string, { method: string; netRevenueCents: number; orderCount: number }>();
@@ -304,7 +304,7 @@ export class GetFinancialAnalytics {
 			] as const) {
 				const row = map.get(method) ?? { method, netRevenueCents: 0, orderCount: 0 };
 				row.orderCount += 1;
-				row.netRevenueCents += merchantAmount(order);
+				row.netRevenueCents += merchantAmount(order) - order.deliveryFee;
 				map.set(method, row);
 			}
 		}

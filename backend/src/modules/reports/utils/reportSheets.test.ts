@@ -13,7 +13,7 @@ function order(overrides: Partial<ExportableOrder> = {}): ExportableOrder {
 		deliveryFee: 500,
 		deliveryMethod: "delivery",
 		discountCents: 0,
-		id: "ord_1",
+		displayNumber: 1,
 		items: [{ optionSnapshots: [], productName: "Pizza", quantity: 1 }],
 		status: "entregue",
 		subtotal: 4000,
@@ -59,16 +59,16 @@ describe("buildReportSheets", () => {
 	});
 
 	it("lists cancelled orders in the orders sheet", () => {
-		const orders = [order(), order({ id: "ord_2", status: "cancelado" })];
+		const orders = [order(), order({ displayNumber: 2, status: "cancelado" })];
 		const rows = sheetByName(buildReportSheets(input({ orders })), "Pedidos");
 
 		// One header row plus both orders.
 		expect(rows).toHaveLength(3);
-		expect(rows.slice(1).map(row => row[1])).toEqual(["ord_1", "ord_2"]);
+		expect(rows.slice(1).map(row => row[1])).toEqual([1, 2]);
 	});
 
 	it("excludes cancelled orders from the period sheets, matching the dashboard chart", () => {
-		const orders = [order(), order({ id: "ord_2", status: "cancelado" })];
+		const orders = [order(), order({ displayNumber: 2, status: "cancelado" })];
 		const rows = sheetByName(buildReportSheets(input({ orders })), "Por hora do dia");
 		const totalOrders = rows.slice(1).reduce((sum, row) => sum + Number(row[1]), 0);
 
@@ -110,5 +110,73 @@ describe("buildReportSheets", () => {
 		const rows = sheetByName(buildReportSheets(input({ orders })), "Pedidos");
 
 		expect(rows[1]?.[8]).toBe("2x Pizza (Borda recheada) | 1x Refrigerante");
+	});
+
+	it("mirrors the finance screen sections in the Financeiro sheet", () => {
+		const financial = {
+			cancellation: {
+				averageCanceledTicket: 0,
+				byStage: [{ lostRevenueCents: 500, orderCount: 1, stage: "em_preparo" }],
+				cancelRatePercent: 0,
+				canceledOrderCount: 1,
+				lostRevenueCents: 500,
+				pendingRefundCents: 0,
+				refundedCents: 0,
+				refundedOrderCount: 0,
+				wastedCostCents: 0,
+			},
+			distribution: {
+				delivery: [{ method: "pickup", netRevenueCents: 500, orderCount: 1 }],
+				payment: [{ method: "pix", netRevenueCents: 500, orderCount: 1 }],
+			},
+			paymentAbandonment: { abandonedOrderCount: 1, abandonedValueCents: 400, averageAbandonedTicket: 400 },
+			summary: {
+				averageOrderValue: 500,
+				cashbackRedeemedCents: 0,
+				deliveryFeeCents: 0,
+				discountCents: 0,
+				grossMarginPercent: null,
+				grossProfitCents: 0,
+				grossRevenueCents: 500,
+				knownCostCents: 0,
+				knownItemNetRevenueCents: 0,
+				netRevenueCents: 500,
+				orderCount: 1,
+				refundedCents: 0,
+				unknownCostRevenueCents: 500,
+			},
+		} as unknown as NonNullable<ReportSheetsInput["financial"]>;
+		const business = {
+			customers: { newCustomers: 1, ordersPerCustomer: 1, repeatRatePercent: 0, returningCustomers: 0, revenuePerCustomer: 500 },
+			discounts: { cashbackRedeemedCents: 0, couponOrderCount: 0, discountCents: 0, discountShareOfGrossPercent: 0, loyaltyPointsRedeemed: 0, topCoupons: [] },
+			operations: {
+				averageDeliveryMinutes: null,
+				averageFulfillmentMinutes: null,
+				averagePrepMinutes: 24,
+				peaks: { byDayOfWeek: [], byHourOfDay: [] },
+				problemRatePercent: 0,
+			},
+			units: [],
+		} as unknown as NonNullable<ReportSheetsInput["business"]>;
+
+		const rows = sheetByName(buildReportSheets(input({ business, financial })), "Financeiro");
+		const flat = rows.map(row => String((row[0] as { value?: unknown } | undefined)?.value ?? row[0] ?? ""));
+
+		for (const title of [
+			"Receita por forma de pagamento",
+			"Receita por modalidade de entrega",
+			"Cancelamentos",
+			"Cancelamentos por etapa",
+			"Abandono no pagamento",
+			"Clientes",
+			"Descontos e cupons",
+			"Cupons mais usados",
+			"Operação",
+			"Comparativo por unidade",
+		]) {
+			expect(flat).toContain(title);
+		}
+		expect(flat).toContain("Em preparo");
+		expect(flat).toContain("PIX");
 	});
 });

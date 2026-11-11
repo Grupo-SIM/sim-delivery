@@ -33,6 +33,7 @@ const exportReports = new ExportReports(
 	getBestSellers,
 	getDashboardAnalytics,
 	getFinancialAnalytics,
+	getBusinessMetrics,
 );
 
 export const ReportsController = new Elysia({ prefix: "/reports" })
