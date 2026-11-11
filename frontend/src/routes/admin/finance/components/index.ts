@@ -6,6 +6,7 @@ export * from "./FinancialDistribution";
 export * from "./FinancialTrend";
 export * from "./OperationsMetrics";
 export * from "./PaymentAbandonmentSummary";
+export * from "./ProductRevenue";
 export * from "./UnitComparisonTable";
 export * from "./WithdrawalHistory";
 export * from "./WithdrawalRequestModal";

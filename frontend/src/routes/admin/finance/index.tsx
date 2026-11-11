@@ -16,6 +16,7 @@ import {
 	useGetFinanceWithdrawals,
 	useGetReportsBusiness,
 	useGetReportsFinancial,
+	useGetReportsProductProfitability,
 } from "@/lib/api";
 import { canAccessWithdrawals } from "@/lib/staff-guard";
 import {
@@ -33,6 +34,7 @@ import {
 	FinancialTrend,
 	OperationsMetrics,
 	PaymentAbandonmentSummary,
+	ProductRevenue,
 	UnitComparisonTable,
 	WithdrawalHistory,
 	WithdrawalRequestModal,
@@ -81,6 +83,20 @@ function FinancePage() {
 		...(unitId ? { unitId } : {}),
 		period: queryPeriod,
 	});
+	const products = useGetReportsProductProfitability({
+		...dateRange,
+		...(unitId ? { unitId } : {}),
+		period: queryPeriod,
+	});
+	const productRevenue =
+		products.data
+			?.filter(product => Number(product.totalRevenue) > 0)
+			.map(product => ({
+				productId: product.productId,
+				productName: product.productName,
+				totalQuantity: Number(product.totalQuantity),
+				totalRevenue: Number(product.totalRevenue),
+			})) ?? [];
 	const labels: Record<DashboardPeriodSelection, string> = {
 		custom: t("admin.reports.period.custom"),
 		lastMonth: t("admin.reports.period.lastMonth"),
@@ -246,6 +262,12 @@ function FinancePage() {
 					unreported="Não informado"
 				/>
 			</div>
+			<ProductRevenue
+				formatCents={formatCents}
+				isError={products.isError}
+				isPending={products.isPending}
+				rows={productRevenue}
+			/>
 			<div className="grid gap-4 sm:grid-cols-3">
 				<StatCard
 					label="Faturamento bruto"
