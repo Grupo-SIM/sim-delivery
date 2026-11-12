@@ -1,6 +1,7 @@
 import { CashbackErrors } from "@/modules/cashback/errors";
 import { GetCashbackBalance } from "@/modules/cashback/useCases";
 import { ValidateCoupon } from "@/modules/coupons/useCases";
+import { listCompanyDiscounts, resolveDiscountedPrice } from "@/modules/discounts/pricing";
 import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
 import { LoyaltyErrors } from "@/modules/loyalty/errors";
 import { GetLoyaltyBalance } from "@/modules/loyalty/useCases";
@@ -60,7 +61,8 @@ export class CreateOrder {
 			include: {
 				additionalOptions: true,
 				optionOverrides: true,
-				product: { include: { optionGroups: { include: { options: true } } } },
+				product: { include: { optionGroups: { include: { options: true } }, tags: true } },
+				tags: true,
 			},
 			where: { id: { in: items.map(i => i.unitProductId) }, unitId },
 		} as never)) as Array<{
@@ -68,6 +70,8 @@ export class CreateOrder {
 			priceCentsOverride: number | null;
 			promotionalPriceCents: number | null;
 			stock: number | null;
+			tags?: Array<{ tagId: string }>;
+			tagsOverridden?: boolean;
 			additionalOptions: Array<{
 				available: boolean;
 				groupId: string;
@@ -86,6 +90,7 @@ export class CreateOrder {
 			product: {
 				basePriceCents: number;
 				id: string;
+				tags?: Array<{ tagId: string }>;
 				title: string;
 				optionGroups: Array<{
 					id: string;
@@ -122,6 +127,8 @@ export class CreateOrder {
 			ids.add(exclusion.optionId);
 			excludedByAssociation.set(exclusion.unitProductId, ids);
 		}
+
+		const discounts = await listCompanyDiscounts(this.prisma, company.id);
 
 		const resolvedItems = items.map((item, lineIndex) => {
 			const assoc = unitProducts.find(up => up.id === item.unitProductId);
@@ -218,8 +225,15 @@ export class CreateOrder {
 				throw new DomainError(OrderErrors.INVALID_OPTIONS);
 			}
 			const unitPrice =
-				(assoc.promotionalPriceCents ?? assoc.priceCentsOverride ?? assoc.product.basePriceCents) +
-				optionDelta;
+				resolveDiscountedPrice(
+					discounts,
+					{
+						productId: assoc.product.id,
+						tagIds: (assoc.tagsOverridden ? assoc.tags : assoc.product.tags)?.map(tag => tag.tagId) ?? [],
+						unitId,
+					},
+					assoc.promotionalPriceCents ?? assoc.priceCentsOverride ?? assoc.product.basePriceCents,
+				).priceCents + optionDelta;
 			return {
 				lineIndex,
 				legacyStock: assoc.stock,

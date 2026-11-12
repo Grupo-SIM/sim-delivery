@@ -1,4 +1,5 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
+import { listCompanyDiscounts, resolveDiscountedPrice } from "@/modules/discounts/pricing";
 import { listEffectiveFees } from "@/modules/platformFees/effectiveFees";
 import type { PublicMenuReturn, PublicMenuSectionReturn } from "../dtos";
 
@@ -27,6 +28,8 @@ export class ListPublicMenu {
 		const productFees = (await listEffectiveFees(this.prisma, company!.id)).filter(
 			fee => fee.applicationScope === "product",
 		);
+
+		const discounts = await listCompanyDiscounts(this.prisma, company!.id);
 
 		const associations = await this.prisma.unitProduct.findMany({
 			include: {
@@ -145,6 +148,7 @@ export class ListPublicMenu {
 					? association.tags.map(item => item.tag)
 					: product.tags.map(item => item.tag)
 			).map(({ color, id, name }) => ({ color, id, name }));
+			const tagIds = tags.map(tag => tag.id);
 			const effectiveCategories = categories.length > 0 ? categories : [null];
 			for (const category of effectiveCategories) {
 				const key = category?.id ?? "";
@@ -157,7 +161,12 @@ export class ListPublicMenu {
 				}
 
 				const regularPriceCents = association.priceCentsOverride ?? product.basePriceCents;
-				const basePriceCents = association.promotionalPriceCents ?? regularPriceCents;
+				const discounted = resolveDiscountedPrice(
+					discounts,
+					{ productId: product.id, tagIds, unitId: unit.id },
+					association.promotionalPriceCents ?? regularPriceCents,
+				);
+				const basePriceCents = discounted.priceCents;
 				const rating = ratingByProduct.get(product.id);
 
 				// "A partir de": base + sum of cheapest available option per required group.
@@ -202,7 +211,7 @@ export class ListPublicMenu {
 					productSlug: product.slug,
 					ratingAverage: rating?._avg.rating ?? null,
 					ratingCount: rating?._count.rating ?? 0,
-					regularPriceCents,
+					regularPriceCents: Math.max(regularPriceCents, discounted.regularPriceCents),
 					tags,
 					title: product.title,
 				});

@@ -1,0 +1,28 @@
+/// Price discount applied to menu items (docs/05). `real` lowers the price actually charged;
+/// `fake` only inflates the struck-through "de" price while the customer pays the regular price.
+/// Targets are additive filters: empty `unitIds` = every unit; a product matches when its id is in
+/// `productIds` or it carries a tag in `tagIds`; both empty = every product.
+model Discount {
+    id         String    @id @default(cuid())
+    companyId  String
+    name       String
+    /// "real" | "fake"
+    kind       String
+    /// "percent" | "fixed" (fixed on a fake discount adds that many cents to the struck price)
+    type       String
+    /// Percent (1..99) or cents, depending on `type`.
+    value      Int
+    productIds String[]  @default([])
+    tagIds     String[]  @default([])
+    unitIds    String[]  @default([])
+    active     Boolean   @default(true)
+    startsAt   DateTime?
+    endsAt     DateTime?
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime  @updatedAt
+
+    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+    @@index([companyId])
+    @@map("discount")
+}

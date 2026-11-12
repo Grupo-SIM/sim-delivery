@@ -6,6 +6,7 @@ import { CategoriesController } from "./modules/categories/infra";
 import { CepController } from "./modules/cep/infra";
 import { CompaniesController } from "./modules/companies/infra";
 import { CouponsController } from "./modules/coupons/infra";
+import { DiscountsController } from "./modules/discounts/infra";
 import { CustomersController } from "./modules/customers/infra";
 import { DeliveriesController } from "./modules/deliveries/infra/elysia";
 import { ExampleController } from "./modules/example/infra";
@@ -54,6 +55,7 @@ export const server = app.use([
 	InventoryController,
 	CepController,
 	CouponsController,
+	DiscountsController,
 	CustomersController,
 	DeliveriesController,
 	OrdersController,

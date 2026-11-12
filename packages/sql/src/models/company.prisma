@@ -59,6 +59,7 @@ model Company {
 
     categories Category[]
     coupons    Coupon[]
+    discounts  Discount[]
     customers  Customer[]
     deliveries Delivery[]
     orders     Order[]
