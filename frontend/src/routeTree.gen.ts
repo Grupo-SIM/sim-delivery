@@ -25,6 +25,7 @@ import { Route as AdminProductsIndexRouteImport } from './routes/admin/products/
 import { Route as AdminOrdersIndexRouteImport } from './routes/admin/orders/index'
 import { Route as AdminInventoryIndexRouteImport } from './routes/admin/inventory/index'
 import { Route as AdminFinanceIndexRouteImport } from './routes/admin/finance/index'
+import { Route as AdminDiscountsIndexRouteImport } from './routes/admin/discounts/index'
 import { Route as AdminCustomersIndexRouteImport } from './routes/admin/customers/index'
 import { Route as AdminCouponsIndexRouteImport } from './routes/admin/coupons/index'
 import { Route as AdminCompanyIndexRouteImport } from './routes/admin/company/index'
@@ -126,6 +127,11 @@ const AdminInventoryIndexRoute = AdminInventoryIndexRouteImport.update({
 const AdminFinanceIndexRoute = AdminFinanceIndexRouteImport.update({
   id: '/finance/',
   path: '/finance/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDiscountsIndexRoute = AdminDiscountsIndexRouteImport.update({
+  id: '/discounts/',
+  path: '/discounts/',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminCustomersIndexRoute = AdminCustomersIndexRouteImport.update({
@@ -269,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/admin/company/': typeof AdminCompanyIndexRoute
   '/admin/coupons/': typeof AdminCouponsIndexRoute
   '/admin/customers/': typeof AdminCustomersIndexRoute
+  '/admin/discounts/': typeof AdminDiscountsIndexRoute
   '/admin/finance/': typeof AdminFinanceIndexRoute
   '/admin/inventory/': typeof AdminInventoryIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
@@ -307,6 +314,7 @@ export interface FileRoutesByTo {
   '/admin/company': typeof AdminCompanyIndexRoute
   '/admin/coupons': typeof AdminCouponsIndexRoute
   '/admin/customers': typeof AdminCustomersIndexRoute
+  '/admin/discounts': typeof AdminDiscountsIndexRoute
   '/admin/finance': typeof AdminFinanceIndexRoute
   '/admin/inventory': typeof AdminInventoryIndexRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
@@ -348,6 +356,7 @@ export interface FileRoutesById {
   '/admin/company/': typeof AdminCompanyIndexRoute
   '/admin/coupons/': typeof AdminCouponsIndexRoute
   '/admin/customers/': typeof AdminCustomersIndexRoute
+  '/admin/discounts/': typeof AdminDiscountsIndexRoute
   '/admin/finance/': typeof AdminFinanceIndexRoute
   '/admin/inventory/': typeof AdminInventoryIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
@@ -389,6 +398,7 @@ export interface FileRouteTypes {
     | '/admin/company/'
     | '/admin/coupons/'
     | '/admin/customers/'
+    | '/admin/discounts/'
     | '/admin/finance/'
     | '/admin/inventory/'
     | '/admin/orders/'
@@ -427,6 +437,7 @@ export interface FileRouteTypes {
     | '/admin/company'
     | '/admin/coupons'
     | '/admin/customers'
+    | '/admin/discounts'
     | '/admin/finance'
     | '/admin/inventory'
     | '/admin/orders'
@@ -467,6 +478,7 @@ export interface FileRouteTypes {
     | '/admin/company/'
     | '/admin/coupons/'
     | '/admin/customers/'
+    | '/admin/discounts/'
     | '/admin/finance/'
     | '/admin/inventory/'
     | '/admin/orders/'
@@ -610,6 +622,13 @@ declare module '@tanstack/react-router' {
       path: '/finance'
       fullPath: '/admin/finance/'
       preLoaderRoute: typeof AdminFinanceIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/discounts/': {
+      id: '/admin/discounts/'
+      path: '/discounts'
+      fullPath: '/admin/discounts/'
+      preLoaderRoute: typeof AdminDiscountsIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/customers/': {
@@ -812,6 +831,7 @@ interface AdminRouteChildren {
   AdminCompanyIndexRoute: typeof AdminCompanyIndexRoute
   AdminCouponsIndexRoute: typeof AdminCouponsIndexRoute
   AdminCustomersIndexRoute: typeof AdminCustomersIndexRoute
+  AdminDiscountsIndexRoute: typeof AdminDiscountsIndexRoute
   AdminFinanceIndexRoute: typeof AdminFinanceIndexRoute
   AdminInventoryIndexRoute: typeof AdminInventoryIndexRoute
   AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
@@ -835,6 +855,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCompanyIndexRoute: AdminCompanyIndexRoute,
   AdminCouponsIndexRoute: AdminCouponsIndexRoute,
   AdminCustomersIndexRoute: AdminCustomersIndexRoute,
+  AdminDiscountsIndexRoute: AdminDiscountsIndexRoute,
   AdminFinanceIndexRoute: AdminFinanceIndexRoute,
   AdminInventoryIndexRoute: AdminInventoryIndexRoute,
   AdminOrdersIndexRoute: AdminOrdersIndexRoute,

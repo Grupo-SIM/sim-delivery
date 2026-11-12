@@ -534,6 +534,80 @@
 					"recusada": "Recusada"
 				}
 			},
+			"discounts": {
+				"columns": {
+					"kind": "Tipo",
+					"name": "Nome",
+					"period": "Período",
+					"targets": "Aplica-se a",
+					"units": "Unidades",
+					"value": "Desconto"
+				},
+				"create": {
+					"error": "Não foi possível criar o desconto.",
+					"heading": "Novo desconto",
+					"submit": "Criar desconto",
+					"submitting": "Criando...",
+					"success": "Desconto criado."
+				},
+				"dateError": "Informe uma data e hora válida.",
+				"edit": {
+					"action": "Editar",
+					"discard": "Descartar",
+					"error": "Não foi possível salvar o desconto.",
+					"save": "Salvar",
+					"saving": "Salvando...",
+					"success": "Desconto atualizado."
+				},
+				"empty": "Nenhum desconto ainda.",
+				"form": {
+					"allProducts": "Todos os produtos",
+					"allUnits": "Todas as unidades",
+					"endsAt": "Termina em",
+					"kind": "Tipo de desconto",
+					"name": "Nome",
+					"namePlaceholder": "Ex: Semana do hambúrguer",
+					"noTags": "Nenhuma etiqueta selecionada",
+					"products": "Produtos",
+					"startsAt": "Começa em",
+					"tags": "Etiquetas",
+					"targetsHint": "Aplica-se a produtos selecionados ou que tenham uma das etiquetas selecionadas, nas unidades escolhidas. Sem seleção, vale para todos.",
+					"type": "Tipo de valor",
+					"units": "Unidades",
+					"value": "Valor do desconto"
+				},
+				"kindHints": {
+					"fake": "O cliente paga o preço normal; o cardápio exibe um preço \"de\" maior riscado.",
+					"real": "O preço cobrado é reduzido de verdade."
+				},
+				"kinds": {
+					"fake": "Falso (preço riscado)",
+					"real": "Real"
+				},
+				"loadError": "Não foi possível carregar os descontos.",
+				"row": {
+					"activate": "Ativar",
+					"activated": "Desconto ativado.",
+					"always": "Sempre",
+					"deactivate": "Desativar",
+					"deactivated": "Desconto desativado.",
+					"delete": "Excluir",
+					"deleteConfirm": "Excluir desconto {{name}}?",
+					"deleteError": "Não foi possível excluir o desconto.",
+					"deleteSuccess": "Desconto excluído.",
+					"inactive": "Inativo",
+					"products_one": "{{count}} produto",
+					"products_other": "{{count}} produtos",
+					"tags_one": "{{count}} etiqueta",
+					"tags_other": "{{count}} etiquetas"
+				},
+				"subtitle": "Descontos reais ou falsos por produto, etiqueta e unidade.",
+				"title": "Descontos",
+				"types": {
+					"fixed": "Valor fixo",
+					"percent": "Percentual"
+				}
+			},
 			"inventory": {
 				"actions": {
 					"registerEntry": "Registrar entrada",

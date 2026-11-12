@@ -16,6 +16,7 @@ import {
 	LuStar,
 	LuStore,
 	LuTag,
+	LuPercent,
 	LuTicket,
 	LuUsers,
 } from "react-icons/lu";
@@ -66,6 +67,12 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 							label={t("admin.coupons.title")}
 							onNavigate={onNavigate}
 							to="/admin/coupons"
+						/>
+						<AdminNavItem
+							icon={LuPercent}
+							label={t("admin.discounts.title")}
+							onNavigate={onNavigate}
+							to="/admin/discounts"
 						/>
 						<AdminNavItem
 							icon={LuUsers}
