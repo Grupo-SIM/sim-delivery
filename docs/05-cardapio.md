@@ -32,6 +32,19 @@ técnica global; o custo e a disponibilidade são calculados com o estoque da un
   `novidade`, etc. — mas o conjunto é **livre** (nome+cor).
 - Aplicáveis a produtos; exibidas como badge no card do produto.
 
+## Descontos (reais e falsos)
+
+- Gerenciados em `/admin/discounts` por `owner`/`manager`. Escopo por **produto**, **etiqueta** e **unidade**:
+  unidades vazias = todas; produto casa se estiver na lista de produtos **ou** tiver uma das etiquetas
+  (etiquetas efetivas da unidade); produtos e etiquetas vazios = todos os produtos.
+- Valor percentual (1–99%) ou fixo em centavos; período opcional (`startsAt`/`endsAt`) e ativo/inativo.
+- **Real**: reduz o preço cobrado. Aplica-se ao preço-base efetivo (preço da unidade ou promocional); opções
+  nunca são descontadas. Entre vários reais, vence o de maior economia (sem acúmulo). O backend recalcula o
+  preço no pedido com a mesma regra do cardápio (`discounts/pricing.ts`).
+- **Falso**: o cliente paga o preço normal; o cardápio exibe um preço "de" riscado maior (`preço / (1 − %)`
+  ou `preço + valor fixo`). Só vale quando nenhum desconto real se aplica ao item.
+- O cardápio público expõe o resultado em `priceCents` (cobrado) e `regularPriceCents` (riscado).
+
 ## Associação produto ↔ unidade (regra objetiva)
 
 - A associação produto ↔ unidade controla presença no cardápio. Categorias e tags são herdadas do produto, salvo sobrescrita explícita daquela unidade.
@@ -72,4 +85,3 @@ técnica global; o custo e a disponibilidade são calculados com o estoque da un
 - Como configurar **sugestões de produtos** no carrinho (manual por produto, por
   categoria, ou automático por co-ocorrência).
 - Conversões de embalagem, fornecedores, lotes, validade e transferências entre unidades.
-- Preço promocional: campo próprio vs derivado de cupom/tag.
