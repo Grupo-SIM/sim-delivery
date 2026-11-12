@@ -161,11 +161,11 @@ export function AssociatedProducts({
 							<Skeleton className="h-14" />
 						</div>
 					) : (
-						<ScrollArea className="max-h-80 overflow-y-auto pr-3">
-							<div className="space-y-2">
+						<ScrollArea className="max-h-72 space-y-2 overflow-y-auto">
+							<div>
 								{filteredProducts.map(product => (
 									<label
-										className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3 hover:bg-muted/50"
+										className="flex cursor-pointer items-center gap-2 rounded-md border border-transparent p-2 text-sm hover:border-border hover:bg-muted/40"
 										key={product.id}
 									>
 										<Checkbox
@@ -174,7 +174,7 @@ export function AssociatedProducts({
 											id={`associated-product-${urlState}-${product.id}`}
 											onChange={() => toggleProduct(product.id)}
 										/>
-										<span className="min-w-0 flex-1 truncate font-medium">{product.title}</span>
+										<span className="min-w-0 flex-1 truncate">{product.title}</span>
 									</label>
 								))}
 								{filteredProducts.length === 0 && (
