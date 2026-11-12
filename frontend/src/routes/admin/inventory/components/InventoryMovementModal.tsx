@@ -129,7 +129,8 @@ export function InventoryMovementModal({
 				)}
 				<div>
 					<span className="mb-1 block font-medium text-sm">
-						{t("admin.inventory.fields.quantity")} <RequiredMark />
+						{t(type === "adjustment" ? "admin.inventory.fields.newBalance" : "admin.inventory.fields.quantity")}{" "}
+						<RequiredMark />
 					</span>
 					<NumericInput
 						decimalScale={3}
@@ -166,7 +167,7 @@ export function InventoryMovementModal({
 						disabled={
 							!unitId ||
 							!inventoryItemId ||
-							quantity <= 0 ||
+							(type === "adjustment" ? quantity < 0 : quantity <= 0) ||
 							(requiresTotalCost && totalCostCents <= 0) ||
 							mutation.isPending
 						}

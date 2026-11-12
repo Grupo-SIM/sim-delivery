@@ -74,12 +74,6 @@ export class InventoryService {
 		if (!unit || !item) throw new DomainError("INVENTORY_SCOPE_INVALID");
 		if (body.type === "entry" && (body.quantity <= 0 || body.unitCostCents === undefined))
 			throw new DomainError("INVENTORY_ENTRY_COST_REQUIRED");
-		const delta =
-			body.type === "entry"
-				? Math.abs(body.quantity)
-				: body.type === "loss"
-					? -Math.abs(body.quantity)
-					: body.quantity;
 
 		return this.prisma.$transaction(async tx => {
 			const current = await tx.unitInventoryBalance.upsert({
@@ -88,7 +82,12 @@ export class InventoryService {
 				where: { unitId_inventoryItemId: { inventoryItemId: item.id, unitId: unit.id } },
 			});
 			const oldQuantity = number(current.quantity);
-			const nextQuantity = oldQuantity + delta;
+			// Correction sets the absolute balance; the stored movement quantity is the resulting delta.
+			const nextQuantity =
+				body.type === "adjustment"
+					? body.quantity
+					: oldQuantity + (body.type === "entry" ? Math.abs(body.quantity) : -Math.abs(body.quantity));
+			const delta = nextQuantity - oldQuantity;
 			let averageCostCents = number(current.averageCostCents);
 			if (body.type === "entry") {
 				const costedOldQuantity = Math.max(0, oldQuantity);

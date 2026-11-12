@@ -635,6 +635,7 @@
 					"item": "Insumo",
 					"measureUnit": "Unidade de medida",
 					"name": "Nome",
+					"newBalance": "Novo saldo",
 					"quantity": "Quantidade",
 					"reason": "Motivo",
 					"totalCost": "Custo total",
