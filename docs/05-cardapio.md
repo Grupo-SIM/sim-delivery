@@ -78,7 +78,7 @@ técnica global; o custo e a disponibilidade são calculados com o estoque da un
   uma unidade possuem deltas locais.
 - Pedido reserva insumos na criação e consome ao entrar em preparo. Cancelamento anterior ao
   preparo libera a reserva; cancelamento posterior não recompõe estoque automaticamente.
-- Entradas recalculam custo médio ponderado. Ajustes e perdas mantêm histórico imutável.
+- Entradas recalculam custo médio ponderado. Correções e saídas mantêm histórico imutável.
 
 ## Pontos em aberto
 

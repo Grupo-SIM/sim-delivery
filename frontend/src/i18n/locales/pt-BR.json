@@ -680,9 +680,9 @@
 				"subtitle": "Saldos, reservas, custos e cobertura por unidade.",
 				"title": "Estoque",
 				"types": {
-					"adjustment": "Ajuste",
+					"adjustment": "Correção",
 					"entry": "Entrada",
-					"loss": "Perda"
+					"loss": "Saída"
 				},
 				"units": {
 					"gram": "Grama",

@@ -97,8 +97,8 @@ function MovementsPage() {
 						options={[
 							{ label: t("admin.inventory.filters.allTypes"), value: "" },
 							{ label: t("admin.inventory.types.entry"), value: "entry" },
-							{ label: t("admin.inventory.types.adjustment"), value: "adjustment" },
 							{ label: t("admin.inventory.types.loss"), value: "loss" },
+							{ label: t("admin.inventory.types.adjustment"), value: "adjustment" },
 						]}
 						value={type}
 					/>
