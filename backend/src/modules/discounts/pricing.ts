@@ -3,6 +3,7 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 /** Minimal discount shape the pricing rules need (matches the `discount` table). */
 export interface DiscountRule {
 	active: boolean;
+	categoryIds: string[];
 	endsAt: Date | null;
 	id: string;
 	kind: string;
@@ -15,6 +16,8 @@ export interface DiscountRule {
 }
 
 export interface DiscountTarget {
+	/** Effective categories of the product at the unit (unit override or product default). */
+	categoryIds: string[];
 	productId: string;
 	/** Effective tags of the product at the unit (unit override or product default). */
 	tagIds: string[];
@@ -40,10 +43,13 @@ export function isDiscountRunning(discount: DiscountRule, now: Date): boolean {
 
 export function discountMatches(discount: DiscountRule, target: DiscountTarget): boolean {
 	if (discount.unitIds.length > 0 && !discount.unitIds.includes(target.unitId)) return false;
-	if (discount.productIds.length === 0 && discount.tagIds.length === 0) return true;
+	if (discount.productIds.length === 0 && discount.categoryIds.length === 0 && discount.tagIds.length === 0) {
+		return true;
+	}
 
 	return (
 		discount.productIds.includes(target.productId) ||
+		target.categoryIds.some(categoryId => discount.categoryIds.includes(categoryId)) ||
 		target.tagIds.some(tagId => discount.tagIds.includes(tagId))
 	);
 }

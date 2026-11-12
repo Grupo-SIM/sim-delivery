@@ -2,11 +2,12 @@ import { describe, expect, it } from "bun:test";
 import { type DiscountRule, resolveDiscountedPrice } from "./pricing";
 
 const now = new Date("2026-06-01T12:00:00Z");
-const target = { productId: "p1", tagIds: ["t1"], unitId: "u1" };
+const target = { categoryIds: ["c1"], productId: "p1", tagIds: ["t1"], unitId: "u1" };
 
 function rule(overrides: Partial<DiscountRule>): DiscountRule {
 	return {
 		active: true,
+		categoryIds: [],
 		endsAt: null,
 		id: "d1",
 		kind: "real",
@@ -59,6 +60,11 @@ describe("resolveDiscountedPrice", () => {
 		expect(resolveDiscountedPrice([rule({ productIds: ["p1"] })], target, 1000, now).discountId).toBe("d1");
 		expect(resolveDiscountedPrice([rule({ tagIds: ["t1"] })], target, 1000, now).discountId).toBe("d1");
 		expect(resolveDiscountedPrice([rule({ tagIds: ["t2"] })], target, 1000, now).discountId).toBeNull();
+		expect(resolveDiscountedPrice([rule({ categoryIds: ["c1"] })], target, 1000, now).discountId).toBe("d1");
+		expect(resolveDiscountedPrice([rule({ categoryIds: ["c2"] })], target, 1000, now).discountId).toBeNull();
+		expect(
+			resolveDiscountedPrice([rule({ categoryIds: ["c2"], productIds: ["p1"] })], target, 1000, now).discountId,
+		).toBe("d1");
 		expect(resolveDiscountedPrice([rule({ unitIds: ["u2"] })], target, 1000, now).discountId).toBeNull();
 		expect(
 			resolveDiscountedPrice([rule({ tagIds: ["t1"], unitIds: ["u1"] })], target, 1000, now).discountId,

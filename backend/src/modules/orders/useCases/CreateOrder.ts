@@ -61,7 +61,8 @@ export class CreateOrder {
 			include: {
 				additionalOptions: true,
 				optionOverrides: true,
-				product: { include: { optionGroups: { include: { options: true } }, tags: true } },
+				categories: true,
+				product: { include: { categories: true, optionGroups: { include: { options: true } }, tags: true } },
 				tags: true,
 			},
 			where: { id: { in: items.map(i => i.unitProductId) }, unitId },
@@ -70,6 +71,8 @@ export class CreateOrder {
 			priceCentsOverride: number | null;
 			promotionalPriceCents: number | null;
 			stock: number | null;
+			categories?: Array<{ categoryId: string }>;
+			categoriesOverridden?: boolean;
 			tags?: Array<{ tagId: string }>;
 			tagsOverridden?: boolean;
 			additionalOptions: Array<{
@@ -89,6 +92,7 @@ export class CreateOrder {
 			}>;
 			product: {
 				basePriceCents: number;
+				categories?: Array<{ categoryId: string }>;
 				id: string;
 				tags?: Array<{ tagId: string }>;
 				title: string;
@@ -228,6 +232,10 @@ export class CreateOrder {
 				resolveDiscountedPrice(
 					discounts,
 					{
+						categoryIds:
+							(assoc.categoriesOverridden ? assoc.categories : assoc.product.categories)?.map(
+								category => category.categoryId,
+							) ?? [],
 						productId: assoc.product.id,
 						tagIds: (assoc.tagsOverridden ? assoc.tags : assoc.product.tags)?.map(tag => tag.tagId) ?? [],
 						unitId,

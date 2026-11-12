@@ -163,7 +163,7 @@ export class ListPublicMenu {
 				const regularPriceCents = association.priceCentsOverride ?? product.basePriceCents;
 				const discounted = resolveDiscountedPrice(
 					discounts,
-					{ productId: product.id, tagIds, unitId: unit.id },
+					{ categoryIds: categories.map(item => item.id), productId: product.id, tagIds, unitId: unit.id },
 					association.promotionalPriceCents ?? regularPriceCents,
 				);
 				const basePriceCents = discounted.priceCents;

@@ -1,7 +1,8 @@
 /// Price discount applied to menu items (docs/05). `real` lowers the price actually charged;
 /// `fake` only inflates the struck-through "de" price while the customer pays the regular price.
 /// Targets are additive filters: empty `unitIds` = every unit; a product matches when its id is in
-/// `productIds` or it carries a tag in `tagIds`; both empty = every product.
+/// `productIds`, it belongs to a category in `categoryIds` or it carries a tag in `tagIds`; all three
+/// empty = every product.
 model Discount {
     id         String    @id @default(cuid())
     companyId  String
@@ -12,6 +13,7 @@ model Discount {
     type       String
     /// Percent (1..99) or cents, depending on `type`.
     value      Int
+    categoryIds String[] @default([])
     productIds String[]  @default([])
     tagIds     String[]  @default([])
     unitIds    String[]  @default([])

@@ -6,6 +6,7 @@ const Type = t.Union([t.Literal("percent"), t.Literal("fixed")]);
 /** Editable discount fields shared by create (required name/kind/type/value) and update (all optional). */
 const fields = {
 	active: t.Optional(t.Boolean()),
+	categoryIds: t.Optional(t.Array(t.String())),
 	endsAt: t.Optional(t.Nullable(t.String({ format: "date-time" }))),
 	productIds: t.Optional(t.Array(t.String())),
 	startsAt: t.Optional(t.Nullable(t.String({ format: "date-time" }))),
