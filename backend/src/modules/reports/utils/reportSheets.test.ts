@@ -92,6 +92,14 @@ describe("buildReportSheets", () => {
 		expect(rows[1]?.at(-1)).toMatchObject({ type: Number, value: 45 });
 	});
 
+	it("exports the coproduction share and the net amount after it", () => {
+		const rows = sheetByName(buildReportSheets(input({ orders: [order({ payment: { coproductionCents: 239 } })] })), "Pedidos");
+
+		expect(rows[0]?.slice(-2).map(cell => (cell as { value: string }).value)).toEqual(["Coprodução", "Valor líquido"]);
+		expect(rows[1]?.at(-2)).toMatchObject({ value: 2.39 });
+		expect(rows[1]?.at(-1)).toMatchObject({ value: 42.61 });
+	});
+
 	it("shows the last included day rather than the exclusive end of the range", () => {
 		const rows = sheetByName(buildReportSheets(input()), "Resumo");
 

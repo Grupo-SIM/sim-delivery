@@ -33,6 +33,7 @@ export class ExportReports {
 					coupon: { select: { code: true } },
 					customer: { include: { user: { select: { name: true } } } },
 					items: { include: { optionSnapshots: true } },
+					payment: { select: { coproductionCents: true, simintpayFeeCents: true } },
 					unit: { select: { name: true } },
 				},
 				orderBy: { createdAt: "desc" },
