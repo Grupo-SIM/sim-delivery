@@ -4,16 +4,17 @@ import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { useGetDiscounts, useGetProducts, useGetTags, useGetUnits } from "@/lib/api";
+import { useGetCategories, useGetDiscounts, useGetProducts, useGetTags, useGetUnits } from "@/lib/api";
 import { CreateDiscountForm, DiscountsTable } from "./components";
 
 function DiscountsPage() {
 	const { t } = useTranslation();
 	const discountsQuery = useGetDiscounts();
+	const categoriesQuery = useGetCategories();
 	const productsQuery = useGetProducts();
 	const tagsQuery = useGetTags();
 	const unitsQuery = useGetUnits();
-	const queries = [discountsQuery, productsQuery, tagsQuery, unitsQuery];
+	const queries = [categoriesQuery, discountsQuery, productsQuery, tagsQuery, unitsQuery];
 
 	return (
 		<Container className="space-y-6 py-8">
@@ -27,8 +28,9 @@ function DiscountsPage() {
 				<ErrorState title={t("admin.discounts.loadError")} />
 			) : (
 				<>
-					<CreateDiscountForm products={productsQuery.data} tags={tagsQuery.data} units={unitsQuery.data} />
+					<CreateDiscountForm categories={categoriesQuery.data} products={productsQuery.data} tags={tagsQuery.data} units={unitsQuery.data} />
 					<DiscountsTable
+						categories={categoriesQuery.data}
 						discounts={discountsQuery.data ?? []}
 						products={productsQuery.data}
 						tags={tagsQuery.data}

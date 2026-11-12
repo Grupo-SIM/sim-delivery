@@ -8,6 +8,7 @@ import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Modal } from "@/components/ui/Modal";
 import { Tooltip } from "@/components/ui/Tooltip";
 import {
+	type GetCategories200,
 	type GetDiscounts200,
 	type GetProducts200,
 	type GetTags200,
@@ -22,6 +23,7 @@ import { DiscountFormFields } from "./DiscountFormFields";
 import { type DiscountFormState, isDiscountFormValid } from "./types";
 
 interface DiscountRowProps {
+	categories: GetCategories200 | undefined;
 	discount: GetDiscounts200[number];
 	products: GetProducts200 | undefined;
 	tags: GetTags200 | undefined;
@@ -30,6 +32,7 @@ interface DiscountRowProps {
 
 function discountToForm(discount: GetDiscounts200[number]): DiscountFormState {
 	return {
+		categoryIds: discount.categoryIds,
 		endsAt: dateTimeToDigits(discount.endsAt),
 		kind: discount.kind as DiscountFormState["kind"],
 		name: discount.name,
@@ -48,7 +51,7 @@ function formatValue(discount: GetDiscounts200[number]) {
 		: `${discount.value}%`;
 }
 
-export function DiscountRow({ discount, products, tags, units }: DiscountRowProps) {
+export function DiscountRow({ categories, discount, products, tags, units }: DiscountRowProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [editing, setEditing] = useState(false);
@@ -79,6 +82,7 @@ export function DiscountRow({ discount, products, tags, units }: DiscountRowProp
 		update.mutate(
 			{
 				data: {
+					categoryIds: form.categoryIds,
 					endsAt,
 					kind: form.kind,
 					name: form.name.trim(),
@@ -130,8 +134,11 @@ export function DiscountRow({ discount, products, tags, units }: DiscountRowProp
 
 	const scope = [
 		discount.productIds.length > 0 && t("admin.discounts.row.products", { count: discount.productIds.length }),
+		discount.categoryIds.length > 0 && t("admin.discounts.row.categories", { count: discount.categoryIds.length }),
 		discount.tagIds.length > 0 && t("admin.discounts.row.tags", { count: discount.tagIds.length }),
-		discount.productIds.length === 0 && discount.tagIds.length === 0 && t("admin.discounts.form.allProducts"),
+		discount.productIds.length === 0 &&
+			discount.categoryIds.length === 0 &&
+			discount.tagIds.length === 0 && t("admin.discounts.form.allProducts"),
 	]
 		.filter(Boolean)
 		.join(" · ");
@@ -214,6 +221,7 @@ export function DiscountRow({ discount, products, tags, units }: DiscountRowProp
 			>
 				<div className="space-y-4">
 					<DiscountFormFields
+						categories={categories}
 						onChange={next => setForm(prev => ({ ...prev, ...next }))}
 						products={products}
 						tags={tags}

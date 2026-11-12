@@ -2,6 +2,7 @@ export type DiscountKind = "fake" | "real";
 export type DiscountType = "fixed" | "percent";
 
 export interface DiscountFormState {
+	categoryIds: string[];
 	endsAt: string;
 	kind: DiscountKind;
 	name: string;
@@ -14,6 +15,7 @@ export interface DiscountFormState {
 }
 
 export const emptyDiscountForm: DiscountFormState = {
+	categoryIds: [],
 	endsAt: "",
 	kind: "real",
 	name: "",

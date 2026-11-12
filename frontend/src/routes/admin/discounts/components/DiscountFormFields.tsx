@@ -5,11 +5,12 @@ import { Input } from "@/components/ui/input";
 import { RequiredMark } from "@/components/ui/label";
 import { NumericInput } from "@/components/ui/NumericInput";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
-import type { GetProducts200, GetTags200, GetUnits200 } from "@/lib/api";
+import type { GetCategories200, GetProducts200, GetTags200, GetUnits200 } from "@/lib/api";
 import { TargetPicker } from "./TargetPicker";
 import type { DiscountFormState } from "./types";
 
 interface DiscountFormFieldsProps {
+	categories: GetCategories200 | undefined;
 	onChange: (next: Partial<DiscountFormState>) => void;
 	products: GetProducts200 | undefined;
 	tags: GetTags200 | undefined;
@@ -17,16 +18,16 @@ interface DiscountFormFieldsProps {
 	value: DiscountFormState;
 }
 
-export function DiscountFormFields({ onChange, products, tags, units, value }: DiscountFormFieldsProps) {
+export function DiscountFormFields({ categories, onChange, products, tags, units, value }: DiscountFormFieldsProps) {
 	const { t } = useTranslation();
 	const [localName, setLocalName, flushName] = useDebouncedInput(value.name, name => onChange({ name }));
 	const isFixed = value.type === "fixed";
 
 	return (
 		<div className="space-y-4">
-			<div className="grid gap-4 md:grid-cols-2">
+			<div className="grid items-start gap-4 md:grid-cols-2">
 				{/* biome-ignore lint/a11y/noLabelWithoutControl: Input is a custom control nested in the label. */}
-				<label className="grid gap-2 font-medium text-sm">
+				<label className="grid content-start gap-2 font-medium text-sm">
 					<span>
 						{t("admin.discounts.form.name")} <RequiredMark />
 					</span>
@@ -39,7 +40,7 @@ export function DiscountFormFields({ onChange, products, tags, units, value }: D
 						value={localName}
 					/>
 				</label>
-				<div className="grid gap-2 font-medium text-sm">
+				<div className="grid content-start gap-2 font-medium text-sm">
 					<span>
 						{t("admin.discounts.form.kind")} <RequiredMark />
 					</span>
@@ -57,8 +58,8 @@ export function DiscountFormFields({ onChange, products, tags, units, value }: D
 				</div>
 			</div>
 
-			<div className="grid gap-4 md:grid-cols-2">
-				<div className="grid gap-2 font-medium text-sm">
+			<div className="grid items-start gap-4 md:grid-cols-2">
+				<div className="grid content-start gap-2 font-medium text-sm">
 					<span>
 						{t("admin.discounts.form.type")} <RequiredMark />
 					</span>
@@ -71,7 +72,7 @@ export function DiscountFormFields({ onChange, products, tags, units, value }: D
 						value={value.type}
 					/>
 				</div>
-				<div className="grid gap-2 font-medium text-sm">
+				<div className="grid content-start gap-2 font-medium text-sm">
 					<span>
 						{t("admin.discounts.form.value")} <RequiredMark />
 					</span>
@@ -88,17 +89,27 @@ export function DiscountFormFields({ onChange, products, tags, units, value }: D
 				</div>
 			</div>
 
-			<div className="grid gap-4 md:grid-cols-3">
+			<div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
 				<TargetPicker
 					emptyLabel={t("admin.discounts.form.allProducts")}
 					label={t("admin.discounts.form.products")}
+					noOptionsLabel={t("admin.discounts.form.noProducts")}
 					onChange={productIds => onChange({ productIds })}
 					options={(products ?? []).map(product => ({ id: product.id, label: product.title }))}
 					selected={value.productIds}
 				/>
 				<TargetPicker
-					emptyLabel={t("admin.discounts.form.noTags")}
+					emptyLabel={t("admin.discounts.form.allCategories")}
+					label={t("admin.discounts.form.categories")}
+					noOptionsLabel={t("admin.discounts.form.noCategoriesRegistered")}
+					onChange={categoryIds => onChange({ categoryIds })}
+					options={(categories ?? []).map(category => ({ id: category.id, label: category.name }))}
+					selected={value.categoryIds}
+				/>
+				<TargetPicker
+					emptyLabel={t("admin.discounts.form.allTags")}
 					label={t("admin.discounts.form.tags")}
+					noOptionsLabel={t("admin.discounts.form.noTagsRegistered")}
 					onChange={tagIds => onChange({ tagIds })}
 					options={(tags ?? []).map(tag => ({ id: tag.id, label: tag.name }))}
 					selected={value.tagIds}
@@ -106,6 +117,7 @@ export function DiscountFormFields({ onChange, products, tags, units, value }: D
 				<TargetPicker
 					emptyLabel={t("admin.discounts.form.allUnits")}
 					label={t("admin.discounts.form.units")}
+					noOptionsLabel={t("admin.discounts.form.noUnits")}
 					onChange={unitIds => onChange({ unitIds })}
 					options={(units ?? []).map(unit => ({ id: unit.id, label: unit.name }))}
 					selected={value.unitIds}
@@ -113,12 +125,12 @@ export function DiscountFormFields({ onChange, products, tags, units, value }: D
 			</div>
 			<p className="text-muted-foreground text-xs">{t("admin.discounts.form.targetsHint")}</p>
 
-			<div className="grid gap-4 md:grid-cols-2">
-				<div className="grid gap-2 font-medium text-sm">
+			<div className="grid items-start gap-4 md:grid-cols-2">
+				<div className="grid content-start gap-2 font-medium text-sm">
 					<span>{t("admin.discounts.form.startsAt")}</span>
 					<DateTimePicker onChange={startsAt => onChange({ startsAt })} value={value.startsAt} />
 				</div>
-				<div className="grid gap-2 font-medium text-sm">
+				<div className="grid content-start gap-2 font-medium text-sm">
 					<span>{t("admin.discounts.form.endsAt")}</span>
 					<DateTimePicker onChange={endsAt => onChange({ endsAt })} value={value.endsAt} />
 				</div>

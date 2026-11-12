@@ -3,18 +3,23 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { dateTimeToDate } from "@/lib/date-time-digits";
-import { getDiscountsQueryKey, type GetProducts200, type GetTags200, type GetUnits200, usePostDiscounts } from "@/lib/api";
+import {
+	type GetCategories200,
+	getDiscountsQueryKey,
+	type GetProducts200, type GetTags200, type GetUnits200, 	usePostDiscounts,
+} from "@/lib/api";
 import { showToast } from "@/stores";
 import { DiscountFormFields } from "./DiscountFormFields";
 import { type DiscountFormState, emptyDiscountForm, isDiscountFormValid } from "./types";
 
 interface CreateDiscountFormProps {
+	categories: GetCategories200 | undefined;
 	products: GetProducts200 | undefined;
 	tags: GetTags200 | undefined;
 	units: GetUnits200 | undefined;
 }
 
-export function CreateDiscountForm({ products, tags, units }: CreateDiscountFormProps) {
+export function CreateDiscountForm({ categories, products, tags, units }: CreateDiscountFormProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [form, setForm] = useState<DiscountFormState>(emptyDiscountForm);
@@ -35,6 +40,7 @@ export function CreateDiscountForm({ products, tags, units }: CreateDiscountForm
 		mutate(
 			{
 				data: {
+					categoryIds: form.categoryIds,
 					endsAt,
 					kind: form.kind,
 					name: form.name.trim(),
@@ -68,6 +74,7 @@ export function CreateDiscountForm({ products, tags, units }: CreateDiscountForm
 		>
 			<h2 className="font-semibold">{t("admin.discounts.create.heading")}</h2>
 			<DiscountFormFields
+				categories={categories}
 				key={formKey}
 				onChange={next => setForm(prev => ({ ...prev, ...next }))}
 				products={products}

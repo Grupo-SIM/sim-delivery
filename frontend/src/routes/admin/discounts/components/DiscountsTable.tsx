@@ -1,17 +1,18 @@
 import { useTranslation } from "react-i18next";
 import { DataTable } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/EmptyState";
-import type { GetDiscounts200, GetProducts200, GetTags200, GetUnits200 } from "@/lib/api";
+import type { GetCategories200, GetDiscounts200, GetProducts200, GetTags200, GetUnits200 } from "@/lib/api";
 import { DiscountRow } from "./DiscountRow";
 
 interface DiscountsTableProps {
+	categories: GetCategories200 | undefined;
 	discounts: GetDiscounts200;
 	products: GetProducts200 | undefined;
 	tags: GetTags200 | undefined;
 	units: GetUnits200 | undefined;
 }
 
-export function DiscountsTable({ discounts, products, tags, units }: DiscountsTableProps) {
+export function DiscountsTable({ categories, discounts, products, tags, units }: DiscountsTableProps) {
 	const { t } = useTranslation();
 
 	if (discounts.length === 0) return <EmptyState title={t("admin.discounts.empty")} />;
@@ -31,7 +32,7 @@ export function DiscountsTable({ discounts, products, tags, units }: DiscountsTa
 			</thead>
 			<tbody>
 				{discounts.map(discount => (
-					<DiscountRow discount={discount} key={discount.id} products={products} tags={tags} units={units} />
+					<DiscountRow categories={categories} discount={discount} key={discount.id} products={products} tags={tags} units={units} />
 				))}
 			</tbody>
 		</DataTable>

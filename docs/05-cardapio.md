@@ -34,9 +34,10 @@ técnica global; o custo e a disponibilidade são calculados com o estoque da un
 
 ## Descontos (reais e falsos)
 
-- Gerenciados em `/admin/discounts` por `owner`/`manager`. Escopo por **produto**, **etiqueta** e **unidade**:
-  unidades vazias = todas; produto casa se estiver na lista de produtos **ou** tiver uma das etiquetas
-  (etiquetas efetivas da unidade); produtos e etiquetas vazios = todos os produtos.
+- Gerenciados em `/admin/discounts` por `owner`/`manager`. Filtros por **produto**, **categoria** e **etiqueta**
+  são inclusivos (união): recebe desconto o produto que estiver na lista de produtos **ou** em uma das
+  categorias **ou** tiver uma das etiquetas (categorias/etiquetas efetivas da unidade); os três vazios = todos
+  os produtos. **Unidades** é filtro restritivo: o desconto só vale nas unidades marcadas (vazio = todas).
 - Valor percentual (1–99%) ou fixo em centavos; período opcional (`startsAt`/`endsAt`) e ativo/inativo.
 - **Real**: reduz o preço cobrado. Aplica-se ao preço-base efetivo (preço da unidade ou promocional); opções
   nunca são descontadas. Entre vários reais, vence o de maior economia (sem acúmulo). O backend recalcula o
