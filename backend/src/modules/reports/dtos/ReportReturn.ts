@@ -62,6 +62,8 @@ export type DashboardAnalyticsReturn = typeof DashboardAnalyticsReturn.static;
 const FinancialSummary = t.Object({
 	averageOrderValue: t.Integer(),
 	cashbackRedeemedCents: t.Integer(),
+	/** Coproducers' share (net of refunds); already deducted from netRevenueCents. */
+	coproductionCents: t.Integer(),
 	deliveryFeeCents: t.Integer(),
 	discountCents: t.Integer(),
 	grossMarginPercent: t.Nullable(t.Number()),

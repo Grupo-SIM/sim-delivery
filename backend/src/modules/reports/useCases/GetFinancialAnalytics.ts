@@ -55,9 +55,16 @@ function merchantRefund(order: { feeTotalCents: number; payment?: { coproduction
 	return order.total > 0 ? Math.round((order.refundedCents * merchantAmount(order)) / order.total) : 0;
 }
 
+/** Coproducers' share of the order, net of the proportional refund. */
+function coproductionShare(order: { payment?: { coproductionCents?: number | null } | null; refundedCents: number; total: number }) {
+	const share = order.payment?.coproductionCents ?? 0;
+	return order.total > 0 ? share - Math.round((order.refundedCents * share) / order.total) : share;
+}
+
 function emptySummary(): {
 	averageOrderValue: number;
 	cashbackRedeemedCents: number;
+	coproductionCents: number;
 	deliveryFeeCents: number;
 	discountCents: number;
 	grossMarginPercent: number | null;
@@ -73,6 +80,7 @@ function emptySummary(): {
 	return {
 		averageOrderValue: 0,
 		cashbackRedeemedCents: 0,
+		coproductionCents: 0,
 		deliveryFeeCents: 0,
 		discountCents: 0,
 		grossMarginPercent: null,
@@ -116,6 +124,7 @@ function summarize(orders: FinancialOrder[]) {
 	for (const order of orders) {
 		summary.orderCount += 1;
 		summary.netRevenueCents += merchantAmount(order) - order.deliveryFee;
+		summary.coproductionCents += coproductionShare(order);
 		summary.deliveryFeeCents += order.deliveryFee;
 		summary.discountCents += order.discountCents;
 		summary.cashbackRedeemedCents += order.cashbackCentsRedeemed;

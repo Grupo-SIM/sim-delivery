@@ -153,6 +153,7 @@ function FinancePage() {
 					value: formatCents(Number(report.summary.averageOrderValue)),
 				},
 				{ change: null, label: "Frete", value: formatCents(Number(report.summary.deliveryFeeCents)) },
+				{ change: null, label: "Coprodução", value: formatCents(Number(report.summary.coproductionCents)) },
 			]
 		: [
 				{ change: loadingHint, label: "Receita líquida", value: loadingValue },
@@ -161,6 +162,7 @@ function FinancePage() {
 				{ change: loadingHint, label: "Pedidos concluídos", value: loadingValue },
 				{ change: loadingHint, label: "Ticket médio", value: loadingValue },
 				{ change: null, label: "Frete", value: loadingValue },
+				{ change: null, label: "Coprodução", value: loadingValue },
 			];
 	const trend = report?.trend.map(row => ({ ...row, netRevenueCents: Number(row.netRevenueCents) })) ?? [];
 	const payment =

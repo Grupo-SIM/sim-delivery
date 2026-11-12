@@ -133,6 +133,7 @@ describe("buildReportSheets", () => {
 			summary: {
 				averageOrderValue: 500,
 				cashbackRedeemedCents: 0,
+				coproductionCents: 0,
 				deliveryFeeCents: 0,
 				discountCents: 0,
 				grossMarginPercent: null,
