@@ -26,6 +26,9 @@ export function MenuItemCard({ item, onSelect, menuOnly = false, taxes = true }:
 	const displayPriceCents = displayedUnitPrice(Number(item.fromPriceCents), productFees);
 	const displayPrice = money.format(displayPriceCents / 100);
 	const isPromotional = Number(item.priceCents) < Number(item.regularPriceCents);
+	const discountPercent = isPromotional
+		? Math.round((1 - Number(item.priceCents) / Number(item.regularPriceCents)) * 100)
+		: 0;
 
 	return (
 		<Card
@@ -40,7 +43,12 @@ export function MenuItemCard({ item, onSelect, menuOnly = false, taxes = true }:
 			role={onSelect ? "button" : undefined}
 			tabIndex={onSelect ? 0 : undefined}
 		>
-			<div className="aspect-[4/3] w-full overflow-hidden bg-muted">
+			<div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
+				{discountPercent > 0 && (
+					<span className="absolute top-2 left-2 z-10 rounded-full bg-primary px-2.5 py-1 font-bold text-primary-foreground text-xs shadow-md">
+						-{discountPercent}%
+					</span>
+				)}
 				{item.imageUrl ? (
 					<img
 						alt={item.title}
@@ -79,19 +87,16 @@ export function MenuItemCard({ item, onSelect, menuOnly = false, taxes = true }:
 				)}
 				<div className="mt-auto flex items-end gap-2 pt-2">
 					<div>
-						{isPromotional && (
-							<span className="mr-2 text-muted-foreground text-xs line-through">
-								{money.format(displayedUnitPrice(Number(item.regularPriceCents), productFees) / 100)}
-							</span>
-						)}
 						{showFromPrice && (
 							<span className="block text-[11px] text-muted-foreground">{t("store.product.from")}</span>
 						)}
-						<span className="font-bold text-lg">{displayPrice}</span>
-						<ProductFeeSummary priceCents={Number(item.fromPriceCents)} fees={productFees} className="text-muted-foreground" />
 						{isPromotional && (
-							<Badge className="ml-2" tone="accent">Oferta</Badge>
+							<span className="block text-muted-foreground text-xs line-through">
+								{money.format(displayedUnitPrice(Number(item.regularPriceCents), productFees) / 100)}
+							</span>
 						)}
+						<span className={cn("block font-bold text-lg", isPromotional && "text-primary")}>{displayPrice}</span>
+						<ProductFeeSummary priceCents={Number(item.fromPriceCents)} fees={productFees} className="text-muted-foreground" />
 					</div>
 					{!menuOnly && item.cashbackPercent != null && (
 						<Badge tone="accent">{item.cashbackPercent}%</Badge>
