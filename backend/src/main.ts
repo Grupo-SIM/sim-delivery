@@ -8,7 +8,14 @@ import { SeedAdmin } from "./shared/infra/SeedAdmin";
 import { SeedOwner } from "./shared/infra/SeedOwner";
 import { prisma } from "./shared/infra/sql";
 import { simpay } from "./shared/infra/simpay";
-import { createWhatsAppProvider, startWhatsAppOutboxWorker } from "./shared/infra/whatsapp";
+import {
+	createWhatsAppProvider,
+	getWahaClientOptions,
+	startWhatsAppOutboxWorker,
+	startWhatsAppSessionWatchdog,
+	WahaClient,
+	WahaWhatsAppProvider,
+} from "./shared/infra/whatsapp";
 
 // Add modules here
 await new SeedAdmin(prisma, input => auth.api.signUpEmail(input)).execute();
@@ -16,6 +23,7 @@ await new SeedOwner(prisma, input => auth.api.signUpEmail(input)).execute();
 const whatsApp = createWhatsAppProvider();
 startExpiredUnpaidOrderCancellation(prisma, whatsApp);
 startWhatsAppOutboxWorker(prisma, whatsApp);
+if (whatsApp instanceof WahaWhatsAppProvider) startWhatsAppSessionWatchdog(prisma, new WahaClient(getWahaClientOptions()));
 startMetaCapiWorker(prisma);
 startPendingPaymentReconciliation(prisma, simpay);
 

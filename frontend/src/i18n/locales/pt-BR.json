@@ -1788,6 +1788,7 @@
 					"noPhone": "Número ainda não identificado",
 					"qrAlt": "QR Code para conectar o WhatsApp",
 					"qrError": "Não foi possível carregar o QR Code.",
+					"reauthToast": "O WhatsApp da empresa foi desconectado. Escaneie o QR Code novamente em Empresa > WhatsApp.",
 					"refresh": "Atualizar",
 					"scanHint": "No WhatsApp, abra Aparelhos conectados e escaneie este QR Code.",
 					"status": {

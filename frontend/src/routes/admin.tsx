@@ -4,7 +4,7 @@ import { LuMenu, LuX } from "react-icons/lu";
 import { ScrollArea } from "@/components/ui/ScrollArea";
 import { isOperationalStaff, requireStaffBeforeLoad } from "@/lib/staff-guard";
 import { useAuthStore } from "@/stores";
-import { AdminBrand, AdminSidebar, OperationalNavbar } from "./admin/components";
+import { AdminBrand, AdminSidebar, OperationalNavbar, WhatsAppReauthToasts } from "./admin/components";
 
 function AdminLayout() {
 	const [mobileOpen, setMobileOpen] = useState(false);
@@ -34,6 +34,7 @@ function AdminLayout() {
 					: "admin-shell flex min-h-screen overflow-x-hidden"
 			}
 		>
+			<WhatsAppReauthToasts />
 			<aside className="fixed inset-y-0 left-0 z-20 hidden w-60 flex-col border-border border-r bg-card text-card-foreground md:flex">
 				<AdminSidebar />
 			</aside>

@@ -31,6 +31,9 @@ restrita a `owner`/`manager` (ver [03-papeis-e-permissoes.md](03-papeis-e-permis
 - Uma unidade pertence a exatamente uma empresa (`companyId`); nunca compartilhada.
 - Cada unidade possui no máximo uma sessão WAHA transacional. Owner, manager atribuído à
   unidade e superAdmin podem conectá-la ou desconectá-la.
+- Um watchdog no backend (60s) reinicia sessões WAHA `FAILED`/`STOPPED` com backoff (máx. 5 tentativas
+  seguidas). Se a sessão exigir novo QR Code (`SCAN_QR_CODE`, `PASSKEY_*`), o dono da empresa recebe e-mail
+  (no máx. a cada 6h por sessão) e o painel admin exibe toast de aviso a cada minuto até reconectar.
 - Recuperação de uma sessão WAHA existente usa seu próprio nome e endpoint de reinício.
   Conflitos de metadados não criam sessões alternativas; criação ocorre apenas se WAHA
   confirmar que a sessão vinculada não existe (HTTP 404).

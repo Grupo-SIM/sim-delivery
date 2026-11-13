@@ -4,6 +4,7 @@ export { WahaWhatsAppProvider } from "./implementations/WahaWhatsAppProvider";
 export { WhatsAppProvider, type WhatsAppSender } from "./WhatsAppProvider";
 export type { WhatsAppAttachment, WhatsAppMessage } from "./WhatsAppMessage";
 export { dispatchWhatsApp, ProcessWhatsAppOutbox, startWhatsAppOutboxWorker } from "./WhatsAppOutbox";
+export { startWhatsAppSessionWatchdog, WhatsAppSessionWatchdog } from "./WhatsAppSessionWatchdog";
 export {
 	getWahaClientOptions,
 	getWahaBrazilianChatIds,
