@@ -92,34 +92,42 @@ export function DiscountFormFields({ categories, onChange, products, tags, units
 			<div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
 				<TargetPicker
 					emptyLabel={t("admin.discounts.form.allProducts")}
+					kind="products"
 					label={t("admin.discounts.form.products")}
 					noOptionsLabel={t("admin.discounts.form.noProducts")}
 					onChange={productIds => onChange({ productIds })}
 					options={(products ?? []).map(product => ({ id: product.id, label: product.title }))}
+					searchPlaceholder={t("admin.discounts.picker.search.products")}
 					selected={value.productIds}
 				/>
 				<TargetPicker
 					emptyLabel={t("admin.discounts.form.allCategories")}
+					kind="categories"
 					label={t("admin.discounts.form.categories")}
 					noOptionsLabel={t("admin.discounts.form.noCategoriesRegistered")}
 					onChange={categoryIds => onChange({ categoryIds })}
 					options={(categories ?? []).map(category => ({ id: category.id, label: category.name }))}
+					searchPlaceholder={t("admin.discounts.picker.search.categories")}
 					selected={value.categoryIds}
 				/>
 				<TargetPicker
 					emptyLabel={t("admin.discounts.form.allTags")}
+					kind="tags"
 					label={t("admin.discounts.form.tags")}
 					noOptionsLabel={t("admin.discounts.form.noTagsRegistered")}
 					onChange={tagIds => onChange({ tagIds })}
 					options={(tags ?? []).map(tag => ({ id: tag.id, label: tag.name }))}
+					searchPlaceholder={t("admin.discounts.picker.search.tags")}
 					selected={value.tagIds}
 				/>
 				<TargetPicker
 					emptyLabel={t("admin.discounts.form.allUnits")}
+					kind="units"
 					label={t("admin.discounts.form.units")}
 					noOptionsLabel={t("admin.discounts.form.noUnits")}
 					onChange={unitIds => onChange({ unitIds })}
 					options={(units ?? []).map(unit => ({ id: unit.id, label: unit.name }))}
+					searchPlaceholder={t("admin.discounts.picker.search.units")}
 					selected={value.unitIds}
 				/>
 			</div>

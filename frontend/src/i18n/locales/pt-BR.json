@@ -575,8 +575,6 @@
 					"noTagsRegistered": "Nenhuma etiqueta cadastrada.",
 					"noUnits": "Nenhuma unidade cadastrada.",
 					"products": "Produtos",
-					"selectedCount_one": "{{count}} selecionado",
-					"selectedCount_other": "{{count}} selecionados",
 					"startsAt": "Começa em",
 					"tags": "Etiquetas",
 					"targetsHint": "Produtos, categorias e etiquetas somam: recebe desconto quem estiver em qualquer um dos filtros marcados (sem nenhum marcado, todos os produtos). Unidades restringem onde o desconto vale.",
@@ -593,6 +591,19 @@
 					"real": "Real"
 				},
 				"loadError": "Não foi possível carregar os descontos.",
+				"picker": {
+					"confirm": "Confirmar",
+					"discard": "Descartar",
+					"empty": "Nada encontrado.",
+					"search": {
+						"categories": "Buscar categoria por nome",
+						"products": "Buscar produto por nome",
+						"tags": "Buscar etiqueta por nome",
+						"units": "Buscar unidade por nome"
+					},
+					"selected_one": "{{count}} selecionado",
+					"selected_other": "{{count}} selecionados"
+				},
 				"row": {
 					"activate": "Ativar",
 					"activated": "Desconto ativado.",

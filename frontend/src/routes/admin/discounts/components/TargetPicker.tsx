@@ -1,41 +1,119 @@
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/Checkbox";
+import { Input } from "@/components/ui/input";
+import { Modal } from "@/components/ui/Modal";
 import { ScrollArea } from "@/components/ui/ScrollArea";
+import { useDebouncedInput } from "@/hooks/use-debounced-input";
 
 interface TargetPickerProps {
+	/** Shown on the trigger while nothing is selected (selection empty = "all"). */
 	emptyLabel: string;
+	/** Stable key identifying this picker in the modal URL. */
+	kind: string;
 	label: string;
 	noOptionsLabel: string;
 	onChange: (ids: string[]) => void;
 	options: { id: string; label: string }[];
+	searchPlaceholder: string;
 	selected: string[];
 }
 
-/** Checkbox list used to pick discount targets; an empty selection means "all". */
-export function TargetPicker({ emptyLabel, label, noOptionsLabel, onChange, options, selected }: TargetPickerProps) {
+/** Trigger + modal (search, checkbox list, Descartar/Confirmar) used to pick discount targets. */
+export function TargetPicker({
+	emptyLabel,
+	kind,
+	label,
+	noOptionsLabel,
+	onChange,
+	options,
+	searchPlaceholder,
+	selected,
+}: TargetPickerProps) {
 	const { t } = useTranslation();
+	const [isOpen, setIsOpen] = useState(false);
+	const [draft, setDraft] = useState<string[]>([]);
+	const [search, setSearch] = useState("");
+	const [localSearch, setLocalSearch] = useDebouncedInput(search, setSearch);
+	const filtered = useMemo(() => {
+		const query = search.trim().toLocaleLowerCase();
+		return query ? options.filter(option => option.label.toLocaleLowerCase().includes(query)) : options;
+	}, [options, search]);
+
+	function open() {
+		setDraft(selected);
+		setSearch("");
+		setIsOpen(true);
+	}
 
 	function toggle(id: string) {
-		onChange(selected.includes(id) ? selected.filter(item => item !== id) : [...selected, id]);
+		setDraft(ids => (ids.includes(id) ? ids.filter(item => item !== id) : [...ids, id]));
+	}
+
+	function confirm() {
+		onChange(draft);
+		setIsOpen(false);
 	}
 
 	return (
 		<div className="grid content-start gap-2 font-medium text-sm">
 			<span>{label}</span>
-			<ScrollArea className="h-40 overflow-y-auto rounded-md border border-input">
-				<div className="grid gap-1 p-2">
-					{options.length === 0 && <p className="font-normal text-muted-foreground">{noOptionsLabel}</p>}
-					{options.map(option => (
-						<label className="flex cursor-pointer items-center gap-2 font-normal" key={option.id}>
-							<Checkbox checked={selected.includes(option.id)} onChange={() => toggle(option.id)} />
-							<span>{option.label}</span>
-						</label>
-					))}
+			<Button
+				className="w-full justify-between font-normal"
+				onClick={open}
+				type="button"
+				variant="outline"
+			>
+				<span className="truncate">
+					{selected.length === 0
+						? emptyLabel
+						: t("admin.discounts.picker.selected", { count: selected.length })}
+				</span>
+			</Button>
+			<Modal
+				isOpen={isOpen}
+				layer="submodal"
+				maxWidth="640px"
+				onClose={() => setIsOpen(false)}
+				title={label}
+				urlKey={`discount-targets-${kind}`}
+			>
+				<div className="space-y-4">
+					<Badge tone="neutral">{t("admin.discounts.picker.selected", { count: draft.length })}</Badge>
+					<Input
+						name={`discount-${kind}-search`}
+						onChange={event => setLocalSearch(event.currentTarget.value)}
+						placeholder={searchPlaceholder}
+						value={localSearch}
+					/>
+					<ScrollArea className="max-h-72 overflow-y-auto">
+						{filtered.map(option => (
+							<label
+								className="flex cursor-pointer items-center gap-2 rounded-md border border-transparent p-2 font-normal text-sm hover:border-border hover:bg-muted/40"
+								key={option.id}
+							>
+								<Checkbox checked={draft.includes(option.id)} onChange={() => toggle(option.id)} />
+								<span className="min-w-0 flex-1 truncate">{option.label}</span>
+							</label>
+						))}
+						{filtered.length === 0 && (
+							<p className="py-6 text-center text-muted-foreground text-sm">
+								{options.length === 0 ? noOptionsLabel : t("admin.discounts.picker.empty")}
+							</p>
+						)}
+					</ScrollArea>
+					<div className="flex justify-end gap-2 border-border border-t pt-4">
+						<Button onClick={() => setIsOpen(false)} type="button" variant="outline">
+							{t("admin.discounts.picker.discard")}
+						</Button>
+						<Button onClick={confirm} type="button">
+							{t("admin.discounts.picker.confirm")}
+						</Button>
+					</div>
 				</div>
-			</ScrollArea>
-			<p className="font-normal text-muted-foreground text-xs">
-				{selected.length === 0 ? emptyLabel : t("admin.discounts.form.selectedCount", { count: selected.length })}
-			</p>
+			</Modal>
 		</div>
 	);
 }
