@@ -2,7 +2,7 @@
 /// `fake` only inflates the struck-through "de" price while the customer pays the regular price.
 /// Targets are additive filters: empty `unitIds` = every unit; a product matches when its id is in
 /// `productIds`, it belongs to a category in `categoryIds` or it carries a tag in `tagIds`; all three
-/// empty = every product.
+/// empty = no product (the admin UI selects every item to target the whole menu).
 model Discount {
     id         String    @id @default(cuid())
     companyId  String

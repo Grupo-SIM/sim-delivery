@@ -41,12 +41,9 @@ export function isDiscountRunning(discount: DiscountRule, now: Date): boolean {
 	);
 }
 
+/** Products, categories and tags are inclusive filters (union); with none selected nothing matches. Units restrict. */
 export function discountMatches(discount: DiscountRule, target: DiscountTarget): boolean {
 	if (discount.unitIds.length > 0 && !discount.unitIds.includes(target.unitId)) return false;
-	if (discount.productIds.length === 0 && discount.categoryIds.length === 0 && discount.tagIds.length === 0) {
-		return true;
-	}
-
 	return (
 		discount.productIds.includes(target.productId) ||
 		target.categoryIds.some(categoryId => discount.categoryIds.includes(categoryId)) ||
