@@ -9,8 +9,12 @@ import { ScrollArea } from "@/components/ui/ScrollArea";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
 
 interface TargetPickerProps {
-	/** Shown on the trigger while nothing is selected (selection empty = "all"). */
+	/** Label of the "select everything" option, also shown on the trigger when it applies. */
+	allLabel: string;
+	/** Shown on the trigger while nothing is selected and an empty selection does not mean "all". */
 	emptyLabel: string;
+	/** When true an empty selection means "all" (units); otherwise it means "none". */
+	emptyMeansAll?: boolean;
 	/** Stable key identifying this picker in the modal URL. */
 	kind: string;
 	label: string;
@@ -23,7 +27,9 @@ interface TargetPickerProps {
 
 /** Trigger + modal (search, checkbox list, Descartar/Confirmar) used to pick discount targets. */
 export function TargetPicker({
+	allLabel,
 	emptyLabel,
+	emptyMeansAll = false,
 	kind,
 	label,
 	noOptionsLabel,
@@ -52,6 +58,23 @@ export function TargetPicker({
 		setDraft(ids => (ids.includes(id) ? ids.filter(item => item !== id) : [...ids, id]));
 	}
 
+	const allSelected = emptyMeansAll
+		? draft.length === 0
+		: options.length > 0 && draft.length === options.length;
+
+	function toggleAll() {
+		setDraft(emptyMeansAll || allSelected ? [] : options.map(option => option.id));
+	}
+
+	const triggerLabel =
+		selected.length === 0
+			? emptyMeansAll
+				? allLabel
+				: emptyLabel
+			: !emptyMeansAll && selected.length === options.length
+				? allLabel
+				: t("admin.discounts.picker.selected", { count: selected.length });
+
 	function confirm() {
 		onChange(draft);
 		setIsOpen(false);
@@ -66,11 +89,7 @@ export function TargetPicker({
 				type="button"
 				variant="outline"
 			>
-				<span className="truncate">
-					{selected.length === 0
-						? emptyLabel
-						: t("admin.discounts.picker.selected", { count: selected.length })}
-				</span>
+				<span className="truncate">{triggerLabel}</span>
 			</Button>
 			<Modal
 				isOpen={isOpen}
@@ -89,6 +108,12 @@ export function TargetPicker({
 						value={localSearch}
 					/>
 					<ScrollArea className="max-h-72 overflow-y-auto">
+						{options.length > 0 && (
+							<label className="flex cursor-pointer items-center gap-2 rounded-md border border-transparent p-2 font-medium text-sm hover:border-border hover:bg-muted/40">
+								<Checkbox checked={allSelected} onChange={toggleAll} />
+								<span className="min-w-0 flex-1 truncate">{allLabel}</span>
+							</label>
+						)}
 						{filtered.map(option => (
 							<label
 								className="flex cursor-pointer items-center gap-2 rounded-md border border-transparent p-2 font-normal text-sm hover:border-border hover:bg-muted/40"

@@ -91,7 +91,8 @@ export function DiscountFormFields({ categories, onChange, products, tags, units
 
 			<div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-4">
 				<TargetPicker
-					emptyLabel={t("admin.discounts.form.allProducts")}
+					allLabel={t("admin.discounts.form.allProducts")}
+					emptyLabel={t("admin.discounts.form.noneProducts")}
 					kind="products"
 					label={t("admin.discounts.form.products")}
 					noOptionsLabel={t("admin.discounts.form.noProducts")}
@@ -101,7 +102,8 @@ export function DiscountFormFields({ categories, onChange, products, tags, units
 					selected={value.productIds}
 				/>
 				<TargetPicker
-					emptyLabel={t("admin.discounts.form.allCategories")}
+					allLabel={t("admin.discounts.form.allCategories")}
+					emptyLabel={t("admin.discounts.form.noneCategories")}
 					kind="categories"
 					label={t("admin.discounts.form.categories")}
 					noOptionsLabel={t("admin.discounts.form.noCategoriesRegistered")}
@@ -111,7 +113,8 @@ export function DiscountFormFields({ categories, onChange, products, tags, units
 					selected={value.categoryIds}
 				/>
 				<TargetPicker
-					emptyLabel={t("admin.discounts.form.allTags")}
+					allLabel={t("admin.discounts.form.allTags")}
+					emptyLabel={t("admin.discounts.form.noneTags")}
 					kind="tags"
 					label={t("admin.discounts.form.tags")}
 					noOptionsLabel={t("admin.discounts.form.noTagsRegistered")}
@@ -121,7 +124,9 @@ export function DiscountFormFields({ categories, onChange, products, tags, units
 					selected={value.tagIds}
 				/>
 				<TargetPicker
+					allLabel={t("admin.discounts.form.allUnits")}
 					emptyLabel={t("admin.discounts.form.allUnits")}
+					emptyMeansAll
 					kind="units"
 					label={t("admin.discounts.form.units")}
 					noOptionsLabel={t("admin.discounts.form.noUnits")}

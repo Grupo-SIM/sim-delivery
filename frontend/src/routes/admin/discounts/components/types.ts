@@ -28,5 +28,8 @@ export const emptyDiscountForm: DiscountFormState = {
 };
 
 export function isDiscountFormValid(form: DiscountFormState): boolean {
-	return form.name.trim() !== "" && form.value > 0 && (form.type !== "percent" || form.value < 100);
+	return (
+		form.name.trim() !== "" &&
+		(form.productIds.length > 0 || form.categoryIds.length > 0 || form.tagIds.length > 0) && form.value > 0 && (form.type !== "percent" || form.value < 100)
+	);
 }

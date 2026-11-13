@@ -136,9 +136,6 @@ export function DiscountRow({ categories, discount, products, tags, units }: Dis
 		discount.productIds.length > 0 && t("admin.discounts.row.products", { count: discount.productIds.length }),
 		discount.categoryIds.length > 0 && t("admin.discounts.row.categories", { count: discount.categoryIds.length }),
 		discount.tagIds.length > 0 && t("admin.discounts.row.tags", { count: discount.tagIds.length }),
-		discount.productIds.length === 0 &&
-			discount.categoryIds.length === 0 &&
-			discount.tagIds.length === 0 && t("admin.discounts.form.allProducts"),
 	]
 		.filter(Boolean)
 		.join(" · ");
