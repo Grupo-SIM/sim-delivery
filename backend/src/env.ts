@@ -64,6 +64,7 @@ export const envSchema = t.Object({
 			format: "uri",
 		}),
 	),
+	S3_PREFIX: t.Optional(t.String()),
 	S3_SECRET_ACCESS_KEY: t.Optional(t.String()),
 	SIMPAY_API_URL: t.Optional(
 		t.String({
