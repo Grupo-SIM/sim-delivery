@@ -41,7 +41,20 @@ export class WithdrawalService {
 		}
 		try {
 			const summary = await this.simpay.getWithdrawalSummary(this.merchant(company));
-			return { ...summary, configured: true, minimumCents: company.withdrawalMinimumCents, pixKey: company.withdrawalPixKey };
+			// Provider counts APPROVED as processing; only still-pending requests are.
+			const processing = await this.prisma.withdrawal.aggregate({
+				_count: true,
+				_sum: { grossAmountCents: true },
+				where: { companyId, status: "PENDING" },
+			});
+			return {
+				...summary,
+				configured: true,
+				processingCount: processing._count,
+				processingGrossCents: processing._sum.grossAmountCents ?? 0,
+				minimumCents: company.withdrawalMinimumCents,
+				pixKey: company.withdrawalPixKey,
+			};
 		} catch (error) {
 			throw new DomainError(WithdrawalErrors.WITHDRAWAL_PROVIDER_ERROR, error instanceof Error ? error.message : undefined);
 		}
