@@ -1,21 +1,30 @@
+export type EarlyImage = { sizes: string; widths: number[] };
+
 export type EarlyPreloadConfig = {
 	apiUrl: string;
+	banner: EarlyImage;
 	cdnUrl?: string;
 	companySlug?: string;
-	imageSizes: string;
-	imageWidths: number[];
+	product: EarlyImage;
+	/** Top-level paths that are not unit slugs (orders, profile, admin...). */
+	reservedPaths: string[];
 };
 
 /**
- * Runs inline in `<head>` (serialized by the Vite plugin), before any bundle loads. For a direct product link
- * (`?product=`) it starts the menu request immediately and preloads the product photo with high priority as
- * soon as the menu answers, instead of waiting for JS + API + render to discover the `<img>`.
+ * Runs inline in `<head>` (serialized by the Vite plugin), before any bundle loads. On storefront entry points
+ * (`/` and `/<unit>`) it starts the units and menu requests immediately and preloads the LCP candidates with
+ * high priority as soon as they are known: the first banner and, for `?product=` links, the product photo.
+ * Without it the `<img>` is only discovered after JS + API + render.
  * Must stay self-contained: no imports or outer references. Responses are parked in `window.__earlyFetch`
  * and consumed once by `takeEarlyResponse` (src/lib/early-fetch.ts).
  */
 export function earlyPreload(config: EarlyPreloadConfig) {
-	const productId = new URLSearchParams(location.search).get("product");
-	if (!productId) return;
+	const segments = location.pathname.split("/").filter(Boolean).map(decodeURIComponent);
+	if (segments.length > 1 || (segments[0] && config.reservedPaths.includes(segments[0]))) return;
+
+	const search = new URLSearchParams(location.search);
+	const productId = search.get("product");
+	const menuOnly = search.get("menuOnly") === "true";
 
 	const store = new Map<string, Promise<Response | undefined>>();
 	(window as unknown as { __earlyFetch: typeof store }).__earlyFetch = store;
@@ -32,10 +41,10 @@ export function earlyPreload(config: EarlyPreloadConfig) {
 		return pending;
 	};
 
-	const preload = async (response: Response | undefined) => {
-		if (!response?.ok) return;
-		const sections: { items: { id: string; imageUrl?: string | null }[] }[] = await response.clone().json();
-		const imageUrl = sections.flatMap(section => section.items).find(item => item.id === productId)?.imageUrl;
+	const json = async <T>(response: Response | undefined): Promise<T | undefined> =>
+		response?.ok ? ((await response.clone().json()) as T) : undefined;
+
+	const preload = (imageUrl: string | null | undefined, image: EarlyImage) => {
 		if (!imageUrl) return;
 
 		const link = document.createElement("link");
@@ -45,23 +54,32 @@ export function earlyPreload(config: EarlyPreloadConfig) {
 		link.setAttribute("fetchpriority", "high");
 		if (config.cdnUrl && imageUrl.startsWith(`${config.cdnUrl}/`)) {
 			const base = imageUrl.split("?")[0];
-			link.setAttribute("imagesrcset", config.imageWidths.map(width => `${base}?width=${width} ${width}w`).join(", "));
-			link.setAttribute("imagesizes", config.imageSizes);
+			link.setAttribute("imagesrcset", image.widths.map(width => `${base}?width=${width} ${width}w`).join(", "));
+			link.setAttribute("imagesizes", image.sizes);
 		}
 		document.head.append(link);
 	};
 
-	const [unitSlug] = location.pathname.split("/").filter(Boolean).map(decodeURIComponent);
-	if (unitSlug) {
-		void request(`/public/units/${unitSlug}/menu`).then(preload);
+	const loadMenu = (unitSlug: string) =>
+		request(`/public/units/${unitSlug}/menu`).then(async response => {
+			const sections = await json<{ items: { id: string; imageUrl?: string | null }[] }[]>(response);
+			if (productId) preload(sections?.flatMap(section => section.items).find(item => item.id === productId)?.imageUrl, config.product);
+		});
+
+	const units = request("/public/units").then(json<{ bannerUrls: string[]; slug: string }[]>);
+	const loadBanner = (unitSlug?: string) =>
+		units.then(list => {
+			const unit = unitSlug ? list?.find(each => each.slug === unitSlug) : list?.length === 1 ? list[0] : undefined;
+			if (!menuOnly) preload(unit?.bannerUrls[0], config.banner);
+			return unit?.slug;
+		});
+
+	if (segments[0]) {
+		void loadMenu(segments[0]);
+		void loadBanner(segments[0]);
 		return;
 	}
 
 	// Homepage of a single-unit company: the unit slug is only known after the units list.
-	void request("/public/units")
-		.then(async response => {
-			if (!response?.ok) return;
-			const units: { slug: string }[] = await response.clone().json();
-			if (units.length === 1) await request(`/public/units/${units[0].slug}/menu`).then(preload);
-		});
+	void loadBanner().then(unitSlug => unitSlug && loadMenu(unitSlug));
 }

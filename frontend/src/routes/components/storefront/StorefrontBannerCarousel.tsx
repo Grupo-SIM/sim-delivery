@@ -1,5 +1,6 @@
 import { type TouchEvent, useEffect, useRef, useState } from "react";
 import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
+import { BANNER_IMAGE_SIZES, BANNER_IMAGE_WIDTHS } from "@/lib/early-images";
 import { cn } from "@/lib/utils";
 import { cdnSrcSet } from "@/lib/media-url";
 
@@ -89,7 +90,7 @@ export function StorefrontBannerCarousel({ className, images, label }: Storefron
 					style={{ transform: `translateX(-${currentIndex * 100}%)` }}
 				>
 					{images.map((image, index) => {
-						const content = <img alt={image.alt} className="h-full w-full object-cover" decoding="async" fetchPriority={index === 0 ? "high" : "auto"} loading={index === 0 ? "eager" : "lazy"} sizes="(min-width: 1024px) 1024px, 100vw" src={image.src} srcSet={cdnSrcSet(image.src, [480, 640, 768, 1024, 1280, 1600])} />;
+						const content = <img alt={image.alt} className="h-full w-full object-cover" decoding="async" fetchPriority={index === 0 ? "high" : "auto"} loading={index === 0 ? "eager" : "lazy"} sizes={BANNER_IMAGE_SIZES} src={image.src} srcSet={cdnSrcSet(image.src, BANNER_IMAGE_WIDTHS)} />;
 						const interactive = index === currentIndex;
 						return (
 							<div aria-hidden={index !== currentIndex} className="h-full w-full shrink-0" key={`${image.src}-${index}`}>

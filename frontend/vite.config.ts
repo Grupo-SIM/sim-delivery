@@ -1,15 +1,23 @@
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
+import { readdirSync } from "node:fs";
+import { join } from "node:path";
 import { defineConfig, type Plugin } from "vite";
 import svgr from "vite-plugin-svgr";
 import "dotenv/config";
 import { branding } from "./src/lib/branding";
+import { BANNER_IMAGE_SIZES, BANNER_IMAGE_WIDTHS, PRODUCT_IMAGE_SIZES, PRODUCT_IMAGE_WIDTHS } from "./src/lib/early-images";
 import { earlyPreload } from "./src/lib/early-preload";
-import { PRODUCT_IMAGE_SIZES, PRODUCT_IMAGE_WIDTHS } from "./src/lib/product-image";
 
 const host = process.env.TAURI_DEV_HOST;
 
-/** Inlines the early menu fetch + product photo preload at the top of <head> (direct product links only). */
+// Top-level route segments that are never unit slugs: real routes, plus the storefront pages that sit beside `$unitId`.
+const reservedPaths = [...new Set([".", "_storefront"]
+	.flatMap(dir => readdirSync(join("src/routes", dir), { withFileTypes: true }))
+	.map(entry => entry.name.replace(/\.tsx?$/, ""))
+	.filter(name => !name.startsWith("$") && !name.startsWith("_") && name !== "components" && name !== "index"))];
+
+/** Inlines, at the top of <head>, the early units/menu fetch and the banner/product photo preloads. */
 const earlyProductPreload = (): Plugin => ({
 	name: "early-product-preload",
 	transformIndexHtml: () => [
@@ -18,8 +26,9 @@ const earlyProductPreload = (): Plugin => ({
 				apiUrl: branding.apiUrl,
 				cdnUrl: process.env.VITE_CDN_URL?.replace(/\/+$/, ""),
 				companySlug: branding.companySlug || process.env.VITE_COMPANY_SLUG,
-				imageSizes: PRODUCT_IMAGE_SIZES,
-				imageWidths: PRODUCT_IMAGE_WIDTHS,
+				banner: { sizes: BANNER_IMAGE_SIZES, widths: BANNER_IMAGE_WIDTHS },
+				product: { sizes: PRODUCT_IMAGE_SIZES, widths: PRODUCT_IMAGE_WIDTHS },
+				reservedPaths,
 			}).replaceAll("<", "\\u003c")})`,
 			injectTo: "head-prepend",
 			tag: "script",

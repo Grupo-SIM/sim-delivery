@@ -18,7 +18,7 @@ import { type MenuItem, money } from "../types";
 import { ProductOptionGroup } from "./ProductOptionGroup";
 import type { OptionImagePreview, ProductOption } from "./types";
 import { cdnSrcSet } from "@/lib/media-url";
-import { PRODUCT_IMAGE_SIZES, PRODUCT_IMAGE_WIDTHS } from "@/lib/product-image";
+import { PRODUCT_IMAGE_SIZES, PRODUCT_IMAGE_WIDTHS } from "@/lib/early-images";
 
 interface ProductDetailsModalProps {
 	item: MenuItem | null;
