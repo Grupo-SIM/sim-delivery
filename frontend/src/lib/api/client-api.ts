@@ -1,12 +1,17 @@
 import { createClient } from "@hyoretsu/kubb/client";
 import ky from "ky";
 import { branding } from "@/lib/branding";
+import { takeEarlyResponse } from "@/lib/early-fetch";
 
 export type { Client, RequestConfig, ResponseConfig, ResponseErrorConfig } from "@hyoretsu/kubb/client";
 export default createClient(
 	ky.extend({
 		baseUrl: branding.apiUrl,
 		credentials: "include",
+		fetch: async (input, init) => {
+			const early = await takeEarlyResponse(input instanceof Request ? input.url : String(input));
+			return early?.ok ? early : fetch(input, init);
+		},
 		hooks: {
 			beforeRequest: [({ request }) => {
 				if (typeof window === "undefined") return;

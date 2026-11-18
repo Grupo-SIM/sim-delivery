@@ -1,11 +1,31 @@
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import svgr from "vite-plugin-svgr";
 import "dotenv/config";
 import { branding } from "./src/lib/branding";
+import { earlyPreload } from "./src/lib/early-preload";
+import { PRODUCT_IMAGE_SIZES, PRODUCT_IMAGE_WIDTHS } from "./src/lib/product-image";
 
 const host = process.env.TAURI_DEV_HOST;
+
+/** Inlines the early menu fetch + product photo preload at the top of <head> (direct product links only). */
+const earlyProductPreload = (): Plugin => ({
+	name: "early-product-preload",
+	transformIndexHtml: () => [
+		{
+			children: `(${earlyPreload.toString()})(${JSON.stringify({
+				apiUrl: branding.apiUrl,
+				cdnUrl: process.env.VITE_CDN_URL?.replace(/\/+$/, ""),
+				companySlug: branding.companySlug || process.env.VITE_COMPANY_SLUG,
+				imageSizes: PRODUCT_IMAGE_SIZES,
+				imageWidths: PRODUCT_IMAGE_WIDTHS,
+			}).replaceAll("<", "\\u003c")})`,
+			injectTo: "head-prepend",
+			tag: "script",
+		},
+	],
+});
 
 export default defineConfig({
 	build: {
@@ -28,7 +48,7 @@ export default defineConfig({
 	},
 	clearScreen: false,
 	envPrefix: ["VITE_", "TAURI_"],
-	plugins: [tanstackRouter({ autoCodeSplitting: true, routeFileIgnorePattern: "^components$" }), react(), svgr()],
+	plugins: [tanstackRouter({ autoCodeSplitting: true, routeFileIgnorePattern: "^components$" }), react(), svgr(), earlyProductPreload()],
 	resolve: {
 		tsconfigPaths: true,
 	},
