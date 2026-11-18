@@ -208,9 +208,16 @@ try {
 	let logoUrl = "";
 	const logoAsset = await fetchBrandingAsset(logoSourceUrl);
 	if (logoSourceUrl && logoAsset) {
-		const logoFilename = `logo.${extensionFrom(logoAsset.contentType, logoSourceUrl)}`;
+		const sourceExtension = extensionFrom(logoAsset.contentType, logoSourceUrl);
+		// Logos render at ~48px; uploads can be huge (e.g. 17000px, 2.5 MB), so rasterize to a bounded WebP.
+		const logoFilename = sourceExtension === "svg" ? "logo.svg" : "logo.webp";
 		logoPath = join(publicDir, logoFilename);
-		await writeFile(logoPath, logoAsset.bytes);
+		await writeFile(
+			logoPath,
+			sourceExtension === "svg"
+				? logoAsset.bytes
+				: await sharp(logoAsset.bytes).resize({ fit: "inside", height: 512, width: 512, withoutEnlargement: true }).webp({ quality: 85 }).toBuffer(),
+		);
 		logoUrl = `/${logoFilename}`;
 	}
 	await writeFile(join(publicDir, "branding.css"), createBrandingCss(themeColors, fontFamily, fontDisplay));
