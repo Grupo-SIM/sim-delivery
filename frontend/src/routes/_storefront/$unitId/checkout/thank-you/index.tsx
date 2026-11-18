@@ -1,11 +1,11 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { z } from "zod";
+import { object, optional, string } from "zod/mini";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
-const searchSchema = z.object({
-	orderId: z.string().optional(),
+const searchSchema = object({
+	orderId: optional(string()),
 });
 
 function ThankYouPage() {

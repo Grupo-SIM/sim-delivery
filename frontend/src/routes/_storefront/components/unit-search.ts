@@ -1,15 +1,19 @@
-import { z } from "zod";
+import { boolean, catch as catchValue, enum as zEnum, object, optional, pipe, string, transform, union } from "zod/mini";
 
-const optionalBooleanSearch = z
-	.union([z.boolean(), z.enum(["true", "false"])])
-	.transform(value => value === true || value === "true")
-	.optional()
-	.catch(undefined);
+const optionalBooleanSearch = catchValue(
+	optional(
+		pipe(
+			union([boolean(), zEnum(["true", "false"])]),
+			transform(value => value === true || value === "true"),
+		),
+	),
+	undefined,
+);
 
-export const unitSearchSchema = z.object({
+export const unitSearchSchema = object({
 	menuOnly: optionalBooleanSearch,
-	note: z.string().optional(),
-	options: z.string().optional(),
-	product: z.string().optional(),
+	note: optional(string()),
+	options: optional(string()),
+	product: optional(string()),
 	taxes: optionalBooleanSearch,
 });

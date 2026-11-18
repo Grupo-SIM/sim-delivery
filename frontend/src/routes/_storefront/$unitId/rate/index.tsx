@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { LuStar } from "react-icons/lu";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { z } from "zod";
+import { object, string } from "zod/mini";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/Container";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -14,8 +14,8 @@ import { useGetCustomerOrder } from "@/lib/api/get-customer-order";
 import { slug } from "@/lib/variant";
 import { ProductRatingRow } from "./components";
 
-const searchSchema = z.object({
-	orderId: z.string(),
+const searchSchema = object({
+	orderId: string(),
 });
 
 function RatePage() {

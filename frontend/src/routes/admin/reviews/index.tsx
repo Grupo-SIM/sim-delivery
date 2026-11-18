@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { z } from "zod";
+import { _default, enum as zEnum, object } from "zod/mini";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ProductReviewsTab, UnitReviewsTab } from "./components";
@@ -42,7 +42,7 @@ function ReviewsPage() {
 
 export const Route = createFileRoute("/admin/reviews/")({
 	component: ReviewsPage,
-	validateSearch: z.object({
-		tab: z.enum(["units", "products"]).default("units"),
+	validateSearch: object({
+		tab: _default(zEnum(["units", "products"]), "units"),
 	}),
 });
