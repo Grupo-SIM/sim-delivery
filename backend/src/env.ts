@@ -29,6 +29,8 @@ export const envSchema = t.Object({
 	}),
 	BETTER_AUTH_SECRETS: t.String({ default: "1:secret" }),
 	BETTER_AUTH_URL: t.String({ default: `${apiUrl}` }),
+	/** Public base URL (including any path) serving the media bucket through the CDN, e.g. https://cdn.example.com/bucket. */
+	CDN_URL: t.Optional(t.String({ format: "uri" })),
 	CORS_WHITELIST: t.String({ default: "*" }),
 	DATABASE_TEST_URL: t.Optional(
 		t.String({
