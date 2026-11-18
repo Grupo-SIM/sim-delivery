@@ -4,7 +4,7 @@
 		"backend#build": {
 			"cache": false,
 			"dependsOn": ["backend#inject", "^export", "generate"],
-			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
+			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_CDN_URL", "VITE_COMPANY_SLUG"],
 			"inputs": ["scripts/inject.ts", "src/**", ".env*"],
 			"outputLogs": "new-only",
 			"outputs": ["dist/**"]
@@ -12,7 +12,7 @@
 		"backend#dev": {
 			"cache": false,
 			"dependsOn": ["backend#inject", "^export", "generate"],
-			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
+			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_CDN_URL", "VITE_COMPANY_SLUG"],
 			"persistent": true
 		},
 		"backend#inject": {
@@ -50,7 +50,7 @@
 		"frontend#build": {
 			"cache": false,
 			"dependsOn": ["frontend#inject", "^export", "generate"],
-			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
+			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_CDN_URL", "VITE_COMPANY_SLUG"],
 			"inputs": ["src/**", "!src/**/generated/**"],
 			"outputLogs": "new-only",
 			"outputs": ["build/**", "dist/**", "out/**", ".next/**", "!.next/cache/**"]
@@ -59,7 +59,7 @@
 			"cache": false,
 			"dependsOn": ["frontend#inject", "^export", "generate"],
 			"persistent": true,
-			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"]
+			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_CDN_URL", "VITE_COMPANY_SLUG"]
 		},
 		"frontend#generate": {
 			"dependsOn": ["^export"],
@@ -70,7 +70,7 @@
 		"frontend#inject": {
 			"cache": false,
 			"dependsOn": ["sql#export"],
-			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
+			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_CDN_URL", "VITE_COMPANY_SLUG"],
 			"inputs": [".env*", "index.html", "scripts/inject.ts", "src-tauri/tauri.conf.json", "scripts/defaults/**", "scripts/branding-assets.ts", "scripts/branding-icons.ts"],
 			"outputLogs": "new-only",
 			"outputs": ["index.html", "public/apple-touch-icon.png", "public/branding.css", "public/favicon.png", "public/logo.*", "src/lib/branding.ts", "src-tauri/icons", "src-tauri/tauri.conf.json", "public/mobile-icon.*"]
@@ -111,34 +111,34 @@
 		"backend#check-types": {
 			"cache": false,
 			"dependsOn": ["backend#inject", "^export", "generate"],
-			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"]
+			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_CDN_URL", "VITE_COMPANY_SLUG"]
 		},
 		"frontend#check-types": {
 			"cache": false,
 			"dependsOn": ["frontend#inject", "^export", "generate"],
-			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"]
+			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_CDN_URL", "VITE_COMPANY_SLUG"]
 		},
 		"frontend#build:tauri": {
 			"cache": false,
 			"dependsOn": ["frontend#inject", "^export", "generate"],
-			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"]
+			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_CDN_URL", "VITE_COMPANY_SLUG"]
 		},
 		"frontend#dev:android": {
 			"cache": false,
 			"dependsOn": ["frontend#inject", "^export", "generate"],
-			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
+			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_CDN_URL", "VITE_COMPANY_SLUG"],
 			"persistent": true
 		},
 		"frontend#dev:desktop": {
 			"cache": false,
 			"dependsOn": ["frontend#inject", "^export", "generate"],
-			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
+			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_CDN_URL", "VITE_COMPANY_SLUG"],
 			"persistent": true
 		},
 		"frontend#dev:ios": {
 			"cache": false,
 			"dependsOn": ["frontend#inject", "^export", "generate"],
-			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_COMPANY_SLUG"],
+			"env": ["COMPANY_SLUG", "DATABASE_URL", "NODE_ENV", "VITE_API_URL", "VITE_APP_URL", "VITE_CDN_URL", "VITE_COMPANY_SLUG"],
 			"persistent": true
 		}
 	}

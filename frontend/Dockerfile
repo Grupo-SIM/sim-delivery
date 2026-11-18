@@ -19,9 +19,11 @@ WORKDIR /app
 ARG COMPANY_SLUG
 ARG NODE_ENV=production
 ARG BRANDING_REVISION=unversioned
+ARG VITE_CDN_URL
 
 ENV COMPANY_SLUG=${COMPANY_SLUG}
 ENV NODE_ENV=${NODE_ENV}
+ENV VITE_CDN_URL=${VITE_CDN_URL}
 
 COPY . .
 RUN --mount=type=secret,id=DATABASE_URL DATABASE_URL="$(cat /run/secrets/DATABASE_URL)" bunx turbo -F frontend build

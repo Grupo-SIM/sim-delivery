@@ -131,6 +131,7 @@ jobs:
             COMPANY_SLUG=${{ matrix.slug }}
             BRANDING_REVISION=${{ github.run_id }}-${{ github.run_attempt }}
             NODE_ENV=production
+            VITE_CDN_URL=${{ vars.VITE_CDN_URL }}
           dockerfile: frontend/Dockerfile
           image_suffix: frontend_${{ matrix.slug }}
           password: ${{ secrets.GITHUB_TOKEN }}
@@ -155,6 +156,7 @@ jobs:
     env:
       COMPANY_SLUG: ${{ matrix.slug }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      VITE_CDN_URL: ${{ vars.VITE_CDN_URL }}
       VITE_COMPANY_SLUG: ${{ matrix.slug }}
     steps:
       - name: Checkout repository
