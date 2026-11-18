@@ -3,7 +3,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/ScrollArea";
 import { type MenuItem, type MenuSection, money } from "./types";
-import { mediaUrl } from "@/lib/media-url";
 
 interface PromoCarouselProps {
 	sections: MenuSection[];
@@ -35,7 +34,7 @@ export function PromoCarousel({ sections }: PromoCarouselProps) {
 				{highlights.map(item => (
 					<Card className="flex w-40 shrink-0 flex-col overflow-hidden" key={item.id}>
 						{item.imageUrl && (
-							<img alt={item.title} className="h-24 w-full object-cover" loading="lazy" src={mediaUrl(item.imageUrl)} />
+							<img alt={item.title} className="h-24 w-full object-cover" loading="lazy" src={item.imageUrl} />
 						)}
 						<div className="flex flex-1 flex-col gap-1 p-3">
 							<p className="truncate font-medium text-sm">{item.title}</p>

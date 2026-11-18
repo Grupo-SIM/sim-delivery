@@ -1,7 +1,6 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { LuX } from "react-icons/lu";
 import { useModalHistory } from "@/hooks/use-modal-history";
-import { mediaUrl } from "@/lib/media-url";
 
 interface OptionImagePreviewModalProps {
 	alt: string;
@@ -27,7 +26,7 @@ export function OptionImagePreviewModal({ alt, imageUrl, onClose }: OptionImageP
 						<img
 							alt={alt}
 							className="size-full rounded-[calc(var(--radius-brand)-0.25rem)] object-contain"
-							src={mediaUrl(imageUrl, "full")}
+							src={imageUrl}
 						/>
 					)}
 					<Dialog.Close
