@@ -30,14 +30,20 @@ const inlineBrandingCss = (): Plugin => ({
 	},
 });
 
-/** Inlines, at the top of <head>, the early units/menu fetch and the banner/product photo preloads. */
+const cdnUrl = process.env.VITE_CDN_URL?.replace(/\/+$/, "");
+
+/**
+ * Inlines, at the top of <head>, the early units/menu fetch and the banner/product photo preloads, and opens the
+ * CDN connection while the API answers (images are fetched without CORS, so no `crossorigin` on the preconnect).
+ */
 const earlyProductPreload = (): Plugin => ({
 	name: "early-product-preload",
 	transformIndexHtml: () => [
+		...(cdnUrl ? [{ attrs: { href: cdnUrl, rel: "preconnect" }, injectTo: "head-prepend" as const, tag: "link" }] : []),
 		{
 			children: `(${earlyPreload.toString()})(${JSON.stringify({
 				apiUrl: branding.apiUrl,
-				cdnUrl: process.env.VITE_CDN_URL?.replace(/\/+$/, ""),
+				cdnUrl,
 				companySlug: branding.companySlug || process.env.VITE_COMPANY_SLUG,
 				banner: { sizes: BANNER_IMAGE_SIZES, widths: BANNER_IMAGE_WIDTHS },
 				product: { sizes: PRODUCT_IMAGE_SIZES, widths: PRODUCT_IMAGE_WIDTHS },
