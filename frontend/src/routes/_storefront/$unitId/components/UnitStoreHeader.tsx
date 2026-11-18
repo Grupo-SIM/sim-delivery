@@ -37,7 +37,6 @@ export function UnitStoreHeader({ onReviewsClick, unit, unitSlug, units }: UnitS
 					</Badge>
 					{Number(unit.ratingCount) > 0 && (
 						<button
-							aria-label={t("store.unit.reviews.title")}
 							className="cursor-pointer rounded-md border border-transparent focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
 							onClick={onReviewsClick}
 							type="button"

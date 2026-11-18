@@ -41,10 +41,12 @@ export function fontsToCss(
 	fontFamilyUrl?: string | null,
 	fontDisplayUrl?: string | null,
 ) {
+	// Page URLs (e.g. fonts.google.com/specimen/X) are not font files and fail CORS; Google families load via stylesheet.
+	const isFontFile = (url?: string | null) => !!url && !/^https?:\/\/fonts\.google\.com\//i.test(url);
 	const fontFaces = [
-		fontFamilyUrl &&
+		isFontFile(fontFamilyUrl) &&
 			`@font-face{font-family:"${escapeCssValue(fontFamily)}";src:url("${escapeCssValue(fontFamilyUrl)}") format("woff2");font-display:swap;}`,
-		fontDisplayUrl &&
+		isFontFile(fontDisplayUrl) &&
 			`@font-face{font-family:"${escapeCssValue(fontDisplay)}";src:url("${escapeCssValue(fontDisplayUrl)}") format("woff2");font-display:swap;}`,
 	]
 		.filter(Boolean)

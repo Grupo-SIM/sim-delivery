@@ -40,7 +40,6 @@ export function StoreToolbar({
 				<DeliveryMethodSelector deliveryMethods={deliveryMethods} unitId={unitId} />
 			</div>
 			<button
-				aria-label={t("store.unit.operation")}
 				className="store-hours flex w-full cursor-pointer items-center gap-3 rounded-xl border border-border bg-card px-3.5 py-2 text-left transition-colors hover:bg-muted sm:col-span-1 md:w-auto"
 				onClick={onHoursClick}
 				type="button"

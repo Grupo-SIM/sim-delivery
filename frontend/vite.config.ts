@@ -15,7 +15,7 @@ export default defineConfig({
 	},
 	clearScreen: false,
 	envPrefix: ["VITE_", "TAURI_"],
-	plugins: [tanstackRouter({ routeFileIgnorePattern: "^components$" }), react(), svgr()],
+	plugins: [tanstackRouter({ autoCodeSplitting: true, routeFileIgnorePattern: "^components$" }), react(), svgr()],
 	resolve: {
 		tsconfigPaths: true,
 	},

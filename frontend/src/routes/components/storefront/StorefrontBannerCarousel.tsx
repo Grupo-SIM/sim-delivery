@@ -88,7 +88,7 @@ export function StorefrontBannerCarousel({ className, images, label }: Storefron
 					style={{ transform: `translateX(-${currentIndex * 100}%)` }}
 				>
 					{images.map((image, index) => {
-						const content = <img alt={image.alt} className="h-full w-full object-cover" src={image.src} />;
+						const content = <img alt={image.alt} className="h-full w-full object-cover" decoding="async" fetchPriority={index === 0 ? "high" : "auto"} loading={index === 0 ? "eager" : "lazy"} src={image.src} />;
 						const interactive = index === currentIndex;
 						return (
 							<div aria-hidden={index !== currentIndex} className="h-full w-full shrink-0" key={`${image.src}-${index}`}>
@@ -120,19 +120,26 @@ export function StorefrontBannerCarousel({ className, images, label }: Storefron
 						>
 							<LuChevronRight aria-hidden className="size-5" />
 						</button>
-						<div className="absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
+						<div className="absolute inset-x-0 bottom-0 flex justify-center">
 							{images.map((image, index) => (
 								<button
 									aria-label={`Exibir banner ${index + 1}`}
 									aria-pressed={index === currentIndex}
 									className={cn(
-										"h-2.5 cursor-pointer rounded-full border border-white/70 shadow-sm transition-all",
-										index === currentIndex ? "w-6 bg-white" : "w-2.5 bg-black/35 hover:bg-white/70",
+										"group/dot grid h-6 cursor-pointer place-items-center transition-all",
+										index === currentIndex ? "w-8" : "w-6",
 									)}
 									key={`${image.src}-control-${index}`}
 									onClick={() => setActiveIndex(index)}
 									type="button"
-								/>
+								>
+									<span
+										className={cn(
+											"h-2.5 rounded-full border border-white/70 shadow-sm transition-all",
+											index === currentIndex ? "w-6 bg-white" : "w-2.5 bg-black/35 group-hover/dot:bg-white/70",
+										)}
+									/>
+								</button>
 							))}
 						</div>
 					</>

@@ -45,7 +45,7 @@ export function StorefrontHeader({
 				{!isHome && (
 					<BackButton />
 				)}
-				<Link aria-label={companyName} className="flex min-w-0 items-center gap-3" search={menuOnly ? { menuOnly: true, taxes } : undefined} to="/">
+				<Link aria-label={unitName ? undefined : companyName} className="flex min-w-0 items-center gap-3" search={menuOnly ? { menuOnly: true, taxes } : undefined} to="/">
 					{branding?.logoUrl ? (
 						<img alt="" className="h-12 w-12 rounded-xl object-contain" src={branding.logoUrl} />
 					) : (
