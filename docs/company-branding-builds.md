@@ -12,6 +12,8 @@ Keep one company build per checkout at a time: generated files are shared within
 
 The frontend runtime uses Nginx on port 5173, configured in `frontend/nginx.conf`. HTML, SPA navigation and mutable public files (including `branding.css` and logos) revalidate on every request. Successful content-hashed files under `/assets/` use immutable caching; missing assets return 404 without long-lived caching. They must never receive the SPA entrypoint as a successful CSS or JavaScript response. Nginx gzips text assets (`gzip_types` in `frontend/nginx.conf`); a reverse proxy in front, such as Caddy, may compress as well (`encode zstd gzip`) and skips responses already encoded.
 
+The Vite build inlines `public/branding.css` into `index.html` as a `<style>` block to remove one render-blocking request; the file is still emitted and served at `/branding.css`.
+
 After starting a local runtime, run `bun run --cwd frontend check:static http://127.0.0.1:5173`. This checks entrypoint assets, CSS content/types, cache headers, branding, SPA navigation and missing-file behavior. The same read-only check accepts a deployed URL.
 
 All proxy upstreams/replicas for one company must serve the same image version. Alternating entrypoint hashes on repeated cache-busted requests indicates inconsistent deployment targets; cache headers cannot repair that. Replace stale replicas/upstreams before considering the deployment complete. Proxies must preserve origin cache headers. Previously cached HTML/branding or HTML returned at asset URLs may require invalidating existing proxy/browser cache after deploying this fix.

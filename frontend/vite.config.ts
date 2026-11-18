@@ -1,6 +1,6 @@
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
-import { readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { defineConfig, type Plugin } from "vite";
 import svgr from "vite-plugin-svgr";
@@ -16,6 +16,19 @@ const reservedPaths = [...new Set([".", "_storefront"]
 	.flatMap(dir => readdirSync(join("src/routes", dir), { withFileTypes: true }))
 	.map(entry => entry.name.replace(/\.tsx?$/, ""))
 	.filter(name => !name.startsWith("$") && !name.startsWith("_") && name !== "components" && name !== "index"))];
+
+/** Inlines the small generated branding stylesheet so it stops being a separate render-blocking request. */
+const inlineBrandingCss = (): Plugin => ({
+	name: "inline-branding-css",
+	transformIndexHtml: {
+		handler: html => {
+			const file = join("public", "branding.css");
+			if (!existsSync(file)) return html;
+			return html.replace(/<link[^>]*href="\/branding\.css"[^>]*>/, () => `<style>${readFileSync(file, "utf8")}</style>`);
+		},
+		order: "pre",
+	},
+});
 
 /** Inlines, at the top of <head>, the early units/menu fetch and the banner/product photo preloads. */
 const earlyProductPreload = (): Plugin => ({
@@ -57,7 +70,7 @@ export default defineConfig({
 	},
 	clearScreen: false,
 	envPrefix: ["VITE_", "TAURI_"],
-	plugins: [tanstackRouter({ autoCodeSplitting: true, routeFileIgnorePattern: "^components$" }), react(), svgr(), earlyProductPreload()],
+	plugins: [tanstackRouter({ autoCodeSplitting: true, routeFileIgnorePattern: "^components$" }), react(), svgr(), inlineBrandingCss(), earlyProductPreload()],
 	resolve: {
 		tsconfigPaths: true,
 	},
