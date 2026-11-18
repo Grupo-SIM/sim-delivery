@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { ProductFeeSummary } from "./ProductFeeSummary";
 import { hasPriceVariation } from "./product-options";
 import { type MenuItem, money } from "./types";
+import { cdnSrcSet } from "@/lib/media-url";
 
 interface MenuItemCardProps {
 	item: MenuItem;
@@ -54,6 +55,8 @@ export function MenuItemCard({ item, onSelect, menuOnly = false, taxes = true }:
 						alt={item.title}
 						className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
 						loading="lazy"
+						sizes="(min-width: 1280px) 210px, (min-width: 1024px) calc((100vw - 14rem) / 2), 50vw"
+						srcSet={cdnSrcSet(item.imageUrl)}
 						src={item.imageUrl}
 					/>
 				) : (

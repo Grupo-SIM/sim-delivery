@@ -5,6 +5,7 @@ import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { displayedUnitPrice } from "@/lib/platform-fees";
 import { type CartItem, useCartStore } from "@/stores";
 import { money } from "./types";
+import { cdnSrcSet } from "@/lib/media-url";
 
 interface CartItemRowProps {
 	item: CartItem;
@@ -30,7 +31,9 @@ export function CartItemRow({ item, onEdit }: CartItemRowProps) {
 					alt={item.title}
 					className="size-14 shrink-0 rounded-md object-cover"
 					loading="lazy"
-					src={item.imageUrl}
+					sizes="56px"
+						srcSet={cdnSrcSet(item.imageUrl, [112, 168])}
+						src={item.imageUrl}
 				/>
 			)}
 			<div className="flex min-w-0 flex-1 flex-col gap-2">

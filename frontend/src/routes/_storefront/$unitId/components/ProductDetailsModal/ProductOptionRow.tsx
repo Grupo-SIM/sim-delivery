@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import type { SelectedOption } from "@/stores";
 import { money } from "../types";
 import type { OptionImagePreview, ProductOption, ProductOptionGroup } from "./types";
+import { cdnSrcSet } from "@/lib/media-url";
 
 interface ProductOptionRowProps {
 	group: ProductOptionGroup;
@@ -72,7 +73,7 @@ export function ProductOptionRow({
 					}}
 					type="button"
 				>
-					<img alt="" className="size-full object-cover" src={option.imageUrl} />
+					<img alt="" className="size-full object-cover" sizes="96px" src={option.imageUrl} srcSet={cdnSrcSet(option.imageUrl, [96, 192, 288])} />
 				</button>
 			) : null}
 			<div className="flex min-w-0 flex-1 flex-col justify-center">

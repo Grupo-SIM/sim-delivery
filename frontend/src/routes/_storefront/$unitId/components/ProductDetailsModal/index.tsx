@@ -17,6 +17,7 @@ import { hasPriceVariation, applyOptionQuantity, findInvalidGroup, isGroupComple
 import { type MenuItem, money } from "../types";
 import { ProductOptionGroup } from "./ProductOptionGroup";
 import type { OptionImagePreview, ProductOption } from "./types";
+import { cdnSrcSet } from "@/lib/media-url";
 
 interface ProductDetailsModalProps {
 	item: MenuItem | null;
@@ -227,7 +228,7 @@ export function ProductDetailsModal({
 						>
 						{selectedItem.imageUrl && (
 							<div className="aspect-[4/3] w-full shrink-0 self-start overflow-hidden rounded-brand bg-muted lg:aspect-square">
-								<img alt={selectedItem.title} className="size-full object-cover" src={selectedItem.imageUrl} />
+								<img alt={selectedItem.title} className="size-full object-cover" sizes="(min-width: 1024px) 400px, 100vw" src={selectedItem.imageUrl} srcSet={cdnSrcSet(selectedItem.imageUrl, [400, 800, 1200])} />
 							</div>
 						)}
 						<div className="flex min-h-0 min-w-0 flex-col gap-5">

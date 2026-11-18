@@ -1,6 +1,7 @@
 import { type TouchEvent, useEffect, useRef, useState } from "react";
 import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import { cn } from "@/lib/utils";
+import { cdnSrcSet } from "@/lib/media-url";
 
 const AUTO_ADVANCE_MS = 4_000;
 const SWIPE_THRESHOLD_PX = 48;
@@ -88,7 +89,7 @@ export function StorefrontBannerCarousel({ className, images, label }: Storefron
 					style={{ transform: `translateX(-${currentIndex * 100}%)` }}
 				>
 					{images.map((image, index) => {
-						const content = <img alt={image.alt} className="h-full w-full object-cover" decoding="async" fetchPriority={index === 0 ? "high" : "auto"} loading={index === 0 ? "eager" : "lazy"} src={image.src} />;
+						const content = <img alt={image.alt} className="h-full w-full object-cover" decoding="async" fetchPriority={index === 0 ? "high" : "auto"} loading={index === 0 ? "eager" : "lazy"} sizes="(min-width: 1024px) 1024px, 100vw" src={image.src} srcSet={cdnSrcSet(image.src, [640, 1024, 1600])} />;
 						const interactive = index === currentIndex;
 						return (
 							<div aria-hidden={index !== currentIndex} className="h-full w-full shrink-0" key={`${image.src}-${index}`}>

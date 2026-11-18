@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/ScrollArea";
 import { displayedUnitPrice } from "@/lib/platform-fees";
 import { hasPriceVariation } from "./product-options";
 import { type MenuItem, type MenuSection, money } from "./types";
+import { cdnSrcSet } from "@/lib/media-url";
 
 interface TopPicksCarouselProps {
 	sections: MenuSection[];
@@ -59,7 +60,9 @@ export function TopPicksCarousel({ onSelect, sections, taxes = true }: TopPicksC
 									alt={item.title}
 									className="h-24 w-full object-cover"
 									loading="lazy"
-									src={item.imageUrl}
+									sizes="160px"
+						srcSet={cdnSrcSet(item.imageUrl, [160, 320, 480])}
+						src={item.imageUrl}
 								/>
 							)}
 							<div className="flex flex-1 flex-col gap-1 p-3">
