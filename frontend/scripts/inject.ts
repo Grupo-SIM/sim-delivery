@@ -213,7 +213,7 @@ try {
 		const logoFilename = sourceExtension === "svg" ? "logo.svg" : "logo.webp";
 		const cdnBase = process.env.VITE_CDN_URL?.replace(/\/+$/, "");
 		const servedFromCdn = !!cdnBase && logoSourceUrl.startsWith(`${cdnBase}/`);
-		// CDN logos are referenced directly (resized via ?width=); the local copy only feeds icon generation.
+		// CDN logos are referenced directly (resized per slot at render time); the local copy only feeds icon generation.
 		logoPath = join(servedFromCdn ? stage : publicDir, logoFilename);
 		await writeFile(
 			logoPath,
@@ -221,7 +221,7 @@ try {
 				? logoAsset.bytes
 				: await sharp(logoAsset.bytes).resize({ fit: "inside", height: 512, width: 512, withoutEnlargement: true }).webp({ quality: 85 }).toBuffer(),
 		);
-		logoUrl = servedFromCdn ? `${logoSourceUrl.split("?")[0]}?width=384` : `/${logoFilename}`;
+		logoUrl = servedFromCdn ? logoSourceUrl.split("?")[0] : `/${logoFilename}`;
 	}
 	await writeFile(join(publicDir, "branding.css"), createBrandingCss(themeColors, fontFamily, fontDisplay));
 	

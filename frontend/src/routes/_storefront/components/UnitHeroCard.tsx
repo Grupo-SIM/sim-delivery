@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useLiveBranding } from "@/hooks/use-live-branding";
 import { cn } from "@/lib/utils";
 import type { PublicUnit } from "../../components/storefront/types";
+import { cdnResizedUrl } from "@/lib/media-url";
 
 interface UnitHeroCardProps {
 	openLabel: string;
@@ -37,7 +38,7 @@ export function UnitHeroCard({ openLabel, unit }: UnitHeroCardProps) {
 					<img
 						alt=""
 						className="absolute top-1/2 left-1/2 w-1/3 -translate-x-1/2 -translate-y-1/2 object-contain"
-						src={branding.logoUrl}
+						src={cdnResizedUrl(branding.logoUrl, 384)}
 					/>
 				)
 			)}

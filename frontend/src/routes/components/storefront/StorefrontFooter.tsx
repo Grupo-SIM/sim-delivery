@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useConsentStore } from "@/stores/consent";
 import type { StorefrontBranding } from "./types";
+import { cdnResizedUrl } from "@/lib/media-url";
 
 interface StorefrontFooterProps {
 	branding?: StorefrontBranding;
@@ -40,7 +41,7 @@ export function StorefrontFooter({ branding }: StorefrontFooterProps) {
 							</div>
 						<div className="flex items-center gap-3">
 							{branding?.logoUrl && (
-								<img alt="" className="h-10 w-10 rounded-lg object-contain dark:bg-white dark:p-1" src={branding.logoUrl} />
+								<img alt="" className="h-10 w-10 rounded-lg object-contain dark:bg-white dark:p-1" src={cdnResizedUrl(branding.logoUrl, 120)} />
 							)}
 							<p className="font-display text-lg">{companyName}</p>
 						</div>

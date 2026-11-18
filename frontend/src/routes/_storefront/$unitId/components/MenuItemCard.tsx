@@ -10,6 +10,7 @@ import { ProductFeeSummary } from "./ProductFeeSummary";
 import { hasPriceVariation } from "./product-options";
 import { type MenuItem, money } from "./types";
 import { cdnSrcSet } from "@/lib/media-url";
+import { cdnResizedUrl } from "@/lib/media-url";
 
 interface MenuItemCardProps {
 	item: MenuItem;
@@ -64,7 +65,7 @@ export function MenuItemCard({ item, onSelect, menuOnly = false, taxes = true }:
 						<img
 							alt={t("store.menu.imagePlaceholder")}
 							className="w-1/3 object-contain opacity-25 grayscale"
-							src={logoUrl || mobileIconUrl || "/apple-touch-icon.png"}
+							src={cdnResizedUrl(logoUrl || mobileIconUrl || "/apple-touch-icon.png", 192)}
 						/>
 					</div>
 				)}

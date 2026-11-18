@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { cdnResizedUrl } from "@/lib/media-url";
 
 /**
  * Points the browser tab favicon at the company's logo once branding loads.
@@ -13,7 +14,7 @@ export function useBrandingFavicon(logoUrl: string | null | undefined) {
 
 		const previousHref = link.href;
 		const previousType = link.type;
-		link.href = logoUrl;
+		link.href = cdnResizedUrl(logoUrl, 128);
 		link.removeAttribute("type");
 
 		return () => {

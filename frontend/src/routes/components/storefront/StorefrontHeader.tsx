@@ -7,6 +7,7 @@ import { getStaffAreaPath, isOperationalStaff, isStaff } from "@/lib/staff-guard
 import { useAuthStore } from "@/stores/auth";
 import { ProfileMenu } from "./ProfileMenu";
 import type { StorefrontBranding } from "./types";
+import { cdnResizedUrl } from "@/lib/media-url";
 
 interface StorefrontHeaderProps {
 	branding?: StorefrontBranding;
@@ -47,7 +48,7 @@ export function StorefrontHeader({
 				)}
 				<Link aria-label={unitName ? undefined : companyName} className="flex min-w-0 items-center gap-3" search={menuOnly ? { menuOnly: true, taxes } : undefined} to="/">
 					{branding?.logoUrl ? (
-						<img alt="" className="h-12 w-12 rounded-xl object-contain" src={branding.logoUrl} />
+						<img alt="" className="h-12 w-12 rounded-xl object-contain" src={cdnResizedUrl(branding.logoUrl, 144)} />
 					) : (
 						<span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary font-display text-lg text-primary-foreground">
 							{companyName.slice(0, 2).toUpperCase()}
