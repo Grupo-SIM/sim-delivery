@@ -10,7 +10,7 @@ Keep one company build per checkout at a time: generated files are shared within
 
 ## Static frontend delivery
 
-The frontend runtime uses Nginx on port 5173, configured in `frontend/nginx.conf`. HTML, SPA navigation and mutable public files (including `branding.css` and logos) revalidate on every request. Successful content-hashed files under `/assets/` use immutable caching; missing assets return 404 without long-lived caching. They must never receive the SPA entrypoint as a successful CSS or JavaScript response.
+The frontend runtime uses Nginx on port 5173, configured in `frontend/nginx.conf`. HTML, SPA navigation and mutable public files (including `branding.css` and logos) revalidate on every request. Successful content-hashed files under `/assets/` use immutable caching; missing assets return 404 without long-lived caching. They must never receive the SPA entrypoint as a successful CSS or JavaScript response. Nginx gzips text assets (`gzip_types` in `frontend/nginx.conf`); a reverse proxy in front, such as Caddy, may compress as well (`encode zstd gzip`) and skips responses already encoded.
 
 After starting a local runtime, run `bun run --cwd frontend check:static http://127.0.0.1:5173`. This checks entrypoint assets, CSS content/types, cache headers, branding, SPA navigation and missing-file behavior. The same read-only check accepts a deployed URL.
 
