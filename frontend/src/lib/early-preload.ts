@@ -81,5 +81,7 @@ export function earlyPreload(config: EarlyPreloadConfig) {
 	}
 
 	// Homepage of a single-unit company: the unit slug is only known after the units list.
-	void loadBanner().then(unitSlug => unitSlug && loadMenu(unitSlug));
+	void loadBanner().then(unitSlug => {
+		if (unitSlug) void loadMenu(unitSlug);
+	});
 }
