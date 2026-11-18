@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/ScrollArea";
 import { normalizeProductFees } from "@/lib/platform-fees";
 import { showToast, useCartStore } from "@/stores";
 import { type MenuItem, type MenuSection, money } from "./types";
+import { mediaUrl } from "@/lib/media-url";
 
 interface CartSuggestionsProps {
 	onSelect: (item: MenuItem) => void;
@@ -70,7 +71,7 @@ export function CartSuggestions({ onSelect, sections, unitId }: CartSuggestionsP
 				{suggestions.map(item => (
 					<Card className="flex w-32 shrink-0 flex-col overflow-hidden" key={item.id}>
 						{item.imageUrl && (
-							<img alt={item.title} className="h-20 w-full object-cover" loading="lazy" src={item.imageUrl} />
+							<img alt={item.title} className="h-20 w-full object-cover" loading="lazy" src={mediaUrl(item.imageUrl)} />
 						)}
 						<div className="flex flex-1 flex-col gap-1 p-2">
 							<p className="truncate font-medium text-xs">{item.title}</p>

@@ -6,6 +6,7 @@ import { useDebouncedInput } from "@/hooks/use-debounced-input";
 import { formatMoney } from "@/lib/formatMoney";
 import { displayedUnitPrice } from "@/lib/platform-fees";
 import { type CartItem, useCartStore } from "@/stores";
+import { mediaUrl } from "@/lib/media-url";
 
 interface CheckoutItemRowProps {
 	item: CartItem;
@@ -62,7 +63,7 @@ export function CheckoutItemRow({ item, onEdit }: CheckoutItemRowProps) {
 							alt=""
 							className="size-20 rounded-lg object-cover"
 							loading="lazy"
-							src={item.imageUrl}
+							src={mediaUrl(item.imageUrl)}
 						/>
 					) : (
 						<div aria-hidden className="size-20 rounded-lg bg-muted" />

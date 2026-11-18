@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { displayedUnitPrice } from "@/lib/platform-fees";
 import { type CartItem, useCartStore } from "@/stores";
 import { money } from "./types";
+import { mediaUrl } from "@/lib/media-url";
 
 interface DesktopCartItemProps {
 	item: CartItem;
@@ -19,7 +20,7 @@ export function DesktopCartItem({ item }: DesktopCartItemProps) {
 					alt={item.title}
 					className="size-12 shrink-0 rounded-lg object-cover"
 					loading="lazy"
-					src={item.imageUrl}
+					src={mediaUrl(item.imageUrl)}
 				/>
 			)}
 			<div className="min-w-0 flex-1">
