@@ -42,7 +42,7 @@ export function fontsToCss(
 	fontDisplayUrl?: string | null,
 ) {
 	// Page URLs (e.g. fonts.google.com/specimen/X) are not font files and fail CORS; Google families load via stylesheet.
-	const isFontFile = (url?: string | null) => !!url && !/^https?:\/\/fonts\.google\.com\//i.test(url);
+	const isFontFile = (url?: string | null): url is string => !!url && !/^https?:\/\/fonts\.google\.com\//i.test(url);
 	const fontFaces = [
 		isFontFile(fontFamilyUrl) &&
 			`@font-face{font-family:"${escapeCssValue(fontFamily)}";src:url("${escapeCssValue(fontFamilyUrl)}") format("woff2");font-display:swap;}`,
