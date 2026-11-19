@@ -45,9 +45,11 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 
 	return (
 		<ScrollArea className="flex h-full flex-col gap-6 overflow-y-auto p-4">
-			<div className="admin-sidebar-brand -mx-4 -mt-4 flex shrink-0 items-center bg-primary px-5 py-4 text-primary-foreground">
-				<AdminBrand />
-			</div>
+			{!onNavigate && (
+				<div className="admin-sidebar-brand -mx-4 -mt-4 flex shrink-0 items-center bg-primary px-5 py-4 text-primary-foreground">
+					<AdminBrand />
+				</div>
+			)}
 			{needsUnitSelection && <AdminUnitPicker />}
 
 			{!attendant && <AdminNavItem exact icon={LuChartBar} label="Dashboard" onNavigate={onNavigate} to="/admin/" />}
