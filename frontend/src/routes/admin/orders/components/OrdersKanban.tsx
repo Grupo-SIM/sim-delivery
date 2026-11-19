@@ -331,7 +331,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 							>
 								<header className="relative z-20 flex items-center justify-between gap-2 px-4 py-3">
 									{column.kind === "finalized" ? (
-										<div>
+										<div className="min-w-0">
 											<p className="font-semibold text-foreground text-sm">
 												{t("admin.orders.kanban.finalized")}
 											</p>
@@ -345,9 +345,11 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 											</p>
 										</div>
 									) : (
-										<OrderStatusBadge showHelp status={column.status} />
+										<div className="min-w-0">
+											<OrderStatusBadge showHelp status={column.status} />
+										</div>
 									)}
-									<span className="rounded-md bg-background px-2 py-1 font-semibold text-foreground text-sm shadow-sm">
+									<span className="shrink-0 rounded-md bg-background px-2 py-1 font-semibold text-foreground text-sm shadow-sm">
 										{column.orders.length}
 									</span>
 								</header>
