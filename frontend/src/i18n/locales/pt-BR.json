@@ -807,6 +807,44 @@
 					"description": "Peça ao responsável pela empresa para vincular seu usuário a uma unidade em Equipe → Editar → Unidades. Após salvar, clique em Atualizar.",
 					"title": "Seu usuário não está vinculado a nenhuma unidade."
 				},
+				"origin": {
+					"contents": {
+						"link_in_bio": "Link da Bio"
+					},
+					"direct": "Acesso direto, sem origem de campanha.",
+					"fields": {
+						"campaign": "Campanha",
+						"content": "Conteúdo",
+						"medium": "Meio",
+						"source": "Origem"
+					},
+					"filter": {
+						"all": "Todas as origens",
+						"bio": "Link da bio do Instagram",
+						"instagram": "Instagram (qualquer link)",
+						"label": "Origem"
+					},
+					"mediums": {
+						"social": "Social"
+					},
+					"metrics": {
+						"hint": "Link da bio do Instagram",
+						"orders": "Pedidos da bio",
+						"revenue": "Faturamento da bio",
+						"ticket": "Ticket médio da bio"
+					},
+					"none": "—",
+					"sources": {
+						"facebook": "Facebook",
+						"fb": "Facebook",
+						"ig": "Instagram",
+						"tiktok": "TikTok",
+						"whatsapp": "WhatsApp",
+						"x": "X",
+						"youtube": "YouTube"
+					},
+					"title": "Origem do pedido"
+				},
 				"problemReason": "Motivo da pendência",
 				"refresh": {
 					"action": "Atualizar",

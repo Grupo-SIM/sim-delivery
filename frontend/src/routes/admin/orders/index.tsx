@@ -13,7 +13,7 @@ import { useGetOrders, useGetUnits } from "@/lib/api";
 import { canAccessAllUnits } from "@/lib/staff-guard";
 import { showToast, useAuthStore } from "@/stores";
 import { DashboardDateRangePicker } from "../components/DashboardDateRangePicker";
-import { AutoPrintControls, OrdersKanban } from "./components";
+import { AutoPrintControls, OrdersKanban, OriginMetrics } from "./components";
 import { useAutoPrintOrders } from "./use-auto-print-orders";
 import { useOrderEvents } from "./use-order-events";
 
@@ -44,6 +44,7 @@ function OrdersPage() {
 	const [search, setSearch] = useState("");
 	const [dateRange, setDateRange] = useState<{ endDate: string; startDate: string } | null>(null);
 	const [unitId, setUnitId] = useState("");
+	const [origin, setOrigin] = useState<"" | "bio" | "instagram">("");
 	const unitsQuery = useGetUnits();
 	const canViewAllUnits = canAccessAllUnits(role);
 
@@ -56,6 +57,8 @@ function OrdersPage() {
 	const ordersQuery = useGetOrders({
 		...(unitId ? { unitId } : {}),
 		...(search.trim() ? { search: search.trim() } : {}),
+		...(origin === "bio" ? { utmContent: "link_in_bio", utmMedium: "social", utmSource: "ig" } : {}),
+		...(origin === "instagram" ? { utmSource: "ig" } : {}),
 		...(dateRange
 			? {
 					from: dateRange.startDate,
@@ -118,8 +121,24 @@ function OrdersPage() {
 						value={unitId}
 					/>
 				</div>
+				<div className="space-y-1">
+					<span className="font-medium text-sm">{t("admin.orders.origin.filter.label")}</span>
+					<CustomSelect
+						onChange={value => setOrigin(value as typeof origin)}
+						options={[
+							{ label: t("admin.orders.origin.filter.all"), value: "" },
+							{ label: t("admin.orders.origin.filter.bio"), value: "bio" },
+							{ label: t("admin.orders.origin.filter.instagram"), value: "instagram" },
+						]}
+						value={origin}
+					/>
+				</div>
 				<AutoPrintControls />
 			</div>
+
+			{canViewAllUnits && (
+				<OriginMetrics from={dateRange?.startDate} to={dateRange?.endDate} unitId={unitId || undefined} />
+			)}
 
 			{unitsQuery.isPending || ordersQuery.isPending ? (
 				<div className="grid min-h-0 flex-1 gap-4 overflow-hidden sm:grid-cols-3">

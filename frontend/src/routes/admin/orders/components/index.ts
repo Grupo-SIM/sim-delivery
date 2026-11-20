@@ -6,6 +6,7 @@ export * from "./OrderKanbanCard";
 export * from "./OrderReceiptButton";
 export * from "./OrderRow";
 export * from "./OrderStatusBadge";
+export * from "./OriginMetrics";
 export * from "./OrdersKanban";
 export * from "./OrdersTable";
 export * from "./PhaseEstimateModal";

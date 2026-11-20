@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/Modal";
 import type { GetOrders200 } from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
+import { OrderOrigin } from "./OrderOrigin";
 
 type OrderSummaryModalView = "customer" | "orders";
 
@@ -73,6 +74,11 @@ export function OrderSummaryModal({ onClose, onEditEstimate, order, view }: Orde
 							<div className="sm:col-span-2">
 								<p className="text-muted-foreground">{t("admin.orders.updateStatus.cancelReason")}</p>
 								<p className="mt-1 whitespace-pre-wrap break-words font-medium">{order.cancelReason}</p>
+							</div>
+						)}
+						{showOrderOperations && (
+							<div className="sm:col-span-2">
+								<OrderOrigin origin={order.origin} />
 							</div>
 						)}
 						{showOrderOperations && (
