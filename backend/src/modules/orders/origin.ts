@@ -30,5 +30,5 @@ export function readOrigin(row: OriginRow): OrderOriginReturn | null {
 	});
 	const first = pick("first");
 	const last = pick("last");
-	return Object.values({ ...first, ...last }).some(Boolean) ? { first, last } : null;
+	return [...Object.values(first), ...Object.values(last)].some(Boolean) ? { first, last } : null;
 }
