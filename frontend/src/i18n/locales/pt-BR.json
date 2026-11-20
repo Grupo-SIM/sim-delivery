@@ -308,11 +308,11 @@
 						"short": "Abaixo do custo"
 					},
 					"extras": {
-						"disabled": "Neste modo as taxas aditivas não são cobradas nos pedidos.",
-						"empty": "Nenhuma taxa aditiva associada a esta empresa.",
+						"disabled": "Neste modo as taxas do comprador não são cobradas nos pedidos.",
+						"empty": "Nenhuma taxa do comprador associada a esta empresa.",
 						"hint": "Associe taxas e ajuste os valores desta empresa. Campos vazios usam o padrão da plataforma. As alterações só são salvas e validadas ao salvar o modal.",
-						"overridden": "O total das taxas aditivas desta empresa foi definido pela SimIntPay e vale no lugar das associações. Associe uma taxa abaixo e salve para substituir esse total.",
-						"overriddenNone": "Nenhuma taxa aditiva é cobrada.",
+						"overridden": "O total das taxas do comprador desta empresa foi definido pela SimIntPay e vale no lugar das associações. Associe uma taxa abaixo e salve para substituir esse total.",
+						"overriddenNone": "Nenhuma taxa do comprador é cobrada.",
 						"scope": {
 							"order": "Por pedido",
 							"product": "Por produto"
@@ -330,12 +330,12 @@
 						"PIX": "Pix"
 					},
 					"mode": {
-						"ADDITIVE_ONLY": "Somente taxas aditivas",
-						"ADDITIVE_ONLYHint": "As taxas aditivas somam ao preço do comprador. A SimIntPay não desconta suas taxas do lojista.",
-						"BOTH": "Taxas aditivas e SimIntPay",
-						"BOTHHint": "As taxas aditivas somam ao comprador e a SimIntPay também desconta suas taxas do lojista.",
-						"SIMINTPAY_ONLY": "Somente taxas SimIntPay",
-						"SIMINTPAY_ONLYHint": "A SimIntPay desconta suas taxas do valor do lojista. Nenhuma taxa aditiva é cobrada do comprador.",
+						"ADDITIVE_ONLY": "Somente taxas do comprador",
+						"ADDITIVE_ONLYHint": "As taxas do comprador somam ao preço pago pelo comprador. A SimIntPay não desconta taxas do vendedor.",
+						"BOTH": "Taxas do comprador e do vendedor",
+						"BOTHHint": "As taxas do comprador somam ao preço pago pelo comprador e a SimIntPay também desconta as taxas do vendedor.",
+						"SIMINTPAY_ONLY": "Somente taxas do vendedor",
+						"SIMINTPAY_ONLYHint": "A SimIntPay desconta as taxas do vendedor do valor do lojista. Nenhuma taxa do comprador é cobrada.",
 						"title": "Taxas aplicadas"
 					},
 					"saveError": "Não foi possível salvar. As taxas podem estar abaixo do custo da adquirente ou ter mudado; recarregue e tente novamente.",
@@ -345,9 +345,9 @@
 						"product": "Por produto"
 					},
 					"simintpay": {
-						"fixed": "Valor fixo SimIntPay ({{lane}})",
-						"hint": "Descontadas do lojista pela SimIntPay quando o modo inclui taxas SimIntPay. O custo da adquirente é global e define o mínimo.",
-						"rate": "Percentual SimIntPay ({{lane}})",
+						"fixed": "Valor fixo do vendedor ({{lane}})",
+						"hint": "Descontadas do lojista pela SimIntPay quando o modo inclui taxas do vendedor. O custo da adquirente é global e define o mínimo.",
+						"rate": "Percentual do vendedor ({{lane}})",
 						"title": "Taxas do vendedor"
 					},
 					"title": "Taxas de {{name}}",
