@@ -3,10 +3,14 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "@fontsource-variable/inter/index.css";
 import { reactQueryClient } from "./lib/tanstack";
+import { captureUtm } from "./lib/utm";
 import { Providers } from "./providers";
 import { routeTree } from "./routeTree.gen";
 import "./i18n/config";
 import "./globals.css";
+
+// Before the router exists: no redirect or route change can lose the UTMs of the first load.
+captureUtm();
 
 const router = createRouter({
 	context: {

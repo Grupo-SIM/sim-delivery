@@ -1,4 +1,5 @@
 import { getCheckoutAttribution } from "@/lib/attribution";
+import { getOrigin } from "@/lib/utm";
 import { onMetaPixelReady, trackMetaEvent } from "@/lib/meta-pixel";
 import { useCartImages } from "@/hooks/use-cart-images";
 import { useQuery } from "@tanstack/react-query";
@@ -194,6 +195,7 @@ function CheckoutPage() {
 					deliveryMethod: resolvedDeliveryMethod,
 					idempotencyKey: getCheckoutIdempotencyKey(),
 					marketingAttribution: getCheckoutAttribution(),
+					origin: getOrigin(),
 					items: cartItems.map(item => ({
 						note: item.note || undefined,
 						options: item.options.map(option => ({
