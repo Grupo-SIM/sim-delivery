@@ -26,8 +26,8 @@ export function OriginMetrics({ from, to, unitId }: OriginMetricsProps) {
 			) : (
 				<>
 					<StatCard hint={t("admin.orders.origin.metrics.hint")} label={t("admin.orders.origin.metrics.orders")} value={data.bio.orders} />
-					<StatCard label={t("admin.orders.origin.metrics.revenue")} value={formatMoney(data.bio.revenueCents / 100)} />
-					<StatCard label={t("admin.orders.origin.metrics.ticket")} value={formatMoney(data.bio.averageTicketCents / 100)} />
+					<StatCard label={t("admin.orders.origin.metrics.revenue")} value={formatMoney(Number(data.bio.revenueCents) / 100)} />
+					<StatCard label={t("admin.orders.origin.metrics.ticket")} value={formatMoney(Number(data.bio.averageTicketCents) / 100)} />
 				</>
 			)}
 		</div>

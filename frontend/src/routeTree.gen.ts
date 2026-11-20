@@ -16,6 +16,7 @@ import { Route as DesignKitIndexRouteImport } from './routes/design-kit/index'
 import { Route as CourierIndexRouteImport } from './routes/courier/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as StorefrontIndexRouteImport } from './routes/_storefront/index'
+import { Route as UtmNetworkIndexRouteImport } from './routes/utm/$network/index'
 import { Route as AdminUnitsIndexRouteImport } from './routes/admin/units/index'
 import { Route as AdminTagsIndexRouteImport } from './routes/admin/tags/index'
 import { Route as AdminStaffIndexRouteImport } from './routes/admin/staff/index'
@@ -36,6 +37,7 @@ import { Route as StorefrontPreferencesIndexRouteImport } from './routes/_storef
 import { Route as StorefrontOrdersIndexRouteImport } from './routes/_storefront/orders/index'
 import { Route as StorefrontIdentifyIndexRouteImport } from './routes/_storefront/identify/index'
 import { Route as StorefrontUnitIdIndexRouteImport } from './routes/_storefront/$unitId/index'
+import { Route as UtmNetworkUnitIdIndexRouteImport } from './routes/utm/$network/$unitId/index'
 import { Route as AdminPlatformFeesIndexRouteImport } from './routes/admin/platform/fees/index'
 import { Route as AdminPlatformCompaniesIndexRouteImport } from './routes/admin/platform/companies/index'
 import { Route as AdminInventoryMovementsIndexRouteImport } from './routes/admin/inventory/movements/index'
@@ -82,6 +84,11 @@ const StorefrontIndexRoute = StorefrontIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => StorefrontRoute,
+} as any)
+const UtmNetworkIndexRoute = UtmNetworkIndexRouteImport.update({
+  id: '/utm/$network/',
+  path: '/utm/$network/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUnitsIndexRoute = AdminUnitsIndexRouteImport.update({
   id: '/units/',
@@ -186,6 +193,11 @@ const StorefrontUnitIdIndexRoute = StorefrontUnitIdIndexRouteImport.update({
   path: '/$unitId/',
   getParentRoute: () => StorefrontRoute,
 } as any)
+const UtmNetworkUnitIdIndexRoute = UtmNetworkUnitIdIndexRouteImport.update({
+  id: '/utm/$network/$unitId/',
+  path: '/utm/$network/$unitId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminPlatformFeesIndexRoute = AdminPlatformFeesIndexRouteImport.update({
   id: '/platform/fees/',
   path: '/platform/fees/',
@@ -285,6 +297,7 @@ export interface FileRoutesByFullPath {
   '/admin/staff/': typeof AdminStaffIndexRoute
   '/admin/tags/': typeof AdminTagsIndexRoute
   '/admin/units/': typeof AdminUnitsIndexRoute
+  '/utm/$network/': typeof UtmNetworkIndexRoute
   '/$unitId/cardapio/': typeof StorefrontUnitIdCardapioIndexRoute
   '/$unitId/checkout/': typeof StorefrontUnitIdCheckoutIndexRoute
   '/$unitId/rate/': typeof StorefrontUnitIdRateIndexRoute
@@ -295,6 +308,7 @@ export interface FileRoutesByFullPath {
   '/admin/inventory/movements/': typeof AdminInventoryMovementsIndexRoute
   '/admin/platform/companies/': typeof AdminPlatformCompaniesIndexRoute
   '/admin/platform/fees/': typeof AdminPlatformFeesIndexRoute
+  '/utm/$network/$unitId/': typeof UtmNetworkUnitIdIndexRoute
   '/$unitId/checkout/thank-you/': typeof StorefrontUnitIdCheckoutThankYouIndexRoute
   '/admin/units/$unitId/products/': typeof AdminUnitsUnitIdProductsIndexRoute
 }
@@ -324,6 +338,7 @@ export interface FileRoutesByTo {
   '/admin/staff': typeof AdminStaffIndexRoute
   '/admin/tags': typeof AdminTagsIndexRoute
   '/admin/units': typeof AdminUnitsIndexRoute
+  '/utm/$network': typeof UtmNetworkIndexRoute
   '/$unitId/cardapio': typeof StorefrontUnitIdCardapioIndexRoute
   '/$unitId/checkout': typeof StorefrontUnitIdCheckoutIndexRoute
   '/$unitId/rate': typeof StorefrontUnitIdRateIndexRoute
@@ -334,6 +349,7 @@ export interface FileRoutesByTo {
   '/admin/inventory/movements': typeof AdminInventoryMovementsIndexRoute
   '/admin/platform/companies': typeof AdminPlatformCompaniesIndexRoute
   '/admin/platform/fees': typeof AdminPlatformFeesIndexRoute
+  '/utm/$network/$unitId': typeof UtmNetworkUnitIdIndexRoute
   '/$unitId/checkout/thank-you': typeof StorefrontUnitIdCheckoutThankYouIndexRoute
   '/admin/units/$unitId/products': typeof AdminUnitsUnitIdProductsIndexRoute
 }
@@ -366,6 +382,7 @@ export interface FileRoutesById {
   '/admin/staff/': typeof AdminStaffIndexRoute
   '/admin/tags/': typeof AdminTagsIndexRoute
   '/admin/units/': typeof AdminUnitsIndexRoute
+  '/utm/$network/': typeof UtmNetworkIndexRoute
   '/_storefront/$unitId/cardapio/': typeof StorefrontUnitIdCardapioIndexRoute
   '/_storefront/$unitId/checkout/': typeof StorefrontUnitIdCheckoutIndexRoute
   '/_storefront/$unitId/rate/': typeof StorefrontUnitIdRateIndexRoute
@@ -376,6 +393,7 @@ export interface FileRoutesById {
   '/admin/inventory/movements/': typeof AdminInventoryMovementsIndexRoute
   '/admin/platform/companies/': typeof AdminPlatformCompaniesIndexRoute
   '/admin/platform/fees/': typeof AdminPlatformFeesIndexRoute
+  '/utm/$network/$unitId/': typeof UtmNetworkUnitIdIndexRoute
   '/_storefront/$unitId/checkout/thank-you/': typeof StorefrontUnitIdCheckoutThankYouIndexRoute
   '/admin/units/$unitId/products/': typeof AdminUnitsUnitIdProductsIndexRoute
 }
@@ -408,6 +426,7 @@ export interface FileRouteTypes {
     | '/admin/staff/'
     | '/admin/tags/'
     | '/admin/units/'
+    | '/utm/$network/'
     | '/$unitId/cardapio/'
     | '/$unitId/checkout/'
     | '/$unitId/rate/'
@@ -418,6 +437,7 @@ export interface FileRouteTypes {
     | '/admin/inventory/movements/'
     | '/admin/platform/companies/'
     | '/admin/platform/fees/'
+    | '/utm/$network/$unitId/'
     | '/$unitId/checkout/thank-you/'
     | '/admin/units/$unitId/products/'
   fileRoutesByTo: FileRoutesByTo
@@ -447,6 +467,7 @@ export interface FileRouteTypes {
     | '/admin/staff'
     | '/admin/tags'
     | '/admin/units'
+    | '/utm/$network'
     | '/$unitId/cardapio'
     | '/$unitId/checkout'
     | '/$unitId/rate'
@@ -457,6 +478,7 @@ export interface FileRouteTypes {
     | '/admin/inventory/movements'
     | '/admin/platform/companies'
     | '/admin/platform/fees'
+    | '/utm/$network/$unitId'
     | '/$unitId/checkout/thank-you'
     | '/admin/units/$unitId/products'
   id:
@@ -488,6 +510,7 @@ export interface FileRouteTypes {
     | '/admin/staff/'
     | '/admin/tags/'
     | '/admin/units/'
+    | '/utm/$network/'
     | '/_storefront/$unitId/cardapio/'
     | '/_storefront/$unitId/checkout/'
     | '/_storefront/$unitId/rate/'
@@ -498,6 +521,7 @@ export interface FileRouteTypes {
     | '/admin/inventory/movements/'
     | '/admin/platform/companies/'
     | '/admin/platform/fees/'
+    | '/utm/$network/$unitId/'
     | '/_storefront/$unitId/checkout/thank-you/'
     | '/admin/units/$unitId/products/'
   fileRoutesById: FileRoutesById
@@ -508,6 +532,8 @@ export interface RootRouteChildren {
   CourierIndexRoute: typeof CourierIndexRoute
   DesignKitIndexRoute: typeof DesignKitIndexRoute
   ResetPasswordIndexRoute: typeof ResetPasswordIndexRoute
+  UtmNetworkIndexRoute: typeof UtmNetworkIndexRoute
+  UtmNetworkUnitIdIndexRoute: typeof UtmNetworkUnitIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -560,6 +586,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof StorefrontIndexRouteImport
       parentRoute: typeof StorefrontRoute
+    }
+    '/utm/$network/': {
+      id: '/utm/$network/'
+      path: '/utm/$network'
+      fullPath: '/utm/$network/'
+      preLoaderRoute: typeof UtmNetworkIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/units/': {
       id: '/admin/units/'
@@ -700,6 +733,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/$unitId/'
       preLoaderRoute: typeof StorefrontUnitIdIndexRouteImport
       parentRoute: typeof StorefrontRoute
+    }
+    '/utm/$network/$unitId/': {
+      id: '/utm/$network/$unitId/'
+      path: '/utm/$network/$unitId'
+      fullPath: '/utm/$network/$unitId/'
+      preLoaderRoute: typeof UtmNetworkUnitIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/platform/fees/': {
       id: '/admin/platform/fees/'
@@ -881,6 +921,8 @@ const rootRouteChildren: RootRouteChildren = {
   CourierIndexRoute: CourierIndexRoute,
   DesignKitIndexRoute: DesignKitIndexRoute,
   ResetPasswordIndexRoute: ResetPasswordIndexRoute,
+  UtmNetworkIndexRoute: UtmNetworkIndexRoute,
+  UtmNetworkUnitIdIndexRoute: UtmNetworkUnitIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
