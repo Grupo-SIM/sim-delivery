@@ -12,6 +12,7 @@ import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CreateOrderBody, OrderReturn } from "../dtos";
 import { OrderErrors } from "../errors";
+import { originColumns } from "../origin";
 
 export class CreateOrder {
 	constructor(private readonly prisma: PrismaInstance) {}
@@ -307,6 +308,7 @@ export class CreateOrder {
 			const order = await this.prisma.$transaction(async tx => {
 			const created = await tx.order.create({
 				data: {
+					...originColumns(data.origin),
 					marketingAttribution: data.marketingAttribution ? {
                         ...data.marketingAttribution,
                         sourceUrl: data.marketingAttribution.sourceUrl ? (() => { const url = new URL(data.marketingAttribution.sourceUrl); return `${url.origin}${url.pathname}`; })() : undefined,

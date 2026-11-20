@@ -17,6 +17,8 @@ import {
 	CustomerOrderListReturn,
 	CustomerOrderTrackingReturn,
 	GetCustomerOrderQuery,
+	GetOriginMetricsQuery,
+	OriginMetricsReturn,
 	ListOrdersQuery,
 	OrderReceiptReturn,
 	OrderReturn,
@@ -27,6 +29,7 @@ import {
 	CreateOrder,
 	GetCustomerOrder,
 	GetOrderReceipt,
+	GetOriginMetrics,
 	ListCustomerOrders,
 	ListOrders,
 	UpdateOrderStatus,
@@ -56,6 +59,7 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 				createOrder: new CreateOrder(prisma),
 				getCustomerOrder: new GetCustomerOrder(prisma),
 				getOrderReceipt: new GetOrderReceipt(prisma),
+				getOriginMetrics: new GetOriginMetrics(prisma),
 				listCustomerOrders: new ListCustomerOrders(prisma),
 				listOrders: new ListOrders(prisma),
 				prisma,
@@ -166,6 +170,16 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 					return listOrders.execute(scope.companyId, query, scope.role, scope.userId);
 				},
 				{ query: ListOrdersQuery, response: AdminOrderListReturn },
+			)
+			.get(
+				"/origin-metrics",
+				async ({ getOriginMetrics, query, request }) => {
+					const scope = await CompanyScopeGuard.execute(request.headers);
+					CompanyScopeGuard.authorize(scope, "orders", "read");
+					if (query.unitId) CompanyScopeGuard.authorizeUnit(scope, query.unitId);
+					return getOriginMetrics.execute(scope.companyId, query);
+				},
+				{ query: GetOriginMetricsQuery, response: OriginMetricsReturn },
 			)
 			.post(
 				"/close-day",

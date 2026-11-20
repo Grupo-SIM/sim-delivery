@@ -37,6 +37,11 @@ export const ListOrdersQuery = t.Object({
 	status: t.Optional(t.String()),
 	to: t.Optional(t.String()),
 	unitId: t.Optional(t.String()),
+	/** Filters by first-touch UTM (any subset). `bio` is the Instagram link-in-bio preset. */
+	utmCampaign: t.Optional(t.String()),
+	utmContent: t.Optional(t.String()),
+	utmMedium: t.Optional(t.String()),
+	utmSource: t.Optional(t.String()),
 });
 export type ListOrdersQuery = typeof ListOrdersQuery.static;
 export const CloseOrdersDayReturn = t.Object({ orderBoardStartedAt: t.String() });
@@ -62,7 +67,18 @@ export const MarketingAttribution = t.Object({
     fbc: t.Optional(t.String({ maxLength: 1024, pattern: "^fb\\.[0-9]+\\.[0-9]+\\.[A-Za-z0-9_-]+$" })),
     sourceUrl: t.Optional(t.String({ format: "uri", pattern: "^https?://", maxLength: 2048 })),
 });
+const UtmValue = t.Optional(t.String({ maxLength: 200 }));
+export const UtmSet = t.Object({ campaign: UtmValue, content: UtmValue, medium: UtmValue, source: UtmValue, term: UtmValue });
+export type UtmSet = typeof UtmSet.static;
+/** Campaign origin of the order. Independent of marketing consent: UTM labels carry no personal data. */
+export const OrderOrigin = t.Object({
+	fbclid: t.Optional(t.String({ maxLength: 500, pattern: "^[A-Za-z0-9_-]+$" })),
+	first: t.Optional(UtmSet),
+	last: t.Optional(UtmSet),
+});
+export type OrderOrigin = typeof OrderOrigin.static;
 export const CreateOrderBody = t.Object({
+	origin: t.Optional(OrderOrigin),
     marketingAttribution: t.Optional(MarketingAttribution),
 	addressId: t.Optional(t.Nullable(t.String({ minLength: 1 }))),
 	couponCode: t.Optional(t.String()),
@@ -91,3 +107,10 @@ export const QuoteOrderFeesBody = t.Object({
 	unitSlug: t.String({ minLength: 1 }),
 });
 export type QuoteOrderFeesBody = typeof QuoteOrderFeesBody.static;
+
+export const GetOriginMetricsQuery = t.Object({
+	from: t.Optional(t.String()),
+	to: t.Optional(t.String()),
+	unitId: t.Optional(t.String()),
+});
+export type GetOriginMetricsQuery = typeof GetOriginMetricsQuery.static;

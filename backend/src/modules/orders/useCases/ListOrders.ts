@@ -2,6 +2,7 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import type { Role } from "@/shared/permissions";
 import type { AdminOrderListReturn, ListOrdersQuery } from "../dtos";
 import { customerOrderFilter } from "../customer-order-filter";
+import { readOrigin } from "../origin";
 import { getBusinessShiftDateRanges } from "./getBusinessShiftDateRanges";
 import { getCurrentBusinessShiftStart } from "./getCurrentBusinessShiftStart";
 
@@ -13,7 +14,7 @@ export class ListOrders {
 		role?: Role,
 		userId?: string,
 	): Promise<AdminOrderListReturn> {
-		const { customerId, deliveryMethod, from, hasCoupon, search, status, to, unitId } = query;
+		const { customerId, deliveryMethod, from, hasCoupon, search, status, to, unitId, utmCampaign, utmContent, utmMedium, utmSource } = query;
 		// The operational board includes the current shift and unresolved orders from earlier shifts. A customer history,
 		// however, must cover every eligible order so it agrees with the customer metrics.
 		const usesCurrentShift = !customerId && !from && !to;
@@ -92,6 +93,10 @@ export class ListOrders {
 				...(deliveryMethod ? { deliveryMethod } : {}),
 				...(status ? { status } : {}),
 				...(unitId ? { unitId } : {}),
+				...(utmSource ? { firstUtmSource: utmSource.toLowerCase() } : {}),
+				...(utmMedium ? { firstUtmMedium: utmMedium.toLowerCase() } : {}),
+				...(utmCampaign ? { firstUtmCampaign: utmCampaign.toLowerCase() } : {}),
+				...(utmContent ? { firstUtmContent: utmContent.toLowerCase() } : {}),
 				...(hasCoupon !== undefined ? (hasCoupon ? { couponId: { not: null } } : { couponId: null }) : {}),
 				...(!usesSelectedShifts && (from || to)
 					? {
@@ -149,6 +154,7 @@ export class ListOrders {
 				};
 			}),
 			loyaltyPointsRedeemed: o.loyaltyPointsRedeemed,
+			origin: readOrigin(o),
 			payment: o.payment ? { status: o.payment.status } : null,
 			preparedBy: o.preparedBy,
 			problemReason: o.problemReason,

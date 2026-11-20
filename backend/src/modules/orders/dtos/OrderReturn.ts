@@ -31,6 +31,16 @@ export const QuoteOrderFeesReturn = t.Object({
 });
 export type QuoteOrderFeesReturn = typeof QuoteOrderFeesReturn.static;
 
+const UtmReturn = t.Object({
+	campaign: __nullable__(t.String()),
+	content: __nullable__(t.String()),
+	medium: __nullable__(t.String()),
+	source: __nullable__(t.String()),
+	term: __nullable__(t.String()),
+});
+export const OrderOriginReturn = t.Object({ first: UtmReturn, last: UtmReturn });
+export type OrderOriginReturn = typeof OrderOriginReturn.static;
+
 export const AdminOrderReturn = t.Object({
 	addressId: __nullable__(t.String()),
 	cancelReason: __nullable__(t.String()),
@@ -79,6 +89,7 @@ export const AdminOrderReturn = t.Object({
 		}),
 	),
 	loyaltyPointsRedeemed: t.Integer(),
+	origin: __nullable__(OrderOriginReturn),
 	payment: __nullable__(
 		t.Object({
 			/** "pending" | "confirmed" | "failed" | "partially_refunded" | "refunded" */
@@ -201,3 +212,23 @@ export type CustomerOrderSummaryReturn = typeof CustomerOrderSummaryReturn.stati
 
 export const CustomerOrderListReturn = t.Array(CustomerOrderSummaryReturn);
 export type CustomerOrderListReturn = typeof CustomerOrderListReturn.static;
+
+const OriginMetric = t.Object({
+	averageTicketCents: t.Integer(),
+	orders: t.Integer(),
+	revenueCents: t.Integer(),
+});
+export const OriginMetricsReturn = t.Object({
+	/** Instagram link-in-bio: utm_source=ig, utm_medium=social, utm_content=link_in_bio (first touch). */
+	bio: OriginMetric,
+	origins: t.Array(
+		t.Object({
+			...OriginMetric.properties,
+			campaign: __nullable__(t.String()),
+			content: __nullable__(t.String()),
+			medium: __nullable__(t.String()),
+			source: __nullable__(t.String()),
+		}),
+	),
+});
+export type OriginMetricsReturn = typeof OriginMetricsReturn.static;

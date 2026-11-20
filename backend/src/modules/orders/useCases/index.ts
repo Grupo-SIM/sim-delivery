@@ -6,3 +6,4 @@ export * from "./GetOrderReceipt";
 export * from "./ListCustomerOrders";
 export * from "./ListOrders";
 export * from "./UpdateOrderStatus";
+export * from "./GetOriginMetrics";

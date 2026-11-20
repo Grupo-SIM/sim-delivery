@@ -8,6 +8,19 @@ model Order {
     customerId     String
     /// Client-generated UUID that makes checkout retries return this same order.
     marketingAttribution Json?
+    /// First/last-touch campaign origin (UTMs). Independent of marketing consent: campaign labels carry no personal data.
+    firstUtmSource String?
+    firstUtmMedium String?
+    firstUtmCampaign String?
+    firstUtmContent String?
+    firstUtmTerm String?
+    lastUtmSource String?
+    lastUtmMedium String?
+    lastUtmCampaign String?
+    lastUtmContent String?
+    lastUtmTerm String?
+    /// Click id kept apart from UTMs: never used as the origin identifier.
+    fbclid String?
     marketingEvents MarketingEvent[]
     idempotencyKey String?
     preparedById   String?
@@ -57,6 +70,7 @@ model Order {
     @@index([companyId, status])
     @@index([companyId, status, createdAt])
     @@index([customerId])
+    @@index([companyId, firstUtmSource, firstUtmMedium, firstUtmContent])
     @@index([preparedById])
     @@unique([customerId, idempotencyKey])
     @@map("order")
