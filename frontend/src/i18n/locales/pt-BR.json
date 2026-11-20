@@ -317,7 +317,7 @@
 							"order": "Por pedido",
 							"product": "Por produto"
 						},
-						"title": "Taxas aditivas"
+						"title": "Taxas do comprador"
 					},
 					"lane": {
 						"creditCard_one": "Crédito {{count}}x",
@@ -348,7 +348,7 @@
 						"fixed": "Valor fixo SimIntPay ({{lane}})",
 						"hint": "Descontadas do lojista pela SimIntPay quando o modo inclui taxas SimIntPay. O custo da adquirente é global e define o mínimo.",
 						"rate": "Percentual SimIntPay ({{lane}})",
-						"title": "Taxas SimIntPay"
+						"title": "Taxas do vendedor"
 					},
 					"title": "Taxas de {{name}}",
 					"underCovered": "As taxas efetivas desta empresa não cobrem o custo das adquirentes em alguma modalidade."
