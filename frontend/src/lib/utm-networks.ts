@@ -15,9 +15,6 @@ export const utmNetworks: Record<string, UtmPreset> = {
 	youtube: { campaign: "branding_youtube", content: "link_in_bio", medium: "social", source: "youtube" },
 };
 
-/** `/cardapio` is the Instagram bio link. */
-export const BIO_NETWORK = "instagram";
-
 /**
  * Fixed UTMs go first and replace any incoming utm_* of the same key; every other incoming param
  * (fbclid, gclid, utm_term...) is preserved as-is.
