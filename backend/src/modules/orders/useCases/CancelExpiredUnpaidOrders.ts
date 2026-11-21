@@ -1,22 +1,13 @@
 import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
-import type { OrderStatusEmailTemplate, OrderStatusWhatsAppTemplate } from "@/modules/branding/dtos";
 import { orderEvents } from "@/shared/infra/OrderEvents";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import type { WhatsAppSender } from "@/shared/infra/whatsapp";
-import {
-	dispatchOrderStatusWhatsApp,
-	sendOrderStatusEmail,
-} from "../notifications/sendOrderStatusNotification";
 
 const CANCELLATION_REASON = "Pagamento não confirmado em até 1 hora.";
 const EXPIRATION_MS = 60 * 60 * 1_000;
 const INTERVAL_MS = 60_000;
 
 export class CancelExpiredUnpaidOrders {
-	constructor(
-		private readonly prisma: PrismaInstance,
-		private readonly whatsApp: WhatsAppSender,
-	) {}
+	constructor(private readonly prisma: PrismaInstance) {}
 
 	async execute(now = new Date()): Promise<number> {
 		const slug = process.env.COMPANY_SLUG?.trim();
@@ -24,29 +15,12 @@ export class CancelExpiredUnpaidOrders {
 
 		const expiresAt = new Date(now.getTime() - EXPIRATION_MS);
 		const orders = await this.prisma.order.findMany({
-			include: {
-				company: { select: { orderStatusEmailTemplates: true, orderStatusWhatsAppTemplates: true, whatsAppConnection: { select: { connectedPhone: true, sessionName: true } } } },
-				customer: {
-					select: {
-						notificationEmail: true,
-						notificationWhatsApp: true,
-						phone: true,
-						user: { select: { email: true, phoneNumber: true } },
-					},
-				},
-				unit: { select: { whatsAppConnection: { select: { connectedPhone: true, sessionName: true } } } },
-			},
 			where: { company: { slug }, createdAt: { lt: expiresAt }, status: "awaiting_payment" },
 		});
 
 		let cancelled = 0;
 		for (const order of orders) {
 			try {
-				const templates = order.company.orderStatusWhatsAppTemplates as Record<
-					string,
-					string | OrderStatusWhatsAppTemplate
-				> | null;
-				const emailTemplates = order.company.orderStatusEmailTemplates as Record<string, OrderStatusEmailTemplate> | null;
 				const result = await this.prisma.$transaction(async tx => {
 					const changed = await tx.order.updateMany({
 						data: { cancelReason: CANCELLATION_REASON, status: "cancelado" },
@@ -59,30 +33,8 @@ export class CancelExpiredUnpaidOrders {
 					});
 					if (changed.count > 0) {
 						await InventoryLifecycle.release(tx, order.id);
-						const statusEvent = await tx.orderStatusEvent?.create({
+						await tx.orderStatusEvent?.create({
 							data: { orderId: order.id, status: "cancelado" },
-						});
-						await dispatchOrderStatusWhatsApp({
-							cancelReason: CANCELLATION_REASON,
-							companyId: order.companyId,
-							customer: order.customer,
-							deduplicationKey: statusEvent?.id
-								? `order-status:${statusEvent.id}`
-								: `expired-cancellation:${order.id}`,
-							deliveryMethod: order.deliveryMethod,
-							orderId: order.id,
-							orderNumber: order.displayNumber,
-							prisma: tx,
-							status: "cancelado",
-							templates,
-							unitId: order.unitId,
-							companyWhatsAppSession: order.company.whatsAppConnection?.connectedPhone
-								? order.company.whatsAppConnection.sessionName
-								: null,
-							unitWhatsAppSession: order.unit?.whatsAppConnection?.connectedPhone
-								? order.unit.whatsAppConnection.sessionName
-								: null,
-							whatsApp: this.whatsApp,
 						});
 					}
 					return changed;
@@ -91,17 +43,6 @@ export class CancelExpiredUnpaidOrders {
 
 				cancelled += 1;
 				orderEvents.publish(order.companyId, order.unitId);
-
-				await sendOrderStatusEmail({
-					customer: order.customer,
-					cancelReason: CANCELLATION_REASON,
-					deliveryMethod: order.deliveryMethod,
-					emailTemplates,
-					orderId: order.id,
-					orderNumber: order.displayNumber,
-					status: "cancelado",
-					templates,
-				});
 			} catch (error) {
 				console.error(`Failed to cancel expired unpaid order ${order.id}`, error);
 			}
@@ -111,11 +52,8 @@ export class CancelExpiredUnpaidOrders {
 	}
 }
 
-export function startExpiredUnpaidOrderCancellation(
-	prisma: PrismaInstance,
-	whatsApp: WhatsAppSender,
-): () => void {
-	const cancellation = new CancelExpiredUnpaidOrders(prisma, whatsApp);
+export function startExpiredUnpaidOrderCancellation(prisma: PrismaInstance): () => void {
+	const cancellation = new CancelExpiredUnpaidOrders(prisma);
 	const run = () =>
 		void cancellation
 			.execute()

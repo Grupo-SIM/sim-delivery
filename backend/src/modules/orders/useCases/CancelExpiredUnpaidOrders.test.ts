@@ -3,12 +3,11 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import { CancelExpiredUnpaidOrders } from "./CancelExpiredUnpaidOrders";
 
 describe("CancelExpiredUnpaidOrders", () => {
-	it("cancels expired unpaid orders and notifies their customers", async () => {
+	it("cancels expired unpaid orders without notifying their customers", async () => {
 		process.env.COMPANY_SLUG = "zero-grau";
 		const findManyCalls: unknown[] = [];
 		const updateManyCalls: unknown[] = [];
 		const statusEvents: unknown[] = [];
-		const notifications: unknown[] = [];
 		const prisma = {
 			$transaction: async (fn: (tx: unknown) => Promise<unknown>) => fn(prisma),
 			inventoryReservation: { findMany: async () => [], updateMany: async () => ({ count: 0 }) },
@@ -35,13 +34,8 @@ describe("CancelExpiredUnpaidOrders", () => {
 			orderItem: { findMany: async () => [] },
 			orderStatusEvent: { create: async (args: unknown) => statusEvents.push(args) },
 		} as unknown as PrismaInstance;
-		const whatsApp = {
-			sendMessage: async (...args: unknown[]): Promise<void> => {
-				notifications.push(args);
-			},
-		};
 
-		const cancelled = await new CancelExpiredUnpaidOrders(prisma, whatsApp).execute(
+		const cancelled = await new CancelExpiredUnpaidOrders(prisma).execute(
 			new Date("2026-07-23T12:00:00.000Z"),
 		);
 
@@ -59,20 +53,9 @@ describe("CancelExpiredUnpaidOrders", () => {
 			}),
 		]);
 		expect(statusEvents).toEqual([{ data: { orderId: "ord_1", status: "cancelado" } }]);
-		expect(notifications).toEqual([
-			[
-				"5511999999999",
-				{
-					attachments: [],
-					text: "Seu pedido #154 foi cancelado.\nMotivo: Pagamento não confirmado em até 1 hora.",
-				},
-				"company-session",
-			],
-		]);
 	});
 
-	it("does not notify when payment confirmation wins the update race", async () => {
-		const notifications: unknown[] = [];
+	it("does not cancel when payment confirmation wins the update race", async () => {
 		const prisma = {
 			$transaction: async (fn: (tx: unknown) => Promise<unknown>) => fn(prisma),
 			inventoryReservation: { findMany: async () => [], updateMany: async () => ({ count: 0 }) },
@@ -90,13 +73,7 @@ describe("CancelExpiredUnpaidOrders", () => {
 			orderItem: { findMany: async () => [] },
 			orderStatusEvent: { create: async () => undefined },
 		} as unknown as PrismaInstance;
-		const whatsApp = {
-			sendMessage: async (...args: unknown[]): Promise<void> => {
-				notifications.push(args);
-			},
-		};
 
-		expect(await new CancelExpiredUnpaidOrders(prisma, whatsApp).execute()).toBe(0);
-		expect(notifications).toEqual([]);
+		expect(await new CancelExpiredUnpaidOrders(prisma).execute()).toBe(0);
 	});
 });

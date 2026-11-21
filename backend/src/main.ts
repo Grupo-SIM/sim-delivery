@@ -21,7 +21,7 @@ import {
 await new SeedAdmin(prisma, input => auth.api.signUpEmail(input)).execute();
 await new SeedOwner(prisma, input => auth.api.signUpEmail(input)).execute();
 const whatsApp = createWhatsAppProvider();
-startExpiredUnpaidOrderCancellation(prisma, whatsApp);
+startExpiredUnpaidOrderCancellation(prisma);
 startWhatsAppOutboxWorker(prisma, whatsApp);
 if (whatsApp instanceof WahaWhatsAppProvider) startWhatsAppSessionWatchdog(prisma, new WahaClient(getWahaClientOptions()));
 startMetaCapiWorker(prisma);
