@@ -13,6 +13,7 @@ export class ListOrders {
 		query: ListOrdersQuery,
 		role?: Role,
 		userId?: string,
+		timeZone?: string,
 	): Promise<AdminOrderListReturn> {
 		const { customerId, deliveryMethod, from, hasCoupon, search, status, to, unitId, utmCampaign, utmContent, utmMedium, utmSource } = query;
 		// The operational board includes the current shift and unresolved orders from earlier shifts. A customer history,
@@ -42,7 +43,7 @@ export class ListOrders {
 				? {
 						OR: shiftStarts.map(unit => ({
 							OR: [
-								{ createdAt: { gte: getCurrentBusinessShiftStart(unit.hours) } },
+								{ createdAt: { gte: getCurrentBusinessShiftStart(unit.hours, new Date(), timeZone) } },
 								{ status: { in: ["recebido", "em_preparo", "pronto", "saiu_para_entrega", "problema"] } },
 							],
 							unitId: unit.id,
@@ -53,7 +54,7 @@ export class ListOrders {
 			usesSelectedShifts
 				? {
 						OR: shiftStarts.map(unit => ({
-							OR: getBusinessShiftDateRanges(unit.hours, from, to).map(createdAt => ({ createdAt })),
+							OR: getBusinessShiftDateRanges(unit.hours, from, to, timeZone).map(createdAt => ({ createdAt })),
 							unitId: unit.id,
 						})),
 					}

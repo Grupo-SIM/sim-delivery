@@ -167,7 +167,7 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 					const scope = await CompanyScopeGuard.execute(request.headers);
 					CompanyScopeGuard.authorize(scope, "orders", "read");
 					if (query.unitId) CompanyScopeGuard.authorizeUnit(scope, query.unitId);
-					return listOrders.execute(scope.companyId, query, scope.role, scope.userId);
+					return listOrders.execute(scope.companyId, query, scope.role, scope.userId, request.headers.get("x-time-zone") ?? undefined);
 				},
 				{ query: ListOrdersQuery, response: AdminOrderListReturn },
 			)
