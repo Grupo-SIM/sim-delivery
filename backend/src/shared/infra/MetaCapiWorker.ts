@@ -4,7 +4,9 @@ import { decryptSimpaySecret } from "./simpay-secrets";
 
 const leaseMs = 120_000;
 const maxAgeMs = 7 * 24 * 60 * 60_000;
-const maxAttempts = 12;
+const maxAttempts = 60;
+const concurrency = 5;
+const maxBackoffMs = 5 * 60_000;
 
 /** Payloads and credentials never enter logs or error messages. */
 export class MetaCapiWorker {
@@ -23,13 +25,21 @@ export class MetaCapiWorker {
 			orderBy: { nextRetryAt: "asc" }, take: 25,
 		});
 		let delivered = 0;
-		for (const event of candidates) {
+		for (let i = 0; i < candidates.length; i += concurrency) {
+			const results = await Promise.all(candidates.slice(i, i + concurrency).map(event => this.deliver(event, now)));
+			delivered += results.filter(Boolean).length;
+		}
+		return delivered;
+	}
+
+	private async deliver(event: Awaited<ReturnType<PrismaInstance["marketingEvent"]["findMany"]>>[number], now: Date): Promise<boolean> {
+		{
 			const lockToken = randomUUID();
 			const claim = await this.prisma.marketingEvent.updateMany({
 				where: { id: event.id, attempts: event.attempts, nextRetryAt: { lte: now }, sentAt: null, failedAt: null, OR: [{ lockedAt: null }, { lockedAt: { lt: new Date(now.getTime() - leaseMs) } }] },
 				data: { lockedAt: new Date(), lockToken, attempts: { increment: 1 } },
 			});
-			if (!claim.count) continue;
+			if (!claim.count) return false;
 			let error = "transport_error";
 			let permanent = false;
 			let success = false;
@@ -55,12 +65,11 @@ export class MetaCapiWorker {
 				data: success ? { sentAt: now, lockedAt: null, lockToken: null, lastError: null, payload: {} } : {
 					lockedAt: null, lockToken: null, lastError: error,
 					failedAt: permanent || attempts >= maxAttempts ? now : null,
-					nextRetryAt: new Date(now.getTime() + Math.min(6 * 60 * 60_000, 30_000 * 2 ** (attempts - 1)) + Math.floor(Math.random() * 10_000)),
+					nextRetryAt: new Date(now.getTime() + Math.min(maxBackoffMs, 30_000 * 2 ** (attempts - 1)) + Math.floor(Math.random() * 10_000)),
 				},
 			});
-			if (success) delivered++;
+			return success;
 		}
-		return delivered;
 	}
 }
 
