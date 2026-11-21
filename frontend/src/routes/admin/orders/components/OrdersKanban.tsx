@@ -296,8 +296,8 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 				<div
 					className="grid min-h-full gap-3"
 					style={{
-						gridTemplateColumns: `repeat(${columns.length}, minmax(15rem, 1fr))`,
-						minWidth: `${columns.length * 15}rem`,
+						gridTemplateColumns: `repeat(${columns.length}, minmax(19rem, 1fr))`,
+						minWidth: `${columns.length * 19}rem`,
 					}}
 				>
 					{columns.map(column => {
