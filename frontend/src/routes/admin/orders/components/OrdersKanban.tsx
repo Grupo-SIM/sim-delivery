@@ -19,6 +19,7 @@ import { showAlert, showToast } from "@/stores";
 import { OrderKanbanCard } from "./OrderKanbanCard";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 import { FinalizeOrderModal } from "./FinalizeOrderModal";
+import { OrdersMobileList } from "./OrdersMobileList";
 import { PhaseEstimateModal } from "./PhaseEstimateModal";
 
 const KANBAN_STATUSES = [
@@ -276,8 +277,15 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 
 	return (
 		<>
+			<div className="flex min-h-0 flex-1 flex-col md:hidden">
+				<OrdersMobileList
+					canPrint={["superAdmin", "owner", "manager", "attendant", "kitchen"].includes(role ?? "")}
+					columns={columns}
+					finalizedStatuses={FINALIZED_STATUSES}
+				/>
+			</div>
 			<ScrollArea
-				className="min-h-0 min-w-0 flex-1 overscroll-contain overflow-auto pb-3"
+				className="hidden min-h-0 min-w-0 flex-1 overscroll-contain overflow-auto pb-3 md:block"
 				onDragLeave={event => {
 					const nextTarget = event.relatedTarget as Node | null;
 					if (nextTarget && !event.currentTarget.contains(nextTarget)) finishDrag();
