@@ -219,8 +219,6 @@ const OriginMetric = t.Object({
 	revenueCents: t.Integer(),
 });
 export const OriginMetricsReturn = t.Object({
-	/** Instagram link-in-bio: utm_source=ig, utm_medium=social, utm_content=link_in_bio (first touch). */
-	bio: OriginMetric,
 	origins: t.Array(
 		t.Object({
 			...OriginMetric.properties,
@@ -230,5 +228,7 @@ export const OriginMetricsReturn = t.Object({
 			source: __nullable__(t.String()),
 		}),
 	),
+	/** Sold orders matching every applied filter. */
+	totals: OriginMetric,
 });
 export type OriginMetricsReturn = typeof OriginMetricsReturn.static;

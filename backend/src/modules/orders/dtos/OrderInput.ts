@@ -110,7 +110,12 @@ export type QuoteOrderFeesBody = typeof QuoteOrderFeesBody.static;
 
 export const GetOriginMetricsQuery = t.Object({
 	from: t.Optional(t.String()),
+	search: t.Optional(t.String()),
 	to: t.Optional(t.String()),
 	unitId: t.Optional(t.String()),
+	utmCampaign: t.Optional(t.String()),
+	utmContent: t.Optional(t.String()),
+	utmMedium: t.Optional(t.String()),
+	utmSource: t.Optional(t.String()),
 });
 export type GetOriginMetricsQuery = typeof GetOriginMetricsQuery.static;

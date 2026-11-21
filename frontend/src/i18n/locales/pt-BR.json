@@ -828,10 +828,9 @@
 						"social": "Social"
 					},
 					"metrics": {
-						"hint": "Link da bio do Instagram",
-						"orders": "Pedidos da bio",
-						"revenue": "Faturamento da bio",
-						"ticket": "Ticket médio da bio"
+						"orders": "Pedidos",
+						"revenue": "Faturamento",
+						"ticket": "Ticket médio"
 					},
 					"none": "—",
 					"sources": {

@@ -54,11 +54,14 @@ function OrdersPage() {
 		setUnitId(units[0].id);
 	}, [canViewAllUnits, unitId, unitsQuery.data]);
 
+	const originFilter = {
+		...(origin === "bio" ? { utmContent: "link_in_bio", utmMedium: "social", utmSource: "ig" } : {}),
+		...(origin === "instagram" ? { utmSource: "ig" } : {}),
+	};
 	const ordersQuery = useGetOrders({
 		...(unitId ? { unitId } : {}),
 		...(search.trim() ? { search: search.trim() } : {}),
-		...(origin === "bio" ? { utmContent: "link_in_bio", utmMedium: "social", utmSource: "ig" } : {}),
-		...(origin === "instagram" ? { utmSource: "ig" } : {}),
+		...originFilter,
 		...(dateRange
 			? {
 					from: dateRange.startDate,
@@ -137,7 +140,13 @@ function OrdersPage() {
 			</div>
 
 			{canViewAllUnits && (
-				<OriginMetrics from={dateRange?.startDate} to={dateRange?.endDate} unitId={unitId || undefined} />
+				<OriginMetrics
+					from={dateRange?.startDate}
+					search={search.trim() || undefined}
+					to={dateRange?.endDate}
+					unitId={unitId || undefined}
+					{...originFilter}
+				/>
 			)}
 
 			{unitsQuery.isPending || ordersQuery.isPending ? (
