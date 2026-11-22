@@ -15,4 +15,4 @@ Sem push nem migração remota.
 - [x] Pagamentos: tentativa pela base + total cotado, recotação em `QUOTE_CHANGED`.
 - [x] Relatórios: líquido devolvido pela SimIntPay quando presente.
 - [x] Frontend: total cotado e aviso de preço alterado.
-- [ ] Docs e testes.
+- [x] Docs e testes.
