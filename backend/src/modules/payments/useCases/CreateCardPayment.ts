@@ -1,8 +1,8 @@
 import { DomainError } from "@/shared/errors";
 import { isValidCpf } from "@/shared/cpf";
 import type { CanonicalCardToken } from "@/shared/infra/simpay";
-import { attemptAllocation, startPaymentAttempt, recoverPaymentAttempt, recordAttemptResponse } from "./payment-attempts";
-import { PaymentProviderError, isFinancialContractError, paymentProviderErrorDescription } from "@/shared/infra/paymentProviderError";
+import { attemptCharge, chargeAmounts, repriceOrderAfterQuoteChange, startPaymentAttempt, recoverPaymentAttempt, recordAttemptResponse } from "./payment-attempts";
+import { PaymentProviderError, isFinancialContractError, paymentProviderErrorDescription, quoteChangedTotal } from "@/shared/infra/paymentProviderError";
 import { isApprovedSimpayStatus, isFailedSimpayStatus, type SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CardPaymentReturn, CreateCardPaymentBody } from "../dtos";
@@ -100,12 +100,13 @@ export class CreateCardPayment {
 		await this.prisma.paymentAttempt.update({ where: { id: attempt.id }, data: { state: "submitting" } });
 		let simpayPaymentId: string | null = null;
 		let gatewayStatus = "";
+		let settled: ReturnType<typeof chargeAmounts> = {};
 		try {
 			const result = await this.simpay.createCardPayment({
 				idempotencyKey: attempt.id,
 				bin,
 				brand,
-				allocation: attemptAllocation(attempt, order.items),
+				...attemptCharge(attempt, order.items),
 				description: buildPaymentDescription(order),
 				document: holderDocument,
 				document_type: holderDocument.length === 11 ? "CPF" : "CNPJ",
@@ -114,13 +115,14 @@ export class CreateCardPayment {
 				installments: 1,
 				mobile_phone: phone || undefined,
 				name: user.name,
-				price: order.total / 100,
-				token: cardToken,
+					token: cardToken,
 			}, merchant);
 			await recordAttemptResponse(this.prisma, attempt.id, result);
 			simpayPaymentId = result.paymentId ?? result.id ?? null;
 			gatewayStatus = result.status;
+			settled = chargeAmounts(result);
 		} catch (error) {
+			if (quoteChangedTotal(error) != null) return repriceOrderAfterQuoteChange(this.prisma, context, attempt.id, "CREDIT_CARD");
 			if (isFinancialContractError(error)) {
 				await this.prisma.paymentAttempt.update({ where: { id: attempt.id }, data: { state: "failed" } });
 				throw new DomainError(PaymentErrors.PAYMENT_PROCESSING, error.message);
@@ -166,7 +168,8 @@ export class CreateCardPayment {
 		const payment = existing
 			? await this.prisma.payment.update({
 					data: {
-						amount: order.total,
+						amount: settled.totalAmountCents ?? order.total,
+						...settled,
 						method: "credit_card",
 						pixContent: null,
 						pixQrcode: null,
@@ -176,7 +179,7 @@ export class CreateCardPayment {
 					where: { id: existing.id },
 				})
 			: await this.prisma.payment.create({
-					data: { amount: order.total, method: "credit_card", orderId: order.id, simpayPaymentId },
+					data: { amount: settled.totalAmountCents ?? order.total, ...settled, method: "credit_card", orderId: order.id, simpayPaymentId },
 				});
 
 		// Simintpay accepts the request before the acquirer settles it. HTTP success and

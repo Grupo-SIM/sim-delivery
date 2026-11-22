@@ -1,3 +1,4 @@
+import { setChargeQuoteSource } from "@/modules/platformFees/chargeQuote";
 import { beforeEach, describe, expect, it, mock } from "bun:test";
 interface DomPagamentosClient {
  createCustomer(payload: unknown): Promise<string>;
@@ -50,6 +51,8 @@ interface OrderRow {
 
 interface PaymentRow {
 	amount: number;
+	netAmountCents?: number;
+	totalAmountCents?: number;
 	id: string;
 	method: string;
 	orderId: string;
@@ -130,6 +133,8 @@ function makeWorld(opts: WorldOptions = {}) {
 			tokenSeq += 1;
 			const payment: PaymentRow = {
 				amount: data.amount as number,
+				...(data.netAmountCents != null ? { netAmountCents: data.netAmountCents as number } : {}),
+				...(data.totalAmountCents != null ? { totalAmountCents: data.totalAmountCents as number } : {}),
 				id: `pay_${tokenSeq}`,
 				method: data.method as string,
 				orderId: data.orderId as string,
@@ -493,17 +498,18 @@ describe("CreatePixPayment", () => {
 			description: "Pedido Zero Grau - Boa Viagem",
 			document: "52998224725",
 			document_type: "CPF",
-			price: 50,
+			expectedTotalCents: 5000,
 		});
 	});
 
-	it("sends the amount to the gateway in reais, not cents", async () => {
+	it("sends the merchant base in cents and the quoted total as the expected total", async () => {
 		const { prisma } = makeWorld({ orders: [{ ...baseOrder, total: 12345 }] });
 		const { calls, simpay } = makeSimpay();
 
 		await new CreatePixPayment(prisma, simpay).execute("user_1", body);
 
-		expect((calls.pix[0] as { price: number }).price).toBe(123.45);
+		expect(calls.pix[0]).toMatchObject({ charge: { amountCents: 12345, itemsAmountCents: 12345, deliveryAmountCents: 0 }, expectedTotalCents: 12345 });
+		expect(calls.pix[0]).not.toHaveProperty("price");
 	});
 
 	it("labels a 14-digit document as CNPJ", async () => {
@@ -1124,7 +1130,7 @@ describe("CreateCardPayment", () => {
 
 		expect(result).toMatchObject({ status: "confirmed" });
 		expect(payments[0]).toMatchObject({ method: "credit_card", status: "confirmed", orderId: "order_1", simpayPaymentId: "simpay_card_1" });
-		expect(calls.card[0]).toMatchObject({ description: "Pedido Zero Grau - Boa Viagem", brand: "visa", installments: 1, price: 50, token: "424242tok" });
+		expect(calls.card[0]).toMatchObject({ description: "Pedido Zero Grau - Boa Viagem", brand: "visa", installments: 1, expectedTotalCents: 5000, token: "424242tok" });
 		expect(cashbackLedger).toHaveLength(1);
 		expect(await prisma.paymentAttempt.findFirst({ where: { orderId: "order_1", state: { in: ["confirmed"] } } })).toMatchObject({ orderId: "order_1", providerPaymentId: "simpay_card_1", providerTransactionId: "transaction_card_1" });
 	});
@@ -1524,11 +1530,15 @@ describe("DeleteSavedCard", () => {
 	});
 });
 
-describe("platform fee allocation", () => {
-	it("sends the frozen fee separately from merchant proceeds for PIX and card", async () => {
+describe("SimIntPay-priced charges", () => {
+	it("sends the base, items and freight with the quoted total, never an allocation, for PIX and card", async () => {
 		for (const method of ["pix", "card"]) {
-			const { prisma } = makeWorld({ orders: [{ ...baseOrder, deliveryFee: 1000, feeTotalCents: 537, total: 11537 }] });
-			const { calls, simpay } = makeSimpay();
+			const { payments, prisma } = makeWorld({ orders: [{ ...baseOrder, deliveryFee: 1000, feeTotalCents: 537, total: 11537 }] });
+			const settled = { netAmountCents: 11000, totalAmountCents: 11537 };
+			const { calls, simpay } = makeSimpay({
+				createCardPayment: async (payload: unknown) => { calls.card.push(payload); return { id: "simpay_card_1", paymentId: "simpay_card_1", transactionId: "transaction_card_1", status: "PENDING", ...settled }; },
+				createPixPayment: async (payload: unknown) => { calls.pix.push(payload); return { ...pixSuccess, paymentId: "simpay_1", transactionId: "transaction_pix_1", ...settled }; },
+			});
 			if (method === "pix") {
 				await new CreatePixPayment(prisma, simpay).execute("user_1", { orderId: "order_1", slug: "zero-grau" });
 			} else {
@@ -1537,17 +1547,26 @@ describe("platform fee allocation", () => {
 					holderCpf: "11144477735", orderId: "order_1", slug: "zero-grau",
 				});
 			}
-			expect(calls[method][0]).toMatchObject({ price: 115.37, allocation: { merchantAmountCents: 11000, platformFeeCents: 537, itemsAmountCents: 10000, deliveryAmountCents: 1000 } });
+			expect(calls[method][0]).toMatchObject({ charge: { amountCents: 11000, itemsAmountCents: 10000, deliveryAmountCents: 1000 }, expectedTotalCents: 11537 });
+			expect(calls[method][0]).not.toHaveProperty("allocation");
+			expect(payments[0]).toMatchObject({ amount: 11537, ...settled });
 		}
 	});
 
-	it("still declares an explicit zero platform fee", async () => {
-		const { prisma } = makeWorld();
-		const { calls, simpay } = makeSimpay();
-		await new CreatePixPayment(prisma, simpay).execute("user_1", { orderId: "order_1", slug: "zero-grau" });
-		expect(calls.pix[0]).toMatchObject({ allocation: { merchantAmountCents: 5000, platformFeeCents: 0 } });
+	it("asks the buyer to confirm a new price when SimIntPay answers QUOTE_CHANGED", async () => {
+		const error = new PaymentProviderError("Simpay", "Preço alterado (QUOTE_CHANGED)", 409, "QUOTE_CHANGED", { code: "QUOTE_CHANGED", expectedTotalCents: 5100 });
+		setChargeQuoteSource({ quotePayment: async (_scope, input) => ({ additiveFeeCents: 100, additiveRevision: "rev_2", baseAmountCents: input.amountCents, buyerInterestCents: 0, feeMode: "ADDITIVE_ONLY", netAmountCents: input.amountCents, sellerFeeCents: 0, totalAmountCents: input.amountCents + 100 }) });
+		try {
+			const { orders, payments, prisma } = makeWorld();
+			const { simpay } = makeSimpay({ createPixPayment: async () => { throw error; } });
+			await expect(new CreatePixPayment(prisma, simpay).execute("user_1", { orderId: "order_1", slug: "zero-grau" })).rejects.toMatchObject({ message: "PRICE_CHANGED" });
+			expect(orders[0]).toMatchObject({ additiveFeeRevision: "rev_2", feeTotalCents: 100, total: 5100 });
+			expect(payments).toHaveLength(0);
+			expect(await prisma.paymentAttempt.findFirst({ where: { orderId: "order_1", state: { in: ["preparing", "submitting", "pending"] } } })).toBeNull();
+		} finally { setChargeQuoteSource(null); }
 	});
 });
+
 it("financial contract errors remain operational for PIX and card, never a card refusal", async () => {
  const error = new PaymentProviderError("Simpay", "Detalhamento comercial inválido", 422, "COPRODUCTION_BASE_INVALID");
  const { prisma } = makeWorld();

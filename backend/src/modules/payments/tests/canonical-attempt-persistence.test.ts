@@ -13,7 +13,7 @@ suite("canonical attempt SQL constraints (isolated local PostgreSQL)", () => {
  test("concurrent starts permit exactly one active attempt and preserve frozen cents", async () => {
   const result = await Promise.allSettled([startPaymentAttempt(db, context, "pix"), startPaymentAttempt(db, context, "pix")]);
   const rows = await db.paymentAttempt.findMany({ where: { orderId: context.order.id } });
-  expect(rows).toHaveLength(1); expect(rows[0]).toMatchObject({ amountCents: 10537, merchantAmountCents: 10000, platformFeeCents: 537 });
+  expect(rows).toHaveLength(1); expect(rows[0]).toMatchObject({ amountCents: 10537, baseAmountCents: 10000, merchantAmountCents: null, platformFeeCents: null });
   expect(result.some(r => r.status === "fulfilled")).toBe(true);
   await expect(Promise.resolve(db.paymentAttempt.create({ data: { ...rows[0], id: "duplicate" } }))).rejects.toMatchObject({ code: "P2002" });
  });

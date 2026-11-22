@@ -1,5 +1,5 @@
 import { paymentStatusEvents } from "@/modules/payments/infra/PaymentStatusEvents";
-import { isApprovedSimpayStatus, isFailedSimpayStatus } from "@/shared/infra/simpay";
+import { isApprovedSimpayStatus, isFailedSimpayStatus, type SimpayChargeAmounts } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { ConfirmPayment } from "./ConfirmPayment";
 
@@ -12,13 +12,15 @@ export interface AppliedPaymentStatus {
 export class ApplySimpayPaymentStatus {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(simpayPaymentId: string, remoteStatus: string, companyId?: string, coproductionCents = 0, simintpayFeeCents = 0): Promise<AppliedPaymentStatus> {
+	async execute(simpayPaymentId: string, remoteStatus: string, companyId?: string, coproductionCents = 0, simintpayFeeCents = 0, amounts: SimpayChargeAmounts = {}): Promise<AppliedPaymentStatus> {
 		const payment = await this.prisma.payment.findFirst({ where: { simpayPaymentId, ...(companyId ? { order: { companyId } } : {}) } });
 		if (!payment) return { found: false, status: "not_found" };
 		if (payment.status !== "pending") return { found: true, status: payment.status };
 
 		if (isApprovedSimpayStatus(remoteStatus)) {
-			if (coproductionCents > 0 || simintpayFeeCents > 0) await this.prisma.payment.update({ data: { coproductionCents, simintpayFeeCents }, where: { id: payment.id } });
+			// SimIntPay's settled net replaces any value stored at charge time; historical charges have none.
+			const settled = { ...(amounts.netAmountCents != null ? { netAmountCents: amounts.netAmountCents } : {}), ...(amounts.totalAmountCents != null ? { totalAmountCents: amounts.totalAmountCents } : {}) };
+			if (coproductionCents > 0 || simintpayFeeCents > 0 || Object.keys(settled).length > 0) await this.prisma.payment.update({ data: { coproductionCents, simintpayFeeCents, ...settled }, where: { id: payment.id } });
 			const confirmed = await new ConfirmPayment(this.prisma).execute(payment.token, simpayPaymentId);
 			const status = confirmed
 				? "confirmed"

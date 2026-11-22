@@ -1,4 +1,5 @@
 import { afterEach, expect, it, mock, spyOn } from "bun:test";
+import { quoteChangedTotal } from "./paymentProviderError";
 import { SimpayClient, isApprovedSimpayStatus, isFailedSimpayStatus } from "./simpay";
 import { decryptSimpaySecret, encryptSimpaySecret } from "./simpay-secrets";
 import type { PrismaInstance } from "./sql";
@@ -35,13 +36,31 @@ it("rejects incomplete active registration responses", async () => {
  const { client, db } = fixture(false); spyOn(globalThis, "fetch").mockResolvedValue(Response.json({ id: "platform", status: "READY" }));
  await expect(client.provisionPlatform(scope, "Shop")).rejects.toThrow("credenciais"); expect(db.companySimpayIntegration.upsert).not.toHaveBeenCalled();
 });
-it("sends cents, allocation and idempotency only through canonical merchant scope", async () => {
+it("sends the base, breakdown, expected total and idempotency only through canonical merchant scope", async () => {
  const { client } = fixture(); const fetch = spyOn(globalThis, "fetch").mockResolvedValueOnce(Response.json({ id: "merchant" })).mockResolvedValueOnce(Response.json({ transactionId: "transaction", paymentId: "gateway", status: "PENDING", amountCents: 10537, pixContent: "copy", qrCode: "qr" }));
- const params = { idempotencyKey: "attempt", allocation: { merchantAmountCents: 10000, platformFeeCents: 537 }, price: 105.37, document: "52998224725", document_type: "CPF", name: "Maria Silva", email: "buyer@example.com", description: "Pedido" };
+ const params = { idempotencyKey: "attempt", charge: { amountCents: 10000, itemsAmountCents: 9000, deliveryAmountCents: 1000, items: [{ key: "item", quantity: 1, unitPriceCents: 9000 }] }, expectedTotalCents: 10537, document: "52998224725", document_type: "CPF", name: "Maria Silva", email: "buyer@example.com", description: "Pedido" };
  expect(await client.createPixPayment(params, { ...scope, cnpj: "10802530000107", legalName: "Shop" })).toMatchObject({ paymentId: "gateway", pix_qrcode: "qr", pix_content: "copy" });
  expect(String(fetch.mock.calls[1][0])).toEndWith("/platforms/SHOP/merchants/company/payments");
  expect(fetch.mock.calls[1][1]?.headers).toHaveProperty("x-access-token", "scoped-token"); expect(fetch.mock.calls[1][1]?.headers).not.toHaveProperty("x-internal-token");
- expect(JSON.parse(String(fetch.mock.calls[1][1]?.body))).toMatchObject({ amountCents: 10537, allocation: params.allocation, idempotencyKey: "attempt", paymentMethod: "PIX", customer: { documentType: "CPF" } });
+ expect(JSON.parse(String(fetch.mock.calls[1][1]?.body))).toMatchObject({ amountCents: 10000, itemsAmountCents: 9000, deliveryAmountCents: 1000, items: params.charge.items, expectedTotalCents: 10537, idempotencyKey: "attempt", paymentMethod: "PIX", customer: { documentType: "CPF" } });
+ expect(JSON.parse(String(fetch.mock.calls[1][1]?.body))).not.toHaveProperty("allocation");
+});
+it("quotes the base with the merchant token and card at one installment", async () => {
+ const { client } = fixture();
+ const quote = { feeMode: "BOTH", baseAmountCents: 10000, additiveFeeCents: 500, buyerInterestCents: 0, totalAmountCents: 10500, sellerFeeCents: 399, netAmountCents: 9601, additiveRevision: "rev" };
+ const fetch = spyOn(globalThis, "fetch").mockResolvedValueOnce(Response.json(quote));
+ expect(await client.quotePayment(scope, { amountCents: 10000, itemsAmountCents: 9000, deliveryAmountCents: 1000, paymentMethod: "CREDIT_CARD" })).toEqual(quote as never);
+ expect(String(fetch.mock.calls[0][0])).toEndWith("/platforms/SHOP/merchants/company/payments/quote");
+ expect(fetch.mock.calls[0][1]?.headers).toHaveProperty("x-access-token", "scoped-token");
+ expect(JSON.parse(String(fetch.mock.calls[0][1]?.body))).toEqual({ amountCents: 10000, itemsAmountCents: 9000, deliveryAmountCents: 1000, paymentMethod: "CREDIT_CARD", installments: 1 });
+});
+it("exposes the current total of a QUOTE_CHANGED refusal", async () => {
+ const { client } = fixture();
+ spyOn(globalThis, "fetch").mockResolvedValueOnce(Response.json({ id: "merchant" })).mockResolvedValueOnce(Response.json({ code: "QUOTE_CHANGED", message: "Preço alterado", expectedTotalCents: 10600 }, { status: 409 }));
+ const params = { idempotencyKey: "attempt", charge: { amountCents: 10000, itemsAmountCents: 10000, deliveryAmountCents: 0 }, expectedTotalCents: 10537, document: "52998224725", document_type: "CPF", name: "Maria Silva", email: "buyer@example.com", description: "Pedido" };
+ const error = await client.createPixPayment(params, { ...scope, cnpj: "10802530000107", legalName: "Shop" }).catch(caught => caught);
+ expect(quoteChangedTotal(error)).toBe(10600);
+ expect(quoteChangedTotal(new Error("other"))).toBeNull();
 });
 it("adapts canonical withdrawal amounts, pagination and decimal rates", async () => {
  const { client } = fixture(); const row = { id: "withdrawal", amountCents: 800, grossAmountCents: 1000, feeCents: 200, pixKey: "key", requestId: "local", status: "PENDING", rejectionReason: null, createdAt: "2026-10-22T00:00:00Z", updatedAt: "2026-10-22T00:00:00Z" };

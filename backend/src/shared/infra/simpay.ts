@@ -1,6 +1,7 @@
 /**
  * SIM INT PAY client. New charges use authenticated company-scoped merchant
- * endpoints with explicit merchant/platform allocation. Historical references
+ * endpoints: Delivery sends the merchant base and items, SimIntPay prices the
+ * buyer total (quote first, then charge with `expectedTotalCents`). Historical references
  * require an explicit company binding; no anonymous provider fallback.
  */
 
@@ -8,25 +9,41 @@ import { prisma, type PrismaInstance } from "./sql";
 import { encryptSimpaySecret, decryptSimpaySecret } from "./simpay-secrets";
 import { extractPaymentProviderMessage, PaymentProviderError } from "./paymentProviderError";
 
-export interface SimpayAllocationItem {
+export interface SimpayChargeItem {
 	key: string;
 	quantity: number;
 	unitPriceCents: number;
 }
 
-export interface SimpayPaymentAllocation {
-	/** Lets SimIntPay recompute the additive surcharge from the company's totals; it rejects with 409 FEE_MISMATCH on divergence. */
-	items?: SimpayAllocationItem[];
-	itemsAmountCents?: number;
-	deliveryAmountCents?: number;
-	merchantAmountCents: number;
-	platformFeeCents: number;
+/** Merchant base SimIntPay prices: items after discounts/credits plus freight. */
+export interface SimpayChargeBase {
+	/** Items after discounts + freight; what the merchant sells, before any SimIntPay fee. */
+	amountCents: number;
+	deliveryAmountCents: number;
+	items?: SimpayChargeItem[];
+	itemsAmountCents: number;
+}
+
+export interface SimpayPaymentQuoteInput extends SimpayChargeBase {
+	paymentMethod: "CREDIT_CARD" | "PIX";
+}
+
+export interface SimpayPaymentQuote {
+	additiveFeeCents: number;
+	additiveRevision: string | null;
+	baseAmountCents: number;
+	buyerInterestCents: number;
+	feeMode: "ADDITIVE_ONLY" | "BOTH" | "SIMINTPAY_ONLY";
+	netAmountCents: number;
+	sellerFeeCents: number;
+	totalAmountCents: number;
 }
 
 export interface SimpayCardPaymentParams {
 	idempotencyKey: string;
-	allocation: SimpayPaymentAllocation;
-	price: number;
+	charge: SimpayChargeBase;
+	/** Buyer total from the quote; SimIntPay answers 409 QUOTE_CHANGED when it no longer matches. */
+	expectedTotalCents: number;
 	document: string;
 	document_type: string;
 	email: string;
@@ -40,7 +57,7 @@ export interface SimpayCardPaymentParams {
 	installments: number;
 }
 
-export interface SimpayPaymentResponse {
+export interface SimpayPaymentResponse extends SimpayChargeAmounts {
 	transactionId: string;
 	paymentId: string;
 	status: string;
@@ -55,8 +72,9 @@ export interface SimpayPaymentResponse {
 
 export interface SimpayPixPaymentParams {
 	idempotencyKey: string;
-	allocation: SimpayPaymentAllocation;
-	price: number;
+	charge: SimpayChargeBase;
+	/** Buyer total from the quote; SimIntPay answers 409 QUOTE_CHANGED when it no longer matches. */
+	expectedTotalCents: number;
 	document: string;
 	document_type: string;
 	email: string;
@@ -65,7 +83,7 @@ export interface SimpayPixPaymentParams {
 	description: string;
 }
 
-export interface SimpayPixCreateResponse {
+export interface SimpayPixCreateResponse extends SimpayChargeAmounts {
 	pix_qrcode: string | null;
 	pix_content: string | null;
 	/** Fallback image URL for the QR code when `pix_qrcode` is absent. */
@@ -206,10 +224,39 @@ export function isFailedSimpayStatus(status: unknown): boolean {
 	return FAILED_PAYMENT_STATUSES.has(normalizePaymentStatus(status));
 }
 
-type CanonicalPayment = { transactionId: string; paymentId: string | null; status: string; amountCents: number; coproductionCents?: number; simintpayFeeCents?: number; qrCode?: string | null; pixContent?: string | null; pixExpire?: string | null };
+type CanonicalPayment = { transactionId: string; paymentId: string | null; status: string; amountCents: number; totalAmountCents?: number; netAmountCents?: number; coproductionCents?: number; simintpayFeeCents?: number; qrCode?: string | null; pixContent?: string | null; pixExpire?: string | null };
 type RegistrationResult = { id: string; status: "PENDING_OWNER" | "READY"; platform?: { id: string; tag: string }; merchant?: { id: string }; credentials?: { accessToken: string; webhookSecret: string } };
 export interface CanonicalCardToken { token: string; bin: string; last4: string; brand: string; expiryMonth: string; expiryYear: string; holderName: string; customerId: string }
 function baseUrl() { return (process.env.SIMPAY_API_URL?.trim() || "https://simpay-back.simintermediacoes.com").replace(/\/+$/, ""); }
+
+/** Settled amounts; absent on charges SimIntPay priced before the quote contract. */
+export interface SimpayChargeAmounts {
+	netAmountCents?: number;
+	totalAmountCents?: number;
+}
+
+export interface SimpayPaymentStatus extends SimpayChargeAmounts {
+	coproductionCents: number;
+	paymentId: string;
+	simintpayFeeCents: number;
+	status: string;
+}
+
+function amounts(result: SimpayChargeAmounts): SimpayChargeAmounts {
+	return {
+		...(typeof result.netAmountCents === "number" ? { netAmountCents: result.netAmountCents } : {}),
+		...(typeof result.totalAmountCents === "number" ? { totalAmountCents: result.totalAmountCents } : {}),
+	};
+}
+
+function chargeBody(base: SimpayChargeBase) {
+	return {
+		amountCents: base.amountCents,
+		...(base.items?.length ? { items: base.items } : {}),
+		itemsAmountCents: base.itemsAmountCents,
+		deliveryAmountCents: base.deliveryAmountCents,
+	};
+}
 
 export class SimpayClient {
 	constructor(private readonly db: PrismaInstance) {}
@@ -225,7 +272,7 @@ export class SimpayClient {
 		if (!response.ok || !data) {
 			const code = data && typeof data === "object" && "code" in data && typeof data.code === "string" ? data.code : undefined;
 			const message = extractPaymentProviderMessage(data) || `Erro na API canônica SIM INT PAY (HTTP ${response.status})`;
-			throw new PaymentProviderError("Simpay", code ? `${message} (${code})` : message, response.status, code);
+			throw new PaymentProviderError("Simpay", code ? `${message} (${code})` : message, response.status, code, data);
 		}
 		return data as T;
 	}
@@ -290,25 +337,29 @@ export class SimpayClient {
 		if (!scope) throw new PaymentProviderError("Simpay", "Configure o CPF/CNPJ e a carteira da empresa antes de receber pagamentos online.", 422);
 		await this.provisionMerchant(scope);
 		const card = params as SimpayCardPaymentParams;
-		return this.scoped<CanonicalPayment>(scope, "/payments", { amountCents: Math.round(params.price * 100), paymentMethod: method, idempotencyKey: params.idempotencyKey,
-			allocation: params.allocation, description: params.description,
+		return this.scoped<CanonicalPayment>(scope, "/payments", { ...chargeBody(params.charge), paymentMethod: method, idempotencyKey: params.idempotencyKey,
+			...(method === "CREDIT_CARD" ? { installments: 1 } : {}), expectedTotalCents: params.expectedTotalCents, description: params.description,
 			customer: { name: params.name, email: params.email, document: params.document, documentType: params.document_type, phone: params.mobile_phone },
 			...(method === "CREDIT_CARD" ? { card: { token: card.token, holderName: card.holder_name, bin: card.bin, brand: card.brand, installments: card.installments } } : {}),
 		});
 	}
+	/** Buyer total and merchant net for a base; Delivery only charges PIX and card 1x, so no interest is passed. */
+	async quotePayment(scope: SimpayMerchantScope, input: SimpayPaymentQuoteInput): Promise<SimpayPaymentQuote> {
+		return this.scoped(scope, "/payments/quote", { ...chargeBody(input), paymentMethod: input.paymentMethod, ...(input.paymentMethod === "CREDIT_CARD" ? { installments: 1 } : {}) });
+	}
 	async createPixPayment(params: SimpayPixPaymentParams, scope?: SimpayMerchantReference): Promise<SimpayPixCreateResponse> {
 		const result = await this.createPayment(params, scope, "PIX");
-		return { transactionId: result.transactionId, paymentId: result.paymentId ?? result.transactionId, status: result.status, pix_qrcode: result.qrCode ?? null, pix_content: result.pixContent ?? null };
+		return { transactionId: result.transactionId, paymentId: result.paymentId ?? result.transactionId, status: result.status, pix_qrcode: result.qrCode ?? null, pix_content: result.pixContent ?? null, ...amounts(result) };
 	}
 	async createCardPayment(params: SimpayCardPaymentParams, scope?: SimpayMerchantReference): Promise<SimpayPaymentResponse> {
 		const result = await this.createPayment(params, scope, "CREDIT_CARD");
-		return { transactionId: result.transactionId, paymentId: result.paymentId ?? result.transactionId, status: result.status };
+		return { transactionId: result.transactionId, paymentId: result.paymentId ?? result.transactionId, status: result.status, ...amounts(result) };
 	}
 	async getPaymentAttempt(scope: SimpayMerchantScope, key: string): Promise<CanonicalPayment> { return this.scoped(scope, `/payment-attempts/${encodeURIComponent(key)}`); }
-	async getPaymentStatus(paymentId: string, scope?: SimpayMerchantScope): Promise<{ coproductionCents: number; paymentId: string; simintpayFeeCents: number; status: string }> {
+	async getPaymentStatus(paymentId: string, scope?: SimpayMerchantScope): Promise<SimpayPaymentStatus> {
 		if (!scope) throw new PaymentProviderError("Simpay", "Pagamento histórico exige associação empresarial explícita.", 422);
 		const result = await this.scoped<CanonicalPayment>(scope, `/payments/${encodeURIComponent(paymentId)}`);
-		return { coproductionCents: result.coproductionCents ?? 0, simintpayFeeCents: result.simintpayFeeCents ?? 0, paymentId: result.paymentId ?? result.transactionId, status: result.status };
+		return { coproductionCents: result.coproductionCents ?? 0, simintpayFeeCents: result.simintpayFeeCents ?? 0, paymentId: result.paymentId ?? result.transactionId, status: result.status, ...amounts(result) };
 	}
 	async getPixStatusDirect(paymentId: string, scope?: SimpayMerchantScope) { return this.getPaymentStatus(paymentId, scope); }
 	async getWithdrawalSummary(scope: SimpayMerchantScope): Promise<SimpayWithdrawalSummary> {

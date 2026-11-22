@@ -1,5 +1,5 @@
-import { PaymentProviderError, isFinancialContractError, paymentProviderErrorDescription } from "@/shared/infra/paymentProviderError";
-import { attemptAllocation, startPaymentAttempt, recoverPaymentAttempt, recordAttemptResponse } from "./payment-attempts";
+import { PaymentProviderError, isFinancialContractError, paymentProviderErrorDescription, quoteChangedTotal } from "@/shared/infra/paymentProviderError";
+import { attemptCharge, chargeAmounts, repriceOrderAfterQuoteChange, startPaymentAttempt, recoverPaymentAttempt, recordAttemptResponse } from "./payment-attempts";
 import { DomainError } from "@/shared/errors";
 import type { SimpayClient } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
@@ -40,15 +40,15 @@ export class CreatePixPayment {
 		const phone = (customer.phone ?? user.phoneNumber ?? "").replace(/\D/g, "");
 		const pix = await this.simpay.createPixPayment({
 			idempotencyKey: attempt.id,
-			allocation: attemptAllocation(attempt, order.items),
+			...attemptCharge(attempt, order.items),
 			description: buildPaymentDescription(order),
 			document,
 			document_type: document.length === 11 ? "CPF" : "CNPJ",
 			email: user.email,
 			mobile_phone: phone || undefined,
 			name: user.name,
-			price: order.total / 100,
 		}, merchant).catch(async error => {
+			if (quoteChangedTotal(error) != null) return repriceOrderAfterQuoteChange(this.prisma, context, attempt.id, "PIX");
 			if (isFinancialContractError(error)) {
 				await this.prisma.paymentAttempt.update({ where: { id: attempt.id }, data: { state: "failed" } });
 				throw new DomainError(PaymentErrors.PAYMENT_PROCESSING, error.message);
@@ -73,11 +73,13 @@ export class CreatePixPayment {
 		}
 
 		const simpayPaymentId = pix.paymentId ?? pix.id ?? null;
+		const amount = pix.totalAmountCents ?? order.total;
 
 		const payment = existing
 			? await this.prisma.payment.update({
 					data: {
-						amount: order.total,
+						amount,
+						...chargeAmounts(pix),
 						method: "pix",
 						pixContent: pix.pix_content,
 						pixQrcode: qrcode,
@@ -88,7 +90,8 @@ export class CreatePixPayment {
 				})
 			: await this.prisma.payment.create({
 					data: {
-						amount: order.total,
+						amount,
+						...chargeAmounts(pix),
 						method: "pix",
 						orderId: order.id,
 						pixContent: pix.pix_content,

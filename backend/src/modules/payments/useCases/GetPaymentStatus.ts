@@ -1,5 +1,5 @@
 import { DomainError } from "@/shared/errors";
-import { simpayIntegrationKey, type SimpayClient } from "@/shared/infra/simpay";
+import { simpayIntegrationKey, type SimpayClient, type SimpayPaymentStatus } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { PaymentStatusReturn } from "../dtos";
 import { PaymentErrors } from "../errors";
@@ -19,7 +19,7 @@ export class GetPaymentStatus {
 		if (!payment) throw new DomainError(PaymentErrors.PAYMENT_NOT_FOUND);
 		if (!reconcileRemote || payment.status !== "pending" || !payment.simpayPaymentId) return { status: payment.status };
 
-		let remote: { coproductionCents: number; simintpayFeeCents: number; status: string };
+		let remote: SimpayPaymentStatus;
 		try {
 			const merchant = payment.order?.company
 				? { externalMerchantId: payment.order.company.id, integrationKey: simpayIntegrationKey(payment.order.company.slug) }
@@ -42,6 +42,7 @@ export class GetPaymentStatus {
 			undefined,
 			remote.coproductionCents,
 			remote.simintpayFeeCents,
+			remote,
 		);
 		return { status: result.status };
 	}
