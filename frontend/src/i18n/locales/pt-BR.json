@@ -738,6 +738,37 @@
 				"subtitle": "Pedidos ativos para esta unidade.",
 				"title": "Cozinha"
 			},
+			"marketing": {
+				"company": "Empresa",
+				"loadError": "Não foi possível carregar as empresas.",
+				"subtitle": "Rastreamento e campanhas da plataforma.",
+				"title": "Marketing",
+				"utm": {
+					"copied": "Link copiado.",
+					"copy": "Copiar link",
+					"delete": "Excluir link",
+					"deleteConfirm": "Confirmar",
+					"deleteConfirmation": "Clique de novo para excluir",
+					"deleted": "Link excluído.",
+					"discard": "Descartar",
+					"edit": "Editar link",
+					"empty": "Nenhum link UTM criado ainda.",
+					"error": "Não foi possível concluir a ação.",
+					"fields": {
+						"path": "Caminho",
+						"unitSlug": "Unidade (opcional)"
+					},
+					"invalid": "Caminho inválido ou nenhum parâmetro UTM informado.",
+					"loadError": "Não foi possível carregar os links UTM.",
+					"new": "Novo link",
+					"pathHint": "Até 6 níveis separados por \"/\", só letras minúsculas, números, \"-\" e \"_\". Ex.: influencers/fulano.",
+					"pathTaken": "Já existe um link com esse caminho.",
+					"save": "Salvar",
+					"saved": "Link salvo.",
+					"subtitle": "Cada link /utm/<caminho> redireciona para a loja aplicando os parâmetros definidos.",
+					"unitHint": "Slug da unidade para abrir direto no cardápio dela. Vazio = página inicial."
+				}
+			},
 			"orders": {
 				"assignment": {
 					"assign": "Atribuir",

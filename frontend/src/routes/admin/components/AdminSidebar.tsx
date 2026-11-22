@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
 	LuArrowLeft,
 	LuBuilding2,
+	LuMegaphone,
 	LuChartBar,
 	LuClipboardList,
 	LuFolderTree,
@@ -140,6 +141,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
 			{isSuperAdmin(role) && (
 				<AdminNavGroup label={t("admin.dashboard.nav.platform")}>
 					<AdminNavItem icon={LuBadgeDollarSign} label="Taxas" onNavigate={onNavigate} to="/admin/platform/fees" />
+					<AdminNavItem icon={LuMegaphone} label={t("admin.marketing.title")} onNavigate={onNavigate} to="/admin/platform/marketing" />
 					<AdminNavItem
 						icon={LuBuilding2}
 						label={t("admin.companies.title")}
