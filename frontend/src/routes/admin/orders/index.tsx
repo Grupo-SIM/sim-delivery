@@ -98,13 +98,15 @@ function OrdersPage() {
 				</Button>
 			</div>
 
-			<div className="grid shrink-0 gap-4 md:grid-cols-[minmax(0,2fr)_minmax(15rem,1fr)_minmax(0,2fr)] md:items-start">
+			<div className="flex shrink-0 flex-wrap items-start gap-4">
+				<div className="min-w-56 flex-[2_1_14rem]">
 				<TextField
 					label={t("admin.orders.filter.search")}
 					onValueChange={setSearch}
 					placeholder={t("admin.orders.filter.searchPlaceholder")}
 					value={search}
 				/>
+				</div>
 				<div className="flex flex-col gap-1">
 					<span className="font-medium text-sm">{t("admin.orders.filter.date")}</span>
 					<DashboardDateRangePicker
@@ -113,7 +115,7 @@ function OrdersPage() {
 						value={dateRange}
 					/>
 				</div>
-				<div className="space-y-1">
+				<div className="min-w-48 flex-[1_1_12rem] space-y-1">
 					<span className="font-medium text-sm">{t("admin.orders.filter.unit")}</span>
 					<CustomSelect
 						onChange={setUnitId}
@@ -124,7 +126,7 @@ function OrdersPage() {
 						value={unitId}
 					/>
 				</div>
-				<div className="space-y-1">
+				<div className="min-w-48 flex-[1_1_12rem] space-y-1">
 					<span className="font-medium text-sm">{t("admin.orders.origin.filter.label")}</span>
 					<CustomSelect
 						onChange={value => setOrigin(value as typeof origin)}
@@ -139,15 +141,7 @@ function OrdersPage() {
 				<AutoPrintControls />
 			</div>
 
-			{canViewAllUnits && (
-				<OriginMetrics
-					from={dateRange?.startDate}
-					search={search.trim() || undefined}
-					to={dateRange?.endDate}
-					unitId={unitId || undefined}
-					{...originFilter}
-				/>
-			)}
+			{canViewAllUnits && !ordersQuery.isPending && <OriginMetrics orders={ordersQuery.data ?? []} />}
 
 			{unitsQuery.isPending || ordersQuery.isPending ? (
 				<div className="grid min-h-0 flex-1 gap-4 overflow-hidden sm:grid-cols-3">
