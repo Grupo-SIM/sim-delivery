@@ -19,7 +19,7 @@ export interface CalculatedFee extends Omit<EffectiveFeeReturn, "components"> {
 	items: CalculatedItemFee[];
 }
 
-function feeAmount(cents: number, fee: EffectiveFeeReturn) {
+function feeAmount(cents: number, fee: Pick<EffectiveFeeReturn, "fixedValue" | "percentageValue">) {
 	return Math.floor((cents * fee.percentageValue + 5_000) / 10_000) + fee.fixedValue;
 }
 

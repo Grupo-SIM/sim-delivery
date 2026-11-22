@@ -15,8 +15,8 @@ export class UpdateDiscount {
 			throw new DomainError(DiscountErrors.DISCOUNT_NOT_FOUND);
 		}
 
-		const startsAt = data.startsAt === undefined ? discount.startsAt : data.startsAt && new Date(data.startsAt);
-		const endsAt = data.endsAt === undefined ? discount.endsAt : data.endsAt && new Date(data.endsAt);
+		const startsAt = data.startsAt === undefined ? discount.startsAt : data.startsAt ? new Date(data.startsAt) : null;
+		const endsAt = data.endsAt === undefined ? discount.endsAt : data.endsAt ? new Date(data.endsAt) : null;
 		assertValidDiscount({
 			endsAt,
 			startsAt,
