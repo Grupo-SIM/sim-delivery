@@ -2281,7 +2281,8 @@
 					"placing": "Realizando pedido…",
 					"subtitle": "Revise seu pedido antes de confirmar.",
 					"title": "Resumo do pedido",
-					"total": "Total"
+					"total": "Total",
+					"unitClosed": "Esta unidade está fechada no momento. Volte no horário de funcionamento para fazer seu pedido."
 				},
 				"payment": {
 					"card": {

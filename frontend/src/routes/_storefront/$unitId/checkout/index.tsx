@@ -213,7 +213,12 @@ function CheckoutPage() {
 				},
 			},
 			{
-				onError: () => void showAlert(t("store.checkout.order.error")),
+				onError: error =>
+					void showAlert(
+						(error.data as { error?: string } | undefined)?.error === "UNIT_CLOSED"
+							? t("store.checkout.order.unitClosed")
+							: t("store.checkout.order.error"),
+					),
 				onSuccess: order => {
 					const totalCents = Number(order.total);
 					if (totalCents === 0) {

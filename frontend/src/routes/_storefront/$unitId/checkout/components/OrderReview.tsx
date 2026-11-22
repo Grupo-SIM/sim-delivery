@@ -373,6 +373,10 @@ export function OrderReview({
 				</div>
 			</section>
 
+			{unit?.isOpenNow === false && (
+				<p className="text-center text-destructive text-sm">{t("store.checkout.order.unitClosed")}</p>
+			)}
+
 			<Button
 				className="w-full"
 				disabled={
@@ -381,6 +385,7 @@ export function OrderReview({
 					!!feeQuoteError ||
 					!feeQuote ||
 					blockedByFreight ||
+					unit?.isOpenNow === false ||
 					(deliveryMethod === "delivery" && !address)
 				}
 				onClick={onSubmit}
