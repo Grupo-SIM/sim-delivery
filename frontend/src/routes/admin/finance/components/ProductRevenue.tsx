@@ -14,7 +14,7 @@ export function ProductRevenue({ formatCents, isError, isPending, rows }: Produc
 	return (
 		<section>
 			<h2 className="mb-3 font-semibold text-base">Receita por produto</h2>
-			<DataTable tableClassName="!min-w-0 table-fixed">
+			<DataTable className="max-h-[317px]" tableClassName="!min-w-0 table-fixed">
 				<thead>
 					<tr className="border-border border-b text-left text-muted-foreground">
 						<th className="p-3">Produto</th>
