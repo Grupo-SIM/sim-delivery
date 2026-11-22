@@ -27,6 +27,8 @@ interface PaymentStepProps {
 	isSavingIdentity: boolean;
 	onIdentitySubmit: (value: { cpf: string; name: string; phone: string }) => void;
 	onConfirmed: () => void;
+	/** The charge was refused because SimIntPay repriced the order; reload its total before the buyer retries. */
+	onPriceChanged: () => Promise<void>;
 	orderId: string;
 	slug: string;
 }
@@ -39,6 +41,7 @@ export function PaymentStep({
 	isSavingIdentity,
 	onConfirmed,
 	onIdentitySubmit,
+	onPriceChanged,
 	orderId,
 	slug,
 }: PaymentStepProps) {
@@ -63,6 +66,7 @@ export function PaymentStep({
 			{
 				onError: error => {
 					if (error.data.error === "SAVED_CARD_REAUTH_REQUIRED") setReauthCardId(value.savedCardId);
+					if (error.data.error === "PRICE_CHANGED") void onPriceChanged();
 					const message =
 						error.data.description ??
 						t(`store.checkout.payment.card.errors.${error.data.error}`, {
@@ -145,6 +149,7 @@ export function PaymentStep({
 					customerCpf={pixCpf}
 					onConfirmed={onConfirmed}
 					onCpfSaved={setPixCpf}
+					onPriceChanged={onPriceChanged}
 					orderId={orderId}
 					slug={slug}
 				/>

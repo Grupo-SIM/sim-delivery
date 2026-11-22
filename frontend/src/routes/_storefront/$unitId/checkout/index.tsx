@@ -11,6 +11,7 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Skeleton } from "@/components/ui/Skeleton";
 import {
+	getCustomerOrder,
 	getCustomersMeQueryOptions,
 	getPublicUnitsByUnitSlugMenuQueryOptions,
 	getPublicUnitsQueryOptions,
@@ -228,6 +229,13 @@ function CheckoutPage() {
 		);
 	}
 
+	/** SimIntPay repriced the order (QUOTE_CHANGED): show the stored total before the buyer confirms again. */
+	async function handlePriceChanged() {
+		if (!placedOrder) return;
+		const order = await getCustomerOrder(placedOrder.id, slug ?? "");
+		setPlacedOrder({ id: order.id, totalCents: Number(order.total) });
+	}
+
 	function handlePaymentConfirmed() {
 		if (!placedOrder) return;
 		void navigate({
@@ -340,6 +348,7 @@ function CheckoutPage() {
 						isSavingIdentity={isSavingIdentity}
 						onConfirmed={handlePaymentConfirmed}
 						onIdentitySubmit={handleIdentitySubmit}
+						onPriceChanged={handlePriceChanged}
 						orderId={placedOrder.id}
 						slug={slug ?? ""}
 					/>

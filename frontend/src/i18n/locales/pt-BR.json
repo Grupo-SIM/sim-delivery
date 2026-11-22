@@ -2284,6 +2284,7 @@
 							"PAYMENT_ALREADY_CONFIRMED": "Este pedido já foi pago.",
 							"PAYMENT_PROCESSING": "Pagamento em processamento. Aguarde; sua cobrança será consultada sem criar outra.",
 							"PHONE_REQUIRED": "Informe seu celular antes de pagar.",
+							"PRICE_CHANGED": "O valor do pedido mudou. Confira o novo total e confirme para pagar.",
 							"SAVED_CARD_NOT_FOUND": "O cartão salvo não foi encontrado.",
 							"SAVED_CARD_REAUTH_REQUIRED": "Atualize os dados deste cartão para continuar.",
 							"UNAUTHORIZED_ORDER": "Este pedido não pertence à sua conta."

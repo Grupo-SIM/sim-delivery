@@ -34,7 +34,7 @@ function getCustomerOrderQueryKey(orderId: string, slug: string) {
 	return ["customer-order", orderId, slug] as const;
 }
 
-async function getCustomerOrder(orderId: string, slug: string): Promise<CustomerOrderTracking> {
+export async function getCustomerOrder(orderId: string, slug: string): Promise<CustomerOrderTracking> {
 	const response = await fetch<CustomerOrderTracking>({
 		method: "GET",
 		params: { slug },

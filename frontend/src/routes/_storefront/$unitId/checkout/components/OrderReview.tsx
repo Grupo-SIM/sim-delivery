@@ -92,21 +92,6 @@ export function OrderReview({
 	} = usePostOrdersFeesQuote();
 
 	useEffect(() => {
-		if (items.length === 0 || !slug) return;
-		quoteFees({
-			data: {
-				items: items.map(item => ({
-					options: item.options.map(option => ({ optionId: option.optionId, quantity: option.quantity })),
-					quantity: item.quantity,
-					unitProductId: item.id,
-				})),
-				slug,
-				unitSlug,
-			},
-		});
-	}, [items, quoteFees, slug, unitSlug]);
-
-	useEffect(() => {
 		if (deliveryMethod !== "delivery" || address?.latitude == null || address?.longitude == null) return;
 		simulateFreight({ data: { latitude: address.latitude, longitude: address.longitude, slug, unitId } });
 	}, [address?.latitude, address?.longitude, deliveryMethod, simulateFreight, slug, unitId]);
@@ -121,13 +106,31 @@ export function OrderReview({
 	const blockedByFreight =
 		deliveryMethod === "delivery" && hasCoordinates && (isSimulatingFreight || !!freightError);
 	const discountCents = Number(appliedCoupon?.discountCents ?? 0);
-	const feeTotalCents = Number(feeQuote?.feeTotalCents ?? 0);
 	const embeddedFeeTotalCents = Number(feeQuote?.embeddedFeeTotalCents ?? 0);
 	const subtotalAfterCoupon = Math.max(0, subtotal - discountCents);
 	const appliedCashbackCents = Math.min(cashbackRedeemCents, subtotalAfterCoupon);
 	const appliedLoyaltyPoints = Math.min(loyaltyRedeemPoints, subtotalAfterCoupon - appliedCashbackCents);
 	const remainingSubtotal = subtotalAfterCoupon - appliedCashbackCents - appliedLoyaltyPoints;
-	const total = remainingSubtotal + deliveryFee + feeTotalCents;
+	const quoteDiscountCents = subtotal - remainingSubtotal;
+	// SimIntPay prices the buyer total from the merchant base; the checkout never sums fees itself.
+	const total = Number(feeQuote?.totalAmountCents ?? remainingSubtotal + deliveryFee);
+
+	useEffect(() => {
+		if (items.length === 0 || !slug) return;
+		quoteFees({
+			data: {
+				deliveryFeeCents: deliveryFee,
+				discountCents: quoteDiscountCents,
+				items: items.map(item => ({
+					options: item.options.map(option => ({ optionId: option.optionId, quantity: option.quantity })),
+					quantity: item.quantity,
+					unitProductId: item.id,
+				})),
+				slug,
+				unitSlug,
+			},
+		});
+	}, [deliveryFee, items, quoteDiscountCents, quoteFees, slug, unitSlug]);
 
 	async function handleApplyCoupon() {
 		if (!couponInput.trim()) return;

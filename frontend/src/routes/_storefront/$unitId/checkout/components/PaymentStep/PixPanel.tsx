@@ -17,11 +17,12 @@ interface PixPanelProps {
 	customerCpf: string | null;
 	onConfirmed: () => void;
 	onCpfSaved: (cpf: string) => void;
+	onPriceChanged: () => Promise<void>;
 	orderId: string;
 	slug: string;
 }
 
-export function PixPanel({ amountCents, customerCpf, onConfirmed, onCpfSaved, orderId, slug }: PixPanelProps) {
+export function PixPanel({ amountCents, customerCpf, onConfirmed, onCpfSaved, onPriceChanged, orderId, slug }: PixPanelProps) {
 	const { t } = useTranslation();
 	const [pix, setPix] = useState<PostPaymentsPix200 | null>(null);
 	const [copied, setCopied] = useState(false);
@@ -42,11 +43,17 @@ export function PixPanel({ amountCents, customerCpf, onConfirmed, onCpfSaved, or
 			setPix(payment);
 			trackAddPaymentInfoOnce(orderId, amountCents, "pix");
 			if (cpfDigits) onCpfSaved(cpfDigits);
-		} catch {
+		} catch (error) {
 			setFailed(true);
+			const data = (error as { data?: { description?: string; error?: string } }).data;
+			if (data?.error === "PRICE_CHANGED") {
+				await onPriceChanged();
+				void showAlert(data.description ?? t("store.checkout.payment.card.errors.PRICE_CHANGED"));
+				return;
+			}
 			void showAlert(t("store.checkout.payment.pix.error"));
 		}
-	}, [amountCents, cpfDigits, createPix, onCpfSaved, orderId, slug, t]);
+	}, [amountCents, cpfDigits, createPix, onCpfSaved, onPriceChanged, orderId, slug, t]);
 
 	useEffect(() => {
 		if (needsCpf || requestedRef.current) return;
