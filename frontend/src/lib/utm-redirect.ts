@@ -10,7 +10,7 @@ import { slug } from "./variant";
  * goes home with the params it came with.
  */
 export async function redirectToTrackedLink(path: string, incoming: Record<string, unknown>): Promise<never> {
-	const link = await getMarketingUtmLinksResolve({ path, slug }).catch(() => null);
+	const link = slug ? await getMarketingUtmLinksResolve({ path, slug }).catch(() => null) : null;
 	const search = new URLSearchParams(link ? buildUtmSearch(link, incoming) : (incoming as Record<string, string>)).toString();
 	// The first-load capture only saw the short URL; capture the final one too.
 	captureUtm(`?${search}`);
