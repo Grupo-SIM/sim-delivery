@@ -1,1 +1,1 @@
-export * from "./UtmSection";
+export * from "./UtmLinksSection";

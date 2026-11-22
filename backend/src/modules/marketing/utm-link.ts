@@ -17,6 +17,18 @@ function clean(value: string | null | undefined) {
 	return text ? text : null;
 }
 
+/** Absolute http(s) URL or a storefront "/path"; null when empty. Throws on anything else. */
+export function normalizeUtmUrl(value: string | null | undefined): string | null {
+	const text = value?.replace(/[\u0000-\u001f\u007f\s]/g, "");
+	if (!text) return null;
+	if (text.startsWith("/") && !text.startsWith("//")) return text;
+	try {
+		const url = new URL(text);
+		if (url.protocol === "http:" || url.protocol === "https:") return url.toString();
+	} catch {}
+	throw new DomainError(MarketingErrors.UTM_LINK_INVALID_URL);
+}
+
 /** Validated, normalized columns. Throws on an invalid path or a link with no UTM at all. */
 export function utmLinkColumns(body: UtmLinkBody) {
 	const path = normalizeUtmPath(body.path);
@@ -27,7 +39,7 @@ export function utmLinkColumns(body: UtmLinkBody) {
 		medium: clean(body.medium),
 		path,
 		source: clean(body.source),
-		unitSlug: clean(body.unitSlug),
+		url: normalizeUtmUrl(body.url),
 	};
 	if (!columns.source && !columns.medium && !columns.campaign && !columns.content) {
 		throw new DomainError(MarketingErrors.UTM_LINK_EMPTY);

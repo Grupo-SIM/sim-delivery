@@ -6,11 +6,13 @@ export const MarketingErrors = createEnumFromArray([
 	"UTM_LINK_PATH_TAKEN",
 	"UTM_LINK_INVALID_PATH",
 	"UTM_LINK_EMPTY",
+	"UTM_LINK_INVALID_URL",
 ]);
 
 export const MarketingErrorsStatusCodes: Record<keyof typeof MarketingErrors, StatusCodes> = {
 	UTM_LINK_EMPTY: StatusCodes.UNPROCESSABLE_ENTITY,
 	UTM_LINK_INVALID_PATH: StatusCodes.UNPROCESSABLE_ENTITY,
+	UTM_LINK_INVALID_URL: StatusCodes.UNPROCESSABLE_ENTITY,
 	UTM_LINK_NOT_FOUND: StatusCodes.NOT_FOUND,
 	UTM_LINK_PATH_TAKEN: StatusCodes.CONFLICT,
 };

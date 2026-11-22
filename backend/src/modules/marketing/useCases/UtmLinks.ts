@@ -1,19 +1,19 @@
 import { Prisma } from "sql";
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import type { CreateUtmLinkBody, ResolvedUtmLinkReturn, UtmLinkBody } from "../dtos";
+import type { ResolvedUtmLinkReturn, UtmLinkBody } from "../dtos";
 import { MarketingErrors } from "../errors";
 import { normalizeUtmPath, utmLinkColumns } from "../utm-link";
 
 export class UtmLinks {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	list(companyId: string) {
-		return this.prisma.utmLink.findMany({ orderBy: { path: "asc" }, where: { companyId } });
+	list() {
+		return this.prisma.utmLink.findMany({ orderBy: { path: "asc" } });
 	}
 
-	async create({ companyId, ...body }: CreateUtmLinkBody) {
-		return this.guardUnique(() => this.prisma.utmLink.create({ data: { ...utmLinkColumns(body), companyId } }));
+	async create(body: UtmLinkBody) {
+		return this.guardUnique(() => this.prisma.utmLink.create({ data: utmLinkColumns(body) }));
 	}
 
 	async update(id: string, body: UtmLinkBody) {
@@ -26,13 +26,13 @@ export class UtmLinks {
 		await this.prisma.utmLink.delete({ where: { id } });
 	}
 
-	/** Public: null when the company or path is unknown (the storefront then just goes home). */
-	async resolve(slug: string, path: string): Promise<ResolvedUtmLinkReturn> {
+	/** Public: null when the path is unknown (the storefront then just goes home). */
+	async resolve(path: string): Promise<ResolvedUtmLinkReturn> {
 		const normalized = normalizeUtmPath(path);
 		if (!normalized) return null;
 		const link = await this.prisma.utmLink.findFirst({
-			select: { campaign: true, content: true, medium: true, source: true, unitSlug: true },
-			where: { company: { slug }, path: normalized },
+			select: { campaign: true, content: true, medium: true, source: true, url: true },
+			where: { path: normalized },
 		});
 		return link;
 	}

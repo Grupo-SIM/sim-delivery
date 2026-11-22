@@ -5,8 +5,6 @@ import { DomainError } from "@/shared/errors";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import {
-	CreateUtmLinkBody,
-	ListUtmLinksQuery,
 	ResolvedUtmLinkReturn,
 	ResolveUtmLinkQuery,
 	UtmLinkBody,
@@ -27,18 +25,15 @@ export const MarketingController = new Elysia({ detail: { tags: ["Marketing"] } 
 		app
 			.decorate(({ prisma }) => ({ prisma, utmLinks: new UtmLinks(prisma) }))
 			// Public: the storefront resolves `/utm/<path>` here before redirecting.
-			.get("/utm-links/resolve", ({ query, utmLinks }) => utmLinks.resolve(query.slug, query.path), {
+			.get("/utm-links/resolve", ({ query, utmLinks }) => utmLinks.resolve(query.path), {
 				query: ResolveUtmLinkQuery,
 				response: ResolvedUtmLinkReturn,
 			})
 			.group("/utm-links", admin =>
 				admin
 					.onBeforeHandle(async ({ prisma, request }) => requireSuperAdmin(request, prisma))
-					.get("/", ({ query, utmLinks }) => utmLinks.list(query.companyId), {
-						query: ListUtmLinksQuery,
-						response: UtmLinkListReturn,
-					})
-					.post("/", ({ body, utmLinks }) => utmLinks.create(body), { body: CreateUtmLinkBody, response: UtmLinkReturn })
+					.get("/", ({ utmLinks }) => utmLinks.list(), { response: UtmLinkListReturn })
+					.post("/", ({ body, utmLinks }) => utmLinks.create(body), { body: UtmLinkBody, response: UtmLinkReturn })
 					.patch("/:id", ({ body, params, utmLinks }) => utmLinks.update(params.id, body), {
 						body: UtmLinkBody,
 						response: UtmLinkReturn,

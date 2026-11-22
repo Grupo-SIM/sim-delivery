@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { normalizeUtmPath, utmLinkColumns } from "./utm-link";
+import { normalizeUtmPath, normalizeUtmUrl, utmLinkColumns } from "./utm-link";
 
 describe("utm link", () => {
 	test("normalizes arbitrary-depth paths", () => {
@@ -13,6 +13,18 @@ describe("utm link", () => {
 
 	test("requires at least one UTM and lowercases values", () => {
 		expect(() => utmLinkColumns({ path: "x" })).toThrow();
-		expect(utmLinkColumns({ path: "x", source: " IG ", unitSlug: "" })).toMatchObject({ source: "ig", unitSlug: null });
+		expect(utmLinkColumns({ path: "x", source: " IG ", url: "" })).toMatchObject({ source: "ig", url: null });
+	});
+});
+
+describe("utm link url", () => {
+	test("accepts storefront paths and http(s) URLs", () => {
+		expect(normalizeUtmUrl(" /centro ")).toBe("/centro");
+		expect(normalizeUtmUrl("https://example.com/a?b=1")).toBe("https://example.com/a?b=1");
+		expect(normalizeUtmUrl("")).toBeNull();
+	});
+
+	test("rejects protocol-relative and non-http URLs", () => {
+		for (const value of ["//evil.com", "javascript:alert(1)", "centro"]) expect(() => normalizeUtmUrl(value)).toThrow();
 	});
 });

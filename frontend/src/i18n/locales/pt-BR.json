@@ -739,8 +739,6 @@
 				"title": "Cozinha"
 			},
 			"marketing": {
-				"company": "Empresa",
-				"loadError": "Não foi possível carregar as empresas.",
 				"subtitle": "Rastreamento e campanhas da plataforma.",
 				"title": "Marketing",
 				"utm": {
@@ -750,23 +748,28 @@
 					"deleteConfirm": "Confirmar",
 					"deleteConfirmation": "Clique de novo para excluir",
 					"deleted": "Link excluído.",
-					"discard": "Descartar",
 					"edit": "Editar link",
+					"editTitle": "Editar link UTM",
 					"empty": "Nenhum link UTM criado ainda.",
 					"error": "Não foi possível concluir a ação.",
 					"fields": {
 						"path": "Caminho",
-						"unitSlug": "Unidade (opcional)"
+						"url": "URL"
 					},
+					"home": "Página inicial",
 					"invalid": "Caminho inválido ou nenhum parâmetro UTM informado.",
+					"linkSection": "Link",
+					"linkSummaryEmpty": "Caminho e destino do redirecionamento",
 					"loadError": "Não foi possível carregar os links UTM.",
 					"new": "Novo link",
+					"newTitle": "Novo link UTM",
+					"paramsSection": "Parâmetros UTM",
+					"paramsSummaryEmpty": "Nenhum parâmetro informado",
 					"pathHint": "Até 6 níveis separados por \"/\", só letras minúsculas, números, \"-\" e \"_\". Ex.: influencers/fulano.",
 					"pathTaken": "Já existe um link com esse caminho.",
-					"save": "Salvar",
 					"saved": "Link salvo.",
 					"subtitle": "Cada link /utm/<caminho> redireciona para a loja aplicando os parâmetros definidos.",
-					"unitHint": "Slug da unidade para abrir direto no cardápio dela. Vazio = página inicial."
+					"urlHint": "Destino do redirecionamento: URL completa (https://...) ou caminho da loja (/centro). Vazio = página inicial."
 				}
 			},
 			"orders": {
