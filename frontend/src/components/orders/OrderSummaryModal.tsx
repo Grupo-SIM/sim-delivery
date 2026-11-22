@@ -35,7 +35,6 @@ export function OrderSummaryModal({ onClose, onEditEstimate, order, view }: Orde
 			? `${order.couponCode} · ${Number(order.couponValue)}%`
 			: order.couponCode
 		: null;
-	const showCustomerFinancials = view === "customer";
 	const showOrderOperations = view === "orders";
 
 	return (
@@ -144,11 +143,9 @@ export function OrderSummaryModal({ onClose, onEditEstimate, order, view }: Orde
 												<p className="break-words font-semibold text-sm leading-5">
 													{Number(item.quantity)}× {item.productName}
 												</p>
-												{showCustomerFinancials && (
-													<span className="shrink-0 whitespace-nowrap font-semibold text-sm">
-												{formatMoney(Number(item.displayTotal) / 100)}
-													</span>
-												)}
+												<span className="shrink-0 whitespace-nowrap font-semibold text-sm">
+													{formatMoney(Number(item.displayTotal) / 100)}
+												</span>
 											</div>
 											{item.options.length > 0 && (
 												<ul className="mt-2 space-y-1 text-muted-foreground text-xs leading-4">
@@ -159,13 +156,11 @@ export function OrderSummaryModal({ onClose, onEditEstimate, order, view }: Orde
 																{Number(option.quantity) > 1 ? `${Number(option.quantity)}× ` : ""}
 																{option.optionName}
 															</span>
-															{showCustomerFinancials && (
-																<span className="shrink-0 whitespace-nowrap">
-																	{Number(option.priceDeltaCents) > 0
-																		? `+${formatMoney((Number(option.priceDeltaCents) * Number(option.quantity)) / 100)}`
-																		: formatMoney(0)}
-																</span>
-															)}
+															<span className="shrink-0 whitespace-nowrap">
+																{Number(option.priceDeltaCents) > 0
+																	? `+${formatMoney((Number(option.priceDeltaCents) * Number(option.quantity)) / 100)}`
+																	: formatMoney(0)}
+															</span>
 														</li>
 													))}
 												</ul>
@@ -182,57 +177,50 @@ export function OrderSummaryModal({ onClose, onEditEstimate, order, view }: Orde
 						</ul>
 					</section>
 
-					{showCustomerFinancials ? (
-						<section className="space-y-2 border-border border-t pt-4 text-sm">
+					<section className="space-y-2 border-border border-t pt-4 text-sm">
+						<div className="flex justify-between">
+							<span className="text-muted-foreground">{t("store.checkout.order.itemsSubtotal")}</span>
+							<span>{formatMoney((subtotal + embeddedFeeTotal) / 100)}</span>
+						</div>
+						{visibleFees.map(fee => (
+							<div className="flex justify-between" key={fee.id}>
+								<span className="text-muted-foreground">{fee.name}</span>
+								<span>+{formatMoney(Number(fee.amountCents) / 100)}</span>
+							</div>
+						))}
+						{order.deliveryMethod === "delivery" && (
 							<div className="flex justify-between">
-								<span className="text-muted-foreground">{t("store.checkout.order.itemsSubtotal")}</span>
-								<span>{formatMoney((subtotal + embeddedFeeTotal) / 100)}</span>
+								<span className="text-muted-foreground">{t("store.cart.deliveryFee")}</span>
+								<span>{formatMoney(deliveryFee / 100)}</span>
 							</div>
-							{visibleFees.map(fee => (
-								<div className="flex justify-between" key={fee.id}>
-									<span className="text-muted-foreground">{fee.name}</span>
-									<span>+{formatMoney(Number(fee.amountCents) / 100)}</span>
-								</div>
-							))}
-							{order.deliveryMethod === "delivery" && (
-								<div className="flex justify-between">
-									<span className="text-muted-foreground">{t("store.cart.deliveryFee")}</span>
-									<span>{formatMoney(deliveryFee / 100)}</span>
-								</div>
-							)}
-							{discount > 0 && (
-								<div className="flex justify-between text-success">
-									<span>
-										{couponDetail
-											? `${t("store.checkout.order.discount")} (${couponDetail})`
-											: t("store.checkout.order.discount")}
-									</span>
-									<span>−{formatMoney(discount / 100)}</span>
-								</div>
-							)}
-							{cashbackRedeemed > 0 && (
-								<div className="flex justify-between text-success">
-									<span>{t("store.checkout.order.cashbackRedeemed")}</span>
-									<span>−{formatMoney(cashbackRedeemed / 100)}</span>
-								</div>
-							)}
-							{loyaltyRedeemed > 0 && (
-								<div className="flex justify-between text-success">
-									<span>{t("store.checkout.order.loyaltyRedeemed")}</span>
-									<span>−{formatMoney(loyaltyRedeemed / 100)}</span>
-								</div>
-							)}
-							<div className="flex justify-between border-border border-t pt-3 font-bold text-base">
-								<span>{t("admin.customers.orderDetails.total")}</span>
-								<span>{formatMoney(Number(order.total) / 100)}</span>
+						)}
+						{discount > 0 && (
+							<div className="flex justify-between text-success">
+								<span>
+									{couponDetail
+										? `${t("store.checkout.order.discount")} (${couponDetail})`
+										: t("store.checkout.order.discount")}
+								</span>
+								<span>−{formatMoney(discount / 100)}</span>
 							</div>
-						</section>
-					) : (
-						<div className="flex justify-between border-border border-t pt-4 font-semibold">
+						)}
+						{cashbackRedeemed > 0 && (
+							<div className="flex justify-between text-success">
+								<span>{t("store.checkout.order.cashbackRedeemed")}</span>
+								<span>−{formatMoney(cashbackRedeemed / 100)}</span>
+							</div>
+						)}
+						{loyaltyRedeemed > 0 && (
+							<div className="flex justify-between text-success">
+								<span>{t("store.checkout.order.loyaltyRedeemed")}</span>
+								<span>−{formatMoney(loyaltyRedeemed / 100)}</span>
+							</div>
+						)}
+						<div className="flex justify-between border-border border-t pt-3 font-bold text-base">
 							<span>{t("admin.customers.orderDetails.total")}</span>
 							<span>{formatMoney(Number(order.total) / 100)}</span>
 						</div>
-					)}
+					</section>
 				</div>
 			)}
 		</Modal>
