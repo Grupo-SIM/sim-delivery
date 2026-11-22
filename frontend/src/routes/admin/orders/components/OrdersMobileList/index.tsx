@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { ScrollArea } from "@/components/ui/ScrollArea";
 import type { GetOrders200 } from "@/lib/api";
 import { OrderStatusBadge } from "../OrderStatusBadge";
 import { OrderCompactCard } from "./OrderCompactCard";
@@ -16,7 +15,7 @@ export function OrdersMobileList({ canPrint, columns, finalizedStatuses }: Order
 	const { t } = useTranslation();
 
 	return (
-		<ScrollArea className="min-h-0 flex-1 space-y-2 overflow-y-auto pb-3">
+		<div className="space-y-2 pb-3">
 			{columns.map(column => {
 				const summary =
 					column.kind === "finalized"
@@ -61,6 +60,6 @@ export function OrdersMobileList({ canPrint, columns, finalizedStatuses }: Order
 					</OrdersMobileSection>
 				);
 			})}
-		</ScrollArea>
+		</div>
 	);
 }

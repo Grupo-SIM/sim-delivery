@@ -85,7 +85,7 @@ function OrdersPage() {
 	}
 
 	return (
-		<Container className="flex h-full min-h-0 min-w-0 flex-col gap-6 overflow-hidden py-6 sm:py-8" size="full">
+		<Container className="flex h-full min-h-0 min-w-0 flex-col gap-6 scrollbar-themed overflow-y-auto py-6 sm:py-8 md:overflow-hidden" size="full">
 			<div className="flex shrink-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 				<SectionHeading subtitle={t("admin.orders.subtitle")} title={t("admin.orders.title")} />
 				<Button disabled={ordersQuery.isFetching} onClick={() => void handleRefresh()} type="button" variant="outline">

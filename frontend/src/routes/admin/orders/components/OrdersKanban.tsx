@@ -277,7 +277,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 
 	return (
 		<>
-			<div className="flex min-h-0 flex-1 flex-col md:hidden">
+			<div className="flex shrink-0 flex-col md:hidden">
 				<OrdersMobileList
 					canPrint={["superAdmin", "owner", "manager", "attendant", "kitchen"].includes(role ?? "")}
 					columns={columns}
