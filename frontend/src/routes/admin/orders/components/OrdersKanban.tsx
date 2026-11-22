@@ -35,7 +35,7 @@ const KANBAN_STATUSES = [
 	"falta_de_pagamento",
 ] as const;
 
-const FINALIZED_STATUSES = ["entregue", "retirado", "cancelado"] as const;
+const FINALIZED_STATUSES = ["entregue", "retirado", "cancelado", "falta_de_pagamento"] as const;
 
 type KanbanStatus = (typeof KANBAN_STATUSES)[number];
 type FinalizedStatus = (typeof FINALIZED_STATUSES)[number];
