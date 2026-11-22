@@ -33,8 +33,10 @@ model Order {
     discountCents         Int      @default(0)
     cashbackCentsRedeemed Int      @default(0)
     loyaltyPointsRedeemed Int      @default(0)
-    /// Platform surcharges charged on top of merchant prices.
+    /// Additive surcharges quoted by SimIntPay on top of the merchant base.
     feeTotalCents         Int      @default(0)
+    /// SimIntPay additive revision the order was quoted with; null on historical orders.
+    additiveFeeRevision   String?
     total                 Int
     /// "delivery" or "pickup"
     deliveryMethod String
