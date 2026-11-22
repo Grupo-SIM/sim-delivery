@@ -4,9 +4,9 @@ import { formatMoney } from "@/lib/formatMoney";
 
 interface MetricOrder {
 	payment: { status: string } | null;
-	refundedCents: number;
+	refundedCents: number | string;
 	status: string;
-	total: number;
+	total: number | string;
 }
 
 interface OriginMetricsProps {
@@ -19,7 +19,7 @@ export function OriginMetrics({ orders }: OriginMetricsProps) {
 	const sold = orders.filter(
 		order => order.status !== "cancelado" && ["confirmed", "partially_refunded"].includes(order.payment?.status ?? ""),
 	);
-	const revenueCents = sold.reduce((sum, order) => sum + order.total - order.refundedCents, 0);
+	const revenueCents = sold.reduce((sum, order) => sum + Number(order.total) - Number(order.refundedCents), 0);
 	const averageTicketCents = sold.length ? Math.round(revenueCents / sold.length) : 0;
 	return (
 		<div className="grid shrink-0 gap-3 sm:grid-cols-3">
