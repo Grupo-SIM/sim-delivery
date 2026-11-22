@@ -2,7 +2,7 @@ import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
 import { orderEvents } from "@/shared/infra/OrderEvents";
 import type { PrismaInstance } from "@/shared/infra/sql";
 
-const CANCELLATION_REASON = "Pagamento não confirmado em até 1 hora.";
+const REASON = "Pagamento não confirmado em até 1 hora.";
 const EXPIRATION_MS = 60 * 60 * 1_000;
 const INTERVAL_MS = 60_000;
 
@@ -23,7 +23,7 @@ export class CancelExpiredUnpaidOrders {
 			try {
 				const result = await this.prisma.$transaction(async tx => {
 					const changed = await tx.order.updateMany({
-						data: { cancelReason: CANCELLATION_REASON, status: "cancelado" },
+						data: { cancelReason: REASON, status: "falta_de_pagamento" },
 						where: {
 							createdAt: { lt: expiresAt },
 							id: order.id,
@@ -34,7 +34,7 @@ export class CancelExpiredUnpaidOrders {
 					if (changed.count > 0) {
 						await InventoryLifecycle.release(tx, order.id);
 						await tx.orderStatusEvent?.create({
-							data: { orderId: order.id, status: "cancelado" },
+							data: { orderId: order.id, status: "falta_de_pagamento" },
 						});
 					}
 					return changed;

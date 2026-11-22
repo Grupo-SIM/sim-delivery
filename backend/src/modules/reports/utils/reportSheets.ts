@@ -26,6 +26,7 @@ const PAYMENT_METHOD_LABELS: Record<string, string> = {
 };
 const CANCEL_STAGE_LABELS: Record<string, string> = {
 	awaiting_payment: "Aguardando pagamento",
+	falta_de_pagamento: "Falta de pagamento",
 	em_preparo: "Em preparo",
 	entregue: "Entregue",
 	pronto: "Pronto",

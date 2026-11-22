@@ -7,6 +7,7 @@ const STATUS_DESCRIPTIONS: Record<string, string> = {
 	awaiting_payment:
 		"Pedido criado, mas ainda sem pagamento confirmado. Muda automaticamente quando o pagamento for aprovado.",
 	cancelado: "Pedido encerrado sem seguir para preparo, retirada ou entrega.",
+	falta_de_pagamento: "Pedido encerrado automaticamente por falta de pagamento em até 1 hora. Não conta como cancelamento.",
 	em_preparo: "Pedido aceito pela unidade e em produção.",
 	entregue: "Pedido de entrega finalizado: chegou ao cliente.",
 	problema: "Pedido com pendência operacional que exige solução.",

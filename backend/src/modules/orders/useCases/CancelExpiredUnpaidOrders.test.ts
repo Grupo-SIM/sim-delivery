@@ -45,14 +45,14 @@ describe("CancelExpiredUnpaidOrders", () => {
 		]);
 		expect(updateManyCalls).toEqual([
 			expect.objectContaining({
-				data: { cancelReason: "Pagamento não confirmado em até 1 hora.", status: "cancelado" },
+				data: { cancelReason: "Pagamento não confirmado em até 1 hora.", status: "falta_de_pagamento" },
 				where: expect.objectContaining({
 					id: "ord_1",
 					status: "awaiting_payment",
 				}),
 			}),
 		]);
-		expect(statusEvents).toEqual([{ data: { orderId: "ord_1", status: "cancelado" } }]);
+		expect(statusEvents).toEqual([{ data: { orderId: "ord_1", status: "falta_de_pagamento" } }]);
 	});
 
 	it("does not cancel when payment confirmation wins the update race", async () => {

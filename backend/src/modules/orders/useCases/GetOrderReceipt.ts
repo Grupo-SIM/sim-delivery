@@ -39,7 +39,7 @@ export class GetOrderReceipt {
 				companyId: order.companyId,
 				customerId: order.customerId,
 				displayNumber: { lt: order.displayNumber },
-				status: { not: "cancelado" },
+				status: { notIn: ["cancelado", "falta_de_pagamento"] },
 			},
 		});
 

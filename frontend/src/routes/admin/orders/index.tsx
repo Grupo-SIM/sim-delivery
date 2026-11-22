@@ -27,6 +27,7 @@ const KANBAN_STATUSES = [
 	"entregue",
 	"retirado",
 	"cancelado",
+	"falta_de_pagamento",
 ] as const;
 
 const KITCHEN_KANBAN_STATUSES = ["recebido", "em_preparo", "pronto"] as const;

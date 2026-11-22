@@ -4,6 +4,7 @@ const statusClassNames: Record<string, string> = {
 	cancelado: "border-destructive/30 bg-destructive/10 text-destructive",
 	em_preparo: "border-primary/30 bg-primary/10 text-primary",
 	entregue: "border-success/30 bg-success/10 text-success",
+	falta_de_pagamento: "border-muted-foreground/30 bg-muted text-muted-foreground",
 	problema: "border-destructive/30 bg-destructive/10 text-destructive",
 	pronto: "border-success/30 bg-success/10 text-success",
 	recebido: "border-primary/30 bg-primary/10 text-primary",

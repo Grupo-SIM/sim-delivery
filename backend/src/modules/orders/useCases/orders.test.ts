@@ -1006,12 +1006,17 @@ describe("ListOrders", () => {
 
 		expect(where).toMatchObject({
 			NOT: {
-				AND: [
-					{ status: "cancelado" },
+				OR: [
+					{ status: "falta_de_pagamento" },
 					{
-						OR: [
-							{ payment: { is: null } },
-							{ payment: { is: { status: { not: "confirmed" } } } },
+						AND: [
+							{ status: "cancelado" },
+							{
+								OR: [
+									{ payment: { is: null } },
+									{ payment: { is: { status: { not: "confirmed" } } } },
+								],
+							},
 						],
 					},
 				],
@@ -1040,12 +1045,17 @@ describe("ListCustomerOrders", () => {
 		expect(result).toEqual([]);
 		expect(where).toMatchObject({
 			NOT: {
-				AND: [
-					{ status: "cancelado" },
+				OR: [
+					{ status: "falta_de_pagamento" },
 					{
-						OR: [
-							{ payment: { is: null } },
-							{ payment: { is: { status: { not: "confirmed" } } } },
+						AND: [
+							{ status: "cancelado" },
+							{
+								OR: [
+									{ payment: { is: null } },
+									{ payment: { is: { status: { not: "confirmed" } } } },
+								],
+							},
 						],
 					},
 				],

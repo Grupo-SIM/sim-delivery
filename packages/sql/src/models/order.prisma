@@ -26,7 +26,7 @@ model Order {
     preparedById   String?
     addressId      String?
     couponId              String?
-    /// One of: awaiting_payment | recebido | em_preparo | pronto | saiu_para_entrega | problema | entregue | retirado | cancelado
+    /// One of: awaiting_payment | recebido | em_preparo | pronto | saiu_para_entrega | problema | entregue | retirado | cancelado | falta_de_pagamento
     status                String   @default("awaiting_payment")
     subtotal              Int
     deliveryFee           Int      @default(0)

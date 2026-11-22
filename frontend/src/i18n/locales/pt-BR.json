@@ -909,6 +909,7 @@
 					"cancelado": "Cancelado",
 					"em_preparo": "Em preparo",
 					"entregue": "Entregue",
+					"falta_de_pagamento": "Falta de pagamento",
 					"problema": "Problema",
 					"pronto": "Pronto",
 					"recebido": "Recebido",

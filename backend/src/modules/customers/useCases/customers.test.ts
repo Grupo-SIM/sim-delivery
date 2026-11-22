@@ -291,12 +291,17 @@ describe("customers use-cases", () => {
 					orders: {
 						where: {
 							NOT: {
-								AND: [
-									{ status: "cancelado" },
+								OR: [
+									{ status: "falta_de_pagamento" },
 									{
-										OR: [
-											{ payment: { is: null } },
-											{ payment: { is: { status: { not: "confirmed" } } } },
+										AND: [
+											{ status: "cancelado" },
+											{
+												OR: [
+													{ payment: { is: null } },
+													{ payment: { is: { status: { not: "confirmed" } } } },
+												],
+											},
 										],
 									},
 								],
@@ -340,12 +345,17 @@ describe("customers use-cases", () => {
 					orders: {
 						where: {
 							NOT: {
-								AND: [
-									{ status: "cancelado" },
+								OR: [
+									{ status: "falta_de_pagamento" },
 									{
-										OR: [
-											{ payment: { is: null } },
-											{ payment: { is: { status: { not: "confirmed" } } } },
+										AND: [
+											{ status: "cancelado" },
+											{
+												OR: [
+													{ payment: { is: null } },
+													{ payment: { is: { status: { not: "confirmed" } } } },
+												],
+											},
 										],
 									},
 								],

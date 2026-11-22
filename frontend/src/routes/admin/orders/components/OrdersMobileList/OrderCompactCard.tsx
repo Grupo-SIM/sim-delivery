@@ -8,7 +8,7 @@ import { OrderReceiptButton } from "../OrderReceiptButton";
 import { OrderStatusBadge } from "../OrderStatusBadge";
 import { UpdateStatusModal } from "../UpdateStatusModal";
 
-const TERMINAL_STATUSES = ["entregue", "retirado", "cancelado", "awaiting_payment"];
+const TERMINAL_STATUSES = ["entregue", "retirado", "cancelado", "awaiting_payment", "falta_de_pagamento"];
 
 interface OrderCompactCardProps {
 	canPrint: boolean;

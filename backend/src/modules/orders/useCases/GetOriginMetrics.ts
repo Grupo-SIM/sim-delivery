@@ -39,7 +39,7 @@ export class GetOriginMetrics {
 					...(query.to ? { lte: new Date(query.to) } : {}),
 				},
 				payment: { is: { status: { in: ["confirmed", "partially_refunded"] } } },
-				status: { not: "cancelado" },
+				status: { notIn: ["cancelado", "falta_de_pagamento"] },
 			},
 		});
 		const groups = new Map<string, OriginMetricsReturn["origins"][number]>();

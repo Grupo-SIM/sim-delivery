@@ -32,6 +32,7 @@ const KANBAN_STATUSES = [
 	"entregue",
 	"retirado",
 	"cancelado",
+	"falta_de_pagamento",
 ] as const;
 
 const FINALIZED_STATUSES = ["entregue", "retirado", "cancelado"] as const;
