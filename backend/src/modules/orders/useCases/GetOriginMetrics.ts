@@ -61,7 +61,7 @@ export class GetOriginMetrics {
 			groups.set(key, group);
 			totals = { orders: totals.orders + 1, revenueCents: totals.revenueCents + revenue };
 		}
-		const withTicket = (value: { orders: number; revenueCents: number }) => ({
+		const withTicket = <T extends { orders: number; revenueCents: number }>(value: T) => ({
 			...value,
 			averageTicketCents: value.orders ? Math.round(value.revenueCents / value.orders) : 0,
 		});

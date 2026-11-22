@@ -60,6 +60,7 @@ model Company {
     categories Category[]
     coupons    Coupon[]
     discounts  Discount[]
+    utmLinks   UtmLink[]
     customers  Customer[]
     deliveries Delivery[]
     orders     Order[]

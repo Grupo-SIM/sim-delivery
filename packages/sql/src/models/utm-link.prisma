@@ -1,0 +1,20 @@
+/// Tracked short link `/utm/<path>` that redirects to the storefront with fixed UTMs. `path` has 1..6
+/// lowercase segments joined by "/". Managed by superAdmin only; resolved publicly by company slug.
+model UtmLink {
+    id        String   @id @default(cuid())
+    companyId String
+    path      String
+    source    String?
+    medium    String?
+    campaign  String?
+    content   String?
+    /// Optional unit slug: lands on that unit's menu instead of the home.
+    unitSlug  String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+    @@unique([companyId, path])
+    @@map("utm_link")
+}

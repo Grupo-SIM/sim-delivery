@@ -4,6 +4,7 @@ import { CategoryErrors, CategoryErrorsStatusCodes } from "@/modules/categories/
 import { CepErrors, CepErrorsStatusCodes } from "@/modules/cep/errors";
 import { CompanyErrors, CompanyErrorsStatusCodes } from "@/modules/companies/errors";
 import { CouponErrors, CouponErrorsStatusCodes } from "@/modules/coupons/errors";
+import { MarketingErrors, MarketingErrorsStatusCodes } from "@/modules/marketing/errors";
 import { DiscountErrors, DiscountErrorsStatusCodes } from "@/modules/discounts/errors";
 import { CustomerErrors, CustomerErrorsStatusCodes } from "@/modules/customers/errors";
 import { DeliveryErrors, DeliveryErrorsStatusCodes } from "@/modules/deliveries/errors";
@@ -38,6 +39,7 @@ export const DomainErrors = {
 	...CompanyErrors,
 	...CouponErrors,
 	...DiscountErrors,
+	...MarketingErrors,
 	...CustomerErrors,
 	...OrderErrors,
 	...StaffErrors,
@@ -64,6 +66,7 @@ export const DomainErrorsStatusCodes: Record<keyof typeof DomainErrors, StatusCo
 	...CompanyErrorsStatusCodes,
 	...CouponErrorsStatusCodes,
 	...DiscountErrorsStatusCodes,
+	...MarketingErrorsStatusCodes,
 	...CustomerErrorsStatusCodes,
 	...OrderErrorsStatusCodes,
 	...StaffErrorsStatusCodes,
