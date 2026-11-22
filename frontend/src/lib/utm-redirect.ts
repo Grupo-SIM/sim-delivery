@@ -2,18 +2,19 @@ import { redirect } from "@tanstack/react-router";
 import { getMarketingUtmLinksResolve } from "./api";
 import { captureUtm } from "./utm";
 import { buildUtmSearch } from "./utm-search";
+import { slug } from "./variant";
 
 /**
- * `/utm/<path>`: asks the backend for the link registered under `path` and redirects to its URL (a storefront
- * "/path" or an absolute URL; empty = home) with its fixed UTMs plus every extra param received (fbclid,
+ * `/utm/<path>`: asks the backend for the link registered under `path` and redirects to this company's destination (a unit, a storefront
+ * "/path" or an absolute URL; none = home) with its fixed UTMs plus every extra param received (fbclid,
  * gclid...). An unknown path just goes home with the params it came with.
  */
 export async function redirectToTrackedLink(path: string, incoming: Record<string, unknown>): Promise<never> {
-	const link = await getMarketingUtmLinksResolve({ path }).catch(() => null);
+	const link = slug ? await getMarketingUtmLinksResolve({ path, slug }).catch(() => null) : null;
 	const params = link ? buildUtmSearch(link, incoming) : (incoming as Record<string, string>);
 	let target: URL;
 	try {
-		target = new URL(link?.url || "/", window.location.origin);
+		target = new URL(link?.unitSlug ? `/${encodeURIComponent(link.unitSlug)}` : link?.url || "/", window.location.origin);
 	} catch {
 		target = new URL("/", window.location.origin);
 	}

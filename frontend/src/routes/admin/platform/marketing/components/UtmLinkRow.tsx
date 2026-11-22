@@ -6,19 +6,24 @@ import { ConfirmActionButton } from "@/components/ui/ConfirmActionButton";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { getMarketingUtmLinksQueryKey, useDeleteMarketingUtmLinksById } from "@/lib/api";
 import { showToast } from "@/stores";
-import type { UtmLink } from "./types";
+import type { UtmCompany, UtmLink } from "./types";
 
 interface UtmLinkRowProps {
+	companies: UtmCompany[];
 	link: UtmLink;
 	onEdit: () => void;
 }
 
 /** Compact read-only row: short link, applied UTMs and destination. Editing happens in the modal. */
-export function UtmLinkRow({ link, onEdit }: UtmLinkRowProps) {
+export function UtmLinkRow({ companies, link, onEdit }: UtmLinkRowProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const remove = useDeleteMarketingUtmLinksById();
 	const utms = [link.source, link.medium, link.campaign, link.content].filter(Boolean).join(" · ");
+
+	const destinations = link.destinations
+		.map(destination => `${companies.find(company => company.id === destination.companyId)?.name ?? ""}: ${destination.unitSlug ? `/${destination.unitSlug}` : destination.url}`)
+		.join(" · ");
 
 	async function copy() {
 		try {
@@ -34,7 +39,7 @@ export function UtmLinkRow({ link, onEdit }: UtmLinkRowProps) {
 			<div className="min-w-0 flex-1">
 				<h3 className="truncate font-semibold text-sm">/utm/{link.path}</h3>
 				<p className="mt-0.5 truncate text-muted-foreground text-sm">{utms}</p>
-				<p className="mt-0.5 truncate text-muted-foreground text-xs">→ {link.url || t("admin.marketing.utm.home")}</p>
+				<p className="mt-0.5 truncate text-muted-foreground text-xs">→ {destinations || t("admin.marketing.utm.home")}</p>
 			</div>
 			<div className="flex shrink-0 gap-2">
 				<Tooltip content={t("admin.marketing.utm.copy")}>

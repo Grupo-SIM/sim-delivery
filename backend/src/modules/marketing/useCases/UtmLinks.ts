@@ -3,22 +3,36 @@ import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { ResolvedUtmLinkReturn, UtmLinkBody } from "../dtos";
 import { MarketingErrors } from "../errors";
-import { normalizeUtmPath, utmLinkColumns } from "../utm-link";
+import { normalizeUtmPath, utmDestinationRows, utmLinkColumns } from "../utm-link";
+
+const DESTINATION_SELECT = { select: { companyId: true, unitSlug: true, url: true } } as const;
 
 export class UtmLinks {
 	constructor(private readonly prisma: PrismaInstance) {}
 
 	list() {
-		return this.prisma.utmLink.findMany({ orderBy: { path: "asc" } });
+		return this.prisma.utmLink.findMany({ include: { destinations: DESTINATION_SELECT }, orderBy: { path: "asc" } });
 	}
 
 	async create(body: UtmLinkBody) {
-		return this.guardUnique(() => this.prisma.utmLink.create({ data: utmLinkColumns(body) }));
+		const columns = utmLinkColumns(body);
+		const destinations = await this.destinations(body);
+		return this.guardUnique(() =>
+			this.prisma.utmLink.create({ data: { ...columns, destinations: { create: destinations } }, include: { destinations: DESTINATION_SELECT } }),
+		);
 	}
 
 	async update(id: string, body: UtmLinkBody) {
 		await this.get(id);
-		return this.guardUnique(() => this.prisma.utmLink.update({ data: utmLinkColumns(body), where: { id } }));
+		const columns = utmLinkColumns(body);
+		const destinations = await this.destinations(body);
+		return this.guardUnique(() =>
+			this.prisma.utmLink.update({
+				data: { ...columns, destinations: { create: destinations, deleteMany: {} } },
+				include: { destinations: DESTINATION_SELECT },
+				where: { id },
+			}),
+		);
 	}
 
 	async delete(id: string) {
@@ -27,14 +41,33 @@ export class UtmLinks {
 	}
 
 	/** Public: null when the path is unknown (the storefront then just goes home). */
-	async resolve(path: string): Promise<ResolvedUtmLinkReturn> {
+	async resolve(slug: string, path: string): Promise<ResolvedUtmLinkReturn> {
 		const normalized = normalizeUtmPath(path);
 		if (!normalized) return null;
 		const link = await this.prisma.utmLink.findFirst({
-			select: { campaign: true, content: true, medium: true, source: true, url: true },
+			select: {
+				campaign: true,
+				content: true,
+				destinations: { select: { unitSlug: true, url: true }, take: 1, where: { company: { slug } } },
+				medium: true,
+				source: true,
+			},
 			where: { path: normalized },
 		});
-		return link;
+		if (!link) return null;
+		const { destinations, ...utms } = link;
+		return { ...utms, unitSlug: destinations[0]?.unitSlug ?? null, url: destinations[0]?.url ?? null };
+	}
+
+	/** Normalized destination rows; a unit slug must exist in its company. */
+	private async destinations(body: UtmLinkBody) {
+		const rows = utmDestinationRows(body.destinations);
+		for (const row of rows) {
+			if (!row.unitSlug) continue;
+			const unit = await this.prisma.unit.findFirst({ select: { id: true }, where: { companyId: row.companyId, slug: row.unitSlug } });
+			if (!unit) throw new DomainError(MarketingErrors.UTM_LINK_INVALID_URL);
+		}
+		return rows;
 	}
 
 	private async get(id: string) {

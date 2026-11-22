@@ -9,29 +9,43 @@ import { TextField } from "@/components/ui/TextField";
 import { closeActiveModalHistory } from "@/hooks/use-modal-history";
 import { getMarketingUtmLinksQueryKey, usePatchMarketingUtmLinksById, usePostMarketingUtmLinks } from "@/lib/api";
 import { showToast } from "@/stores";
-import type { UtmLink } from "./types";
+import type { DestinationState, UtmCompany, UtmLink } from "./types";
+import { UtmDestinationField } from "./UtmDestinationField";
 
-const EMPTY = { campaign: "", content: "", medium: "", path: "", source: "", url: "" };
+const EMPTY = { campaign: "", content: "", medium: "", path: "", source: "" };
+const HOME: DestinationState = { mode: "home", unitSlug: "", url: "" };
 type Fields = typeof EMPTY;
 
 interface UtmLinkModalProps {
+	companies: UtmCompany[];
 	editing: UtmLink | null;
 	onClose: () => void;
 }
 
 /** Create/edit modal of a tracked `/utm/<path>` link. */
-export function UtmLinkModal({ editing, onClose }: UtmLinkModalProps) {
+export function UtmLinkModal({ companies, editing, onClose }: UtmLinkModalProps) {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const [fields, setFields] = useState<Fields>(() =>
 		editing
-			? { campaign: editing.campaign ?? "", content: editing.content ?? "", medium: editing.medium ?? "", path: editing.path, source: editing.source ?? "", url: editing.url ?? "" }
+			? { campaign: editing.campaign ?? "", content: editing.content ?? "", medium: editing.medium ?? "", path: editing.path, source: editing.source ?? "" }
 			: EMPTY,
+	);
+	const [destinations, setDestinations] = useState<Record<string, DestinationState>>(() =>
+		Object.fromEntries(
+			(editing?.destinations ?? []).map(destination => [
+				destination.companyId,
+				destination.unitSlug ? { mode: "unit", unitSlug: destination.unitSlug, url: "" } : { mode: "url", unitSlug: "", url: destination.url ?? "" },
+			]),
+		),
 	);
 	const create = usePostMarketingUtmLinks();
 	const update = usePatchMarketingUtmLinksById();
 	const set = (key: keyof Fields) => (value: string) => setFields(previous => ({ ...previous, [key]: value }));
 	const hasUtm = Boolean(fields.source || fields.medium || fields.campaign || fields.content);
+	const destinationSummary = t("admin.marketing.utm.destinationsSummary", {
+		count: Object.values(destinations).filter(destination => destination.mode !== "home").length,
+	});
 	const utmSummary = [fields.source, fields.medium, fields.campaign, fields.content].filter(Boolean).join(" · ");
 
 	function save() {
@@ -41,7 +55,14 @@ export function UtmLinkModal({ editing, onClose }: UtmLinkModalProps) {
 			medium: fields.medium || null,
 			path: fields.path,
 			source: fields.source || null,
-			url: fields.url || null,
+			destinations: companies.map(company => {
+				const destination = destinations[company.id] ?? HOME;
+				return {
+					companyId: company.id,
+					unitSlug: destination.mode === "unit" ? destination.unitSlug || null : null,
+					url: destination.mode === "url" ? destination.url || null : null,
+				};
+			}),
 		};
 		const options = {
 			onError: (caught: { status?: number }) =>
@@ -77,10 +98,6 @@ export function UtmLinkModal({ editing, onClose }: UtmLinkModalProps) {
 						/>
 						<p className="text-muted-foreground text-xs">{t("admin.marketing.utm.pathHint")}</p>
 					</div>
-					<div className="space-y-1">
-						<TextField label={t("admin.marketing.utm.fields.url")} name="url" onValueChange={set("url")} placeholder="https://loja.com/centro" value={fields.url} />
-						<p className="text-muted-foreground text-xs">{t("admin.marketing.utm.urlHint")}</p>
-					</div>
 				</CollapsibleModalSection>
 				<CollapsibleModalSection defaultOpen summary={utmSummary || t("admin.marketing.utm.paramsSummaryEmpty")} title={t("admin.marketing.utm.paramsSection")}>
 					<div className="grid gap-4 sm:grid-cols-2">
@@ -89,6 +106,17 @@ export function UtmLinkModal({ editing, onClose }: UtmLinkModalProps) {
 						<TextField label="utm_campaign" name="utm_campaign" onValueChange={set("campaign")} placeholder="branding_instagram" value={fields.campaign} />
 						<TextField label="utm_content" name="utm_content" onValueChange={set("content")} placeholder="link_in_bio" value={fields.content} />
 					</div>
+				</CollapsibleModalSection>
+				<CollapsibleModalSection summary={destinationSummary} title={t("admin.marketing.utm.destinationSection")}>
+					<p className="text-muted-foreground text-xs">{t("admin.marketing.utm.destinationHint")}</p>
+					{companies.map(company => (
+						<UtmDestinationField
+							company={company}
+							key={company.id}
+							onChange={value => setDestinations(previous => ({ ...previous, [company.id]: value }))}
+							value={destinations[company.id] ?? HOME}
+						/>
+					))}
 				</CollapsibleModalSection>
 				<div className="flex justify-end gap-2 border-border border-t pt-5">
 					<Button onClick={() => closeActiveModalHistory()} type="button" variant="outline">{t("actions.discard")}</Button>

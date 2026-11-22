@@ -68,6 +68,7 @@ model Company {
     productReviews ProductReview[]
     promotionalImages PromotionalImage[]
     reviews    Review[]
+    utmLinkDestinations UtmLinkDestination[]
     tags       Tag[]
     units      Unit[]
     whatsAppConnection CompanyWhatsAppConnection?

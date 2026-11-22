@@ -7,11 +7,27 @@ model UtmLink {
     medium    String?
     campaign  String?
     content   String?
-    /// Optional redirect destination: absolute http(s) URL or a "/path" of the storefront. Empty = home.
-    url       String?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
+    destinations UtmLinkDestination[]
+
     @@unique([path])
     @@map("utm_link")
+}
+
+/// Where a link lands for one company: a unit (`unitSlug`), an arbitrary `url` (absolute http(s) or storefront
+/// "/path"), or the home when the company has no row. `unitSlug` wins over `url`.
+model UtmLinkDestination {
+    id        String  @id @default(cuid())
+    utmLinkId String
+    companyId String
+    unitSlug  String?
+    url       String?
+
+    utmLink UtmLink @relation(fields: [utmLinkId], references: [id], onDelete: Cascade)
+    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+    @@unique([utmLinkId, companyId])
+    @@map("utm_link_destination")
 }

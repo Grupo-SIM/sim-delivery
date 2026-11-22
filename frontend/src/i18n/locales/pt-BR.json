@@ -748,19 +748,30 @@
 					"deleteConfirm": "Confirmar",
 					"deleteConfirmation": "Clique de novo para excluir",
 					"deleted": "Link excluído.",
+					"destinationHint": "Cada empresa pode abrir a página inicial, uma de suas unidades (cardápio) ou uma URL própria.",
+					"destinationSection": "Destino por empresa",
+					"destinationsSummary_one": "{{count}} empresa com destino",
+					"destinationsSummary_other": "{{count}} empresas com destino",
 					"edit": "Editar link",
 					"editTitle": "Editar link UTM",
 					"empty": "Nenhum link UTM criado ainda.",
 					"error": "Não foi possível concluir a ação.",
 					"fields": {
+						"destination": "Destino",
 						"path": "Caminho",
+						"unit": "Unidade",
 						"url": "URL"
 					},
 					"home": "Página inicial",
 					"invalid": "Caminho inválido ou nenhum parâmetro UTM informado.",
 					"linkSection": "Link",
-					"linkSummaryEmpty": "Caminho e destino do redirecionamento",
+					"linkSummaryEmpty": "Caminho do link curto",
 					"loadError": "Não foi possível carregar os links UTM.",
+					"mode": {
+						"home": "Página inicial",
+						"unit": "Unidade (cardápio)",
+						"url": "URL personalizada"
+					},
 					"new": "Novo link",
 					"newTitle": "Novo link UTM",
 					"paramsSection": "Parâmetros UTM",
@@ -769,7 +780,7 @@
 					"pathTaken": "Já existe um link com esse caminho.",
 					"saved": "Link salvo.",
 					"subtitle": "Cada link /utm/<caminho> redireciona para a loja aplicando os parâmetros definidos.",
-					"urlHint": "Destino do redirecionamento: URL completa (https://...) ou caminho da loja (/centro). Vazio = página inicial."
+					"unitPlaceholder": "Escolha a unidade"
 				}
 			},
 			"orders": {

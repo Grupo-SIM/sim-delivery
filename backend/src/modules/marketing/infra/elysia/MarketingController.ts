@@ -25,7 +25,7 @@ export const MarketingController = new Elysia({ detail: { tags: ["Marketing"] } 
 		app
 			.decorate(({ prisma }) => ({ prisma, utmLinks: new UtmLinks(prisma) }))
 			// Public: the storefront resolves `/utm/<path>` here before redirecting.
-			.get("/utm-links/resolve", ({ query, utmLinks }) => utmLinks.resolve(query.path), {
+			.get("/utm-links/resolve", ({ query, utmLinks }) => utmLinks.resolve(query.slug, query.path), {
 				query: ResolveUtmLinkQuery,
 				response: ResolvedUtmLinkReturn,
 			})

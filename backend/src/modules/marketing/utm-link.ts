@@ -1,6 +1,6 @@
 import { DomainError } from "@/shared/errors";
 import { MarketingErrors } from "./errors";
-import type { UtmLinkBody } from "./dtos";
+import type { UtmLinkBody, UtmLinkDestinationBody } from "./dtos";
 
 const SEGMENT = /^[a-z0-9][a-z0-9_-]{0,49}$/;
 export const MAX_UTM_SEGMENTS = 6;
@@ -39,10 +39,20 @@ export function utmLinkColumns(body: UtmLinkBody) {
 		medium: clean(body.medium),
 		path,
 		source: clean(body.source),
-		url: normalizeUtmUrl(body.url),
 	};
 	if (!columns.source && !columns.medium && !columns.campaign && !columns.content) {
 		throw new DomainError(MarketingErrors.UTM_LINK_EMPTY);
 	}
 	return columns;
+}
+
+/** Destination rows to store: one per company, unit slug wins over URL, empty ones (= home) are dropped. */
+export function utmDestinationRows(destinations: UtmLinkDestinationBody[] = []) {
+	const byCompany = new Map<string, { companyId: string; unitSlug: string | null; url: string | null }>();
+	for (const destination of destinations) {
+		const unitSlug = clean(destination.unitSlug);
+		const url = unitSlug ? null : normalizeUtmUrl(destination.url);
+		if (unitSlug || url) byCompany.set(destination.companyId, { companyId: destination.companyId, unitSlug, url });
+	}
+	return [...byCompany.values()];
 }

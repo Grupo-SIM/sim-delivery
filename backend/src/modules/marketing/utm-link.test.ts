@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { normalizeUtmPath, normalizeUtmUrl, utmLinkColumns } from "./utm-link";
+import { normalizeUtmPath, normalizeUtmUrl, utmDestinationRows, utmLinkColumns } from "./utm-link";
 
 describe("utm link", () => {
 	test("normalizes arbitrary-depth paths", () => {
@@ -13,7 +13,7 @@ describe("utm link", () => {
 
 	test("requires at least one UTM and lowercases values", () => {
 		expect(() => utmLinkColumns({ path: "x" })).toThrow();
-		expect(utmLinkColumns({ path: "x", source: " IG ", url: "" })).toMatchObject({ source: "ig", url: null });
+		expect(utmLinkColumns({ path: "x", source: " IG ", })).toMatchObject({ source: "ig" });
 	});
 });
 
@@ -26,5 +26,21 @@ describe("utm link url", () => {
 
 	test("rejects protocol-relative and non-http URLs", () => {
 		for (const value of ["//evil.com", "javascript:alert(1)", "centro"]) expect(() => normalizeUtmUrl(value)).toThrow();
+	});
+});
+
+describe("utm destinations", () => {
+	test("unit wins over url, empty destinations are dropped, last entry per company wins", () => {
+		expect(
+			utmDestinationRows([
+				{ companyId: "a", unitSlug: "Centro", url: "/x" },
+				{ companyId: "b", url: "https://example.com" },
+				{ companyId: "c", unitSlug: "", url: "" },
+				{ companyId: "b", url: "/y" },
+			]),
+		).toEqual([
+			{ companyId: "a", unitSlug: "centro", url: null },
+			{ companyId: "b", unitSlug: null, url: "/y" },
+		]);
 	});
 });
