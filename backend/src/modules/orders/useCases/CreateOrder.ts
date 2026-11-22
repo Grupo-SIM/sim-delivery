@@ -12,12 +12,13 @@ import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CreateOrderBody, OrderReturn } from "../dtos";
 import { OrderErrors } from "../errors";
+import { isUnitOpen } from "@/modules/units/isUnitOpen";
 import { originColumns } from "../origin";
 
 export class CreateOrder {
 	constructor(private readonly prisma: PrismaInstance) {}
 
-	async execute(userId: string, data: CreateOrderBody, requestContext?: { ip?: string; userAgent?: string }): Promise<OrderReturn> {
+	async execute(userId: string, data: CreateOrderBody, requestContext?: { ip?: string; userAgent?: string; timeZone?: string }): Promise<OrderReturn> {
 		const {
 			addressId,
 			couponCode,
@@ -36,6 +37,7 @@ export class CreateOrder {
 		if (!company) throw new DomainError(OrderErrors.COMPANY_NOT_FOUND);
 
 		const unit = await this.prisma.unit.findFirst({
+			include: { hours: true },
 			where: { active: true, companyId: company.id, slug: unitSlug },
 		});
 		if (!unit) throw new DomainError(OrderErrors.UNIT_NOT_FOUND);
@@ -49,6 +51,10 @@ export class CreateOrder {
 		if (customer.companyId !== company.id) throw new DomainError(OrderErrors.CUSTOMER_NOT_FOUND);
 		const existingOrder = await this.findOrderByIdempotencyKey(customer.id, idempotencyKey);
 		if (existingOrder) return existingOrder;
+
+		if (!isUnitOpen(unit.hours ?? [], unit.isOpenManual, new Date(), requestContext?.timeZone)) {
+			throw new DomainError(OrderErrors.UNIT_CLOSED);
+		}
 
 		if (deliveryMethod === "delivery") {
 			const address = await this.prisma.address.findFirst({

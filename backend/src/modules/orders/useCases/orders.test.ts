@@ -14,7 +14,7 @@ import { UpdateOrderStatus } from "./UpdateOrderStatus";
 const noopWhatsApp = new DisabledWhatsAppProvider();
 
 const baseCompany = { id: "cmp_1", slug: "demo" };
-const baseUnit = { active: true, companyId: "cmp_1", deliveryFee: 500, id: "unit_1", slug: "centro" };
+const baseUnit = { active: true, companyId: "cmp_1", deliveryFee: 500, hours: [], id: "unit_1", isOpenManual: true as boolean | null, slug: "centro" };
 const baseCustomer = { companyId: "cmp_1", id: "cust_1", userId: "user_1" };
 const baseAddress = { customerId: "cust_1", deletedAt: null, id: "addr_1" };
 const baseProduct = { basePriceCents: 1000, id: "prod_1", title: "Pão de queijo" };
@@ -234,6 +234,11 @@ describe("CreateOrder", () => {
 	it("throws UNIT_NOT_FOUND when unit is inactive", async () => {
 		const { prisma } = makeOrderPrisma({ unit: { ...baseUnit, active: false } });
 		await expect(new CreateOrder(prisma).execute("user_1", baseBody)).rejects.toThrow("UNIT_NOT_FOUND");
+	});
+
+	it("throws UNIT_CLOSED when unit is closed", async () => {
+		const { prisma } = makeOrderPrisma({ unit: { ...baseUnit, isOpenManual: false } });
+		await expect(new CreateOrder(prisma).execute("user_1", baseBody)).rejects.toThrow("UNIT_CLOSED");
 	});
 
 	it("creates a customer during the first checkout", async () => {
