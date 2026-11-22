@@ -11,6 +11,7 @@ export const OrderErrors = createEnumFromArray([
 	"INVALID_OPTIONS",
 	"INVALID_TRANSITION",
 	"ORDER_NOT_FOUND",
+	"PRICING_UNAVAILABLE",
 	"UNIT_NOT_FOUND",
 ]);
 
@@ -24,5 +25,6 @@ export const OrderErrorsStatusCodes: Record<keyof typeof OrderErrors, StatusCode
 	INVALID_OPTIONS: StatusCodes.UNPROCESSABLE_ENTITY,
 	INVALID_TRANSITION: StatusCodes.UNPROCESSABLE_ENTITY,
 	ORDER_NOT_FOUND: StatusCodes.NOT_FOUND,
+	PRICING_UNAVAILABLE: StatusCodes.SERVICE_UNAVAILABLE,
 	UNIT_NOT_FOUND: StatusCodes.NOT_FOUND,
 };

@@ -4,9 +4,9 @@ import { checkoutOnlyProductTotals, productDisplayModeOf, syntheticFees } from "
 import { getCompanyFeeSnapshot } from "./companyFeeMode";
 
 /**
- * Surcharges charged to buyers, built from SimIntPay's effective totals (its admin may override Delivery's sum) as one
- * synthetic fee per scope, so SimIntPay recomputes the same cents. `SIMINTPAY_ONLY` mode leaves cost recovery entirely
- * to SimIntPay's own fees. Without SimIntPay data the local resolved fees are used.
+ * Display-only view of the buyer surcharges (menu prices, checkout labels), built from SimIntPay's effective totals
+ * (its admin may override Delivery's sum) as one synthetic fee per scope. Charged amounts always come from SimIntPay's
+ * quote (`chargeQuote.ts`). `SIMINTPAY_ONLY` mode has no surcharges. Without SimIntPay data the local resolved fees are used.
  */
 export async function listEffectiveFees(
 	prisma: PrismaInstance,

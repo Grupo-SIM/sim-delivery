@@ -93,6 +93,10 @@ export const CreateOrderBody = t.Object({
 export type CreateOrderBody = typeof CreateOrderBody.static;
 
 export const QuoteOrderFeesBody = t.Object({
+	/** Freight the buyer currently sees; part of the merchant base SimIntPay prices. */
+	deliveryFeeCents: t.Optional(t.Integer({ minimum: 0 })),
+	/** Coupon, cashback and loyalty discounts the buyer currently applied, taken off the items. */
+	discountCents: t.Optional(t.Integer({ minimum: 0 })),
 	items: t.Array(
 		t.Object({
 			options: t.Optional(

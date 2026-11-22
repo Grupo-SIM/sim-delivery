@@ -34,6 +34,7 @@ function splitComponents(fee: EffectiveFeeReturn, items: FeeItemInput[], subtota
 	return fee.components.map((component, index) => ({ amountCents: index === amounts.length - 1 ? rest : amounts[index], name: component.name }));
 }
 
+/** Display-only split of additive fees; never the charged amount, which SimIntPay quotes (see `additiveBreakdown.ts`). */
 export function calculatePlatformFees(
 	fees: EffectiveFeeReturn[],
 	items: FeeItemInput[],

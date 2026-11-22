@@ -1,7 +1,7 @@
 import Elysia, { t } from "elysia";
 import { RefundPayment } from "@/modules/payments/useCases";
-import { calculatePlatformFees } from "@/modules/platformFees/calculateFees";
-import { listEffectiveFees } from "@/modules/platformFees/effectiveFees";
+import { additiveFeeBreakdown } from "@/modules/platformFees/additiveBreakdown";
+import { ChargeQuoteUnavailableError, quoteOrderCharge } from "@/modules/platformFees/chargeQuote";
 import { AuthGuard, CompanyScopeGuard } from "@/modules/users/guards";
 import { DomainError } from "@/shared/errors";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
@@ -106,10 +106,11 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 			.post(
 				"/fees/quote",
 				async ({ body, prisma }): Promise<QuoteOrderFeesReturn> => {
-					const company = await prisma.company.findUnique({ select: { id: true }, where: { slug: body.slug } });
-					if (!company) return { embeddedFeeTotalCents: 0, feeTotalCents: 0, fees: [], visibleFeeTotalCents: 0 };
+					const empty = { baseAmountCents: 0, embeddedFeeTotalCents: 0, feeTotalCents: 0, fees: [], totalAmountCents: 0, visibleFeeTotalCents: 0 };
+					const company = await prisma.company.findUnique({ select: { id: true, slug: true }, where: { slug: body.slug } });
+					if (!company) return empty;
 					const unit = await prisma.unit.findFirst({ select: { id: true }, where: { active: true, companyId: company.id, slug: body.unitSlug } });
-					if (!unit) return { embeddedFeeTotalCents: 0, feeTotalCents: 0, fees: [], visibleFeeTotalCents: 0 };
+					if (!unit) return empty;
 					const associations = await prisma.unitProduct.findMany({
 						include: {
 							additionalOptions: true,
@@ -143,8 +144,18 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 						}];
 					});
 					if (resolvedItems.length !== body.items.length) throw new DomainError(OrderErrors.INVALID_ITEM);
-					const calculated = calculatePlatformFees(await listEffectiveFees(prisma, company.id), resolvedItems);
+					// Display quote: the order re-quotes with server-validated discounts before charging.
+					const subtotal = resolvedItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+					const itemsAmountCents = Math.max(0, subtotal - (body.discountCents ?? 0));
+					const deliveryAmountCents = body.deliveryFeeCents ?? 0;
+					const quote = await quoteOrderCharge({ company, deliveryAmountCents, items: resolvedItems, itemsAmountCents }).catch(error => {
+						if (error instanceof ChargeQuoteUnavailableError) throw new DomainError(OrderErrors.PRICING_UNAVAILABLE, error.message);
+						throw error;
+					});
+					const calculated = await additiveFeeBreakdown(prisma, company.id, resolvedItems, quote.additiveFeeCents);
 					return {
+						baseAmountCents: itemsAmountCents + deliveryAmountCents,
+						totalAmountCents: quote.totalAmountCents,
 						embeddedFeeTotalCents: calculated.fees
 							.filter(fee => fee.displayMode === "embedded")
 							.reduce((sum, fee) => sum + fee.amountCents, 0),

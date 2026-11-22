@@ -12,6 +12,8 @@ export const OrderFeeReturn = t.Object({
 });
 
 export const QuoteOrderFeesReturn = t.Object({
+	/** Merchant base quoted: items after discounts plus freight. */
+	baseAmountCents: t.Integer(),
 	embeddedFeeTotalCents: t.Integer(),
 	feeTotalCents: t.Integer(),
 	fees: t.Array(
@@ -27,6 +29,8 @@ export const QuoteOrderFeesReturn = t.Object({
 			),
 		}),
 	),
+	/** Buyer total priced by SimIntPay; the checkout shows this, never a locally summed total. */
+	totalAmountCents: t.Integer(),
 	visibleFeeTotalCents: t.Integer(),
 });
 export type QuoteOrderFeesReturn = typeof QuoteOrderFeesReturn.static;

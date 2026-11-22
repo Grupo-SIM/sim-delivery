@@ -11,7 +11,7 @@ Sem push nem migração remota.
 - [x] SQL: `Payment.netAmountCents`/`totalAmountCents`, `PaymentAttempt.baseAmountCents`,
       `Order.additiveFeeRevision`; colunas de alocação viram históricas (migração local).
 - [x] Cliente SimIntPay: `quotePayment`, cobrança sem `allocation`, `QUOTE_CHANGED`.
-- [ ] Pedidos: total e aditivas pela cotação (`CreateOrder`, `POST /orders/fees/quote`).
+- [x] Pedidos: total e aditivas pela cotação (`CreateOrder`, `POST /orders/fees/quote`).
 - [x] Pagamentos: tentativa pela base + total cotado, recotação em `QUOTE_CHANGED`.
 - [ ] Relatórios: líquido devolvido pela SimIntPay quando presente.
 - [ ] Frontend: total cotado e aviso de preço alterado.

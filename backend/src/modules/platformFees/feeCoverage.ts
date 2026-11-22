@@ -33,7 +33,8 @@ export function surchargeComponents(fees: Pick<EffectiveFeeReturn, "fixedValue" 
 }
 
 /**
- * Compares fees charged for each lane against the global acquirer cost. Percentage and fixed parts are checked
+ * Admin display-only estimate: SimIntPay does not expose its coverage yet, so this compares the configured fees for
+ * each lane against the global acquirer cost. It never prices a charge. Percentage and fixed parts are checked
  * independently, which is conservative: a higher fixed part never hides a lower percentage.
  */
 export function evaluateCoverage(input: {

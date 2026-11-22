@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it } from "bun:test";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import { DisabledWhatsAppProvider } from "@/shared/infra/whatsapp";
+import { setChargeQuoteSource } from "@/modules/platformFees/chargeQuote";
 import { setFeeModeSource } from "@/modules/platformFees/companyFeeMode";
+import { PaymentProviderError } from "@/shared/infra/paymentProviderError";
+import type { SimpayPaymentQuoteInput } from "@/shared/infra/simpay";
 import { CreateOrder } from "./CreateOrder";
 import { GetCustomerOrder } from "./GetCustomerOrder";
 import { ListCustomerOrders } from "./ListCustomerOrders";
@@ -196,8 +199,23 @@ const baseBody = {
 	unitSlug: "centro",
 };
 
+/** SimIntPay stand-in: prices the base with a fixed additive amount and records each quote request. */
+function stubQuote(additiveFeeCents = 0, additiveRevision: string | null = "rev_1") {
+	const requests: SimpayPaymentQuoteInput[] = [];
+	setChargeQuoteSource({
+		quotePayment: async (_scope, input) => {
+			requests.push(input);
+			return { additiveFeeCents, additiveRevision, baseAmountCents: input.amountCents, buyerInterestCents: 0, feeMode: "ADDITIVE_ONLY", netAmountCents: input.amountCents, sellerFeeCents: 0, totalAmountCents: input.amountCents + additiveFeeCents };
+		},
+	});
+	return requests;
+}
+
 describe("CreateOrder", () => {
-	beforeEach(() => setFeeModeSource({ companyFees: async () => ({ costs: [], disabledLanes: [], lanes: [], mode: "ADDITIVE_ONLY", version: "1" }) }));
+	beforeEach(() => {
+		setFeeModeSource({ companyFees: async () => ({ costs: [], disabledLanes: [], lanes: [], mode: "ADDITIVE_ONLY", version: "1" }) });
+		stubQuote();
+	});
 
 	it("throws COMPANY_NOT_FOUND when slug unknown", async () => {
 		const { prisma } = makeOrderPrisma({ company: null });
@@ -324,17 +342,29 @@ describe("CreateOrder", () => {
 		expect(orders).toHaveLength(2);
 	});
 
-	it("charges no surcharge when SimIntPay dictates SIMINTPAY_ONLY", async () => {
+	it("stores SimIntPay's quoted total and additives instead of pricing local fees", async () => {
 		const platformFees = [{ active: true, applicationScope: "order", companyOverrides: [], displayMode: "checkout_only", fixedValue: 75, id: "fee_order", name: "Operação", percentageValue: 0 }];
-		setFeeModeSource({ companyFees: async () => ({ costs: [], disabledLanes: [], lanes: [], mode: "ADDITIVE_ONLY", version: "1" }) });
-		const additive = makeOrderPrisma({ platformFees });
-		await new CreateOrder(additive.prisma).execute("user_1", baseBody);
-		expect(additive.orders[0]).toMatchObject({ feeTotalCents: 75 });
+		const requests = stubQuote(0, null);
+		const simintpayOnly = makeOrderPrisma({ platformFees });
+		await new CreateOrder(simintpayOnly.prisma).execute("user_1", baseBody);
+		expect(simintpayOnly.orders[0]).toMatchObject({ additiveFeeRevision: null, feeTotalCents: 0, total: 2500 });
+		expect(simintpayOnly.orderFeeSnapshots).toHaveLength(0);
+		expect(requests[0]).toMatchObject({ amountCents: 2500, deliveryAmountCents: 500, itemsAmountCents: 2000, paymentMethod: "PIX" });
+		expect(requests[0]!.items).toEqual([{ key: "0", quantity: 2, unitPriceCents: 1000 }]);
 
-		setFeeModeSource({ companyFees: async () => ({ costs: [], disabledLanes: [], lanes: [], mode: "SIMINTPAY_ONLY", version: "1" }) });
-		const simintpay = makeOrderPrisma({ platformFees });
-		await new CreateOrder(simintpay.prisma).execute("user_1", baseBody);
-		expect(simintpay.orders[0]).toMatchObject({ feeTotalCents: 0 });
+		stubQuote(90, "rev_2");
+		const overridden = makeOrderPrisma({ platformFees });
+		await new CreateOrder(overridden.prisma).execute("user_1", baseBody);
+		expect(overridden.orders[0]).toMatchObject({ additiveFeeRevision: "rev_2", feeTotalCents: 90, total: 2590 });
+		// The local split no longer matches the quote: one checkout fee carries the quoted cents.
+		expect(overridden.orderFeeSnapshots).toEqual([expect.objectContaining({ amountCents: 90, applicationScope: "order", displayMode: "checkout_only", platformFeeId: null })]);
+	});
+
+	it("refuses the order when SimIntPay cannot quote it", async () => {
+		setChargeQuoteSource({ quotePayment: async () => { throw new PaymentProviderError("Simpay", "offline", 503); } });
+		const { orders, prisma } = makeOrderPrisma();
+		await expect(new CreateOrder(prisma).execute("user_1", baseBody)).rejects.toThrow("PRICING_UNAVAILABLE");
+		expect(orders).toHaveLength(0);
 	});
 
 	it("uses priceCentsOverride when set", async () => {
@@ -348,6 +378,7 @@ describe("CreateOrder", () => {
 	});
 
 	it("adds stacked fees without reducing merchant prices and stores snapshots", async () => {
+		stubQuote(175);
 		const { orderFeeSnapshots, orderItemFeeSnapshots, orders, prisma } = makeOrderPrisma({
 			platformFees: [
 				{

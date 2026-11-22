@@ -5,8 +5,8 @@ import { listCompanyDiscounts, resolveDiscountedPrice } from "@/modules/discount
 import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
 import { LoyaltyErrors } from "@/modules/loyalty/errors";
 import { GetLoyaltyBalance } from "@/modules/loyalty/useCases";
-import { calculatePlatformFees } from "@/modules/platformFees/calculateFees";
-import { listEffectiveFees } from "@/modules/platformFees/effectiveFees";
+import { additiveFeeBreakdown } from "@/modules/platformFees/additiveBreakdown";
+import { ChargeQuoteUnavailableError, quoteOrderCharge } from "@/modules/platformFees/chargeQuote";
 import { isSyntheticFee } from "@/modules/platformFees/additiveTotals";
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
@@ -260,15 +260,11 @@ export class CreateOrder {
 
 		const subtotal = resolvedItems.reduce((sum, i) => sum + i.total, 0);
 		const deliveryFee = deliveryMethod === "delivery" ? unit.deliveryFee : 0;
-		const effectiveFees = await listEffectiveFees(this.prisma, company.id);
-		const calculatedFees = calculatePlatformFees(
-			effectiveFees,
-			resolvedItems.map(item => ({
-				key: String(item.lineIndex),
-				quantity: item.quantity,
-				unitPrice: item.unitPrice,
-			})),
-		);
+		const feeItems = resolvedItems.map(item => ({
+			key: String(item.lineIndex),
+			quantity: item.quantity,
+			unitPrice: item.unitPrice,
+		}));
 
 		let couponId: string | null = null;
 		let discountCents = 0;
@@ -302,7 +298,18 @@ export class CreateOrder {
 		remainingSubtotal -= cashbackCentsRedeemed;
 		loyaltyPointsRedeemed = Math.min(loyaltyPointsRedeemed, remainingSubtotal);
 		remainingSubtotal -= loyaltyPointsRedeemed;
-		const total = remainingSubtotal + deliveryFee + calculatedFees.feeTotalCents;
+		// SimIntPay prices the charge from the merchant base; Delivery stores its quote, never its own fee math.
+		const quote = await quoteOrderCharge({
+			company,
+			deliveryAmountCents: deliveryFee,
+			items: feeItems,
+			itemsAmountCents: remainingSubtotal,
+		}).catch(error => {
+			if (error instanceof ChargeQuoteUnavailableError) throw new DomainError(OrderErrors.PRICING_UNAVAILABLE, error.message);
+			throw error;
+		});
+		const total = quote.totalAmountCents;
+		const calculatedFees = await additiveFeeBreakdown(this.prisma, company.id, feeItems, quote.additiveFeeCents);
 
 		try {
 			const order = await this.prisma.$transaction(async tx => {
@@ -326,7 +333,8 @@ export class CreateOrder {
 					discountCents,
 					idempotencyKey,
 					loyaltyPointsRedeemed,
-					feeTotalCents: calculatedFees.feeTotalCents,
+					additiveFeeRevision: quote.additiveRevision,
+					feeTotalCents: quote.additiveFeeCents,
 					subtotal,
 					total,
 					unitId,
