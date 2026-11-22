@@ -16,6 +16,13 @@ describe("merchantAmount", () => {
 		expect(merchantAmount({ feeTotalCents: 0, payment: { coproductionCents: 0 }, total: 5000 })).toBe(5000);
 	});
 
+	it("uses the net SimIntPay returned for priced charges, minus coproduction only", () => {
+		// BOTH: buyer paid 10500 (500 additives), SimIntPay kept 399 from the merchant.
+		expect(merchantAmount({ feeTotalCents: 500, payment: { coproductionCents: 1000, netAmountCents: 9601, simintpayFeeCents: 399 }, total: 10500 })).toBe(8601);
+		// ADDITIVE_ONLY: the merchant keeps the base intact.
+		expect(merchantAmount({ feeTotalCents: 500, payment: { netAmountCents: 10000 }, total: 10500 })).toBe(10000);
+	});
+
 	it("never goes negative", () => {
 		expect(merchantAmount({ feeTotalCents: 500, payment: { coproductionCents: 900 }, total: 1000 })).toBe(0);
 	});

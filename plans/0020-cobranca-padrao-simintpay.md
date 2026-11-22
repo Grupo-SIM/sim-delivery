@@ -13,6 +13,6 @@ Sem push nem migração remota.
 - [x] Cliente SimIntPay: `quotePayment`, cobrança sem `allocation`, `QUOTE_CHANGED`.
 - [x] Pedidos: total e aditivas pela cotação (`CreateOrder`, `POST /orders/fees/quote`).
 - [x] Pagamentos: tentativa pela base + total cotado, recotação em `QUOTE_CHANGED`.
-- [ ] Relatórios: líquido devolvido pela SimIntPay quando presente.
+- [x] Relatórios: líquido devolvido pela SimIntPay quando presente.
 - [ ] Frontend: total cotado e aviso de preço alterado.
 - [ ] Docs e testes.

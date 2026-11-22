@@ -45,7 +45,7 @@ export interface ExportableOrder {
 	discountCents: number;
 	displayNumber: number;
 	feeTotalCents?: number;
-	payment?: { coproductionCents?: number | null; simintpayFeeCents?: number | null } | null;
+	payment?: { coproductionCents?: number | null; netAmountCents?: number | null; simintpayFeeCents?: number | null } | null;
 	items: { optionSnapshots: { optionName: string }[]; productName: string; quantity: number }[];
 	status: string;
 	subtotal: number;
