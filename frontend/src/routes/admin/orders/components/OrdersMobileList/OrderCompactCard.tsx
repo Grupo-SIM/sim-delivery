@@ -39,7 +39,7 @@ export function OrderCompactCard({ canPrint, order, showStatus }: OrderCompactCa
 					<DeliveryIcon aria-hidden className="size-3.5 shrink-0" />
 					<span className="truncate">
 						{t(`store.checkout.order.${order.deliveryMethod}`, { defaultValue: order.deliveryMethod })} ·{" "}
-						{itemCount} {t("admin.orders.items", { count: itemCount })}
+						{t("admin.orders.items", { count: itemCount })}
 					</span>
 				</p>
 				{showStatus && (

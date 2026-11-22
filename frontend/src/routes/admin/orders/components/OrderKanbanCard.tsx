@@ -125,7 +125,7 @@ export function OrderKanbanCard({
 						))}
 						{remainingItems > 0 && (
 							<li className="text-muted-foreground text-xs">
-								+{remainingItems} {t("admin.orders.items", { count: remainingItems })}
+								+{t("admin.orders.items", { count: remainingItems })}
 							</li>
 						)}
 					</ul>
