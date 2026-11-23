@@ -274,10 +274,9 @@ function drawReceipt(doc: jsPDF, receipt: GetOrdersByOrderIdReceipt200, labels: 
 				if (receipt.loyaltyPointsRedeemed !== 0) drawAmountRow(cursor, labels.loyalty, `-${formatMoney(receipt.loyaltyPointsRedeemed)}`);
 				break;
 			case "fees": {
-				const visibleFees = receipt.fees.filter(fee => fee.displayMode !== "embedded");
-				if (visibleFees.length > 0) {
+				if (receipt.fees.length > 0) {
 					drawWrappedText(cursor, labels.fees, { style: "bold" });
-					for (const fee of visibleFees) drawAmountRow(cursor, fee.name, formatMoney(fee.amountCents));
+					for (const fee of receipt.fees) drawAmountRow(cursor, fee.name, formatMoney(fee.amountCents));
 				}
 				break;
 			}
