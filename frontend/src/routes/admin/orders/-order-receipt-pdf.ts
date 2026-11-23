@@ -262,16 +262,16 @@ function drawReceipt(doc: jsPDF, receipt: GetOrdersByOrderIdReceipt200, labels: 
 				drawAmountRow(cursor, labels.subtotal, formatMoney(receipt.subtotal));
 				break;
 			case "deliveryFee":
-				drawAmountRow(cursor, labels.deliveryFee, formatMoney(receipt.deliveryFee));
+				if (Number(receipt.deliveryFee) !== 0) drawAmountRow(cursor, labels.deliveryFee, formatMoney(receipt.deliveryFee));
 				break;
 			case "discount":
-				drawAmountRow(cursor, labels.discount, `-${formatMoney(receipt.discountCents)}`);
+				if (receipt.discountCents !== 0) drawAmountRow(cursor, labels.discount, `-${formatMoney(receipt.discountCents)}`);
 				break;
 			case "cashback":
-				drawAmountRow(cursor, labels.cashback, `-${formatMoney(receipt.cashbackCentsRedeemed)}`);
+				if (receipt.cashbackCentsRedeemed !== 0) drawAmountRow(cursor, labels.cashback, `-${formatMoney(receipt.cashbackCentsRedeemed)}`);
 				break;
 			case "loyalty":
-				drawAmountRow(cursor, labels.loyalty, `-${formatMoney(receipt.loyaltyPointsRedeemed)}`);
+				if (receipt.loyaltyPointsRedeemed !== 0) drawAmountRow(cursor, labels.loyalty, `-${formatMoney(receipt.loyaltyPointsRedeemed)}`);
 				break;
 			case "fees": {
 				const visibleFees = receipt.fees.filter(fee => fee.displayMode !== "embedded");
