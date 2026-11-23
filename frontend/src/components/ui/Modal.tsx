@@ -43,6 +43,7 @@ export function Modal({
 	const closeWithHistory = useModalHistory({ historyMode, isOpen, onClose, urlKey, urlState });
 	const setContentRef = useCallback((node: HTMLDivElement | null) => {
 		contentRef.current = node;
+		if (node) node.scrollTop = 0;
 		setContent(node);
 	}, []);
 
