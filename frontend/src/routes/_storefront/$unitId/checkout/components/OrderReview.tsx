@@ -12,7 +12,7 @@ import {
 	usePostPublicFreightSimulate,
 } from "@/lib/api";
 import { formatMoney } from "@/lib/formatMoney";
-import type { AppliedCoupon, CartItem } from "@/stores";
+import { type AppliedCoupon, type CartItem, cartDisplayTotalCents } from "@/stores";
 import { CheckoutFees } from "./CheckoutFees";
 import { CheckoutItemRow } from "./CheckoutItemRow";
 
@@ -331,7 +331,7 @@ export function OrderReview({
 				{feeQuoteError && <p className="text-destructive">{t("store.checkout.order.feesError")}</p>}
 				<div className="flex justify-between">
 					<span className="text-muted-foreground">{t("store.checkout.order.itemsSubtotal")}</span>
-					<span>{formatMoney((subtotal + embeddedFeeTotalCents) / 100)}</span>
+					<span>{formatMoney((feeQuote ? subtotal + embeddedFeeTotalCents : cartDisplayTotalCents(items)) / 100)}</span>
 				</div>
 				{feeQuote && Number(feeQuote.visibleFeeTotalCents) > 0 && (
 					<CheckoutFees
