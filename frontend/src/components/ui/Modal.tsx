@@ -82,7 +82,7 @@ export function Modal({
 						ref={setContentRef}
 					>
 						<div
-							className={`sticky top-0 z-10 -mt-5 flex shrink-0 items-start gap-4 bg-card pt-5 sm:-mt-7 sm:pt-7 ${
+							className={`sticky -top-5 z-10 -mt-5 flex shrink-0 items-start gap-4 bg-card pt-5 sm:-top-7 sm:-mt-7 sm:pt-7 ${
 								title ? "border-border/70 border-b pb-5" : "justify-end"
 							}`}
 						>
