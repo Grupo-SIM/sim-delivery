@@ -311,6 +311,23 @@ try {
 		conf.identifier = packageName.replaceAll("_", "-");
 		conf.productName = company.name || "Delivery";
 		if (conf.app?.windows?.[0]) conf.app.windows[0].title = company.name || "Delivery";
+		// In-app updates: only wired when the public signing key is provided (CI sets it),
+		// because `createUpdaterArtifacts` fails the build without TAURI_SIGNING_PRIVATE_KEY.
+		const updaterPubkey = process.env.TAURI_UPDATER_PUBKEY?.trim();
+		if (updaterPubkey) {
+			const repository = process.env.UPDATER_REPOSITORY?.trim() || process.env.GITHUB_REPOSITORY?.trim();
+			if (!repository) throw new Error("TAURI_UPDATER_PUBKEY requires UPDATER_REPOSITORY (owner/repo) or GITHUB_REPOSITORY.");
+			conf.bundle = { ...conf.bundle, createUpdaterArtifacts: true };
+			conf.plugins = {
+				...conf.plugins,
+				updater: {
+					// Rolling per-company release refreshed by the CD workflow after every desktop build.
+					endpoints: [`https://github.com/${repository}/releases/download/${slug}-latest/latest.json`],
+					pubkey: updaterPubkey,
+					windows: { installMode: "passive" },
+				},
+			};
+		}
 		await writeFile(join(stage, "tauri.conf.json"), `${JSON.stringify(conf, null, "\t")}\n`);
 	}
 	

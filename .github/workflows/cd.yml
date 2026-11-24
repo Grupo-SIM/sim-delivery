@@ -158,6 +158,11 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       VITE_CDN_URL: ${{ vars.VITE_CDN_URL }}
       VITE_COMPANY_SLUG: ${{ matrix.slug }}
+      # In-app updates: signs the installers and enables the updater config. Both are optional;
+      # without them the build still works, but installed apps never see new versions.
+      TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+      TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+      TAURI_UPDATER_PUBKEY: ${{ vars.TAURI_UPDATER_PUBKEY }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -193,6 +198,23 @@ jobs:
           # One release per company: every variant shares the app version.
           tag-name: ${{ matrix.slug }}-v__VERSION__
           release-name: ${{ matrix.slug }} v__VERSION__
+
+      # Installed apps poll a fixed URL, so mirror the versioned latest.json into a rolling
+      # `<slug>-latest` release (never marked as the repository's latest release).
+      - name: Publish updater manifest
+        if: ${{ env.TAURI_SIGNING_PRIVATE_KEY != '' }}
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version=$(jq -r .version frontend/src-tauri/tauri.conf.json)
+          tag="${{ matrix.slug }}-v${version}"
+          rolling="${{ matrix.slug }}-latest"
+          gh release download "$tag" --pattern latest.json --dir updater --clobber
+          gh release view "$rolling" >/dev/null 2>&1 || gh release create "$rolling" \
+            --latest=false --title "${{ matrix.slug }} updater manifest" \
+            --notes "Rolling release read by installed apps to find new versions. Do not delete."
+          gh release upload "$rolling" updater/latest.json --clobber
 
   # android:
   #   name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Build & release Android app

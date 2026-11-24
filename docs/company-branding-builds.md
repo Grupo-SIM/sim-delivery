@@ -17,3 +17,15 @@ The Vite build inlines `public/branding.css` into `index.html` as a `<style>` bl
 After starting a local runtime, run `bun run --cwd frontend check:static http://127.0.0.1:5173`. This checks entrypoint assets, CSS content/types, cache headers, branding, SPA navigation and missing-file behavior. The same read-only check accepts a deployed URL.
 
 All proxy upstreams/replicas for one company must serve the same image version. Alternating entrypoint hashes on repeated cache-busted requests indicates inconsistent deployment targets; cache headers cannot repair that. Replace stale replicas/upstreams before considering the deployment complete. Proxies must preserve origin cache headers. Previously cached HTML/branding or HTML returned at asset URLs may require invalidating existing proxy/browser cache after deploying this fix.
+
+## In-app desktop updates
+
+Installed desktop apps update themselves through `tauri-plugin-updater`; admins install once and never again. `DesktopUpdateBanner` (mounted in `__root.tsx`) checks on launch and every 6 hours, then offers "Atualizar e reiniciar".
+
+One-time setup (the maintainer runs these, nothing here leaves the machine automatically):
+
+1. `bunx tauri signer generate -w ~/.tauri/updater.key` creates the signing key pair.
+2. Repository secrets `TAURI_SIGNING_PRIVATE_KEY` (file contents) and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`; repository variable `TAURI_UPDATER_PUBKEY` (the `.pub` contents).
+3. Keep the private key forever: apps signed with a different key can never update. Losing it forces a manual reinstall.
+
+How it works: when `TAURI_UPDATER_PUBKEY` is set, `frontend/scripts/inject.ts` adds `plugins.updater` and `bundle.createUpdaterArtifacts` to the generated `tauri.conf.json` with the endpoint `https://github.com/<repo>/releases/download/<slug>-latest/latest.json`. The CD `desktop` job signs installers and mirrors each build's `latest.json` into the rolling `<slug>-latest` release. The repository must be public (or the endpoint reachable without authentication) for installed apps to read it. Builds without the key work as before but never offer updates. Bump `version` in `frontend/scripts/defaults/tauri.conf.json` for every release: the updater only offers strictly higher versions.

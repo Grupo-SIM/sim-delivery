@@ -1952,6 +1952,12 @@
 			"subtitle": "Suas entregas ativas.",
 			"title": "Entregas"
 		},
+		"desktopUpdate": {
+			"available": "Nova versão {{version}} disponível.",
+			"error": "Não foi possível atualizar o aplicativo. Tente novamente.",
+			"install": "Atualizar e reiniciar",
+			"installing": "Atualizando..."
+		},
 		"media": {
 			"anyDimensions": "Dimensões: qualquer tamanho.",
 			"optionDimensions": "Miniatura: 56 × 56 px. Ampliação: até 75% da altura da tela, limitada à largura disponível; sem tamanho máximo fixo em pixels.",

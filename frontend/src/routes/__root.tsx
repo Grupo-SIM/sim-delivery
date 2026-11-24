@@ -1,5 +1,6 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { ConsentPreferences, CookieBanner } from "@/components/consent";
+import { DesktopUpdateBanner } from "@/components/desktop";
 import { useConsentStore } from "@/stores/consent";
 import { useLiveBranding } from "@/hooks/use-live-branding";
 import { useTracking } from "@/hooks/use-tracking";
@@ -21,6 +22,7 @@ function RootComponent() {
 			<main>
 				<Outlet />
 			</main>
+			<DesktopUpdateBanner />
 			<CookieBanner />
 			{preferencesOpen && <ConsentPreferences />}
 		</div>

@@ -91,7 +91,12 @@ fn setup_tray(app: &AppHandle) -> tauri::Result<()> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let app = tauri::Builder::default()
+    let builder = tauri::Builder::default();
+    #[cfg(desktop)]
+    let builder = builder
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_updater::Builder::new().build());
+    let app = builder
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_statusbar_style::init())
         .invoke_handler(tauri::generate_handler![list_printers, open_pdf, print_pdf])
