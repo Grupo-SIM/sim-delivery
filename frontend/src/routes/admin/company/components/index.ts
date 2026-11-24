@@ -1,4 +1,5 @@
 export * from "./BrandAssetsSection";
+export * from "./CnpjSourcesSection";
 export * from "./CompanyWhatsAppEditor";
 export * from "./EmailMessagePreview";
 export * from "./FontField";

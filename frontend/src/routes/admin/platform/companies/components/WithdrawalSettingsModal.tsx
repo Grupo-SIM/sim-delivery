@@ -9,7 +9,7 @@ import { Modal } from "@/components/ui/Modal";
 import { TextField } from "@/components/ui/TextField";
 import { closeActiveModalHistory } from "@/hooks/use-modal-history";
 import { getCompaniesQueryKey, type GetCompanies200, usePatchCompaniesByCompanyIdWithdrawalSettings } from "@/lib/api";
-import { MerchantDocumentField } from "./MerchantDocumentField";
+import { MerchantDocumentField } from "@/components/ui/MerchantDocumentField";
 import { isValidMerchantDocument } from "@/lib/merchant-document";
 import { showAlert, showToast } from "@/stores";
 

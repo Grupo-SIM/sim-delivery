@@ -8,6 +8,7 @@ import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Input } from "@/components/ui/input";
 import { Label, RequiredMark } from "@/components/ui/label";
 import { MaskedInput } from "@/components/ui/MaskedInput";
+import { MerchantDocumentField } from "@/components/ui/MerchantDocumentField";
 import { MediaUrlInput } from "@/components/ui/MediaUrlInput";
 import { Modal } from "@/components/ui/Modal";
 import { NumericInput } from "@/components/ui/NumericInput";
@@ -93,6 +94,7 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 	const [bannerUrls, setBannerUrls] = useState<string[]>([""]);
 	const [cashback, setCashback] = useState(0);
 	const [cepError, setCepError] = useState<string | null>(null);
+	const [cnpj, setCnpj] = useState("");
 	const [imageUrl, setImageUrl] = useState("");
 	const [lookingUp, setLookingUp] = useState(false);
 	const [name, setName] = useState("");
@@ -113,6 +115,7 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 		setBannerLinks(unit?.bannerUrls.length ? unit.bannerUrls.map((_, index) => unit.bannerLinks[index] ?? "") : [""]);
 		setCashback(unit?.cashbackPercent ?? 0);
 		setCepError(null);
+		setCnpj(unit?.cnpj ?? "");
 		setImageUrl(unit?.imageUrl ?? "");
 		setName(unit?.name ?? "");
 		setPhone(unit?.phone ?? "");
@@ -161,6 +164,7 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 					),
 					bannerUrls: bannerUrls.map(bannerUrl => bannerUrl.trim()).filter(Boolean),
 					cashbackPercent: cashback,
+					cnpj: cnpj || null,
 					facebookUrl: localFacebookUrl.trim() || null,
 					imageUrl: imageUrl.trim() || null,
 					instagramUrl: localInstagramUrl.trim() || null,
@@ -231,6 +235,10 @@ export function UnitEditor({ onClose, unit }: UnitEditorProps) {
 
 				<section className="space-y-4 border-border border-t pt-6">
 					<h2 className="font-semibold text-lg">{t("admin.units.config.contact.title")}</h2>
+					<div className="space-y-1">
+						<MerchantDocumentField label={t("admin.units.config.cnpj")} name="unit-document" onChange={setCnpj} required={false} value={cnpj} />
+						<p className="text-muted-foreground text-xs">{t("admin.units.config.cnpjHint")}</p>
+					</div>
 					<div className="grid gap-4 sm:grid-cols-2">
 						<Label>
 							{t("admin.units.config.contact.phone")}

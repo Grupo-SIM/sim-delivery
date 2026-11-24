@@ -14,6 +14,7 @@ import { showToast } from "@/stores";
 import {
 	BrandAssetsSection,
 	WelcomeCopySection,
+	CnpjSourcesSection,
 	CompanyWhatsAppEditor,
 	type BrandAssetsState,
 	defaultOrderStatusTemplates,
@@ -38,7 +39,7 @@ import {
 } from "./components";
 
 /** One skeleton per collapsed section card, so the loading state mirrors the settled layout. */
-const sectionSkeletonKeys = ["privacy", "theme", "assets", "typography", "footer", "notifications", "tracking"] as const;
+const sectionSkeletonKeys = ["privacy", "cnpjSources", "theme", "assets", "typography", "footer", "notifications", "tracking"] as const;
 
 function BrandingPage() {
 	const { t } = useTranslation();
@@ -60,6 +61,8 @@ function BrandingPage() {
 	const [footer, setFooter] = useState<FooterState>(emptyFooter);
 	const [tracking, setTracking] = useState<TrackingState>(emptyTracking);
 	const [legalName, setLegalName] = useState("");
+	const [orderCnpjSource, setOrderCnpjSource] = useState<"COMPANY" | "UNIT">("UNIT");
+	const [withdrawalCnpjSource, setWithdrawalCnpjSource] = useState<"COMPANY" | "UNIT">("UNIT");
 	const [address, setAddress] = useState("");
 	const [privacyContactEmail, setPrivacyContactEmail] = useState("");
 	const [privacyContactPhone, setPrivacyContactPhone] = useState("");
@@ -76,6 +79,8 @@ function BrandingPage() {
 			setWelcomeTitle([branding.welcomeTitle, branding.welcomeTitleAccent].filter(Boolean).join(" "));
 			setWelcomeDescription(branding.welcomeDescription ?? "");
 			setLegalName(branding.legalName ?? "");
+			setOrderCnpjSource(branding.orderCnpjSource);
+			setWithdrawalCnpjSource(branding.withdrawalCnpjSource);
 			setAddress(branding.address ?? "");
 			setPrivacyContactEmail(branding.privacyContactEmail ?? "");
 			setPrivacyContactPhone(branding.privacyContactPhone ?? "");
@@ -136,6 +141,8 @@ function BrandingPage() {
 
 	const serializedSettings = JSON.stringify({
 		legalName: legalName.trim(),
+		orderCnpjSource,
+		withdrawalCnpjSource,
 		address: address.trim(),
 		privacyContactEmail: privacyContactEmail.trim(),
 		privacyContactPhone: privacyContactPhone.trim(),
@@ -227,6 +234,7 @@ function BrandingPage() {
 			) : (
 				<div className="space-y-3">
 					<PrivacySection address={address} cnpj={branding.cnpj} legalName={legalName} onAddressChange={setAddress} onLegalNameChange={setLegalName} onPrivacyContactEmailChange={setPrivacyContactEmail} onPrivacyContactPhoneChange={setPrivacyContactPhone} privacyContactEmail={privacyContactEmail} privacyContactPhone={privacyContactPhone} />
+					<CnpjSourcesSection onOrderChange={setOrderCnpjSource} onWithdrawalChange={setWithdrawalCnpjSource} orderSource={orderCnpjSource} withdrawalSource={withdrawalCnpjSource} />
 					<ThemeSection
 						company={{ name: branding.companyName ?? "SIM Delivery", slug: slug || "empresa", themeColors, fontDisplay: fonts.display, fontFamily: fonts.family }}
 						allowThemeToggle={allowThemeToggle}

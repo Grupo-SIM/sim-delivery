@@ -278,6 +278,15 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
 - Retroatribuição de pagamentos confirmados é operação administrativa, começa em dry-run e
   exige execução explícita após conferência dos conflitos.
 
+- **CPF/CNPJ por unidade (opcional).** A carteira, o saldo e o vínculo na SIM INT PAY continuam por empresa e exigem o
+  CPF/CNPJ da empresa; a unidade só registra um documento próprio (`Unit.cnpj`, CPF ou CNPJ válido, sem unicidade).
+  O dono escolhe separadamente, em Configurações da empresa, qual documento identifica **pedidos**
+  (`Company.orderCnpjSource`) e **saques** (`Company.withdrawalCnpjSource`): `UNIT` (padrão) usa o da unidade e, se
+  vazio, o da empresa; `COMPANY` usa o da empresa e, se vazio, o da unidade. Pedido grava o documento resolvido em
+  `Order.cnpj` na criação (nunca recalculado). No saque, as opções de documento (unidades com CNPJ e empresa, na ordem da
+  preferência, sem repetir) viram sugestão de chave Pix, editável; `Withdrawal.unitId`/`cnpj` guardam a escolha.
+  Nada disso altera o merchant na SIM INT PAY.
+
 - O campo técnico `cnpj` do contrato e do vínculo financeiro aceita CPF (11 dígitos) ou CNPJ (14). Na SIM INT PAY, CPF identifica pessoa física em `user.cpf`; CNPJ identifica pessoa jurídica em `user.cnpj`.
 
 ## Índice

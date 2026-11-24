@@ -24,6 +24,16 @@
 				"attachmentsHelp": "Até 3 imagens ou PDFs, com 10 MB por arquivo.",
 				"attachmentsUploaded": "Anexo enviado. Salve para publicar.",
 				"cancelReasonPreview": "Produto indisponível.",
+				"cnpjSources": {
+					"company": "CNPJ da empresa",
+					"orders": "CNPJ dos pedidos",
+					"ordersHint": "Documento registrado em cada novo pedido. Se a opção escolhida não tiver CNPJ, usa a outra.",
+					"summary": "Pedidos: {{orders}} · Saques: {{withdrawals}}",
+					"title": "CNPJ de pedidos e saques",
+					"unit": "CNPJ da unidade",
+					"withdrawals": "CNPJ dos saques",
+					"withdrawalsHint": "Sugerido como chave Pix ao solicitar saque. Se a opção escolhida não tiver CNPJ, usa a outra."
+				},
 				"colorCopied": "Cor copiada de {{mode}}.",
 				"colorGroups": {
 					"actions": "Marca, ações e destaques",
@@ -1763,6 +1773,8 @@
 					"availabilityOpen": "Forçar aberto",
 					"cancel": "Cancelar",
 					"cashback": "Cashback",
+					"cnpj": "CPF ou CNPJ da unidade",
+					"cnpjHint": "Opcional. Tem prioridade sobre o da empresa quando o dono escolher o documento da unidade.",
 					"contact": {
 						"facebook": "Facebook",
 						"instagram": "Instagram",
