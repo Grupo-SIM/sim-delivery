@@ -11,6 +11,7 @@ export const LocalWithdrawalStatus = t.Union([t.Literal("submitting"), ProviderW
 export type LocalWithdrawalStatus = typeof LocalWithdrawalStatus.static;
 
 export const WithdrawalReturn = t.Object({
+	cnpj: t.Nullable(t.String()),
 	createdAt: t.Date(),
 	externalWithdrawalId: t.Nullable(t.String()),
 	feeCents: t.Integer(),
@@ -20,7 +21,14 @@ export const WithdrawalReturn = t.Object({
 	pixKey: t.String(),
 	rejectionReason: t.Nullable(t.String()),
 	status: LocalWithdrawalStatus,
+	unitId: t.Nullable(t.String()),
 	updatedAt: t.Date(),
+});
+
+export const WithdrawalDocumentOption = t.Object({
+	cnpj: t.String(),
+	label: t.String(),
+	unitId: t.Nullable(t.String()),
 });
 
 export const WithdrawalSummaryReturn = t.Object({
@@ -28,6 +36,8 @@ export const WithdrawalSummaryReturn = t.Object({
 	blockReason: t.Nullable(t.String()),
 	canRequest: t.Boolean(),
 	configured: t.Boolean(),
+	/** Documents the requester may use as the Pix key, already ordered by the company preference (first = default). */
+	documents: t.Array(WithdrawalDocumentOption),
 	feePolicy: t.Object({ fixedCents: t.Integer(), percentBasisPoints: t.Integer() }),
 	minimumCents: t.Nullable(t.Integer()),
 	pixKey: t.Nullable(t.String()),
@@ -44,6 +54,8 @@ export const WithdrawalQuoteReturn = t.Object({
 export const RequestWithdrawalBody = t.Object({
 	grossAmountCents: t.Integer({ minimum: 1 }),
 	pixKey: t.String({ minLength: 1 }),
+	/** Unit whose CNPJ the Pix key refers to; omitted/null = company CNPJ. */
+	unitId: t.Optional(t.Nullable(t.String())),
 });
 export const WithdrawalListQuery = t.Object({
 	page: t.Optional(t.Numeric({ default: 1, minimum: 1 })),

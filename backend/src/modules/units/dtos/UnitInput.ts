@@ -7,6 +7,7 @@ const fields = {
 	bannerUrls: t.Optional(t.Array(t.String({ format: "uri", maxLength: 1000 }), { maxItems: 10 })),
 	cashbackPercent: t.Optional(t.Number({ minimum: 0 })),
 	city: t.Optional(t.Nullable(t.String())),
+	cnpj: t.Optional(t.Nullable(t.String({ pattern: "^([0-9]{11}|[0-9]{14})?$" }))),
 	complement: t.Optional(t.Nullable(t.String())),
 	deliveryFee: t.Optional(t.Integer({ minimum: 0 })),
 	deliveryFeeFallbackEnabled: t.Optional(t.Boolean()),

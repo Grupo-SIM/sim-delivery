@@ -1,8 +1,10 @@
 import { t } from "elysia";
 import { __nullable__ } from "sql/typebox";
-import { OrderStatusEmailTemplates, OrderStatusWhatsAppTemplates, ThemeColors, ThemeMode } from "./BrandingInput";
+import { CnpjSourceInput, OrderStatusEmailTemplates, OrderStatusWhatsAppTemplates, ThemeColors, ThemeMode } from "./BrandingInput";
 
 export const BrandingReturn = t.Object({
+    orderCnpjSource: CnpjSourceInput,
+    withdrawalCnpjSource: CnpjSourceInput,
     legalName: __nullable__(t.String()),
     cnpj: __nullable__(t.String()),
     address: __nullable__(t.String()),

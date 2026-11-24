@@ -54,6 +54,9 @@ model Company {
     withdrawalMinimumCents Int?
     withdrawalPixKey String?
     simpayMerchantId String?
+    /// Which document identifies orders / withdrawals: "UNIT" (unit CNPJ first, company as fallback) or "COMPANY" (company CNPJ first).
+    orderCnpjSource String @default("UNIT")
+    withdrawalCnpjSource String @default("UNIT")
     createdAt   DateTime @default(now())
     updatedAt  DateTime @updatedAt
 

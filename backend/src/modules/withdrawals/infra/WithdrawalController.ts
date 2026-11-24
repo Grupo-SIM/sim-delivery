@@ -27,7 +27,7 @@ export const WithdrawalController = new Elysia({ prefix: "/finance" })
 		const scope = await CompanyScopeGuard.execute(request.headers);
 		CompanyScopeGuard.authorize(scope, "withdrawals", "request");
 		if (!scope.companyId) throw new DomainError(WithdrawalErrors.WITHDRAWAL_MERCHANT_NOT_CONFIGURED);
-		return withdrawals.request(scope.companyId, scope.userId, body.grossAmountCents, body.pixKey);
+		return withdrawals.request(scope.companyId, scope.userId, body.grossAmountCents, body.pixKey, body.unitId ?? null);
 	}, { body: RequestWithdrawalBody, response: WithdrawalReturn })
 	.get("/withdrawals", async ({ query, request, withdrawals }) => {
 		const scope = await CompanyScopeGuard.execute(request.headers);

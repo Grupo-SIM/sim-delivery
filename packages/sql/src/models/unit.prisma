@@ -6,6 +6,8 @@ model Unit {
     name         String
     slug         String
     phone        String?
+    /// Optional CPF/CNPJ (digits) of this unit. Takes priority over the company document when the company chooses so.
+    cnpj         String?
     /// Customer-support WhatsApp number for this specific unit.
     whatsApp     String?
     /// Social profiles shown on this unit's storefront.

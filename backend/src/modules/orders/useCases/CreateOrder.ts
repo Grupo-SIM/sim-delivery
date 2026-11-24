@@ -1,4 +1,5 @@
 import { CashbackErrors } from "@/modules/cashback/errors";
+import { resolveCnpj } from "@/shared/resolve-cnpj";
 import { GetCashbackBalance } from "@/modules/cashback/useCases";
 import { ValidateCoupon } from "@/modules/coupons/useCases";
 import { listCompanyDiscounts, resolveDiscountedPrice } from "@/modules/discounts/pricing";
@@ -331,6 +332,7 @@ export class CreateOrder {
                     } : undefined,
                     addressId: addressId ?? null,
 					cashbackCentsRedeemed,
+					cnpj: resolveCnpj(company.orderCnpjSource, unit.cnpj, company.cnpj),
 					companyId: company.id,
 					couponId,
 					customerId: customer.id,

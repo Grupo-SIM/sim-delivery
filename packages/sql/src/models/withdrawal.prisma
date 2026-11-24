@@ -3,6 +3,10 @@ model Withdrawal {
     id                   String   @id @default(cuid())
     companyId            String
     requestedById        String
+    /// Unit whose CNPJ was chosen for this withdrawal; null when the company CNPJ was used.
+    unitId               String?
+    /// CPF/CNPJ (digits) resolved when the withdrawal was requested.
+    cnpj                 String?
     externalWithdrawalId String?  @unique
     grossAmountCents     Int
     feeCents             Int      @default(0)

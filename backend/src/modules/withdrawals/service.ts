@@ -1,4 +1,5 @@
 import { DomainError } from "@/shared/errors";
+import { resolveCnpj } from "@/shared/resolve-cnpj";
 import { simpayIntegrationKey, type SimpayClient, type SimpayMerchantScope, type SimpayWithdrawal } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { LocalWithdrawalStatus } from "./dtos";
@@ -24,6 +25,19 @@ export class WithdrawalService {
 		return { externalMerchantId: company.id, integrationKey: simpayIntegrationKey(company.slug) };
 	}
 
+	/** Documents usable as Pix key. Order follows the company preference; duplicates collapse into the first occurrence. */
+	private async documentOptions(company: { cnpj: string | null; id: string; withdrawalCnpjSource: string }) {
+		const units = await this.prisma.unit.findMany({
+			orderBy: { name: "asc" },
+			select: { cnpj: true, id: true, name: true },
+			where: { cnpj: { not: null }, companyId: company.id },
+		});
+		const fromUnits = units.flatMap(unit => (unit.cnpj ? [{ cnpj: unit.cnpj, label: unit.name, unitId: unit.id as string | null }] : []));
+		const fromCompany = company.cnpj ? [{ cnpj: company.cnpj, label: "Empresa", unitId: null as string | null }] : [];
+		const ordered = company.withdrawalCnpjSource === "COMPANY" ? [...fromCompany, ...fromUnits] : [...fromUnits, ...fromCompany];
+		return ordered.filter((option, index) => ordered.findIndex(other => other.cnpj === option.cnpj) === index);
+	}
+
 	async summary(companyId: string) {
 		const company = await this.prisma.company.findUnique({ where: { id: companyId } });
 		if (!company?.cnpj) {
@@ -32,6 +46,7 @@ export class WithdrawalService {
 				blockReason: "MERCHANT_NOT_CONFIGURED",
 				canRequest: false,
 				configured: false,
+				documents: [],
 				feePolicy: { fixedCents: 0, percentBasisPoints: 0 },
 				minimumCents: company?.withdrawalMinimumCents ?? null,
 				pixKey: company?.withdrawalPixKey ?? null,
@@ -50,6 +65,7 @@ export class WithdrawalService {
 			return {
 				...summary,
 				configured: true,
+				documents: await this.documentOptions(company),
 				processingCount: processing._count,
 				processingGrossCents: processing._sum.grossAmountCents ?? 0,
 				minimumCents: company.withdrawalMinimumCents,
@@ -70,13 +86,16 @@ export class WithdrawalService {
 		}
 	}
 
-	async request(companyId: string, userId: string, grossAmountCents: number, pixKeyInput: string) {
+	async request(companyId: string, userId: string, grossAmountCents: number, pixKeyInput: string, unitId: string | null = null) {
 		const company = await this.company(companyId);
 		this.validateAmount(company.withdrawalMinimumCents, grossAmountCents);
 		const pixKey = pixKeyInput.trim();
 		if (!pixKey) throw new DomainError(WithdrawalErrors.WITHDRAWAL_INVALID_AMOUNT);
+		const unit = unitId ? await this.prisma.unit.findFirst({ select: { cnpj: true, id: true }, where: { companyId, id: unitId } }) : null;
+		if (unitId && !unit) throw new DomainError(WithdrawalErrors.WITHDRAWAL_INVALID_CNPJ);
+		const cnpj = unit ? resolveCnpj("UNIT", unit.cnpj, company.cnpj) : resolveCnpj("COMPANY", null, company.cnpj);
 		const local = await this.prisma.withdrawal.create({
-			data: { companyId, grossAmountCents, pixKey, requestedById: userId },
+			data: { cnpj, companyId, grossAmountCents, pixKey, requestedById: userId, unitId: unit?.id ?? null },
 		});
 		try {
 			const provider = await this.simpay.requestWithdrawal(this.merchant(company), { grossAmountCents, pixKey, requestId: local.id });
@@ -172,6 +191,7 @@ export class WithdrawalService {
 	}
 
 	private serialize(item: {
+		cnpj: string | null;
 		createdAt: Date;
 		externalWithdrawalId: string | null;
 		feeCents: number;
@@ -181,12 +201,14 @@ export class WithdrawalService {
 		pixKey: string;
 		rejectionReason: string | null;
 		status: string;
+		unitId: string | null;
 		updatedAt: Date;
 	}) {
 		const status = localStatuses.has(item.status as LocalWithdrawalStatus)
 			? item.status as LocalWithdrawalStatus
 			: "submitting";
 		return {
+			cnpj: item.cnpj,
 			createdAt: item.createdAt,
 			externalWithdrawalId: item.externalWithdrawalId,
 			feeCents: item.feeCents,
@@ -196,6 +218,7 @@ export class WithdrawalService {
 			pixKey: item.pixKey,
 			rejectionReason: item.rejectionReason,
 			status,
+			unitId: item.unitId,
 			updatedAt: item.updatedAt,
 		};
 	}

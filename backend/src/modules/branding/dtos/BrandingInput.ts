@@ -84,7 +84,11 @@ export type OrderStatusEmailTemplates = typeof OrderStatusEmailTemplates.static;
 export const ThemeMode = t.Union([t.Literal("dark"), t.Literal("light")]);
 export type ThemeMode = typeof ThemeMode.static;
 
+export const CnpjSourceInput = t.Union([t.Literal("UNIT"), t.Literal("COMPANY")]);
+
 export const UpdateBrandingBody = t.Object({
+    orderCnpjSource: t.Optional(CnpjSourceInput),
+    withdrawalCnpjSource: t.Optional(CnpjSourceInput),
     metaCapiToken: t.Optional(t.String({ maxLength: 4096 })),
     legalName: t.Optional(t.String({ maxLength: 500 })),
     cnpj: t.Optional(t.String({ maxLength: 500 })),
