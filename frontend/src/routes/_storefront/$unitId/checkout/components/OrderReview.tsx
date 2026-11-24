@@ -113,7 +113,9 @@ export function OrderReview({
 	const remainingSubtotal = subtotalAfterCoupon - appliedCashbackCents - appliedLoyaltyPoints;
 	const quoteDiscountCents = subtotal - remainingSubtotal;
 	// SimIntPay prices the buyer total from the merchant base; the checkout never sums fees itself.
-	const total = Number(feeQuote?.totalAmountCents ?? remainingSubtotal + deliveryFee);
+	// Until the quote returns, show the embedded-fee price like the subtotal row does.
+	const pendingEmbeddedFeeCents = Math.max(0, cartDisplayTotalCents(items) - subtotal);
+	const total = Number(feeQuote?.totalAmountCents ?? remainingSubtotal + pendingEmbeddedFeeCents + deliveryFee);
 
 	useEffect(() => {
 		if (items.length === 0 || !slug) return;
