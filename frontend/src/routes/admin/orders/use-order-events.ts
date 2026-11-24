@@ -4,11 +4,12 @@ import { getOrdersQueryKey } from "@/lib/api";
 import { branding } from "@/lib/branding";
 
 /** Keeps every open order board synchronized with persisted order changes. */
-export function useOrderEvents(unitId: string) {
+export function useOrderEvents(unitId: string, enabled = true) {
 	const queryClient = useQueryClient();
 	const invalidateTimerRef = useRef<number | null>(null);
 
 	useEffect(() => {
+		if (!enabled) return;
 		const params = new URLSearchParams();
 		if (unitId) params.set("unitId", unitId);
 		const query = params.size ? `?${params}` : "";
@@ -24,6 +25,8 @@ export function useOrderEvents(unitId: string) {
 			}, 100);
 		};
 		source.addEventListener("orders-changed", invalidate);
+		// Events published while the stream was down are lost: refetch whenever it (re)connects.
+		source.addEventListener("open", invalidate);
 
 		return () => {
 			source.close();
@@ -32,5 +35,5 @@ export function useOrderEvents(unitId: string) {
 				invalidateTimerRef.current = null;
 			}
 		};
-	}, [queryClient, unitId]);
+	}, [enabled, queryClient, unitId]);
 }

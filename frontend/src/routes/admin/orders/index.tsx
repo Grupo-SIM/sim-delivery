@@ -14,7 +14,6 @@ import { canAccessAllUnits } from "@/lib/staff-guard";
 import { showToast, useAuthStore } from "@/stores";
 import { DashboardDateRangePicker } from "../components/DashboardDateRangePicker";
 import { AutoPrintControls, OrdersKanban, OriginMetrics } from "./components";
-import { useAutoPrintOrders } from "./use-auto-print-orders";
 import { useOrderEvents } from "./use-order-events";
 
 const KANBAN_STATUSES = [
@@ -71,7 +70,6 @@ function OrdersPage() {
 			: {}),
 	});
 	useOrderEvents(unitId);
-	useAutoPrintOrders(unitId);
 	const availableStatuses = getAvailableStatuses(role);
 
 	async function handleRefresh() {
@@ -139,7 +137,7 @@ function OrdersPage() {
 						value={origin}
 					/>
 				</div>
-				<AutoPrintControls />
+				<AutoPrintControls unitId={unitId} />
 			</div>
 
 			{canViewAllUnits && !ordersQuery.isPending && <OriginMetrics orders={ordersQuery.data ?? []} />}

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { CustomSelect } from "@/components/ui/CustomSelect";
@@ -6,11 +7,16 @@ import { canPrintNatively, listNativePrinters } from "@/lib/native-printer";
 import { showToast, useAutoPrintStore } from "@/stores";
 
 /** Desktop-only: toggles silent receipt printing for new orders and picks the printer. */
-export function AutoPrintControls() {
+export function AutoPrintControls({ unitId }: { unitId: string }) {
 	const { t } = useTranslation();
-	const { enabled, printer, setEnabled, setPrinter } = useAutoPrintStore();
+	const { enabled, printer, setEnabled, setPrinter, setUnitId } = useAutoPrintStore();
 	const printersQuery = useQuery({ enabled: canPrintNatively(), queryFn: listNativePrinters, queryKey: ["native-printers"] });
 	const printers = printersQuery.data ?? [];
+
+	// The station prints the unit selected on the board; the background listener reads it from the store.
+	useEffect(() => {
+		if (enabled) setUnitId(unitId);
+	}, [enabled, setUnitId, unitId]);
 
 	if (!canPrintNatively()) return null;
 

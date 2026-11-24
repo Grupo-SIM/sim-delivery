@@ -1,32 +1,47 @@
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { canPrintNatively, printPdfNatively } from "@/lib/native-printer";
 import { useGetOrders } from "@/lib/api";
+import { canPrintNatively, printPdfNatively } from "@/lib/native-printer";
 import { showToast, useAutoPrintStore } from "@/stores";
 import { createOrderReceiptBlob } from "./-create-receipt-blob";
+import { useOrderEvents } from "./use-order-events";
 
-/** Order status that marks a newly received (confirmed) order. */
+/** Order status that marks a confirmed (paid) order. */
 const RECEIVED_STATUS = "recebido";
+/** Safety net for events lost between server replicas; payment webhooks normally push through SSE. */
+const SAFETY_REFETCH_MS = 30_000;
 
 /**
  * Silently prints the receipt of every order that reaches "recebido" while auto-print is on.
+ * Mounted in the admin layout so it keeps working on any screen: the payment webhook confirms the
+ * order, the order SSE stream signals it, and this hook refetches and prints it.
  * Fetches its own unfiltered list so board search/date filters never hide a new order.
  */
-export function useAutoPrintOrders(unitId: string) {
+export function useAutoPrintOrders() {
 	const { t } = useTranslation();
-	const { enabled, markPrinted, printedIds, printer } = useAutoPrintStore();
-	const ordersQuery = useGetOrders(unitId ? { unitId } : {}, { query: { enabled: enabled && canPrintNatively() } });
+	const { enabled, markPrinted, printedIds, printer, unitId } = useAutoPrintStore();
+	const active = enabled && canPrintNatively();
+	useOrderEvents(unitId, active);
+	const ordersQuery = useGetOrders(unitId ? { unitId } : {}, {
+		query: { enabled: active, refetchInterval: SAFETY_REFETCH_MS },
+	});
 	const inFlightRef = useRef(new Set<string>());
-	const wasEnabledRef = useRef(enabled);
+	// Unit whose backlog was already baselined. Starts set when auto-print was left on, so orders
+	// confirmed while the app was closed still print on launch.
+	const baselineUnitRef = useRef<string | null>(enabled ? unitId : null);
 
 	const received = ordersQuery.data?.filter(order => order.status === RECEIVED_STATUS) ?? [];
 
 	useEffect(() => {
-		if (!enabled || !printer || !ordersQuery.data) return;
+		if (!active) baselineUnitRef.current = null;
+	}, [active]);
 
-		// Turning auto-print on must not dump the existing backlog on the printer.
-		if (!wasEnabledRef.current) {
-			wasEnabledRef.current = true;
+	useEffect(() => {
+		if (!active || !printer || !ordersQuery.data) return;
+
+		// Turning auto-print on (or switching unit) must not dump the existing backlog on the printer.
+		if (baselineUnitRef.current !== unitId) {
+			baselineUnitRef.current = unitId;
 			markPrinted(received.map(order => order.id));
 			return;
 		}
@@ -46,9 +61,5 @@ export function useAutoPrintOrders(unitId: string) {
 				}
 			})();
 		}
-	}, [enabled, markPrinted, ordersQuery.data, printedIds, printer, received, t]);
-
-	useEffect(() => {
-		if (!enabled) wasEnabledRef.current = false;
-	}, [enabled]);
+	}, [active, markPrinted, ordersQuery.data, printedIds, printer, received, t, unitId]);
 }
