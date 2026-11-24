@@ -25,14 +25,14 @@
 				"attachmentsUploaded": "Anexo enviado. Salve para publicar.",
 				"cancelReasonPreview": "Produto indisponível.",
 				"cnpjSources": {
-					"company": "CNPJ da empresa",
-					"orders": "CNPJ dos pedidos",
-					"ordersHint": "Documento registrado em cada novo pedido. Se a opção escolhida não tiver CNPJ, usa a outra.",
+					"company": "Empresa",
+					"orders": "Pedidos",
+					"ordersHint": "Documento registrado em cada novo pedido. Se a opção escolhida não tiver, usa a outra.",
 					"summary": "Pedidos: {{orders}} · Saques: {{withdrawals}}",
 					"title": "CNPJ de pedidos e saques",
-					"unit": "CNPJ da unidade",
-					"withdrawals": "CNPJ dos saques",
-					"withdrawalsHint": "Sugerido como chave Pix ao solicitar saque. Se a opção escolhida não tiver CNPJ, usa a outra."
+					"unit": "Unidade",
+					"withdrawals": "Saques",
+					"withdrawalsHint": "Sugerido como chave Pix ao solicitar saque. Se a opção escolhida não tiver, usa a outra."
 				},
 				"colorCopied": "Cor copiada de {{mode}}.",
 				"colorGroups": {
