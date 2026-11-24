@@ -100,12 +100,19 @@ pub fn run() {
             setup_tray(app.handle())?;
             Ok(())
         })
-        // Closing the window only hides it: the app keeps running in the tray.
-        .on_window_event(|window, event| {
-            if let WindowEvent::CloseRequested { api, .. } = event {
+        // Closing or minimizing the window only hides it: the app keeps running in the tray.
+        .on_window_event(|window, event| match event {
+            WindowEvent::CloseRequested { api, .. } => {
                 api.prevent_close();
                 let _ = window.hide();
             }
+            // Tauri has no minimize event; minimizing triggers a resize.
+            WindowEvent::Resized(_) => {
+                if window.is_minimized().unwrap_or(false) {
+                    let _ = window.hide();
+                }
+            }
+            _ => {}
         })
         .build(tauri::generate_context!())
         .expect("error while building tauri application");
