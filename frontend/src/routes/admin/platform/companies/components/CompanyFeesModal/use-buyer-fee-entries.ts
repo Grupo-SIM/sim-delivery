@@ -1,9 +1,9 @@
 import { useQueries } from "@tanstack/react-query";
 import { getPlatformFeesByFeeIdCompaniesQueryOptions, useGetPlatformFees } from "@/lib/api";
-import { type ExtraFeeDraft, percentToBasisPoints, reaisToNullableCents } from "./types";
+import { type BuyerFeeDraft, percentToBasisPoints, reaisToNullableCents } from "./types";
 
 /** Platform fees joined with this company's association, honoring unsaved drafts. */
-export function useExtraFeeEntries(companyId: string, drafts: Record<string, ExtraFeeDraft>) {
+export function useBuyerFeeEntries(companyId: string, drafts: Record<string, BuyerFeeDraft>) {
 	const query = useGetPlatformFees();
 	const fees = query.data ?? [];
 	const associations = useQueries({ queries: fees.map(fee => getPlatformFeesByFeeIdCompaniesQueryOptions(fee.id)) });

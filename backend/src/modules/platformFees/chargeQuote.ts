@@ -16,7 +16,7 @@ export interface OrderChargeInput {
 	deliveryAmountCents: number;
 	/** Items after coupon, cashback and loyalty discounts; what the merchant keeps before SimIntPay fees. */
 	itemsAmountCents: number;
-	/** Line prices before order-level discounts, so SimIntPay can price per-product additives. */
+	/** Line prices before order-level discounts, so SimIntPay can price per-product buyer fees. */
 	items: { key: string; quantity: number; unitPrice: number }[];
 	paymentMethod?: SimpayPaymentQuoteInput["paymentMethod"];
 }
@@ -28,8 +28,8 @@ export class ChargeQuoteUnavailableError extends Error {
 }
 
 /**
- * Buyer total for an order as SimIntPay will charge it. Delivery never prices additive fees itself: the quote is the
- * only source of `total` and `feeTotalCents`. A zero base has nothing to charge online and is not quoted.
+ * Buyer total for an order as SimIntPay will charge it. Delivery never prices buyer fees itself: the quote is the
+ * only source of `total` and `buyerFeeTotalCents`. A zero base has nothing to charge online and is not quoted.
  */
 export async function quoteOrderCharge(input: OrderChargeInput): Promise<SimpayPaymentQuote> {
 	const baseAmountCents = input.itemsAmountCents + input.deliveryAmountCents;

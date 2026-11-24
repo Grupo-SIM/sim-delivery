@@ -1,9 +1,9 @@
 import { describe, expect, it } from "bun:test";
 import { PaymentProviderError } from "@/shared/infra/paymentProviderError";
-import type { SimpayAdditiveFees, SimpayAdditiveTotals, SimpayCompanyFees } from "@/shared/infra/simpay";
+import type { SimpayBuyerFees, SimpayBuyerFeeTotals, SimpayCompanyFees } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import { AdditiveFeeSync } from "./additiveFeeSync";
-import { sameTotals } from "./additiveTotals";
+import { BuyerFeeSync } from "./buyerFeeSync";
+import { sameTotals } from "./buyerFeeTotals";
 
 const fees = [
 	{
@@ -38,7 +38,7 @@ const fees = [
 	},
 ];
 
-const totals = (order: [number, number], product: [number, number]): SimpayAdditiveTotals => ({
+const totals = (order: [number, number], product: [number, number]): SimpayBuyerFeeTotals => ({
 	order: { fixedValue: order[1], percentageValue: order[0] },
 	product: { fixedValue: product[1], percentageValue: product[0] },
 });
@@ -51,7 +51,7 @@ function setup(current: Partial<SimpayCompanyFees> & { notFound?: boolean } = {}
 	const overrides: Array<{ active: boolean; feeId: string }> = [];
 	const state = {
 		fees: options.empty ? [] : fees.map(fee => ({ ...fee, companyOverrides: fee.companyOverrides.map(override => ({ ...override })) })),
-		integration: { additiveFeeOverridden: false, additiveFeeRevision: options.revision ?? null as string | null },
+		integration: { buyerFeeOverridden: false, buyerFeeRevision: options.revision ?? null as string | null },
 		updates: [] as unknown[],
 		locks: 0,
 	};
@@ -60,9 +60,9 @@ function setup(current: Partial<SimpayCompanyFees> & { notFound?: boolean } = {}
 		$executeRaw: async () => { state.locks++; return 0; },
 		companySimpayIntegration: {
 			findUnique: async () => ({ ...state.integration }),
-			updateMany: async ({ where, data }: { where: { additiveFeeRevision: string | null; additiveFeeOverridden?: boolean }; data: Partial<typeof state.integration> }) => {
+			updateMany: async ({ where, data }: { where: { buyerFeeRevision: string | null; buyerFeeOverridden?: boolean }; data: Partial<typeof state.integration> }) => {
 				state.updates.push({ where, data });
-				if (where.additiveFeeRevision !== state.integration.additiveFeeRevision || (where.additiveFeeOverridden !== undefined && where.additiveFeeOverridden !== state.integration.additiveFeeOverridden)) return { count: 0 };
+				if (where.buyerFeeRevision !== state.integration.buyerFeeRevision || (where.buyerFeeOverridden !== undefined && where.buyerFeeOverridden !== state.integration.buyerFeeOverridden)) return { count: 0 };
 				Object.assign(state.integration, data);
 				return { count: 1 };
 			},
@@ -84,25 +84,25 @@ function setup(current: Partial<SimpayCompanyFees> & { notFound?: boolean } = {}
 				state.fees.map(fee => ({ ...fee, companyOverrides: fee.companyOverrides.filter(o => o.companyId === include.companyOverrides.where.companyId) })),
 		},
 	} as unknown as PrismaInstance;
-	let providerFees = { additiveFees: additive(zero), costs: [], disabledLanes: ["CREDIT_CARD/12"], lanes: [], mode: "BOTH", version: "7", ...current } as SimpayCompanyFees;
+	let providerFees = { additiveFees: buyerFees(zero), costs: [], disabledLanes: ["CREDIT_CARD/12"], lanes: [], mode: "BOTH", version: "7", ...current } as SimpayCompanyFees;
 	const provider = {
 		companyFees: async () => {
 			if (current.notFound) throw new PaymentProviderError("Simpay", "nf", 404);
 			return providerFees;
 		},
-		saveCompanyFees: async (_: string, input: { additiveFees?: SimpayAdditiveTotals; additiveRevision?: string }) => {
+		saveCompanyFees: async (_: string, input: { additiveFees?: SimpayBuyerFeeTotals; additiveRevision?: string }) => {
 			if (options.failSave || input.additiveRevision !== providerFees.additiveFees!.revision) throw new PaymentProviderError("Simpay", "revision conflict", 409);
 			saved.push(input);
-			providerFees = { ...providerFees, additiveFees: additive(input.additiveFees!, String(Number(providerFees.additiveFees!.revision) + 1)) };
+			providerFees = { ...providerFees, additiveFees: buyerFees(input.additiveFees!, String(Number(providerFees.additiveFees!.revision) + 1)) };
 			return providerFees;
 		},
 	};
-	return { overrides, saved, state, sync: new AdditiveFeeSync(prisma, provider) };
+	return { overrides, saved, state, sync: new BuyerFeeSync(prisma, provider) };
 }
 
-const additive = (effective: SimpayAdditiveTotals, revision = "0"): SimpayAdditiveFees => ({ effective, revision });
+const buyerFees = (effective: SimpayBuyerFeeTotals, revision = "0"): SimpayBuyerFees => ({ effective, revision });
 
-describe("additive fee totals and push", () => {
+describe("buyer fee totals and push", () => {
 	it("sums active fees per scope with overrides applied and drops disabled ones", async () => {
 		const { sync } = setup();
 		expect(await sync.resolve("c1")).toEqual(c1Totals);
@@ -116,7 +116,7 @@ describe("additive fee totals and push", () => {
 	});
 
 	it("does not push when SimIntPay already holds the same Delivery total", async () => {
-		const { saved, sync } = setup({ additiveFees: additive(c1Totals) });
+		const { saved, sync } = setup({ additiveFees: buyerFees(c1Totals) });
 		expect((await sync.push("c1")).result).toBe("skipped-unchanged");
 		expect(saved).toHaveLength(0);
 	});
@@ -126,7 +126,7 @@ describe("additive fee totals and push", () => {
 		expect((await sync.push("c1", { dryRun: true })).result).toBe("pushed");
 		expect(saved).toHaveLength(0);
 		expect(state.updates).toHaveLength(0);
-		expect(state.integration.additiveFeeRevision).toBeNull();
+		expect(state.integration.buyerFeeRevision).toBeNull();
 	});
 
 	it("skips companies SimIntPay does not know", async () => {
@@ -136,13 +136,13 @@ describe("additive fee totals and push", () => {
 	});
 
 	it("pushes zeros when nothing resolves", async () => {
-		const { saved, sync } = setup({ additiveFees: additive(c1Totals, "1") }, { empty: true, revision: "1" });
+		const { saved, sync } = setup({ additiveFees: buyerFees(c1Totals, "1") }, { empty: true, revision: "1" });
 		await sync.push("c1");
 		expect(saved[0]).toMatchObject({ additiveFees: zero });
 	});
 
 	it("never pushes over a SimIntPay override and undoes associations idempotently", async () => {
-		const { overrides, saved, sync } = setup({ additiveFees: additive(totals([100, 0], [0, 25]), "2") }, { revision: "1" });
+		const { overrides, saved, sync } = setup({ additiveFees: buyerFees(totals([100, 0], [0, 25]), "2") }, { revision: "1" });
 		expect((await sync.push("c1")).result).toBe("skipped-overridden");
 		expect(saved).toHaveLength(0);
 		// a_inherited and b_overridden applied to c1; c_disabled already off.
@@ -154,7 +154,7 @@ describe("additive fee totals and push", () => {
 	});
 
 	it("dry run leaves associations untouched while overridden", async () => {
-		const { overrides, sync } = setup({ additiveFees: additive(zero, "2") }, { revision: "1" });
+		const { overrides, sync } = setup({ additiveFees: buyerFees(zero, "2") }, { revision: "1" });
 		expect((await sync.push("c1", { dryRun: true })).result).toBe("skipped-overridden");
 		expect(overrides).toHaveLength(0);
 	});
@@ -168,15 +168,15 @@ describe("additive fee totals and push", () => {
 	});
 
 	it("detects an external revision even when the effective total is unchanged", async () => {
-		const { sync, state, overrides, saved } = setup({ additiveFees: additive(c1Totals, "2") }, { revision: "1" });
+		const { sync, state, overrides, saved } = setup({ additiveFees: buyerFees(c1Totals, "2") }, { revision: "1" });
 		expect((await sync.push("c1")).result).toBe("skipped-overridden");
-		expect(state.integration).toEqual({ additiveFeeOverridden: true, additiveFeeRevision: "1" });
+		expect(state.integration).toEqual({ buyerFeeOverridden: true, buyerFeeRevision: "1" });
 		expect(overrides).toHaveLength(2);
 		expect(saved).toHaveLength(0);
 	});
 
 	it("protects unknown provider revisions without suppressing associations", async () => {
-		const { sync, state, overrides, saved } = setup({ additiveFees: additive(c1Totals, "3") });
+		const { sync, state, overrides, saved } = setup({ additiveFees: buyerFees(c1Totals, "3") });
 		expect((await sync.push("c1")).result).toBe("skipped-overridden");
 		expect(await sync.resolve("c1")).toEqual(c1Totals);
 		expect(overrides).toHaveLength(0);
@@ -188,14 +188,14 @@ describe("additive fee totals and push", () => {
 		const { sync, state } = setup();
 		await sync.push("c1");
 		expect(state.locks).toBe(1);
-		expect(state.integration.additiveFeeRevision).toBe("1");
+		expect(state.integration.buyerFeeRevision).toBe("1");
 	});
 
 	it("does not acknowledge provider CAS conflicts", async () => {
 		const { sync, state, saved } = setup({}, { failSave: true });
 		await expect(sync.push("c1")).rejects.toThrow("revision conflict");
 		expect(state.updates).toHaveLength(0);
-		expect(state.integration.additiveFeeRevision).toBeNull();
+		expect(state.integration.buyerFeeRevision).toBeNull();
 		expect(saved).toHaveLength(0);
 	});
 

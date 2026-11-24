@@ -8,11 +8,11 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useGetPlatformFeesByFeeIdCompanies, type GetPlatformFees200 } from "@/lib/api";
 import { formatFeeAmount } from "@/lib/platform-fees";
-import { ExtraFeeEditor } from "./ExtraFeeEditor";
-import { percentToBasisPoints, reaisToNullableCents, type ExtraFeeDraft } from "./types";
+import { BuyerFeeEditor } from "./BuyerFeeEditor";
+import { percentToBasisPoints, reaisToNullableCents, type BuyerFeeDraft } from "./types";
 type Fee = GetPlatformFees200[number];
 
-export function ExtraFeeRow({ companyId, draft, fee, onDraftChange }: { companyId: string; draft?: ExtraFeeDraft; fee: Fee; onDraftChange: (draft: ExtraFeeDraft) => void }) {
+export function BuyerFeeRow({ companyId, draft, fee, onDraftChange }: { companyId: string; draft?: BuyerFeeDraft; fee: Fee; onDraftChange: (draft: BuyerFeeDraft) => void }) {
 	const { t } = useTranslation();
 	const [editing, setEditing] = useState(false);
 	const query = useGetPlatformFeesByFeeIdCompanies(fee.id);
@@ -28,7 +28,7 @@ export function ExtraFeeRow({ companyId, draft, fee, onDraftChange }: { companyI
 			<Tooltip content="Editar associação"><Button aria-label={`Editar associação de ${fee.name}`} onClick={() => setEditing(true)} size="icon" type="button" variant="outline"><LuPencil /></Button></Tooltip>
 		</div>
 		<Modal isOpen={editing} onClose={() => setEditing(false)} title={`Taxa da empresa · ${fee.name}`} urlKey="company-extra-fee" urlState={`${companyId}:${fee.id}`}>
-			{editing && <ExtraFeeEditor association={association} draft={draft} fee={fee} onApply={onDraftChange} onClose={() => setEditing(false)} />}
+			{editing && <BuyerFeeEditor association={association} draft={draft} fee={fee} onApply={onDraftChange} onClose={() => setEditing(false)} />}
 		</Modal>
 	</>;
 }

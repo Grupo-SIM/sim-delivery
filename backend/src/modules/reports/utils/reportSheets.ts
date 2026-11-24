@@ -44,8 +44,8 @@ export interface ExportableOrder {
 	deliveryMethod: string;
 	discountCents: number;
 	displayNumber: number;
-	feeTotalCents?: number;
-	payment?: { coproductionCents?: number | null; netAmountCents?: number | null; simintpayFeeCents?: number | null } | null;
+	buyerFeeTotalCents?: number;
+	payment?: { coproductionCents?: number | null; netAmountCents?: number | null; sellerFeeCents?: number | null } | null;
 	items: { optionSnapshots: { optionName: string }[]; productName: string; quantity: number }[];
 	status: string;
 	subtotal: number;
@@ -293,7 +293,7 @@ function buildOrdersSheet(orders: ExportableOrder[]): SheetData {
 				money(order.subtotal),
 				money(order.deliveryFee),
 				money(order.discountCents),
-				money(Math.max(0, order.total - (order.feeTotalCents ?? 0))),
+				money(Math.max(0, order.total - (order.buyerFeeTotalCents ?? 0))),
 				money(order.payment?.coproductionCents ?? 0),
 				money(merchantAmount(order)),
 			],

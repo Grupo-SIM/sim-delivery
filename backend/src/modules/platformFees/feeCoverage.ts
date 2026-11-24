@@ -42,17 +42,17 @@ export function evaluateCoverage(input: {
 	/** Lanes (`METHOD/installments`) the platform does not accept; they are not evaluated. */
 	disabledLanes?: string[];
 	mode: PlatformFeeMode;
-	simintpay: (FeeComponents & LaneId)[];
+	sellerFees: (FeeComponents & LaneId)[];
 	surcharges: FeeComponents;
 }): CoverageLane[] {
 	const disabled = new Set(input.disabledLanes);
 	return input.costs
 		.filter(cost => !disabled.has(laneKey(cost)))
 		.map(cost => {
-		const sim = input.simintpay.find(lane => lane.method === cost.method && lane.installments === cost.installments);
-		const simPart = input.mode === "ADDITIVE_ONLY" ? { fixedCents: 0, ratePpm: 0 } : (sim ?? { fixedCents: 0, ratePpm: 0 });
-		const extraPart = input.mode === "SIMINTPAY_ONLY" ? { fixedCents: 0, ratePpm: 0 } : input.surcharges;
-		const covered = { fixedCents: simPart.fixedCents + extraPart.fixedCents, ratePpm: simPart.ratePpm + extraPart.ratePpm };
+		const seller = input.sellerFees.find(lane => lane.method === cost.method && lane.installments === cost.installments);
+		const sellerPart = input.mode === "ADDITIVE_ONLY" ? { fixedCents: 0, ratePpm: 0 } : (seller ?? { fixedCents: 0, ratePpm: 0 });
+		const buyerPart = input.mode === "SIMINTPAY_ONLY" ? { fixedCents: 0, ratePpm: 0 } : input.surcharges;
+		const covered = { fixedCents: sellerPart.fixedCents + buyerPart.fixedCents, ratePpm: sellerPart.ratePpm + buyerPart.ratePpm };
 		return {
 			cost: { fixedCents: cost.fixedCents, ratePpm: cost.ratePpm },
 			covered,

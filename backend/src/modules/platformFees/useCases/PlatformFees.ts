@@ -8,7 +8,7 @@ import type {
 	UpdatePlatformFeeBody,
 	UpsertCompanyFeeOverrideBody,
 } from "../dtos";
-import { AdditiveFeeSync } from "../additiveFeeSync";
+import { BuyerFeeSync } from "../buyerFeeSync";
 import { PlatformFeeErrors } from "../errors";
 
 const INVALID_FEE = PlatformFeeErrors.INVALID_PLATFORM_FEE;
@@ -63,7 +63,7 @@ const feeInclude = { _count: { select: { companyOverrides: true } } } as const;
 export class PlatformFees {
 	constructor(
 		private readonly prisma: PrismaInstance,
-		private readonly sync: Pick<AdditiveFeeSync, "push" | "resyncAffected"> = new AdditiveFeeSync(prisma),
+		private readonly sync: Pick<BuyerFeeSync, "push" | "resyncAffected"> = new BuyerFeeSync(prisma),
 	) {}
 
 	async list(): Promise<PlatformFeeListReturn> {

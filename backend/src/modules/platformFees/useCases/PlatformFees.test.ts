@@ -92,7 +92,7 @@ describe("fee mode gate on surcharges", () => {
 		}
 	});
 
-	it("caches the mode and treats a company unknown to SimIntPay as additive-only", async () => {
+	it("caches the mode and treats a company unknown to SimIntPay as buyer-fees-only", async () => {
 		let calls = 0;
 		setFeeModeSource({ companyFees: async () => (calls++, { costs: [], disabledLanes: [], lanes: [], mode: "SIMINTPAY_ONLY", version: "1" }) });
 		await listEffectiveFees(prisma, "cached");

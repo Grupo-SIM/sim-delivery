@@ -21,7 +21,7 @@ export const OrderReceiptReturn = t.Object({
 	deliveryFee: t.Integer(),
 	deliveryMethod: t.String(),
 	discountCents: t.Integer(),
-	feeTotalCents: t.Integer(),
+	buyerFeeTotalCents: t.Integer(),
 	fees: t.Array(
 		t.Object({
 			amountCents: t.Integer(),

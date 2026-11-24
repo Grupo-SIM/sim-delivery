@@ -2,7 +2,7 @@ import type { PrismaInstance } from "@/shared/infra/sql";
 import { listCompanySurcharges } from "./effectiveFees";
 
 /**
- * While a SimIntPay admin overrides a company's additive total, Delivery's fee associations no longer mean anything:
+ * While a SimIntPay admin overrides a company's buyer total, Delivery's fee associations no longer mean anything:
  * make every fee that currently applies to the company not apply (company override with active=false). Idempotent:
  * writes only for fees still applying. Failures propagate so provenance transactions roll back.
  */

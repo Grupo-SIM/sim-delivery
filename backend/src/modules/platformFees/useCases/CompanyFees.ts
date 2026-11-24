@@ -2,9 +2,9 @@ import { simpay, type SimpayClient, type SimpayCompanyFees } from "@/shared/infr
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CompanyFeeDefaultsReturn, CompanyFeesReturn, UpdateCompanyFeesBody } from "../dtos";
 import { invalidateCompanyFeeMode, rememberCompanyFeeMode } from "../companyFeeMode";
-import { resolveAdditiveTotals } from "../additiveFeeSync";
-import { acknowledgeAdditiveFees, releaseAdditiveOverride, additiveFeeOwnership, withAdditiveFeeLock } from "../additiveFeeProvenance";
-import { sumAdditiveTotals } from "../additiveTotals";
+import { resolveBuyerFeeTotals } from "../buyerFeeSync";
+import { acknowledgeBuyerFees, releaseBuyerFeeOverride, buyerFeeOwnership, withBuyerFeeLock } from "../buyerFeeProvenance";
+import { sumBuyerFeeTotals } from "../buyerFeeTotals";
 import { undoAssociationsWhileOverridden } from "../overrideAssociations";
 import { listCompanySurcharges } from "../effectiveFees";
 import { evaluateCoverage, hasShortfall, totalsComponents } from "../feeCoverage";
@@ -33,7 +33,7 @@ export class CompanyFees {
 						costs: provider.costs,
 						disabledLanes: provider.disabledLanes,
 						mode: provider.mode,
-						simintpay: provider.lanes,
+						sellerFees: provider.lanes,
 						surcharges: totalsComponents(provider.additiveFees.effective),
 					});
 					return hasShortfall(coverage) ? id : null;
@@ -46,7 +46,7 @@ export class CompanyFees {
 	}
 
 	async get(companyId: string): Promise<CompanyFeesReturn> {
-		return withAdditiveFeeLock(this.prisma, companyId, async tx => {
+		return withBuyerFeeLock(this.prisma, companyId, async tx => {
 			const provider = await this.provider.companyFees(companyId);
 			rememberCompanyFeeMode(companyId, provider);
 			return new CompanyFees(tx, this.provider, this.defaultsProvider).build(companyId, provider);
@@ -55,31 +55,31 @@ export class CompanyFees {
 
 	/** SimIntPay owns the mode and its fees; Delivery only forwards the edit; SimIntPay validates it against acquirer cost. */
 	async update(companyId: string, input: UpdateCompanyFeesBody): Promise<CompanyFeesReturn> {
-		return withAdditiveFeeLock(this.prisma, companyId, tx => new CompanyFees(tx, this.provider, this.defaultsProvider).updateLocked(companyId, input));
+		return withBuyerFeeLock(this.prisma, companyId, tx => new CompanyFees(tx, this.provider, this.defaultsProvider).updateLocked(companyId, input));
 	}
 
 	private async updateLocked(companyId: string, input: UpdateCompanyFeesBody): Promise<CompanyFeesReturn> {
 		const current = await this.provider.companyFees(companyId);
-		let ownership = await additiveFeeOwnership(this.prisma, companyId, current.additiveFees);
-		if (input.releaseAdditiveOverride && ownership.overridden && current.additiveFees) {
-			await releaseAdditiveOverride(this.prisma, companyId, current.additiveFees.revision);
-			ownership = await additiveFeeOwnership(this.prisma, companyId, current.additiveFees);
+		let ownership = await buyerFeeOwnership(this.prisma, companyId, current.additiveFees);
+		if (input.releaseBuyerFeeOverride && ownership.overridden && current.additiveFees) {
+			await releaseBuyerFeeOverride(this.prisma, companyId, current.additiveFees.revision);
+			ownership = await buyerFeeOwnership(this.prisma, companyId, current.additiveFees);
 		}
 		const disabledLanes = input.disabledLanes ?? current.disabledLanes;
 		let provider: SimpayCompanyFees = { ...current, disabledLanes, mode: input.mode ?? current.mode };
-		if (input.simintpay) provider = { ...provider, ...input.simintpay, lanes: this.merge(provider, input.simintpay.lanes) };
-		if (input.releaseAdditiveOverride || input.simintpay || input.disabledLanes || provider.mode !== current.mode) {
+		if (input.seller) provider = { ...provider, ...input.seller, lanes: this.merge(provider, input.seller.lanes) };
+		if (input.releaseBuyerFeeOverride || input.seller || input.disabledLanes || provider.mode !== current.mode) {
 			invalidateCompanyFeeMode(companyId);
 			provider = await this.provider.saveCompanyFees(companyId, {
 				// Delivery's total never touches a SimIntPay override; while one is active nothing is pushed over it.
-				additiveFees: ownership.overridden ? undefined : await resolveAdditiveTotals(this.prisma, companyId),
+				additiveFees: ownership.overridden ? undefined : await resolveBuyerFeeTotals(this.prisma, companyId),
 				additiveRevision: ownership.overridden ? undefined : current.additiveFees!.revision,
 				disabledLanes,
-				lanes: input.simintpay?.lanes ?? [],
+				lanes: input.seller?.lanes ?? [],
 				mode: provider.mode,
-				version: input.simintpay?.version ?? current.version,
+				version: input.seller?.version ?? current.version,
 			});
-			if (!ownership.overridden) await acknowledgeAdditiveFees(this.prisma, companyId, ownership.revision, provider.additiveFees!.revision);
+			if (!ownership.overridden) await acknowledgeBuyerFees(this.prisma, companyId, ownership.revision, provider.additiveFees!.revision);
 			rememberCompanyFeeMode(companyId, provider);
 		}
 		return this.build(companyId, provider);
@@ -93,28 +93,28 @@ export class CompanyFees {
 	}
 
 	private async build(companyId: string, provider: SimpayCompanyFees): Promise<CompanyFeesReturn> {
-		if (!provider.additiveFees) throw new Error("SimIntPay additive fee contract unavailable; refusing to infer zero rates");
+		if (!provider.additiveFees) throw new Error("SimIntPay buyer fee contract unavailable; refusing to infer zero rates");
 		const mode = provider.mode;
-		const { overridden, protected: protectedState } = await additiveFeeOwnership(this.prisma, companyId, provider.additiveFees);
+		const { overridden, protected: protectedState } = await buyerFeeOwnership(this.prisma, companyId, provider.additiveFees);
 		if (overridden && !protectedState) await undoAssociationsWhileOverridden(this.prisma, companyId, true);
 		// The seller is charged SimIntPay's effective total; the named list is only meaningful without an override.
 		const surcharges = overridden ? [] : await listCompanySurcharges(this.prisma, companyId);
-		const effective = provider.additiveFees?.effective ?? sumAdditiveTotals(surcharges);
+		const effective = provider.additiveFees?.effective ?? sumBuyerFeeTotals(surcharges);
 		const coverage = evaluateCoverage({
 			costs: provider.costs,
 			disabledLanes: provider.disabledLanes,
 			mode,
-			simintpay: provider.lanes,
+			sellerFees: provider.lanes,
 			surcharges: totalsComponents(effective),
 		});
 		return {
-			additiveOverride: overridden ? provider.additiveFees!.effective : null,
+			buyerFeeOverride: overridden ? provider.additiveFees!.effective : null,
 			coverage,
 			disabledLanes: provider.disabledLanes ?? [],
 			effectiveTotals: effective,
-			extras: mode === "SIMINTPAY_ONLY" || overridden ? [] : surcharges,
+			buyerFees: mode === "SIMINTPAY_ONLY" || overridden ? [] : surcharges,
 			mode,
-			simintpay: { lanes: provider.lanes, version: provider.version },
+			seller: { lanes: provider.lanes, version: provider.version },
 			underCovered: hasShortfall(coverage),
 		};
 	}

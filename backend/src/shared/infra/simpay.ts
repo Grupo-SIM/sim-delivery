@@ -122,28 +122,28 @@ export interface SimpayFeeLane {
 	ratePpm: number;
 }
 
-/** Sum of the active additive fees of one scope: basis points and cents. */
-export interface SimpayAdditiveScopeTotal {
+/** Sum of the active buyer fees of one scope: basis points and cents. */
+export interface SimpayBuyerFeeScopeTotal {
 	fixedValue: number;
 	percentageValue: number;
 }
 
-/** Additive surcharge totals per application scope; zeros mean none. SimIntPay stores sums only. */
-export interface SimpayAdditiveTotals {
-	order: SimpayAdditiveScopeTotal;
-	product: SimpayAdditiveScopeTotal;
+/** Buyer fee surcharge totals per application scope; zeros mean none. SimIntPay stores sums only. */
+export interface SimpayBuyerFeeTotals {
+	order: SimpayBuyerFeeScopeTotal;
+	product: SimpayBuyerFeeScopeTotal;
 }
 
-export interface SimpayAdditiveFees {
+export interface SimpayBuyerFees {
 	/** Actual generic rates charged by SimIntPay; provenance belongs to Delivery. */
-	effective: SimpayAdditiveTotals;
-	/** Changes on every additive write, including same-value administrative writes. */
+	effective: SimpayBuyerFeeTotals;
+	/** Changes on every buyer write, including same-value administrative writes. */
 	revision: string;
 }
 
 export interface SimpayCompanyFees {
-	/** Additive totals SimIntPay stores for this company's platform. */
-	additiveFees?: SimpayAdditiveFees;
+	/** Buyer fee totals SimIntPay stores for this company's platform. */
+	additiveFees?: SimpayBuyerFees;
 	/** Which fee sets SimIntPay applies to this company's payments. */
 	mode: "ADDITIVE_ONLY" | "BOTH" | "SIMINTPAY_ONLY";
 	/** Global acquirer cost per lane: what SimIntPay pays regardless of seller. */
@@ -242,7 +242,7 @@ export interface SimpayChargeAmounts {
 export interface SimpayPaymentStatus extends SimpayChargeAmounts {
 	coproductionCents: number;
 	paymentId: string;
-	simintpayFeeCents: number;
+	sellerFeeCents: number;
 	status: string;
 }
 
@@ -316,7 +316,7 @@ export class SimpayClient {
 	async feeDefaults(): Promise<SimpayFeeDefaults> {
 		return this.json("/platform-registrations/fees/defaults", { provisioning: true });
 	}
-	async saveCompanyFees(companyId: string, input: { additiveFees?: SimpayAdditiveTotals; additiveRevision?: string; disabledLanes?: string[]; lanes: SimpayFeeLane[]; mode?: SimpayCompanyFees["mode"]; version: string }): Promise<SimpayCompanyFees> {
+	async saveCompanyFees(companyId: string, input: { additiveFees?: SimpayBuyerFeeTotals; additiveRevision?: string; disabledLanes?: string[]; lanes: SimpayFeeLane[]; mode?: SimpayCompanyFees["mode"]; version: string }): Promise<SimpayCompanyFees> {
 		return this.json(`/platform-registrations/${encodeURIComponent(companyId)}/fees`, { body: input, method: "PUT", provisioning: true });
 	}
 	private async access(scope: SimpayMerchantScope) {
@@ -363,7 +363,7 @@ export class SimpayClient {
 	async getPaymentStatus(paymentId: string, scope?: SimpayMerchantScope): Promise<SimpayPaymentStatus> {
 		if (!scope) throw new PaymentProviderError("Simpay", "Pagamento histórico exige associação empresarial explícita.", 422);
 		const result = await this.scoped<CanonicalPayment>(scope, `/payments/${encodeURIComponent(paymentId)}`);
-		return { coproductionCents: result.coproductionCents ?? 0, simintpayFeeCents: result.simintpayFeeCents ?? 0, paymentId: result.paymentId ?? result.transactionId, status: result.status, ...amounts(result) };
+		return { coproductionCents: result.coproductionCents ?? 0, sellerFeeCents: result.simintpayFeeCents ?? 0, paymentId: result.paymentId ?? result.transactionId, status: result.status, ...amounts(result) };
 	}
 	async getPixStatusDirect(paymentId: string, scope?: SimpayMerchantScope) { return this.getPaymentStatus(paymentId, scope); }
 	async getWithdrawalSummary(scope: SimpayMerchantScope): Promise<SimpayWithdrawalSummary> {

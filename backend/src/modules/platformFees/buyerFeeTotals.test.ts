@@ -1,11 +1,11 @@
 import { describe, expect, it } from "bun:test";
 import { calculatePlatformFees } from "./calculateFees";
-import { checkoutOnlyProductTotals, productDisplayModeOf, sumAdditiveTotals, syntheticFees } from "./additiveTotals";
+import { checkoutOnlyProductTotals, productDisplayModeOf, sumBuyerFeeTotals, syntheticFees } from "./buyerFeeTotals";
 import { totalsComponents } from "./feeCoverage";
 
-describe("additive totals", () => {
+describe("buyer fee totals", () => {
 	it("sums per scope", () => {
-		const totals = sumAdditiveTotals([
+		const totals = sumBuyerFeeTotals([
 			{ applicationScope: "order", fixedValue: 50, percentageValue: 100 },
 			{ applicationScope: "order", fixedValue: 0, percentageValue: 50 },
 			{ applicationScope: "product", fixedValue: 10, percentageValue: 200 },

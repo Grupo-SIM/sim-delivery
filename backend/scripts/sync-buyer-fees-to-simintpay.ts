@@ -1,18 +1,18 @@
 /**
- * One-off: sums each company's additive fees per scope (active, associated, overrides applied) and stores the total
+ * One-off: sums each company's buyer fees per scope (active, associated, overrides applied) and stores the total
  * in SimIntPay as the Delivery total. Skips companies under a SimIntPay override; only pushes when the total differs, so it is safe to re-run.
  *
  * Dry run by default; pass --execute to write to SimIntPay. Optionally limit to companies with --company=<id>.
  *
- *   bun ./scripts/sync-additive-fees-to-simintpay.ts [--execute] [--company=<id>]
+ *   bun ./scripts/sync-buyer-fees-to-simintpay.ts [--execute] [--company=<id>]
  */
-import { AdditiveFeeSync } from "../src/modules/platformFees/additiveFeeSync";
+import { BuyerFeeSync } from "../src/modules/platformFees/buyerFeeSync";
 import { prisma } from "../src/shared/infra/sql";
 
 const execute = process.argv.includes("--execute");
 const only = process.argv.find(arg => arg.startsWith("--company="))?.slice("--company=".length);
 
-const outcomes = await new AdditiveFeeSync(prisma).pushMany(only ? [only] : undefined, { dryRun: !execute });
+const outcomes = await new BuyerFeeSync(prisma).pushMany(only ? [only] : undefined, { dryRun: !execute });
 
 console.table(outcomes.map(outcome => ({
 	companyId: outcome.companyId,

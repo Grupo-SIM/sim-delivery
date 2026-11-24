@@ -1,6 +1,6 @@
 /** Import a reviewed legacy export, or deliberately return a company to catalog control. Dry-run by default. */
 import { readFile } from "node:fs/promises";
-import { withAdditiveFeeLock } from "../src/modules/platformFees/additiveFeeProvenance";
+import { withBuyerFeeLock } from "../src/modules/platformFees/buyerFeeProvenance";
 import { simpay } from "../src/shared/infra/simpay";
 import { prisma } from "../src/shared/infra/sql";
 
@@ -24,14 +24,14 @@ for (const row of rows) {
 }
 try {
 	for (const row of rows) {
-		await withAdditiveFeeLock(prisma, row.companyId, async tx => {
+		await withBuyerFeeLock(prisma, row.companyId, async tx => {
 			const integration = await tx.companySimpayIntegration.findUnique({ where: { companyId: row.companyId } });
 			if (!integration || (!release && (!row.platformId || integration.platformId !== row.platformId))) throw new Error(`Company/platform mismatch: ${row.companyId}`);
 			const current = await simpay.companyFees(row.companyId);
 			if (current.additiveFees?.revision !== row.revision) throw new Error(`Provider revision changed: ${row.companyId}; export/review again`);
-			if (!release && integration.additiveFeeRevision !== null) throw new Error(`Already initialized: ${row.companyId}`);
+			if (!release && integration.buyerFeeRevision !== null) throw new Error(`Already initialized: ${row.companyId}`);
 			console.info(JSON.stringify({ ...row, action: release ? "release-to-catalog" : "import", apply }));
-			if (apply) await tx.companySimpayIntegration.update({ where: { companyId: row.companyId }, data: { additiveFeeRevision: row.revision, additiveFeeOverridden: row.overridden } });
+			if (apply) await tx.companySimpayIntegration.update({ where: { companyId: row.companyId }, data: { buyerFeeRevision: row.revision, buyerFeeOverridden: row.overridden } });
 		});
 	}
 } finally {

@@ -160,29 +160,30 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
   a taxa; remover a exceção restaura herança. Exclusão global é lógica e não altera pedidos antigos.
 - Taxa `product` incide por unidade sobre preço comercial efetivo, incluindo promoção e opções.
   Taxa `order` incide uma vez sobre subtotal comercial e aceita apenas exibição `checkout_only`.
+- **Taxas do comprador e do vendedor nunca se misturam.** Taxas do comprador (`PlatformFee`, antes "aditivas") somam ao preço pago e ficam em `Order.buyerFeeTotalCents` e nos snapshots de taxas do pedido; taxas do vendedor (antes "taxas SimIntPay") são descontadas do lojista e ficam em `Payment.sellerFeeCents`. Salvar uma como a outra distorce exibição, alocação e relatórios.
 - Uma taxa combina percentual e valor fixo (ex.: 4% + R$ 1,00); ao menos um deve ser maior que zero.
   Exceção empresarial sobrescreve cada componente separadamente (vazio herda o global).
   Valor fixo usa centavos; percentual usa basis points e arredonda por unidade, somando o fixo depois. Taxas acumulam sem
   incidência entre si e preservam preço e margem cadastrados pelo lojista.
-- Há dois conjuntos de taxas por empresa: as **aditivas** deste app (`PlatformFee`, somadas ao preço do comprador)
-  e as **da SimIntPay** (descontadas do valor do lojista pela SimIntPay, por modalidade e parcela). Adicionais do
+- Há dois conjuntos de taxas por empresa: as **taxas do comprador** deste app (`PlatformFee`, somadas ao preço do comprador)
+  e as **taxas do vendedor** (da SimIntPay, descontadas do valor do lojista pela SimIntPay, por modalidade e parcela). Adicionais do
   `owner` na SimIntPay são outro tipo e são ignorados aqui. Custos das adquirentes são globais (a mais cara entre
   as ativas define o piso por modalidade/parcela), nunca por empresa ou lojista. O percentual mínimo inclui
   a taxa de aquisição **mais os juros do parcelamento** da adquirente, mesmo quando esses componentes são
   cadastrados separadamente na SimIntPay. A SimIntPay entrega esse percentual efetivo em `costs[].ratePpm`;
   o Delivery compara esse valor integral, sem somar juros novamente. Cobertura igual ao piso é suficiente.
 - O modo de taxas da empresa pertence à SimIntPay (`Platform.feeMode`); este app não guarda cópia e apenas
-  o consome (cache de 60 s) e o edita pela SimIntPay. Padrão `SIMINTPAY_ONLY`: `ADDITIVE_ONLY` (só taxas aditivas; a
-  SimIntPay não desconta nada), `SIMINTPAY_ONLY` (nenhuma taxa aditiva)
+  o consome (cache de 60 s) e o edita pela SimIntPay. Padrão `SIMINTPAY_ONLY`: `ADDITIVE_ONLY` (só taxas do comprador; a
+  SimIntPay não desconta nada), `SIMINTPAY_ONLY` (nenhuma taxa do comprador)
   ou `BOTH`. Empresa ainda desconhecida pela SimIntPay (404) segue como `ADDITIVE_ONLY`; qualquer outra falha
   impede precificar, em vez de adivinhar o modo. Somente o dono da SimIntPay altera modo e taxas.
 - **A SimIntPay precifica toda cobrança; o Delivery não calcula taxas para cobrar.** O pedido envia a base do
   lojista (`amountCents` = itens após cupom/cashback/fidelidade + frete, com `itemsAmountCents`,
   `deliveryAmountCents` e as linhas `items`) a `POST .../payments/quote` e grava a resposta: `Order.total` =
-  `totalAmountCents`, `Order.feeTotalCents` = `additiveFeeCents` e `Order.additiveFeeRevision` = revisão cotada.
-  Regra por modo: `ADDITIVE_ONLY` — o lojista recebe a base intacta e o comprador paga base + aditivas (+ juros
-  repassados); `BOTH` — o comprador paga base + aditivas e o lojista ainda paga adquirente + taxa SimIntPay (ou
-  taxa alvo); `SIMINTPAY_ONLY` — sem aditivas, lojista paga adquirente + taxa SimIntPay. O Delivery só cobra Pix e
+  `totalAmountCents`, `Order.buyerFeeTotalCents` = `additiveFeeCents` e `Order.buyerFeeRevision` = revisão cotada.
+  Regra por modo: `ADDITIVE_ONLY` — o lojista recebe a base intacta e o comprador paga base + taxas do comprador (+ juros
+  repassados); `BOTH` — o comprador paga base + taxas do comprador e o lojista ainda paga adquirente + taxa do vendedor (ou
+  taxa alvo do vendedor); `SIMINTPAY_ONLY` — sem taxas do comprador, lojista paga adquirente + taxa do vendedor. O Delivery só cobra Pix e
   crédito 1x, então não há juros repassados. O checkout mostra o total cotado (`POST /orders/fees/quote`, que
   repassa frete e descontos exibidos); o pedido recota com descontos validados no servidor. Sem cotação (SimIntPay
   indisponível ou empresa sem integração pronta) o pedido é recusado com `PRICING_UNAVAILABLE`, nunca precificado
@@ -191,26 +192,26 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
 - A cobrança (`POST .../payments`) reenvia a mesma base e o total cotado em `expectedTotalCents`, sem `allocation`.
   Se o preço mudou, a SimIntPay responde 409 `QUOTE_CHANGED`: o Delivery encerra a tentativa, recota, grava o novo
   total no pedido e devolve `PRICE_CHANGED` para o comprador conferir o novo valor e confirmar o pagamento.
-- Percentual e fixo são comparados separadamente ao custo global; salvar taxas SimIntPay, exceções ou modo que
+- Percentual e fixo são comparados separadamente ao custo global; salvar taxas do vendedor, exceções ou modo que
   deixem a cobertura abaixo do custo é rejeitado. Essa cobertura é uma estimativa de administração calculada no
-  Delivery (`feeCoverage.ts`) enquanto a SimIntPay não expõe a sua; nunca precifica cobranças. A comparação usa as **taxas efetivas da empresa** (SimIntPay +
-  aditivas, conforme o modo) e vale para os três modos; só o modal de taxas da empresa a julga. A tela global de
+  Delivery (`feeCoverage.ts`) enquanto a SimIntPay não expõe a sua; nunca precifica cobranças. A comparação usa as **taxas efetivas da empresa** (vendedor +
+  taxas do comprador, conforme o modo) e vale para os três modos; só o modal de taxas da empresa a julga. A tela global de
   taxas cria templates genéricos, sem ativação nem validação de cobertura (ativar/associar é por empresa).
 - Modalidades que a plataforma não aceita (ex.: SIM Delivery só aceita crédito 1x e Pix) ficam em
   `Platform.disabledPaymentLanes` na SimIntPay e são desconsideradas na cobertura; a SimIntPay rejeita cobranças
   nessas modalidades.
 - SimIntPay guarda apenas quatro taxas genéricas em `PlatformAdditiveFees` (pedido/produto, percentual em basis
-  points e fixo em centavos), não catálogo ou relação de override. Cada escrita aditiva incrementa revisão, mesmo
+  points e fixo em centavos), não catálogo ou relação de override. Cada escrita de taxas do comprador incrementa revisão, mesmo
   com valores idênticos. Delivery guarda revisão reconhecida e override na integração empresarial. Escritas usam
-  comparação atômica de revisão; editar modalidades não muda revisão aditiva. Revisão externa controla preço e
+  comparação atômica de revisão; editar modalidades não muda revisão das taxas do comprador. Revisão externa controla preço e
   desativa associações aplicáveis (`active=false`), sem alterar catálogo ou outras empresas. Estado desconhecido
   protege valores existentes sem desativar associações até handoff explícito. Retomar controle exige revisão
-  esperada via `backend/scripts/import-additive-fee-provenance.ts --release-company=...`, depois reassociar taxas.
-  `backend/scripts/sync-additive-fees-to-simintpay.ts` nunca sobrescreve taxas protegidas/externas.
+  esperada via `backend/scripts/import-buyer-fee-provenance.ts --release-company=...`, depois reassociar taxas.
+  `backend/scripts/sync-buyer-fees-to-simintpay.ts` nunca sobrescreve taxas protegidas/externas.
 - Handoff operacional (não executado automaticamente): aplicar primeiro a migração genérica SimIntPay e a
   migração de proveniência Delivery. Exportar somente `companyId`, `platformId`, `revision` como string e
   `overridden` da tabela `LegacyPlatformAdditiveTotalsBackup` para um array JSON, sem credenciais. Conferir em
-  dry-run `bun backend/scripts/import-additive-fee-provenance.ts --file=/caminho/export.json`; o script valida
+  dry-run `bun backend/scripts/import-buyer-fee-provenance.ts --file=/caminho/export.json`; o script valida
   plataforma vinculada, empresa, revisão atual e estado ainda não inicializado. `--apply` permite apenas banco
   local, exige revisão ainda igual à exportada e não escreve na SimIntPay. Bancos remotos exigem autorização e
   execução operacional separada; não executar migrações nem importações remotas durante desenvolvimento. Após
@@ -219,10 +220,10 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
   reassociar taxas. Associações já desativadas não são restauradas implicitamente. Se uma escrita no provedor
   confirmar mas a resposta ou commit local falhar, a revisão seguinte é tratada conservadoramente como externa;
   revisar valores e liberar controle explicitamente. Não há transação distribuída nem retry cego de escrita.
-- Relatórios do lojista usam o líquido devolvido pela SimIntPay (`Payment.netAmountCents`, já sem a taxa SimIntPay
-  e antes da coprodução) menos a coprodução. Pagamentos históricos sem esse valor seguem `total − taxas aditivas −
-  coprodução − taxa SimIntPay` (`Payment.simintpayFeeCents`, congelada na confirmação). Para a SimIntPay, o custo
-  da adquirente é custo e as taxas aditivas e SimIntPay são receita.
+- Relatórios do lojista usam o líquido devolvido pela SimIntPay (`Payment.netAmountCents`, já sem a taxa do vendedor
+  e antes da coprodução) menos a coprodução. Pagamentos históricos sem esse valor seguem `total − taxas do comprador −
+  coprodução − taxa do vendedor` (`Payment.sellerFeeCents`, congelada na confirmação). Para a SimIntPay, o custo
+  da adquirente é custo e as taxas do comprador e do vendedor são receita.
 - Base do lojista: `max(0, subtotal − cupom − cashback − fidelidade) + frete`; o total é o cotado pela SimIntPay
   sobre essa base. Créditos nunca cobrem frete ou taxas. Cashback e fidelidade futuros ignoram taxas.
 - `product_explicit` mostra base e taxa no produto; `embedded` mostra preço visual acrescido sem
@@ -232,7 +233,7 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
   taxas de receita, margem e recompensas empresariais. Reembolso atribui parcela comercial de modo
   proporcional ao total pago.
 - Pagamentos online enviam à SIM INT PAY a base do lojista em centavos (itens após descontos/créditos +
-  frete) e o total cotado; a SimIntPay calcula aditivas e taxas e devolve `totalAmountCents` e `netAmountCents`,
+  frete) e o total cotado; a SimIntPay calcula as taxas do comprador e do vendedor e devolve `totalAmountCents` e `netAmountCents`,
   gravados no `Payment`. SimIntPay pode repartir itens líquidos entre empresa e coprodutores configurados
   exclusivamente naquela plataforma; frete fica integralmente com a empresa.
 - Relatórios financeiros (receita, margem, dashboard) descontam da parcela da empresa a parcela de

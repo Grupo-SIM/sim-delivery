@@ -24,8 +24,8 @@ export function rememberCompanyFeeMode(companyId: string, fees: Pick<SimpayCompa
 }
 
 /**
- * SimIntPay's mode and additive totals for a company, briefly cached. A company SimIntPay does not know yet (404)
- * has no online payments to price: null, which keeps the historical additive-only behavior. Any other failure is
+ * SimIntPay's mode and buyer totals for a company, briefly cached. A company SimIntPay does not know yet (404)
+ * has no online payments to price: null, which keeps the historical buyer-fees-only behavior. Any other failure is
  * thrown: guessing would misprice orders.
  */
 export async function getCompanyFeeSnapshot(companyId: string): Promise<Pick<SimpayCompanyFees, "additiveFees" | "mode"> | null> {

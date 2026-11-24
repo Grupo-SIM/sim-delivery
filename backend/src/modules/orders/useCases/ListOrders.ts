@@ -138,7 +138,7 @@ export class ListOrders {
 			deliveryMethod: o.deliveryMethod,
 			displayNumber: o.displayNumber,
 			discountCents: o.discountCents,
-			feeTotalCents: o.feeTotalCents,
+			buyerFeeTotalCents: o.buyerFeeTotalCents,
 			fees: o.feeSnapshots ?? [],
 			estimatedStatusCompletionAt: o.estimatedStatusCompletionAt,
 			id: o.id,

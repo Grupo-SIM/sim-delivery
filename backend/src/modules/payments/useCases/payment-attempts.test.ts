@@ -6,7 +6,7 @@ import { attemptCharge, repriceOrderAfterQuoteChange, startPaymentAttempt, recov
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { SimpayClient } from "@/shared/infra/simpay";
 import type { PayingCustomerContext } from "./resolvePayingCustomer";
-const context = { companyId: "company", order: { id: "order", total: 10537, feeTotalCents: 537 }, merchant: { externalMerchantId: "company", integrationKey: "sim-delivery_shop" } } as PayingCustomerContext;
+const context = { companyId: "company", order: { id: "order", total: 10537, buyerFeeTotalCents: 537 }, merchant: { externalMerchantId: "company", integrationKey: "sim-delivery_shop" } } as PayingCustomerContext;
 function fixture() {
  let saved: any = null;
  let payment: any = null;
@@ -85,6 +85,6 @@ test("QUOTE_CHANGED re-quotes the same base, stores the new total and asks the b
  try {
   await expect(repriceOrderAfterQuoteChange(f.db, context, "attempt", "PIX")).rejects.toMatchObject({ message: "PRICE_CHANGED", description: "O valor do pedido mudou para R$ 106,00. Confirme para pagar." });
   expect(f.saved().state).toBe("failed");
-  expect((f.db as any).order.update).toHaveBeenCalledWith({ where: { id: "order" }, data: { additiveFeeRevision: "rev_2", feeTotalCents: 600, total: 10600 } });
+  expect((f.db as any).order.update).toHaveBeenCalledWith({ where: { id: "order" }, data: { buyerFeeRevision: "rev_2", buyerFeeTotalCents: 600, total: 10600 } });
  } finally { setChargeQuoteSource(null); }
 });

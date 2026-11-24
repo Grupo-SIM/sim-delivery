@@ -41,7 +41,7 @@ export class GetPaymentStatus {
 			remote.status,
 			undefined,
 			remote.coproductionCents,
-			remote.simintpayFeeCents,
+			remote.sellerFeeCents,
 			remote,
 		);
 		return { status: result.status };

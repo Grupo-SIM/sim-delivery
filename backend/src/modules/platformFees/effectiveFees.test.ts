@@ -13,7 +13,7 @@ function setup(fees: Partial<SimpayCompanyFees>) {
 	const written: string[] = [];
 	const rows = [{ active: true, applicationScope: "order", companyOverrides: [] as Array<{ active: boolean }>, createdAt: new Date(), deletedAt: null, displayMode: "checkout_only", fixedValue: 0, id: "f1", name: "Taxa", percentageValue: 500 }];
 	const prisma = {
-		companySimpayIntegration: { findUnique: async () => ({ additiveFeeRevision: "1", additiveFeeOverridden: false }) },
+		companySimpayIntegration: { findUnique: async () => ({ buyerFeeRevision: "1", buyerFeeOverridden: false }) },
 		companyFeeOverride: {
 			upsert: async ({ where }: { where: { feeId_companyId: { feeId: string } } }) => {
 				written.push(where.feeId_companyId.feeId);

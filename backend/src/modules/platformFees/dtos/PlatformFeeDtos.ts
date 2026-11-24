@@ -89,7 +89,7 @@ export type EffectiveFeeListReturn = typeof EffectiveFeeListReturn.static;
 
 export const PlatformFeeModeDto = t.Union([t.Literal("SIMINTPAY_ONLY"), t.Literal("ADDITIVE_ONLY"), t.Literal("BOTH")]);
 
-const SimintpayLane = t.Object({
+const SellerFeeLane = t.Object({
 	channel: t.Literal("ONLINE"),
 	fixedCents: t.Integer({ maximum: 1_000_000_000, minimum: 0 }),
 	installments: t.Integer({ maximum: 12, minimum: 1 }),
@@ -98,37 +98,37 @@ const SimintpayLane = t.Object({
 });
 
 /** Lanes SimIntPay returns; BOLETO is read-only here and cannot be edited through UpdateCompanyFeesBody. */
-const SimintpayLaneReturn = t.Object({
-	...SimintpayLane.properties,
-	method: t.Union([t.Literal("BOLETO"), ...SimintpayLane.properties.method.anyOf]),
+const SellerFeeLaneReturn = t.Object({
+	...SellerFeeLane.properties,
+	method: t.Union([t.Literal("BOLETO"), ...SellerFeeLane.properties.method.anyOf]),
 });
 
 /** Global SimIntPay fee and highest acquirer cost per lane, before any company override. Super admin only. */
 export const CompanyFeeDefaultsReturn = t.Object({
-	costs: t.Array(SimintpayLaneReturn),
-	lanes: t.Array(SimintpayLaneReturn),
+	costs: t.Array(SellerFeeLaneReturn),
+	lanes: t.Array(SellerFeeLaneReturn),
 });
 export type CompanyFeeDefaultsReturn = typeof CompanyFeeDefaultsReturn.static;
 
 const FeeComponentsDto = t.Object({ fixedCents: t.Integer(), ratePpm: t.Integer() });
 
-const AdditiveScopeTotalReturn = t.Object({ fixedValue: t.Integer(), percentageValue: t.Integer() });
-export const AdditiveTotalsReturn = t.Object({ order: AdditiveScopeTotalReturn, product: AdditiveScopeTotalReturn });
-export type AdditiveTotalsReturn = typeof AdditiveTotalsReturn.static;
+const BuyerFeeScopeTotalReturn = t.Object({ fixedValue: t.Integer(), percentageValue: t.Integer() });
+export const BuyerFeeTotalsReturn = t.Object({ order: BuyerFeeScopeTotalReturn, product: BuyerFeeScopeTotalReturn });
+export type BuyerFeeTotalsReturn = typeof BuyerFeeTotalsReturn.static;
 
 export const UpdateCompanyFeesBody = t.Object({
 	/** Lanes (`METHOD/installments`) to ignore for this platform, e.g. `CREDIT_CARD/2`. */
 	disabledLanes: t.Optional(t.Array(t.String({ pattern: "^(PIX|BOLETO|DEBIT_CARD|CREDIT_CARD)/\\d{1,2}$" }), { maxItems: 14 })),
 	mode: t.Optional(PlatformFeeModeDto),
-	/** Hands the additive total back to Delivery's associations and pushes their total, replacing SimIntPay's. */
-	releaseAdditiveOverride: t.Optional(t.Boolean()),
-	simintpay: t.Optional(t.Object({ lanes: t.Array(SimintpayLane, { maxItems: 14 }), version: t.String() })),
+	/** Hands the buyer total back to Delivery's associations and pushes their total, replacing SimIntPay's. */
+	releaseBuyerFeeOverride: t.Optional(t.Boolean()),
+	seller: t.Optional(t.Object({ lanes: t.Array(SellerFeeLane, { maxItems: 14 }), version: t.String() })),
 });
 export type UpdateCompanyFeesBody = typeof UpdateCompanyFeesBody.static;
 
 export const CompanyFeesReturn = t.Object({
 	/** Set while a SimIntPay admin overrides the total: Delivery associations are undone and this total rules. */
-	additiveOverride: t.Nullable(AdditiveTotalsReturn),
+	buyerFeeOverride: t.Nullable(BuyerFeeTotalsReturn),
 	/** Per lane: acquirer cost, what the company pays to cover it and any shortfall. */
 	coverage: t.Array(
 		t.Object({
@@ -142,13 +142,13 @@ export const CompanyFeesReturn = t.Object({
 	),
 	/** Lanes (`METHOD/installments`) the platform does not accept. */
 	disabledLanes: t.Array(t.String()),
-	/** SimIntPay effective additive total (override ?? Delivery sum) that buyers are charged. */
-	effectiveTotals: AdditiveTotalsReturn,
+	/** SimIntPay effective buyer total (override ?? Delivery sum) that buyers are charged. */
+	effectiveTotals: BuyerFeeTotalsReturn,
 	/** Surcharges added to the buyer price in this app, after company overrides. Empty when mode is SIMINTPAY_ONLY. */
-	extras: EffectiveFeeListReturn,
+	buyerFees: EffectiveFeeListReturn,
 	mode: PlatformFeeModeDto,
 	/** SimIntPay's own fees, deducted from the seller. Not counted when mode is ADDITIVE_ONLY. */
-	simintpay: t.Object({ lanes: t.Array(SimintpayLaneReturn), version: t.String() }),
+	seller: t.Object({ lanes: t.Array(SellerFeeLaneReturn), version: t.String() }),
 	underCovered: t.Boolean(),
 });
 export type CompanyFeesReturn = typeof CompanyFeesReturn.static;

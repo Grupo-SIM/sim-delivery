@@ -41,7 +41,7 @@ interface OrderRow {
 	cashbackPercent: number;
 	customerId: string;
 	displayNumber: number;
-	feeTotalCents?: number;
+	buyerFeeTotalCents?: number;
 	id: string;
 	loyaltyPointsRate: number;
 	status?: string;
@@ -400,7 +400,7 @@ describe("resolvePayingCustomer", () => {
 		const context = await resolvePayingCustomer(prisma, "user_1", body);
 
 		expect(context.document).toBe("52998224725");
-		expect(context.order).toEqual({ cnpj: "10802530000107", companyName: "Zero Grau", deliveryFee: 0, feeTotalCents: 0, id: "order_1", total: 5000, unitName: "Boa Viagem" });
+		expect(context.order).toEqual({ cnpj: "10802530000107", companyName: "Zero Grau", deliveryFee: 0, buyerFeeTotalCents: 0, id: "order_1", total: 5000, unitName: "Boa Viagem" });
 		expect(context.user.email).toBe("maria@example.com");
 	});
 
@@ -752,7 +752,7 @@ describe("ConfirmPayment", () => {
 
 	it("does not award cashback or loyalty over platform fees", async () => {
 		const { cashbackLedger, loyaltyLedger, prisma } = makeWorld({
-			orders: [{ ...baseOrder, feeTotalCents: 1000, total: 6000 }],
+			orders: [{ ...baseOrder, buyerFeeTotalCents: 1000, total: 6000 }],
 			payments: [{ amount: 6000, id: "pay_1", method: "pix", orderId: "order_1", pixContent: "c", pixQrcode: "q", simpayPaymentId: "simpay_1", status: "pending", token: "token_1" }],
 		});
 
@@ -1533,7 +1533,7 @@ describe("DeleteSavedCard", () => {
 describe("SimIntPay-priced charges", () => {
 	it("sends the base, items and freight with the quoted total, never an allocation, for PIX and card", async () => {
 		for (const method of ["pix", "card"]) {
-			const { payments, prisma } = makeWorld({ orders: [{ ...baseOrder, deliveryFee: 1000, feeTotalCents: 537, total: 11537 }] });
+			const { payments, prisma } = makeWorld({ orders: [{ ...baseOrder, deliveryFee: 1000, buyerFeeTotalCents: 537, total: 11537 }] });
 			const settled = { netAmountCents: 11000, totalAmountCents: 11537 };
 			const { calls, simpay } = makeSimpay({
 				createCardPayment: async (payload: unknown) => { calls.card.push(payload); return { id: "simpay_card_1", paymentId: "simpay_card_1", transactionId: "transaction_card_1", status: "PENDING", ...settled }; },
@@ -1560,7 +1560,7 @@ describe("SimIntPay-priced charges", () => {
 			const { orders, payments, prisma } = makeWorld();
 			const { simpay } = makeSimpay({ createPixPayment: async () => { throw error; } });
 			await expect(new CreatePixPayment(prisma, simpay).execute("user_1", { orderId: "order_1", slug: "zero-grau" })).rejects.toMatchObject({ message: "PRICE_CHANGED" });
-			expect(orders[0]).toMatchObject({ additiveFeeRevision: "rev_2", feeTotalCents: 100, total: 5100 });
+			expect(orders[0]).toMatchObject({ buyerFeeRevision: "rev_2", buyerFeeTotalCents: 100, total: 5100 });
 			expect(payments).toHaveLength(0);
 			expect(await prisma.paymentAttempt.findFirst({ where: { orderId: "order_1", state: { in: ["preparing", "submitting", "pending"] } } })).toBeNull();
 		} finally { setChargeQuoteSource(null); }

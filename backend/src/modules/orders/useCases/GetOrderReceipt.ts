@@ -66,7 +66,7 @@ export class GetOrderReceipt {
 			deliveryFee: order.deliveryFee,
 			deliveryMethod: order.deliveryMethod,
 			discountCents: order.discountCents,
-			feeTotalCents: order.feeTotalCents,
+			buyerFeeTotalCents: order.buyerFeeTotalCents,
 			fees: order.feeSnapshots.map(fee => ({
 				amountCents: fee.amountCents,
 				displayMode: fee.displayMode,

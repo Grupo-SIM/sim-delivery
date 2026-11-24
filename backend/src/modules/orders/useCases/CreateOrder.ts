@@ -6,9 +6,9 @@ import { listCompanyDiscounts, resolveDiscountedPrice } from "@/modules/discount
 import { InventoryLifecycle } from "@/modules/inventory/lifecycle";
 import { LoyaltyErrors } from "@/modules/loyalty/errors";
 import { GetLoyaltyBalance } from "@/modules/loyalty/useCases";
-import { additiveFeeBreakdown } from "@/modules/platformFees/additiveBreakdown";
+import { buyerFeeBreakdown } from "@/modules/platformFees/buyerFeeBreakdown";
 import { ChargeQuoteUnavailableError, quoteOrderCharge } from "@/modules/platformFees/chargeQuote";
-import { isSyntheticFee } from "@/modules/platformFees/additiveTotals";
+import { isSyntheticFee } from "@/modules/platformFees/buyerFeeTotals";
 import { DomainError } from "@/shared/errors";
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { CreateOrderBody, OrderReturn } from "../dtos";
@@ -316,7 +316,7 @@ export class CreateOrder {
 			throw error;
 		});
 		const total = quote.totalAmountCents;
-		const calculatedFees = await additiveFeeBreakdown(this.prisma, company.id, feeItems, quote.additiveFeeCents);
+		const calculatedFees = await buyerFeeBreakdown(this.prisma, company.id, feeItems, quote.additiveFeeCents);
 
 		try {
 			const order = await this.prisma.$transaction(async tx => {
@@ -341,8 +341,8 @@ export class CreateOrder {
 					discountCents,
 					idempotencyKey,
 					loyaltyPointsRedeemed,
-					additiveFeeRevision: quote.additiveRevision,
-					feeTotalCents: quote.additiveFeeCents,
+					buyerFeeRevision: quote.additiveRevision,
+					buyerFeeTotalCents: quote.additiveFeeCents,
 					subtotal,
 					total,
 					unitId,

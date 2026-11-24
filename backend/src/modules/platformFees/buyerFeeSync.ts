@@ -1,41 +1,41 @@
 import { PaymentProviderError } from "@/shared/infra/paymentProviderError";
-import { simpay, type SimpayAdditiveTotals, type SimpayClient, type SimpayCompanyFees } from "@/shared/infra/simpay";
+import { simpay, type SimpayBuyerFeeTotals, type SimpayClient, type SimpayCompanyFees } from "@/shared/infra/simpay";
 import type { PrismaInstance } from "@/shared/infra/sql";
-import { acknowledgeAdditiveFees, additiveFeeOwnership, withAdditiveFeeLock } from "./additiveFeeProvenance";
-import { emptyTotals, sameTotals, sumAdditiveTotals } from "./additiveTotals";
+import { acknowledgeBuyerFees, buyerFeeOwnership, withBuyerFeeLock } from "./buyerFeeProvenance";
+import { emptyTotals, sameTotals, sumBuyerFeeTotals } from "./buyerFeeTotals";
 import { invalidateCompanyFeeMode, rememberCompanyFeeMode } from "./companyFeeMode";
 import { listCompanySurcharges } from "./effectiveFees";
 import { undoAssociationsWhileOverridden } from "./overrideAssociations";
 
-export type AdditiveFeeProvider = Pick<SimpayClient, "companyFees" | "saveCompanyFees">;
+export type BuyerFeeProvider = Pick<SimpayClient, "companyFees" | "saveCompanyFees">;
 
 /** Delivery's total: the sum per scope of the company's active resolved fees (company overrides applied). */
-export async function resolveAdditiveTotals(prisma: PrismaInstance, companyId: string): Promise<SimpayAdditiveTotals> {
-	return sumAdditiveTotals(await listCompanySurcharges(prisma, companyId));
+export async function resolveBuyerFeeTotals(prisma: PrismaInstance, companyId: string): Promise<SimpayBuyerFeeTotals> {
+	return sumBuyerFeeTotals(await listCompanySurcharges(prisma, companyId));
 }
 
 export type PushResult = "pushed" | "skipped-overridden" | "skipped-unchanged" | "skipped-unregistered";
 
-/** Resolves a company's additive totals and stores them in SimIntPay as Delivery's total; Delivery owns the catalog. */
-export class AdditiveFeeSync {
+/** Resolves a company's buyer totals and stores them in SimIntPay as Delivery's total; Delivery owns the catalog. */
+export class BuyerFeeSync {
 	constructor(
 		private readonly prisma: PrismaInstance,
-		private readonly provider: AdditiveFeeProvider = simpay,
+		private readonly provider: BuyerFeeProvider = simpay,
 	) {}
 
 	resolve(companyId: string) {
-		return resolveAdditiveTotals(this.prisma, companyId);
+		return resolveBuyerFeeTotals(this.prisma, companyId);
 	}
 
 	/**
 	 * Pushes only when SimIntPay's Delivery total differs. Companies SimIntPay does not know are skipped. While a
 	 * SimIntPay admin override is active nothing is pushed: associations are undone instead and SimIntPay's total rules.
 	 */
-	async push(companyId: string, options: { dryRun?: boolean } = {}): Promise<{ result: PushResult; totals: SimpayAdditiveTotals }> {
-		return withAdditiveFeeLock(this.prisma, companyId, tx => new AdditiveFeeSync(tx, this.provider).pushLocked(companyId, options));
+	async push(companyId: string, options: { dryRun?: boolean } = {}): Promise<{ result: PushResult; totals: SimpayBuyerFeeTotals }> {
+		return withBuyerFeeLock(this.prisma, companyId, tx => new BuyerFeeSync(tx, this.provider).pushLocked(companyId, options));
 	}
 
-	private async pushLocked(companyId: string, options: { dryRun?: boolean }): Promise<{ result: PushResult; totals: SimpayAdditiveTotals }> {
+	private async pushLocked(companyId: string, options: { dryRun?: boolean }): Promise<{ result: PushResult; totals: SimpayBuyerFeeTotals }> {
 		let current: SimpayCompanyFees;
 		try {
 			current = await this.provider.companyFees(companyId);
@@ -43,14 +43,14 @@ export class AdditiveFeeSync {
 			if (error instanceof PaymentProviderError && error.status === 404) return { result: "skipped-unregistered", totals: emptyTotals() };
 			throw error;
 		}
-		const ownership = await additiveFeeOwnership(this.prisma, companyId, current.additiveFees, !options.dryRun);
+		const ownership = await buyerFeeOwnership(this.prisma, companyId, current.additiveFees, !options.dryRun);
 		if (ownership.overridden) {
 			if (!options.dryRun && !ownership.protected) await undoAssociationsWhileOverridden(this.prisma, companyId, true);
 			return { result: "skipped-overridden", totals: current.additiveFees?.effective ?? emptyTotals() };
 		}
 		const totals = await this.resolve(companyId);
 		if (sameTotals(current.additiveFees?.effective, totals)) {
-			if (!options.dryRun) await acknowledgeAdditiveFees(this.prisma, companyId, ownership.revision, current.additiveFees!.revision);
+			if (!options.dryRun) await acknowledgeBuyerFees(this.prisma, companyId, ownership.revision, current.additiveFees!.revision);
 			return { result: "skipped-unchanged", totals };
 		}
 		if (!options.dryRun) {
@@ -63,7 +63,7 @@ export class AdditiveFeeSync {
 				mode: current.mode,
 				version: current.version,
 			});
-			await acknowledgeAdditiveFees(this.prisma, companyId, ownership.revision, saved.additiveFees!.revision);
+			await acknowledgeBuyerFees(this.prisma, companyId, ownership.revision, saved.additiveFees!.revision);
 			invalidateCompanyFeeMode(companyId);
 			if (saved?.mode) rememberCompanyFeeMode(companyId, saved);
 		}
@@ -73,7 +73,7 @@ export class AdditiveFeeSync {
 /** Resyncs the given companies (all when omitted) with limited concurrency; returns per-company failures. */
 	async pushMany(companyIds?: string[], options: { concurrency?: number; dryRun?: boolean } = {}) {
 		const ids = companyIds ?? (await this.prisma.company.findMany({ select: { id: true } })).map(company => company.id);
-		const outcomes: Array<{ companyId: string; error?: unknown; result?: PushResult; totals?: SimpayAdditiveTotals }> = [];
+		const outcomes: Array<{ companyId: string; error?: unknown; result?: PushResult; totals?: SimpayBuyerFeeTotals }> = [];
 		const queue = [...ids];
 		const worker = async () => {
 			for (let id = queue.shift(); id !== undefined; id = queue.shift()) {
@@ -104,7 +104,7 @@ export class AdditiveFeeSync {
 	async resyncAffected(feeId: string, options: { all?: boolean } = {}) {
 		const outcomes = await this.pushMany(await this.companiesAffectedBy(feeId, options));
 		for (const outcome of outcomes) {
-			if (outcome.error) console.error(`[additive-fee-sync] company ${outcome.companyId} not synced`, outcome.error);
+			if (outcome.error) console.error(`[buyer-fee-sync] company ${outcome.companyId} not synced`, outcome.error);
 		}
 		return outcomes;
 	}

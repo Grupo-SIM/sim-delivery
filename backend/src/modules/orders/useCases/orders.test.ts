@@ -199,7 +199,7 @@ const baseBody = {
 	unitSlug: "centro",
 };
 
-/** SimIntPay stand-in: prices the base with a fixed additive amount and records each quote request. */
+/** SimIntPay stand-in: prices the base with a fixed buyer fee amount and records each quote request. */
 function stubQuote(additiveFeeCents = 0, additiveRevision: string | null = "rev_1") {
 	const requests: SimpayPaymentQuoteInput[] = [];
 	setChargeQuoteSource({
@@ -347,12 +347,12 @@ describe("CreateOrder", () => {
 		expect(orders).toHaveLength(2);
 	});
 
-	it("stores SimIntPay's quoted total and additives instead of pricing local fees", async () => {
+	it("stores SimIntPay's quoted total and buyer fees instead of pricing local fees", async () => {
 		const platformFees = [{ active: true, applicationScope: "order", companyOverrides: [], displayMode: "checkout_only", fixedValue: 75, id: "fee_order", name: "Operação", percentageValue: 0 }];
 		const requests = stubQuote(0, null);
 		const simintpayOnly = makeOrderPrisma({ platformFees });
 		await new CreateOrder(simintpayOnly.prisma).execute("user_1", baseBody);
-		expect(simintpayOnly.orders[0]).toMatchObject({ additiveFeeRevision: null, feeTotalCents: 0, total: 2500 });
+		expect(simintpayOnly.orders[0]).toMatchObject({ buyerFeeRevision: null, buyerFeeTotalCents: 0, total: 2500 });
 		expect(simintpayOnly.orderFeeSnapshots).toHaveLength(0);
 		expect(requests[0]).toMatchObject({ amountCents: 2500, deliveryAmountCents: 500, itemsAmountCents: 2000, paymentMethod: "PIX" });
 		expect(requests[0]!.items).toEqual([{ key: "0", quantity: 2, unitPriceCents: 1000 }]);
@@ -360,7 +360,7 @@ describe("CreateOrder", () => {
 		stubQuote(90, "rev_2");
 		const overridden = makeOrderPrisma({ platformFees });
 		await new CreateOrder(overridden.prisma).execute("user_1", baseBody);
-		expect(overridden.orders[0]).toMatchObject({ additiveFeeRevision: "rev_2", feeTotalCents: 90, total: 2590 });
+		expect(overridden.orders[0]).toMatchObject({ buyerFeeRevision: "rev_2", buyerFeeTotalCents: 90, total: 2590 });
 		// The local split no longer matches the quote: one checkout fee carries the quoted cents.
 		expect(overridden.orderFeeSnapshots).toEqual([expect.objectContaining({ amountCents: 90, applicationScope: "order", displayMode: "checkout_only", platformFeeId: null })]);
 	});
@@ -411,7 +411,7 @@ describe("CreateOrder", () => {
 
 		const result = await new CreateOrder(prisma).execute("user_1", baseBody);
 
-		expect(orders[0]).toMatchObject({ feeTotalCents: 175, subtotal: 2000, total: 2675 });
+		expect(orders[0]).toMatchObject({ buyerFeeTotalCents: 175, subtotal: 2000, total: 2675 });
 		expect(orderFeeSnapshots).toHaveLength(2);
 		expect(orderItemFeeSnapshots).toHaveLength(1);
 		expect(result.items[0]).toMatchObject({ displayTotal: 2100, total: 2000, unitPrice: 1000 });

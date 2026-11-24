@@ -178,7 +178,7 @@ export const SAMPLE_RECEIPT: GetOrdersByOrderIdReceipt200 = {
 	deliveryFee: 0,
 	deliveryMethod: "delivery",
 	discountCents: 0,
-	feeTotalCents: 50,
+	buyerFeeTotalCents: 50,
 	fees: [{ amountCents: 50, displayMode: "checkout_only", id: "preview-fee", name: "Taxa de serviço" }],
 	displayNumber: 18,
 	estimatedDeliveryAt: new Date("2026-09-14T15:23:00.000Z"),

@@ -7,7 +7,7 @@ const enabled = !!local && new URL(local).hostname === "127.0.0.1" && process.en
 const suite = enabled ? describe : describe.skip;
 suite("canonical attempt SQL constraints (isolated local PostgreSQL)", () => {
  const db = new PrismaClient({ adapter }).$extends(prismaExtensionKysely());
- const context = { companyId: "local-company", order: { id: "attempt-order", total: 10537, feeTotalCents: 537 } } as PayingCustomerContext;
+ const context = { companyId: "local-company", order: { id: "attempt-order", total: 10537, buyerFeeTotalCents: 537 } } as PayingCustomerContext;
  beforeAll(async () => { await db.paymentAttempt.deleteMany({ where: { orderId: context.order.id } }); });
  afterAll(async () => { await db.paymentAttempt.deleteMany({ where: { orderId: context.order.id } }); await db.$disconnect(); });
  test("concurrent starts permit exactly one active attempt and preserve frozen cents", async () => {

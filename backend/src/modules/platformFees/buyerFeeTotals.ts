@@ -1,9 +1,9 @@
-import type { SimpayAdditiveTotals } from "@/shared/infra/simpay";
+import type { SimpayBuyerFeeTotals } from "@/shared/infra/simpay";
 import type { EffectiveFeeReturn } from "./dtos";
 
 export const SYNTHETIC_FEE_PREFIX = "additive-total:";
 
-export const emptyTotals = (): SimpayAdditiveTotals => ({
+export const emptyTotals = (): SimpayBuyerFeeTotals => ({
 	order: { fixedValue: 0, percentageValue: 0 },
 	product: { fixedValue: 0, percentageValue: 0 },
 });
@@ -11,9 +11,9 @@ export const emptyTotals = (): SimpayAdditiveTotals => ({
 export const isSyntheticFee = (id: string) => id.startsWith(SYNTHETIC_FEE_PREFIX);
 
 /** Sums resolved fees per scope; this is all SimIntPay stores. */
-export function sumAdditiveTotals(
+export function sumBuyerFeeTotals(
 	fees: Pick<EffectiveFeeReturn, "applicationScope" | "fixedValue" | "percentageValue">[],
-): SimpayAdditiveTotals {
+): SimpayBuyerFeeTotals {
 	const totals = emptyTotals();
 	for (const fee of fees) {
 		const scope = fee.applicationScope === "product" ? totals.product : totals.order;
@@ -23,7 +23,7 @@ export function sumAdditiveTotals(
 	return totals;
 }
 
-export function sameTotals(a: SimpayAdditiveTotals | undefined, b: SimpayAdditiveTotals) {
+export function sameTotals(a: SimpayBuyerFeeTotals | undefined, b: SimpayBuyerFeeTotals) {
 	return (["order", "product"] as const).every(
 		scope => a?.[scope].fixedValue === b[scope].fixedValue && a?.[scope].percentageValue === b[scope].percentageValue,
 	);
@@ -49,9 +49,9 @@ function componentsOf(
  * Product fees stay embedded only when every real product fee was embedded.
  */
 export function syntheticFees(
-	totals: SimpayAdditiveTotals,
+	totals: SimpayBuyerFeeTotals,
 	productDisplayMode: EffectiveFeeReturn["displayMode"] = "product_explicit",
-	checkoutOnlyProduct: SimpayAdditiveTotals["product"] = { fixedValue: 0, percentageValue: 0 },
+	checkoutOnlyProduct: SimpayBuyerFeeTotals["product"] = { fixedValue: 0, percentageValue: 0 },
 	local: EffectiveFeeReturn[] = [],
 ): EffectiveFeeReturn[] {
 	const fees: EffectiveFeeReturn[] = [];
@@ -78,5 +78,5 @@ export function productDisplayModeOf(fees: Pick<EffectiveFeeReturn, "application
 }
 
 export function checkoutOnlyProductTotals(fees: Pick<EffectiveFeeReturn, "applicationScope" | "displayMode" | "fixedValue" | "percentageValue">[]) {
-	return sumAdditiveTotals(fees.filter(fee => fee.applicationScope === "product" && fee.displayMode === "checkout_only")).product;
+	return sumBuyerFeeTotals(fees.filter(fee => fee.applicationScope === "product" && fee.displayMode === "checkout_only")).product;
 }

@@ -18,7 +18,7 @@ model Payment {
     /// Cents of the commercial share owed to coproducers, frozen by SIM INT PAY; reports deduct it from company revenue.
     coproductionCents Int    @default(0)
     /// SimIntPay fee deducted from the merchant share (SIMINTPAY_ONLY and BOTH); zero otherwise.
-    simintpayFeeCents Int    @default(0)
+    sellerFeeCents Int    @default(0)
     /// Buyer total priced by SimIntPay at charge time; null on historical rows.
     totalAmountCents Int?
     /// Merchant net returned by SimIntPay (before coproduction); null on historical rows, which
@@ -108,9 +108,9 @@ model CompanySimpayIntegration {
     status String @default("PENDING_OWNER")
     encryptedAccessToken String?
     encryptedWebhookSecret String?
-    /// Last provider additive revision acknowledged by Delivery; null protects existing provider configuration.
-    additiveFeeRevision String?
-    additiveFeeOverridden Boolean @default(false)
+    /// Last provider buyer fee revision acknowledged by Delivery; null protects existing provider configuration.
+    buyerFeeRevision String?
+    buyerFeeOverridden Boolean @default(false)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     @@map("company_simpay_integration")

@@ -2,17 +2,17 @@ import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { cn } from "@/lib/utils";
 import { OverrideValueInput } from "@/routes/admin/platform/fees/components/OverrideValueInput";
-import { type CoverageLane, type LaneDraft, type SimintpayLane, ppmToPercent, centsToReais, percentToPpm, reaisToCents } from "./types";
+import { type CoverageLane, type LaneDraft, type SellerFeeLane, ppmToPercent, centsToReais, percentToPpm, reaisToCents } from "./types";
 
-interface SimintpayLaneRowProps {
+interface SellerFeeLaneRowProps {
 	accepted: boolean;
 	applied: boolean;
 	coverage: CoverageLane | undefined;
 	draft: LaneDraft;
 	/** Global SimIntPay fee for this lane, shown as placeholder while a field is empty. */
-	globalDefault: SimintpayLane | undefined;
-	lane: SimintpayLane;
-	/** Sum of the additive fees charged in the current mode. */
+	globalDefault: SellerFeeLane | undefined;
+	lane: SellerFeeLane;
+	/** Sum of the buyer fees charged in the current mode. */
 	surcharge: { fixedCents: number; ratePpm: number };
 	onAcceptedChange: (accepted: boolean) => void;
 	onChange: (draft: LaneDraft) => void;
@@ -24,7 +24,7 @@ function formatCost(ratePpm: number | string, fixedCents: number | string) {
 	return `${percent}% + ${fixed}`;
 }
 
-export function SimintpayLaneRow({ accepted, applied, coverage, draft, globalDefault, lane, surcharge, onAcceptedChange, onChange }: SimintpayLaneRowProps) {
+export function SellerFeeLaneRow({ accepted, applied, coverage, draft, globalDefault, lane, surcharge, onAcceptedChange, onChange }: SellerFeeLaneRowProps) {
 	const { t } = useTranslation();
 	const label =
 		lane.method === "CREDIT_CARD"
@@ -56,7 +56,7 @@ export function SimintpayLaneRow({ accepted, applied, coverage, draft, globalDef
 				<OverrideValueInput
 					defaultValue={globalDefault && Number(globalDefault.ratePpm) / 10_000}
 					kind="percentage"
-					label={t("admin.companies.fees.simintpay.rate", { lane: label })}
+					label={t("admin.companies.fees.seller.rate", { lane: label })}
 					name={`rate-${lane.method}-${lane.installments}`}
 					onCommit={rate => onChange({ ...draft, rate })}
 					value={globalDefault && Number(draft.rate) === Number(defaultRate) ? "" : draft.rate}
@@ -66,7 +66,7 @@ export function SimintpayLaneRow({ accepted, applied, coverage, draft, globalDef
 				<OverrideValueInput
 					defaultValue={globalDefault && Number(globalDefault.fixedCents) / 100}
 					kind="fixed"
-					label={t("admin.companies.fees.simintpay.fixed", { lane: label })}
+					label={t("admin.companies.fees.seller.fixed", { lane: label })}
 					name={`fixed-${lane.method}-${lane.installments}`}
 					onCommit={fixed => onChange({ ...draft, fixed })}
 					value={globalDefault && Number(draft.fixed) === Number(defaultFixed) ? "" : draft.fixed}
@@ -86,6 +86,6 @@ export function SimintpayLaneRow({ accepted, applied, coverage, draft, globalDef
 	);
 }
 
-export function initialDraft(lane: SimintpayLane): LaneDraft {
+export function initialDraft(lane: SellerFeeLane): LaneDraft {
 	return { fixed: centsToReais(lane.fixedCents), rate: ppmToPercent(lane.ratePpm) };
 }

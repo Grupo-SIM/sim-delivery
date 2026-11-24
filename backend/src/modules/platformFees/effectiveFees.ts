@@ -1,6 +1,6 @@
 import type { PrismaInstance } from "@/shared/infra/sql";
 import type { EffectiveFeeReturn } from "./dtos";
-import { checkoutOnlyProductTotals, productDisplayModeOf, syntheticFees } from "./additiveTotals";
+import { checkoutOnlyProductTotals, productDisplayModeOf, syntheticFees } from "./buyerFeeTotals";
 import { getCompanyFeeSnapshot } from "./companyFeeMode";
 
 /**
@@ -18,7 +18,7 @@ export async function listEffectiveFees(
 	if (!totals) return listCompanySurcharges(prisma, companyId);
 	// Pricing consumes actual provider rates; provenance mutations belong to the serialized sync/admin path.
 	const integration = await prisma.companySimpayIntegration.findUnique({ where: { companyId } });
-	const owned = integration && !integration.additiveFeeOverridden && integration.additiveFeeRevision === totals.revision;
+	const owned = integration && !integration.buyerFeeOverridden && integration.buyerFeeRevision === totals.revision;
 	if (!owned) return syntheticFees(totals.effective);
 	const local = await listCompanySurcharges(prisma, companyId);
 	return syntheticFees(totals.effective, productDisplayModeOf(local), checkoutOnlyProductTotals(local), local);

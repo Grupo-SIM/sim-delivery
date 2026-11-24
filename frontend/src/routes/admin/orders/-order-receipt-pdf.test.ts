@@ -94,7 +94,7 @@ const receipt: GetOrdersByOrderIdReceipt200 = {
 	deliveryFee: 500,
 	deliveryMethod: "delivery",
 	discountCents: 200,
-	feeTotalCents: 0,
+	buyerFeeTotalCents: 0,
 	fees: [],
 	displayNumber: 42,
 	estimatedDeliveryAt: new Date("2026-08-31T16:15:00.000Z"),

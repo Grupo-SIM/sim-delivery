@@ -5,18 +5,18 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import type { GetPlatformFees200, GetPlatformFeesByFeeIdCompanies200 } from "@/lib/api";
 import { formatFeeAmount } from "@/lib/platform-fees";
 import { showToast } from "@/stores";
-import type { ExtraFeeDraft } from "./types";
+import type { BuyerFeeDraft } from "./types";
 import { OverrideValueInput } from "../../../fees/components/OverrideValueInput";
 
 type Association = GetPlatformFeesByFeeIdCompanies200[number];
 type Fee = GetPlatformFees200[number];
 
-export function ExtraFeeEditor({ association, draft, fee, onApply, onClose }: { association: Association; draft?: ExtraFeeDraft; fee: Fee; onApply: (draft: ExtraFeeDraft) => void; onClose: () => void }) {
-	const initial = (): ExtraFeeDraft => draft ?? { active: association.active, fixed: association.fixedOverride == null ? "" : String(Number(association.fixedOverride) / 100), percentage: association.percentageOverride == null ? "" : String(Number(association.percentageOverride) / 100), reset: false };
+export function BuyerFeeEditor({ association, draft, fee, onApply, onClose }: { association: Association; draft?: BuyerFeeDraft; fee: Fee; onApply: (draft: BuyerFeeDraft) => void; onClose: () => void }) {
+	const initial = (): BuyerFeeDraft => draft ?? { active: association.active, fixed: association.fixedOverride == null ? "" : String(Number(association.fixedOverride) / 100), percentage: association.percentageOverride == null ? "" : String(Number(association.percentageOverride) / 100), reset: false };
 	const [values, setValues] = useState(initial);
 	const current = useRef(values);
-	const set = (patch: Partial<ExtraFeeDraft>) => { current.current = { ...current.current, ...patch }; setValues(current.current); };
-	function apply(next: ExtraFeeDraft) {
+	const set = (patch: Partial<BuyerFeeDraft>) => { current.current = { ...current.current, ...patch }; setValues(current.current); };
+	function apply(next: BuyerFeeDraft) {
 		onApply(next);
 		showToast("Alteração aplicada. Salve a empresa para confirmar.", "info");
 		onClose();

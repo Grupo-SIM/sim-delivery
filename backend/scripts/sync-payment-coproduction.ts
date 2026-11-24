@@ -14,7 +14,7 @@ const execute = process.argv.includes("--execute");
 const only = process.argv.find(arg => arg.startsWith("--company="))?.slice("--company=".length);
 
 const payments = await prisma.payment.findMany({
-	select: { id: true, order: { select: { company: { select: { id: true, slug: true } } } }, simintpayFeeCents: true, simpayPaymentId: true },
+	select: { id: true, order: { select: { company: { select: { id: true, slug: true } } } }, sellerFeeCents: true, simpayPaymentId: true },
 	where: { coproductionCents: 0, simpayPaymentId: { not: null }, status: "confirmed", ...(only ? { order: { companyId: only } } : {}) },
 });
 
@@ -25,7 +25,7 @@ for (const payment of payments) {
 	try {
 		const remote = await simpay.getPaymentStatus(payment.simpayPaymentId, { externalMerchantId: company.id, integrationKey: simpayIntegrationKey(company.slug) });
 		const changed = remote.coproductionCents > 0;
-		if (changed && execute) await prisma.payment.update({ data: { coproductionCents: remote.coproductionCents, ...(payment.simintpayFeeCents === 0 ? { simintpayFeeCents: remote.simintpayFeeCents } : {}) }, where: { id: payment.id } });
+		if (changed && execute) await prisma.payment.update({ data: { coproductionCents: remote.coproductionCents, ...(payment.sellerFeeCents === 0 ? { sellerFeeCents: remote.sellerFeeCents } : {}) }, where: { id: payment.id } });
 		if (changed) rows.push({ coproductionCents: remote.coproductionCents, error: "", paymentId: payment.simpayPaymentId, updated: execute });
 	} catch (error) {
 		rows.push({ coproductionCents: 0, error: error instanceof Error ? error.message : String(error), paymentId: payment.simpayPaymentId, updated: false });

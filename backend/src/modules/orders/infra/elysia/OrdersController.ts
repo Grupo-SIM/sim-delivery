@@ -1,6 +1,6 @@
 import Elysia, { t } from "elysia";
 import { RefundPayment } from "@/modules/payments/useCases";
-import { additiveFeeBreakdown } from "@/modules/platformFees/additiveBreakdown";
+import { buyerFeeBreakdown } from "@/modules/platformFees/buyerFeeBreakdown";
 import { ChargeQuoteUnavailableError, quoteOrderCharge } from "@/modules/platformFees/chargeQuote";
 import { AuthGuard, CompanyScopeGuard } from "@/modules/users/guards";
 import { DomainError } from "@/shared/errors";
@@ -106,7 +106,7 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 			.post(
 				"/fees/quote",
 				async ({ body, prisma }): Promise<QuoteOrderFeesReturn> => {
-					const empty = { baseAmountCents: 0, embeddedFeeTotalCents: 0, feeTotalCents: 0, fees: [], totalAmountCents: 0, visibleFeeTotalCents: 0 };
+					const empty = { baseAmountCents: 0, embeddedFeeTotalCents: 0, buyerFeeTotalCents: 0, fees: [], totalAmountCents: 0, visibleFeeTotalCents: 0 };
 					const company = await prisma.company.findUnique({ select: { id: true, slug: true }, where: { slug: body.slug } });
 					if (!company) return empty;
 					const unit = await prisma.unit.findFirst({ select: { id: true }, where: { active: true, companyId: company.id, slug: body.unitSlug } });
@@ -152,14 +152,14 @@ export const OrdersController = new Elysia({ detail: { tags: ["Orders"] } })
 						if (error instanceof ChargeQuoteUnavailableError) throw new DomainError(OrderErrors.PRICING_UNAVAILABLE, error.message);
 						throw error;
 					});
-					const calculated = await additiveFeeBreakdown(prisma, company.id, resolvedItems, quote.additiveFeeCents);
+					const calculated = await buyerFeeBreakdown(prisma, company.id, resolvedItems, quote.additiveFeeCents);
 					return {
 						baseAmountCents: itemsAmountCents + deliveryAmountCents,
 						totalAmountCents: quote.totalAmountCents,
 						embeddedFeeTotalCents: calculated.fees
 							.filter(fee => fee.displayMode === "embedded")
 							.reduce((sum, fee) => sum + fee.amountCents, 0),
-						feeTotalCents: calculated.feeTotalCents,
+						buyerFeeTotalCents: calculated.buyerFeeTotalCents,
 						fees: calculated.fees.map(({ fixedValue, percentageValue, ...fee }) => ({
 						...fee,
 						configuredFixed: fixedValue,

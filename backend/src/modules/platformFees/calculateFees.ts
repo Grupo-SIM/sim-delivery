@@ -34,11 +34,11 @@ function splitComponents(fee: EffectiveFeeReturn, items: FeeItemInput[], subtota
 	return fee.components.map((component, index) => ({ amountCents: index === amounts.length - 1 ? rest : amounts[index], name: component.name }));
 }
 
-/** Display-only split of additive fees; never the charged amount, which SimIntPay quotes (see `additiveBreakdown.ts`). */
+/** Display-only split of buyer fees; never the charged amount, which SimIntPay quotes (see `buyerFeeBreakdown.ts`). */
 export function calculatePlatformFees(
 	fees: EffectiveFeeReturn[],
 	items: FeeItemInput[],
-): { feeTotalCents: number; fees: CalculatedFee[] } {
+): { buyerFeeTotalCents: number; fees: CalculatedFee[] } {
 	const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
 	const calculated = fees.map(fee => {
 		if (fee.applicationScope === "order") {
@@ -58,6 +58,6 @@ export function calculatePlatformFees(
 	});
 	return {
 		fees: calculated,
-		feeTotalCents: calculated.reduce((sum, fee) => sum + fee.amountCents, 0),
+		buyerFeeTotalCents: calculated.reduce((sum, fee) => sum + fee.amountCents, 0),
 	};
 }

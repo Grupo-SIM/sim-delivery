@@ -39,7 +39,7 @@ export class ConfirmPayment {
 			where: { id: payment.orderId },
 		});
 
-		const commercialTotal = Math.max(0, order.total - (order.feeTotalCents ?? 0));
+		const commercialTotal = Math.max(0, order.total - (order.buyerFeeTotalCents ?? 0));
 		const earnedCashbackCents = Math.floor((commercialTotal * order.unit.cashbackPercent) / 100);
 		const earnedLoyaltyPoints = Math.floor((commercialTotal * order.unit.loyaltyPointsRate) / 100);
 		const templates = order.company.orderStatusWhatsAppTemplates as Record<

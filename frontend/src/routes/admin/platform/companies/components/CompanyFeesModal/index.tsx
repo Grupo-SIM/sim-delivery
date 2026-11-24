@@ -17,12 +17,12 @@ import {
 	useGetPlatformFeesByCompanyDefaults,
 } from "@/lib/api";
 import { showAlert, showToast } from "@/stores";
-import { ExtraFeesList } from "./ExtraFeesList";
+import { BuyerFeesList } from "./BuyerFeesList";
 import { overriddenSurcharge } from "./overridden-fee-lines";
 import { OverriddenFeesList } from "./OverriddenFeesList";
-import { SimintpayLaneRow, initialDraft } from "./SimintpayLaneRow";
-import { useExtraFeeEntries } from "./use-extra-fee-entries";
-import { type CompanyFees, type FeeMode, type ExtraFeeDraft, type LaneDraft, compareLanes, laneId, percentToBasisPoints, percentToPpm, reaisToCents, reaisToNullableCents } from "./types";
+import { SellerFeeLaneRow, initialDraft } from "./SellerFeeLaneRow";
+import { useBuyerFeeEntries } from "./use-buyer-fee-entries";
+import { type CompanyFees, type FeeMode, type BuyerFeeDraft, type LaneDraft, compareLanes, laneId, percentToBasisPoints, percentToPpm, reaisToCents, reaisToNullableCents } from "./types";
 
 interface CompanyFeesModalProps {
 	companyId: string;
@@ -38,12 +38,12 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 	const queryClient = useQueryClient();
 	const [mode, setMode] = useState<FeeMode>(fees.mode);
 	const [drafts, setDrafts] = useState<Record<string, LaneDraft>>(() =>
-		Object.fromEntries(fees.simintpay.lanes.map(lane => [laneId(lane), initialDraft(lane)])),
+		Object.fromEntries(fees.seller.lanes.map(lane => [laneId(lane), initialDraft(lane)])),
 	);
 	const [disabledLanes, setDisabledLanes] = useState<Set<string>>(() => new Set(fees.disabledLanes));
-	const [extraDrafts, setExtraDrafts] = useState<Record<string, ExtraFeeDraft>>({});
+	const [buyerDrafts, setBuyerDrafts] = useState<Record<string, BuyerFeeDraft>>({});
 	const [saving, setSaving] = useState(false);
-	const lanes = useMemo(() => [...fees.simintpay.lanes].sort(compareLanes), [fees.simintpay.lanes]);
+	const lanes = useMemo(() => [...fees.seller.lanes].sort(compareLanes), [fees.seller.lanes]);
 	const orderedLanes = useMemo(
 		() => [...lanes].sort((a, b) => Number(disabledLanes.has(laneId(a))) - Number(disabledLanes.has(laneId(b)))),
 		[disabledLanes, lanes],
@@ -52,16 +52,16 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 	const globalDefaults = useMemo(() => new Map(defaults?.lanes.map(lane => [laneId(lane), lane])), [defaults]);
 	const coverage = useMemo(() => new Map(fees.coverage.map(lane => [laneId(lane), lane])), [fees.coverage]);
 
-	const { entries: extraEntries } = useExtraFeeEntries(companyId, extraDrafts);
-	const overridden = fees.additiveOverride != null;
+	const { entries: buyerEntries } = useBuyerFeeEntries(companyId, buyerDrafts);
+	const overridden = fees.buyerFeeOverride != null;
 	// Associating a fee over the SimIntPay total hands the total back to Delivery on save.
-	const associating = overridden && Object.values(extraDrafts).some(draft => draft.active && !draft.reset);
+	const associating = overridden && Object.values(buyerDrafts).some(draft => draft.active && !draft.reset);
 	const surcharge = useMemo(() => {
 		// Until a fee is associated, SimIntPay's total is what the seller is charged, whatever the drafts say.
-		if (overridden && !associating) return mode === "SIMINTPAY_ONLY" ? { fixedCents: 0, ratePpm: 0 } : overriddenSurcharge(fees.additiveOverride);
-		const active = mode === "SIMINTPAY_ONLY" ? [] : extraEntries.filter(entry => entry.active);
+		if (overridden && !associating) return mode === "SIMINTPAY_ONLY" ? { fixedCents: 0, ratePpm: 0 } : overriddenSurcharge(fees.buyerFeeOverride);
+		const active = mode === "SIMINTPAY_ONLY" ? [] : buyerEntries.filter(entry => entry.active);
 		return { fixedCents: active.reduce((sum, entry) => sum + entry.fixedCents, 0), ratePpm: active.reduce((sum, entry) => sum + entry.ratePpm, 0) };
-	}, [associating, extraEntries, fees.additiveOverride, mode, overridden]);
+	}, [associating, buyerEntries, fees.buyerFeeOverride, mode, overridden]);
 
 	const underCovered = lanes.some(lane => {
 		const id = laneId(lane);
@@ -78,9 +78,9 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 		setSaving(true);
 		try {
 			// Release first: while overridden, Delivery undoes any association it sees.
-			if (associating) await putPlatformFeesByCompanyByCompanyId(companyId, { releaseAdditiveOverride: true });
+			if (associating) await putPlatformFeesByCompanyByCompanyId(companyId, { releaseBuyerFeeOverride: true });
 			await Promise.all(
-				Object.entries(extraDrafts).map(([feeId, draft]) =>
+				Object.entries(buyerDrafts).map(([feeId, draft]) =>
 					draft.reset
 						? deletePlatformFeesByFeeIdCompaniesByCompanyId(feeId, companyId)
 						: putPlatformFeesByFeeIdCompaniesByCompanyId(feeId, companyId, {
@@ -93,7 +93,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 			await putPlatformFeesByCompanyByCompanyId(companyId, {
 				disabledLanes: [...disabledLanes].sort(),
 				mode,
-				simintpay: {
+				seller: {
 					// BOLETO is read-only: returned by the API but not accepted in the update body.
 					lanes: lanes.flatMap(lane =>
 						lane.method === "BOLETO"
@@ -112,13 +112,13 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 									},
 								],
 					),
-					version: fees.simintpay.version,
+					version: fees.seller.version,
 				},
 			});
 			await Promise.all([
 				queryClient.invalidateQueries({ queryKey: getPlatformFeesByCompanyByCompanyIdQueryKey(companyId) }),
 				queryClient.invalidateQueries({ queryKey: getPlatformFeesUnderCoveredCompaniesQueryKey() }),
-				...Object.keys(extraDrafts).map(feeId => queryClient.invalidateQueries({ queryKey: getPlatformFeesByFeeIdCompaniesQueryKey(feeId) })),
+				...Object.keys(buyerDrafts).map(feeId => queryClient.invalidateQueries({ queryKey: getPlatformFeesByFeeIdCompaniesQueryKey(feeId) })),
 			]);
 			showToast(t("admin.companies.fees.saved"), "positive");
 			history.back();
@@ -149,15 +149,15 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 			</section>
 
 			<section className="space-y-2">
-				<h3 className="font-semibold text-sm">{t("admin.companies.fees.extras.title")}</h3>
-				{overridden && !associating && <OverriddenFeesList additiveOverride={fees.additiveOverride} />}
-				<p className="text-muted-foreground text-xs">{t("admin.companies.fees.extras.hint")}</p>
-				<ExtraFeesList companyId={companyId} drafts={extraDrafts} mode={mode} overridden={overridden} onDraftChange={(feeId, draft) => setExtraDrafts(current => ({ ...current, [feeId]: draft }))} />
+				<h3 className="font-semibold text-sm">{t("admin.companies.fees.buyerFees.title")}</h3>
+				{overridden && !associating && <OverriddenFeesList buyerFeeOverride={fees.buyerFeeOverride} />}
+				<p className="text-muted-foreground text-xs">{t("admin.companies.fees.buyerFees.hint")}</p>
+				<BuyerFeesList companyId={companyId} drafts={buyerDrafts} mode={mode} overridden={overridden} onDraftChange={(feeId, draft) => setBuyerDrafts(current => ({ ...current, [feeId]: draft }))} />
 			</section>
 
 			<section className="space-y-2">
-				<h3 className="font-semibold text-sm">{t("admin.companies.fees.simintpay.title")}</h3>
-				<p className="text-muted-foreground text-xs">{t("admin.companies.fees.simintpay.hint")}</p>
+				<h3 className="font-semibold text-sm">{t("admin.companies.fees.seller.title")}</h3>
+				<p className="text-muted-foreground text-xs">{t("admin.companies.fees.seller.hint")}</p>
 				<table className="w-full text-left text-sm">
 					<thead className="text-muted-foreground text-xs">
 						<tr>
@@ -172,7 +172,7 @@ function FeesEditor({ fees, companyId }: { companyId: string; fees: CompanyFees 
 					</thead>
 					<tbody>
 						{orderedLanes.map(lane => (
-							<SimintpayLaneRow
+							<SellerFeeLaneRow
 								coverage={coverage.get(laneId(lane))}
 								accepted={!disabledLanes.has(laneId(lane))}
 								applied={mode !== "ADDITIVE_ONLY"}
@@ -230,7 +230,7 @@ export function CompanyFeesModal({ companyId, companyName, isOpen, onClose }: Co
 			) : isError ? (
 				<ErrorState title={t("admin.companies.fees.loadError")} />
 			) : (
-				<FeesEditor companyId={companyId} fees={data} key={data.simintpay.version + data.mode} />
+				<FeesEditor companyId={companyId} fees={data} key={data.seller.version + data.mode} />
 			)}
 		</Modal>
 	);

@@ -1,6 +1,6 @@
 interface MerchantAmountOrder {
-	feeTotalCents?: number | null;
-	payment?: { coproductionCents?: number | null; netAmountCents?: number | null; simintpayFeeCents?: number | null } | null;
+	buyerFeeTotalCents?: number | null;
+	payment?: { coproductionCents?: number | null; netAmountCents?: number | null; sellerFeeCents?: number | null } | null;
 	total: number;
 }
 
@@ -13,5 +13,5 @@ export function merchantAmount(order: MerchantAmountOrder) {
 	const coproduction = order.payment?.coproductionCents ?? 0;
 	const net = order.payment?.netAmountCents;
 	if (net != null) return Math.max(0, net - coproduction);
-	return Math.max(0, order.total - (order.feeTotalCents ?? 0) - coproduction - (order.payment?.simintpayFeeCents ?? 0));
+	return Math.max(0, order.total - (order.buyerFeeTotalCents ?? 0) - coproduction - (order.payment?.sellerFeeCents ?? 0));
 }

@@ -6,23 +6,23 @@ import { CustomSelect } from "@/components/ui/CustomSelect";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { showToast } from "@/stores";
-import { ExtraFeeRow } from "./ExtraFeeRow";
-import { useExtraFeeEntries } from "./use-extra-fee-entries";
-import type { CompanyFees, ExtraFeeDraft } from "./types";
+import { BuyerFeeRow } from "./BuyerFeeRow";
+import { useBuyerFeeEntries } from "./use-buyer-fee-entries";
+import type { CompanyFees, BuyerFeeDraft } from "./types";
 
-interface ExtraFeesListProps {
+interface BuyerFeesListProps {
 	companyId: string;
-	drafts: Record<string, ExtraFeeDraft>;
+	drafts: Record<string, BuyerFeeDraft>;
 	mode: CompanyFees["mode"];
 	/** SimIntPay total in force: stored associations are void until one is associated again in this session. */
 	overridden?: boolean;
-	onDraftChange: (feeId: string, draft: ExtraFeeDraft) => void;
+	onDraftChange: (feeId: string, draft: BuyerFeeDraft) => void;
 }
 
-export function ExtraFeesList({ companyId, drafts, mode, onDraftChange, overridden = false }: ExtraFeesListProps) {
+export function BuyerFeesList({ companyId, drafts, mode, onDraftChange, overridden = false }: BuyerFeesListProps) {
 	const { t } = useTranslation();
 	const [selectedId, setSelectedId] = useState("");
-	const { entries, isError, isPending } = useExtraFeeEntries(companyId, drafts);
+	const { entries, isError, isPending } = useBuyerFeeEntries(companyId, drafts);
 	if (isPending) return <div className="space-y-3"><Skeleton className="h-16 w-full" /><Skeleton className="h-16 w-full" /></div>;
 	if (isError) return <ErrorState title={t("admin.companies.fees.loadError")} />;
 
@@ -44,9 +44,9 @@ export function ExtraFeesList({ companyId, drafts, mode, onDraftChange, overridd
 	}
 
 	return <div className="space-y-3">
-		{mode === "SIMINTPAY_ONLY" && <p className="text-muted-foreground text-sm">{t("admin.companies.fees.extras.disabled")}</p>}
-		{associated.length === 0 && !overridden && <p className="text-muted-foreground text-sm">{t("admin.companies.fees.extras.empty")}</p>}
-		{associated.map(({ draft, fee }) => <ExtraFeeRow companyId={companyId} draft={draft} fee={fee} key={fee.id} onDraftChange={next => onDraftChange(fee.id, next)} />)}
+		{mode === "SIMINTPAY_ONLY" && <p className="text-muted-foreground text-sm">{t("admin.companies.fees.buyerFees.disabled")}</p>}
+		{associated.length === 0 && !overridden && <p className="text-muted-foreground text-sm">{t("admin.companies.fees.buyerFees.empty")}</p>}
+		{associated.map(({ draft, fee }) => <BuyerFeeRow companyId={companyId} draft={draft} fee={fee} key={fee.id} onDraftChange={next => onDraftChange(fee.id, next)} />)}
 		{available.length > 0 && <div className="flex items-center gap-2">
 			<CustomSelect ariaLabel="Taxa a associar" className="min-w-0 flex-1" onChange={setSelectedId} options={available.map(entry => ({ label: entry.fee.name, value: entry.fee.id }))} placeholder="Selecione uma taxa" value={selectedId} />
 			<Button disabled={!selected} onClick={associate} type="button" variant="outline"><LuPlus />Associar taxa</Button>

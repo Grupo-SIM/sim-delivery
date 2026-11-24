@@ -23,7 +23,7 @@ describe("calculatePlatformFees", () => {
 			[{ key: "line", quantity: 3, unitPrice: 2_000 }],
 		);
 		expect(result.fees.map(item => item.amountCents)).toEqual([120, 75]);
-		expect(result.feeTotalCents).toBe(195);
+		expect(result.buyerFeeTotalCents).toBe(195);
 	});
 
 	it("calculates order fees from merchant subtotal without fee-on-fee", () => {
@@ -56,6 +56,6 @@ describe("calculatePlatformFees", () => {
 		const result = calculatePlatformFees([fee({ id: "round", percentageValue: 333 })], [
 			{ key: "line", quantity: 2, unitPrice: 101 },
 		]);
-		expect(result.feeTotalCents).toBe(6);
+		expect(result.buyerFeeTotalCents).toBe(6);
 	});
 });

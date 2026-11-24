@@ -11,7 +11,7 @@ const active = ["preparing", "submitting", "pending"];
 /** Merchant base of an order (items after discounts + freight); SimIntPay prices the buyer total from it. */
 export function orderChargeBase(order: PayingCustomerContext["order"]) {
 	const deliveryAmountCents = order.deliveryFee ?? 0;
-	const itemsAmountCents = order.total - order.feeTotalCents - deliveryAmountCents;
+	const itemsAmountCents = order.total - order.buyerFeeTotalCents - deliveryAmountCents;
 	if (itemsAmountCents < 0 || deliveryAmountCents < 0) throw new DomainError(PaymentErrors.PAYMENT_PROCESSING);
 	return { amountCents: itemsAmountCents + deliveryAmountCents, deliveryAmountCents, itemsAmountCents };
 }
@@ -102,6 +102,6 @@ export async function repriceOrderAfterQuoteChange(db: PrismaInstance, context: 
 	}).catch(error => {
 		throw new DomainError(PaymentErrors.PAYMENT_PROCESSING, error instanceof Error ? error.message : undefined);
 	});
-	await db.order.update({ where: { id: context.order.id }, data: { additiveFeeRevision: quote.additiveRevision, feeTotalCents: quote.additiveFeeCents, total: quote.totalAmountCents } });
+	await db.order.update({ where: { id: context.order.id }, data: { buyerFeeRevision: quote.additiveRevision, buyerFeeTotalCents: quote.additiveFeeCents, total: quote.totalAmountCents } });
 	throw new DomainError(PaymentErrors.PRICE_CHANGED, `O valor do pedido mudou para R$ ${(quote.totalAmountCents / 100).toFixed(2).replace(".", ",")}. Confirme para pagar.`);
 }

@@ -1,7 +1,7 @@
 import type { GetPlatformFeesByCompanyByCompanyId200 } from "@/lib/api";
 
 export type CompanyFees = GetPlatformFeesByCompanyByCompanyId200;
-export type SimintpayLane = CompanyFees["simintpay"]["lanes"][number];
+export type SellerFeeLane = CompanyFees["seller"]["lanes"][number];
 export type CoverageLane = CompanyFees["coverage"][number];
 export type FeeMode = CompanyFees["mode"];
 
@@ -39,8 +39,8 @@ export function compareLanes(a: { installments: number | string; method: string 
 	return method || Number(a.installments) - Number(b.installments);
 }
 
-/** Pending company-specific edit of an additive fee; only sent when the whole modal is saved. */
-export interface ExtraFeeDraft {
+/** Pending company-specific edit of an buyer fee; only sent when the whole modal is saved. */
+export interface BuyerFeeDraft {
 	active: boolean;
 	/** Reais, empty = platform default. */
 	fixed: string;

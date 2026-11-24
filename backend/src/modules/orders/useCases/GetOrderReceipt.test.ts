@@ -23,7 +23,7 @@ const receiptOrder = {
 	deliveryMethod: "delivery",
 	discountCents: 200,
 	feeSnapshots: [],
-	feeTotalCents: 0,
+	buyerFeeTotalCents: 0,
 	displayNumber: 42,
 	estimatedStatusCompletionAt: new Date("2026-08-31T16:15:00.000Z"),
 	id: "ord_1",

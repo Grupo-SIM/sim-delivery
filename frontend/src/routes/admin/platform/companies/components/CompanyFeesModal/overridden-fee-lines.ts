@@ -9,18 +9,18 @@ export interface OverriddenFeeLine {
 }
 
 /** One nameless line per non-zero scope of the total a SimIntPay admin set; empty when no override is active. */
-export function overriddenFeeLines(additiveOverride: CompanyFees["additiveOverride"]): OverriddenFeeLine[] {
-	if (!additiveOverride) return [];
+export function overriddenFeeLines(buyerFeeOverride: CompanyFees["buyerFeeOverride"]): OverriddenFeeLine[] {
+	if (!buyerFeeOverride) return [];
 	return (["order", "product"] as const).flatMap(scope => {
-		const total = additiveOverride[scope];
+		const total = buyerFeeOverride[scope];
 		if (!total.percentageValue && !total.fixedValue) return [];
 		return [{ fixedCents: Number(total.fixedValue), percentageBasisPoints: Number(total.percentageValue), scope }];
 	});
 }
 
 /** Surcharge applied to the seller's lanes: the override while active, otherwise the live associated fees. */
-export function overriddenSurcharge(additiveOverride: CompanyFees["additiveOverride"]) {
-	const lines = overriddenFeeLines(additiveOverride);
+export function overriddenSurcharge(buyerFeeOverride: CompanyFees["buyerFeeOverride"]) {
+	const lines = overriddenFeeLines(buyerFeeOverride);
 	return {
 		fixedCents: lines.reduce((sum, line) => sum + line.fixedCents, 0),
 		ratePpm: lines.reduce((sum, line) => sum + line.percentageBasisPoints * 100, 0),

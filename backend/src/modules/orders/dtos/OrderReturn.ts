@@ -15,7 +15,7 @@ export const QuoteOrderFeesReturn = t.Object({
 	/** Merchant base quoted: items after discounts plus freight. */
 	baseAmountCents: t.Integer(),
 	embeddedFeeTotalCents: t.Integer(),
-	feeTotalCents: t.Integer(),
+	buyerFeeTotalCents: t.Integer(),
 	fees: t.Array(
 		t.Object({
 			...OrderFeeReturn.properties,
@@ -63,7 +63,7 @@ export const AdminOrderReturn = t.Object({
 	deliveryMethod: t.String(),
 	displayNumber: t.Integer(),
 	discountCents: t.Integer(),
-	feeTotalCents: t.Integer(),
+	buyerFeeTotalCents: t.Integer(),
 	fees: t.Array(OrderFeeReturn),
 	estimatedStatusCompletionAt: __nullable__(t.Date()),
 	id: t.String(),
@@ -154,7 +154,7 @@ export const OrderReturn = t.Object({
 	deliveryMethod: t.String(),
 	displayNumber: t.Integer(),
 	discountCents: t.Integer(),
-	feeTotalCents: t.Integer(),
+	buyerFeeTotalCents: t.Integer(),
 	fees: t.Optional(t.Array(OrderFeeReturn)),
 	estimatedStatusCompletionAt: __nullable__(t.Date()),
 	id: t.String(),
