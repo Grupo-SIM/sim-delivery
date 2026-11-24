@@ -304,7 +304,7 @@ export class SimpayClient {
 		return { id: result.id, status: result.status };
 	}
 	async provisionOwner(scope: SimpayMerchantScope, owner: { cnpj?: string | null; email: string; legalName: string; password?: string }): Promise<{ id: string }> {
-		const result = await this.json<RegistrationResult>(`/platform-registrations/${encodeURIComponent(scope.externalMerchantId)}/owner`, { provisioning: true, method: "PUT", body: { ...owner, slug: scope.integrationKey.replace(/^sim-delivery_/, "") } });
+		const result = await this.json<RegistrationResult>(`/platform-registrations/${encodeURIComponent(scope.externalMerchantId)}/owner`, { provisioning: true, method: "PUT", body: { ...owner, clientStatus: "APPROVED", slug: scope.integrationKey.replace(/^sim-delivery_/, "") } });
 		await this.save(scope.externalMerchantId, result);
 		return { id: result.merchant!.id };
 	}

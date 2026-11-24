@@ -29,6 +29,7 @@ it("completes owner with encrypted per-company credentials and no stored passwor
  const fetch = spyOn(globalThis, "fetch").mockResolvedValue(Response.json(ready));
  expect(await client.provisionOwner(scope, { email: "owner@example.com", legalName: "Shop", password: "secret123", cnpj: null })).toEqual({ id: "merchant" });
  expect(String(fetch.mock.calls[0][0])).toEndWith("/platform-registrations/company/owner");
+ expect(JSON.parse(String(fetch.mock.calls[0][1]?.body))).toMatchObject({ clientStatus: "APPROVED" });
  expect(decryptSimpaySecret(saved().encryptedAccessToken)).toBe("scoped-token");
  expect(JSON.stringify(saved())).not.toContain("scoped-token"); expect(JSON.stringify(saved())).not.toContain("secret123");
 });
