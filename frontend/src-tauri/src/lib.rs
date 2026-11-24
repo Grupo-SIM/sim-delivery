@@ -94,15 +94,20 @@ pub fn run() {
     let builder = tauri::Builder::default();
     #[cfg(desktop)]
     let builder = builder
-        .plugin(tauri_plugin_process::init())
-        .plugin(tauri_plugin_updater::Builder::new().build());
+        .plugin(tauri_plugin_process::init());
     let app = builder
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_statusbar_style::init())
         .invoke_handler(tauri::generate_handler![list_printers, open_pdf, print_pdf])
         .setup(|app| {
             #[cfg(desktop)]
-            setup_tray(app.handle())?;
+            {
+                // The updater aborts startup without its config, which builds only inject when signing is set up.
+                if app.config().plugins.0.contains_key("updater") {
+                    app.handle().plugin(tauri_plugin_updater::Builder::new().build())?;
+                }
+                setup_tray(app.handle())?;
+            }
             Ok(())
         })
         // Closing the window only hides it: the app keeps running in the tray.
