@@ -5,9 +5,12 @@ import { useConsentStore } from "@/stores/consent";
 import { useLiveBranding } from "@/hooks/use-live-branding";
 import { useTracking } from "@/hooks/use-tracking";
 import { useSyncSession } from "@/hooks/useSyncSession";
+import { useAutoPrintOrders } from "./admin/orders/use-auto-print-orders";
 
 function RootComponent() {
 	useSyncSession();
+	// Staff-only and whole-app: orders keep printing on the menu, storefront and every admin screen.
+	useAutoPrintOrders();
 	const preferencesOpen = useConsentStore(state => state.preferencesOpen);
 
 	const branding = useLiveBranding();

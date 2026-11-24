@@ -2,7 +2,8 @@ import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useGetOrders } from "@/lib/api";
 import { canPrintNatively, printPdfNatively } from "@/lib/native-printer";
-import { showToast, useAutoPrintStore } from "@/stores";
+import { isStaff } from "@/lib/staff-guard";
+import { showToast, useAuthStore, useAutoPrintStore } from "@/stores";
 import { createOrderReceiptBlob } from "./-create-receipt-blob";
 import { useOrderEvents } from "./use-order-events";
 
@@ -13,14 +14,15 @@ const SAFETY_REFETCH_MS = 30_000;
 
 /**
  * Silently prints the receipt of every order that reaches "recebido" while auto-print is on.
- * Mounted in the admin layout so it keeps working on any screen: the payment webhook confirms the
+ * Mounted at the app root, for staff only, so it keeps working on any screen: the payment webhook confirms the
  * order, the order SSE stream signals it, and this hook refetches and prints it.
  * Fetches its own unfiltered list so board search/date filters never hide a new order.
  */
 export function useAutoPrintOrders() {
 	const { t } = useTranslation();
 	const { enabled, markPrinted, printedIds, printer, unitId } = useAutoPrintStore();
-	const active = enabled && canPrintNatively();
+	const role = useAuthStore(state => state.role);
+	const active = enabled && canPrintNatively() && isStaff(role);
 	useOrderEvents(unitId, active);
 	const ordersQuery = useGetOrders(unitId ? { unitId } : {}, {
 		query: { enabled: active, refetchInterval: SAFETY_REFETCH_MS },
@@ -33,8 +35,8 @@ export function useAutoPrintOrders() {
 	const received = ordersQuery.data?.filter(order => order.status === RECEIVED_STATUS) ?? [];
 
 	useEffect(() => {
-		if (!active) baselineUnitRef.current = null;
-	}, [active]);
+		if (!enabled) baselineUnitRef.current = null;
+	}, [enabled]);
 
 	useEffect(() => {
 		if (!active || !printer || !ordersQuery.data) return;

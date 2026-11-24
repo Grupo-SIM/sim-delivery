@@ -4,7 +4,6 @@ import { LuMenu, LuX } from "react-icons/lu";
 import { ScrollArea } from "@/components/ui/ScrollArea";
 import { isOperationalStaff, requireStaffBeforeLoad } from "@/lib/staff-guard";
 import { useAuthStore } from "@/stores";
-import { useAutoPrintOrders } from "./admin/orders/use-auto-print-orders";
 import { AdminBrand, AdminSidebar, OperationalNavbar, WhatsAppReauthToasts } from "./admin/components";
 
 function AdminLayout() {
@@ -13,7 +12,6 @@ function AdminLayout() {
 		select: state => /^\/admin\/orders\/?$/.test(state.location.pathname),
 	});
 	const role = useAuthStore(state => state.role);
-	useAutoPrintOrders();
 
 	if (isOperationalStaff(role)) {
 		return (
