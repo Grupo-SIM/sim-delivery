@@ -44,6 +44,8 @@ export interface SimpayCardPaymentParams {
 	charge: SimpayChargeBase;
 	/** Buyer total from the quote; SimIntPay answers 409 QUOTE_CHANGED when it no longer matches. */
 	expectedTotalCents: number;
+	/** CPF/CNPJ (digits) the sale is issued under; SimIntPay stores it on the transaction. */
+	merchantDocument?: string | null;
 	document: string;
 	document_type: string;
 	email: string;
@@ -75,6 +77,8 @@ export interface SimpayPixPaymentParams {
 	charge: SimpayChargeBase;
 	/** Buyer total from the quote; SimIntPay answers 409 QUOTE_CHANGED when it no longer matches. */
 	expectedTotalCents: number;
+	/** CPF/CNPJ (digits) the sale is issued under; SimIntPay stores it on the transaction. */
+	merchantDocument?: string | null;
 	document: string;
 	document_type: string;
 	email: string;
@@ -337,7 +341,7 @@ export class SimpayClient {
 		if (!scope) throw new PaymentProviderError("Simpay", "Configure o CPF/CNPJ e a carteira da empresa antes de receber pagamentos online.", 422);
 		await this.provisionMerchant(scope);
 		const card = params as SimpayCardPaymentParams;
-		return this.scoped<CanonicalPayment>(scope, "/payments", { ...chargeBody(params.charge), paymentMethod: method, idempotencyKey: params.idempotencyKey,
+		return this.scoped<CanonicalPayment>(scope, "/payments", { ...chargeBody(params.charge), paymentMethod: method, idempotencyKey: params.idempotencyKey, ...(params.merchantDocument ? { merchantDocument: params.merchantDocument } : {}),
 			...(method === "CREDIT_CARD" ? { installments: 1 } : {}), expectedTotalCents: params.expectedTotalCents, description: params.description,
 			customer: { name: params.name, email: params.email, document: params.document, documentType: params.document_type, phone: params.mobile_phone },
 			...(method === "CREDIT_CARD" ? { card: { token: card.token, holderName: card.holder_name, bin: card.bin, brand: card.brand, installments: card.installments } } : {}),

@@ -285,7 +285,8 @@ As cores seguem os mesmos papéis em todas as empresas; os valores da paleta sal
   vazio, o da empresa; `COMPANY` usa o da empresa e, se vazio, o da unidade. Pedido grava o documento resolvido em
   `Order.cnpj` na criação (nunca recalculado). No saque, as opções de documento (unidades com CNPJ e empresa, na ordem da
   preferência, sem repetir) viram sugestão de chave Pix, editável; `Withdrawal.unitId`/`cnpj` guardam a escolha.
-  Nada disso altera o merchant na SIM INT PAY.
+  O documento do pedido (`Order.cnpj`; pedidos antigos usam o da empresa) segue em `merchantDocument` na cobrança e fica
+  gravado na transação da SIM INT PAY, sem alterar o merchant. Publicar a SIM INT PAY antes do Delivery.
 
 - O campo técnico `cnpj` do contrato e do vínculo financeiro aceita CPF (11 dígitos) ou CNPJ (14). Na SIM INT PAY, CPF identifica pessoa física em `user.cpf`; CNPJ identifica pessoa jurídica em `user.cnpj`.
 

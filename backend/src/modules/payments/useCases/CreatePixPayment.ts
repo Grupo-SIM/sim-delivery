@@ -42,6 +42,7 @@ export class CreatePixPayment {
 			idempotencyKey: attempt.id,
 			...attemptCharge(attempt, order.items),
 			description: buildPaymentDescription(order),
+			merchantDocument: order.cnpj,
 			document,
 			document_type: document.length === 11 ? "CPF" : "CNPJ",
 			email: user.email,

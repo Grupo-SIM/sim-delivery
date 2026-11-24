@@ -108,6 +108,7 @@ export class CreateCardPayment {
 				brand,
 				...attemptCharge(attempt, order.items),
 				description: buildPaymentDescription(order),
+				merchantDocument: order.cnpj,
 				document: holderDocument,
 				document_type: holderDocument.length === 11 ? "CPF" : "CNPJ",
 				email: user.email,
