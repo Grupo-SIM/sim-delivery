@@ -11,6 +11,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
+import { fontFaceCss, isFontFile } from "../src/lib/google-fonts";
 import { resolveThemeColors, themeColorsToCss } from "../src/lib/theme-colors";
 import { fetchBrandingAsset, resolveBrandingAssetUrl } from "./branding-assets";
 import { squareIconSource } from "./branding-icons";
@@ -102,9 +103,20 @@ function extensionFrom(contentType: string | null, sourceUrl: string) {
 	return fromUrl && ["avif", "jpg", "jpeg", "png", "svg", "webp"].includes(fromUrl) ? fromUrl : "png";
 }
 
-function createBrandingCss(colors: ThemeColors, fontFamily: string, fontDisplay: string) {
+function createBrandingCss(
+	colors: ThemeColors,
+	fontFamily: string,
+	fontDisplay: string,
+	fontFamilyUrl?: string | null,
+	fontDisplayUrl?: string | null,
+) {
+ // Own font files are declared here (not only at runtime) so the browser can fetch them as soon as the CSS is parsed.
+ const fontFaces = [
+	isFontFile(fontFamilyUrl) && fontFaceCss(fontFamily, fontFamilyUrl),
+	isFontFile(fontDisplayUrl) && fontFaceCss(fontDisplay, fontDisplayUrl),
+ ].filter(Boolean).join("");
  const fontVariables = `--font-sans:"${fontFamily}", system-ui, sans-serif;--font-display:"${fontDisplay}", "${fontFamily}", system-ui, sans-serif`;
- return `${themeColorsToCss(colors as Parameters<typeof themeColorsToCss>[0])}:root{${fontVariables}}\n`;
+ return `${fontFaces}${themeColorsToCss(colors as Parameters<typeof themeColorsToCss>[0])}:root{${fontVariables}}\n`;
 }
 
 function googleFontsUrl(families: string[]) {
@@ -234,7 +246,7 @@ try {
 		);
 		logoUrl = servedFromCdn ? logoSourceUrl.split("?")[0] : `/${logoFilename}`;
 	}
-	await writeFile(join(publicDir, "branding.css"), createBrandingCss(themeColors, fontFamily, fontDisplay));
+	await writeFile(join(publicDir, "branding.css"), createBrandingCss(themeColors, fontFamily, fontDisplay, company.fontFamilyUrl, company.fontDisplayUrl));
 	
 	await writeFile(
 		brandingPath,
@@ -353,7 +365,15 @@ try {
 			/document\.documentElement\.classList\.add\("(?:dark|light)"\)/,
 			`document.documentElement.classList.add("${initialTheme}")`,
 		)
-		.replace(/https:\/\/fonts\.googleapis\.com\/css2\?[^"]+/, googleFontsUrl([fontDisplay, fontFamily]));
+		.replace(/https:\/\/fonts\.googleapis\.com\/css2\?[^"]+/, googleFontsUrl([fontDisplay, fontFamily]))
+		// Own font files: start the download with the HTML instead of after the CSS and JS. Fonts are always CORS fetches.
+		.replace(
+			/(\s*)(<link rel="stylesheet" href="\/branding\.css" \/>)/,
+			(_, indent: string, stylesheet: string) =>
+				[...new Set([company.fontDisplayUrl, company.fontFamilyUrl].filter(isFontFile))]
+					.map(url => `${indent}<link rel="preload" as="font" href="${url.replaceAll("&", "&amp;").replaceAll('"', "&quot;")}" crossorigin />`)
+					.join("") + `${indent}${stylesheet}`,
+		);
 	await writeFile(join(stage, "index.html"), updatedIndexHtml);
 	
 	// Only publish after all downloads, image processing and config generation succeed.

@@ -35,19 +35,29 @@ function escapeCssValue(value: string) {
 	return value.replace(/["\\\\]/g, "\\\\$&");
 }
 
+/** Page URLs (e.g. fonts.google.com/specimen/X) are not font files and fail CORS; Google families load via stylesheet. */
+export function isFontFile(url?: string | null): url is string {
+	return !!url && !/^https?:\/\/fonts\.google\.com\//i.test(url);
+}
+
+const FONT_FORMATS: Record<string, string> = { otf: "opentype", ttf: "truetype", woff: "woff", woff2: "woff2" };
+
+/** `@font-face` for an uploaded font file; the format hint follows the extension so non-woff2 uploads still load. */
+export function fontFaceCss(family: string, url: string) {
+	const extension = url.split(/[?#]/, 1)[0].split(".").pop()?.toLowerCase() ?? "";
+	const format = FONT_FORMATS[extension] ? ` format("${FONT_FORMATS[extension]}")` : "";
+	return `@font-face{font-family:"${escapeCssValue(family)}";src:url("${escapeCssValue(url)}")${format};font-display:swap;}`;
+}
+
 export function fontsToCss(
 	fontFamily: string,
 	fontDisplay: string,
 	fontFamilyUrl?: string | null,
 	fontDisplayUrl?: string | null,
 ) {
-	// Page URLs (e.g. fonts.google.com/specimen/X) are not font files and fail CORS; Google families load via stylesheet.
-	const isFontFile = (url?: string | null): url is string => !!url && !/^https?:\/\/fonts\.google\.com\//i.test(url);
 	const fontFaces = [
-		isFontFile(fontFamilyUrl) &&
-			`@font-face{font-family:"${escapeCssValue(fontFamily)}";src:url("${escapeCssValue(fontFamilyUrl)}") format("woff2");font-display:swap;}`,
-		isFontFile(fontDisplayUrl) &&
-			`@font-face{font-family:"${escapeCssValue(fontDisplay)}";src:url("${escapeCssValue(fontDisplayUrl)}") format("woff2");font-display:swap;}`,
+		isFontFile(fontFamilyUrl) && fontFaceCss(fontFamily, fontFamilyUrl),
+		isFontFile(fontDisplayUrl) && fontFaceCss(fontDisplay, fontDisplayUrl),
 	]
 		.filter(Boolean)
 		.join("");
