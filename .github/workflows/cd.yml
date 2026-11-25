@@ -221,8 +221,10 @@ jobs:
           # tauri-action skips latest.json when it cannot match signatures (non-ASCII product names),
           # so build the manifest from the local bundle output instead of the GitHub release.
           bundle=$(find . -type d -path '*target/release/bundle' -print -quit)
-          exe=$(find "$bundle/nsis" -name '*-setup.exe' -print -quit)
-          msi=$(find "$bundle/msi" -name '*.msi' -print -quit)
+          # Product names can be non-ASCII ("Estação 237"); expanding globs in-shell keeps the
+          # exact filename bytes, unlike capturing `find` output on the Windows runner.
+          exes=("$bundle"/nsis/*-setup.exe); exe="${exes[0]}"
+          msis=("$bundle"/msi/*.msi); msi="${msis[0]}"
           [ -f "${exe}.sig" ] && [ -f "${msi}.sig" ] || { echo "::error::Missing updater signatures in $bundle"; find "$bundle" -type f | sort; exit 1; }
           out=updater
           mkdir -p "$out"
