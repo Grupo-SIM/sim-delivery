@@ -3,20 +3,27 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { CustomSelect } from "@/components/ui/CustomSelect";
+import { useGetUnits } from "@/lib/api";
 import { canPrintNatively, listNativePrinters } from "@/lib/native-printer";
-import { showToast, useAutoPrintStore } from "@/stores";
+import { canAccessAllUnits } from "@/lib/staff-guard";
+import { showToast, useAuthStore, useAutoPrintStore } from "@/stores";
 
 /** Desktop-only: toggles silent receipt printing for new orders and picks the printer. */
-export function AutoPrintControls({ unitId }: { unitId: string }) {
+export function AutoPrintControls() {
 	const { t } = useTranslation();
-	const { enabled, printer, setEnabled, setPrinter, setUnitId } = useAutoPrintStore();
+	const { enabled, printer, setEnabled, setPrinter, setUnitId, unitId } = useAutoPrintStore();
+	const role = useAuthStore(state => state.role);
+	const unitsQuery = useGetUnits();
+	const canViewAllUnits = canAccessAllUnits(role);
+	const units = unitsQuery.data ?? [];
 	const printersQuery = useQuery({ enabled: canPrintNatively(), queryFn: listNativePrinters, queryKey: ["native-printers"] });
 	const printers = printersQuery.data ?? [];
 
-	// The station prints the unit selected on the board; the background listener reads it from the store.
+	// Fixed per station, independent from the board filter. Staff limited to some units must pick one of them.
 	useEffect(() => {
-		if (enabled) setUnitId(unitId);
-	}, [enabled, setUnitId, unitId]);
+		if (canViewAllUnits || units.length === 0 || units.some(unit => unit.id === unitId)) return;
+		setUnitId(units[0].id);
+	}, [canViewAllUnits, setUnitId, unitId, units]);
 
 	if (!canPrintNatively()) return null;
 
@@ -34,6 +41,16 @@ export function AutoPrintControls({ unitId }: { unitId: string }) {
 
 	return (
 		<div className="space-y-1">
+			<span className="font-medium text-sm">{t("admin.orders.autoPrint.unit")}</span>
+			<CustomSelect
+				ariaLabel={t("admin.orders.autoPrint.unit")}
+				onChange={setUnitId}
+				options={[
+					...(canViewAllUnits ? [{ label: t("admin.orders.autoPrint.unitAll"), value: "" }] : []),
+					...units.map(unit => ({ label: unit.name, value: unit.id })),
+				]}
+				value={unitId}
+			/>
 			<span className="font-medium text-sm">{t("admin.orders.autoPrint.printer")}</span>
 			<div className="flex items-center gap-3">
 				<CustomSelect

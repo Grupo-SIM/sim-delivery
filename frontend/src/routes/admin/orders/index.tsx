@@ -137,7 +137,7 @@ function OrdersPage() {
 						value={origin}
 					/>
 				</div>
-				<AutoPrintControls unitId={unitId} />
+				<AutoPrintControls />
 			</div>
 
 			{canViewAllUnits && !ordersQuery.isPending && <OriginMetrics orders={ordersQuery.data ?? []} />}

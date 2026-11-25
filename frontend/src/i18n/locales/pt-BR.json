@@ -815,7 +815,9 @@
 					"error": "Não foi possível imprimir o pedido automaticamente.",
 					"label": "Imprimir pedidos automaticamente",
 					"noPrinter": "Nenhuma impressora disponível.",
-					"printer": "Impressora"
+					"printer": "Impressora",
+					"unit": "Unidade da impressão",
+					"unitAll": "Todas as unidades"
 				},
 				"columns": {
 					"customer": "Cliente",
