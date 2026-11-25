@@ -225,6 +225,12 @@ jobs:
           # exact filename bytes, unlike capturing `find` output on the Windows runner.
           exes=("$bundle"/nsis/*-setup.exe); exe="${exes[0]}"
           msis=("$bundle"/msi/*.msi); msi="${msis[0]}"
+          # The build does not always emit .sig files, so sign here with the same private key
+          # (TAURI_SIGNING_PRIVATE_KEY[_PASSWORD] come from the job env).
+          for f in "$exe" "$msi"; do
+            [ -f "$f" ] || { echo "::error::Installer not found in $bundle"; find "$bundle" -type f | sort; exit 1; }
+            [ -f "$f.sig" ] || bun --cwd frontend tauri signer sign "$PWD/${f#./}"
+          done
           [ -f "${exe}.sig" ] && [ -f "${msi}.sig" ] || { echo "::error::Missing updater signatures in $bundle"; find "$bundle" -type f | sort; exit 1; }
           out=updater
           mkdir -p "$out"
