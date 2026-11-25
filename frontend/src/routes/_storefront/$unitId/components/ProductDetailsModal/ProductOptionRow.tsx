@@ -5,8 +5,11 @@ import type { SelectedOption } from "@/stores";
 import { money } from "../types";
 import type { OptionImagePreview, ProductOption, ProductOptionGroup } from "./types";
 import { cdnSrcSet } from "@/lib/media-url";
+import { displayedUnitPrice, type ProductFee } from "@/lib/platform-fees";
 
 interface ProductOptionRowProps {
+	basePriceCents: number;
+	fees: ProductFee[];
 	group: ProductOptionGroup;
 	readOnly?: boolean;
 	groupQuantity: number;
@@ -17,6 +20,8 @@ interface ProductOptionRowProps {
 }
 
 export function ProductOptionRow({
+	basePriceCents,
+	fees,
 	group,
 	readOnly = false,
 	groupQuantity,
@@ -81,7 +86,7 @@ export function ProductOptionRow({
 				{option.description && <p className="break-words text-muted-foreground text-sm">{option.description}</p>}
 				{Number(option.priceDeltaCents) > 0 && (
 					<p className="text-muted-foreground text-sm">
-						{`+ ${money.format(Number(option.priceDeltaCents) / 100)}`}
+						{`+ ${money.format((displayedUnitPrice(basePriceCents + Number(option.priceDeltaCents), fees) - displayedUnitPrice(basePriceCents, fees)) / 100)}`}
 					</p>
 				)}
 			</div>

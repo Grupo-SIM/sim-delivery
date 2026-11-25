@@ -1,11 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { LuChevronDown } from "react-icons/lu";
+import type { ProductFee } from "@/lib/platform-fees";
 import type { SelectedOption } from "@/stores";
 import { isGroupComplete } from "../product-options";
 import { ProductOptionRow } from "./ProductOptionRow";
 import type { OptionImagePreview, ProductOption, ProductOptionGroup as ProductOptionGroupType } from "./types";
 
 interface ProductOptionGroupProps {
+	basePriceCents: number;
+	fees: ProductFee[];
 	expanded: boolean;
 	readOnly?: boolean;
 	group: ProductOptionGroupType;
@@ -16,6 +19,8 @@ interface ProductOptionGroupProps {
 }
 
 export function ProductOptionGroup({
+	basePriceCents,
+	fees,
 	expanded,
 	readOnly = false,
 	group,
@@ -110,6 +115,8 @@ export function ProductOptionGroup({
 				<div className="grid auto-rows-fr divide-y divide-border overflow-hidden rounded-b-brand border-x border-b border-border">
 					{group.options.map(option => (
 						<ProductOptionRow
+							basePriceCents={basePriceCents}
+							fees={fees}
 							readOnly={readOnly}
 							group={group}
 							groupQuantity={groupQuantity}

@@ -257,6 +257,8 @@ export function ProductDetailsModal({
 													}}
 												>
 													<ProductOptionGroup
+														basePriceCents={Number(selectedItem.priceCents)}
+														fees={visibleFees}
 														readOnly={readOnly}
 														expanded={expandedGroupIds.has(group.id)}
 														group={group}
