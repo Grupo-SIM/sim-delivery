@@ -14,6 +14,7 @@ import sharp from "sharp";
 import { resolveThemeColors, themeColorsToCss } from "../src/lib/theme-colors";
 import { fetchBrandingAsset, resolveBrandingAssetUrl } from "./branding-assets";
 import { squareIconSource } from "./branding-icons";
+import { productPreloadNginxMap } from "./product-preload";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const FRONTEND = join(ROOT, "frontend");
@@ -125,6 +126,7 @@ const { PrismaClient, adapter } = await import("../../packages/sql/src/index.ts"
 const prisma = new PrismaClient({ adapter });
 
 let company: CompanyBranding | null;
+let products: { id: string; imageUrl: string }[] = [];
 try {
 	const branding = await prisma.company.findUnique({
 		select: {
@@ -170,6 +172,15 @@ try {
 				welcomeDescription: welcomeCopy?.welcomeDescription ?? null,
 			}
 		: null;
+	// Feeds the nginx product-photo preload map; a failure only costs the optimisation.
+	products = company
+		? await prisma.product
+				.findMany({ select: { id: true, imageUrl: true }, where: { company: { slug }, imageUrl: { not: "" } } })
+				.catch(error => {
+					console.warn("Skipping product preload map:", error);
+					return [];
+				})
+		: [];
 } finally {
 	await prisma.$disconnect();
 }
@@ -361,6 +372,13 @@ try {
 	await copyFile(brandingPath, join(FRONTEND, "src", "lib", "branding.ts"));
 	await copyFile(join(stage, "tauri.conf.json"), join(FRONTEND, "src-tauri", "tauri.conf.json"));
 	await copyFile(join(stage, "index.html"), join(FRONTEND, "index.html"));
+
+	// Consumed by the nginx image (see frontend/Dockerfile); always written so the include never dangles.
+	await mkdir(join(FRONTEND, "generated"), { recursive: true });
+	await writeFile(
+		join(FRONTEND, "generated", "product-preload.conf"),
+		productPreloadNginxMap(products, apiUrl, process.env.VITE_CDN_URL?.trim().replace(/\/+$/, "")),
+	);
 } finally {
 	// Temp cleanup is best-effort: Windows may still hold handles (EBUSY) and the OS reaps tmpdir.
 	await rm(stage, { force: true, maxRetries: 5, recursive: true, retryDelay: 200 }).catch(error => {

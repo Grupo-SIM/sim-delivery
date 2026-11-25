@@ -46,6 +46,8 @@ export function earlyPreload(config: EarlyPreloadConfig) {
 
 	const preload = (imageUrl: string | null | undefined, image: EarlyImage) => {
 		if (!imageUrl) return;
+		// nginx already put this exact preload in the HTML (product links); a second one would only add noise.
+		if (image === config.product && document.getElementById("product-preload")) return;
 
 		const link = document.createElement("link");
 		link.rel = "preload";

@@ -31,6 +31,7 @@ RUN --mount=type=secret,id=DATABASE_URL DATABASE_URL="$(cat /run/secrets/DATABAS
 FROM nginx:stable-alpine AS runtime
 
 COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/frontend/generated/product-preload.conf /etc/nginx/conf.d/00-product-preload.conf
 COPY --from=build /app/frontend/dist /usr/share/nginx/html
 
 # The HTTP config keeps SPA navigation separate from missing static assets.
