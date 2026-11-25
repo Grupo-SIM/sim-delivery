@@ -140,6 +140,10 @@ function formatCpf(value: string): string {
 		: value;
 }
 
+function isEmbeddedFee(fee: GetOrdersByOrderIdReceipt200["fees"][number]): boolean {
+	return fee.displayMode === "embedded";
+}
+
 function paidAmount(receipt: GetOrdersByOrderIdReceipt200): number {
 	if (!receipt.payment || !["confirmed", "partially_refunded", "refunded"].includes(receipt.payment.status)) return 0;
 	return Math.max(0, Number(receipt.payment.amount) - Number(receipt.payment.refundedAmount));
@@ -259,7 +263,11 @@ function drawReceipt(doc: jsPDF, receipt: GetOrdersByOrderIdReceipt200, labels: 
 				drawAmountRow(cursor, labels.amountDue, formatMoney(Math.max(0, Number(receipt.total) - paidAmount(receipt))), true);
 				break;
 			case "subtotal":
-				drawAmountRow(cursor, labels.subtotal, formatMoney(receipt.subtotal));
+				drawAmountRow(cursor, labels.subtotal, formatMoney(
+					Number(receipt.subtotal) +
+						receipt.fees.filter(isEmbeddedFee).reduce((sum, fee) => sum + Number(fee.amountCents), 0),
+				),
+			);
 				break;
 			case "deliveryFee":
 				if (Number(receipt.deliveryFee) !== 0) drawAmountRow(cursor, labels.deliveryFee, formatMoney(receipt.deliveryFee));
@@ -274,9 +282,10 @@ function drawReceipt(doc: jsPDF, receipt: GetOrdersByOrderIdReceipt200, labels: 
 				if (receipt.loyaltyPointsRedeemed !== 0) drawAmountRow(cursor, labels.loyalty, `-${formatMoney(receipt.loyaltyPointsRedeemed)}`);
 				break;
 			case "fees": {
-				if (receipt.fees.length > 0) {
+				const visibleFees = receipt.fees.filter(fee => !isEmbeddedFee(fee));
+				if (visibleFees.length > 0) {
 					drawWrappedText(cursor, labels.fees, { style: "bold" });
-					for (const fee of receipt.fees) drawAmountRow(cursor, fee.name, formatMoney(fee.amountCents));
+					for (const fee of visibleFees) drawAmountRow(cursor, fee.name, formatMoney(fee.amountCents));
 				}
 				break;
 			}
