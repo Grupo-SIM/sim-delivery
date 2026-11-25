@@ -200,7 +200,7 @@ jobs:
           release-name: ${{ matrix.slug }} v__VERSION__
 
       # The repository is private, so installed apps cannot read GitHub releases. Mirror the signed
-      # installers and a rewritten latest.json into the public media bucket (served through the CDN).
+      # installers and a generated latest.json into the public media bucket (served through the CDN).
       - name: Publish updater manifest to CDN
         if: ${{ env.TAURI_SIGNING_PRIVATE_KEY != '' }}
         shell: bash
@@ -209,27 +209,39 @@ jobs:
           AWS_DEFAULT_REGION: auto
           AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           CDN_URL: ${{ vars.VITE_CDN_URL }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           S3_BUCKET: ${{ vars.S3_BUCKET }}
           S3_ENDPOINT: ${{ vars.S3_ENDPOINT }}
           S3_PREFIX: ${{ vars.S3_PREFIX }}
         run: |
           set -euo pipefail
           version=$(jq -r .version frontend/src-tauri/tauri.conf.json)
-          tag="${{ matrix.slug }}-v${version}"
           key="updates/${{ matrix.slug }}"
           bucket_path="s3://${S3_BUCKET}/${S3_PREFIX:+${S3_PREFIX%/}/}${key}"
           cdn="${CDN_URL%/}/${key}"
-          gh release download "$tag" --dir updater --clobber \
-            --pattern latest.json --pattern '*.exe' --pattern '*.msi' --pattern '*.zip' \
-            --pattern '*.tar.gz' --pattern '*.sig'
+          # tauri-action skips latest.json when it cannot match signatures (non-ASCII product names),
+          # so build the manifest from the local bundle output instead of the GitHub release.
+          bundle=$(find . -type d -path '*target/release/bundle' -print -quit)
+          exe=$(find "$bundle/nsis" -name '*-setup.exe' -print -quit)
+          msi=$(find "$bundle/msi" -name '*.msi' -print -quit)
+          [ -f "${exe}.sig" ] && [ -f "${msi}.sig" ] || { echo "::error::Missing updater signatures in $bundle"; exit 1; }
+          out=updater
+          mkdir -p "$out"
+          exe_name="${{ matrix.slug }}_${version}_x64-setup.exe"
+          msi_name="${{ matrix.slug }}_${version}_x64_en-US.msi"
+          cp "$exe" "$out/$exe_name"; cp "${exe}.sig" "$out/$exe_name.sig"
+          cp "$msi" "$out/$msi_name"; cp "${msi}.sig" "$out/$msi_name.sig"
+          base="${cdn}/${version}"
+          jq -n --arg version "$version" --arg date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg exe "$base/$exe_name" --rawfile exesig "$out/$exe_name.sig" \
+            --arg msi "$base/$msi_name" --rawfile msisig "$out/$msi_name.sig" \
+            '{version: $version, pub_date: $date, platforms: {
+               "windows-x86_64": {url: $exe, signature: ($exesig | rtrimstr("\n"))},
+               "windows-x86_64-nsis": {url: $exe, signature: ($exesig | rtrimstr("\n"))},
+               "windows-x86_64-msi": {url: $msi, signature: ($msisig | rtrimstr("\n"))}}}' \
+            > latest.json
           # Installers first, manifest last: a client never sees a manifest whose files are missing.
-          aws s3 cp updater "${bucket_path}/${version}" --endpoint-url "$S3_ENDPOINT" --recursive \
-            --exclude latest.json
-          jq --arg base "${cdn}/${version}" \
-            '.platforms |= map_values(.url |= ($base + "/" + (split("/") | last)))' \
-            updater/latest.json > updater/latest.cdn.json
-          aws s3 cp updater/latest.cdn.json "${bucket_path}/latest.json" --endpoint-url "$S3_ENDPOINT" \
+          aws s3 cp "$out" "${bucket_path}/${version}" --endpoint-url "$S3_ENDPOINT" --recursive
+          aws s3 cp latest.json "${bucket_path}/latest.json" --endpoint-url "$S3_ENDPOINT" \
             --content-type application/json --cache-control "no-cache"
 
   # android:
