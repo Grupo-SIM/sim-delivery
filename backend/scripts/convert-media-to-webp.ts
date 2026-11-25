@@ -39,7 +39,7 @@ const columns = [
 const urls = new Set<string>();
 for (const [model, field] of columns) {
 	// biome-ignore lint/suspicious/noExplicitAny: dynamic delegate access
-	const rows = await (prisma as any)[model].findMany({ select: { [field]: true }, where: { [field]: { not: null } } });
+	const rows = await (prisma as any)[model].findMany({ select: { [field]: true } });
 	for (const row of rows) if (toConvert(row[field])) urls.add(row[field]);
 }
 const units = await prisma.unit.findMany({ select: { bannerUrls: true, id: true } });
