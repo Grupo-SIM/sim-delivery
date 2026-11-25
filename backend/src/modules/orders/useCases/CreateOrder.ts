@@ -415,7 +415,7 @@ export class CreateOrder {
 						configuredFixed: fee.fixedValue,
 						configuredPercentage: fee.percentageValue,
 						displayMode: fee.displayMode,
-						name: fee.name,
+						name: fee.components?.length ? fee.components.map(component => component.name).join(" + ") : fee.name,
 						orderId: created.id,
 						platformFeeId: isSyntheticFee(fee.id) ? null : fee.id,
 					},
