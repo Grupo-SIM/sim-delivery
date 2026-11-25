@@ -93,14 +93,23 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 	const columns = useMemo<KanbanColumn[]>(
 		() => {
 			const regularColumns = statuses
-				.filter(status => !isFinalizedStatus(status))
+				.filter(status => !isFinalizedStatus(status) && status !== "problema")
 				.map(status => ({
 					kind: "status" as const,
 					orders: orders.filter(order => order.status === status),
 					status,
 				}));
+			const problemColumns = statuses.includes("problema")
+				? [
+						{
+							kind: "status" as const,
+							orders: orders.filter(order => order.status === "problema"),
+							status: "problema" as const,
+						},
+					]
+				: [];
 			const canShowFinalized = statuses.some(isFinalizedStatus);
-			if (!canShowFinalized) return regularColumns;
+			if (!canShowFinalized) return [...regularColumns, ...problemColumns];
 
 			return [
 				...regularColumns,
@@ -109,6 +118,7 @@ export function OrdersKanban({ orders, role, statuses }: OrdersKanbanProps) {
 					orders: orders.filter(order => FINALIZED_STATUSES.includes(order.status as FinalizedStatus)),
 					status: "finalizado" as const,
 				},
+				...problemColumns,
 			];
 		},
 		[orders, statuses],
