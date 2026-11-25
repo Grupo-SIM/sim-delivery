@@ -202,7 +202,7 @@ jobs:
       # The repository is private, so installed apps cannot read GitHub releases. Mirror the signed
       # installers and a generated latest.json into the public media bucket (served through the CDN).
       - name: Publish updater manifest to CDN
-        if: ${{ env.TAURI_SIGNING_PRIVATE_KEY != '' }}
+        if: ${{ env.TAURI_SIGNING_PRIVATE_KEY != '' && env.TAURI_UPDATER_PUBKEY != '' }}
         shell: bash
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
@@ -223,7 +223,7 @@ jobs:
           bundle=$(find . -type d -path '*target/release/bundle' -print -quit)
           exe=$(find "$bundle/nsis" -name '*-setup.exe' -print -quit)
           msi=$(find "$bundle/msi" -name '*.msi' -print -quit)
-          [ -f "${exe}.sig" ] && [ -f "${msi}.sig" ] || { echo "::error::Missing updater signatures in $bundle"; exit 1; }
+          [ -f "${exe}.sig" ] && [ -f "${msi}.sig" ] || { echo "::error::Missing updater signatures in $bundle"; find "$bundle" -type f | sort; exit 1; }
           out=updater
           mkdir -p "$out"
           exe_name="${{ matrix.slug }}_${version}_x64-setup.exe"
