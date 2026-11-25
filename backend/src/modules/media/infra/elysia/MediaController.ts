@@ -1,6 +1,15 @@
 import { randomUUID } from "node:crypto";
 import Elysia, { t } from "elysia";
 import { CompanyScopeGuard } from "@/modules/users/guards";
+import {
+	OPTIMIZABLE_EXTENSIONS,
+	optimizeOriginal,
+	resizeToWebp,
+	snapVariantWidth,
+	UNTOUCHED_ASSETS,
+	variantFilename,
+	variantFilenames,
+} from "@/modules/media/services/ImageVariants";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
 
 const imageTypes = ["image/avif", "image/jpeg", "image/png", "image/webp"];
@@ -47,12 +56,55 @@ const Asset = t.Union([
 	t.Literal("whatsapp"),
 ]);
 
+const knownVariants = new Set<string>();
+const pendingVariants = new Map<string, Promise<void>>();
+
 export const MediaController = new Elysia({ prefix: "/media" })
 	.use(GlobalPlugin)
 	.get(
 		"/:filename",
-		({ params, redirect, storageProvider }) => redirect(storageProvider.getUrl(params.filename)),
-		{ params: t.Object({ filename: Filename }) },
+		async ({ params, query, redirect, set, storageProvider }) => {
+			const extension = params.filename.split(".").pop() ?? "";
+			if (!query.width || !OPTIMIZABLE_EXTENSIONS.includes(extension)) {
+				return redirect(storageProvider.getUrl(params.filename));
+			}
+
+			const variant = variantFilename(params.filename, snapVariantWidth(query.width));
+			if (!knownVariants.has(variant)) {
+				let pending = pendingVariants.get(variant);
+				if (!pending) {
+					pending = (async () => {
+						const existing = await fetch(storageProvider.getUrl(variant), { method: "HEAD" }).catch(() => null);
+						if (!existing?.ok) {
+							const original = await fetch(storageProvider.getUrl(params.filename));
+							if (!original.ok) throw new Error("Media not found");
+
+							await storageProvider.uploadFile({
+								buffer: await resizeToWebp(
+									new Uint8Array(await original.arrayBuffer()),
+									snapVariantWidth(query.width as number),
+								),
+								contentType: "image/webp",
+								filename: variant,
+							});
+						}
+						knownVariants.add(variant);
+					})().finally(() => pendingVariants.delete(variant));
+					pendingVariants.set(variant, pending);
+				}
+
+				try {
+					await pending;
+				} catch {
+					// Never break an <img>: fall back to the untouched original.
+					return redirect(storageProvider.getUrl(params.filename));
+				}
+			}
+
+			set.headers["cache-control"] = "public, max-age=86400";
+			return redirect(storageProvider.getUrl(variant));
+		},
+		{ params: t.Object({ filename: Filename }), query: t.Object({ width: t.Optional(t.Numeric({ maximum: 4000, minimum: 16 })) }) },
 	)
 	.post(
 		"/:asset",
@@ -70,10 +122,12 @@ export const MediaController = new Elysia({ prefix: "/media" })
 				throw new Error("Unsupported media type");
 			}
 
-			const filename = `${randomUUID()}.${extension}`;
+			const raw = new Uint8Array(await file.arrayBuffer());
+			const optimize = imageTypes.includes(file.type) && !UNTOUCHED_ASSETS.includes(params.asset);
+			const filename = `${randomUUID()}.${optimize ? "webp" : extension}`;
 			await storageProvider.uploadFile({
-				buffer: new Uint8Array(await file.arrayBuffer()),
-				contentType: file.type,
+				buffer: optimize ? await optimizeOriginal(raw) : raw,
+				contentType: optimize ? "image/webp" : file.type,
 				filename,
 			});
 
@@ -97,6 +151,7 @@ export const MediaController = new Elysia({ prefix: "/media" })
 			);
 
 			await storageProvider.deleteFile(params.filename);
+			await Promise.all(variantFilenames(params.filename).map(variant => storageProvider.deleteFile(variant).catch(() => undefined)));
 			return { ok: true };
 		},
 		{

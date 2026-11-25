@@ -53,8 +53,9 @@ export function earlyPreload(config: EarlyPreloadConfig) {
 		link.href = imageUrl;
 		link.setAttribute("fetchpriority", "high");
 		if (config.cdnUrl && imageUrl.startsWith(`${config.cdnUrl}/`)) {
-			const base = imageUrl.split("?")[0];
-			link.setAttribute("imagesrcset", image.widths.map(width => `${base}?width=${width} ${width}w`).join(", "));
+			const filename = imageUrl.split("?")[0].split("/").pop();
+			const mediaUrl = `${config.apiUrl.replace(/\/+$/, "")}/media/${filename}`;
+			link.setAttribute("imagesrcset", image.widths.map(width => `${mediaUrl}?width=${width} ${width}w`).join(", "));
 			link.setAttribute("imagesizes", image.sizes);
 		}
 		document.head.append(link);
