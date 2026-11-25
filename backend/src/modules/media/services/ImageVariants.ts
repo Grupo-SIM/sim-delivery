@@ -6,8 +6,8 @@ export const VARIANT_WIDTHS = [96, 144, 192, 288, 400, 480, 640, 800, 1024, 1280
 /** Raster formats the optimizer can resize; others (fonts, PDFs) are always served untouched. */
 export const OPTIMIZABLE_EXTENSIONS = ["avif", "jpg", "png", "webp"];
 
-/** Assets whose exact bytes matter (PWA icons) and are never re-encoded on upload. */
-export const UNTOUCHED_ASSETS = ["mobile-icon", "whatsapp"];
+/** Assets whose exact bytes matter (PWA icons, logo used in emails) and are never re-encoded on upload. */
+export const UNTOUCHED_ASSETS = ["logo", "mobile-icon", "whatsapp"];
 
 export const MAX_ORIGINAL_WIDTH = 1600;
 
