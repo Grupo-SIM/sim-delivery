@@ -199,22 +199,38 @@ jobs:
           tag-name: ${{ matrix.slug }}-v__VERSION__
           release-name: ${{ matrix.slug }} v__VERSION__
 
-      # Installed apps poll a fixed URL, so mirror the versioned latest.json into a rolling
-      # `<slug>-latest` release (never marked as the repository's latest release).
-      - name: Publish updater manifest
+      # The repository is private, so installed apps cannot read GitHub releases. Mirror the signed
+      # installers and a rewritten latest.json into the public media bucket (served through the CDN).
+      - name: Publish updater manifest to CDN
         if: ${{ env.TAURI_SIGNING_PRIVATE_KEY != '' }}
         shell: bash
         env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+          AWS_DEFAULT_REGION: auto
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+          CDN_URL: ${{ vars.VITE_CDN_URL }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          S3_ENDPOINT: ${{ vars.S3_ENDPOINT }}
+          S3_PREFIX: ${{ vars.S3_PREFIX }}
         run: |
+          set -euo pipefail
           version=$(jq -r .version frontend/src-tauri/tauri.conf.json)
           tag="${{ matrix.slug }}-v${version}"
-          rolling="${{ matrix.slug }}-latest"
-          gh release download "$tag" --pattern latest.json --dir updater --clobber
-          gh release view "$rolling" >/dev/null 2>&1 || gh release create "$rolling" \
-            --latest=false --title "${{ matrix.slug }} updater manifest" \
-            --notes "Rolling release read by installed apps to find new versions. Do not delete."
-          gh release upload "$rolling" updater/latest.json --clobber
+          key="updates/${{ matrix.slug }}"
+          bucket_path="s3://${S3_BUCKET}/${S3_PREFIX:+${S3_PREFIX%/}/}${key}"
+          cdn="${CDN_URL%/}/${key}"
+          gh release download "$tag" --dir updater --clobber \
+            --pattern latest.json --pattern '*.exe' --pattern '*.msi' --pattern '*.zip' \
+            --pattern '*.tar.gz' --pattern '*.sig'
+          # Installers first, manifest last: a client never sees a manifest whose files are missing.
+          aws s3 cp updater "${bucket_path}/${version}" --endpoint-url "$S3_ENDPOINT" --recursive \
+            --exclude latest.json
+          jq --arg base "${cdn}/${version}" \
+            '.platforms |= map_values(.url |= ($base + "/" + (split("/") | last)))' \
+            updater/latest.json > updater/latest.cdn.json
+          aws s3 cp updater/latest.cdn.json "${bucket_path}/latest.json" --endpoint-url "$S3_ENDPOINT" \
+            --content-type application/json --cache-control "no-cache"
 
   # android:
   #   name: ${{ matrix.slug && format('{0} / ', matrix.slug) || '' }}Build & release Android app

@@ -315,14 +315,14 @@ try {
 		// because `createUpdaterArtifacts` fails the build without TAURI_SIGNING_PRIVATE_KEY.
 		const updaterPubkey = process.env.TAURI_UPDATER_PUBKEY?.trim();
 		if (updaterPubkey) {
-			const repository = process.env.UPDATER_REPOSITORY?.trim() || process.env.GITHUB_REPOSITORY?.trim();
-			if (!repository) throw new Error("TAURI_UPDATER_PUBKEY requires UPDATER_REPOSITORY (owner/repo) or GITHUB_REPOSITORY.");
+			const cdnUrl = process.env.VITE_CDN_URL?.trim().replace(/\/+$/, "");
+			if (!cdnUrl) throw new Error("TAURI_UPDATER_PUBKEY requires VITE_CDN_URL (public CDN base URL).");
 			conf.bundle = { ...conf.bundle, createUpdaterArtifacts: true };
 			conf.plugins = {
 				...conf.plugins,
 				updater: {
-					// Rolling per-company release refreshed by the CD workflow after every desktop build.
-					endpoints: [`https://github.com/${repository}/releases/download/${slug}-latest/latest.json`],
+					// Per-company manifest the CD workflow mirrors to the media bucket after every desktop build.
+					endpoints: [`${cdnUrl}/updates/${slug}/latest.json`],
 					pubkey: updaterPubkey,
 					windows: { installMode: "passive" },
 				},
