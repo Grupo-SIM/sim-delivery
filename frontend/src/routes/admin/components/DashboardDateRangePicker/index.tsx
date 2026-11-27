@@ -178,7 +178,7 @@ export function DashboardDateRangePicker({
 		<div
 			className={cn(
 				!inline &&
-					"absolute right-0 z-50 mt-2 w-80 rounded-xl border border-border bg-popover text-popover-foreground p-3 shadow-medium",
+					"absolute left-0 z-50 mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-xl sm:right-0 sm:left-auto border border-border bg-popover text-popover-foreground p-3 shadow-medium",
 				inline && "p-3",
 			)}
 			role="dialog"
