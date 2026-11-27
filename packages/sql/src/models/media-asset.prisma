@@ -1,0 +1,18 @@
+/// Company-scoped registry of uploaded images, backing the media gallery. Files are content-addressed
+/// (see `contentFilename`), so one row exists per company and distinct file; re-uploading the same
+/// bytes only bumps `lastUsedAt`. Which records use an asset is derived by the `media_usage` SQL view.
+model MediaAsset {
+    id         String   @id @default(cuid())
+    companyId  String
+    /// Storage object name, the last segment of `url`.
+    filename   String
+    url        String
+    createdAt  DateTime @default(now())
+    lastUsedAt DateTime @default(now())
+
+    company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+    @@unique([companyId, filename])
+    @@index([companyId, lastUsedAt(sort: Desc), id(sort: Desc)])
+    @@map("media_asset")
+}

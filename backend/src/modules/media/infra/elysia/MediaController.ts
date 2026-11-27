@@ -12,6 +12,8 @@ import {
 	variantFilenames,
 } from "@/modules/media/services/ImageVariants";
 import { GlobalPlugin } from "@/shared/infra/elysia/global";
+import { MediaGalleryQuery, MediaGalleryReturn } from "../../dtos";
+import { ListMediaGallery, RegisterMediaAsset, RemoveMediaAsset } from "../../useCases";
 
 const imageTypes = ["image/avif", "image/jpeg", "image/png", "image/webp"];
 const fontTypes = ["font/otf", "font/ttf", "font/woff", "font/woff2"];
@@ -62,6 +64,22 @@ const pendingVariants = new Map<string, Promise<void>>();
 
 export const MediaController = new Elysia({ prefix: "/media" })
 	.use(GlobalPlugin)
+	.decorate(({ prisma, ...injected }) => ({
+		...injected,
+		listMediaGallery: new ListMediaGallery(prisma),
+		prisma,
+		registerMediaAsset: new RegisterMediaAsset(prisma),
+		removeMediaAsset: new RemoveMediaAsset(prisma),
+	}))
+	.get(
+		"/gallery",
+		async ({ listMediaGallery, query, request }) => {
+			const scope = await CompanyScopeGuard.execute(request.headers);
+			CompanyScopeGuard.authorize(scope, "menu", "read");
+			return listMediaGallery.execute(scope.companyId, query);
+		},
+		{ query: MediaGalleryQuery, response: MediaGalleryReturn },
+	)
 	.get(
 		"/:filename",
 		async ({ params, query, redirect, set, storageProvider }) => {
@@ -109,7 +127,7 @@ export const MediaController = new Elysia({ prefix: "/media" })
 	)
 	.post(
 		"/:asset",
-		async ({ body, params, request, storageProvider }) => {
+		async ({ body, params, registerMediaAsset, request, storageProvider }) => {
 			const scope = await CompanyScopeGuard.execute(request.headers);
 			CompanyScopeGuard.authorize(
 				scope,
@@ -138,7 +156,11 @@ export const MediaController = new Elysia({ prefix: "/media" })
 			}
 
 			const cdnUrl = process.env.CDN_URL?.replace(/\/+$/, "");
-			return { url: cdnUrl ? `${cdnUrl}/${filename}` : new URL(`/media/${filename}`, process.env.API_URL).href };
+			const url = cdnUrl ? `${cdnUrl}/${filename}` : new URL(`/media/${filename}`, process.env.API_URL).href;
+			// Fonts and WhatsApp attachments are not gallery material.
+			if (imageTypes.includes(file.type)) await registerMediaAsset.execute(scope.companyId, url);
+
+			return { url };
 		},
 		{
 			body: t.Object({ file: t.File({ maxSize: "10m" }) }),
@@ -148,7 +170,7 @@ export const MediaController = new Elysia({ prefix: "/media" })
 	)
 	.delete(
 		"/:asset/:filename",
-		async ({ params, request, storageProvider }) => {
+		async ({ params, removeMediaAsset, request, storageProvider }) => {
 			const scope = await CompanyScopeGuard.execute(request.headers);
 			CompanyScopeGuard.authorize(
 				scope,
@@ -159,6 +181,7 @@ export const MediaController = new Elysia({ prefix: "/media" })
 			// Content-addressed files may be referenced by other records; only legacy random names are deleted.
 			if (isContentFilename(params.filename)) return { ok: true };
 
+			await removeMediaAsset.execute(scope.companyId, params.filename);
 			await storageProvider.deleteFile(params.filename);
 			await Promise.all(variantFilenames(params.filename).map(variant => storageProvider.deleteFile(variant).catch(() => undefined)));
 			return { ok: true };

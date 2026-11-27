@@ -68,6 +68,7 @@ model Company {
     orders     Order[]
     products   Product[]
     refunds    Refund[]
+    mediaAssets MediaAsset[]
     productReviews ProductReview[]
     promotionalImages PromotionalImage[]
     reviews    Review[]
