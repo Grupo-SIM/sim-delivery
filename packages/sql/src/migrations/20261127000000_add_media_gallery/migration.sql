@@ -49,12 +49,6 @@ JOIN "unit_product" up ON up."id" = ov."unitProductId"
 JOIN "unit" u ON u."id" = up."unitId"
 WHERE ov."imageUrl" IS NOT NULL AND ov."imageUrl" <> ''
 UNION ALL
-SELECT u."companyId", up."imageUrl", 'unitProduct', up."id", p."title", u."name", up."createdAt"
-FROM "unit_product" up
-JOIN "unit" u ON u."id" = up."unitId"
-JOIN "product" p ON p."id" = up."productId"
-WHERE up."imageUrl" IS NOT NULL AND up."imageUrl" <> ''
-UNION ALL
 SELECT u."companyId", u."imageUrl", 'unit', u."id", u."name", NULL, u."createdAt"
 FROM "unit" u WHERE u."imageUrl" IS NOT NULL AND u."imageUrl" <> ''
 UNION ALL
