@@ -1974,6 +1974,32 @@
 		},
 		"media": {
 			"anyDimensions": "Dimensões: qualquer tamanho.",
+			"gallery": {
+				"choose": "Escolher da galeria",
+				"empty": "Nenhuma imagem enviada ainda.",
+				"emptySearch": "Nenhuma imagem encontrada para essa busca.",
+				"entity": {
+					"category": "Categoria",
+					"companyLogo": "Logo da empresa",
+					"companyMobileIcon": "Ícone do app",
+					"companyUnitFallback": "Imagem padrão de unidade",
+					"option": "Opção",
+					"product": "Produto",
+					"promotion": "Promoção",
+					"unit": "Unidade",
+					"unitBanner": "Banner da unidade",
+					"unitOption": "Opção da unidade",
+					"unitProduct": "Produto da unidade"
+				},
+				"error": "Não foi possível carregar a galeria.",
+				"more_one": "+{{count}} uso",
+				"more_other": "+{{count}} usos",
+				"searchLabel": "Buscar imagens",
+				"searchPlaceholder": "Ex: Pizza Calabresa",
+				"selected": "Imagem selecionada da galeria.",
+				"title": "Galeria de imagens",
+				"unused": "Sem uso no momento"
+			},
 			"optionDimensions": "Miniatura: 56 × 56 px. Ampliação: até 75% da altura da tela, limitada à largura disponível; sem tamanho máximo fixo em pixels.",
 			"preview": "Prévia da imagem",
 			"recommendedDimensions": "Dimensões recomendadas: {{width}} × {{height}} px.",

@@ -1,10 +1,13 @@
 import { type DragEvent, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LuImageUp, LuLoaderCircle, LuTrash2, LuUpload } from "react-icons/lu";
+import { LuImageUp, LuImages, LuLoaderCircle, LuTrash2, LuUpload } from "react-icons/lu";
 import { useDebouncedInput } from "@/hooks/use-debounced-input";
+import { closeActiveModalHistory } from "@/hooks/use-modal-history";
 import { deleteMedia, type MediaAsset, uploadMedia } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { showToast } from "@/stores";
 import { Input } from "./input";
+import { MediaGalleryModal } from "./MediaGalleryModal";
 
 const acceptByAsset: Record<MediaAsset, string> = {
 	banner: "image/avif,image/jpeg,image/png,image/webp",
@@ -58,6 +61,7 @@ export function MediaUrlInput({
 	const dragDepthRef = useRef(0);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [isDragging, setIsDragging] = useState(false);
+	const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [isUploading, setIsUploading] = useState(false);
 	const [localValue, setLocalValue, flushValue] = useDebouncedInput(value, onValueChange);
@@ -100,6 +104,12 @@ export function MediaUrlInput({
 		} finally {
 			setIsDeleting(false);
 		}
+	}
+	function selectFromGallery(url: string) {
+		setLocalValue(url);
+		onValueChange(url);
+		showToast(t("media.gallery.selected"), "positive");
+		closeActiveModalHistory();
 	}
 	function handleDrop(event: DragEvent<HTMLDivElement>) {
 		event.preventDefault();
@@ -149,9 +159,10 @@ export function MediaUrlInput({
 				)}
 				<Input
 					className={
-						localValue
-							? "border-0 pr-22 shadow-none focus-visible:ring-0"
-							: "border-0 pr-11 shadow-none focus-visible:ring-0"
+						cn(
+							"border-0 shadow-none focus-visible:ring-0",
+							localValue ? (isImageAsset ? "pr-33" : "pr-22") : isImageAsset ? "pr-22" : "pr-11",
+						)
 					}
 					onBlur={flushValue}
 					onChange={event => setLocalValue(event.currentTarget.value)}
@@ -172,13 +183,28 @@ export function MediaUrlInput({
 				{localValue && (
 					<button
 						aria-label={isImageAsset ? "Remover imagem" : "Remover fonte"}
-						className="absolute inset-y-0 right-11 flex w-11 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+						className={cn(
+							"absolute inset-y-0 flex w-11 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-foreground",
+							isImageAsset ? "right-22" : "right-11",
+						)}
 						disabled={isUploading || isDeleting}
 						onClick={() => void removeImage()}
 						title={isImageAsset ? "Remover imagem" : "Remover fonte"}
 						type="button"
 					>
 						<LuTrash2 className="size-4" />
+					</button>
+				)}
+				{isImageAsset && (
+					<button
+						aria-label={t("media.gallery.choose")}
+						className="absolute inset-y-0 right-11 flex w-11 cursor-pointer items-center justify-center text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+						disabled={isUploading || isDeleting}
+						onClick={() => setIsGalleryOpen(true)}
+						title={t("media.gallery.choose")}
+						type="button"
+					>
+						<LuImages className="size-4" />
 					</button>
 				)}
 				<button
@@ -192,6 +218,7 @@ export function MediaUrlInput({
 					{isUploading ? <LuLoaderCircle className="size-4 animate-spin" /> : <LuUpload className="size-4" />}
 				</button>
 			</div>
+			{isGalleryOpen && <MediaGalleryModal onClose={() => setIsGalleryOpen(false)} onSelect={selectFromGallery} />}
 			{dimensionHint && <p className="text-muted-foreground text-xs">{dimensionHint}</p>}
 			{preview && isImageAsset && localValue && (
 				<figure
