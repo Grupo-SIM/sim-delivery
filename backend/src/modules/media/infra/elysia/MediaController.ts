@@ -1,7 +1,8 @@
-import { randomUUID } from "node:crypto";
 import Elysia, { t } from "elysia";
 import { CompanyScopeGuard } from "@/modules/users/guards";
 import {
+	contentFilename,
+	isContentFilename,
 	OPTIMIZABLE_EXTENSIONS,
 	optimizeOriginal,
 	resizeToWebp,
@@ -124,12 +125,17 @@ export const MediaController = new Elysia({ prefix: "/media" })
 
 			const raw = new Uint8Array(await file.arrayBuffer());
 			const optimize = imageTypes.includes(file.type) && !UNTOUCHED_ASSETS.includes(params.asset);
-			const filename = `${randomUUID()}.${optimize ? "webp" : extension}`;
-			await storageProvider.uploadFile({
-				buffer: optimize ? await optimizeOriginal(raw) : raw,
-				contentType: optimize ? "image/webp" : file.type,
-				filename,
-			});
+			const buffer = optimize ? await optimizeOriginal(raw) : raw;
+			const filename = contentFilename(buffer, optimize ? "webp" : extension);
+			// Identical bytes always map to the same name: skip the upload when it already exists.
+			const existing = await fetch(storageProvider.getUrl(filename), { method: "HEAD" }).catch(() => null);
+			if (!existing?.ok) {
+				await storageProvider.uploadFile({
+					buffer,
+					contentType: optimize ? "image/webp" : file.type,
+					filename,
+				});
+			}
 
 			const cdnUrl = process.env.CDN_URL?.replace(/\/+$/, "");
 			return { url: cdnUrl ? `${cdnUrl}/${filename}` : new URL(`/media/${filename}`, process.env.API_URL).href };
@@ -149,6 +155,9 @@ export const MediaController = new Elysia({ prefix: "/media" })
 				["product", "promotion"].includes(params.asset) ? "menu" : "branding",
 				"update",
 			);
+
+			// Content-addressed files may be referenced by other records; only legacy random names are deleted.
+			if (isContentFilename(params.filename)) return { ok: true };
 
 			await storageProvider.deleteFile(params.filename);
 			await Promise.all(variantFilenames(params.filename).map(variant => storageProvider.deleteFile(variant).catch(() => undefined)));

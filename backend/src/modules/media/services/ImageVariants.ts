@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import sharp from "sharp";
 
 /** Variant widths served by `GET /media/:filename?width=N`; requests snap up to the next bucket to bound storage. */
@@ -38,4 +39,15 @@ export async function resizeToWebp(input: Uint8Array, width: number): Promise<Ui
 	return new Uint8Array(
 		await sharp(input).rotate().resize({ width, withoutEnlargement: true }).webp({ quality: 78 }).toBuffer(),
 	);
+}
+
+/** Deterministic UUID-shaped name (version nibble 5) derived from the stored bytes, so identical uploads dedupe. */
+export function contentFilename(buffer: Uint8Array, extension: string): string {
+	const hex = createHash("sha256").update(buffer).digest("hex");
+	return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-5${hex.slice(13, 16)}-a${hex.slice(17, 20)}-${hex.slice(20, 32)}.${extension}`;
+}
+
+/** True for names produced by `contentFilename`; legacy uploads use random v4 UUIDs. */
+export function isContentFilename(filename: string): boolean {
+	return /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-a[0-9a-f]{3}-[0-9a-f]{12}\./.test(filename);
 }
