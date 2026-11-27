@@ -28,7 +28,7 @@ export class RegisterMediaAsset {
 
 		await this.prisma.mediaAsset.upsert({
 			create: { companyId, filename, url },
-			update: { lastUsedAt: new Date(), url },
+			update: { lastUsedAt: new Date(), unusedSince: null, url },
 			where: { companyId_filename: { companyId, filename } },
 		});
 	}
@@ -53,16 +53,13 @@ export class ListMediaGallery {
 		const search = query.search?.trim();
 		const cursor = decodeCursor(query.cursor);
 		const params: unknown[] = [companyId];
-		const filters: string[] = [`a."companyId" = $1`];
+		const filters: string[] = [];
+		let having = "";
 
 		if (search) {
 			params.push(`%${escapeLike(search)}%`);
 			// Matches the owning record (product, option, unit...) or its parent, e.g. the product of an option.
-			filters.push(`EXISTS (
-				SELECT 1 FROM "media_usage" s
-				WHERE s."companyId" = a."companyId" AND media_filename(s."url") = a."filename"
-					AND (s."name" ILIKE $${params.length} OR s."context" ILIKE $${params.length})
-			)`);
+			having = `HAVING bool_or(u."name" ILIKE $${params.length} OR u."context" ILIKE $${params.length})`;
 		}
 		if (cursor) {
 			params.push(cursor.lastUsedAt, cursor.id);
@@ -70,17 +67,35 @@ export class ListMediaGallery {
 		}
 		params.push(limit + 1);
 
+		// Gallery = uploaded assets (tracked in media_asset, matched to usages by filename, so CDN/API URL changes
+		// don't matter) plus external URLs pasted into a record, which have no row and are matched by exact URL.
 		const rows = await this.prisma.$queryRawUnsafe<GalleryRow[]>(
-			`SELECT a."id", a."url", a."createdAt", a."lastUsedAt",
+			`WITH usage AS (SELECT * FROM "media_usage" WHERE "companyId" = $1),
+			managed AS (
+				SELECT "id", "filename", "url", "createdAt", "lastUsedAt" FROM "media_asset" WHERE "companyId" = $1
+			),
+			external AS (
+				SELECT md5(u."url") AS "id", NULL::TEXT AS "filename", u."url",
+					min(u."createdAt") AS "createdAt", max(u."createdAt") AS "lastUsedAt"
+				FROM usage u
+				WHERE NOT EXISTS (SELECT 1 FROM managed m WHERE m."filename" = media_filename(u."url"))
+				GROUP BY u."url"
+			),
+			assets AS (SELECT * FROM managed UNION ALL SELECT * FROM external)
+			SELECT a."id", a."url", a."createdAt", a."lastUsedAt",
 				COALESCE(
 					jsonb_agg(DISTINCT jsonb_build_object('context', u."context", 'name', u."name", 'type', u."entityType"))
 						FILTER (WHERE u."entityType" IS NOT NULL),
 					'[]'::jsonb
 				) AS "usedBy"
-			FROM "media_asset" a
-			LEFT JOIN "media_usage" u ON u."companyId" = a."companyId" AND media_filename(u."url") = a."filename"
-			WHERE ${filters.join(" AND ")}
-			GROUP BY a."id"
+			FROM assets a
+			LEFT JOIN usage u ON CASE
+				WHEN a."filename" IS NULL THEN u."url" = a."url"
+				ELSE media_filename(u."url") = a."filename"
+			END
+			${filters.length ? `WHERE ${filters.join(" AND ")}` : ""}
+			GROUP BY a."id", a."url", a."createdAt", a."lastUsedAt"
+			${having}
 			ORDER BY a."lastUsedAt" DESC, a."id" DESC
 			LIMIT $${params.length}`,
 			...params,

@@ -9,6 +9,9 @@ model MediaAsset {
     url        String
     createdAt  DateTime @default(now())
     lastUsedAt DateTime @default(now())
+    /// First time the cleanup sweep saw no record using this asset. Cleared on reuse; the storage object is
+    /// deleted once this is older than the retention period (see `SweepUnusedMedia`).
+    unusedSince DateTime?
 
     company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 

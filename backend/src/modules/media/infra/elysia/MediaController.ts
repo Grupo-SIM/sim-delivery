@@ -145,6 +145,13 @@ export const MediaController = new Elysia({ prefix: "/media" })
 			const optimize = imageTypes.includes(file.type) && !UNTOUCHED_ASSETS.includes(params.asset);
 			const buffer = optimize ? await optimizeOriginal(raw) : raw;
 			const filename = contentFilename(buffer, optimize ? "webp" : extension);
+			const cdnUrl = process.env.CDN_URL?.replace(/\/+$/, "");
+			const url = cdnUrl ? `${cdnUrl}/${filename}` : new URL(`/media/${filename}`, process.env.API_URL).href;
+			// Register before touching storage so the cleanup sweep never deletes bytes another upload is reusing.
+			// Fonts and WhatsApp attachments are not gallery material (the latter are referenced from JSON).
+			if (imageTypes.includes(file.type) && params.asset !== "whatsapp") {
+				await registerMediaAsset.execute(scope.companyId, url);
+			}
 			// Identical bytes always map to the same name: skip the upload when it already exists.
 			const existing = await fetch(storageProvider.getUrl(filename), { method: "HEAD" }).catch(() => null);
 			if (!existing?.ok) {
@@ -154,11 +161,6 @@ export const MediaController = new Elysia({ prefix: "/media" })
 					filename,
 				});
 			}
-
-			const cdnUrl = process.env.CDN_URL?.replace(/\/+$/, "");
-			const url = cdnUrl ? `${cdnUrl}/${filename}` : new URL(`/media/${filename}`, process.env.API_URL).href;
-			// Fonts and WhatsApp attachments are not gallery material.
-			if (imageTypes.includes(file.type)) await registerMediaAsset.execute(scope.companyId, url);
 
 			return { url };
 		},

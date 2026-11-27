@@ -1,3 +1,5 @@
+import { resolveProvider, storageProviders } from "@hyoretsu/providers";
+import { startUnusedMediaSweep } from "./modules/media/useCases";
 import { startMetaCapiWorker } from "./shared/infra/MetaCapiWorker";
 import { startExpiredUnpaidOrderCancellation } from "./modules/orders/useCases";
 import { startPendingPaymentReconciliation } from "./modules/payments/useCases";
@@ -26,6 +28,7 @@ startWhatsAppOutboxWorker(prisma, whatsApp);
 if (whatsApp instanceof WahaWhatsAppProvider) startWhatsAppSessionWatchdog(prisma, new WahaClient(getWahaClientOptions()));
 startMetaCapiWorker(prisma);
 startPendingPaymentReconciliation(prisma, simpay);
+startUnusedMediaSweep(prisma, await resolveProvider(storageProviders, process.env.STORAGE_DRIVER));
 
 server.listen(process.env.PORT || 3333);
 
